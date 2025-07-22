@@ -1,164 +1,119 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { useUserRole } from './hooks/useUserRole';
+import Layout from './components/layout/Layout';
+import Dashboard from './pages/Dashboard';
+import Jobs from './pages/Jobs';
+import Inventory from './pages/Inventory';
+import CustomerHub from './pages/CustomerHub';
+import QuotesInvoices from './pages/QuotesInvoices';
+import FleetManagement from './pages/FleetManagement';
+import MarketingHub from './pages/MarketingHub';
+import Analytics from "@/pages/Analytics";
 
-import React from "react";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./components/layout/Layout";
-import { Landing } from "./pages/Landing";
-import Dashboard from "./pages/Dashboard";
-import { ComingSoon } from "./pages/ComingSoon";
-import JobsPage from "./pages/Jobs";
-import CustomerHub from "./pages/CustomerHub";
-import Inventory from "./pages/Inventory";
-import FleetManagement from "./pages/FleetManagement";
-import FleetCompliancePage from "./pages/FleetCompliancePage";
-import FleetAssignmentsPage from "./pages/FleetAssignmentsPage";
-import FleetMaintenancePage from "./pages/FleetMaintenancePage";
-import FleetFuel from "./pages/FleetFuel";
-import FleetFiles from "./pages/FleetFiles";
-import MarketingHub from "./pages/MarketingHub";
-import QuotesInvoices from "./pages/QuotesInvoices";
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
-const queryClient = new QueryClient();
+if (!clerkPubKey) {
+  throw new Error("REACT_APP_CLERK_PUBLISHABLE_KEY is not defined in the environment variables.");
+}
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={
-            <>
-              <SignedOut>
-                <Landing />
-              </SignedOut>
-              <SignedIn>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </SignedIn>
-            </>
-          } />
-          <Route path="/dashboard" element={
-            <SignedIn>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/jobs" element={
-            <SignedIn>
-              <Layout>
-                <JobsPage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/jobs/calendar" element={
-            <SignedIn>
-              <Layout>
-                <JobsPage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/jobs/map" element={
-            <SignedIn>
-              <Layout>
-                <JobsPage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet" element={
-            <SignedIn>
-              <Layout>
-                <FleetManagement />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet/compliance" element={
-            <SignedIn>
-              <Layout>
-                <FleetCompliancePage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet/assignments" element={
-            <SignedIn>
-              <Layout>
-                <FleetAssignmentsPage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet/maintenance" element={
-            <SignedIn>
-              <Layout>
-                <FleetMaintenancePage />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet/fuel" element={
-            <SignedIn>
-              <Layout>
-                <FleetFuel />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/fleet/files" element={
-            <SignedIn>
-              <Layout>
-                <FleetFiles />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/customers" element={
-            <SignedIn>
-              <Layout>
-                <CustomerHub />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/inventory" element={
-            <SignedIn>
-              <Layout>
-                <Inventory />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/quotes" element={
-            <SignedIn>
-              <Layout>
-                <QuotesInvoices />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/marketing" element={
-            <SignedIn>
-              <Layout>
-                <MarketingHub />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/analytics" element={
-            <SignedIn>
-              <Layout>
-                <ComingSoon title="Analytics" description="Business analytics and reporting features are coming soon." />
-              </Layout>
-            </SignedIn>
-          } />
-          <Route path="/settings" element={
-            <SignedIn>
-              <Layout>
-                <ComingSoon title="Settings" description="Application settings and configuration are coming soon." />
-              </Layout>
-            </SignedIn>
-          } />
-        </Routes>
-        <Toaster />
-        <Sonner />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => {}}>
+      <Router>
+        <div className="min-h-screen bg-background font-sans antialiased">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/jobs"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/inventory"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <Inventory />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/customer-hub"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <CustomerHub />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/quotes-invoices"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <QuotesInvoices />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet-management"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetManagement />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/marketing-hub"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <MarketingHub />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
+            <Route
+              path="*"
+              element={
+                <SignedIn>
+                  <RedirectToSignIn />
+                </SignedIn>
+              }
+            />
+            <Route
+              path="*"
+              element={<SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>}
+            />
+          </Routes>
+        </div>
+      </Router>
+    </ClerkProvider>
+  );
+}
 
 export default App;
