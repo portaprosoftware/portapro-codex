@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import { ComingSoon } from "./pages/ComingSoon";
 import JobsPage from "./pages/Jobs";
 import CustomerHub from "./pages/CustomerHub";
+import Inventory from "./pages/Inventory";
 
 const queryClient = new QueryClient();
 
@@ -78,7 +79,7 @@ const App = () => (
           <Route path="/inventory" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Inventory" description="Inventory management features are coming soon." />
+                <Inventory />
               </Layout>
             </SignedIn>
           } />
