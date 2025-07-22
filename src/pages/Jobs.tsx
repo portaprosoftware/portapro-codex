@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, X, Eye, Play } from 'lucide-react';
+import { format, addDays, subDays } from 'date-fns';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, Filter, Eye, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,8 @@ const mockJobs = [
     status: 'assigned',
     driverId: 1,
     scheduledDate: new Date(2025, 6, 17), // July 17, 2025
-    driverName: 'Grady Green'
+    driverName: 'Grady Green',
+    direction: 'out'
   },
   {
     id: 'SVC-941',
@@ -28,7 +29,8 @@ const mockJobs = [
     status: 'assigned',
     driverId: 2,
     scheduledDate: new Date(2025, 6, 17), // July 17, 2025
-    driverName: 'Jason Wells'
+    driverName: 'Jason Wells',
+    direction: 'out'
   },
   {
     id: 'PKP-122',
@@ -37,57 +39,21 @@ const mockJobs = [
     jobType: 'Pickup',
     status: 'in_progress',
     driverId: 1,
-    scheduledDate: new Date(2025, 6, 18), // July 18, 2025
-    driverName: 'Grady Green'
-  },
-  {
-    id: 'SVC-144',
-    customerId: 126,
-    customerName: 'Sunset Park',
-    jobType: 'Service',
-    status: 'completed',
-    driverId: 3,
-    scheduledDate: new Date(2025, 6, 19), // July 19, 2025
-    driverName: 'Kygo Jones'
+    scheduledDate: new Date(2025, 6, 17), // July 17, 2025
+    driverName: 'Grady Green',
+    direction: 'back'
   }
 ];
-
-// Map status to colors
-const statusColors = {
-  assigned: 'bg-blue-500',
-  in_progress: 'bg-orange-500',
-  completed: 'bg-green-500'
-};
-
-const statusText = {
-  assigned: 'Assigned',
-  in_progress: 'In Progress',
-  completed: 'Completed'
-};
-
-// Function to get jobs for a specific date
-const getJobsForDate = (date: Date) => {
-  return mockJobs.filter(job => 
-    isSameDay(new Date(job.scheduledDate), date)
-  );
-};
-
-// Function to get unique job statuses for a date
-const getStatusesForDate = (date: Date) => {
-  const jobs = getJobsForDate(date);
-  return [...new Set(jobs.map(job => job.status))];
-};
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map'>('calendar');
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 6, 1)); // July 2025
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedJobs, setSelectedJobs] = useState<typeof mockJobs>([]);
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [selectedDateOut, setSelectedDateOut] = useState(new Date(2025, 6, 17)); // July 17, 2025
+  const [selectedDateBack, setSelectedDateBack] = useState(new Date(2025, 6, 17)); // July 17, 2025
   
   // Filters
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [selectedJobType, setSelectedJobType] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState('all');
@@ -103,18 +69,6 @@ const JobsPage: React.FC = () => {
       setActiveTab('dispatch');
     }
   }, [location.pathname]);
-
-  // Handle date selection
-  useEffect(() => {
-    if (selectedDate) {
-      const jobs = getJobsForDate(selectedDate);
-      setSelectedJobs(jobs);
-      setIsPanelOpen(true);
-    } else {
-      setSelectedJobs([]);
-      setIsPanelOpen(false);
-    }
-  }, [selectedDate]);
 
   const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
     setActiveTab(tab);
@@ -132,92 +86,57 @@ const JobsPage: React.FC = () => {
     }
   };
 
-  // Handle month navigation
-  const goToPreviousMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
-  // Get days for the current month
-  const days = eachDayOfInterval({
-    start: startOfMonth(currentMonth),
-    end: endOfMonth(currentMonth)
-  });
-
-  // Close the panel
-  const handleClosePanel = () => {
-    setIsPanelOpen(false);
-    setSelectedDate(null);
-  };
-
-  // Calendar day renderer
-  const renderDay = (day: Date) => {
-    const isCurrentMonth = isSameMonth(day, currentMonth);
-    const isToday = isSameDay(day, new Date());
-    const dayJobs = getJobsForDate(day);
-    const statuses = getStatusesForDate(day);
-    const isSelected = selectedDate && isSameDay(day, selectedDate);
-
-    return (
-      <div 
-        key={day.toString()}
-        className={cn(
-          "h-24 p-1 border border-gray-200 relative cursor-pointer hover:bg-gray-50 transition-colors",
-          !isCurrentMonth && "bg-gray-50 text-gray-400",
-          isToday && "border-blue-500",
-          isSelected && "ring-2 ring-blue-500"
-        )}
-        onClick={() => setSelectedDate(day)}
-      >
-        <div className="text-right p-1">
-          <span className={cn(
-            "text-sm font-medium",
-            isToday && "text-blue-500"
-          )}>
-            {format(day, 'd')}
-          </span>
-        </div>
-        
-        {/* Status badges */}
-        {dayJobs.length > 0 && (
-          <div className="absolute top-1 left-1 flex flex-col gap-1">
-            {statuses.length <= 3 ? (
-              // Show individual status badges if there are 3 or fewer
-              statuses.map(status => (
-                <div 
-                  key={status}
-                  className={cn(
-                    "w-3 h-3 rounded-full",
-                    statusColors[status as keyof typeof statusColors]
-                  )}
-                />
-              ))
-            ) : (
-              // Show job count if there are more than 3 statuses
-              <Badge className="bg-blue-500 text-white text-xs">
-                {dayJobs.length}
-              </Badge>
-            )}
-          </div>
-        )}
-        
-        {/* Job preview (limited space) */}
-        {dayJobs.length > 0 && (
-          <div className="mt-1 text-xs">
-            {dayJobs.slice(0, 2).map(job => (
-              <div key={job.id} className="truncate">
-                {job.jobType}
-              </div>
-            ))}
-            {dayJobs.length > 2 && <div>+{dayJobs.length - 2} more</div>}
-          </div>
-        )}
-      </div>
+  // Get jobs for specific date and direction
+  const getJobsForDate = (date: Date, direction: 'out' | 'back') => {
+    return mockJobs.filter(job => 
+      format(new Date(job.scheduledDate), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd') &&
+      job.direction === direction
     );
   };
+
+  const outgoingJobs = getJobsForDate(selectedDateOut, 'out');
+  const incomingJobs = getJobsForDate(selectedDateBack, 'back');
+
+  const JobCard = ({ job }: { job: typeof mockJobs[0] }) => (
+    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-3">
+        <span className="font-semibold text-gray-900">{job.id}</span>
+        <Badge 
+          className={cn(
+            "text-white text-xs px-2 py-1 rounded-full",
+            job.status === 'assigned' && "bg-[#3366FF]",
+            job.status === 'in_progress' && "bg-[#FF9933]",
+            job.status === 'completed' && "bg-[#33CC66]"
+          )}
+        >
+          {job.status === 'assigned' && 'Assigned'}
+          {job.status === 'in_progress' && 'In Progress'}
+          {job.status === 'completed' && 'Completed'}
+        </Badge>
+      </div>
+      
+      <div className="mb-3">
+        <p className="font-medium text-gray-900 mb-1">{job.customerName}</p>
+        <p className="text-sm text-gray-600">{job.jobType}</p>
+        <p className="text-sm text-gray-500 mt-1">Driver: {job.driverName}</p>
+      </div>
+      
+      <div className="flex space-x-2">
+        <Button variant="outline" size="sm" className="flex-1 text-sm">
+          <Eye className="w-4 h-4 mr-1" />
+          View
+        </Button>
+        <Button 
+          variant="default" 
+          size="sm" 
+          className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-sm"
+        >
+          <Play className="w-4 h-4 mr-1" />
+          Start
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="container-modern py-6 space-y-6">
@@ -271,210 +190,167 @@ const JobsPage: React.FC = () => {
       </div>
 
       {activeTab === 'calendar' && (
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="flex">
-            {/* Main Calendar Area */}
-            <div className={cn("transition-all duration-300", isPanelOpen ? "w-2/3" : "w-full")}>
-              <div className="p-6">
-                {/* Date Navigator */}
-                <div className="flex items-center justify-center mb-6">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="rounded-full"
-                    onClick={goToPreviousMonth}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                  
-                  <Button variant="outline" className="px-4 mx-4 rounded-lg">
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    {format(currentMonth, 'MMMM yyyy')}
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="rounded-full"
-                    onClick={goToNextMonth}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {/* Calendar Grid */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  {/* Day of week headers */}
-                  <div className="grid grid-cols-7 bg-gray-50">
-                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                      <div key={day} className="p-3 text-center font-semibold text-gray-700 border-r border-gray-200 last:border-r-0">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Calendar cells */}
-                  <div className="grid grid-cols-7">
-                    {/* Empty cells for days before the first of the month */}
-                    {Array.from({ 
-                      length: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() 
-                    }).map((_, i) => (
-                      <div key={`empty-start-${i}`} className="h-24 border-r border-b border-gray-200 bg-gray-50 last:border-r-0"></div>
-                    ))}
-                    
-                    {/* Days of the month */}
-                    {days.map(day => {
-                      const isCurrentMonth = isSameMonth(day, currentMonth);
-                      const isToday = isSameDay(day, new Date());
-                      const dayJobs = getJobsForDate(day);
-                      const statuses = getStatusesForDate(day);
-                      const isSelected = selectedDate && isSameDay(day, selectedDate);
-
-                      return (
-                        <div 
-                          key={day.toString()}
-                          className={cn(
-                            "h-24 border-r border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors relative last:border-r-0",
-                            !isCurrentMonth && "bg-gray-50 text-gray-400",
-                            isToday && "bg-blue-50",
-                            isSelected && "bg-blue-100 ring-2 ring-blue-500 ring-inset"
-                          )}
-                          onClick={() => setSelectedDate(day)}
-                        >
-                          <div className="p-2 h-full flex flex-col">
-                            <div className={cn(
-                              "text-sm font-medium mb-1",
-                              isToday && "text-blue-600"
-                            )}>
-                              {format(day, 'd')}
-                            </div>
-                            
-                            {/* Status badges in top-right corner */}
-                            {dayJobs.length > 0 && (
-                              <div className="absolute top-2 right-2">
-                                {statuses.length <= 3 ? (
-                                  <div className="flex flex-col gap-1">
-                                    {statuses.map(status => (
-                                      <div 
-                                        key={status}
-                                        className={cn(
-                                          "w-2 h-2 rounded-full",
-                                          status === 'assigned' && "bg-[#3366FF]",
-                                          status === 'in_progress' && "bg-[#FF9933]", 
-                                          status === 'completed' && "bg-[#33CC66]"
-                                        )}
-                                      />
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <div className="bg-[#3366FF] text-white text-xs px-1 rounded">
-                                    {dayJobs.length}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    
-                    {/* Empty cells for days after the last of the month */}
-                    {Array.from({ 
-                      length: 6 - new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDay() 
-                    }).map((_, i) => (
-                      <div key={`empty-end-${i}`} className="h-24 border-r border-b border-gray-200 bg-gray-50 last:border-r-0"></div>
-                    ))}
-                  </div>
-                </div>
+        <div className="space-y-6">
+          {/* Filters */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input 
+                  placeholder="Search jobs..." 
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
+              <Button variant="outline" size="sm">
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
             </div>
             
-            {/* Slide-in Day Panel */}
-            {isPanelOpen && selectedDate && (
-              <div className="w-1/3 border-l border-gray-200 bg-white animate-slide-in-right">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        Jobs for {format(selectedDate, 'MMMM d, yyyy')}
-                      </h3>
-                      <p className="text-gray-600">
-                        {selectedJobs.length} job{selectedJobs.length !== 1 ? 's' : ''} scheduled
-                      </p>
-                    </div>
+            <div className="grid grid-cols-4 gap-4">
+              <select 
+                className="rounded-md border border-gray-300 p-2 text-sm"
+                value={selectedDriver}
+                onChange={(e) => setSelectedDriver(e.target.value)}
+              >
+                <option value="all">All Drivers</option>
+                <option value="1">Grady Green</option>
+                <option value="2">Jason Wells</option>
+                <option value="3">Kygo Jones</option>
+              </select>
+              
+              <select 
+                className="rounded-md border border-gray-300 p-2 text-sm"
+                value={selectedJobType}
+                onChange={(e) => setSelectedJobType(e.target.value)}
+              >
+                <option value="all">All Job Types</option>
+                <option value="delivery">Delivery</option>
+                <option value="pickup">Pickup</option>
+                <option value="service">Service</option>
+              </select>
+              
+              <select 
+                className="rounded-md border border-gray-300 p-2 text-sm"
+                value={selectedProduct}
+                onChange={(e) => setSelectedProduct(e.target.value)}
+              >
+                <option value="all">All Products</option>
+                <option value="standard">Standard Unit</option>
+                <option value="deluxe">Deluxe Unit</option>
+                <option value="sink">Hand Wash Station</option>
+              </select>
+              
+              <select 
+                className="rounded-md border border-gray-300 p-2 text-sm"
+                value={selectedVariation}
+                onChange={(e) => setSelectedVariation(e.target.value)}
+              >
+                <option value="all">All Variations</option>
+                <option value="standard">Standard</option>
+                <option value="ada">ADA Compliant</option>
+                <option value="luxury">Luxury</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Going Out Column */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white p-4 rounded-t-lg">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Going Out</h3>
+                  <div className="flex items-center space-x-2">
                     <Button 
                       variant="ghost" 
-                      size="icon"
-                      onClick={handleClosePanel}
-                      className="h-8 w-8"
+                      size="icon" 
+                      className="text-white hover:bg-white/20 h-8 w-8"
+                      onClick={() => setSelectedDateOut(subDays(selectedDateOut, 1))}
                     >
-                      <X className="h-4 w-4" />
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    
+                    <span className="font-medium px-3">
+                      {format(selectedDateOut, 'MMM d, yyyy')}
+                    </span>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-white hover:bg-white/20 h-8 w-8"
+                      onClick={() => setSelectedDateOut(addDays(selectedDateOut, 1))}
+                    >
+                      <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
-                  
-                  <Button
-                    variant="default"
-                    className="w-full mb-6 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] rounded-lg"
-                  >
-                    + Schedule
-                  </Button>
-                  
-                  {selectedJobs.length > 0 ? (
-                    <div className="space-y-4">
-                      {selectedJobs.map(job => (
-                        <div 
-                          key={job.id}
-                          className="bg-white border border-gray-200 rounded-lg shadow-sm p-4"
-                          style={{ boxShadow: 'rgba(0,0,0,0.05) 0 2px 8px' }}
-                        >
-                          <div className="flex justify-between items-center mb-3">
-                            <span className="font-semibold">{job.id}</span>
-                            <Badge 
-                              className={cn(
-                                "text-white rounded-full",
-                                job.status === 'assigned' && "bg-[#3366FF]",
-                                job.status === 'in_progress' && "bg-[#FF9933]",
-                                job.status === 'completed' && "bg-[#33CC66]"
-                              )}
-                            >
-                              {statusText[job.status as keyof typeof statusText]}
-                            </Badge>
-                          </div>
-                          
-                          <div className="mb-4">
-                            <p className="font-medium">{job.customerName} – {job.jobType}</p>
-                          </div>
-                          
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="flex-1 border border-gray-300 rounded-lg"
-                            >
-                              View
-                            </Button>
-                            
-                            <Button 
-                              variant="default" 
-                              size="sm"
-                              className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] rounded-lg"
-                            >
-                              Start
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                      <CalendarIcon className="w-12 h-12 text-gray-300 mb-3" />
-                      <p className="text-lg font-medium text-gray-500">No jobs scheduled</p>
-                      <p className="text-gray-400">No jobs scheduled for this date</p>
-                    </div>
-                  )}
                 </div>
               </div>
-            )}
+              
+              <div className="p-4">
+                {outgoingJobs.length > 0 ? (
+                  <div className="space-y-4">
+                    {outgoingJobs.map(job => (
+                      <JobCard key={job.id} job={job} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p>No deliveries or services scheduled for this date</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Coming Back Column */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white p-4 rounded-t-lg">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Coming Back</h3>
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-white hover:bg-white/20 h-8 w-8"
+                      onClick={() => setSelectedDateBack(subDays(selectedDateBack, 1))}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    
+                    <span className="font-medium px-3">
+                      {format(selectedDateBack, 'MMM d, yyyy')}
+                    </span>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-white hover:bg-white/20 h-8 w-8"
+                      onClick={() => setSelectedDateBack(addDays(selectedDateBack, 1))}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4">
+                {incomingJobs.length > 0 ? (
+                  <div className="space-y-4">
+                    {incomingJobs.map(job => (
+                      <JobCard key={job.id} job={job} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p>No pickups or returns scheduled for this date</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
