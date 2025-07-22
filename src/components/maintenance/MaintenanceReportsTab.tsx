@@ -177,50 +177,53 @@ export const MaintenanceReportsTab: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {reports?.map((report, index) => (
-                <tr 
-                  key={report.id} 
-                  className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
-                >
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {report.report_number || `RPT-${report.id.slice(0, 8)}`}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(report.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.report_data?.vehicle_info || 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.report_data?.service_type || 'General Maintenance'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge className={`capitalize ${getStatusColor(report.status)}`}>
-                      {report.status.replace('_', ' ')}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                        <div 
-                          className="h-full bg-blue-600 rounded-full" 
-                          style={{ width: `${report.completion_percentage || 0}%` }}
-                        ></div>
+              {reports?.map((report, index) => {
+                const reportData = report.report_data as Record<string, any> || {};
+                return (
+                  <tr 
+                    key={report.id} 
+                    className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {report.report_number || `RPT-${report.id.slice(0, 8)}`}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {new Date(report.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {reportData.vehicle_info || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {reportData.service_type || 'General Maintenance'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge className={`capitalize ${getStatusColor(report.status)}`}>
+                        {report.status.replace('_', ' ')}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                          <div 
+                            className="h-full bg-blue-600 rounded-full" 
+                            style={{ width: `${report.completion_percentage || 0}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
                       </div>
-                      <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedReport(report.id)}
-                    >
-                      View/Edit
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedReport(report.id)}
+                      >
+                        View/Edit
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
