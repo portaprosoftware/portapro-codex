@@ -55,6 +55,12 @@ export const FleetOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
+        <p className="text-gray-600 mt-1">All vehicles</p>
+      </div>
+
       {/* Search and Controls */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
         <div className="relative flex-1 max-w-md">

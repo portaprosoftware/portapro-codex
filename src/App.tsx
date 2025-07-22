@@ -14,6 +14,11 @@ import JobsPage from "./pages/Jobs";
 import CustomerHub from "./pages/CustomerHub";
 import Inventory from "./pages/Inventory";
 import FleetManagement from "./pages/FleetManagement";
+import FleetCompliancePage from "./pages/FleetCompliancePage";
+import FleetAssignmentsPage from "./pages/FleetAssignmentsPage";
+import FleetMaintenancePage from "./pages/FleetMaintenancePage";
+import FleetFuel from "./pages/FleetFuel";
+import FleetFiles from "./pages/FleetFiles";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +71,41 @@ const App = () => (
             <SignedIn>
               <Layout>
                 <FleetManagement />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/fleet/compliance" element={
+            <SignedIn>
+              <Layout>
+                <FleetCompliancePage />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/fleet/assignments" element={
+            <SignedIn>
+              <Layout>
+                <FleetAssignmentsPage />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/fleet/maintenance" element={
+            <SignedIn>
+              <Layout>
+                <FleetMaintenancePage />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/fleet/fuel" element={
+            <SignedIn>
+              <Layout>
+                <FleetFuel />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/fleet/files" element={
+            <SignedIn>
+              <Layout>
+                <FleetFiles />
               </Layout>
             </SignedIn>
           } />

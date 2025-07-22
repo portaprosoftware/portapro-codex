@@ -1,16 +1,15 @@
-
 import React from "react";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
-import { FleetOverview } from "@/components/fleet/FleetOverview";
+import { FleetCompliance } from "@/components/fleet/FleetCompliance";
 
-export default function FleetManagement() {
+export default function FleetCompliancePage() {
   return (
     <div className="flex h-screen bg-gray-50">
       <FleetSidebar />
       
       <div className="flex-1 overflow-auto">
         <div className="p-6">
-          <FleetOverview />
+          <FleetCompliance />
         </div>
       </div>
     </div>
