@@ -1,15 +1,28 @@
 import React, { useState } from "react";
-import { Layout } from "@/components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, BarChart3, Plus, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Layout } from "@/components/layout/Layout";
 
 const Jobs: React.FC = () => {
   const [activeView, setActiveView] = useState<"calendar" | "dashboard" | "map">("calendar");
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 17)); // July 17, 2025
+  const location = useLocation();
+  
+  // Determine view based on URL path
+  React.useEffect(() => {
+    if (location.pathname === '/jobs') {
+      setActiveView('calendar');
+    } else if (location.pathname === '/jobs/dashboard') {
+      setActiveView('dashboard');
+    } else if (location.pathname === '/jobs/map') {
+      setActiveView('map');
+    }
+  }, [location.pathname]);
 
   const formatMonth = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
