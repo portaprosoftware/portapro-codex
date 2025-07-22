@@ -232,35 +232,35 @@
     @apply card-modern border-l-4 border-l-yellow;
   }
 
-  /* Icon containers with gradients */
+  /* Icon containers with solid gradients and white icons */
   .icon-circle-blue {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--blue-light)), hsl(var(--blue)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--blue)), hsl(221 83% 48%));
   }
 
   .icon-circle-purple {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--purple-light)), hsl(var(--purple)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--purple)), hsl(262 83% 53%));
   }
 
   .icon-circle-green {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--green-light)), hsl(var(--green)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--green)), hsl(142 76% 31%));
   }
 
   .icon-circle-orange {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--orange-light)), hsl(var(--orange)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--orange)), hsl(38 92% 45%));
   }
 
   .icon-circle-red {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--red-light)), hsl(var(--red)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--red)), hsl(0 84% 55%));
   }
 
   .icon-circle-yellow {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
-    background: linear-gradient(135deg, hsl(var(--yellow-light)), hsl(var(--yellow)));
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--yellow)), hsl(45 93% 42%));
   }
 
   /* Modern input styles */
