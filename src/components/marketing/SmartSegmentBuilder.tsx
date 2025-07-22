@@ -99,7 +99,7 @@ export const SmartSegmentBuilder: React.FC = () => {
         .insert({
           name: data.name,
           description: data.description,
-          rule_set: { rules: data.rules },
+          rule_set: { rules: data.rules } as any,
           customer_count: estimatedCount,
           segment_type: 'smart'
         });
