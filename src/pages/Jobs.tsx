@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Select } from '@/components/ui/select';
+import JobsMapPage from '@/components/JobsMapView';
 
 // Sample data for demonstration
 const mockJobs = [
@@ -527,6 +527,20 @@ const JobsPage: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+      
+      {activeTab === 'dispatch' && (
+        <div className="bg-white rounded-2xl shadow-md p-6">
+          <div className="text-center py-20">
+            <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-500 mb-2">Dispatch Board</h3>
+            <p className="text-gray-400">Dispatch functionality coming soon</p>
+          </div>
+        </div>
+      )}
+      
+      {activeTab === 'map' && (
+        <JobsMapPage />
       )}
     </div>
   );
