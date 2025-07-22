@@ -101,16 +101,20 @@ export const Sidebar: React.FC = () => {
             to={item.path}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200",
-                "text-gray-900 hover:bg-gray-100",
+                "flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer",
+                "text-gray-900",
                 isActive 
                   ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md" 
-                  : ""
+                  : "hover:bg-gray-100 hover:rounded-lg"
               )
             }
           >
-            <item.icon className="w-5 h-5" />
-            {item.name}
+            {({ isActive }) => (
+              <>
+                <item.icon className={cn("w-5 h-5 mr-2", isActive ? "text-white" : "text-gray-900")} />
+                {item.name}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
