@@ -73,54 +73,125 @@ body {
   padding: 0 1rem;
 }
 
-/* Dashboard cards */
+/* Dashboard cards with proper gradient borders */
 .card {
   background-color: #ffffff;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
 }
 
 .card .label {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: #6b7280;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .card .value {
-  font-size: 1.75rem;
+  font-size: 1.875rem;
   font-weight: 600;
   color: #111827;
+  margin-bottom: 0.25rem;
 }
 
 .card .icon-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .card .icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.5rem;
-  background: #f3f4f6;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Color highlights for each card */
-.card.units { border-left: 4px solid #3b82f6; }
-.card.customers { border-left: 4px solid #a855f7; }
-.card.jobs { border-left: 4px solid #60a5fa; }
-.card.revenue { border-left: 4px solid #34d399; }
-.card.fleet { border-left: 4px solid #6366f1; }
-.card.fuel { border-left: 4px solid #f59e0b; }
-.card.maintenance { border-left: 4px solid #ef4444; }
-.card.documents { border-left: 4px solid #facc15; }
+/* Gradient borders for dashboard cards */
+.card.units::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #3366FF, #6699FF);
+}
+
+.card.customers::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #9B51E0, #BB66E0);
+}
+
+.card.jobs::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #3366FF, #6699FF);
+}
+
+.card.revenue::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #33CC66, #66DD88);
+}
+
+.card.fleet::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #6666FF, #8888FF);
+}
+
+.card.fuel::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #FFAA33, #FFCC55);
+}
+
+.card.maintenance::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #FF4444, #FF6666);
+}
+
+.card.documents::before { 
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #FF8822, #FFA044);
+}
 
 /* Buttons */
 .btn-primary {
@@ -174,5 +245,17 @@ h1, h2, h3, h4 {
 @media (max-width: 768px) {
   .container-modern {
     padding: 0 0.5rem;
+  }
+  
+  /* Stack cards two per row on mobile */
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Stack cards single column on very small screens */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
