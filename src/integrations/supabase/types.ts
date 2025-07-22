@@ -119,6 +119,51 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_analytics: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          customer_id: string
+          event_timestamp: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          customer_id: string
+          event_timestamp?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          customer_id?: string
+          event_timestamp?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_analytics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_analytics_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       communication_templates: {
         Row: {
           category: string | null
@@ -720,6 +765,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      customer_segments: {
+        Row: {
+          created_at: string | null
+          customer_count: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          rule_set: Json
+          segment_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_count?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          rule_set?: Json
+          segment_type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_count?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          rule_set?: Json
+          segment_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       customer_service_locations: {
         Row: {
@@ -2554,6 +2635,74 @@ export type Database = {
             columns: ["report_id"]
             isOneToOne: false
             referencedRelation: "maintenance_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_campaigns: {
+        Row: {
+          bounced_count: number | null
+          campaign_type: string
+          clicked_count: number | null
+          created_at: string | null
+          created_by: string | null
+          delivered_count: number | null
+          id: string
+          name: string
+          opened_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string
+          target_customer_types: Json | null
+          target_segments: Json | null
+          template_id: string | null
+          total_recipients: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          bounced_count?: number | null
+          campaign_type: string
+          clicked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          delivered_count?: number | null
+          id?: string
+          name: string
+          opened_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+          target_customer_types?: Json | null
+          target_segments?: Json | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          bounced_count?: number | null
+          campaign_type?: string
+          clicked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          delivered_count?: number | null
+          id?: string
+          name?: string
+          opened_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+          target_customer_types?: Json | null
+          target_segments?: Json | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "communication_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -5137,6 +5286,16 @@ export type Database = {
         Returns: {
           category_name: string
           point_count: number
+        }[]
+      }
+      get_customer_type_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          customer_type: string
+          total_count: number
+          email_count: number
+          sms_count: number
+          both_count: number
         }[]
       }
       get_inventory_breakdown: {

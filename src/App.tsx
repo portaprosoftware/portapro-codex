@@ -19,6 +19,7 @@ import FleetAssignmentsPage from "./pages/FleetAssignmentsPage";
 import FleetMaintenancePage from "./pages/FleetMaintenancePage";
 import FleetFuel from "./pages/FleetFuel";
 import FleetFiles from "./pages/FleetFiles";
+import MarketingHub from "./pages/MarketingHub";
 
 const queryClient = new QueryClient();
 
@@ -133,7 +134,7 @@ const App = () => (
           <Route path="/marketing" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Marketing" description="Marketing and communication features are coming soon." />
+                <MarketingHub />
               </Layout>
             </SignedIn>
           } />
