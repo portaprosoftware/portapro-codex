@@ -15,12 +15,11 @@ interface MaintenanceReport {
   id: string;
   report_number: string;
   created_at: string;
-  vehicle_id: string;
-  service_description: string;
+  report_data: any;
   status: string;
   completion_percentage: number;
   assigned_technician: string;
-  report_data: any;
+  actual_completion: string;
 }
 
 export const MaintenanceReportsTab: React.FC = () => {
@@ -190,10 +189,10 @@ export const MaintenanceReportsTab: React.FC = () => {
                     {new Date(report.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.vehicle_id ? `Vehicle ${report.vehicle_id.slice(0, 8)}` : 'N/A'}
+                    {report.report_data?.vehicle_info || 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.service_description || 'General Maintenance'}
+                    {report.report_data?.service_type || 'General Maintenance'}
                   </td>
                   <td className="px-6 py-4">
                     <Badge className={`capitalize ${getStatusColor(report.status)}`}>

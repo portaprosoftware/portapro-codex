@@ -72,13 +72,14 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
 
   useEffect(() => {
     if (template && !isCreating) {
+      const templateData = template.template_data as Record<string, any> || {};
       setFormData({
         name: template.name || "",
         description: template.description || "",
         template_type: template.template_type || "maintenance",
-        template_data: template.template_data || {},
+        template_data: templateData,
       });
-      setSelectedFields(Object.keys(template.template_data || {}));
+      setSelectedFields(Object.keys(templateData));
     } else if (isCreating) {
       setFormData({
         name: "",

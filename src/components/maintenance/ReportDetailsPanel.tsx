@@ -86,12 +86,12 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 <div>
                   <label className="text-sm font-medium text-gray-500">Vehicle/Unit</label>
                   <p className="text-gray-900">
-                    {report?.vehicle_id ? `Vehicle ${report.vehicle_id.slice(0, 8)}` : 'N/A'}
+                    {(report?.report_data as any)?.vehicle_info || 'N/A'}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Service Type</label>
-                  <p className="text-gray-900">{report?.service_description || 'General Maintenance'}</p>
+                  <p className="text-gray-900">{(report?.report_data as any)?.service_type || 'General Maintenance'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Status</label>
@@ -128,7 +128,7 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Customer Signature</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    {report?.report_data?.customer_signature ? (
+                    {(report?.report_data as any)?.customer_signature ? (
                       <div className="flex items-center justify-center">
                         <CheckCircle className="w-8 h-8 text-green-600" />
                         <span className="ml-2 text-green-600">Signature Captured</span>
@@ -145,7 +145,7 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Tech Signature</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    {report?.report_data?.tech_signature ? (
+                    {(report?.report_data as any)?.tech_signature ? (
                       <div className="flex items-center justify-center">
                         <CheckCircle className="w-8 h-8 text-green-600" />
                         <span className="ml-2 text-green-600">Signature Captured</span>
