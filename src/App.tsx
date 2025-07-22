@@ -8,6 +8,7 @@ import { Layout } from "./components/layout/Layout";
 import { Landing } from "./pages/Landing";
 import { Dashboard } from "./pages/Dashboard";
 import { ComingSoon } from "./pages/ComingSoon";
+import Jobs from "./pages/Jobs";
 
 const queryClient = new QueryClient();
 
@@ -37,10 +38,10 @@ const App = () => (
               </Layout>
             </SignedIn>
           } />
-          <Route path="/jobs" element={
+<Route path="/jobs" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Jobs" description="Job management and scheduling features are coming soon." />
+                <Jobs />
               </Layout>
             </SignedIn>
           } />
