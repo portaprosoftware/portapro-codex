@@ -1,220 +1,151 @@
 import React from "react";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { 
   Calendar, 
   Truck, 
   Users, 
   DollarSign, 
-  TrendingUp, 
+  Fuel,
   AlertTriangle,
-  Plus,
-  Eye
+  FileText,
+  Archive
 } from "lucide-react";
 
-// Mock data - replace with actual data from Supabase
-const mockStats = {
-  totalJobs: 156,
-  activeJobs: 23,
-  totalRevenue: 58469,
-  pendingInvoices: 12,
-  availableVehicles: 7,
-  maintenanceVehicles: 2,
-  totalCustomers: 89,
-  newCustomers: 5
+// Type definition for dashboard card data
+interface DashboardCard {
+  value: string;
+  icon: React.ComponentType<any>;
+  color: string;
+  subtitle?: string;
+  details?: string;
+}
+
+// Mock data for the 8 dashboard cards
+const dashboardData: Record<string, DashboardCard> = {
+  totalUnits: { value: "10", icon: Archive, color: "blue" },
+  activeCustomers: { value: "42", icon: Users, color: "purple" },
+  jobsToday: { value: "3", subtitle: "0 deliveries, 0 pickups", icon: Calendar, color: "blue" },
+  monthlyRevenue: { value: "$12,258", icon: DollarSign, color: "green" },
+  fleetVehicles: { 
+    value: "9", 
+    subtitle: "9 vehicles total", 
+    details: "7 active, 1 maintenance", 
+    icon: Truck, 
+    color: "blue" 
+  },
+  fuelCost: { 
+    value: "$1,034.66", 
+    subtitle: "This month's fuel expenses", 
+    icon: Fuel, 
+    color: "orange" 
+  },
+  maintenanceAlerts: { 
+    value: "5", 
+    subtitle: "Due within 7 days", 
+    icon: AlertTriangle, 
+    color: "red" 
+  },
+  expiringDocuments: { 
+    value: "3 vehicles", 
+    subtitle: "4 overdue, 2 expiring soon", 
+    details: "Expiring (30 days): 33%", 
+    icon: FileText, 
+    color: "yellow" 
+  }
 };
 
-const recentJobs = [
-  {
-    id: "SVC-942",
-    customer: "BlueWave Festival",
-    date: "Jul 18, 2025",
-    status: "completed",
-    driver: "Grady Green"
-  },
-  {
-    id: "SVC-946",
-    customer: "Hickory Hollow Farm",
-    date: "Jul 18, 2025", 
-    status: "assigned",
-    driver: "Jason Wells"
-  }
-];
+const getCardStyles = (color: string) => {
+  const styles = {
+    blue: "border-l-4 border-l-blue-500",
+    purple: "border-l-4 border-l-purple-500", 
+    green: "border-l-4 border-l-green-500",
+    orange: "border-l-4 border-l-orange-500",
+    red: "border-l-4 border-l-red-500",
+    yellow: "border-l-4 border-l-yellow-500"
+  };
+  return styles[color as keyof typeof styles] || styles.blue;
+};
+
+const getIconStyles = (color: string) => {
+  const styles = {
+    blue: "bg-blue-100 text-blue-600",
+    purple: "bg-purple-100 text-purple-600",
+    green: "bg-green-100 text-green-600", 
+    orange: "bg-orange-100 text-orange-600",
+    red: "bg-red-100 text-red-600",
+    yellow: "bg-yellow-100 text-yellow-600"
+  };
+  return styles[color as keyof typeof styles] || styles.blue;
+};
 
 export const Dashboard: React.FC = () => {
-  const { role, hasAdminAccess, user } = useUserRole();
+  const { user } = useUserRole();
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
+  const currentTime = new Date().toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short', 
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Header */}
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            {getGreeting()}, {user?.firstName || "there"}!
+          <h1 className="text-2xl font-bold text-foreground">
+            Welcome back, {user?.firstName || "Tyler"}!
           </h1>
           <p className="text-muted-foreground">
-            Here's what's happening with your {role === "customer" ? "account" : "business"} today.
+            Here's what's happening with your rental business today.
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Role: Admin
           </p>
         </div>
-        {hasAdminAccess && (
-          <Button className="btn-hero">
-            <Plus className="w-4 h-4 mr-2" />
-            Schedule Job
-          </Button>
-        )}
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">{currentTime}</p>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      {hasAdminAccess && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="card-elevated p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Jobs</p>
-                <p className="text-2xl font-bold text-foreground">{mockStats.activeJobs}</p>
-              </div>
-              <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-            <div className="flex items-center mt-4 text-sm">
-              <TrendingUp className="w-4 h-4 text-success mr-1" />
-              <span className="text-success">+12%</span>
-              <span className="text-muted-foreground ml-1">from last week</span>
-            </div>
-          </Card>
-
-          <Card className="card-elevated p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Revenue</p>
-                <p className="text-2xl font-bold text-foreground">${mockStats.totalRevenue.toLocaleString()}</p>
-              </div>
-              <div className="w-12 h-12 bg-success-light rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-success" />
-              </div>
-            </div>
-            <div className="flex items-center mt-4 text-sm">
-              <TrendingUp className="w-4 h-4 text-success mr-1" />
-              <span className="text-success">+8%</span>
-              <span className="text-muted-foreground ml-1">from last month</span>
-            </div>
-          </Card>
-
-          <Card className="card-elevated p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Available Fleet</p>
-                <p className="text-2xl font-bold text-foreground">{mockStats.availableVehicles}</p>
-              </div>
-              <div className="w-12 h-12 bg-warning-light rounded-lg flex items-center justify-center">
-                <Truck className="w-6 h-6 text-warning" />
-              </div>
-            </div>
-            <div className="flex items-center mt-4 text-sm">
-              <AlertTriangle className="w-4 h-4 text-warning mr-1" />
-              <span className="text-warning">{mockStats.maintenanceVehicles} in maintenance</span>
-            </div>
-          </Card>
-
-          <Card className="card-elevated p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
-                <p className="text-2xl font-bold text-foreground">{mockStats.totalCustomers}</p>
-              </div>
-              <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-            <div className="flex items-center mt-4 text-sm">
-              <TrendingUp className="w-4 h-4 text-success mr-1" />
-              <span className="text-success">+{mockStats.newCustomers} new</span>
-              <span className="text-muted-foreground ml-1">this week</span>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="card-elevated">
-          <div className="p-6 border-b border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">Recent Jobs</h3>
-              <Button variant="outline" size="sm">
-                <Eye className="w-4 h-4 mr-2" />
-                View All
-              </Button>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            {recentJobs.map((job) => (
-              <div key={job.id} className="flex items-center justify-between py-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">{job.id}</span>
-                    <Badge 
-                      className={job.status === "completed" ? "badge-success" : "badge-primary"}
-                    >
-                      {job.status}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{job.customer}</p>
-                  <p className="text-sm text-muted-foreground">Driver: {job.driver}</p>
+      {/* Dashboard Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Object.entries(dashboardData).map(([key, data]) => {
+          const Icon = data.icon;
+          return (
+            <Card key={key} className={`card-elevated p-6 ${getCardStyles(data.color)}`}>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-muted-foreground capitalize mb-2">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                  </h3>
+                  <p className="text-2xl font-bold text-foreground mb-1">
+                    {data.value}
+                  </p>
+                  {data.subtitle && (
+                    <p className="text-sm text-muted-foreground">
+                      {data.subtitle}
+                    </p>
+                  )}
+                  {data.details && (
+                    <div className="mt-2">
+                      <div className="flex items-center gap-2 text-xs">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-muted-foreground">{data.details}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-foreground">{job.date}</p>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getIconStyles(data.color)}`}>
+                  <Icon className="w-5 h-5" />
                 </div>
               </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="card-elevated">
-          <div className="p-6 border-b border-border">
-            <h3 className="text-lg font-semibold text-foreground">Quick Actions</h3>
-          </div>
-          <div className="p-6 space-y-3">
-            {hasAdminAccess && (
-              <>
-                <Button className="w-full justify-start" variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create New Job
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <Users className="w-4 h-4 mr-2" />
-                  Add Customer
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <Truck className="w-4 h-4 mr-2" />
-                  Add Vehicle
-                </Button>
-              </>
-            )}
-            {role === "customer" && (
-              <>
-                <Button className="w-full justify-start" variant="outline">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Request Service
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <Eye className="w-4 h-4 mr-2" />
-                  View My Jobs
-                </Button>
-              </>
-            )}
-          </div>
-        </Card>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
