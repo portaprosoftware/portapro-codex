@@ -10,7 +10,7 @@ interface Vehicle {
   id: string;
   license_plate: string;
   vehicle_type: string;
-  status: "active" | "maintenance" | "retired";
+  status: string;
   make?: string;
   model?: string;
   year?: number;
