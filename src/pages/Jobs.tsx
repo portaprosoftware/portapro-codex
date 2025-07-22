@@ -271,261 +271,211 @@ const JobsPage: React.FC = () => {
       </div>
 
       {activeTab === 'calendar' && (
-        <div className={cn("bg-white rounded-2xl shadow-md p-6", isPanelOpen && "flex")}>
-          <div className={cn("w-full", isPanelOpen && "w-2/3 pr-6")}>
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold">Calendar View</h2>
-                <p className="text-muted-foreground">Schedule and manage job assignments</p>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-full"
-                  onClick={goToPreviousMonth}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                
-                <Button variant="outline" className="px-4">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {format(currentMonth, 'MMMM yyyy')}
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-full"
-                  onClick={goToNextMonth}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-                
-                <Button 
-                  variant="default"
-                  className="bg-gradient-to-r from-blue-500 to-blue-600"
-                >
-                  + Schedule
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input 
-                  placeholder="Search by customer name or job ID..." 
-                  className="pl-10 rounded-md py-2"
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                >
-                  Filters
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mb-6 grid grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Driver</label>
-                <select 
-                  className="w-full rounded-md border border-gray-300 p-2"
-                  value={selectedDriver}
-                  onChange={(e) => setSelectedDriver(e.target.value)}
-                >
-                  <option value="all">All Drivers</option>
-                  <option value="1">Grady Green</option>
-                  <option value="2">Jason Wells</option>
-                  <option value="3">Kygo Jones</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Job Type</label>
-                <select 
-                  className="w-full rounded-md border border-gray-300 p-2"
-                  value={selectedJobType}
-                  onChange={(e) => setSelectedJobType(e.target.value)}
-                >
-                  <option value="all">All Types</option>
-                  <option value="delivery">Delivery</option>
-                  <option value="service">Service</option>
-                  <option value="pickup">Pickup</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Product</label>
-                <select 
-                  className="w-full rounded-md border border-gray-300 p-2"
-                  value={selectedProduct}
-                  onChange={(e) => setSelectedProduct(e.target.value)}
-                >
-                  <option value="all">All Products</option>
-                  <option value="porta-potty">Porta Potty</option>
-                  <option value="handwash">Handwash Station</option>
-                  <option value="shower">Shower Trailer</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Variation</label>
-                <select 
-                  className="w-full rounded-md border border-gray-300 p-2"
-                  value={selectedVariation}
-                  onChange={(e) => setSelectedVariation(e.target.value)}
-                >
-                  <option value="all">All Variations</option>
-                  <option value="standard">Standard</option>
-                  <option value="deluxe">Deluxe</option>
-                  <option value="ada">ADA Compliant</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* Status indicators */}
-            <div className="mb-4 flex space-x-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                <span className="text-sm">Assigned</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
-                <span className="text-sm">In Progress</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span className="text-sm">Completed</span>
-              </div>
-            </div>
-            
-            {/* Calendar grid */}
-            <div>
-              {/* Weekday headers */}
-              <div className="grid grid-cols-7 mb-2">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center font-medium py-2">
-                    {day}
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="flex">
+            {/* Main Calendar Area */}
+            <div className={cn("transition-all duration-300", isPanelOpen ? "w-2/3" : "w-full")}>
+              <div className="p-6">
+                {/* Date Navigator */}
+                <div className="flex items-center justify-center mb-6">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="rounded-full"
+                    onClick={goToPreviousMonth}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button variant="outline" className="px-4 mx-4 rounded-lg">
+                    <CalendarIcon className="w-4 h-4 mr-2" />
+                    {format(currentMonth, 'MMMM yyyy')}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="rounded-full"
+                    onClick={goToNextMonth}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Calendar Grid */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  {/* Day of week headers */}
+                  <div className="grid grid-cols-7 bg-gray-50">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="p-3 text-center font-semibold text-gray-700 border-r border-gray-200 last:border-r-0">
+                        {day}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              {/* Calendar cells */}
-              <div className="grid grid-cols-7 gap-1">
-                {/* Fill in empty cells for days of the week before the first of the month */}
-                {Array.from({ length: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() }).map((_, i) => (
-                  <div key={`empty-start-${i}`} className="h-24 p-1 bg-gray-50 border border-gray-200"></div>
-                ))}
-                
-                {/* Render the days of the month */}
-                {days.map(day => renderDay(day))}
-                
-                {/* Fill in empty cells for days of the week after the last of the month */}
-                {Array.from({ length: 6 - new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDay() }).map((_, i) => (
-                  <div key={`empty-end-${i}`} className="h-24 p-1 bg-gray-50 border border-gray-200"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          {/* Slide-in panel for selected day */}
-          {isPanelOpen && selectedDate && (
-            <div className="w-1/3 border-l border-gray-200 pl-6 h-full animate-slide-in-right">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">
-                  Jobs for {format(selectedDate, 'MMMM d, yyyy')}
-                </h3>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={handleClosePanel}
-                  className="h-8 w-8"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <p className="text-muted-foreground mb-4">
-                {selectedJobs.length} job{selectedJobs.length !== 1 ? 's' : ''} scheduled
-              </p>
-              
-              <div className="flex justify-end mb-4">
-                <Button
-                  variant="default"
-                  className="bg-gradient-to-r from-blue-500 to-blue-600"
-                >
-                  + Schedule
-                </Button>
-              </div>
-              
-              {selectedJobs.length > 0 ? (
-                <div className="space-y-4">
-                  {selectedJobs.map(job => (
-                    <div 
-                      key={job.id}
-                      className="bg-white border border-gray-200 rounded-xl shadow-sm p-4"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">{job.id}</span>
-                        <Badge 
+                  
+                  {/* Calendar cells */}
+                  <div className="grid grid-cols-7">
+                    {/* Empty cells for days before the first of the month */}
+                    {Array.from({ 
+                      length: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() 
+                    }).map((_, i) => (
+                      <div key={`empty-start-${i}`} className="h-24 border-r border-b border-gray-200 bg-gray-50 last:border-r-0"></div>
+                    ))}
+                    
+                    {/* Days of the month */}
+                    {days.map(day => {
+                      const isCurrentMonth = isSameMonth(day, currentMonth);
+                      const isToday = isSameDay(day, new Date());
+                      const dayJobs = getJobsForDate(day);
+                      const statuses = getStatusesForDate(day);
+                      const isSelected = selectedDate && isSameDay(day, selectedDate);
+
+                      return (
+                        <div 
+                          key={day.toString()}
                           className={cn(
-                            statusColors[job.status as keyof typeof statusColors],
-                            "text-white"
+                            "h-24 border-r border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors relative last:border-r-0",
+                            !isCurrentMonth && "bg-gray-50 text-gray-400",
+                            isToday && "bg-blue-50",
+                            isSelected && "bg-blue-100 ring-2 ring-blue-500 ring-inset"
                           )}
+                          onClick={() => setSelectedDate(day)}
                         >
-                          {statusText[job.status as keyof typeof statusText]}
-                        </Badge>
-                      </div>
-                      
-                      <div className="mb-3">
-                        <p className="font-medium">{job.customerName}</p>
-                        <p className="text-sm text-gray-500">{job.jobType}</p>
-                      </div>
-                      
-                      <div className="text-sm mb-3">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-gray-500">Driver:</span>
-                          <span>{job.driverName}</span>
+                          <div className="p-2 h-full flex flex-col">
+                            <div className={cn(
+                              "text-sm font-medium mb-1",
+                              isToday && "text-blue-600"
+                            )}>
+                              {format(day, 'd')}
+                            </div>
+                            
+                            {/* Status badges in top-right corner */}
+                            {dayJobs.length > 0 && (
+                              <div className="absolute top-2 right-2">
+                                {statuses.length <= 3 ? (
+                                  <div className="flex flex-col gap-1">
+                                    {statuses.map(status => (
+                                      <div 
+                                        key={status}
+                                        className={cn(
+                                          "w-2 h-2 rounded-full",
+                                          status === 'assigned' && "bg-[#3366FF]",
+                                          status === 'in_progress' && "bg-[#FF9933]", 
+                                          status === 'completed' && "bg-[#33CC66]"
+                                        )}
+                                      />
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="bg-[#3366FF] text-white text-xs px-1 rounded">
+                                    {dayJobs.length}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="flex-1"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </Button>
-                        
-                        {job.status !== 'completed' && (
-                          <Button 
-                            variant="default" 
-                            size="sm"
-                            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600"
-                          >
-                            <Play className="w-4 h-4 mr-2" />
-                            Start
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
+                    
+                    {/* Empty cells for days after the last of the month */}
+                    {Array.from({ 
+                      length: 6 - new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDay() 
+                    }).map((_, i) => (
+                      <div key={`empty-end-${i}`} className="h-24 border-r border-b border-gray-200 bg-gray-50 last:border-r-0"></div>
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <CalendarIcon className="w-12 h-12 text-gray-300 mb-3" />
-                  <p className="text-lg font-medium text-gray-500">No jobs scheduled</p>
-                  <p className="text-gray-400">No pickups or returns scheduled for this date</p>
-                </div>
-              )}
+              </div>
             </div>
-          )}
+            
+            {/* Slide-in Day Panel */}
+            {isPanelOpen && selectedDate && (
+              <div className="w-1/3 border-l border-gray-200 bg-white animate-slide-in-right">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Jobs for {format(selectedDate, 'MMMM d, yyyy')}
+                      </h3>
+                      <p className="text-gray-600">
+                        {selectedJobs.length} job{selectedJobs.length !== 1 ? 's' : ''} scheduled
+                      </p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={handleClosePanel}
+                      className="h-8 w-8"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <Button
+                    variant="default"
+                    className="w-full mb-6 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] rounded-lg"
+                  >
+                    + Schedule
+                  </Button>
+                  
+                  {selectedJobs.length > 0 ? (
+                    <div className="space-y-4">
+                      {selectedJobs.map(job => (
+                        <div 
+                          key={job.id}
+                          className="bg-white border border-gray-200 rounded-lg shadow-sm p-4"
+                          style={{ boxShadow: 'rgba(0,0,0,0.05) 0 2px 8px' }}
+                        >
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="font-semibold">{job.id}</span>
+                            <Badge 
+                              className={cn(
+                                "text-white rounded-full",
+                                job.status === 'assigned' && "bg-[#3366FF]",
+                                job.status === 'in_progress' && "bg-[#FF9933]",
+                                job.status === 'completed' && "bg-[#33CC66]"
+                              )}
+                            >
+                              {statusText[job.status as keyof typeof statusText]}
+                            </Badge>
+                          </div>
+                          
+                          <div className="mb-4">
+                            <p className="font-medium">{job.customerName} – {job.jobType}</p>
+                          </div>
+                          
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="flex-1 border border-gray-300 rounded-lg"
+                            >
+                              View
+                            </Button>
+                            
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] rounded-lg"
+                            >
+                              Start
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                      <CalendarIcon className="w-12 h-12 text-gray-300 mb-3" />
+                      <p className="text-lg font-medium text-gray-500">No jobs scheduled</p>
+                      <p className="text-gray-400">No jobs scheduled for this date</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
       
