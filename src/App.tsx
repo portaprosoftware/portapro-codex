@@ -1,3 +1,4 @@
+
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,9 +7,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
 import { Landing } from "./pages/Landing";
-import { Dashboard } from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import { ComingSoon } from "./pages/ComingSoon";
 import JobsPage from "./pages/Jobs";
+import CustomerHub from "./pages/CustomerHub";
 
 const queryClient = new QueryClient();
 
@@ -59,13 +61,6 @@ const App = () => (
               </Layout>
             </SignedIn>
           } />
-          <Route path="/calendar" element={
-            <SignedIn>
-              <Layout>
-                <ComingSoon title="Calendar" description="Calendar view for job scheduling is coming soon." />
-              </Layout>
-            </SignedIn>
-          } />
           <Route path="/fleet" element={
             <SignedIn>
               <Layout>
@@ -76,7 +71,7 @@ const App = () => (
           <Route path="/customers" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Customers" description="Customer management features are coming soon." />
+                <CustomerHub />
               </Layout>
             </SignedIn>
           } />

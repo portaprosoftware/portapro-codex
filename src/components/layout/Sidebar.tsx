@@ -63,12 +63,6 @@ const sidebarItems: SidebarItem[] = [
     ]
   },
   {
-    name: "Calendar",
-    path: "/calendar",
-    icon: Calendar,
-    roles: ["owner", "dispatch"]
-  },
-  {
     name: "Fleet Management",
     path: "/fleet",
     icon: Truck,
