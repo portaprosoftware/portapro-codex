@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,6 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, MessageCircle, TrendingUp, Plus } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import { TemplateManagement } from '@/components/marketing/TemplateManagement';
+import { CampaignCreation } from '@/components/marketing/CampaignCreation';
+import { SmartSegmentBuilder } from '@/components/marketing/SmartSegmentBuilder';
+import { CampaignAnalytics } from '@/components/marketing/CampaignAnalytics';
 
 const MarketingHub: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
@@ -78,6 +83,7 @@ const MarketingHub: React.FC = () => {
 
   const tabs = [
     { id: 'customer-segments', label: 'Customer Segments' },
+    { id: 'campaign-analytics', label: 'Campaign Analytics' },
     { id: 'campaign-history', label: 'Campaign History' },
     { id: 'scheduled-campaigns', label: 'Scheduled Campaigns' },
     { id: 'manage-templates', label: 'Manage Templates' },
@@ -133,12 +139,12 @@ const MarketingHub: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-2 mb-8">
+        <div className="flex space-x-2 mb-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 rounded-md font-medium transition-colors ${
+              className={`px-6 py-3 rounded-md font-medium transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -181,10 +187,7 @@ const MarketingHub: React.FC = () => {
                   <h2 className="text-xl font-bold text-gray-900">Smart Segments</h2>
                   <p className="text-sm text-gray-600">Dynamic segments that update automatically based on customer data</p>
                 </div>
-                <Button className="bg-primary text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Smart Segment
-                </Button>
+                <SmartSegmentBuilder />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -268,8 +271,17 @@ const MarketingHub: React.FC = () => {
           </div>
         )}
 
+        {/* Campaign Analytics Tab */}
+        {activeTab === 'campaign-analytics' && <CampaignAnalytics />}
+
+        {/* Template Management Tab */}
+        {activeTab === 'manage-templates' && <TemplateManagement />}
+
+        {/* Campaign Creation Tab */}
+        {activeTab === 'create-campaign' && <CampaignCreation />}
+
         {/* Placeholder for other tabs */}
-        {activeTab !== 'customer-segments' && (
+        {!['customer-segments', 'campaign-analytics', 'manage-templates', 'create-campaign'].includes(activeTab) && (
           <div className="text-center py-12">
             <p className="text-gray-500">
               {tabs.find(t => t.id === activeTab)?.label} - Coming Soon
