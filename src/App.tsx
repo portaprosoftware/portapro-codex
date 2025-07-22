@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
@@ -12,6 +11,7 @@ import QuotesInvoices from './pages/QuotesInvoices';
 import FleetManagement from './pages/FleetManagement';
 import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
+import MaintenanceHub from "./pages/MaintenanceHub";
 
 const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
@@ -81,6 +81,16 @@ const App = () => {
                 <SignedIn>
                   <Layout>
                     <FleetManagement />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/maintenance-hub"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <MaintenanceHub />
                   </Layout>
                 </SignedIn>
               }
