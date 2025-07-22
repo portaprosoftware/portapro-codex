@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 210 20% 98%;
     --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
@@ -17,11 +17,26 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
 
-    /* Blue theme matching PortaPro screenshots */
+    /* Dashboard-inspired vibrant blue theme */
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 221 83% 48%;
     --primary-light: 221 83% 96%;
+    --primary-dark: 221 83% 38%;
+
+    /* Category colors matching dashboard */
+    --blue: 221 83% 53%;
+    --blue-light: 221 100% 95%;
+    --purple: 262 83% 58%;
+    --purple-light: 262 100% 96%;
+    --green: 142 76% 36%;
+    --green-light: 142 76% 96%;
+    --orange: 38 92% 50%;
+    --orange-light: 38 92% 96%;
+    --red: 0 84% 60%;
+    --red-light: 0 84% 96%;
+    --yellow: 45 93% 47%;
+    --yellow-light: 45 93% 96%;
 
     --secondary: 220 14% 96%;
     --secondary-foreground: 215 25% 26%;
@@ -181,15 +196,71 @@
     font-family: 'Inter', sans-serif;
   }
 
-  /* Card styles with generous spacing */
+  /* Dashboard-style card variations with colored borders */
   .card-modern {
-    @apply bg-card text-card-foreground rounded-2xl p-8 shadow-sm border border-border/50;
-    @apply hover:shadow-md transition-all duration-300 ease-out;
+    @apply bg-card text-card-foreground rounded-2xl p-6 shadow-md border border-border/30;
+    @apply hover:shadow-lg transition-all duration-300 ease-out;
   }
 
   .card-compact {
-    @apply bg-card text-card-foreground rounded-xl p-6 shadow-sm border border-border/50;
-    @apply hover:shadow-md transition-all duration-300 ease-out;
+    @apply bg-card text-card-foreground rounded-xl p-4 shadow-md border border-border/30;
+    @apply hover:shadow-lg transition-all duration-300 ease-out;
+  }
+
+  /* Category-specific card styles matching dashboard */
+  .card-blue {
+    @apply card-modern border-l-4 border-l-blue;
+  }
+
+  .card-purple {
+    @apply card-modern border-l-4 border-l-purple;
+  }
+
+  .card-green {
+    @apply card-modern border-l-4 border-l-green;
+  }
+
+  .card-orange {
+    @apply card-modern border-l-4 border-l-orange;
+  }
+
+  .card-red {
+    @apply card-modern border-l-4 border-l-red;
+  }
+
+  .card-yellow {
+    @apply card-modern border-l-4 border-l-yellow;
+  }
+
+  /* Icon containers with gradients */
+  .icon-circle-blue {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--blue-light)), hsl(var(--blue)));
+  }
+
+  .icon-circle-purple {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--purple-light)), hsl(var(--purple)));
+  }
+
+  .icon-circle-green {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--green-light)), hsl(var(--green)));
+  }
+
+  .icon-circle-orange {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--orange-light)), hsl(var(--orange)));
+  }
+
+  .icon-circle-red {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--red-light)), hsl(var(--red)));
+  }
+
+  .icon-circle-yellow {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(var(--yellow-light)), hsl(var(--yellow)));
   }
 
   /* Modern input styles */

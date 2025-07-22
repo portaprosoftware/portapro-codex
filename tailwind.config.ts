@@ -27,6 +27,31 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				// Dashboard category colors
+				blue: {
+					DEFAULT: 'hsl(var(--blue))',
+					light: 'hsl(var(--blue-light))',
+				},
+				purple: {
+					DEFAULT: 'hsl(var(--purple))',
+					light: 'hsl(var(--purple-light))',
+				},
+				green: {
+					DEFAULT: 'hsl(var(--green))',
+					light: 'hsl(var(--green-light))',
+				},
+				orange: {
+					DEFAULT: 'hsl(var(--orange))',
+					light: 'hsl(var(--orange-light))',
+				},
+				red: {
+					DEFAULT: 'hsl(var(--red))',
+					light: 'hsl(var(--red-light))',
+				},
+				yellow: {
+					DEFAULT: 'hsl(var(--yellow))',
+					light: 'hsl(var(--yellow-light))',
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',

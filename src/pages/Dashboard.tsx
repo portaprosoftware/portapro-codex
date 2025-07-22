@@ -57,24 +57,24 @@ const dashboardData: Record<string, DashboardCard> = {
 
 const getCardStyles = (color: string) => {
   const styles = {
-    blue: "border-l-4 border-l-blue-500",
-    purple: "border-l-4 border-l-purple-500", 
-    green: "border-l-4 border-l-green-500",
-    orange: "border-l-4 border-l-orange-500",
-    red: "border-l-4 border-l-red-500",
-    yellow: "border-l-4 border-l-yellow-500"
+    blue: "card-blue",
+    purple: "card-purple", 
+    green: "card-green",
+    orange: "card-orange",
+    red: "card-red",
+    yellow: "card-yellow"
   };
   return styles[color as keyof typeof styles] || styles.blue;
 };
 
 const getIconStyles = (color: string) => {
   const styles = {
-    blue: "bg-blue-100 text-blue-600",
-    purple: "bg-purple-100 text-purple-600",
-    green: "bg-green-100 text-green-600", 
-    orange: "bg-orange-100 text-orange-600",
-    red: "bg-red-100 text-red-600",
-    yellow: "bg-yellow-100 text-yellow-600"
+    blue: "icon-circle-blue text-white",
+    purple: "icon-circle-purple text-white",
+    green: "icon-circle-green text-white", 
+    orange: "icon-circle-orange text-white",
+    red: "icon-circle-red text-white",
+    yellow: "icon-circle-yellow text-white"
   };
   return styles[color as keyof typeof styles] || styles.blue;
 };

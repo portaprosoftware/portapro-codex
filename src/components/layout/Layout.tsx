@@ -32,7 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: '#f9fafb' }}>
       <Header />
       <div className="flex">
         <Sidebar />
