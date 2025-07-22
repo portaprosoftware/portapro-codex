@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
@@ -5,8 +6,6 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { 
   Calendar as CalendarIcon, 
-  MapPin, 
-  ClipboardList, 
   ChevronLeft, 
   ChevronRight,
   CloudRain,
@@ -16,8 +15,8 @@ import {
   Crosshair,
   Eye,
   Play,
-  User,
-  Navigation
+  Filter,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,9 +33,9 @@ const mockJobs = [
     jobType: 'Delivery',
     status: 'assigned',
     driverId: 1,
-    scheduledDate: new Date(2025, 6, 22), // July 22, 2025
+    scheduledDate: new Date(2025, 6, 22),
     driverName: 'Grady Green',
-    location: { lat: 40.4406, lng: -79.9959 }, // Pittsburgh area
+    location: { lat: 40.4406, lng: -79.9959 },
     address: '123 Farm Road, Butler, PA'
   },
   {
@@ -84,7 +83,6 @@ const mockDrivers = [
   }
 ];
 
-// Status color mappings
 const statusColors = {
   assigned: '#3366FF',
   in_progress: '#FF9933',
@@ -97,13 +95,12 @@ const statusLabels = {
   completed: 'C'
 };
 
-const JobsMapPage: React.FC = () => {
+const JobsMapView: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map'>('map');
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22)); // July 22, 2025
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22));
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [viewMode, setViewMode] = useState<'status' | 'driver'>('status');
   const [weatherRadar, setWeatherRadar] = useState(false);
@@ -113,28 +110,16 @@ const JobsMapPage: React.FC = () => {
   const [weatherApiKey, setWeatherApiKey] = useState<string>('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
-  // Set the active tab based on route
-  useEffect(() => {
-    if (location.pathname.includes('/calendar')) {
-      setActiveTab('calendar');
-    } else if (location.pathname.includes('/map')) {
-      setActiveTab('map');
-    } else if (location.pathname === '/jobs') {
-      setActiveTab('dispatch');
-    }
-  }, [location.pathname]);
-
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Set your Mapbox access token here
     mapboxgl.accessToken = 'pk.eyJ1IjoibG92YWJsZS1haS1kZW1vIiwiYSI6ImNseXFjZm83ejEyMGcya3F5YWJwa29wZ2MifQ.jqTCZzTueBu4oKq4s8Hf8Q';
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-79.9959, 40.4406], // Pittsburgh area
+      center: [-79.9959, 40.4406],
       zoom: 10
     });
 
@@ -162,7 +147,6 @@ const JobsMapPage: React.FC = () => {
     if (!map.current || !mapLoaded) return;
 
     if (weatherRadar) {
-      // Add weather overlay (OpenWeather requires API key)
       if (!weatherApiKey && !showApiKeyInput) {
         setShowApiKeyInput(true);
         return;
@@ -179,7 +163,6 @@ const JobsMapPage: React.FC = () => {
   const addWeatherOverlay = () => {
     if (!map.current) return;
 
-    // Add a demo weather layer (in production, this would use the OpenWeather API)
     if (!map.current.getSource('weather')) {
       map.current.addSource('weather', {
         type: 'raster',
@@ -262,7 +245,6 @@ const JobsMapPage: React.FC = () => {
       }
     });
 
-    // Add job pins layer
     map.current.addLayer({
       id: 'jobs',
       type: 'circle',
@@ -281,7 +263,6 @@ const JobsMapPage: React.FC = () => {
       }
     });
 
-    // Add click handler
     map.current.on('click', 'jobs', (e) => {
       if (e.features && e.features[0] && e.features[0].geometry.type === 'Point') {
         setSelectedPin({
@@ -292,7 +273,6 @@ const JobsMapPage: React.FC = () => {
       }
     });
 
-    // Change cursor on hover
     map.current.on('mouseenter', 'jobs', () => {
       if (map.current) {
         map.current.getCanvas().style.cursor = 'pointer';
@@ -348,7 +328,6 @@ const JobsMapPage: React.FC = () => {
       }
     });
 
-    // Add click handler for drivers
     map.current.on('click', 'drivers', (e) => {
       if (e.features && e.features[0] && e.features[0].geometry.type === 'Point') {
         setSelectedPin({
@@ -373,8 +352,6 @@ const JobsMapPage: React.FC = () => {
   };
 
   const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
-    setActiveTab(tab);
-    
     switch (tab) {
       case 'calendar':
         navigate('/jobs/calendar');
@@ -398,7 +375,6 @@ const JobsMapPage: React.FC = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    // Simulate data refresh
     setTimeout(() => {
       setIsRefreshing(false);
       loadPins();
@@ -430,170 +406,200 @@ const JobsMapPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-2">Jobs</h1>
+        <p className="text-gray-600 mb-6">View jobs on interactive map with real-time locations</p>
+        
+        {/* Navigation Pills */}
+        <div className="flex space-x-2">
+          <Button 
+            variant="ghost" 
+            className="rounded-full px-6"
+            onClick={() => navigateToTab('calendar')}
+          >
+            Calendar
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="rounded-full px-6"
+            onClick={() => navigateToTab('dispatch')}
+          >
+            Dispatch
+          </Button>
+          <Button 
+            className="rounded-full px-6 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
+            onClick={() => navigateToTab('map')}
+          >
+            Map
+          </Button>
+        </div>
+      </div>
 
       {/* Controls Row */}
-      <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-4">
-        <div className="flex items-center space-x-4">
-          {/* Date Navigation */}
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full"
-              onClick={goToPreviousDay}
+      <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* Date Navigation */}
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="rounded-full h-10 w-10"
+                onClick={goToPreviousDay}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              
+              <Button variant="outline" className="px-4 rounded-full">
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                {format(currentDate, 'MMMM do, yyyy')}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="rounded-full h-10 w-10"
+                onClick={goToNextDay}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Driver Filter */}
+            <select 
+              className="rounded-full border border-gray-300 px-4 py-2 bg-white min-w-32"
+              value={selectedDriver}
+              onChange={(e) => setSelectedDriver(e.target.value)}
             >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            
-            <Button variant="outline" className="px-4">
-              <CalendarIcon className="w-4 h-4 mr-2" />
-              {format(currentDate, 'MMMM do, yyyy')}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full"
-              onClick={goToNextDay}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+              <option value="all">All Drivers</option>
+              <option value="1">Grady Green</option>
+              <option value="2">Jason Wells</option>
+            </select>
+
+            {/* View Toggle */}
+            <div className="flex space-x-1 bg-gray-100 rounded-full p-1">
+              <Button 
+                variant={viewMode === 'status' ? 'default' : 'ghost'}
+                size="sm"
+                className={cn(
+                  "rounded-full px-4 h-8",
+                  viewMode === 'status' && "bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white shadow-none"
+                )}
+                onClick={() => setViewMode('status')}
+              >
+                Status View
+              </Button>
+              
+              <Button 
+                variant={viewMode === 'driver' ? 'default' : 'ghost'}
+                size="sm"
+                className={cn(
+                  "rounded-full px-4 h-8",
+                  viewMode === 'driver' && "bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white shadow-none"
+                )}
+                onClick={() => setViewMode('driver')}
+              >
+                Driver View
+              </Button>
+            </div>
           </div>
 
-          {/* Driver Filter */}
-          <select 
-            className="rounded-md border border-gray-300 p-2 bg-white"
-            value={selectedDriver}
-            onChange={(e) => setSelectedDriver(e.target.value)}
-          >
-            <option value="all">All Drivers</option>
-            <option value="1">Grady Green</option>
-            <option value="2">Jason Wells</option>
-          </select>
+          {/* Right Controls */}
+          <div className="flex items-center space-x-4">
+            {/* Weather Radar Toggle */}
+            <div className="flex items-center space-x-2">
+              <CloudRain className="w-4 h-4 text-gray-500" />
+              <span className="text-sm font-medium">Weather Radar</span>
+              <Switch 
+                checked={weatherRadar} 
+                onCheckedChange={setWeatherRadar}
+              />
+            </div>
 
-          {/* View Toggle */}
-          <div className="flex items-center space-x-2">
+            {/* Refresh Button */}
             <Button 
-              variant={viewMode === 'status' ? 'default' : 'ghost'}
-              size="sm"
-              className={cn(
-                "rounded-full px-4",
-                viewMode === 'status' && "bg-gradient-to-r from-blue-500 to-blue-600"
-              )}
-              onClick={() => setViewMode('status')}
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="border-[#3366FF] text-[#3366FF] hover:bg-blue-50 rounded-full"
             >
-              Status View
-            </Button>
-            
-            <Button 
-              variant={viewMode === 'driver' ? 'default' : 'ghost'}
-              size="sm"
-              className={cn(
-                "rounded-full px-4",
-                viewMode === 'driver' && "bg-gradient-to-r from-blue-500 to-blue-600"
-              )}
-              onClick={() => setViewMode('driver')}
-            >
-              Driver View
+              <RotateCcw className={cn("w-4 h-4 mr-2", isRefreshing && "animate-spin")} />
+              Refresh
             </Button>
           </div>
-        </div>
-
-        {/* Right Controls */}
-        <div className="flex items-center space-x-4">
-          {/* Weather Radar Toggle */}
-          <div className="flex items-center space-x-2">
-            <CloudRain className="w-4 h-4 text-gray-500" />
-            <span className="text-sm">Weather Radar</span>
-            <Switch 
-              checked={weatherRadar} 
-              onCheckedChange={setWeatherRadar}
-            />
-          </div>
-
-          {/* Refresh Button */}
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="border-blue-500 text-blue-500 hover:bg-blue-50"
-          >
-            <RotateCcw className={cn("w-4 h-4 mr-2", isRefreshing && "animate-spin")} />
-            Refresh
-          </Button>
         </div>
       </div>
 
       {/* Summary Badges */}
       <div className="flex items-center space-x-3">
-        <Badge className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1">
+        <Badge className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/90 text-white px-3 py-1 rounded-full">
           Total Jobs: {totalJobs}
         </Badge>
-        <Badge className="bg-green-500 hover:bg-green-600 text-white px-3 py-1">
+        <Badge className="bg-[#33CC66] hover:bg-[#33CC66]/90 text-white px-3 py-1 rounded-full">
           Completed: {completedJobs}
         </Badge>
-        <Badge className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1">
+        <Badge className="bg-[#FF9933] hover:bg-[#FF9933]/90 text-white px-3 py-1 rounded-full">
           In Progress: {inProgressJobs}
         </Badge>
-        <Badge className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1">
+        <Badge className="bg-[#3366FF] hover:bg-[#3366FF]/90 text-white px-3 py-1 rounded-full">
           Assigned: {assignedJobs}
         </Badge>
-        <Badge className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1">
+        <Badge className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/90 text-white px-3 py-1 rounded-full">
           Total Drivers on Map Today: {totalDrivers}
         </Badge>
       </div>
 
       {/* Map Container */}
-      <div className="relative bg-white rounded-2xl shadow-md overflow-hidden">
+      <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
         <div 
           ref={mapContainer} 
           className="w-full h-96 lg:h-[600px]"
         />
         
-        {/* Map Controls */}
-        <div className="absolute bottom-4 left-4">
+        {/* Locate Me Button */}
+        <div className="absolute bottom-6 left-6">
           <Button 
             variant="outline"
             size="icon"
-            className="bg-white hover:bg-gray-50"
+            className="bg-white hover:bg-gray-50 shadow-md rounded-full h-12 w-12"
             onClick={handleLocateMe}
           >
-            <Crosshair className="w-4 h-4" />
+            <Crosshair className="w-5 h-5" />
           </Button>
         </div>
 
         {/* Pin Popup */}
         {selectedPin && (
-          <div className="absolute top-4 right-4 bg-white rounded-xl shadow-lg p-4 max-w-xs">
-            <div className="flex justify-between items-start mb-2">
-              <div>
+          <div className="absolute top-6 right-6 bg-white rounded-xl shadow-lg p-4 max-w-xs border">
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex-1">
                 {selectedPin.type === 'job' ? (
                   <>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-medium">{selectedPin.data.id}</span>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="font-semibold text-gray-900">{selectedPin.data.id}</span>
                       <Badge 
                         className={cn(
-                          "text-white",
-                          selectedPin.data.status === 'assigned' && "bg-blue-500",
-                          selectedPin.data.status === 'in_progress' && "bg-orange-500",
-                          selectedPin.data.status === 'completed' && "bg-green-500"
+                          "text-white text-xs",
+                          selectedPin.data.status === 'assigned' && "bg-[#3366FF]",
+                          selectedPin.data.status === 'in_progress' && "bg-[#FF9933]",
+                          selectedPin.data.status === 'completed' && "bg-[#33CC66]"
                         )}
                       >
                         {selectedPin.data.status.replace('_', ' ')}
                       </Badge>
                     </div>
-                    <p className="font-medium">{selectedPin.data.customerName}</p>
+                    <p className="font-medium text-gray-900 text-sm">{selectedPin.data.customerName}</p>
                     <p className="text-sm text-gray-500">{selectedPin.data.jobType}</p>
                     <p className="text-sm text-gray-500">Driver: {selectedPin.data.driverName}</p>
                   </>
                 ) : (
                   <>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-8 h-8 bg-[#3366FF] rounded-full flex items-center justify-center text-white text-sm font-medium">
                         {selectedPin.data.avatar}
                       </div>
-                      <span className="font-medium">{selectedPin.data.name}</span>
+                      <span className="font-semibold text-gray-900">{selectedPin.data.name}</span>
                     </div>
                     <p className="text-sm text-gray-500">{selectedPin.data.jobCount} jobs assigned</p>
                   </>
@@ -602,23 +608,22 @@ const JobsMapPage: React.FC = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="h-6 w-6"
+                className="h-6 w-6 text-gray-400 hover:text-gray-600"
                 onClick={() => setSelectedPin(null)}
               >
-                ×
+                <X className="w-4 h-4" />
               </Button>
             </div>
             
-            <div className="flex space-x-2 mt-3">
-              <Button variant="outline" size="sm" className="flex-1">
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" className="flex-1 rounded-full">
                 <Eye className="w-4 h-4 mr-1" />
                 View
               </Button>
               {selectedPin.type === 'job' && selectedPin.data.status !== 'completed' && (
                 <Button 
-                  variant="default" 
                   size="sm"
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600"
+                  className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white rounded-full"
                 >
                   <Play className="w-4 h-4 mr-1" />
                   Start
@@ -636,7 +641,7 @@ const JobsMapPage: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">OpenWeather API Key Required</h3>
             <p className="text-gray-600 mb-4">
               To enable weather radar, please enter your OpenWeather API key. 
-              You can get one free at <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">openweathermap.org</a>.
+              You can get one free at <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer" className="text-[#3366FF] underline">openweathermap.org</a>.
             </p>
             <Input
               type="text"
@@ -664,7 +669,7 @@ const JobsMapPage: React.FC = () => {
                   }
                 }}
                 disabled={!weatherApiKey}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600"
+                className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
               >
                 Apply
               </Button>
@@ -676,4 +681,4 @@ const JobsMapPage: React.FC = () => {
   );
 };
 
-export default JobsMapPage;
+export default JobsMapView;
