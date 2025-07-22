@@ -5302,6 +5302,10 @@ export type Database = {
         Args: { product_type_id: string }
         Returns: Json
       }
+      get_invoice_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_maintenance_analytics: {
         Args: { days_back?: number }
         Returns: Json
@@ -5348,6 +5352,10 @@ export type Database = {
           end_date: string
           filter_attributes?: Json
         }
+        Returns: Json
+      }
+      get_quote_metrics: {
+        Args: Record<PropertyKey, never>
         Returns: Json
       }
       get_template_analytics: {

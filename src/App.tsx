@@ -20,6 +20,7 @@ import FleetMaintenancePage from "./pages/FleetMaintenancePage";
 import FleetFuel from "./pages/FleetFuel";
 import FleetFiles from "./pages/FleetFiles";
 import MarketingHub from "./pages/MarketingHub";
+import QuotesInvoices from "./pages/QuotesInvoices";
 
 const queryClient = new QueryClient();
 
@@ -127,7 +128,7 @@ const App = () => (
           <Route path="/quotes" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Quotes & Invoices" description="Quote and invoice management features are coming soon." />
+                <QuotesInvoices />
               </Layout>
             </SignedIn>
           } />
