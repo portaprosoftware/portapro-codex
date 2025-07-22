@@ -101,18 +101,18 @@ export const Sidebar: React.FC = () => {
             to={item.path}
             className={({ isActive }) =>
               cn(
-                "flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer",
-                "text-gray-900",
+                "flex items-center px-3 py-2 rounded-md font-medium transition-all duration-200 cursor-pointer",
+                "text-gray-700",
                 isActive 
-                  ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md" 
-                  : "hover:bg-gray-100 hover:rounded-lg"
+                  ? "bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 text-white font-semibold shadow-sm" 
+                  : "hover:bg-gray-100"
               )
             }
           >
             {({ isActive }) => (
               <>
-                <item.icon className={cn("w-5 h-5 mr-2", isActive ? "text-white" : "text-gray-900")} />
-                {item.name}
+                <item.icon className={cn("w-5 h-5 mr-3", isActive ? "text-white" : "text-gray-600")} />
+                <span className={isActive ? "text-white" : "text-gray-700"}>{item.name}</span>
               </>
             )}
           </NavLink>
