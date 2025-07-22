@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, Wrench, Plus, Minus, Search } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface Product {
   id: string;
@@ -49,26 +48,26 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
 
   const fetchProductsAndServices = async () => {
     try {
-      // Fetch products
-      const { data: productsData, error: productsError } = await supabase
-        .from('products')
-        .select('id, name, description, stock_total')
-        .eq('is_active', true)
-        .order('name');
+      // Mock data for now - replace with actual Supabase calls later
+      const mockProducts: Product[] = [
+        { id: '1', name: 'Standard Portable Toilet', description: 'Basic portable toilet unit', stock_total: 25 },
+        { id: '2', name: 'Deluxe Portable Toilet', description: 'Enhanced portable toilet with hand sanitizer', stock_total: 15 },
+        { id: '3', name: 'Handicap Accessible Unit', description: 'ADA compliant portable toilet', stock_total: 8 },
+        { id: '4', name: 'Hand Wash Station', description: 'Portable hand washing station', stock_total: 12 }
+      ];
 
-      if (productsError) throw productsError;
+      const mockServices: Service[] = [
+        { id: '1', name: 'Weekly Service', description: 'Weekly cleaning and restocking', pricing_method: 'per_visit', per_visit_cost: 25 },
+        { id: '2', name: 'Bi-weekly Service', description: 'Bi-weekly cleaning and restocking', pricing_method: 'per_visit', per_visit_cost: 35 },
+        { id: '3', name: 'Emergency Service', description: 'Emergency cleaning service', pricing_method: 'per_hour', per_hour_cost: 75 },
+        { id: '4', name: 'Deep Clean Service', description: 'Thorough deep cleaning service', pricing_method: 'per_visit', per_visit_cost: 50 }
+      ];
 
-      // Fetch services
-      const { data: servicesData, error: servicesError } = await supabase
-        .from('routine_maintenance_services')
-        .select('id, name, description, pricing_method, per_visit_cost, per_hour_cost')
-        .eq('is_active', true)
-        .order('name');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      if (servicesError) throw servicesError;
-
-      setProducts(productsData || []);
-      setServices(servicesData || []);
+      setProducts(mockProducts);
+      setServices(mockServices);
     } catch (error) {
       console.error('Error fetching products and services:', error);
     } finally {
