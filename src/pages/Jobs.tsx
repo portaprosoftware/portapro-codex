@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, Filter, Eye, Play, X, AlertTriangle, User } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, Filter, Eye, Play, X, AlertTriangle, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
+import { AddNewJobSlider } from '@/components/jobs/AddNewJobSlider';
 
 // Sample data for demonstration
 const mockJobs = [
@@ -63,6 +64,9 @@ const JobsPage: React.FC = () => {
   const [selectedDateOut, setSelectedDateOut] = useState(new Date(2025, 6, 17)); // July 17, 2025
   const [selectedDateBack, setSelectedDateBack] = useState(new Date(2025, 6, 17)); // July 17, 2025
   const [dispatchDate, setDispatchDate] = useState(new Date(2025, 6, 22)); // July 22, 2025
+  
+  // Add New Job Slider state
+  const [isAddJobSliderOpen, setIsAddJobSliderOpen] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -208,45 +212,56 @@ const JobsPage: React.FC = () => {
           <p className="text-muted-foreground">Dispatch and track driver schedules</p>
         </div>
         
-        {/* View selector pills */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-4">
+          {/* View selector pills */}
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant={activeTab === 'calendar' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "rounded-full px-5",
+                activeTab === 'calendar' && "bg-gradient-to-r from-blue-500 to-blue-600"
+              )}
+              onClick={() => navigateToTab('calendar')}
+            >
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              Calendar
+            </Button>
+            
+            <Button 
+              variant={activeTab === 'dispatch' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "rounded-full px-5",
+                activeTab === 'dispatch' && "bg-gradient-to-r from-blue-500 to-blue-600"
+              )}
+              onClick={() => navigateToTab('dispatch')}
+            >
+              <ClipboardList className="w-4 h-4 mr-2" />
+              Dispatch
+            </Button>
+            
+            <Button 
+              variant={activeTab === 'map' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "rounded-full px-5",
+                activeTab === 'map' && "bg-gradient-to-r from-blue-500 to-blue-600"
+              )}
+              onClick={() => navigateToTab('map')}
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Map
+            </Button>
+          </div>
+
+          {/* Add New Job Button */}
           <Button 
-            variant={activeTab === 'calendar' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'calendar' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('calendar')}
+            onClick={() => setIsAddJobSliderOpen(true)}
+            className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
           >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            Calendar
-          </Button>
-          
-          <Button 
-            variant={activeTab === 'dispatch' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'dispatch' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('dispatch')}
-          >
-            <ClipboardList className="w-4 h-4 mr-2" />
-            Dispatch
-          </Button>
-          
-          <Button 
-            variant={activeTab === 'map' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'map' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('map')}
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Map
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Job
           </Button>
         </div>
       </div>
@@ -618,6 +633,12 @@ const JobsPage: React.FC = () => {
       {activeTab === 'map' && (
         <JobsMapPage />
       )}
+      
+      {/* Add New Job Slider */}
+      <AddNewJobSlider 
+        open={isAddJobSliderOpen}
+        onOpenChange={setIsAddJobSliderOpen}
+      />
     </div>
   );
 };
