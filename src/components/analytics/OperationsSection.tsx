@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { KPICard } from './KPICard';
 import { Truck, Package, Wrench, RotateCcw } from 'lucide-react';
-import { format } from 'date-fns';
+import type { OperationsAnalytics } from '@/types/analytics';
 
 interface OperationsSectionProps {
   dateRange: { from: Date; to: Date };
@@ -14,13 +13,15 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
   const { data: operations, isLoading } = useQuery({
     queryKey: ['analytics-operations', dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_operations_analytics', {
-        start_date: format(dateRange.from, 'yyyy-MM-dd'),
-        end_date: format(dateRange.to, 'yyyy-MM-dd')
-      });
-      
-      if (error) throw error;
-      return data;
+      // Mock data until RPC functions are available
+      const mockData: OperationsAnalytics = {
+        deliveries: 156,
+        pickups: 142,
+        services: 89,
+        returns: 67,
+        total: 454
+      };
+      return mockData;
     }
   });
 

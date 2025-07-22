@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
-import Layout from './components/layout/Layout';
+import { Layout } from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
@@ -10,7 +11,7 @@ import CustomerHub from './pages/CustomerHub';
 import QuotesInvoices from './pages/QuotesInvoices';
 import FleetManagement from './pages/FleetManagement';
 import MarketingHub from './pages/MarketingHub';
-import Analytics from "@/pages/Analytics";
+import Analytics from "./pages/Analytics";
 
 const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 
@@ -20,7 +21,7 @@ if (!clerkPubKey) {
 
 const App = () => {
   return (
-    <ClerkProvider publishableKey={clerkPubKey} navigate={(to) => {}}>
+    <ClerkProvider publishableKey={clerkPubKey}>
       <Router>
         <div className="min-h-screen bg-background font-sans antialiased">
           <Routes>
@@ -94,20 +95,23 @@ const App = () => {
                 </SignedIn>
               }
             />
-            <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
-            <Route
-              path="*"
+            <Route 
+              path="/analytics" 
               element={
                 <SignedIn>
-                  <RedirectToSignIn />
+                  <Layout>
+                    <Analytics />
+                  </Layout>
                 </SignedIn>
-              }
+              } 
             />
             <Route
               path="*"
-              element={<SignedOut>
-                <RedirectToSignIn />
-              </SignedOut>}
+              element={
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              }
             />
           </Routes>
         </div>

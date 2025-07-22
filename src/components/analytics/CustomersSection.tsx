@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { KPICard } from './KPICard';
 import { UserPlus, Users, Heart, DollarSign } from 'lucide-react';
-import { format } from 'date-fns';
+import type { CustomerAnalytics } from '@/types/analytics';
 
 interface CustomersSectionProps {
   dateRange: { from: Date; to: Date };
@@ -14,13 +13,15 @@ export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange })
   const { data: customers, isLoading } = useQuery({
     queryKey: ['analytics-customers', dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_customer_analytics', {
-        start_date: format(dateRange.from, 'yyyy-MM-dd'),
-        end_date: format(dateRange.to, 'yyyy-MM-dd')
-      });
-      
-      if (error) throw error;
-      return data;
+      // Mock data until RPC functions are available
+      const mockData: CustomerAnalytics = {
+        new_customers: 23,
+        returning_customers: 156,
+        total_customers: 179,
+        retention_rate: 87.2,
+        avg_clv: 4250
+      };
+      return mockData;
     }
   });
 

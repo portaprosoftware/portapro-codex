@@ -1,12 +1,9 @@
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ChevronDown, X } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { format } from 'date-fns';
+import { Calendar, ChevronDown, Filter, X } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 interface GlobalFiltersProps {
   dateRange: { from: Date; to: Date };
@@ -23,148 +20,81 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
   onRemoveFilter,
   onResetAll
 }) => {
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<any>({ from: dateRange.from, to: dateRange.to });
-
   const quickRanges = [
-    {
-      label: 'Last 7 Days',
-      getValue: () => ({
-        from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        to: new Date()
-      })
-    },
-    {
-      label: 'Last 30 Days',
-      getValue: () => ({
-        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        to: new Date()
-      })
-    },
-    {
-      label: 'This Month',
-      getValue: () => {
-        const now = new Date();
-        return {
-          from: new Date(now.getFullYear(), now.getMonth(), 1),
-          to: new Date()
-        };
-      }
-    },
-    {
-      label: 'Last Month',
-      getValue: () => {
-        const now = new Date();
-        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        return {
-          from: lastMonth,
-          to: endOfLastMonth
-        };
-      }
-    }
+    { label: 'Last 7 Days', days: 7 },
+    { label: 'Last 30 Days', days: 30 },
+    { label: 'This Month', days: 30 },
+    { label: 'Last Quarter', days: 90 }
   ];
 
-  const handleQuickRange = (range: { from: Date; to: Date }) => {
-    onDateRangeChange(range);
-    setSelectedRange(range);
-    setIsDatePickerOpen(false);
-  };
-
-  const handleDateSelect = (range: any) => {
-    setSelectedRange(range);
-    if (range?.from && range?.to) {
-      onDateRangeChange({ from: range.from, to: range.to });
-      setIsDatePickerOpen(false);
-    }
+  const handleQuickRange = (days: number) => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - days);
+    onDateRangeChange({ from: start, to: end });
   };
 
   return (
-    <Card className="mx-6 mt-6 p-4 bg-gray-50/50 border border-gray-200 shadow-inner">
-      <div className="flex items-center justify-between">
+    <Card className="p-4 mb-6 bg-gray-50 border border-gray-200">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         {/* Left side - Date picker and quick ranges */}
-        <div className="flex items-center space-x-4">
-          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-            <PopoverTrigger asChild>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Date Range:</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {quickRanges.map((range) => (
               <Button
+                key={range.label}
                 variant="outline"
-                className="w-64 justify-start text-left font-normal bg-white"
+                size="sm"
+                onClick={() => handleQuickRange(range.days)}
+                className="text-xs"
               >
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "LLL dd, y")} -{" "}
-                      {format(dateRange.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Pick a date range</span>
-                )}
-                <ChevronDown className="ml-auto h-4 w-4" />
+                {range.label}
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <div className="flex">
-                <div className="p-3 border-r">
-                  <div className="space-y-1">
-                    <h4 className="font-medium text-sm text-gray-900 mb-2">Quick Ranges</h4>
-                    {quickRanges.map((range) => (
-                      <Button
-                        key={range.label}
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start text-sm"
-                        onClick={() => handleQuickRange(range.getValue())}
-                      >
-                        {range.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <CalendarComponent
-                  initialFocus
-                  mode="range"
-                  defaultMonth={dateRange?.from}
-                  selected={selectedRange}
-                  onSelect={handleDateSelect}
-                  numberOfMonths={2}
-                  className="p-3"
-                />
-              </div>
-            </PopoverContent>
-          </Popover>
+            ))}
+            <Button variant="outline" size="sm" className="text-xs">
+              Custom
+              <ChevronDown className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
         </div>
 
         {/* Right side - Saved filters and reset */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           {savedFilters.length > 0 && (
             <>
-              <div className="flex items-center space-x-2">
-                {savedFilters.map((filter, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="bg-blue-100 text-blue-800 hover:bg-blue-200"
-                  >
-                    {filter}
-                    <button
-                      onClick={() => onRemoveFilter(filter)}
-                      className="ml-1 hover:bg-blue-300 rounded-full p-0.5"
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <div className="flex flex-wrap gap-1">
+                  {savedFilters.map((filter) => (
+                    <Badge
+                      key={filter}
+                      variant="secondary"
+                      className="text-xs bg-blue-100 text-blue-800 hover:bg-blue-200"
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
+                      {filter}
+                      <button
+                        onClick={() => onRemoveFilter(filter)}
+                        className="ml-1 hover:text-blue-900"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onResetAll}
-                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-gray-500 hover:text-gray-700 text-xs"
               >
                 Reset All
-              </button>
+              </Button>
             </>
           )}
         </div>

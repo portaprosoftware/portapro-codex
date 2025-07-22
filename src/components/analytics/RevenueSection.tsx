@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { KPICard } from './KPICard';
 import { DollarSign, TrendingUp, AlertCircle, Target } from 'lucide-react';
-import { format } from 'date-fns';
+import type { RevenueAnalytics } from '@/types/analytics';
 
 interface RevenueSectionProps {
   dateRange: { from: Date; to: Date };
@@ -14,13 +13,14 @@ export const RevenueSection: React.FC<RevenueSectionProps> = ({ dateRange }) => 
   const { data: revenue, isLoading } = useQuery({
     queryKey: ['analytics-revenue', dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_revenue_analytics', {
-        start_date: format(dateRange.from, 'yyyy-MM-dd'),
-        end_date: format(dateRange.to, 'yyyy-MM-dd')
-      });
-      
-      if (error) throw error;
-      return data;
+      // Mock data until RPC functions are available
+      const mockData: RevenueAnalytics = {
+        invoiced: 45200,
+        collected: 38650,
+        outstanding: 6550,
+        collection_rate: 85.5
+      };
+      return mockData;
     }
   });
 

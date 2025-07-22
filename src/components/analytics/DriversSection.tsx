@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { KPICard } from './KPICard';
 import { Users, CheckCircle, Clock, Briefcase } from 'lucide-react';
-import { format } from 'date-fns';
+import type { DriverAnalytics } from '@/types/analytics';
 
 interface DriversSectionProps {
   dateRange: { from: Date; to: Date };
@@ -14,13 +13,14 @@ export const DriversSection: React.FC<DriversSectionProps> = ({ dateRange }) => 
   const { data: drivers, isLoading } = useQuery({
     queryKey: ['analytics-drivers', dateRange],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_driver_analytics', {
-        start_date: format(dateRange.from, 'yyyy-MM-dd'),
-        end_date: format(dateRange.to, 'yyyy-MM-dd')
-      });
-      
-      if (error) throw error;
-      return data;
+      // Mock data until RPC functions are available
+      const mockData: DriverAnalytics = {
+        active_drivers: 12,
+        total_jobs: 342,
+        completed_jobs: 289,
+        avg_completion_rate: 84.5
+      };
+      return mockData;
     }
   });
 
