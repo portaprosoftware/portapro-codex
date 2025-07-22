@@ -25,7 +25,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="border-b border-white/10 sticky top-0 z-50" style={{ background: 'linear-gradient(90deg, #1f2937 0%, #2c3e50 50%, #1f2937 100%)' }}>
+    <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Logo />
         
