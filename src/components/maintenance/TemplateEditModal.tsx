@@ -21,10 +21,8 @@ interface TemplateEditModalProps {
 interface TemplateFormData {
   name: string;
   description: string;
-  header_text: string;
-  footer_text: string;
-  template_fields: Record<string, any>;
-  logo_url: string;
+  template_type: string;
+  template_data: Record<string, any>;
 }
 
 const availableFields = [
@@ -49,10 +47,8 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
   const [formData, setFormData] = useState<TemplateFormData>({
     name: "",
     description: "",
-    header_text: "",
-    footer_text: "",
-    template_fields: {},
-    logo_url: "",
+    template_type: "maintenance",
+    template_data: {},
   });
 
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -79,20 +75,16 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
       setFormData({
         name: template.name || "",
         description: template.description || "",
-        header_text: template.header_text || "",
-        footer_text: template.footer_text || "",
-        template_fields: template.template_fields || {},
-        logo_url: template.logo_url || "",
+        template_type: template.template_type || "maintenance",
+        template_data: template.template_data || {},
       });
-      setSelectedFields(Object.keys(template.template_fields || {}));
+      setSelectedFields(Object.keys(template.template_data || {}));
     } else if (isCreating) {
       setFormData({
         name: "",
         description: "",
-        header_text: "",
-        footer_text: "",
-        template_fields: {},
-        logo_url: "",
+        template_type: "maintenance",
+        template_data: {},
       });
       setSelectedFields([]);
     }
@@ -102,7 +94,7 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
     mutationFn: async (data: TemplateFormData) => {
       const templateData = {
         ...data,
-        template_fields: selectedFields.reduce((acc, fieldId) => {
+        template_data: selectedFields.reduce((acc, fieldId) => {
           acc[fieldId] = availableFields.find(f => f.id === fieldId) || {};
           return acc;
         }, {} as Record<string, any>),
@@ -179,28 +171,6 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="header_text">Header Text</Label>
-              <Textarea
-                id="header_text"
-                value={formData.header_text}
-                onChange={(e) => updateFormData("header_text", e.target.value)}
-                placeholder="Text to appear at the top of reports..."
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="footer_text">Footer Text</Label>
-              <Textarea
-                id="footer_text"
-                value={formData.footer_text}
-                onChange={(e) => updateFormData("footer_text", e.target.value)}
-                placeholder="Text to appear at the bottom of reports..."
-                rows={2}
-              />
-            </div>
-
-            <div>
               <Label>Company Logo</Label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                 <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
@@ -235,12 +205,6 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
             <Label className="text-base font-medium">Live Preview</Label>
             <Card className="p-6 bg-white min-h-[500px]">
               <div className="space-y-4">
-                {formData.header_text && (
-                  <div className="border-b pb-2">
-                    <p className="text-sm font-medium">{formData.header_text}</p>
-                  </div>
-                )}
-
                 <div className="text-center mb-4">
                   <h2 className="text-lg font-bold">
                     {formData.name || "Template Preview"}
@@ -258,12 +222,6 @@ export const TemplateEditModal: React.FC<TemplateEditModalProps> = ({
                     );
                   })}
                 </div>
-
-                {formData.footer_text && (
-                  <div className="border-t pt-2 mt-4">
-                    <p className="text-xs text-gray-600">{formData.footer_text}</p>
-                  </div>
-                )}
               </div>
             </Card>
           </div>

@@ -11,7 +11,7 @@ interface Template {
   id: string;
   name: string;
   created_at: string;
-  template_fields: any;
+  template_data: any;
   is_active: boolean;
 }
 
@@ -92,7 +92,7 @@ export const ReportTemplatesTab: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">
-                {Object.keys(template.template_fields || {}).length} fields
+                {Object.keys(template.template_data || {}).length} fields
               </span>
               <Button variant="outline" size="sm">
                 Preview

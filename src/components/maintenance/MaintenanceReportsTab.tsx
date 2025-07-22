@@ -16,14 +16,11 @@ interface MaintenanceReport {
   report_number: string;
   created_at: string;
   vehicle_id: string;
-  service_type: string;
+  service_description: string;
   status: string;
-  has_signature: boolean;
-  technician_name: string;
-  vehicles?: {
-    license_plate: string;
-    vehicle_type: string;
-  };
+  completion_percentage: number;
+  assigned_technician: string;
+  report_data: any;
 }
 
 export const MaintenanceReportsTab: React.FC = () => {
@@ -36,10 +33,7 @@ export const MaintenanceReportsTab: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("maintenance_reports")
-        .select(`
-          *,
-          vehicles(license_plate, vehicle_type)
-        `)
+        .select("*")
         .order("created_at", { ascending: false });
       
       if (error) throw error;
@@ -48,8 +42,9 @@ export const MaintenanceReportsTab: React.FC = () => {
   });
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "open":
+      case "scheduled":
         return "bg-orange-100 text-orange-800 border-orange-200";
       case "in_progress":
         return "bg-blue-100 text-blue-800 border-blue-200";
@@ -67,7 +62,7 @@ export const MaintenanceReportsTab: React.FC = () => {
     
     return {
       total: reports.length,
-      open: reports.filter(r => r.status === "open").length,
+      open: reports.filter(r => r.status === "open" || r.status === "scheduled").length,
       inProgress: reports.filter(r => r.status === "in_progress").length,
       completed: reports.filter(r => r.status === "completed").length,
     };
@@ -178,7 +173,7 @@ export const MaintenanceReportsTab: React.FC = () => {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Vehicle/Unit</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Type</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Signature</th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Progress</th>
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -195,10 +190,10 @@ export const MaintenanceReportsTab: React.FC = () => {
                     {new Date(report.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.vehicles?.license_plate || 'N/A'}
+                    {report.vehicle_id ? `Vehicle ${report.vehicle_id.slice(0, 8)}` : 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {report.service_type || 'General Maintenance'}
+                    {report.service_description || 'General Maintenance'}
                   </td>
                   <td className="px-6 py-4">
                     <Badge className={`capitalize ${getStatusColor(report.status)}`}>
@@ -206,13 +201,15 @@ export const MaintenanceReportsTab: React.FC = () => {
                     </Badge>
                   </td>
                   <td className="px-6 py-4">
-                    {report.has_signature ? (
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4 text-green-600" />
+                    <div className="flex items-center">
+                      <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                        <div 
+                          className="h-full bg-blue-600 rounded-full" 
+                          style={{ width: `${report.completion_percentage || 0}%` }}
+                        ></div>
                       </div>
-                    ) : (
-                      <div className="w-6 h-6 bg-gray-100 rounded-full"></div>
-                    )}
+                      <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <Button

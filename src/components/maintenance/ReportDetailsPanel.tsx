@@ -26,10 +26,7 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
       
       const { data, error } = await supabase
         .from("maintenance_reports")
-        .select(`
-          *,
-          vehicles(license_plate, vehicle_type, make, model)
-        `)
+        .select("*")
         .eq("id", reportId)
         .single();
       
@@ -42,6 +39,7 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "open":
+      case "scheduled":
         return "bg-orange-100 text-orange-800 border-orange-200";
       case "in_progress":
         return "bg-blue-100 text-blue-800 border-blue-200";
@@ -83,17 +81,17 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Technician</label>
-                  <p className="text-gray-900">{report?.technician_name || 'Not assigned'}</p>
+                  <p className="text-gray-900">{report?.assigned_technician || 'Not assigned'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Vehicle/Unit</label>
                   <p className="text-gray-900">
-                    {report?.vehicles?.license_plate} - {report?.vehicles?.make} {report?.vehicles?.model}
+                    {report?.vehicle_id ? `Vehicle ${report.vehicle_id.slice(0, 8)}` : 'N/A'}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Service Type</label>
-                  <p className="text-gray-900">{report?.service_type || 'General Maintenance'}</p>
+                  <p className="text-gray-900">{report?.service_description || 'General Maintenance'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Status</label>
@@ -101,10 +99,22 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                     {report?.status?.replace('_', ' ')}
                   </Badge>
                 </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Completion</label>
+                  <div className="flex items-center mt-1">
+                    <div className="w-24 h-2 bg-gray-200 rounded-full mr-2">
+                      <div 
+                        className="h-full bg-blue-600 rounded-full" 
+                        style={{ width: `${report?.completion_percentage || 0}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm text-gray-600">{report?.completion_percentage || 0}%</span>
+                  </div>
+                </div>
                 <div className="col-span-2">
                   <label className="text-sm font-medium text-gray-500">Notes</label>
                   <p className="text-gray-900 mt-1">
-                    {report?.notes || 'No notes provided'}
+                    {report?.actual_completion || 'No notes provided'}
                   </p>
                 </div>
               </div>
@@ -118,7 +128,7 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Customer Signature</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    {report?.has_signature ? (
+                    {report?.report_data?.customer_signature ? (
                       <div className="flex items-center justify-center">
                         <CheckCircle className="w-8 h-8 text-green-600" />
                         <span className="ml-2 text-green-600">Signature Captured</span>
@@ -135,10 +145,17 @@ export const ReportDetailsPanel: React.FC<ReportDetailsPanelProps> = ({
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Tech Signature</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <div className="text-gray-400">
-                      <PenTool className="w-8 h-8 mx-auto mb-2" />
-                      <p>No signature captured</p>
-                    </div>
+                    {report?.report_data?.tech_signature ? (
+                      <div className="flex items-center justify-center">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                        <span className="ml-2 text-green-600">Signature Captured</span>
+                      </div>
+                    ) : (
+                      <div className="text-gray-400">
+                        <PenTool className="w-8 h-8 mx-auto mb-2" />
+                        <p>No signature captured</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
