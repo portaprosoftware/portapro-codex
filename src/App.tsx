@@ -13,6 +13,7 @@ import { ComingSoon } from "./pages/ComingSoon";
 import JobsPage from "./pages/Jobs";
 import CustomerHub from "./pages/CustomerHub";
 import Inventory from "./pages/Inventory";
+import FleetManagement from "./pages/FleetManagement";
 
 const queryClient = new QueryClient();
 
@@ -20,8 +21,6 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <Toaster />
-        <Sonner />
         <Routes>
           <Route path="/" element={
             <>
@@ -66,7 +65,7 @@ const App = () => (
           <Route path="/fleet" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Fleet Management" description="Vehicle and equipment management features are coming soon." />
+                <FleetManagement />
               </Layout>
             </SignedIn>
           } />
@@ -113,6 +112,8 @@ const App = () => (
             </SignedIn>
           } />
         </Routes>
+        <Toaster />
+        <Sonner />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
