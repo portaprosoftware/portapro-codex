@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { X, QrCode } from "lucide-react";
+import { X, QrCode, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -96,7 +97,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Edit Item: {item.item_code}</DialogTitle>
         </DialogHeader>
@@ -110,7 +111,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="available">Available</SelectItem>
                   <SelectItem value="assigned">Assigned</SelectItem>
                   <SelectItem value="maintenance">In Maintenance</SelectItem>
@@ -125,7 +126,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 <SelectTrigger>
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="excellent">Excellent</SelectItem>
                   <SelectItem value="good">Good</SelectItem>
                   <SelectItem value="fair">Fair</SelectItem>
@@ -147,7 +148,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           </div>
 
           {/* QR Code Section */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label>QR Code</Label>
             <Button
               type="button"
@@ -162,7 +163,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
           {/* Item Attributes */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900">Item Attributes</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-gray-900">Item Attributes</h3>
+              <Button
+                type="button"
+                variant="link"
+                className="text-blue-600 hover:text-blue-700 p-0 h-auto font-normal text-sm"
+                onClick={() => {
+                  // TODO: Navigate to product attributes
+                  console.log("Navigate to product attributes");
+                }}
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                To add additional attributes to the list - click here
+              </Button>
+            </div>
             
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
@@ -171,7 +186,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   <SelectTrigger>
                     <SelectValue placeholder="Select color" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="blue">Blue</SelectItem>
                     <SelectItem value="green">Green</SelectItem>
                     <SelectItem value="tan">Tan</SelectItem>
@@ -187,7 +202,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   <SelectTrigger>
                     <SelectValue placeholder="Select size" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="standard">Standard</SelectItem>
                     <SelectItem value="large">Large</SelectItem>
                     <SelectItem value="ada">ADA Compliant</SelectItem>
@@ -201,7 +216,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   <SelectTrigger>
                     <SelectValue placeholder="Select material" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="plastic">Plastic</SelectItem>
                     <SelectItem value="fiberglass">Fiberglass</SelectItem>
                     <SelectItem value="metal">Metal</SelectItem>

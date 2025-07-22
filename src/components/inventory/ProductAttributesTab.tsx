@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Plus, Search, Filter, Edit, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface ProductAttributesTabProps {
   productId: string;
@@ -88,7 +88,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
           <SelectTrigger className="w-48">
             <SelectValue placeholder="All Attributes" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white">
             <SelectItem value="all">All Attributes</SelectItem>
             <SelectItem value="required">Required Only</SelectItem>
             <SelectItem value="optional">Optional Only</SelectItem>
@@ -114,7 +114,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {attribute.values.map((value, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
+                      <Badge key={idx} variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
                         {value}
                       </Badge>
                     ))}
@@ -124,7 +124,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
                   {attribute.required ? (
                     <Badge className="bg-red-100 text-red-700 border-red-200">Required</Badge>
                   ) : (
-                    <Badge variant="outline" className="text-gray-600">Optional</Badge>
+                    <Badge variant="outline" className="text-gray-600 border-gray-300">Optional</Badge>
                   )}
                 </TableCell>
                 <TableCell>

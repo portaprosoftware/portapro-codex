@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EditItemModal } from "./EditItemModal";
+import { QRCodeDropdown } from "./QRCodeDropdown";
+import { AttributeFilters } from "./AttributeFilters";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -20,9 +23,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [attributeFilters, setAttributeFilters] = useState<{
+    color?: string;
+    size?: string;
+    material?: string;
+    condition?: string;
+  }>({});
 
   const { data: items, isLoading } = useQuery({
-    queryKey: ["product-items", productId, searchQuery, availabilityFilter],
+    queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
@@ -35,6 +44,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
       if (availabilityFilter !== "all") {
         query = query.eq("status", availabilityFilter);
+      }
+
+      // Apply attribute filters
+      if (attributeFilters.color) {
+        query = query.eq("color", attributeFilters.color);
+      }
+      if (attributeFilters.size) {
+        query = query.eq("size", attributeFilters.size);
+      }
+      if (attributeFilters.material) {
+        query = query.eq("material", attributeFilters.material);
+      }
+      if (attributeFilters.condition) {
+        query = query.eq("condition", attributeFilters.condition);
       }
 
       const { data, error } = await query.order("item_code");
@@ -57,6 +80,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         ? prev.filter(id => id !== itemId)
         : [...prev, itemId]
     );
+  };
+
+  const handleAttributeFilterChange = (key: string, value: string | undefined) => {
+    setAttributeFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setAttributeFilters({});
   };
 
   const getStatusBadge = (status: string) => {
@@ -104,7 +138,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <SelectTrigger className="w-48">
               <SelectValue placeholder="All Availability" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="all">All Availability</SelectItem>
               <SelectItem value="available">Available</SelectItem>
               <SelectItem value="assigned">Assigned</SelectItem>
@@ -123,6 +157,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           </Button>
         </div>
       </div>
+
+      {/* Attribute Filters */}
+      <AttributeFilters
+        filters={attributeFilters}
+        onFilterChange={handleAttributeFilterChange}
+        onClearFilters={handleClearFilters}
+      />
 
       {/* Units Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -170,9 +211,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
                   <TableCell className="text-gray-600">{item.condition || "—"}</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" className="w-6 h-6 p-0">
-                      <QrCode className="w-4 h-4 text-gray-400" />
-                    </Button>
+                    <QRCodeDropdown itemCode={item.item_code} qrCodeData={item.qr_code_data} />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
@@ -195,29 +234,29 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 {expandedRows.includes(item.id) && (
                   <TableRow className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <TableCell colSpan={8} className="border-t">
-                      <div className="py-4 space-y-2 text-sm">
+                      <div className="py-4 space-y-3 text-sm">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div>
                             <span className="font-medium text-gray-700">Location:</span>
-                            <p className="text-gray-600">{item.location || "Not specified"}</p>
+                            <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
                           </div>
                           <div>
                             <span className="font-medium text-gray-700">QR Code:</span>
-                            <p className="text-gray-600">{item.qr_code_data ? "Generated" : "Not generated"}</p>
+                            <p className="text-gray-600 mt-1">{item.qr_code_data ? "Generated" : "Not generated"}</p>
                           </div>
                           <div>
                             <span className="font-medium text-gray-700">GPS Enabled:</span>
-                            <p className="text-gray-600">{item.gps_enabled ? "Yes" : "No"}</p>
+                            <p className="text-gray-600 mt-1">{item.gps_enabled ? "Yes" : "No"}</p>
                           </div>
                           <div>
                             <span className="font-medium text-gray-700">Winterized:</span>
-                            <p className="text-gray-600">{item.winterized ? "Yes" : "No"}</p>
+                            <p className="text-gray-600 mt-1">{item.winterized ? "Yes" : "No"}</p>
                           </div>
                         </div>
                         {item.notes && (
                           <div>
                             <span className="font-medium text-gray-700">Notes:</span>
-                            <p className="text-gray-600">{item.notes}</p>
+                            <p className="text-gray-600 mt-1">{item.notes}</p>
                           </div>
                         )}
                       </div>
