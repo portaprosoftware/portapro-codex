@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Upload, Plus, Search, Filter, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -179,9 +180,11 @@ const CustomerHub: React.FC = () => {
                   <TableCell>0</TableCell>
                   <TableCell>$0.00</TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="w-4 h-4" />
-                    </Button>
+                    <Link to={`/customers/${customer.id}`}>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

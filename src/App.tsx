@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
 import CustomerHub from './pages/CustomerHub';
+import CustomerDetail from './pages/CustomerDetail';
 import QuotesInvoices from './pages/QuotesInvoices';
 import FleetManagement from './pages/FleetManagement';
 import MarketingHub from './pages/MarketingHub';
@@ -61,6 +62,16 @@ const App = () => {
                 <SignedIn>
                   <Layout>
                     <CustomerHub />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/customers/:id"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <CustomerDetail />
                   </Layout>
                 </SignedIn>
               }
