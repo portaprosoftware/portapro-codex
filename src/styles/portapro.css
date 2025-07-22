@@ -51,6 +51,28 @@ body {
   flex-grow: 1;
 }
 
+/* Animation for slide-in panels */
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.container-modern {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 /* Dashboard cards */
 .card {
   background-color: #ffffff;
@@ -127,4 +149,30 @@ h1, h2, h3, h4 {
   border-radius: 0.75rem;
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+/* Jobs status colors */
+:root {
+  --color-assigned: #3366FF;
+  --color-in-progress: #FF9933;
+  --color-completed: #33CC66;
+  --gradient-primary: linear-gradient(to right, #3366FF, #6699FF);
+}
+
+/* Calendar styling */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.section-padding {
+  padding: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container-modern {
+    padding: 0 0.5rem;
+  }
 }

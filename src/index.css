@@ -38,6 +38,11 @@
     --red-light: 0 84% 96%;
     --yellow: 45 93% 47%;
     --yellow-light: 45 93% 96%;
+    
+    /* Job status colors */
+    --assigned: 221 83% 53%;
+    --in-progress: 38 92% 50%;
+    --completed: 142 76% 36%;
 
     --secondary: 220 14% 96%;
     --secondary-foreground: 215 25% 26%;
