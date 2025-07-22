@@ -104,7 +104,7 @@ export const Sidebar: React.FC = () => {
                 "flex items-center px-3 py-2 rounded-md font-medium transition-all duration-200 cursor-pointer",
                 "text-gray-700",
                 isActive 
-                  ? "bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 text-white font-semibold shadow-sm" 
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-sm" 
                   : "hover:bg-gray-100"
               )
             }
