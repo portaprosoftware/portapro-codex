@@ -1,0 +1,130 @@
+
+/* Base font and body */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navigation sidebar */
+.sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 1rem;
+  min-height: 100vh;
+  width: 250px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sidebar li:hover {
+  color: #1d4ed8;
+}
+
+.sidebar li.active {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Main content area */
+.main-content {
+  padding: 2rem;
+  flex-grow: 1;
+}
+
+/* Dashboard cards */
+.card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card .label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.card .value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.card .icon-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.card .icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Color highlights for each card */
+.card.units { border-left: 4px solid #3b82f6; }
+.card.customers { border-left: 4px solid #a855f7; }
+.card.jobs { border-left: 4px solid #60a5fa; }
+.card.revenue { border-left: 4px solid #34d399; }
+.card.fleet { border-left: 4px solid #6366f1; }
+.card.fuel { border-left: 4px solid #f59e0b; }
+.card.maintenance { border-left: 4px solid #ef4444; }
+.card.documents { border-left: 4px solid #facc15; }
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+}
+
+/* Gradient background for sections if needed */
+.section-header {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
