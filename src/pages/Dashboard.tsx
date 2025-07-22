@@ -92,11 +92,11 @@ export const Dashboard: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-3xl font-bold text-foreground">
             Welcome back, {user?.firstName || "Tyler"}!
           </h1>
           <p className="text-muted-foreground">
@@ -112,12 +112,12 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Dashboard Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid-cards">
         {Object.entries(dashboardData).map(([key, data]) => {
           const Icon = data.icon;
           return (
-            <Card key={key} className={`card-elevated p-6 ${getCardStyles(data.color)}`}>
-              <div className="flex items-start justify-between mb-4">
+            <Card key={key} className={`card-modern ${getCardStyles(data.color)}`}>
+              <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-muted-foreground capitalize mb-2">
                     {key.replace(/([A-Z])/g, ' $1').trim()}

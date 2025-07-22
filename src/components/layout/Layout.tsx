@@ -36,8 +36,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6">
-          {children}
+        <main className="flex-1 section-padding">
+          <div className="container-modern">
+            {children}
+          </div>
         </main>
       </div>
     </div>

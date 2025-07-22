@@ -126,24 +126,43 @@
     @apply border-border;
   }
 
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', sans-serif;
-    line-height: 1.5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
   }
+
+  /* Modern headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-foreground;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  h1 { @apply text-3xl lg:text-4xl mb-6; }
+  h2 { @apply text-2xl lg:text-3xl mb-5; }
+  h3 { @apply text-xl lg:text-2xl mb-4; }
+  h4 { @apply text-lg lg:text-xl mb-3; }
 
   /* Custom scrollbars */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    @apply bg-muted rounded-full;
   }
 
   ::-webkit-scrollbar-thumb {
     @apply bg-border rounded-full;
+    transition: background-color 0.2s ease;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -152,75 +171,112 @@
 }
 
 @layer components {
-  /* Modern button styles */
-  button {
-    @apply px-4 py-2 rounded-xl font-semibold shadow-sm transition-all duration-200 ease-in-out;
+  /* Modern button styles with hover effects */
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 text-sm font-medium;
+    @apply ring-offset-background transition-all duration-200 ease-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply shadow-sm hover:shadow-md hover:-translate-y-0.5;
+    font-family: 'Inter', sans-serif;
   }
-  
-  button:hover {
-    @apply shadow-md transform -translate-y-0.5;
+
+  /* Card styles with generous spacing */
+  .card-modern {
+    @apply bg-card text-card-foreground rounded-2xl p-8 shadow-sm border border-border/50;
+    @apply hover:shadow-md transition-all duration-300 ease-out;
+  }
+
+  .card-compact {
+    @apply bg-card text-card-foreground rounded-xl p-6 shadow-sm border border-border/50;
+    @apply hover:shadow-md transition-all duration-300 ease-out;
+  }
+
+  /* Modern input styles */
+  .input-modern {
+    @apply flex h-12 w-full rounded-xl border border-input bg-background px-4 py-3 text-base;
+    @apply ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium;
+    @apply placeholder:text-muted-foreground;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply transition-all duration-200 ease-out;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Layout spacing utilities */
+  .section-padding {
+    @apply px-6 py-8 lg:px-8 lg:py-12;
+  }
+
+  .container-modern {
+    @apply max-w-7xl mx-auto px-6 lg:px-8;
   }
 
   /* Hero button variants */
   .btn-hero {
-    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0;
+    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+    @apply shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
+    @apply border-0 rounded-xl px-8 py-4 font-semibold;
   }
 
   .btn-ghost-hero {
     @apply bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-sm;
+    @apply hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300;
   }
 
-  /* Modern card styles */
-  .card {
-    @apply bg-white rounded-2xl p-6 shadow-sm;
-  }
-
+  /* Enhanced card variations */
   .card-elevated {
-    @apply bg-card border border-border shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl;
+    @apply bg-card border border-border/50 shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl;
   }
 
   .card-gradient {
     background: var(--gradient-card);
-    @apply border border-border shadow-sm rounded-2xl;
+    @apply border border-border/50 shadow-sm rounded-2xl;
   }
 
-  /* Modern input styles */
-  input, select, textarea {
-    @apply rounded-xl border border-input px-3 py-2 text-base bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  /* Form section styling */
+  .form-section {
+    @apply space-y-6 p-8 bg-card rounded-2xl border border-border/50 shadow-sm;
   }
 
-  /* Modern headings */
-  h1, h2, h3, h4 {
-    @apply font-bold text-foreground;
+  .form-group {
+    @apply space-y-3;
   }
 
-  h1 { @apply text-2xl mb-4; }
-  h2 { @apply text-xl mb-3; }
-  h3 { @apply text-lg mb-2; }
-
-  /* Utility classes */
-  .text-muted {
-    @apply text-muted-foreground;
-  }
-  
-  .bg-soft {
-    @apply bg-muted;
-  }
-  
-  .shadow-subtle {
-    @apply shadow-sm;
+  .form-label {
+    @apply text-sm font-medium text-foreground;
+    font-family: 'Inter', sans-serif;
   }
 
-  /* Status badges */
+  /* Status badges with better spacing */
   .badge-success {
-    @apply bg-success-light text-success border-success/20;
+    @apply bg-success-light text-success border border-success/20 px-3 py-1.5 rounded-full text-xs font-medium;
   }
 
   .badge-warning {
-    @apply bg-warning-light text-warning border-warning/20;
+    @apply bg-warning-light text-warning border border-warning/20 px-3 py-1.5 rounded-full text-xs font-medium;
   }
 
   .badge-primary {
-    @apply bg-primary-light text-primary border-primary/20;
+    @apply bg-primary-light text-primary border border-primary/20 px-3 py-1.5 rounded-full text-xs font-medium;
+  }
+
+  /* Navigation improvements */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium;
+    @apply hover:bg-accent hover:text-accent-foreground transition-all duration-200;
+  }
+
+  .nav-item.active {
+    @apply bg-primary text-primary-foreground shadow-sm;
+  }
+
+  /* Responsive grid with generous spacing */
+  .grid-responsive {
+    @apply grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .grid-cards {
+    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
 }
