@@ -8,6 +8,7 @@ import { Layout } from "./components/layout/Layout";
 import { Landing } from "./pages/Landing";
 import { Dashboard } from "./pages/Dashboard";
 import { ComingSoon } from "./pages/ComingSoon";
+import JobsPage from "./pages/Jobs";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +41,21 @@ const App = () => (
           <Route path="/jobs" element={
             <SignedIn>
               <Layout>
-                <ComingSoon title="Jobs" description="Job management and scheduling features are coming soon." />
+                <JobsPage />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/jobs/calendar" element={
+            <SignedIn>
+              <Layout>
+                <JobsPage />
+              </Layout>
+            </SignedIn>
+          } />
+          <Route path="/jobs/map" element={
+            <SignedIn>
+              <Layout>
+                <JobsPage />
               </Layout>
             </SignedIn>
           } />
