@@ -429,55 +429,7 @@ const JobsMapPage: React.FC = () => {
   const totalDrivers = mockDrivers.length;
 
   return (
-    <div className="container-modern py-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Jobs</h1>
-          <p className="text-muted-foreground">View jobs on interactive map with real-time locations</p>
-        </div>
-        
-        {/* View selector pills */}
-        <div className="flex items-center space-x-2">
-          <Button 
-            variant={activeTab === 'calendar' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'calendar' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('calendar')}
-          >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            Calendar
-          </Button>
-          
-          <Button 
-            variant={activeTab === 'dispatch' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'dispatch' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('dispatch')}
-          >
-            <ClipboardList className="w-4 h-4 mr-2" />
-            Dispatch
-          </Button>
-          
-          <Button 
-            variant={activeTab === 'map' ? 'default' : 'ghost'}
-            size="sm"
-            className={cn(
-              "rounded-full px-5",
-              activeTab === 'map' && "bg-gradient-to-r from-blue-500 to-blue-600"
-            )}
-            onClick={() => navigateToTab('map')}
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Map
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-6">
 
       {/* Controls Row */}
       <div className="flex items-center justify-between bg-white rounded-2xl shadow-md p-4">

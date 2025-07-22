@@ -530,11 +530,184 @@ const JobsPage: React.FC = () => {
       )}
       
       {activeTab === 'dispatch' && (
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="text-center py-20">
-            <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-500 mb-2">Dispatch Board</h3>
-            <p className="text-gray-400">Dispatch functionality coming soon</p>
+        <div className="flex gap-6">
+          {/* Left Panel: Unassigned Jobs */}
+          <div className="w-80 bg-white rounded-2xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                  <span className="text-white text-xs">!</span>
+                </div>
+                <h3 className="text-lg font-semibold">Unassigned Jobs</h3>
+                <Badge className="ml-2 bg-orange-500 text-white">0</Badge>
+              </div>
+            </div>
+            
+            <div className="flex space-x-2 mb-4">
+              <Button variant="default" size="sm" className="rounded-full bg-gradient-to-r from-blue-500 to-blue-600">
+                All (0)
+              </Button>
+              <Button variant="ghost" size="sm" className="rounded-full">Service</Button>
+              <Button variant="ghost" size="sm" className="rounded-full">Pickup</Button>
+              <Button variant="ghost" size="sm" className="rounded-full">Delivery</Button>
+            </div>
+            
+            <div className="text-center py-10">
+              <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-lg font-medium text-gray-500">No unassigned jobs</p>
+              <p className="text-gray-400">All jobs have been assigned to drivers</p>
+            </div>
+          </div>
+
+          {/* Main Panel: Dispatch Board */}
+          <div className="flex-1 bg-white rounded-2xl shadow-md p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold">Dispatch Board</h2>
+                <p className="text-muted-foreground">Manage driver schedules and job assignments</p>
+              </div>
+              <Button 
+                variant="default"
+                className="bg-gradient-to-r from-blue-500 to-blue-600"
+              >
+                + Schedule
+              </Button>
+            </div>
+            
+            <div className="mb-6">
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input 
+                  placeholder="Search by customer, job type, or driver..." 
+                  className="pl-10 rounded-md py-2"
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2 mb-4">
+                <Badge className="bg-blue-500 text-white">Assigned</Badge>
+                <Badge className="bg-blue-500 text-white">Service</Badge>
+              </div>
+              
+              <select className="rounded-md border border-gray-300 p-2">
+                <option value="all">All Drivers (3)</option>
+                <option value="1">Grady Green</option>
+                <option value="2">Jason Wells</option>
+                <option value="3">Kygo Jones</option>
+              </select>
+            </div>
+            
+            {/* Status Summary */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">1 job</span>
+                <div className="flex space-x-4">
+                  <div className="flex items-center">
+                    <Badge className="bg-blue-500 text-white mr-1">1</Badge>
+                    <span className="text-sm">Assigned</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge className="bg-orange-500 text-white mr-1">0</Badge>
+                    <span className="text-sm">In Progress</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge className="bg-green-500 text-white mr-1">0</Badge>
+                    <span className="text-sm">Completed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Date Header */}
+            <div className="mb-6 p-4 bg-blue-50 rounded-xl">
+              <div className="flex items-center">
+                <CalendarIcon className="w-5 h-5 text-blue-600 mr-2" />
+                <span className="font-semibold text-blue-900">Tuesday, July 22, 2025</span>
+              </div>
+              <p className="text-blue-700 text-sm mt-1">1 job scheduled</p>
+            </div>
+            
+            {/* Driver Columns */}
+            <div className="grid grid-cols-3 gap-6">
+              {/* Driver 1 - Grady Green */}
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                      <span className="font-medium text-white">GG</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Grady Green</h4>
+                      <Badge className="bg-white/20 text-white">1 assigned</Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 min-h-[200px]">
+                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-xl shadow-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium">SVC-051</span>
+                      <Badge className="bg-blue-500 text-white">Assigned</Badge>
+                    </div>
+                    <div className="mb-4">
+                      <p className="font-medium">Cuyahoga Waste Services</p>
+                      <p className="text-gray-300 text-sm">Service</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Button variant="outline" size="sm" className="w-full text-white border-white hover:bg-white hover:text-gray-900">
+                        Start
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full text-white border-white hover:bg-white hover:text-gray-900">
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Driver 2 - Jason Wells */}
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                      <span className="font-medium text-white">JW</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Jason Wells</h4>
+                      <Badge className="bg-white/20 text-white">0 assigned</Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 min-h-[200px] flex items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <ClipboardList className="w-8 h-8 mx-auto mb-2" />
+                    <p>Drop jobs here to assign to Jason</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Driver 3 - Kygo Jones */}
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                      <span className="font-medium text-white">KJ</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Kygo Jones</h4>
+                      <Badge className="bg-white/20 text-white">0 assigned</Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 min-h-[200px] flex items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <ClipboardList className="w-8 h-8 mx-auto mb-2" />
+                    <p>Drop jobs here to assign to Kygo</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
