@@ -93,19 +93,19 @@ export const Sidebar: React.FC = () => {
   );
 
   return (
-    <aside className="w-64 bg-card border-r border-border h-screen sticky top-16 overflow-y-auto">
-      <nav className="p-4 space-y-2">
+    <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-16 overflow-y-auto font-inter">
+      <nav className="p-4 space-y-1">
         {filteredItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors",
-                "hover:bg-accent hover:text-accent-foreground",
+                "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200",
+                "text-gray-900 hover:bg-gray-100",
                 isActive 
-                  ? "bg-primary text-primary-foreground shadow-sm" 
-                  : "text-muted-foreground"
+                  ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-md" 
+                  : ""
               )
             }
           >
