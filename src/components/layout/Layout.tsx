@@ -8,7 +8,20 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { role } = useUserRole();
+  const { role, user } = useUserRole();
+
+  if (!role && user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">Welcome {user.firstName}!</h2>
+          <p>Please contact your administrator to set your role, or go to your Clerk dashboard and add:</p>
+          <code className="block bg-muted p-4 rounded">publicMetadata: {`{"role": "owner"}`}</code>
+          <p className="text-sm text-muted-foreground">Valid roles: owner, dispatch, driver, customer</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!role) {
     return (
