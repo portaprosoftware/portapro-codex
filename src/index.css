@@ -127,7 +127,9 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
   }
 
   /* Custom scrollbars */
@@ -150,6 +152,15 @@
 }
 
 @layer components {
+  /* Modern button styles */
+  button {
+    @apply px-4 py-2 rounded-xl font-semibold shadow-sm transition-all duration-200 ease-in-out;
+  }
+  
+  button:hover {
+    @apply shadow-md transform -translate-y-0.5;
+  }
+
   /* Hero button variants */
   .btn-hero {
     @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 border-0;
@@ -159,14 +170,45 @@
     @apply bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-sm;
   }
 
-  /* Card variations */
+  /* Modern card styles */
+  .card {
+    @apply bg-white rounded-2xl p-6 shadow-sm;
+  }
+
   .card-elevated {
-    @apply bg-card border border-border shadow-md hover:shadow-lg transition-all duration-300;
+    @apply bg-card border border-border shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl;
   }
 
   .card-gradient {
     background: var(--gradient-card);
-    @apply border border-border shadow-sm;
+    @apply border border-border shadow-sm rounded-2xl;
+  }
+
+  /* Modern input styles */
+  input, select, textarea {
+    @apply rounded-xl border border-input px-3 py-2 text-base bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  }
+
+  /* Modern headings */
+  h1, h2, h3, h4 {
+    @apply font-bold text-foreground;
+  }
+
+  h1 { @apply text-2xl mb-4; }
+  h2 { @apply text-xl mb-3; }
+  h3 { @apply text-lg mb-2; }
+
+  /* Utility classes */
+  .text-muted {
+    @apply text-muted-foreground;
+  }
+  
+  .bg-soft {
+    @apply bg-muted;
+  }
+  
+  .shadow-subtle {
+    @apply shadow-sm;
   }
 
   /* Status badges */
