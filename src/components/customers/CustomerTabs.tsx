@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerNotesPanel } from './CustomerNotesPanel';
+import { CustomerContactsTab } from './CustomerContactsTab';
 
 interface Customer {
   id: string;
@@ -48,10 +50,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       </TabsContent>
 
       <TabsContent value="contacts" className="mt-6">
-        <div className="bg-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Customer Contacts</h3>
-          <p className="text-muted-foreground">Contact management coming soon...</p>
-        </div>
+        <CustomerContactsTab customerId={customer.id} />
       </TabsContent>
 
       <TabsContent value="locations" className="mt-6">
