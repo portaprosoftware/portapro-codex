@@ -23,7 +23,7 @@ export function useJobNotes(jobId: string) {
   return useQuery({
     queryKey: ['job-notes', jobId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .rpc('get_job_notes', { job_uuid: jobId });
 
       if (error) throw error;
@@ -53,7 +53,7 @@ export function useAddJobNote() {
         return null;
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .rpc('add_job_note', {
           job_uuid: data.jobId,
           driver_uuid: data.driverId,

@@ -127,7 +127,7 @@ export function useOfflineSync() {
         break;
         
       case 'notes':
-        await supabase
+        await (supabase as any)
           .rpc('add_job_note', {
             job_uuid: action.jobId,
             driver_uuid: action.data.driverId,

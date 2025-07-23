@@ -40,7 +40,7 @@ export function useJobStatusUpdate() {
 
       // Log the status change with location if provided
       if (data.latitude && data.longitude) {
-        await supabase
+        await (supabase as any)
           .rpc('log_job_status_change', {
             job_uuid: data.jobId,
             changed_by_uuid: data.driverId,
