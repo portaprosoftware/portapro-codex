@@ -3338,14 +3338,19 @@ export type Database = {
         Row: {
           barcode: string | null
           base_image: string | null
+          charge_for_product: boolean | null
           created_at: string
+          daily_rate: number | null
           default_price_per_day: number
           description: string | null
+          fixed_price: number | null
           hourly_rate: number | null
           id: string
+          image_url: string | null
           low_stock_threshold: number
           monthly_rate: number | null
           name: string
+          pricing_method: string | null
           stock_in_service: number
           stock_total: number
           track_inventory: boolean
@@ -3356,14 +3361,19 @@ export type Database = {
         Insert: {
           barcode?: string | null
           base_image?: string | null
+          charge_for_product?: boolean | null
           created_at?: string
+          daily_rate?: number | null
           default_price_per_day: number
           description?: string | null
+          fixed_price?: number | null
           hourly_rate?: number | null
           id?: string
+          image_url?: string | null
           low_stock_threshold?: number
           monthly_rate?: number | null
           name: string
+          pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
           track_inventory?: boolean
@@ -3374,14 +3384,19 @@ export type Database = {
         Update: {
           barcode?: string | null
           base_image?: string | null
+          charge_for_product?: boolean | null
           created_at?: string
+          daily_rate?: number | null
           default_price_per_day?: number
           description?: string | null
+          fixed_price?: number | null
           hourly_rate?: number | null
           id?: string
+          image_url?: string | null
           low_stock_threshold?: number
           monthly_rate?: number | null
           name?: string
+          pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
           track_inventory?: boolean

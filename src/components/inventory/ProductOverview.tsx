@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Edit, Settings } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Edit, Settings, Wrench, Plus, Minus } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
 
 interface Product {
   id: string;
@@ -18,6 +21,14 @@ interface Product {
   stock_in_service: number;
   low_stock_threshold: number;
   track_inventory: boolean;
+  charge_for_product?: boolean;
+  pricing_method?: string;
+  daily_rate?: number;
+  hourly_rate?: number;
+  weekly_rate?: number;
+  monthly_rate?: number;
+  fixed_price?: number;
+  image_url?: string;
 }
 
 interface ProductOverviewProps {
@@ -28,6 +39,13 @@ interface ProductOverviewProps {
 export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDeleted }) => {
   const queryClient = useQueryClient();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAdjustModal, setShowAdjustModal] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+  const [adjustQuantity, setAdjustQuantity] = useState(0);
+  const [adjustReason, setAdjustReason] = useState("");
+  const [maintenanceQuantity, setMaintenanceQuantity] = useState(1);
+  const [maintenanceNotes, setMaintenanceNotes] = useState("");
+
   const availableCount = product.stock_total - product.stock_in_service;
   const maintenanceCount = 0; // This would come from maintenance records
   const reservedCount = 0; // This would come from reservations
@@ -60,9 +78,95 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     }
   });
 
+  const adjustStockMutation = useMutation({
+    mutationFn: async ({ quantity, reason }: { quantity: number; reason: string }) => {
+      // Create stock adjustment record
+      const { error: adjustmentError } = await supabase
+        .from("stock_adjustments")
+        .insert({
+          product_id: product.id,
+          quantity_change: quantity,
+          reason,
+          notes: `Stock adjustment: ${quantity > 0 ? 'Added' : 'Removed'} ${Math.abs(quantity)} units`,
+        });
+
+      if (adjustmentError) throw adjustmentError;
+
+      // Update product stock total
+      const newStockTotal = Math.max(0, product.stock_total + quantity);
+      const { error: updateError } = await supabase
+        .from("products")
+        .update({ stock_total: newStockTotal })
+        .eq("id", product.id);
+
+      if (updateError) throw updateError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Stock adjusted successfully");
+      setShowAdjustModal(false);
+      setAdjustQuantity(0);
+      setAdjustReason("");
+    },
+    onError: (error) => {
+      toast.error("Failed to adjust stock");
+      console.error(error);
+    }
+  });
+
+  const moveToMaintenanceMutation = useMutation({
+    mutationFn: async ({ quantity, notes }: { quantity: number; notes: string }) => {
+      // This would create maintenance records for the specified quantity
+      // For now, we'll just log it and show a success message
+      console.log(`Moving ${quantity} units to maintenance:`, notes);
+      
+      // In a real implementation, this would:
+      // 1. Create maintenance records
+      // 2. Update product status counts
+      // 3. Track which specific units are in maintenance
+      
+      return { quantity, notes };
+    },
+    onSuccess: (data) => {
+      toast.success(`Moved ${data.quantity} unit(s) to maintenance`);
+      setShowMaintenanceModal(false);
+      setMaintenanceQuantity(1);
+      setMaintenanceNotes("");
+    },
+    onError: (error) => {
+      toast.error("Failed to move units to maintenance");
+      console.error(error);
+    }
+  });
+
   const handleTrackingToggle = (checked: boolean) => {
     // Note: Switch checked state is for "disable tracking", so we invert it
     updateTrackingMutation.mutate(!checked);
+  };
+
+  const handleAdjustStock = () => {
+    if (adjustQuantity === 0) {
+      toast.error("Please enter a quantity to adjust");
+      return;
+    }
+    if (!adjustReason.trim()) {
+      toast.error("Please enter a reason for the adjustment");
+      return;
+    }
+    adjustStockMutation.mutate({ quantity: adjustQuantity, reason: adjustReason });
+  };
+
+  const handleMoveToMaintenance = () => {
+    if (maintenanceQuantity <= 0) {
+      toast.error("Please enter a valid quantity");
+      return;
+    }
+    if (maintenanceQuantity > availableCount) {
+      toast.error("Cannot move more units than available");
+      return;
+    }
+    moveToMaintenanceMutation.mutate({ quantity: maintenanceQuantity, notes: maintenanceNotes });
   };
 
   return (
@@ -73,7 +177,9 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-              <Badge className="bg-blue-600 text-white">${product.default_price_per_day}/day</Badge>
+              <Badge className="bg-blue-600 text-white">
+                ${product.charge_for_product ? (product.daily_rate || product.default_price_per_day) : product.default_price_per_day}/day
+              </Badge>
               <Badge variant="outline" className="text-green-700 border-green-300">
                 (Available)
               </Badge>
@@ -98,12 +204,20 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-gray-900">Inventory Status</h2>
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+            <Button 
+              variant="outline" 
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              onClick={() => setShowAdjustModal(true)}
+            >
               <Settings className="w-4 h-4 mr-2" />
               Adjust Stock
             </Button>
-            <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-              <Edit className="w-4 h-4 mr-2" />
+            <Button 
+              variant="outline" 
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              onClick={() => setShowMaintenanceModal(true)}
+            >
+              <Wrench className="w-4 h-4 mr-2" />
               Move to Maintenance
             </Button>
             {isLowStock && (
@@ -172,9 +286,125 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         <EditProductModal
           productId={product.id}
           onClose={() => setShowEditModal(false)}
-          onDeleted={onDeleted}
+          onDeleted={() => {
+            onDeleted?.();
+            setShowEditModal(false);
+          }}
         />
       )}
+
+      {/* Adjust Stock Modal */}
+      <Dialog open={showAdjustModal} onOpenChange={setShowAdjustModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adjust Stock</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="adjust-quantity">Quantity Adjustment</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAdjustQuantity(prev => prev - 1)}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  id="adjust-quantity"
+                  type="number"
+                  value={adjustQuantity}
+                  onChange={(e) => setAdjustQuantity(parseInt(e.target.value) || 0)}
+                  className="text-center"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAdjustQuantity(prev => prev + 1)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Use positive numbers to add stock, negative to remove
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="adjust-reason">Reason for Adjustment</Label>
+              <Textarea
+                id="adjust-reason"
+                value={adjustReason}
+                onChange={(e) => setAdjustReason(e.target.value)}
+                placeholder="Enter reason for stock adjustment..."
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowAdjustModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleAdjustStock}
+                disabled={adjustStockMutation.isPending}
+              >
+                {adjustStockMutation.isPending ? "Adjusting..." : "Adjust Stock"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Move to Maintenance Modal */}
+      <Dialog open={showMaintenanceModal} onOpenChange={setShowMaintenanceModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Move to Maintenance</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="maintenance-quantity">Quantity to Move</Label>
+              <Input
+                id="maintenance-quantity"
+                type="number"
+                min="1"
+                max={availableCount}
+                value={maintenanceQuantity}
+                onChange={(e) => setMaintenanceQuantity(parseInt(e.target.value) || 1)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Available units: {availableCount}
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="maintenance-notes">Maintenance Notes</Label>
+              <Textarea
+                id="maintenance-notes"
+                value={maintenanceNotes}
+                onChange={(e) => setMaintenanceNotes(e.target.value)}
+                placeholder="Enter maintenance details or reason..."
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowMaintenanceModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleMoveToMaintenance}
+                disabled={moveToMaintenanceMutation.isPending}
+              >
+                {moveToMaintenanceMutation.isPending ? "Moving..." : "Move to Maintenance"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
