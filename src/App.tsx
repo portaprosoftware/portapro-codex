@@ -24,22 +24,42 @@ import FleetComplianceReportsPage from './pages/FleetComplianceReportsPage';
 import FleetFuel from './pages/FleetFuel';
 import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
+import { DriverLayout } from './components/driver/DriverLayout';
+import { DriverDashboardPage } from './pages/DriverDashboardPage';
+import { DriverMapPage } from './pages/DriverMapPage';
+import { DriverSchedulePage } from './pages/DriverSchedulePage';
+import { DriverProfilePage } from './pages/DriverProfilePage';
 
 const App = () => {
   return (
     <Router>
       <div className="min-h-screen bg-background font-sans antialiased">
         <Routes>
-            <Route
-              path="/"
-              element={
-                <SignedIn>
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                </SignedIn>
-              }
-            />
+          {/* Driver routes */}
+          <Route
+            path="/driver"
+            element={
+              <SignedIn>
+                <DriverLayout />
+              </SignedIn>
+            }
+          >
+            <Route index element={<DriverDashboardPage />} />
+            <Route path="map" element={<DriverMapPage />} />
+            <Route path="schedule" element={<DriverSchedulePage />} />
+            <Route path="profile" element={<DriverProfilePage />} />
+          </Route>
+
+          <Route
+            path="/"
+            element={
+              <SignedIn>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </SignedIn>
+            }
+          />
             <Route
               path="/jobs"
               element={
