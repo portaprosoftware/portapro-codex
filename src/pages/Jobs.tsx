@@ -1,19 +1,19 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, Filter, AlertTriangle, User, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { JobCreationWizard } from '@/components/jobs/JobCreationWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
+import { FiltersFlyout } from '@/components/jobs/FiltersFlyout';
+import { DateNavigator } from '@/components/jobs/DateNavigator';
 import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -173,184 +173,128 @@ const JobsPage: React.FC = () => {
           </TabNav.Item>
         </TabNav>
 
-        {/* Create Job Button - Only show in Calendar view */}
+        {/* Actions */}
         {activeTab === 'calendar' && (
-          <Button 
-            onClick={() => setIsJobWizardOpen(true)}
-            className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Schedule Job
-          </Button>
+          <div className="flex items-center space-x-3">
+            <FiltersFlyout
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedDriver={selectedDriver}
+              onDriverChange={setSelectedDriver}
+              selectedJobType={selectedJobType}
+              onJobTypeChange={setSelectedJobType}
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
+              drivers={drivers}
+            />
+            <Button 
+              onClick={() => setIsJobWizardOpen(true)}
+              className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Schedule Job
+            </Button>
+          </div>
         )}
       </div>
 
       {activeTab === 'calendar' && (
         <div className="space-y-6">
-          {/* Filters */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input 
-                  placeholder="Search jobs..." 
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+          {/* Enhanced Calendar Header */}
+          <div className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-8">
+                <div className="flex items-center space-x-4">
+                  <h3 className="text-xl font-bold">Going Out</h3>
+                  <DateNavigator
+                    date={selectedDateOut}
+                    onDateChange={setSelectedDateOut}
+                    label="Going Out"
+                  />
+                </div>
               </div>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-4 gap-4">
-              <select 
-                className="rounded-md border border-gray-300 p-2 text-sm"
-                value={selectedDriver}
-                onChange={(e) => setSelectedDriver(e.target.value)}
-              >
-                <option value="all">All Drivers</option>
-                {drivers.map(driver => (
-                  <option key={driver.id} value={driver.id}>
-                    {driver.first_name} {driver.last_name}
-                  </option>
-                ))}
-              </select>
               
-              <select 
-                className="rounded-md border border-gray-300 p-2 text-sm"
-                value={selectedJobType}
-                onChange={(e) => setSelectedJobType(e.target.value)}
-              >
-                <option value="all">All Job Types</option>
-                <option value="delivery">Delivery</option>
-                <option value="pickup">Pickup</option>
-                <option value="service">Service</option>
-              </select>
-              
-              <select 
-                className="rounded-md border border-gray-300 p-2 text-sm"
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-              >
-                <option value="all">All Statuses</option>
-                <option value="assigned">Assigned</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
+              <div className="flex items-center space-x-4">
+                <DateNavigator
+                  date={selectedDateBack}
+                  onDateChange={setSelectedDateBack}
+                  label="Coming Back"
+                />
+                <h3 className="text-xl font-bold">Coming Back</h3>
+              </div>
             </div>
           </div>
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-2 gap-6">
             {/* Going Out Column */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white p-4 rounded-t-lg">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Going Out</h3>
-                  <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-white hover:bg-white/20 h-8 w-8"
-                      onClick={() => setSelectedDateOut(subDays(selectedDateOut, 1))}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    
-                    <span className="font-medium px-3">
-                      {format(selectedDateOut, 'MMM d, yyyy')}
-                    </span>
-                    
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-white hover:bg-white/20 h-8 w-8"
-                      onClick={() => setSelectedDateOut(addDays(selectedDateOut, 1))}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div className="p-4 border-b border-gray-100">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full mr-2"></div>
+                    Outgoing Jobs ({filterJobs(outgoingJobs).length})
+                  </h4>
                 </div>
-              </div>
-              
-              <div className="p-4">
-                {filterJobs(outgoingJobs).length > 0 ? (
-                  <div className="space-y-4">
-                    {filterJobs(outgoingJobs).map(job => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        onView={handleJobView}
-                        onStart={handleJobStart}
-                        onStatusUpdate={handleJobStatusUpdate}
-                        onEquipmentAssign={handleEquipmentAssign}
-                        compact
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p>No jobs scheduled for this date</p>
-                  </div>
-                )}
+                
+                <div className="p-4">
+                  {filterJobs(outgoingJobs).length > 0 ? (
+                    <div className="space-y-4">
+                      {filterJobs(outgoingJobs).map(job => (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          onEquipmentAssign={handleEquipmentAssign}
+                          compact
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg font-medium">No jobs scheduled</p>
+                      <p className="text-sm">No outgoing jobs for this date</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Coming Back Column */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white p-4 rounded-t-lg">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Coming Back</h3>
-                  <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-white hover:bg-white/20 h-8 w-8"
-                      onClick={() => setSelectedDateBack(subDays(selectedDateBack, 1))}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    
-                    <span className="font-medium px-3">
-                      {format(selectedDateBack, 'MMM d, yyyy')}
-                    </span>
-                    
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-white hover:bg-white/20 h-8 w-8"
-                      onClick={() => setSelectedDateBack(addDays(selectedDateBack, 1))}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div className="p-4 border-b border-gray-100">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mr-2"></div>
+                    Incoming Jobs ({incomingJobs.length})
+                  </h4>
                 </div>
-              </div>
-              
-              <div className="p-4">
-                {incomingJobs.length > 0 ? (
-                  <div className="space-y-4">
-                    {incomingJobs.map(job => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        onView={handleJobView}
-                        onStart={handleJobStart}
-                        onStatusUpdate={handleJobStatusUpdate}
-                        compact
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p>No pickups scheduled for this date</p>
-                  </div>
-                )}
+                
+                <div className="p-4">
+                  {incomingJobs.length > 0 ? (
+                    <div className="space-y-4">
+                      {incomingJobs.map(job => (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          compact
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg font-medium">No pickups scheduled</p>
+                      <p className="text-sm">No incoming jobs for this date</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -400,28 +344,11 @@ const JobsPage: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-4">
-                  {/* Date Navigation */}
-                  <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => setDispatchDate(subDays(dispatchDate, 1))}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    
-                    <div className="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium">
-                      {format(dispatchDate, 'MMMM do, yyyy')}
-                    </div>
-                    
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => setDispatchDate(addDays(dispatchDate, 1))}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <DateNavigator
+                    date={dispatchDate}
+                    onDateChange={setDispatchDate}
+                    label="Dispatch Date"
+                  />
                 </div>
               </div>
             </div>

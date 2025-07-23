@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package } from 'lucide-react';
+import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -41,18 +41,47 @@ interface JobCardProps {
   compact?: boolean;
 }
 
-const statusColors = {
-  assigned: 'bg-[#3366FF] text-white',
-  in_progress: 'bg-[#FF9933] text-white',
-  completed: 'bg-[#33CC66] text-white',
-  cancelled: 'bg-red-500 text-white',
-  pending: 'bg-yellow-500 text-white'
+const jobTypeConfig = {
+  delivery: {
+    color: 'bg-emerald-500',
+    lightColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700',
+    borderColor: 'border-emerald-500',
+    icon: Truck,
+    label: 'Delivery'
+  },
+  pickup: {
+    color: 'bg-blue-500',
+    lightColor: 'bg-blue-50',
+    textColor: 'text-blue-700',
+    borderColor: 'border-blue-500',
+    icon: Package,
+    label: 'Pickup'
+  },
+  service: {
+    color: 'bg-orange-500',
+    lightColor: 'bg-orange-50',
+    textColor: 'text-orange-700',
+    borderColor: 'border-orange-500',
+    icon: Settings,
+    label: 'Service'
+  },
+  return: {
+    color: 'bg-purple-500',
+    lightColor: 'bg-purple-50',
+    textColor: 'text-purple-700',
+    borderColor: 'border-purple-500',
+    icon: RotateCcw,
+    label: 'Return'
+  }
 };
 
-const jobTypeColors = {
-  delivery: 'text-blue-600',
-  pickup: 'text-green-600',
-  service: 'text-orange-600'
+const statusConfig = {
+  assigned: { color: 'bg-blue-500', label: 'Assigned' },
+  in_progress: { color: 'bg-orange-500', label: 'In Progress' },
+  completed: { color: 'bg-green-500', label: 'Completed' },
+  cancelled: { color: 'bg-red-500', label: 'Cancelled' },
+  pending: { color: 'bg-yellow-500', label: 'Pending' }
 };
 
 export const JobCard: React.FC<JobCardProps> = ({
@@ -63,6 +92,10 @@ export const JobCard: React.FC<JobCardProps> = ({
   onEquipmentAssign,
   compact = false
 }) => {
+  const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
+  const statusInfo = statusConfig[job.status as keyof typeof statusConfig] || statusConfig.pending;
+  const JobTypeIcon = jobTypeInfo.icon;
+
   const handleViewJob = () => {
     onView?.(job.id);
   };
@@ -75,44 +108,36 @@ export const JobCard: React.FC<JobCardProps> = ({
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      assigned: 'Assigned',
-      in_progress: 'In Progress',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
-      pending: 'Pending'
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-
-  const getJobTypeLabel = (type: string) => {
-    const labels = {
-      delivery: 'Delivery',
-      pickup: 'Pickup',
-      service: 'Service'
-    };
-    return labels[type as keyof typeof labels] || type;
-  };
-
   if (compact) {
     return (
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 border-l-4 border-l-transparent hover:border-l-blue-500 bg-gradient-to-b from-[#F6F9FF] to-white">
         <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex items-center space-x-2">
-              <span className="font-semibold text-sm">{job.job_number}</span>
-              <Badge className={cn("text-xs", statusColors[job.status as keyof typeof statusColors] || 'bg-gray-500 text-white')}>
-                {getStatusLabel(job.status)}
-              </Badge>
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center space-x-3">
+              <div className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
+                jobTypeInfo.color
+              )}>
+                <JobTypeIcon className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold text-sm text-gray-900">{job.job_number}</span>
+                  <span className="text-xs text-gray-500">•</span>
+                  <span className="font-semibold text-sm text-gray-900 truncate">{job.customers.name}</span>
+                </div>
+                <div className={cn("text-xs font-medium", jobTypeInfo.textColor)}>
+                  {jobTypeInfo.label}
+                </div>
+              </div>
             </div>
-            <span className={cn("text-xs font-medium", jobTypeColors[job.job_type as keyof typeof jobTypeColors] || 'text-gray-600')}>
-              {getJobTypeLabel(job.job_type)}
-            </span>
+            
+            <Badge className={cn("text-white text-xs", statusInfo.color)}>
+              {statusInfo.label}
+            </Badge>
           </div>
           
           <div className="space-y-1 mb-3">
-            <p className="font-medium text-sm text-gray-900">{job.customers.name}</p>
             <div className="flex items-center text-xs text-gray-600">
               <Clock className="w-3 h-3 mr-1" />
               {format(new Date(job.scheduled_date), 'MMM d')}
@@ -134,7 +159,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             <Button 
               size="sm" 
               onClick={handleStartJob}
-              className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white text-xs"
+              className="flex-1 bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white text-xs"
             >
               <Play className="w-3 h-3 mr-1" />
               {job.status === 'assigned' ? 'Start' : 'View'}
@@ -146,24 +171,32 @@ export const JobCard: React.FC<JobCardProps> = ({
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 border-l-4 border-l-transparent hover:border-l-blue-500 bg-gradient-to-b from-[#F6F9FF] to-white">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{job.job_number}</CardTitle>
-          <div className="flex items-center space-x-2">
-            <Badge className={cn("text-xs", statusColors[job.status as keyof typeof statusColors] || 'bg-gray-500 text-white')}>
-              {getStatusLabel(job.status)}
-            </Badge>
-            <span className={cn("text-sm font-medium", jobTypeColors[job.job_type as keyof typeof jobTypeColors] || 'text-gray-600')}>
-              {getJobTypeLabel(job.job_type)}
-            </span>
+          <div className="flex items-center space-x-3">
+            <div className={cn(
+              "w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
+              jobTypeInfo.color
+            )}>
+              <JobTypeIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-bold">{job.job_number}</CardTitle>
+              <span className={cn("text-sm font-medium", jobTypeInfo.textColor)}>
+                {jobTypeInfo.label}
+              </span>
+            </div>
           </div>
+          <Badge className={cn("text-white", statusInfo.color)}>
+            {statusInfo.label}
+          </Badge>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-4">
         <div>
-          <h4 className="font-medium text-gray-900 mb-2">{job.customers.name}</h4>
+          <h4 className="font-semibold text-gray-900 mb-2">{job.customers.name}</h4>
           {job.customers.service_street && (
             <div className="flex items-start text-sm text-gray-600">
               <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
@@ -231,7 +264,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           <Button 
             size="sm" 
             onClick={handleStartJob}
-            className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
+            className="flex-1 bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white"
           >
             <Play className="w-4 h-4 mr-2" />
             {job.status === 'assigned' ? 'Start Job' : 'Continue'}
