@@ -143,7 +143,7 @@ const JobsMapView: React.FC = () => {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       center: [-79.9959, 40.4406],
       zoom: 10
     });
