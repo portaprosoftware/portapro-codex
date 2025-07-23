@@ -13,6 +13,7 @@ import FleetManagement from './pages/FleetManagement';
 import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -118,6 +119,14 @@ const App = () => {
                   </Layout>
                 </SignedIn>
               } 
+            />
+            <Route
+              path="/settings"
+              element={
+                <SignedIn>
+                  <Settings />
+                </SignedIn>
+              }
             />
             <Route
               path="*"
