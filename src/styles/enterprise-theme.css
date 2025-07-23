@@ -22,7 +22,7 @@
   --font-family:        "Inter", sans-serif;
   --font-size-base:     14px;
   --font-size-lg:       16px;
-  --font-weight-normal: 500;
+  --font-weight-normal: 600;
   --font-weight-bold:   600;
   
   /* Spacing */
@@ -70,7 +70,7 @@ h1, h2, h3, h4 {
   color: #09090B;
   font-size: 14px;
   font-family: Inter, system-ui, -apple-system, sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   transition: background .2s;
 }
@@ -80,7 +80,7 @@ h1, h2, h3, h4 {
 .nav-item-active {
   background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end)) !important;
   color: #FFFFFF !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   height: 32px;
   padding: 8px 12px;
   border-radius: 6px;
@@ -250,6 +250,44 @@ input:focus, select:focus, textarea:focus {
 }
 .map-btn:hover {
   background: var(--color-hover);
+}
+
+/*────────────────────────────────────────
+  Badges & Pills
+────────────────────────────────────────*/
+.badge, .badge-gradient {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: inline-block;
+  border: none;
+}
+
+/* Gradient Badge Variants */
+.badge-purple {
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
+}
+
+.badge-green {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.badge-blue {
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+}
+
+.badge-orange {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+}
+
+.badge-red {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.badge-primary {
+  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end));
 }
 
 /*────────────────────────────────────────
