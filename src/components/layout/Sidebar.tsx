@@ -69,9 +69,9 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col z-50">
+    <div className="fixed left-0 top-0 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col z-50">
       {/* Logo Section */}
-      <div className="p-6 border-b border-gray-200 flex-shrink-0">
+      <div className="p-6 flex-shrink-0">
         <Logo showText={true} className="justify-start" />
       </div>
 
@@ -91,7 +91,7 @@ const Sidebar = () => {
                     `flex items-center px-3 py-2 rounded-lg text-sm font-medium font-inter transition-colors ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                        : 'hover:bg-gray-50'
+                        : 'hover:bg-gray-100'
                     }`
                   }
                   style={({ isActive }) => ({

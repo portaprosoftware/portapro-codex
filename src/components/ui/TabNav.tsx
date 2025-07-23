@@ -38,7 +38,7 @@ export const TabNav: React.FC<TabNavProps> & { Item: typeof TabNavItem } = ({
   children 
 }) => {
   return (
-    <nav aria-label={ariaLabel} className="flex items-center space-x-1 bg-gray-50 p-1 rounded-full">
+    <nav aria-label={ariaLabel} className="flex items-center space-x-1">
       {children}
     </nav>
   );
