@@ -68,33 +68,80 @@ const Sidebar = () => {
     }
   };
 
+  const navItemStyle = (isActive: boolean) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: '12px 16px',
+    margin: '2px 8px',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: isActive ? '600' : '500',
+    fontFamily: 'Inter, sans-serif',
+    transition: 'all 0.2s ease',
+    background: isActive ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'transparent',
+    color: isActive ? '#ffffff' : '#09090B',
+  });
+
+  const navItemHoverStyle = {
+    backgroundColor: '#f1f5f9',
+  };
+
   return (
-    <div className="sidebar fixed left-0 top-0 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col z-50">
+    <div style={{ 
+      position: 'fixed', 
+      left: 0, 
+      top: 0, 
+      height: '100vh', 
+      width: '256px', 
+      backgroundColor: '#f9fafb', 
+      borderRight: '1px solid #e5e7eb', 
+      display: 'flex', 
+      flexDirection: 'column' as const,
+      zIndex: 50 
+    }}>
       {/* Logo Section */}
-      <div className="p-6 flex-shrink-0 w-full">
+      <div style={{ padding: '24px', flexShrink: 0, width: '100%' }}>
         <Logo showText={true} className="w-full" />
       </div>
 
       {/* Navigation Section */}
-      <div className="flex-1 overflow-y-auto py-4">
-        <div className="px-6 mb-4">
-          <h3 className="text-sm font-semibold font-inter" style={{ color: '#09090B' }}>Navigation</h3>
+      <div style={{ flex: 1, overflowY: 'auto' as const, paddingTop: '16px' }}>
+        <div style={{ paddingLeft: '24px', paddingRight: '24px', marginBottom: '16px' }}>
+          <h3 style={{ 
+            fontSize: '14px', 
+            fontWeight: '600', 
+            fontFamily: 'Inter, sans-serif',
+            color: '#09090B' 
+          }}>
+            Navigation
+          </h3>
         </div>
         
-        <nav className="sidebar-nav px-3">
-          <ul className="space-y-1">
+        <nav style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
             {menuItems.map((item, index) => (
               <li key={index}>
                 <NavLink
                   to={item.path}
-                  className={({ isActive }) =>
-                    `nav-item ${isActive ? 'active' : ''}`
-                  }
-                  style={({ isActive }) => ({
-                    color: isActive ? '#ffffff' : '#09090B'
-                  })}
+                  style={({ isActive }) => navItemStyle(isActive)}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.style.background.includes('linear-gradient')) {
+                      Object.assign(e.currentTarget.style, navItemHoverStyle);
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.style.background.includes('linear-gradient')) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
-                  <item.icon className="w-5 h-5" />
+                  <item.icon style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    marginRight: '12px',
+                    flexShrink: 0 
+                  }} />
                   {item.label}
                 </NavLink>
               </li>
