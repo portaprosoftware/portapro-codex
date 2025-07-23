@@ -1,24 +1,38 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { format } from 'date-fns';
-import { MoreHorizontal, Eye, Download, Edit, Trash2, Send, CreditCard } from 'lucide-react';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Eye, Plus, Mail, FileText, MoreHorizontal, Download, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
+import { InvoiceExportModal } from "./InvoiceExportModal";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface InvoicesTableProps {
   searchTerm: string;
 }
 
-export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
+export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
+  const [showCreateInvoice, setShowCreateInvoice] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const queryClient = useQueryClient();
+
   const { data: invoices = [], isLoading, error } = useQuery({
     queryKey: ['invoices', searchTerm],
     queryFn: async () => {
       let query = supabase
         .from('invoices')
-        .select('*')
+        .select(`
+          *,
+          customers:customer_id (
+            name,
+            email
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
@@ -115,7 +129,7 @@ export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
             invoices.map((invoice: any) => {
               const dueSoon = isDueSoon(invoice.due_date, invoice.status);
               const overdue = isOverdue(invoice.due_date, invoice.status);
-
+      
               return (
                 <TableRow 
                   key={invoice.id} 
@@ -128,7 +142,7 @@ export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
                     {invoice.invoice_number}
                   </TableCell>
                   <TableCell className="font-medium text-foreground">
-                    Customer #{invoice.customer_id.substring(0, 8)}
+                    {(invoice.customers as any)?.name || 'Unknown Customer'}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(invoice.created_at)}
@@ -165,30 +179,26 @@ export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedInvoice(invoice);
+                          setShowExportModal(true);
+                        }}>
                           <Download className="mr-2 h-4 w-4" />
-                          Download PDF
+                          Export PDF
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedInvoice(invoice);
+                          setShowExportModal(true);
+                        }}>
+                          <Mail className="mr-2 h-4 w-4" />
+                          Send Email
                         </DropdownMenuItem>
                         {invoice.status === 'unpaid' && (
-                          <>
-                            <DropdownMenuItem>
-                              <Send className="mr-2 h-4 w-4" />
-                              Send Invoice
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-blue-600 focus:text-blue-600">
-                              <CreditCard className="mr-2 h-4 w-4" />
-                              Collect Payment
-                            </DropdownMenuItem>
-                          </>
+                          <DropdownMenuItem className="text-blue-600 focus:text-blue-600">
+                            <CreditCard className="mr-2 h-4 w-4" />
+                            Collect Payment
+                          </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -198,6 +208,24 @@ export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
           )}
         </TableBody>
       </Table>
+      
+      {showCreateInvoice && (
+        <InvoiceCreationWizard
+          isOpen={showCreateInvoice}
+          onClose={() => setShowCreateInvoice(false)}
+        />
+      )}
+      
+      {selectedInvoice && (
+        <InvoiceExportModal
+          isOpen={showExportModal}
+          onClose={() => {
+            setShowExportModal(false);
+            setSelectedInvoice(null);
+          }}
+          invoice={selectedInvoice}
+        />
+      )}
     </div>
   );
-}
+};

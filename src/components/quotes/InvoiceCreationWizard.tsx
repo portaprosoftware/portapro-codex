@@ -83,11 +83,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data as Array<{
-        id: string;
-        name: string;
-        default_price_per_day: number;
-      }>;
+      return data || [];
     }
   });
 
@@ -101,13 +97,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data as Array<{
-        id: string;
-        name: string;
-        per_visit_cost: number;
-        per_hour_cost: number;
-        flat_rate_cost: number;
-      }>;
+      return data || [];
     }
   });
 

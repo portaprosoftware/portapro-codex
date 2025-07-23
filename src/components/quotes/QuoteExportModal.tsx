@@ -1,107 +1,187 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { FileText, File, FileSpreadsheet } from 'lucide-react';
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Download, Mail, FileText, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QuoteExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isQuickBooks?: boolean;
+  quote: {
+    id: string;
+    quote_number: string;
+    customers?: {
+      name: string;
+      email: string;
+    };
+  };
 }
 
-export const QuoteExportModal: React.FC<QuoteExportModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  isQuickBooks = false 
-}) => {
-  const [format, setFormat] = useState(isQuickBooks ? 'iif' : 'csv');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+export const QuoteExportModal = ({ isOpen, onClose, quote }: QuoteExportModalProps) => {
+  const [action, setAction] = useState<'generate_pdf' | 'send_email' | 'both'>('generate_pdf');
+  const [recipientEmail, setRecipientEmail] = useState(quote.customers?.email || '');
+  const [recipientName, setRecipientName] = useState(quote.customers?.name || '');
+  const [subject, setSubject] = useState(`Quote ${quote.quote_number} from PortaPro`);
+  const [message, setMessage] = useState(`Dear ${quote.customers?.name || 'Customer'},
 
-  const handleExport = () => {
-    console.log('Exporting quotes:', { format, startDate, endDate });
-    onClose();
+Please find attached your quote from PortaPro. We appreciate your business and look forward to serving you.
+
+If you have any questions, please don't hesitate to contact us.
+
+Best regards,
+PortaPro Team`);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleExport = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-pdf-and-email', {
+        body: {
+          type: 'quote',
+          id: quote.id,
+          action,
+          recipient_email: recipientEmail,
+          recipient_name: recipientName,
+          subject,
+          message
+        }
+      });
+
+      if (error) throw error;
+
+      if (action === 'generate_pdf') {
+        toast.success('PDF generated successfully!');
+      } else if (action === 'send_email') {
+        toast.success('Quote emailed successfully!');
+      } else {
+        toast.success('PDF generated and quote emailed successfully!');
+      }
+
+      onClose();
+    } catch (error: any) {
+      console.error('Export error:', error);
+      toast.error(error.message || 'Failed to process quote export');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold text-foreground">
-            {isQuickBooks ? 'Export Quotes to QuickBooks' : 'Export Quotes'}
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Export Quote {quote.quote_number}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
-          {/* Format Selection */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-foreground">Export Format</Label>
-            <RadioGroup value={format} onValueChange={setFormat}>
-              <div className="flex items-center space-x-3">
-                <RadioGroupItem value="csv" id="csv" />
-                <FileText className="h-5 w-5 text-green-600" />
-                <Label htmlFor="csv" className="text-sm text-foreground cursor-pointer">
-                  CSV – Compatible with Excel and most spreadsheet applications
+          <div>
+            <Label className="text-base font-medium">Export Action</Label>
+            <RadioGroup value={action} onValueChange={setAction as any} className="mt-2">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="generate_pdf" id="generate_pdf" />
+                <Label htmlFor="generate_pdf" className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Generate PDF only
                 </Label>
               </div>
-              <div className="flex items-center space-x-3">
-                <RadioGroupItem value="iif" id="iif" />
-                <File className="h-5 w-5 text-blue-800" />
-                <Label htmlFor="iif" className="text-sm text-foreground cursor-pointer">
-                  IIF (QuickBooks Import Format)
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="send_email" id="send_email" />
+                <Label htmlFor="send_email" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Send email only
                 </Label>
               </div>
-              <div className="flex items-center space-x-3">
-                <RadioGroupItem value="excel" id="excel" />
-                <FileSpreadsheet className="h-5 w-5 text-orange-600" />
-                <Label htmlFor="excel" className="text-sm text-foreground cursor-pointer">
-                  Excel (.xlsx)
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="both" id="both" />
+                <Label htmlFor="both" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Generate PDF and send email
                 </Label>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Date Range */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium text-foreground">Date Range (Optional)</Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                type="date"
-                placeholder="Start date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="border-border"
-              />
-              <Input
-                type="date"
-                placeholder="End date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="border-border"
-              />
+          {(action === 'send_email' || action === 'both') && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="recipientName">Recipient Name</Label>
+                  <Input
+                    id="recipientName"
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    placeholder="Customer name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="recipientEmail">Recipient Email</Label>
+                  <Input
+                    id="recipientEmail"
+                    type="email"
+                    value={recipientEmail}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                    placeholder="customer@email.com"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="subject">Email Subject</Label>
+                <Input
+                  id="subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Quote subject line"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="message">Email Message</Label>
+                <Textarea
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Your email message..."
+                  rows={6}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Summary */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <p className="text-sm text-blue-800">
-              Total quotes: 9 • Total value: $58,469.00 • Date range: All time
-            </p>
-          </div>
-
-          {/* Actions */}
           <div className="flex justify-end space-x-3">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button 
-              onClick={handleExport}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleExport} 
+              disabled={isLoading || (action !== 'generate_pdf' && !recipientEmail)}
+              className="min-w-[120px]"
             >
-              {isQuickBooks ? 'Export Quotes' : `Export ${format.toUpperCase()}`}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  {action === 'generate_pdf' && <Download className="mr-2 h-4 w-4" />}
+                  {action === 'send_email' && <Mail className="mr-2 h-4 w-4" />}
+                  {action === 'both' && <FileText className="mr-2 h-4 w-4" />}
+                  {action === 'generate_pdf' && 'Generate PDF'}
+                  {action === 'send_email' && 'Send Email'}
+                  {action === 'both' && 'Export & Email'}
+                </>
+              )}
             </Button>
           </div>
         </div>

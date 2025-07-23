@@ -1,29 +1,29 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Eye, Plus, Mail, FileText, MoreHorizontal, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { QuoteCreationWizard } from "./QuoteCreationWizard";
+import { QuoteExportModal } from "./QuoteExportModal";
+import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface QuotesTableProps {
   searchTerm: string;
 }
 
-export const QuotesTable: React.FC<QuotesTableProps> = ({ searchTerm }) => {
+export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
+  const [showCreateQuote, setShowCreateQuote] = useState(false);
+  const [showCreateInvoice, setShowCreateInvoice] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<any>(null);
+  const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
+  const queryClient = useQueryClient();
+
   const { data: quotes, isLoading } = useQuery({
     queryKey: ['quotes', searchTerm],
     queryFn: async () => {
@@ -45,6 +45,24 @@ export const QuotesTable: React.FC<QuotesTableProps> = ({ searchTerm }) => {
       const { data, error } = await query;
       if (error) throw error;
       return data;
+    }
+  });
+
+  const createInvoiceFromQuote = useMutation({
+    mutationFn: async (quoteId: string) => {
+      const { data, error } = await supabase.rpc('generate_invoice_from_quote', {
+        quote_uuid: quoteId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Invoice created successfully from quote!");
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      setSelectedQuoteForInvoice(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create invoice from quote");
     }
   });
 
@@ -136,12 +154,33 @@ export const QuotesTable: React.FC<QuotesTableProps> = ({ searchTerm }) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View</DropdownMenuItem>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>Send</DropdownMenuItem>
-                    <DropdownMenuItem>Convert to Jobs</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      setSelectedQuote(quote);
+                      setShowExportModal(true);
+                    }}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export PDF
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      setSelectedQuote(quote);
+                      setShowExportModal(true);
+                    }}>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Send Email
+                    </DropdownMenuItem>
+                    {quote.status === 'accepted' && (
+                      <DropdownMenuItem 
+                        onClick={() => createInvoiceFromQuote.mutate(quote.id)}
+                        disabled={createInvoiceFromQuote.isPending}
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Convert to Invoice
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -154,6 +193,35 @@ export const QuotesTable: React.FC<QuotesTableProps> = ({ searchTerm }) => {
         <div className="flex items-center justify-center h-32">
           <p className="text-muted-foreground">No quotes found</p>
         </div>
+      )}
+
+      {showCreateQuote && (
+        <QuoteCreationWizard
+          isOpen={showCreateQuote}
+          onClose={() => setShowCreateQuote(false)}
+        />
+      )}
+
+      {selectedQuoteForInvoice && (
+        <InvoiceCreationWizard
+          isOpen={showCreateInvoice}
+          onClose={() => {
+            setShowCreateInvoice(false);
+            setSelectedQuoteForInvoice(null);
+          }}
+          fromQuote={selectedQuoteForInvoice}
+        />
+      )}
+      
+      {selectedQuote && (
+        <QuoteExportModal
+          isOpen={showExportModal}
+          onClose={() => {
+            setShowExportModal(false);
+            setSelectedQuote(null);
+          }}
+          quote={selectedQuote}
+        />
       )}
     </div>
   );
