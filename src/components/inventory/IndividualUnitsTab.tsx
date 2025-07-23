@@ -1,16 +1,19 @@
 
 import React, { useState } from "react";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EditItemModal } from "./EditItemModal";
 import { QRCodeDropdown } from "./QRCodeDropdown";
+import { QRCodeScanner } from "./QRCodeScanner";
+import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { AttributeFilters } from "./AttributeFilters";
 
 interface IndividualUnitsTabProps {
@@ -23,6 +26,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
     size?: string;
@@ -30,7 +35,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     condition?: string;
   }>({});
 
-  const { data: items, isLoading } = useQuery({
+  const { data: items, isLoading, refetch } = useQuery({
     queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters],
     queryFn: async () => {
       let query = supabase
@@ -66,6 +71,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  const { data: product } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("name, stock_total")
+        .eq("id", productId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const toggleRowExpansion = (itemId: string) => {
     setExpandedRows(prev => 
       prev.includes(itemId) 
@@ -91,6 +110,26 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
   const handleClearFilters = () => {
     setAttributeFilters({});
+  };
+
+  const handleScanResult = (result: string) => {
+    console.log("Scanned QR code:", result);
+    setShowScanner(false);
+    
+    // Parse the QR code and find the item
+    try {
+      const data = JSON.parse(result);
+      if (data.type === "inventory_item" && data.itemCode) {
+        setSearchQuery(data.itemCode);
+      }
+    } catch (error) {
+      // If not JSON, treat as direct item code search
+      setSearchQuery(result);
+    }
+  };
+
+  const handleQRUpdate = (itemId: string, qrData: string) => {
+    refetch();
   };
 
   const getStatusBadge = (status: string) => {
@@ -147,9 +186,21 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowScanner(true)}
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+          >
             <QrCode className="w-4 h-4 mr-2" />
             Scan QR
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowStockAdjustment(true)}
+            className="border-gray-600 text-gray-600 hover:bg-gray-50"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Adjust Stock
           </Button>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             <Plus className="w-4 h-4 mr-2" />
@@ -178,7 +229,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
               <TableHead className="font-medium">Status</TableHead>
               <TableHead className="font-medium">Variations</TableHead>
               <TableHead className="font-medium">Condition</TableHead>
-              <TableHead className="w-12"></TableHead>
+              <TableHead className="w-12">QR</TableHead>
               <TableHead className="w-20">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -211,7 +262,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
                   <TableCell className="text-gray-600">{item.condition || "—"}</TableCell>
                   <TableCell>
-                    <QRCodeDropdown itemCode={item.item_code} qrCodeData={item.qr_code_data} />
+                    <QRCodeDropdown 
+                      itemCode={item.item_code} 
+                      itemId={item.id}
+                      qrCodeData={item.qr_code_data}
+                      onQRUpdate={(qrData) => handleQRUpdate(item.id, qrData)}
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
@@ -282,6 +338,40 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           onClose={() => setEditingItem(null)}
         />
       )}
+
+      {/* QR Scanner Dialog */}
+      <Dialog open={showScanner} onOpenChange={setShowScanner}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Scan QR Code</DialogTitle>
+          </DialogHeader>
+          <QRCodeScanner
+            onScan={handleScanResult}
+            onClose={() => setShowScanner(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Stock Adjustment Dialog */}
+      <Dialog open={showStockAdjustment} onOpenChange={setShowStockAdjustment}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adjust Stock</DialogTitle>
+          </DialogHeader>
+          {product && (
+            <StockAdjustmentWizard
+              productId={productId}
+              productName={product.name}
+              currentStock={product.stock_total}
+              onComplete={() => {
+                setShowStockAdjustment(false);
+                refetch();
+              }}
+              onCancel={() => setShowStockAdjustment(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
