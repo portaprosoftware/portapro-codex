@@ -110,10 +110,21 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   if (compact) {
     return (
-      <div className={cn(
-        "enterprise-job-card group cursor-pointer",
-        job.job_type
-      )}>
+      <div 
+        className={cn(
+          "enterprise-job-card group cursor-pointer",
+          job.job_type
+        )}
+        tabIndex={0}
+        role="button"
+        aria-label={`Job ${job.job_number} for ${job.customers.name}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleViewJob();
+          }
+        }}
+      >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div className={cn(
@@ -154,7 +165,13 @@ export const JobCard: React.FC<JobCardProps> = ({
         </div>
         
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1 text-xs">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleViewJob} 
+            className="flex-1 text-xs"
+            aria-label={`View job ${job.job_number}`}
+          >
             <Eye className="w-3 h-3 mr-1" />
             View
           </Button>
@@ -162,6 +179,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             size="sm" 
             onClick={handleStartJob}
             className="flex-1 btn-enterprise text-xs"
+            aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `View job ${job.job_number}`}
           >
             <Play className="w-3 h-3 mr-1" />
             {job.status === 'assigned' ? 'Start' : 'View'}
@@ -172,10 +190,21 @@ export const JobCard: React.FC<JobCardProps> = ({
   }
 
   return (
-    <div className={cn(
-      "enterprise-job-card group cursor-pointer",
-      job.job_type
-    )}>
+    <div 
+      className={cn(
+        "enterprise-job-card group cursor-pointer",
+        job.job_type
+      )}
+      tabIndex={0}
+      role="button"
+      aria-label={`Job ${job.job_number} for ${job.customers.name}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleViewJob();
+        }
+      }}
+    >
       <div className="mb-4">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center space-x-3">
@@ -243,23 +272,45 @@ export const JobCard: React.FC<JobCardProps> = ({
         )}
         
         <div className="flex space-x-2 pt-2">
-          <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleViewJob} 
+            className="flex-1"
+            aria-label={`View details for job ${job.job_number}`}
+          >
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </Button>
           
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            aria-label={`Call customer for job ${job.job_number}`}
+          >
             <Phone className="w-4 h-4 mr-2" />
             Call
           </Button>
           
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1"
+            aria-label={`Message customer for job ${job.job_number}`}
+          >
             <MessageSquare className="w-4 h-4 mr-2" />
             Message
           </Button>
           
           {onEquipmentAssign && (
-            <Button variant="outline" size="sm" onClick={() => onEquipmentAssign(job.id)} className="flex-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => onEquipmentAssign(job.id)} 
+              className="flex-1"
+              aria-label={`Assign equipment to job ${job.job_number}`}
+            >
               <Package className="w-4 h-4 mr-2" />
               Equipment
             </Button>
@@ -269,6 +320,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             size="sm" 
             onClick={handleStartJob}
             className="flex-1 btn-enterprise"
+            aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `Continue job ${job.job_number}`}
           >
             <Play className="w-4 h-4 mr-2" />
             {job.status === 'assigned' ? 'Start Job' : 'Continue'}

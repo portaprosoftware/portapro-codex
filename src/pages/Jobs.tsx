@@ -368,7 +368,7 @@ const JobsPage: React.FC = () => {
                 
                 {/* Driver Columns with Enhanced Spacing */}
                 <div className="enterprise-card-content">
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  <div className="dispatch-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {drivers.slice(0, 3).map(driver => {
                       const driverJobs = getJobsByDriver(driver.id);
                       

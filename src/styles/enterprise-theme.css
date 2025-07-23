@@ -108,19 +108,25 @@
   transform: translateY(0);
 }
 
-/* Enterprise Card System - Phase 3 Enhanced Elevation */
+/* Enterprise Card System - Phase 5 Enhanced Interactions */
 .enterprise-card {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  will-change: transform, box-shadow;
 }
 
 .enterprise-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
   transform: translateY(-2px);
+}
+
+.enterprise-card:focus-within {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
 }
 
 .enterprise-card-header {
@@ -132,20 +138,33 @@
   padding: 16px;
 }
 
-/* Job Card Variants with Border Accents - Phase 3 */
+/* Job Card Variants - Phase 5 Enhanced Micro-interactions */
 .enterprise-job-card {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
   border-left: 4px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 16px;
+  cursor: pointer;
+  will-change: transform, box-shadow, border-color;
+  position: relative;
 }
 
 .enterprise-job-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
   transform: translateY(-2px);
+}
+
+.enterprise-job-card:focus {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.enterprise-job-card:active {
+  transform: translateY(-1px);
+  transition: transform 0.1s ease;
 }
 
 .enterprise-job-card.delivery {
@@ -253,7 +272,7 @@
   background: #f8fafc;
 }
 
-/* Enhanced Tab System - Phase 4 Refined Gradients */
+/* Enhanced Tab System - Phase 5 Refined Interactions */
 .enterprise-tabs {
   display: flex;
   background: #f8fafc;
@@ -261,65 +280,159 @@
   padding: 4px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  will-change: transform;
 }
 
 .enterprise-tabs .tab-nav-item {
   padding: 12px 24px;
   border-radius: 6px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   background: transparent;
   color: #6b7280;
   font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
+  cursor: pointer;
+  position: relative;
 }
 
 .enterprise-tabs .tab-nav-item:hover {
   background: #f3f4f6;
   color: #374151;
+  transform: translateY(-1px);
+}
+
+.enterprise-tabs .tab-nav-item:focus {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+  z-index: 10;
 }
 
 .enterprise-tabs .tab-nav-item.active {
   background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
   color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
-/* Container Styles */
-.container-modern {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 32px;
+/* Phase 6: Responsive Grid System */
+@media (max-width: 1280px) {
+  .dispatch-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-  .nav-item {
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
+  .dispatch-grid {
+    grid-template-columns: 1fr;
   }
   
-  .container-modern {
-    padding: 0 16px;
+  .enterprise-tabs {
+    flex-direction: column;
+    padding: 8px;
+  }
+  
+  .enterprise-tabs .tab-nav-item {
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .enterprise-job-card {
+    padding: 12px;
   }
   
   .enterprise-card-header,
   .enterprise-card-content {
-    padding: 16px;
+    padding: 12px;
   }
-  
-  .enterprise-gradient-header {
-    padding: 24px;
-  }
-  
-  .enterprise-empty-state {
-    padding: 32px 16px;
-  }
-  
-  .enterprise-drop-zone {
-    padding: 24px;
-    min-height: 150px;
-  }
+}
+
+/* Phase 7: Accessibility & Focus Management */
+.enterprise-focus-visible {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.enterprise-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: hsl(var(--primary));
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.enterprise-skip-link:focus {
+  top: 6px;
+}
+
+/* Phase 8: Loading States & Performance */
+.enterprise-skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.enterprise-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.enterprise-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid hsl(var(--primary));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Drop Zone with Visual Feedback */
+.enterprise-drop-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 32px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.enterprise-drop-zone:hover,
+.enterprise-drop-zone.drag-over {
+  border-color: hsl(var(--primary));
+  background: rgba(59, 130, 246, 0.05);
+  transform: scale(1.02);
+}
+
+.enterprise-drop-zone.drag-active {
+  border-color: hsl(var(--primary));
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
 }
