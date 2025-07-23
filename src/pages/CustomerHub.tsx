@@ -154,7 +154,14 @@ const CustomerHub: React.FC = () => {
                   key={customer.id} 
                   className={`transition-colors hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                 >
-                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link 
+                      to={`/customers/${customer.id}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    >
+                      {customer.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] ? (
                       <Badge 

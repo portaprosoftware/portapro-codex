@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, MapPin, ExternalLink, Navigation } from 'lucide-react';
+import { EditCustomerModal } from './EditCustomerModal';
 
 interface Customer {
   id: string;
@@ -15,6 +16,7 @@ interface Customer {
   billing_state?: string;
   billing_zip?: string;
   customer_type?: string;
+  important_information?: string;
   created_at: string;
   updated_at: string;
 }
@@ -24,7 +26,7 @@ interface CustomerInfoPanelProps {
 }
 
 export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const getCustomerTypeColor = (type?: string) => {
     switch (type) {
@@ -77,7 +79,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={() => setShowEditModal(true)}
           >
             <Edit className="w-4 h-4 mr-2" />
             Edit
@@ -185,8 +187,20 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               {new Date(customer.created_at).toLocaleDateString()}
             </span>
           </div>
+          {customer.important_information && (
+            <div className="border-t pt-3 mt-3">
+              <span className="text-sm font-medium text-muted-foreground">Important Information</span>
+              <p className="text-foreground mt-1">{customer.important_information}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      <EditCustomerModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        customer={customer}
+      />
     </div>
   );
 }

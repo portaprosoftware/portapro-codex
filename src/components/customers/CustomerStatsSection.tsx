@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar, DollarSign, FileText, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { KPICard } from '@/components/analytics/KPICard';
+import { StatCard } from '@/components/ui/StatCard';
 
 interface CustomerStatsSectionProps {
   customerId: string;
@@ -71,33 +71,44 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <KPICard
+      <StatCard
         title="Total Job History"
         value={stats?.totalJobs.toString() || '0'}
         icon={Calendar}
-        color="#3B82F6"
+        gradientFrom="#3B82F6"
+        gradientTo="#1D4ED8"
+        iconBg="#3B82F6"
+        delay={0}
       />
       
-      <KPICard
+      <StatCard
         title="Outstanding Balance"
         value={`$${stats?.outstandingBalance.toLocaleString() || '0'}`}
         icon={DollarSign}
-        color="#10B981"
-        change={stats?.outstandingBalance > 0 ? -5 : 0}
+        gradientFrom="#10B981"
+        gradientTo="#059669"
+        iconBg="#10B981"
+        delay={100}
       />
       
-      <KPICard
+      <StatCard
         title="Outstanding Invoices"
         value={stats?.outstandingInvoices.toString() || '0'}
         icon={FileText}
-        color="#F59E0B"
+        gradientFrom="#F59E0B"
+        gradientTo="#D97706"
+        iconBg="#F59E0B"
+        delay={200}
       />
       
-      <KPICard
+      <StatCard
         title="Next Scheduled Job"
         value={formatNextJob()}
         icon={MapPin}
-        color="#8B5CF6"
+        gradientFrom="#8B5CF6"
+        gradientTo="#7C3AED"
+        iconBg="#8B5CF6"
+        delay={300}
       />
     </div>
   );

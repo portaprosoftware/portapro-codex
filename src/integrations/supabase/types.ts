@@ -938,6 +938,7 @@ export type Database = {
           customer_type: Database["public"]["Enums"]["customer_type"] | null
           email: string | null
           id: string
+          important_information: string | null
           logo_url: string | null
           name: string
           notes: string | null
@@ -964,6 +965,7 @@ export type Database = {
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
           email?: string | null
           id?: string
+          important_information?: string | null
           logo_url?: string | null
           name: string
           notes?: string | null
@@ -990,6 +992,7 @@ export type Database = {
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
           email?: string | null
           id?: string
+          important_information?: string | null
           logo_url?: string | null
           name?: string
           notes?: string | null
