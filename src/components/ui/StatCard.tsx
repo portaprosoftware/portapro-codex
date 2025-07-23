@@ -30,7 +30,8 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => {
   return (
     <div className={cn(
-      "bg-white rounded-lg shadow-sm border border-gray-200 p-4 relative overflow-hidden",
+      "bg-white rounded-xl border border-gray-200 p-4 relative overflow-hidden transition-all duration-200 hover:shadow-md mb-6",
+      "hover:shadow-[0_1px_3px_rgba(0,0,0,0.1)]",
       className
     )}>
       {/* Gradient left border */}
@@ -42,35 +43,37 @@ export const StatCard: React.FC<StatCardProps> = ({
       />
       
       {/* Icon container */}
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end mb-3">
         <div 
-          className="w-8 h-8 rounded-md flex items-center justify-center"
-          style={{ backgroundColor: iconBg }}
+          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm"
+          style={{ 
+            background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
+          }}
         >
-          <Icon className="w-4 h-4 text-white" />
+          <Icon className="w-5 h-5 text-white" />
         </div>
       </div>
       
       {/* Value */}
-      <div className="text-3xl font-semibold text-gray-900 mb-1">
+      <div className="text-[32px] font-semibold text-gray-900 leading-none mb-1">
         {value}
       </div>
       
       {/* Title */}
-      <div className="text-sm text-gray-600 mb-2">
+      <div className="text-base font-semibold text-gray-900 mb-2">
         {title}
       </div>
       
       {/* Subtitle */}
       {subtitle && (
-        <div className={cn("text-xs", subtitleColor)}>
+        <div className={cn("text-sm font-normal", subtitleColor)}>
           {subtitle}
         </div>
       )}
       
       {/* Chart */}
       {chart && (
-        <div className="mt-2">
+        <div className="mt-3">
           {chart}
         </div>
       )}

@@ -8,12 +8,12 @@ import { DonutChart } from "@/components/ui/DonutChart";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Package, 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  Truck, 
-  Fuel, 
+  PackageCheck, 
+  UserCheck, 
+  CalendarCheck, 
+  CircleDollarSign, 
+  TruckIcon, 
+  FuelIcon, 
   AlertTriangle, 
   FileWarning 
 } from "lucide-react";
@@ -47,12 +47,12 @@ const Dashboard = () => {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 -mb-6">
           {/* Row 1 */}
           <StatCard
             title="Total Units"
             value="10"
-            icon={Package}
+            icon={PackageCheck}
             gradientFrom="#3366FF"
             gradientTo="#6699FF"
             iconBg="#3366FF"
@@ -61,7 +61,7 @@ const Dashboard = () => {
           <StatCard
             title="Active Customers"
             value="8"
-            icon={Users}
+            icon={UserCheck}
             gradientFrom="#9B51E0"
             gradientTo="#BB66E0"
             iconBg="#9B51E0"
@@ -70,17 +70,17 @@ const Dashboard = () => {
           <StatCard
             title="Jobs Today"
             value="3"
-            icon={Calendar}
+            icon={CalendarCheck}
             gradientFrom="#3366FF"
             gradientTo="#6699FF"
             iconBg="#3366FF"
-            chart={<Sparkline data={jobsSparklineData} color="#33CC66" />}
+            chart={<Sparkline data={jobsSparklineData} color="#3366FF" />}
           />
           
           <StatCard
             title="Monthly Revenue"
             value="$8,400"
-            icon={DollarSign}
+            icon={CircleDollarSign}
             gradientFrom="#33CC66"
             gradientTo="#66DD88"
             iconBg="#33CC66"
@@ -90,17 +90,19 @@ const Dashboard = () => {
           <StatCard
             title="Fleet Vehicles"
             value="8"
-            icon={Truck}
+            icon={TruckIcon}
             gradientFrom="#6666FF"
             gradientTo="#8888FF"
             iconBg="#6666FF"
+            subtitle="9 vehicles active"
+            subtitleColor="text-gray-600"
             chart={<DonutChart active={7} maintenance={1} />}
           />
           
           <StatCard
             title="Fuel Cost"
             value="$1,245"
-            icon={Fuel}
+            icon={FuelIcon}
             gradientFrom="#FFAA33"
             gradientTo="#FFCC55"
             iconBg="#FFAA33"
