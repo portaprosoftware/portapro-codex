@@ -25,7 +25,7 @@ export const InventoryDashboard: React.FC = () => {
       // Get total products and stock
       const { data: products } = await supabase
         .from("products")
-        .select("stock_total, stock_in_service, price, low_stock_threshold");
+        .select("stock_total, stock_in_service, default_price_per_day, low_stock_threshold");
 
       // Get individual items
       const { data: items } = await supabase
@@ -52,7 +52,7 @@ export const InventoryDashboard: React.FC = () => {
       ).length;
       
       const utilizationRate = totalItems > 0 ? (assignedItems / totalItems) * 100 : 0;
-      const totalValue = products.reduce((sum, p) => sum + (p.stock_total * (p.price || 0)), 0);
+      const totalValue = products.reduce((sum, p) => sum + (p.stock_total * (p.default_price_per_day || 0)), 0);
 
       return {
         totalItems,

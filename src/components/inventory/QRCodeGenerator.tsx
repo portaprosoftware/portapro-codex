@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from "react";
-import { QrCode, Download, Print, Copy, Check } from "lucide-react";
+import { QrCode, Download, Printer, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -185,7 +185,7 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
                 onClick={() => window.print()}
                 className="flex-1"
               >
-                <Print className="w-4 h-4 mr-2" />
+                <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
             </div>
