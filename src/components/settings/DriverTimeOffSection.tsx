@@ -32,7 +32,7 @@ export function DriverTimeOffSection({ onBack }: DriverTimeOffSectionProps) {
       }
 
       if (dateFilter) {
-        query = query.gte('start_date', dateFilter);
+        query = query.gte('request_date', dateFilter);
       }
 
       const { data, error } = await query;
@@ -176,10 +176,10 @@ export function DriverTimeOffSection({ onBack }: DriverTimeOffSectionProps) {
                         </span>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(request.start_date).toLocaleDateString()} - {new Date(request.end_date).toLocaleDateString()}
+                        {new Date(request.request_date).toLocaleDateString()} | {request.start_time} - {request.end_time}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Type: {request.request_type} | Reason: {request.reason || 'Not specified'}
+                        Time Slot: {request.time_slot} | Reason: {request.reason || 'Not specified'}
                       </div>
                     </div>
                     

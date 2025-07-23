@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon, Building2, Users, Bell, DollarSign, Clock, UserClock, Calendar } from "lucide-react";
+import { Settings as SettingsIcon, Building2, Users, Bell, DollarSign, Clock, Calendar } from "lucide-react";
 import { SimplifiedSettings } from "@/components/settings/SimplifiedSettings";
 import { DriverWorkingHoursSection } from "@/components/settings/DriverWorkingHoursSection";
 import { DriverTimeOffSection } from "@/components/settings/DriverTimeOffSection";
@@ -48,7 +48,7 @@ export default function Settings() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-                        <UserClock className="w-6 h-6 text-white" />
+                        <Clock className="w-6 h-6 text-white" />
                       </div>
                       <Badge variant="secondary">Active</Badge>
                     </div>

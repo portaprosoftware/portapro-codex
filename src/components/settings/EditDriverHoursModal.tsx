@@ -62,9 +62,12 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      // Initialize schedule with existing data or defaults
-      const existingHours = data.driver_working_hours || [];
+  });
+
+  // Initialize schedule when data loads
+  React.useEffect(() => {
+    if (driver && Array.isArray(driver.driver_working_hours)) {
+      const existingHours = driver.driver_working_hours;
       const initialSchedule = DAYS.map(day => {
         const existing = existingHours.find((h: any) => h.day_of_week === day.key);
         return existing || {
@@ -76,7 +79,7 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
       });
       setSchedule(initialSchedule);
     }
-  });
+  }, [driver]);
 
   const updateScheduleMutation = useMutation({
     mutationFn: async (updatedSchedule: DaySchedule[]) => {

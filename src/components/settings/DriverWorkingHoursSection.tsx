@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, UserClock, Edit, Users, CheckCircle } from "lucide-react";
+import { ArrowLeft, Clock, Edit, Users, CheckCircle } from "lucide-react";
 import { EditDriverHoursModal } from "./EditDriverHoursModal";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,7 +92,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
 
       <div className="flex items-center space-x-4">
         <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-          <UserClock className="w-6 h-6 text-white" />
+          <Clock className="w-6 h-6 text-white" />
         </div>
         <div>
           <h1 className="text-3xl font-bold">Driver Working Hours</h1>
@@ -184,7 +184,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
             
             {drivers?.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                <UserClock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>No drivers found</p>
                 <p className="text-sm">Add drivers to your team to manage their working hours</p>
               </div>
