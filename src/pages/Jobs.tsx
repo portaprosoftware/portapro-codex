@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import { Calendar as CalendarIcon, MapPin, ClipboardList, ChevronLeft, ChevronRight, Search, Filter, AlertTriangle, User, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -140,56 +142,35 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="container-modern py-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Jobs</h1>
-          <p className="text-muted-foreground">Dispatch and track driver schedules</p>
-        </div>
-        
+      <PageHeader title="Jobs" subtitle="Schedule and manage job assignments">
         <div className="flex items-center space-x-4">
-          {/* View selector pills */}
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant={activeTab === 'calendar' ? 'default' : 'ghost'}
-              size="sm"
-              className={cn(
-                "rounded-full px-5",
-                activeTab === 'calendar' && "bg-gradient-to-r from-blue-500 to-blue-600"
-              )}
+          <TabNav>
+            <TabNav.Item 
+              to="/jobs/calendar" 
+              isActive={activeTab === 'calendar'}
               onClick={() => navigateToTab('calendar')}
             >
               <CalendarIcon className="w-4 h-4 mr-2" />
               Calendar
-            </Button>
-            
-            <Button 
-              variant={activeTab === 'dispatch' ? 'default' : 'ghost'}
-              size="sm"
-              className={cn(
-                "rounded-full px-5",
-                activeTab === 'dispatch' && "bg-gradient-to-r from-blue-500 to-blue-600"
-              )}
+            </TabNav.Item>
+            <TabNav.Item 
+              to="/jobs/dispatch" 
+              isActive={activeTab === 'dispatch'}
               onClick={() => navigateToTab('dispatch')}
             >
               <ClipboardList className="w-4 h-4 mr-2" />
               Dispatch
-            </Button>
-            
-            <Button 
-              variant={activeTab === 'map' ? 'default' : 'ghost'}
-              size="sm"
-              className={cn(
-                "rounded-full px-5",
-                activeTab === 'map' && "bg-gradient-to-r from-blue-500 to-blue-600"
-              )}
+            </TabNav.Item>
+            <TabNav.Item 
+              to="/jobs/map" 
+              isActive={activeTab === 'map'}
               onClick={() => navigateToTab('map')}
             >
               <MapPin className="w-4 h-4 mr-2" />
               Map
-            </Button>
-          </div>
+            </TabNav.Item>
+          </TabNav>
 
-          {/* Create Job Button */}
           <Button 
             onClick={() => setIsJobWizardOpen(true)}
             className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
@@ -198,7 +179,7 @@ const JobsPage: React.FC = () => {
             Create Job
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
       {activeTab === 'calendar' && (
         <div className="space-y-6">
