@@ -1,0 +1,258 @@
+
+/*────────────────────────────────────────
+   PortaPro Enterprise Theme
+────────────────────────────────────────*/
+:root {
+  /* Color Palette */
+  --color-primary-start: #1C44BC;
+  --color-primary-end:   #2F80ED;
+  --color-secondary:     #6B7280;  /* gray‑500 */
+  --color-surface:       #FFFFFF;
+  --color-bg-muted:      #F9FAFB;
+  --color-border:        #E5E7EB;
+  --color-hover:         #F3F4F6;
+  --color-shadow:        rgba(0,0,0,0.1);
+
+  /* Status Colors */
+  --status-ok:           #10B981;
+  --status-warning:      #F59E0B;
+  --status-danger:       #EF4444;
+
+  /* Typography */
+  --font-family:        "Inter", sans-serif;
+  --font-size-base:     14px;
+  --font-size-lg:       16px;
+  --font-weight-normal: 400;
+  --font-weight-bold:   500;
+  
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px var(--color-shadow);
+  --shadow-md: 0 4px 16px var(--color-shadow);
+}
+
+/*────────────────────────────────────────
+  Global Resets & Typography
+────────────────────────────────────────*/
+body, input, select, textarea, button {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: #111827;
+  margin: 0; padding: 0;
+}
+
+h1, h2, h3, h4 {
+  font-weight: var(--font-weight-bold);
+  color: #111827;
+  margin-bottom: var(--space-3);
+}
+
+/*────────────────────────────────────────
+  Navigation (Left & Top Pills)
+────────────────────────────────────────*/
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: background .2s;
+}
+.nav-item:hover {
+  background: var(--color-hover);
+}
+.nav-item-active {
+  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end)) !important;
+  color: #FFF !important;
+}
+
+/* Top "Dashboard / Jobs / …" pills */
+.page-pill {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  margin-right: var(--space-2);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all .2s;
+}
+.page-pill:hover { background: var(--color-hover); }
+.page-pill-active {
+  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end));
+  border-color: transparent;
+  color: #FFF;
+}
+
+/*────────────────────────────────────────
+  Buttons
+────────────────────────────────────────*/
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: box-shadow .2s;
+  border: none;
+}
+.btn-primary {
+  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end));
+  color: #FFF;
+}
+.btn-primary:hover {
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-secondary);
+}
+.btn-secondary:hover {
+  background: var(--color-hover);
+}
+
+/*────────────────────────────────────────
+  Form Controls
+────────────────────────────────────────*/
+input, select, textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-start);
+  box-shadow: var(--shadow-sm);
+}
+
+/*────────────────────────────────────────
+  Cards & Panels
+────────────────────────────────────────*/
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/*────────────────────────────────────────
+  Wizard / Slide‑Over
+────────────────────────────────────────*/
+.wizard-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 60vw;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+  overflow-y: auto;
+}
+.wizard-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+}
+.wizard-steps {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+.step-pill {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-base);
+  background: var(--color-border);
+  color: var(--color-secondary);
+}
+.step-pill-active {
+  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end));
+  color: #FFF;
+}
+
+/*────────────────────────────────────────
+  Job Cards (Calendar/Dispatch)
+────────────────────────────────────────*/
+.job-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  transition: background .2s;
+}
+.job-card:hover {
+  background: var(--color-hover);
+}
+.job-icon {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-secondary);
+}
+.status-badge {
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  display: inline-block;
+}
+.status-assigned  { background: var(--color-primary-start); color: #FFF; }
+.status-in-progress { background: var(--status-warning); color: #FFF; }
+.status-completed { background: var(--status-ok); color: #FFF; }
+.status-unassigned { background: var(--status-danger); color: #FFF; }
+
+/*────────────────────────────────────────
+  Map Header (Jobs → Map)
+────────────────────────────────────────*/
+.map-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.map-btn {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: box-shadow .2s;
+  border: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-secondary);
+}
+.map-btn:hover {
+  background: var(--color-hover);
+}
+
+/*────────────────────────────────────────
+  Utility & Misc
+────────────────────────────────────────*/
+.border-radius-lg { border-radius: var(--radius-md); }
+.text-muted { color: var(--color-secondary); }
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mb-2 { margin-bottom: var(--space-2); }
+.p-2  { padding: var(--space-2); }
+.p-4  { padding: var(--space-4); }
+.shadow-sm { box-shadow: var(--shadow-sm); }

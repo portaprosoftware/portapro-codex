@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Home,
@@ -49,7 +50,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col w-64 bg-gray-50 border-r border-gray-200 h-screen py-4">
+    <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen py-4">
       <div className="px-6 mb-8">
         <h1 className="text-2xl font-bold text-gray-900">PortaPro</h1>
         <p className="text-sm text-gray-500">Welcome, {user?.firstName}!</p>
@@ -61,9 +62,9 @@ const Sidebar = () => {
             <li key={index}>
               <NavLink
                 to={item.path}
-                className={`flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 ${
-                  isActive(item.path) ? "bg-gray-100 font-medium" : ""
-                }`}
+                className={({ isActive }) =>
+                  `nav-item ${isActive ? 'nav-item-active' : ''}`
+                }
               >
                 <item.icon className="w-5 h-5 mr-3" />
                 {item.label}
@@ -77,14 +78,16 @@ const Sidebar = () => {
         <div className="border-t border-gray-200 pt-4">
           <NavLink
             to="/settings"
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            className={({ isActive }) =>
+              `nav-item ${isActive ? 'nav-item-active' : ''}`
+            }
           >
             <Settings className="w-5 h-5 mr-3" />
             Settings
           </NavLink>
           <button
             onClick={handleSignOut}
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
+            className="nav-item w-full text-left"
           >
             <LogOut className="w-5 h-5 mr-3" />
             Sign Out

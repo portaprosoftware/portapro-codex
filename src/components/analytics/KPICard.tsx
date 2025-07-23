@@ -38,7 +38,7 @@ export const KPICard: React.FC<KPICardProps> = ({
 
   if (loading) {
     return (
-      <Card className="p-6 rounded-2xl shadow-md border-l-4 animate-pulse" style={{ borderLeftColor: color }}>
+      <div className="card animate-pulse">
         <div className="space-y-3">
           <div className="flex justify-between items-start">
             <div className="h-4 bg-gray-200 rounded w-24"></div>
@@ -47,12 +47,12 @@ export const KPICard: React.FC<KPICardProps> = ({
           <div className="h-8 bg-gray-200 rounded w-32"></div>
           <div className="h-3 bg-gray-200 rounded w-20"></div>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6 rounded-2xl shadow-md border-l-4 hover:shadow-lg transition-shadow duration-200" style={{ borderLeftColor: color }}>
+    <div className="card hover:shadow-md transition-shadow duration-200" style={{ borderLeftColor: color, borderLeftWidth: '4px' }}>
       <div className="space-y-3">
         {/* Header */}
         <div className="flex justify-between items-start">
@@ -92,6 +92,6 @@ export const KPICard: React.FC<KPICardProps> = ({
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 };
