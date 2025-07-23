@@ -5,16 +5,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VehicleCard } from "./VehicleCard";
-import { Grid, List, Search, Plus } from "lucide-react";
+import { VehicleManagement } from "./VehicleManagement";
+import { FuelManagement } from "./FuelManagement";
+import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "maintenance" | "retired";
+type PageMode = "overview" | "management" | "fuel";
 
 export const FleetOverview: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [pageMode, setPageMode] = useState<PageMode>("overview");
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -53,12 +57,46 @@ export const FleetOverview: React.FC = () => {
     );
   }
 
+  // Handle page mode switching
+  if (pageMode === "management") {
+    return <VehicleManagement />;
+  }
+
+  if (pageMode === "fuel") {
+    return <FuelManagement />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
-        <p className="text-gray-600 mt-1">All vehicles</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
+          <p className="text-gray-600 mt-1">All vehicles</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant={pageMode === "overview" ? "default" : "outline"}
+            onClick={() => setPageMode("overview")}
+          >
+            <Truck className="w-4 h-4 mr-2" />
+            Overview
+          </Button>
+          <Button
+            variant={pageMode === "management" ? "default" : "outline"}
+            onClick={() => setPageMode("management")}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Manage
+          </Button>
+          <Button
+            variant={pageMode === "fuel" ? "default" : "outline"}
+            onClick={() => setPageMode("fuel")}
+          >
+            <Fuel className="w-4 h-4 mr-2" />
+            Fuel
+          </Button>
+        </div>
       </div>
 
       {/* Search and Controls */}
@@ -90,9 +128,9 @@ export const FleetOverview: React.FC = () => {
             <List className="w-4 h-4 mr-2" />
             List
           </Button>
-          <Button>
+          <Button onClick={() => setPageMode("management")}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Vehicle
+            Manage Vehicles
           </Button>
         </div>
       </div>
