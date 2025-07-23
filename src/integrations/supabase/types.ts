@@ -1445,6 +1445,42 @@ export type Database = {
         }
         Relationships: []
       }
+      fleet_utilization_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          efficiency_score: number
+          id: string
+          total_capacity: number
+          updated_at: string
+          utilization_percentage: number
+          utilized_capacity: number
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          efficiency_score?: number
+          id?: string
+          total_capacity?: number
+          updated_at?: string
+          utilization_percentage?: number
+          utilized_capacity?: number
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          efficiency_score?: number
+          id?: string
+          total_capacity?: number
+          updated_at?: string
+          utilization_percentage?: number
+          utilized_capacity?: number
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       fuel_logs: {
         Row: {
           cost_per_gallon: number
@@ -2127,6 +2163,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      load_compliance_reports: {
+        Row: {
+          capacity_violations: number | null
+          compliance_score: number | null
+          created_at: string
+          efficiency_below_threshold: number | null
+          generated_by: string | null
+          id: string
+          report_data: Json
+          report_date: string
+          vehicle_id: string
+          weight_violations: number | null
+        }
+        Insert: {
+          capacity_violations?: number | null
+          compliance_score?: number | null
+          created_at?: string
+          efficiency_below_threshold?: number | null
+          generated_by?: string | null
+          id?: string
+          report_data?: Json
+          report_date: string
+          vehicle_id: string
+          weight_violations?: number | null
+        }
+        Update: {
+          capacity_violations?: number | null
+          compliance_score?: number | null
+          created_at?: string
+          efficiency_below_threshold?: number | null
+          generated_by?: string | null
+          id?: string
+          report_data?: Json
+          report_date?: string
+          vehicle_id?: string
+          weight_violations?: number | null
+        }
+        Relationships: []
+      }
+      load_management_sync_log: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          driver_id: string
+          id: string
+          sync_data: Json
+          sync_timestamp: string
+          sync_type: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          driver_id: string
+          id?: string
+          sync_data?: Json
+          sync_timestamp?: string
+          sync_type: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          driver_id?: string
+          id?: string
+          sync_data?: Json
+          sync_timestamp?: string
+          sync_type?: string
+          vehicle_id?: string
+        }
+        Relationships: []
       }
       location_logs: {
         Row: {
@@ -4855,6 +4963,42 @@ export type Database = {
           },
         ]
       }
+      vehicle_capacity_configurations: {
+        Row: {
+          compartment_config: Json | null
+          configuration_name: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          total_volume_capacity: number | null
+          total_weight_capacity: number | null
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          compartment_config?: Json | null
+          configuration_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          total_volume_capacity?: number | null
+          total_weight_capacity?: number | null
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          compartment_config?: Json | null
+          configuration_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          total_volume_capacity?: number | null
+          total_weight_capacity?: number | null
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicle_compliance_documents: {
         Row: {
           created_at: string
@@ -5268,6 +5412,10 @@ export type Database = {
         Args: { target_date: string }
         Returns: undefined
       }
+      calculate_fleet_efficiency_trends: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: Json
+      }
       calculate_report_metrics: {
         Args:
           | Record<PropertyKey, never>
@@ -5324,6 +5472,10 @@ export type Database = {
       generate_customer_portal_token: {
         Args: { customer_uuid: string }
         Returns: string
+      }
+      generate_daily_compliance_report: {
+        Args: { target_date?: string }
+        Returns: Json
       }
       generate_enhanced_portal_token: {
         Args: {
