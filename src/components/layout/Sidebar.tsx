@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { Logo } from "@/components/ui/logo";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface MenuItem {
   icon: React.ComponentType<any>;
@@ -26,6 +28,8 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useClerk();
+  const { user } = useUser();
+  const { role } = useUserRole();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -49,41 +53,79 @@ const Sidebar = () => {
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "owner":
+        return "Owner";
+      case "dispatch":
+        return "Dispatch";
+      case "driver":
+        return "Driver";
+      case "customer":
+        return "Customer";
+      default:
+        return "User";
+    }
+  };
+
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen">
-      <nav className="flex-1 py-4">
-        <ul>
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `nav-item ${isActive ? 'nav-item-active' : ''}`
-                }
-              >
-                <item.icon className="w-5 h-5 mr-3" />
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* Logo Section */}
+      <div className="p-6 border-b border-gray-200">
+        <Logo showText={true} className="justify-start" />
+      </div>
 
+      {/* Navigation Section */}
+      <div className="flex-1 py-4">
+        <div className="px-6 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 font-inter">Navigation</h3>
+        </div>
+        
+        <nav className="px-3">
+          <ul className="space-y-1">
+            {menuItems.map((item, index) => (
+              <li key={index}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `nav-item ${isActive ? 'nav-item-active' : ''}`
+                  }
+                >
+                  <item.icon className="w-5 h-5 mr-3" />
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+
+      {/* User Info Section */}
       <div className="px-6 py-4 border-t border-gray-200">
         <div className="flex items-center justify-between">
-          <UserButton 
-            appearance={{
-              elements: {
-                avatarBox: "w-8 h-8"
-              }
-            }}
-          />
+          <div className="flex items-center space-x-3">
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8"
+                }
+              }}
+            />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate font-inter">
+                {user?.firstName} {user?.lastName}
+              </p>
+              <p className="text-xs text-gray-500 font-inter">
+                {role ? getRoleDisplayName(role) : "User"}
+              </p>
+            </div>
+          </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors p-1"
+            title="Sign Out"
           >
-            <LogOut className="w-5 h-5 mr-2" />
-            Sign Out
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
