@@ -71,8 +71,8 @@ const Sidebar = () => {
   return (
     <div className="fixed left-0 top-0 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col z-50">
       {/* Logo Section */}
-      <div className="p-6 flex-shrink-0">
-        <Logo showText={true} className="items-center" />
+      <div className="p-6 flex-shrink-0 w-full">
+        <Logo showText={true} className="w-full" />
       </div>
 
       {/* Navigation Section */}

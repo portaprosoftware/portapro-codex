@@ -103,6 +103,7 @@ export function CompanySettingsSection() {
 
   const uploadLogoMutation = useMutation({
     mutationFn: async (file: File) => {
+      console.log("Starting logo upload for file:", file.name);
       const fileExt = file.name.split('.').pop();
       const fileName = `logo-${Date.now()}.${fileExt}`;
       
@@ -113,15 +114,22 @@ export function CompanySettingsSection() {
           upsert: false
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Storage upload error:", error);
+        throw error;
+      }
+      
+      console.log("Storage upload successful:", data);
       
       const { data: { publicUrl } } = supabase.storage
         .from('company-logos')
         .getPublicUrl(data.path);
 
+      console.log("Generated public URL:", publicUrl);
       return publicUrl;
     },
     onSuccess: (logoUrl) => {
+      console.log("Logo upload successful, updating company settings with URL:", logoUrl);
       const formData = form.getValues();
       updateCompanySettings.mutate({ ...formData, company_logo: logoUrl });
       setLogoFile(null);
@@ -159,6 +167,8 @@ export function CompanySettingsSection() {
   const handleLogoUpload = () => {
     if (logoFile) {
       uploadLogoMutation.mutate(logoFile);
+    } else {
+      toast.error("Please select a logo file first");
     }
   };
 
