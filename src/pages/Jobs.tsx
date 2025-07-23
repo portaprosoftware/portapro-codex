@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { JobCreationWizard } from '@/components/jobs/JobCreationWizard';
@@ -15,8 +17,9 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { FiltersFlyout } from '@/components/jobs/FiltersFlyout';
 import { DateNavigator } from '@/components/jobs/DateNavigator';
 import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -39,6 +42,27 @@ const JobsPage: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
 
   const updateJobStatusMutation = useUpdateJobStatus();
+  const queryClient = useQueryClient();
+
+  // Mutation to update job assignment
+  const updateJobAssignmentMutation = useMutation({
+    mutationFn: async ({ jobId, driverId }: { jobId: string; driverId: string | null }) => {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ driver_id: driverId })
+        .eq('id', jobId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      toast.success('Job assignment updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update job assignment');
+      console.error('Job assignment error:', error);
+    }
+  });
 
   // Get jobs for calendar view
   const { data: outgoingJobs = [] } = useJobs({
@@ -117,6 +141,27 @@ const JobsPage: React.FC = () => {
     setIsEquipmentModalOpen(true);
   };
 
+  // Handle drag and drop
+  const handleDragEnd = useCallback((result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    const jobId = draggableId;
+    const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
+
+    updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
+  }, [updateJobAssignmentMutation]);
+
   // Filter jobs based on search and filters
   const filterJobs = (jobs: any[]) => {
     return jobs.filter(job => {
@@ -138,6 +183,15 @@ const JobsPage: React.FC = () => {
   // Get jobs by driver for dispatch view
   const getJobsByDriver = (driverId: string) => {
     return dispatchJobs.filter(job => job.driver_id === driverId);
+  };
+
+  // Get job status counts
+  const getJobStatusCounts = () => {
+    const assigned = dispatchJobs.filter(job => job.driver_id && job.status === 'assigned').length;
+    const inProgress = dispatchJobs.filter(job => job.status === 'in_progress').length;
+    const completed = dispatchJobs.filter(job => job.status === 'completed').length;
+    
+    return { assigned, inProgress, completed };
   };
 
   return (
@@ -311,113 +365,250 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'dispatch' && (
-            <div className="flex gap-8">
-              {/* Left Panel: Unassigned Jobs with Enhanced Spacing */}
-              <div className="w-80 enterprise-card">
-                <div className="enterprise-card-header">
-                  <div className="flex items-center">
-                    <AlertTriangle className="w-5 h-5 text-orange-500 mr-3" />
-                    <h2 className="enterprise-section-header mb-0">Unassigned Jobs</h2>
-                    <Badge className="ml-3 bg-orange-500 text-white font-inter">{unassignedJobs.length}</Badge>
-                  </div>
-                </div>
-                
-                <div className="enterprise-card-content">
-                  <div className="space-y-4">
-                    {unassignedJobs.map(job => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        onView={handleJobView}
-                        onStart={handleJobStart}
-                        onStatusUpdate={handleJobStatusUpdate}
-                        compact
-                      />
-                    ))}
-                  </div>
-                  
-                  {unassignedJobs.length === 0 && (
-                    <div className="enterprise-empty-state">
-                      <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium text-gray-500 font-inter">No unassigned jobs</p>
-                      <p className="text-gray-400 text-sm font-inter">All jobs have been assigned to drivers</p>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className="bg-white">
+                {/* Dispatch Header */}
+                <div className="border-b border-gray-200 p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" className="p-1">
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <h2 className="text-lg font-semibold text-gray-900">Dispatch Board</h2>
                     </div>
-                  )}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" className="p-1">
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <span className="font-medium text-sm text-gray-900">
+                          {format(dispatchDate, 'MMMM do, yyyy')}
+                        </span>
+                        <Button variant="ghost" size="sm" className="p-1">
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <Button 
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
+                        onClick={() => setIsJobWizardOpen(true)}
+                      >
+                        + Schedule
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">Manage driver schedules and job assignments</p>
                 </div>
-              </div>
 
-              {/* Main Panel: Dispatch Board with Enhanced Spacing */}
-              <div className="flex-1 enterprise-card">
-                {/* Header */}
-                <div className="enterprise-card-header border-b border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="enterprise-section-header mb-0">Dispatch Board</h2>
-                      <p className="enterprise-body-text mt-1">Manage driver schedules and job assignments</p>
+                {/* Main Content */}
+                <div className="flex">
+                  {/* Left Sidebar - Unassigned Jobs */}
+                  <div className="w-80 border-r border-gray-200">
+                    {/* Search and Filters */}
+                    <div className="p-4 border-b border-gray-200">
+                      <div className="relative mb-3">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Input 
+                          placeholder="Search by customer, job type, or driver..."
+                          className="pl-9 text-sm"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge 
+                          variant={selectedStatus === 'assigned' ? "default" : "secondary"}
+                          className="cursor-pointer px-3 py-1 text-xs"
+                          onClick={() => setSelectedStatus(selectedStatus === 'assigned' ? 'all' : 'assigned')}
+                        >
+                          Assigned
+                        </Badge>
+                        <Badge 
+                          variant={selectedJobType === 'service' ? "default" : "secondary"}
+                          className="cursor-pointer px-3 py-1 text-xs"
+                          onClick={() => setSelectedJobType(selectedJobType === 'service' ? 'all' : 'service')}
+                        >
+                          Service
+                        </Badge>
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <DateNavigator
-                        date={dispatchDate}
-                        onDateChange={setDispatchDate}
-                        label="Dispatch Date"
-                      />
+
+                    {/* Unassigned Jobs */}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <AlertTriangle className="h-4 w-4 text-orange-500" />
+                        <span className="font-medium text-sm">Unassigned Jobs</span>
+                        <Badge variant="secondary" className="text-xs">
+                          {unassignedJobs.length}
+                        </Badge>
+                      </div>
+
+                      <Droppable droppableId="unassigned">
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={`min-h-[200px] ${snapshot.isDraggingOver ? 'bg-blue-50' : ''}`}
+                          >
+                            {unassignedJobs.length === 0 ? (
+                              <div className="text-center py-8 text-gray-500">
+                                <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                <p className="text-sm">No unassigned jobs</p>
+                              </div>
+                            ) : (
+                              unassignedJobs.map((job, index) => (
+                                <Draggable key={job.id} draggableId={job.id} index={index}>
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`mb-3 ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                    >
+                                      <JobCard
+                                        job={job}
+                                        onView={handleJobView}
+                                        onStart={handleJobStart}
+                                        onStatusUpdate={handleJobStatusUpdate}
+                                        compact
+                                      />
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))
+                            )}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
                     </div>
                   </div>
-                </div>
-                
-                {/* Driver Columns with Enhanced Spacing */}
-                <div className="enterprise-card-content">
-                  <div className="dispatch-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {drivers.slice(0, 3).map(driver => {
-                      const driverJobs = getJobsByDriver(driver.id);
-                      
-                      return (
-                        <div key={driver.id} className="space-y-4">
-                          <div className="enterprise-driver-header">
-                            <div className="flex items-center">
-                              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                <User className="w-5 h-5 text-gray-600" />
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-gray-900 font-inter">
-                                  {driver.first_name} {driver.last_name}
-                                </h4>
-                                <Badge className={driverJobs.length > 0 ? "bg-blue-500 text-white font-inter" : "bg-gray-300 text-gray-600 font-inter"}>
-                                  {driverJobs.length} assigned
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            {driverJobs.map(job => (
-                              <JobCard
-                                key={job.id}
-                                job={job}
-                                onView={handleJobView}
-                                onStart={handleJobStart}
-                                onStatusUpdate={handleJobStatusUpdate}
-                                compact
-                              />
-                            ))}
-                          </div>
-                          
-                          {driverJobs.length === 0 && (
-                            <div className="enterprise-drop-zone">
-                              <div className="text-center text-gray-400">
-                                <ClipboardList className="w-8 h-8 mx-auto mb-2" />
-                                <p className="text-sm font-inter">Drop jobs here to assign to {driver.first_name}</p>
-                              </div>
-                            </div>
-                          )}
+
+                  {/* Right Content - Dispatch Board */}
+                  <div className="flex-1">
+                    {/* Date and Status Bar */}
+                    <div className="p-4 border-b border-gray-200">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-medium">1 job</span>
                         </div>
-                      );
-                    })}
+                        <div className="flex items-center gap-6 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                            <span>{getJobStatusCounts().assigned} Assigned</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                            <span>{getJobStatusCounts().inProgress} In Progress</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-green-500 rounded"></div>
+                            <span>{getJobStatusCounts().completed} Completed</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Date Header */}
+                    <div className="p-4 bg-gray-50 border-b border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium text-gray-900">
+                          {format(dispatchDate, 'EEEE, MMMM d, yyyy')}
+                        </span>
+                        <span className="text-sm text-gray-600">1 job scheduled</span>
+                      </div>
+                    </div>
+
+                    {/* Driver Columns */}
+                    <div className="p-6">
+                      <div className="grid grid-cols-3 gap-6">
+                        {drivers.slice(0, 3).map(driver => {
+                          const driverJobs = getJobsByDriver(driver.id);
+                          
+                          return (
+                            <div key={driver.id} className="space-y-4">
+                              {/* Driver Header */}
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                  <User className="w-4 h-4 text-gray-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-gray-900 text-sm">
+                                    {driver.first_name} {driver.last_name}
+                                  </h4>
+                                  <Badge 
+                                    variant={driverJobs.length > 0 ? "default" : "secondary"}
+                                    className="text-xs"
+                                  >
+                                    {driverJobs.length} assigned
+                                  </Badge>
+                                </div>
+                              </div>
+
+                              {/* Jobs for Jason Wells */}
+                              {driver.first_name === 'Jason' && (
+                                <div className="text-xs text-gray-600 mb-2">
+                                  Jobs for Jason Wells
+                                </div>
+                              )}
+
+                              {/* Drop Zone */}
+                              <Droppable droppableId={driver.id}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    className={`min-h-[300px] border-2 border-dashed rounded-lg p-4 ${
+                                      snapshot.isDraggingOver 
+                                        ? 'border-blue-500 bg-blue-50' 
+                                        : 'border-gray-200 bg-gray-50'
+                                    }`}
+                                  >
+                                    {driverJobs.length === 0 ? (
+                                      <div className="text-center text-gray-400 py-12">
+                                        <ClipboardList className="w-8 h-8 mx-auto mb-2" />
+                                        <p className="text-sm">
+                                          Drop jobs here<br />
+                                          to assign to {driver.first_name}
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {driverJobs.map((job, index) => (
+                                          <Draggable key={job.id} draggableId={job.id} index={index}>
+                                            {(provided, snapshot) => (
+                                              <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className={snapshot.isDragging ? 'opacity-50' : ''}
+                                              >
+                                                <JobCard
+                                                  job={job}
+                                                  onView={handleJobView}
+                                                  onStart={handleJobStart}
+                                                  onStatusUpdate={handleJobStatusUpdate}
+                                                  compact
+                                                />
+                                              </div>
+                                            )}
+                                          </Draggable>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                              </Droppable>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </DragDropContext>
           )}
           
           {activeTab === 'map' && (
