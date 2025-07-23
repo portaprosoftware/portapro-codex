@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
@@ -118,8 +117,6 @@ const driverColors = {
 };
 
 const JobsMapView: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22));
@@ -134,7 +131,6 @@ const JobsMapView: React.FC = () => {
   const [weatherApiKey, setWeatherApiKey] = useState<string>('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
-  // Fetch Mapbox token
   useEffect(() => {
     const fetchMapboxToken = async () => {
       try {
@@ -143,12 +139,10 @@ const JobsMapView: React.FC = () => {
         if (data?.token) {
           setMapboxToken(data.token);
         } else {
-          // Fallback: show input if edge function doesn't return token
           setShowTokenInput(true);
         }
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
-        // Fallback: show input if edge function fails
         setShowTokenInput(true);
       }
     };
@@ -156,7 +150,6 @@ const JobsMapView: React.FC = () => {
     fetchMapboxToken();
   }, []);
 
-  // Initialize map
   useEffect(() => {
     if (!mapContainer.current || !mapboxToken) return;
 
@@ -181,14 +174,12 @@ const JobsMapView: React.FC = () => {
     };
   }, [mapboxToken]);
 
-  // Load pins when data or view mode changes
   useEffect(() => {
     if (mapLoaded) {
       loadPins();
     }
   }, [viewMode, mapLoaded, selectedDriver]);
 
-  // Handle weather radar toggle
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
@@ -454,36 +445,6 @@ const JobsMapView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">Jobs</h1>
-        <p className="text-gray-600 mb-6">View jobs on interactive map with real-time locations</p>
-        
-        {/* Navigation Pills */}
-        <div className="flex space-x-2">
-          <Button 
-            variant="ghost" 
-            className="rounded-full px-6"
-            onClick={() => navigateToTab('calendar')}
-          >
-            Calendar
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="rounded-full px-6"
-            onClick={() => navigateToTab('dispatch')}
-          >
-            Dispatch
-          </Button>
-          <Button 
-            className="rounded-full px-6 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
-            onClick={() => navigateToTab('map')}
-          >
-            Map
-          </Button>
-        </div>
-      </div>
-
       {/* Controls Row */}
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <div className="flex items-center justify-between">

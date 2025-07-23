@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface TabNavProps {
@@ -19,12 +18,12 @@ const TabNavItem: React.FC<TabNavItemProps> = ({ to, isActive, children, onClick
   return (
     <button
       className={cn(
-        "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200",
+        "px-6 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter",
         "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-        "font-sans",
+        "hover:shadow-sm",
         isActive 
-          ? "gradient-primary text-white shadow-sm" 
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          ? "bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white shadow-sm" 
+          : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
       )}
       onClick={onClick}
       aria-current={isActive ? "page" : undefined}
@@ -39,7 +38,7 @@ export const TabNav: React.FC<TabNavProps> & { Item: typeof TabNavItem } = ({
   children 
 }) => {
   return (
-    <nav aria-label={ariaLabel} className="flex items-center space-x-2 overflow-x-auto">
+    <nav aria-label={ariaLabel} className="flex items-center space-x-1 bg-gray-50 p-1 rounded-full">
       {children}
     </nav>
   );
