@@ -79,12 +79,12 @@
   filter: brightness(1.05);
 }
 
-/* Enterprise Button Styles */
+/* Enterprise Button System - Phase 4 Enhanced Gradients */
 .btn-enterprise {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
   color: #fff;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 12px 24px;
   border-radius: 8px;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
@@ -94,23 +94,24 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btn-enterprise:hover {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
   filter: brightness(1.05);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(28, 68, 188, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
 }
 
 .btn-enterprise:active {
   transform: translateY(0);
 }
 
-/* Enterprise Card System */
+/* Enterprise Card System - Phase 3 Enhanced Elevation */
 .enterprise-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
@@ -118,21 +119,91 @@
 }
 
 .enterprise-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
   transform: translateY(-2px);
 }
 
 .enterprise-card-header {
-  padding: 24px;
+  padding: 16px;
   border-bottom: 1px solid #f3f4f6;
 }
 
 .enterprise-card-content {
-  padding: 24px;
+  padding: 16px;
 }
 
-.enterprise-card-content.no-padding {
-  padding: 0;
+/* Job Card Variants with Border Accents - Phase 3 */
+.enterprise-job-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+  padding: 16px;
+}
+
+.enterprise-job-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.enterprise-job-card.delivery {
+  border-left-color: #10b981;
+}
+
+.enterprise-job-card.pickup {
+  border-left-color: #3b82f6;
+}
+
+.enterprise-job-card.service {
+  border-left-color: #f59e0b;
+}
+
+.enterprise-job-card.return {
+  border-left-color: #8b5cf6;
+}
+
+/* Status Badge System - Phase 4 Enhanced Colors */
+.enterprise-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  text-transform: capitalize;
+}
+
+.enterprise-status-badge.assigned {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.enterprise-status-badge.in_progress {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.enterprise-status-badge.completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.enterprise-status-badge.cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.enterprise-status-badge.pending {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 /* Enhanced Gradient Header */
@@ -182,18 +253,19 @@
   background: #f8fafc;
 }
 
-/* Enhanced Tab Styles */
+/* Enhanced Tab System - Phase 4 Refined Gradients */
 .enterprise-tabs {
   display: flex;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 4px;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .enterprise-tabs .tab-nav-item {
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
   transition: all 0.2s ease;
   border: none;
@@ -209,9 +281,9 @@
 }
 
 .enterprise-tabs .tab-nav-item.active {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
   color: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Container Styles */
