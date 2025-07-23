@@ -32,11 +32,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#f9fafb' }}>
+    <div className="h-screen overflow-hidden flex" style={{ backgroundColor: '#f9fafb' }}>
       <Sidebar />
-      <main className="flex-1 p-6">
-        <div className="container-modern">
-          {children}
+      <main className="flex-1 ml-64 overflow-y-auto">
+        <div className="p-6">
+          <div className="container-modern">
+            {children}
+          </div>
         </div>
       </main>
     </div>

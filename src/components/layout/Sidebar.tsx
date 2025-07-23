@@ -69,14 +69,14 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen">
+    <div className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col z-50">
       {/* Logo Section */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex-shrink-0">
         <Logo showText={true} className="justify-start" />
       </div>
 
       {/* Navigation Section */}
-      <div className="flex-1 py-4">
+      <div className="flex-1 overflow-y-auto py-4">
         <div className="px-6 mb-4">
           <h3 className="text-lg font-semibold text-gray-900 font-inter">Navigation</h3>
         </div>
@@ -101,7 +101,7 @@ const Sidebar = () => {
       </div>
 
       {/* User Info Section */}
-      <div className="px-6 py-4 border-t border-gray-200">
+      <div className="px-6 py-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <UserButton 
