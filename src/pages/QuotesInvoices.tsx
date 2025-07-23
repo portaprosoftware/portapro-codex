@@ -21,6 +21,8 @@ import { QuoteExportModal } from '@/components/quotes/QuoteExportModal';
 import { InvoiceExportModal } from '@/components/quotes/InvoiceExportModal';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
+import { QuoteCreationWizard } from '@/components/quotes/QuoteCreationWizard';
+import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 
 const QuotesInvoices: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
@@ -29,6 +31,8 @@ const QuotesInvoices: React.FC = () => {
   const [showQuoteExport, setShowQuoteExport] = useState(false);
   const [showInvoiceExport, setShowInvoiceExport] = useState(false);
   const [showQuickBooksExport, setShowQuickBooksExport] = useState(false);
+  const [showQuoteWizard, setShowQuoteWizard] = useState(false);
+  const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
 
   // Fetch quote metrics
   const { data: quoteMetrics } = useQuery({
@@ -213,7 +217,10 @@ const QuotesInvoices: React.FC = () => {
                 >
                   Export to QuickBooks
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button 
+                  onClick={() => setShowQuoteWizard(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Quote
                 </Button>
@@ -295,7 +302,10 @@ const QuotesInvoices: React.FC = () => {
                   <Download className="h-4 w-4 mr-2" />
                   Export
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button 
+                  onClick={() => setShowInvoiceWizard(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Invoice
                 </Button>
@@ -320,6 +330,16 @@ const QuotesInvoices: React.FC = () => {
       <InvoiceExportModal 
         isOpen={showInvoiceExport} 
         onClose={() => setShowInvoiceExport(false)} 
+      />
+
+      {/* Creation Wizards */}
+      <QuoteCreationWizard 
+        isOpen={showQuoteWizard} 
+        onClose={() => setShowQuoteWizard(false)} 
+      />
+      <InvoiceCreationWizard 
+        isOpen={showInvoiceWizard} 
+        onClose={() => setShowInvoiceWizard(false)} 
       />
     </div>
   );

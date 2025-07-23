@@ -1,45 +1,28 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { format } from 'date-fns';
+import { MoreHorizontal, Eye, Download, Edit, Trash2, Send, CreditCard } from 'lucide-react';
 
 interface InvoicesTableProps {
   searchTerm: string;
 }
 
-export const InvoicesTable: React.FC<InvoicesTableProps> = ({ searchTerm }) => {
-  const { data: invoices, isLoading } = useQuery({
+export function InvoicesTable({ searchTerm }: InvoicesTableProps) {
+  const { data: invoices = [], isLoading, error } = useQuery({
     queryKey: ['invoices', searchTerm],
     queryFn: async () => {
       let query = supabase
         .from('invoices')
-        .select(`
-          *,
-          customers:customer_id (
-            name,
-            email
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
-        query = query.or(`invoice_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%`);
+        query = query.or(`invoice_number.ilike.%${searchTerm}%`);
       }
 
       const { data, error } = await query;
@@ -56,107 +39,165 @@ export const InvoicesTable: React.FC<InvoicesTableProps> = ({ searchTerm }) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    return format(new Date(dateString), 'MMM d, yyyy');
   };
 
-  const getStatusBadge = (status: string, dueDate?: string) => {
-    const isOverdue = dueDate && new Date(dueDate) < new Date() && status === 'unpaid';
-    
-    const statusConfig = {
-      paid: { color: 'bg-green-100 text-green-800', label: 'Paid' },
-      unpaid: { 
-        color: isOverdue ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800', 
-        label: isOverdue ? 'Overdue' : 'Unpaid' 
-      },
-      cancelled: { color: 'bg-gray-100 text-gray-800', label: 'Cancelled' }
+  const getStatusBadge = (status: string) => {
+    const statusColors = {
+      'paid': 'bg-green-500 hover:bg-green-600',
+      'unpaid': 'bg-red-500 hover:bg-red-600',
+      'overdue': 'bg-orange-500 hover:bg-orange-600',
+      'cancelled': 'bg-gray-500 hover:bg-gray-600',
+      'partial': 'bg-yellow-500 hover:bg-yellow-600'
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.unpaid;
-    
     return (
-      <Badge className={`${config.color} border-0 font-medium px-3 py-1 rounded-full`}>
-        {config.label}
+      <Badge className={`text-white ${statusColors[status as keyof typeof statusColors] || 'bg-blue-500'}`}>
+        {status}
       </Badge>
     );
   };
 
+  const isDueSoon = (dueDate: string, status: string) => {
+    if (status === 'paid' || status === 'cancelled') return false;
+    const due = new Date(dueDate);
+    const today = new Date();
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 7 && diffDays >= 0;
+  };
+
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || status === 'cancelled') return false;
+    const due = new Date(dueDate);
+    const today = new Date();
+    return due < today;
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Loading invoices...</p>
+      <div className="flex items-center justify-center py-8">
+        <div className="text-muted-foreground">Loading invoices...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-red-600">Error loading invoices</div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card">
+    <div className="bg-card rounded-2xl border shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="border-b border-border bg-muted/50">
-            <TableHead className="font-medium text-sm text-foreground">Invoice #</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Customer</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Date</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Amount</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Status</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Due Date</TableHead>
-            <TableHead className="font-medium text-sm text-foreground w-12">Actions</TableHead>
+          <TableRow className="border-border">
+            <TableHead className="font-medium text-foreground">Invoice #</TableHead>
+            <TableHead className="font-medium text-foreground">Customer</TableHead>
+            <TableHead className="font-medium text-foreground">Date</TableHead>
+            <TableHead className="font-medium text-foreground">Amount</TableHead>
+            <TableHead className="font-medium text-foreground">Status</TableHead>
+            <TableHead className="font-medium text-foreground">Due Date</TableHead>
+            <TableHead className="font-medium text-foreground">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {invoices?.map((invoice, index) => (
-            <TableRow 
-              key={invoice.id} 
-              className={`border-b border-border ${index % 2 === 0 ? 'bg-muted/20' : 'bg-card'}`}
-            >
-              <TableCell className="font-medium text-sm text-foreground">
-                {invoice.invoice_number || `INV-${invoice.id.slice(0, 8)}`}
-              </TableCell>
-              <TableCell className="text-sm text-foreground">
-                {(invoice.customers as any)?.name || 'Unknown Customer'}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatDate(invoice.created_at)}
-              </TableCell>
-              <TableCell className="text-sm text-foreground font-medium">
-                {formatCurrency(invoice.amount)}
-              </TableCell>
-              <TableCell>
-                {getStatusBadge(invoice.status, invoice.due_date)}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatDate(invoice.due_date)}
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View</DropdownMenuItem>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>Send</DropdownMenuItem>
-                    <DropdownMenuItem>Mark as Paid</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          {invoices.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                No invoices found
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            invoices.map((invoice: any) => {
+              const dueSoon = isDueSoon(invoice.due_date, invoice.status);
+              const overdue = isOverdue(invoice.due_date, invoice.status);
+
+              return (
+                <TableRow 
+                  key={invoice.id} 
+                  className={`hover:bg-muted/50 border-border ${
+                    overdue ? 'bg-red-50 dark:bg-red-950/20' : 
+                    dueSoon ? 'bg-yellow-50 dark:bg-yellow-950/20' : ''
+                  }`}
+                >
+                  <TableCell className="font-mono text-sm font-medium">
+                    {invoice.invoice_number}
+                  </TableCell>
+                  <TableCell className="font-medium text-foreground">
+                    Customer #{invoice.customer_id.substring(0, 8)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDate(invoice.created_at)}
+                  </TableCell>
+                  <TableCell className="font-semibold text-foreground">
+                    {formatCurrency(invoice.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(invoice.status)}
+                      {overdue && (
+                        <span className="text-xs text-red-600 font-medium">OVERDUE</span>
+                      )}
+                      {dueSoon && !overdue && (
+                        <span className="text-xs text-yellow-600 font-medium">DUE SOON</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className={`${
+                    overdue ? 'text-red-600 font-semibold' : 
+                    dueSoon ? 'text-yellow-600 font-medium' : 'text-muted-foreground'
+                  }`}>
+                    {formatDate(invoice.due_date)}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem>
+                          <Eye className="mr-2 h-4 w-4" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Download className="mr-2 h-4 w-4" />
+                          Download PDF
+                        </DropdownMenuItem>
+                        {invoice.status === 'unpaid' && (
+                          <>
+                            <DropdownMenuItem>
+                              <Send className="mr-2 h-4 w-4" />
+                              Send Invoice
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-blue-600 focus:text-blue-600">
+                              <CreditCard className="mr-2 h-4 w-4" />
+                              Collect Payment
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        <DropdownMenuItem>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
-      
-      {(!invoices || invoices.length === 0) && (
-        <div className="flex items-center justify-center h-32">
-          <p className="text-muted-foreground">No invoices found</p>
-        </div>
-      )}
     </div>
   );
-};
+}
