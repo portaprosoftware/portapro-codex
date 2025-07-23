@@ -8,7 +8,8 @@ import {
   Fuel, 
   FileText,
   Bell,
-  Settings
+  Settings,
+  Package
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,13 @@ const navigationItems = [
     href: "/fleet/assignments",
     icon: Calendar,
     description: "Daily driver schedules"
+  },
+  {
+    title: "Load Management",
+    href: "/fleet/loads",
+    icon: Package,
+    description: "Vehicle capacity & loads",
+    badge: "3"
   },
   {
     title: "Maintenance",

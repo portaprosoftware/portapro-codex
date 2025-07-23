@@ -10,6 +10,10 @@ import CustomerHub from './pages/CustomerHub';
 import CustomerDetail from './pages/CustomerDetail';
 import QuotesInvoices from './pages/QuotesInvoices';
 import FleetManagement from './pages/FleetManagement';
+import FleetAssignmentsPage from './pages/FleetAssignmentsPage';
+import FleetCompliancePage from './pages/FleetCompliancePage';
+import FleetMaintenancePage from './pages/FleetMaintenancePage';
+import FleetLoadsPage from './pages/FleetLoadsPage';
 import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
@@ -87,6 +91,56 @@ const App = () => {
                 <SignedIn>
                   <Layout>
                     <FleetManagement />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetManagement />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/assignments"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetAssignmentsPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/compliance"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetCompliancePage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/loads"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetLoadsPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/maintenance"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetMaintenancePage />
                   </Layout>
                 </SignedIn>
               }

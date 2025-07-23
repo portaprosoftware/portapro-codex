@@ -1055,6 +1055,36 @@ export type Database = {
           },
         ]
       }
+      daily_vehicle_loads: {
+        Row: {
+          assigned_quantity: number
+          created_at: string
+          id: string
+          load_date: string
+          product_id: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          assigned_quantity?: number
+          created_at?: string
+          id?: string
+          load_date: string
+          product_id: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          assigned_quantity?: number
+          created_at?: string
+          id?: string
+          load_date?: string
+          product_id?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       dashboard_configurations: {
         Row: {
           created_at: string | null
@@ -5005,6 +5035,33 @@ export type Database = {
           },
         ]
       }
+      vehicle_load_capacities: {
+        Row: {
+          created_at: string
+          id: string
+          max_capacity: number
+          product_id: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_capacity?: number
+          product_id: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_capacity?: number
+          product_id?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicles: {
         Row: {
           capacity: string | null
@@ -5206,6 +5263,10 @@ export type Database = {
       batch_geocode_existing_locations: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      calculate_daily_vehicle_loads: {
+        Args: { target_date: string }
+        Returns: undefined
       }
       calculate_report_metrics: {
         Args:
