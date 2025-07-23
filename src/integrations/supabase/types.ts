@@ -233,6 +233,8 @@ export type Database = {
           next_return_number: number | null
           next_service_number: number | null
           pickup_prefix: string | null
+          qr_feedback_email: string | null
+          qr_feedback_notifications_enabled: boolean | null
           quote_number_prefix: string | null
           return_prefix: string | null
           service_prefix: string | null
@@ -262,6 +264,8 @@ export type Database = {
           next_return_number?: number | null
           next_service_number?: number | null
           pickup_prefix?: string | null
+          qr_feedback_email?: string | null
+          qr_feedback_notifications_enabled?: boolean | null
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
@@ -291,6 +295,8 @@ export type Database = {
           next_return_number?: number | null
           next_service_number?: number | null
           pickup_prefix?: string | null
+          qr_feedback_email?: string | null
+          qr_feedback_notifications_enabled?: boolean | null
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
@@ -3359,6 +3365,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      qr_feedback: {
+        Row: {
+          created_at: string
+          customer_email: string | null
+          customer_message: string
+          customer_phone: string | null
+          feedback_type: string
+          id: string
+          is_read: boolean | null
+          photo_url: string | null
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email?: string | null
+          customer_message: string
+          customer_phone?: string | null
+          feedback_type: string
+          id?: string
+          is_read?: boolean | null
+          photo_url?: string | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string | null
+          customer_message?: string
+          customer_phone?: string | null
+          feedback_type?: string
+          id?: string
+          is_read?: boolean | null
+          photo_url?: string | null
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_feedback_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quote_audit_log: {
         Row: {

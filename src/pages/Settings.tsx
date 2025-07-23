@@ -8,9 +8,10 @@ import { Settings as SettingsIcon, Building2, Users, Bell, DollarSign, Clock, Ca
 import { SimplifiedSettings } from "@/components/settings/SimplifiedSettings";
 import { DriverWorkingHoursSection } from "@/components/settings/DriverWorkingHoursSection";
 import { DriverTimeOffSection } from "@/components/settings/DriverTimeOffSection";
+import { QRFeedbackSection } from "@/components/settings/QRFeedbackSection";
 import { useUserRole } from "@/hooks/useUserRole";
 
-type SettingsSection = 'overview' | 'driver-hours' | 'driver-timeoff';
+type SettingsSection = 'overview' | 'driver-hours' | 'driver-timeoff' | 'qr-feedback';
 
 export default function Settings() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('overview');
@@ -35,6 +36,8 @@ export default function Settings() {
         return <DriverWorkingHoursSection onBack={() => setActiveSection('overview')} />;
       case 'driver-timeoff':
         return <DriverTimeOffSection onBack={() => setActiveSection('overview')} />;
+      case 'qr-feedback':
+        return <QRFeedbackSection />;
       default:
         return (
           <div className="space-y-6">
@@ -71,6 +74,21 @@ export default function Settings() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">Review and manage driver time-off requests</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('qr-feedback')}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
+                        <Bell className="w-6 h-6 text-white" />
+                      </div>
+                      <Badge variant="secondary">Active</Badge>
+                    </div>
+                    <CardTitle className="text-lg">QR Feedback</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Configure QR code feedback notifications and settings</p>
                   </CardContent>
                 </Card>
               </div>

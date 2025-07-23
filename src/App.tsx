@@ -14,6 +14,7 @@ import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
 import Settings from "./pages/Settings";
+import { ScanFeedback } from "./pages/ScanFeedback";
 
 const App = () => {
   return (
@@ -128,6 +129,10 @@ const App = () => {
                 </SignedIn>
               }
             />
+            
+            {/* Public QR Scan Route - Outside authentication */}
+            <Route path="/scan/:unitId" element={<ScanFeedback />} />
+            
             <Route
               path="*"
               element={

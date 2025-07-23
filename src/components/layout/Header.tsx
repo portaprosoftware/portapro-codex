@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserRole } from "@/hooks/useUserRole";
+import { NotificationBell } from "./NotificationBell";
 
 export const Header: React.FC = () => {
   const { user } = useUser();
@@ -35,6 +36,8 @@ export const Header: React.FC = () => {
               {role}
             </Badge>
           )}
+          
+          <NotificationBell />
           
           <UserButton 
             appearance={{
