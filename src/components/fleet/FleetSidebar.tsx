@@ -9,7 +9,9 @@ import {
   FileText,
   Bell,
   Settings,
-  Package
+  Package,
+  BarChart3,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +25,29 @@ const navigationItems = [
     end: true
   },
   {
-    title: "Compliance",
-    href: "/fleet/compliance",
-    icon: AlertTriangle,
-    description: "Insurance & Registration",
-    badge: "6"
+    title: "Load Management",
+    href: "/fleet/loads",
+    icon: Package,
+    description: "Vehicle capacity & loads",
+    badge: "3"
+  },
+  {
+    title: "Analytics",
+    href: "/fleet/analytics",
+    icon: BarChart3,
+    description: "Performance insights"
+  },
+  {
+    title: "Capacity Config",
+    href: "/fleet/capacity",
+    icon: Settings,
+    description: "Vehicle configurations"
+  },
+  {
+    title: "Compliance Reports",
+    href: "/fleet/compliance-reports",
+    icon: Shield,
+    description: "Compliance monitoring"
   },
   {
     title: "Assignments",
@@ -36,18 +56,18 @@ const navigationItems = [
     description: "Daily driver schedules"
   },
   {
-    title: "Load Management",
-    href: "/fleet/loads",
-    icon: Package,
-    description: "Vehicle capacity & loads",
-    badge: "3"
-  },
-  {
     title: "Maintenance",
     href: "/fleet/maintenance",
     icon: Wrench,
     description: "Service & repairs",
     badge: "1"
+  },
+  {
+    title: "Compliance",
+    href: "/fleet/compliance",
+    icon: AlertTriangle,
+    description: "Insurance & Registration",
+    badge: "6"
   },
   {
     title: "Fuel",

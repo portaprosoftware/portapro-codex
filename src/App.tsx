@@ -18,6 +18,11 @@ import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
 import Settings from "./pages/Settings";
+import FleetAnalyticsPage from './pages/FleetAnalyticsPage';
+import FleetCapacityPage from './pages/FleetCapacityPage';
+import FleetComplianceReportsPage from './pages/FleetComplianceReportsPage';
+import FleetFuel from './pages/FleetFuel';
+import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
 
 const App = () => {
@@ -131,6 +136,56 @@ const App = () => {
                 <SignedIn>
                   <Layout>
                     <FleetLoadsPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/analytics"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetAnalyticsPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/capacity"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetCapacityPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/compliance-reports"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetComplianceReportsPage />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/fuel"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetFuel />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/fleet/files"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <FleetFiles />
                   </Layout>
                 </SignedIn>
               }
