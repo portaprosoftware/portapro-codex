@@ -71,6 +71,26 @@ const App = () => {
               }
             />
             <Route
+              path="/jobs/calendar"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
+              path="/jobs/map"
+              element={
+                <SignedIn>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
+                </SignedIn>
+              }
+            />
+            <Route
               path="/inventory"
               element={
                 <SignedIn>
