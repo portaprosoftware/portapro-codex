@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Navigation, Phone, Package, Calendar, Clock } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { MapPin, Navigation, Phone, Package, Calendar, Clock, Radar } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface InventoryLocation {
@@ -46,6 +47,7 @@ export const InventoryMapView: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState<InventoryLocation | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
+  const [radarEnabled, setRadarEnabled] = useState(false);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -165,7 +167,7 @@ export const InventoryMapView: React.FC = () => {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       bounds: bounds.isEmpty() ? undefined : bounds,
       fitBoundsOptions: { padding: 50 }
     });
@@ -273,25 +275,38 @@ export const InventoryMapView: React.FC = () => {
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
 
-      {/* Legend */}
-      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 space-y-2 max-w-xs">
-        <h4 className="font-semibold text-sm">Equipment Status</h4>
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          {Object.entries(statusLabels).map(([status, label]) => (
-            <div key={status} className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${statusColors[status as keyof typeof statusColors]}`} />
-              <span>{label}</span>
-            </div>
-          ))}
+      {/* Radar Toggle */}
+      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
+        <div className="flex items-center gap-2">
+          <Radar className="h-4 w-4" />
+          <span className="text-sm font-medium">Radar</span>
+          <Switch checked={radarEnabled} onCheckedChange={setRadarEnabled} />
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          {inventoryLocations.length} equipment locations shown
-        </p>
+      </div>
+
+      {/* Equipment Status Legend - Horizontal at bottom */}
+      <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h4 className="font-semibold text-sm">Equipment Status:</h4>
+            <div className="flex items-center gap-4">
+              {Object.entries(statusLabels).map(([status, label]) => (
+                <div key={status} className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${statusColors[status as keyof typeof statusColors]}`} />
+                  <span className="text-xs">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-gray-500">
+            {inventoryLocations.length} locations
+          </p>
+        </div>
       </div>
 
       {/* Selected Location Details */}
       {selectedLocation && (
-        <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-4">
+        <div className="absolute bottom-20 left-4 right-4 bg-white rounded-lg shadow-lg p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
