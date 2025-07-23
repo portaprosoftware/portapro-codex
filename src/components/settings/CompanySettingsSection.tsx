@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Building2, Upload, Save, Mail, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { LogoUploadModal } from "@/components/settings/LogoUploadModal";
 
 const companySettingsSchema = z.object({
   company_name: z.string().min(1, "Company name is required"),
@@ -38,6 +40,8 @@ const timezones = [
 export function CompanySettingsSection() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: companySettings, isLoading } = useQuery({
@@ -89,7 +93,7 @@ export function CompanySettingsSection() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company-settings"] });
-      toast.success("Company settings updated successfully");
+      setShowSuccessMessage(true);
     },
     onError: (error) => {
       toast.error("Failed to update company settings");
@@ -122,6 +126,7 @@ export function CompanySettingsSection() {
       updateCompanySettings.mutate({ ...formData, company_logo: logoUrl });
       setLogoFile(null);
       setLogoPreview(null);
+      setShowLogoModal(false);
     },
     onError: (error) => {
       console.error('Error uploading logo:', error);
@@ -145,6 +150,7 @@ export function CompanySettingsSection() {
       const reader = new FileReader();
       reader.onload = (e) => {
         setLogoPreview(e.target?.result as string);
+        setShowLogoModal(true);
       };
       reader.readAsDataURL(file);
     }
@@ -308,10 +314,9 @@ export function CompanySettingsSection() {
                            />
                          </div>
                        </FormControl>
-                       <p className="text-xs text-muted-foreground">
-                         This email address will be used for marketing communications, customer correspondence, 
-                         and as the reply-to address for quotes and invoices.
-                       </p>
+                        <p className="text-xs text-muted-foreground">
+                          This email address will be used for marketing communications and as the reply-to address for all correspondence including, quotes and invoices.
+                        </p>
                        <FormMessage />
                      </FormItem>
                 )}
@@ -375,17 +380,27 @@ export function CompanySettingsSection() {
             </div>
           </div>
           
-          {logoFile && (
-            <Button 
-              onClick={handleLogoUpload}
-              disabled={uploadLogoMutation.isPending}
-              className="w-full"
-            >
-              {uploadLogoMutation.isPending ? "Uploading..." : "Upload Logo"}
-            </Button>
-          )}
         </CardContent>
       </Card>
+
+      <LogoUploadModal
+        isOpen={showLogoModal}
+        onClose={() => {
+          setShowLogoModal(false);
+          setLogoPreview(null);
+          setLogoFile(null);
+        }}
+        logoPreview={logoPreview}
+        onSave={handleLogoUpload}
+        isUploading={uploadLogoMutation.isPending}
+      />
+
+      {showSuccessMessage && (
+        <SuccessMessage
+          message="Company settings updated successfully"
+          onComplete={() => setShowSuccessMessage(false)}
+        />
+      )}
     </div>
   );
 }

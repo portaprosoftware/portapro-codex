@@ -22,7 +22,7 @@ export const Logo: React.FC<LogoProps> = ({ className = "", showText = true }) =
   });
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex flex-col items-center gap-1 ${className}`}>
       <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md overflow-hidden">
         {companySettings?.company_logo ? (
           <img 
@@ -35,7 +35,7 @@ export const Logo: React.FC<LogoProps> = ({ className = "", showText = true }) =
         )}
       </div>
       {showText && (
-        <span className="font-inter font-bold text-xl text-foreground">
+        <span className="font-inter font-medium text-sm text-foreground text-center leading-tight">
           {companySettings?.company_name || "PortaPro"}
         </span>
       )}
