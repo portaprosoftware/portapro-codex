@@ -109,6 +109,7 @@ const JobsMapView: React.FC = () => {
   const [selectedPin, setSelectedPin] = useState<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapboxToken, setMapboxToken] = useState<string>('');
+  const [showTokenInput, setShowTokenInput] = useState(false);
   const [weatherApiKey, setWeatherApiKey] = useState<string>('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
@@ -120,9 +121,14 @@ const JobsMapView: React.FC = () => {
         if (error) throw error;
         if (data?.token) {
           setMapboxToken(data.token);
+        } else {
+          // Fallback: show input if edge function doesn't return token
+          setShowTokenInput(true);
         }
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
+        // Fallback: show input if edge function fails
+        setShowTokenInput(true);
       }
     };
     
@@ -688,6 +694,45 @@ const JobsMapView: React.FC = () => {
                   }
                 }}
                 disabled={!weatherApiKey}
+                className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mapbox Token Input Modal */}
+      {showTokenInput && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Mapbox Token Required</h3>
+            <p className="text-gray-600 mb-4">
+              To display the map, please enter your Mapbox public token. 
+              You can find it at <a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener noreferrer" className="text-[#3366FF] underline">your Mapbox account</a>.
+            </p>
+            <Input
+              type="text"
+              placeholder="Enter your Mapbox public token (pk.)"
+              value={mapboxToken}
+              onChange={(e) => setMapboxToken(e.target.value)}
+              className="mb-4"
+            />
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowTokenInput(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowTokenInput(false);
+                  // Token will be used to initialize map
+                }}
+                disabled={!mapboxToken || !mapboxToken.startsWith('pk.')}
                 className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
               >
                 Apply
