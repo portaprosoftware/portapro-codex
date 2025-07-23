@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface QueuedAction {
   id: string;
@@ -114,24 +115,51 @@ export function useOfflineSync() {
   };
 
   const processAction = async (action: QueuedAction): Promise<void> => {
-    // TODO: Implement actual API calls
     switch (action.type) {
       case 'status_update':
-        // await supabase.from('jobs').update({ status: action.data.status }).eq('id', action.jobId);
+        await supabase
+          .from('jobs')
+          .update({ 
+            status: action.data.status,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', action.jobId);
         break;
+        
       case 'notes':
-        // await supabase.from('job_notes').insert({ job_id: action.jobId, notes: action.data.notes });
+        await supabase
+          .rpc('add_job_note', {
+            job_uuid: action.jobId,
+            driver_uuid: action.data.driverId,
+            note_content: action.data.noteText,
+            note_category: action.data.noteType || 'general'
+          });
         break;
+        
       case 'photo':
-        // await supabase.storage.from('job-photos').upload(`${action.jobId}/${action.data.filename}`, action.data.file);
+        const timestamp = Date.now();
+        const filename = `${action.jobId}/${action.data.driverId}/${action.data.category || 'general'}_${timestamp}.jpg`;
+        
+        await supabase.storage
+          .from('job-photos')
+          .upload(filename, action.data.file, {
+            contentType: 'image/jpeg',
+            upsert: false
+          });
         break;
+        
       case 'signature':
-        // await supabase.storage.from('signatures').upload(`${action.jobId}/signature.png`, action.data.file);
+        const sigTimestamp = Date.now();
+        const sigFilename = `${action.jobId}/${action.data.driverId}/signature_${sigTimestamp}.png`;
+        
+        await supabase.storage
+          .from('job-signatures')
+          .upload(sigFilename, action.data.signatureBlob, {
+            contentType: 'image/png',
+            upsert: false
+          });
         break;
     }
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
   };
 
   const clearQueue = () => {
