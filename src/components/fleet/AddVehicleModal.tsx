@@ -35,7 +35,7 @@ const vehicleSchema = z.object({
   license_plate: z.string().min(1, "License plate is required"),
   make: z.string().min(1, "Make is required"),
   model: z.string().min(1, "Model is required"),
-  year: z.number().min(1900).max(new Date().getFullYear() + 1),
+  year: z.number().min(1900).max(new Date().getFullYear() + 1).optional(),
   vin: z.string().optional(),
   color: z.string().optional(),
   vehicle_type: z.string().optional(),
@@ -95,12 +95,32 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
         vehicleImageUrl = uploadData.path;
       }
 
+      const insertData = {
+        license_plate: data.license_plate,
+        make: data.make,
+        model: data.model,
+        year: data.year,
+        vin: data.vin || null,
+        color: data.color || null,
+        vehicle_type: data.vehicle_type || null,
+        custom_vehicle_type: data.custom_vehicle_type || null,
+        fuel_type: data.fuel_type || "gasoline",
+        status: data.status || "active",
+        nickname: data.nickname || null,
+        capacity: data.capacity || null,
+        purchase_date: data.purchase_date || null,
+        purchase_cost: data.purchase_cost || null,
+        current_mileage: data.current_mileage || 0,
+        maintenance_interval_miles: data.maintenance_interval_miles || 3000,
+        insurance_expiry: data.insurance_expiry || null,
+        registration_expiry: data.registration_expiry || null,
+        notes: data.notes || null,
+        vehicle_image: vehicleImageUrl,
+      };
+
       const { data: vehicle, error } = await supabase
         .from("vehicles")
-        .insert({
-          ...data,
-          vehicle_image: vehicleImageUrl,
-        })
+        .insert(insertData)
         .select()
         .single();
 
