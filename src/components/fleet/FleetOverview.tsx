@@ -76,73 +76,88 @@ export const FleetOverview: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-gray-50">
       <FleetSidebar />
-      <div className="flex-1 space-y-6 p-6 ml-2">
+      <div className="flex-1 max-w-7xl mx-auto px-8 py-6 space-y-6">
         {/* Page Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
-            <p className="text-gray-600 mt-1">{statusCounts.all} of {statusCounts.all} vehicles</p>
+            <h1 className="text-2xl font-semibold text-gray-900">Fleet Overview</h1>
+            <p className="text-base font-normal text-gray-500 mt-1">{statusCounts.all} of {statusCounts.all} vehicles</p>
           </div>
         </div>
 
       {/* Search and Controls */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
             placeholder="Search vehicles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 pl-10 text-base font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
           />
         </div>
         
         <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="sm"
+          <button
             onClick={() => setViewMode("grid")}
+            className={cn(
+              "inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+              viewMode === "grid"
+                ? "bg-blue-600 text-white"
+                : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
+            )}
           >
             <Grid className="w-4 h-4 mr-2" />
             Icons
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
+          </button>
+          <button
             onClick={() => setViewMode("list")}
+            className={cn(
+              "inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+              viewMode === "list"
+                ? "bg-blue-600 text-white"
+                : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
+            )}
           >
             <List className="w-4 h-4 mr-2" />
             List
-          </Button>
-          <Button onClick={() => setIsAddVehicleModalOpen(true)}>
+          </button>
+          <button
+            onClick={() => setIsAddVehicleModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Vehicle
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Status Filter Tabs */}
+      {/* Status Filter Pills */}
       <div className="flex flex-wrap gap-2">
         {Object.entries(statusCounts).map(([status, count]) => (
-          <Button
+          <button
             key={status}
-            variant={statusFilter === status ? "default" : "outline"}
-            size="sm"
             onClick={() => setStatusFilter(status as StatusFilter)}
-            className="capitalize"
+            className={cn(
+              "inline-flex items-center py-1 px-3 text-sm font-semibold rounded-full transition-colors",
+              statusFilter === status
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            )}
           >
-            {status} ({count})
-          </Button>
+            <span className="capitalize">{status}</span>
+            <span className="ml-1">({count})</span>
+          </button>
         ))}
       </div>
 
       {/* Vehicle Grid/List */}
       <div className={cn(
-        "gap-6",
         viewMode === "grid" 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
           : "space-y-4"
       )}>
         {filteredVehicles?.map((vehicle) => (
@@ -157,7 +172,7 @@ export const FleetOverview: React.FC = () => {
 
       {filteredVehicles?.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No vehicles found matching your criteria.</p>
+          <p className="text-base font-normal text-gray-500">No vehicles found matching your criteria.</p>
         </div>
       )}
 

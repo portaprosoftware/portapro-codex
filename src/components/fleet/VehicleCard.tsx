@@ -27,92 +27,99 @@ interface VehicleCardProps {
 }
 
 export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onManage }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusClasses = (status: string) => {
     switch (status) {
       case "active":
-        return "badge-green";
+        return "bg-green-600 text-white";
       case "maintenance":
-        return "badge-orange";
+        return "bg-yellow-100 text-yellow-700";
       case "retired":
-        return "badge-red";
+        return "bg-red-50 text-red-700";
       default:
-        return "badge-blue";
+        return "bg-gray-200 text-gray-700";
     }
   };
 
   if (viewMode === "list") {
     return (
-      <Card className="p-4 hover:shadow-md transition-shadow bg-white">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
-              <Truck className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-gray-50 rounded-md flex items-center justify-center">
+              <Truck className="w-8 h-8 text-gray-500" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-lg">{vehicle.license_plate}</h3>
-              <p className="text-gray-600">
+              <h3 className="text-lg font-medium text-gray-900">{vehicle.license_plate}</h3>
+              <p className="text-base font-normal text-gray-500">
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </p>
-              <p className="text-sm text-gray-500 capitalize">{vehicle.vehicle_type}</p>
+              <p className="text-sm font-medium text-gray-700 capitalize">{vehicle.vehicle_type}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Badge className={cn("badge-gradient", getStatusColor(vehicle.status))}>
+            <span className={cn(
+              "inline-block text-xs font-medium py-0.5 px-2 rounded-md",
+              getStatusClasses(vehicle.status)
+            )}>
               {vehicle.status}
-            </Badge>
-            <Button variant="outline" size="sm" onClick={() => onManage?.(vehicle)}>
+            </span>
+            <button
+              onClick={() => onManage?.(vehicle)}
+              className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+            >
               <Settings className="w-4 h-4 mr-2" />
               Manage
-            </Button>
+            </button>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="hover:shadow-lg transition-shadow bg-white overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       {/* Vehicle Image/Icon Section */}
-      <div className="h-32 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center relative">
-        <Truck className="w-12 h-12 text-blue-600" />
-        <Badge className={cn("absolute top-2 right-2 badge-gradient", getStatusColor(vehicle.status))}>
+      <div className="h-32 w-full bg-gray-100 flex items-center justify-center relative">
+        <Truck className="w-12 h-12 text-gray-500" />
+        <span className={cn(
+          "absolute top-2 right-2 inline-block text-xs font-medium py-0.5 px-2 rounded-md",
+          getStatusClasses(vehicle.status)
+        )}>
           {vehicle.status}
-        </Badge>
+        </span>
       </div>
       
       {/* Vehicle Details */}
-      <div className="p-4 space-y-4">
+      <div className="p-6 space-y-3">
         <div>
-          <h3 className="font-semibold text-gray-900 text-lg mb-1">{vehicle.license_plate}</h3>
-          <p className="text-gray-600 font-medium">
+          <h3 className="text-lg font-medium text-gray-900 mb-1">{vehicle.license_plate}</h3>
+          <p className="text-base font-normal text-gray-500">
             {vehicle.year} {vehicle.make} {vehicle.model}
           </p>
-          <p className="text-sm text-gray-500 capitalize">{vehicle.vehicle_type}</p>
+          <p className="text-sm font-medium text-gray-700 capitalize">{vehicle.vehicle_type}</p>
         </div>
 
         <div className="space-y-2">
           {vehicle.current_mileage && (
-            <div className="flex items-center text-sm text-gray-500">
-              <MapPin className="w-3 h-3 mr-1" />
+            <div className="flex items-center text-xs font-normal text-gray-500">
+              <MapPin className="w-4 h-4 mr-1" />
               {vehicle.current_mileage.toLocaleString()} miles
             </div>
           )}
-          <div className="flex items-center text-sm text-gray-500">
-            <Calendar className="w-3 h-3 mr-1" />
+          <div className="flex items-center text-xs font-normal text-gray-500">
+            <Calendar className="w-4 h-4 mr-1" />
             Added {new Date(vehicle.created_at).toLocaleDateString()}
           </div>
         </div>
 
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full" 
+        <button
           onClick={() => onManage?.(vehicle)}
+          className="w-full inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
         >
           <Settings className="w-4 h-4 mr-2" />
           View Details
-        </Button>
+        </button>
       </div>
-    </Card>
+    </div>
   );
 };

@@ -40,19 +40,36 @@
     --gradient-stop1: 20%;
     --gradient-stop2: 80%;
 
-    /* Custom variables for PortaPro - Updated for Enterprise Theme */
-    --blue: 224 71% 43%;
-    --blue-light: 224 71% 95%;
+    /* Fleet Management Design System Colors */
+    --gray-50: 249 250 251;   /* #F9FAFB */
+    --gray-100: 243 244 246;  /* #F3F4F6 */
+    --gray-200: 229 231 235;  /* #E5E7EB */
+    --gray-300: 209 213 219;  /* #D1D5DB */
+    --gray-500: 107 114 128;  /* #6B7280 */
+    --gray-700: 55 65 81;     /* #374151 */
+    --gray-900: 17 24 39;     /* #111827 */
+    --white: 0 0% 100%;       /* #FFFFFF */
+    --blue-600: 37 99 235;    /* #2563EB */
+    --blue-700: 29 78 216;    /* #1D4ED8 */
+    --green-600: 22 163 74;   /* #16A34A */
+    --yellow-100: 254 243 199; /* #FEF3C7 */
+    --yellow-700: 180 83 9;   /* #B45309 */
+    --red-50: 254 242 242;    /* #FEF2F2 */
+    --red-700: 185 28 28;     /* #B91C1C */
+    
+    /* Legacy colors for backward compatibility */
+    --blue: 37 99 235;        /* Updated to blue-600 */
+    --blue-light: 249 250 251; /* Updated to gray-50 */
     --purple: 270 60% 60%;
     --purple-light: 270 60% 95%;
-    --green: 142 60% 50%;
+    --green: 22 163 74;       /* Updated to green-600 */
     --green-light: 142 60% 95%;
     --orange: 36 90% 60%;
     --orange-light: 36 90% 95%;
-    --red: 0 80% 60%;
-    --red-light: 0 80% 95%;
-    --yellow: 48 90% 60%;
-    --yellow-light: 48 90% 95%;
+    --red: 185 28 28;         /* Updated to red-700 */
+    --red-light: 254 242 242; /* Updated to red-50 */
+    --yellow: 180 83 9;       /* Updated to yellow-700 */
+    --yellow-light: 254 243 199; /* Updated to yellow-100 */
     --primary-hover: 224 71% 38%;
     --primary-light: 224 71% 95%;
     --success: 142 60% 50%;

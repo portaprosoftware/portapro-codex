@@ -27,30 +27,47 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				// Dashboard category colors
-				blue: {
-					DEFAULT: 'hsl(var(--blue))',
-					light: 'hsl(var(--blue-light))',
+				// Fleet Management Design System Colors
+				gray: {
+					50: 'hsl(var(--gray-50))',
+					100: 'hsl(var(--gray-100))',
+					200: 'hsl(var(--gray-200))',
+					300: 'hsl(var(--gray-300))',
+					500: 'hsl(var(--gray-500))',
+					700: 'hsl(var(--gray-700))',
+					900: 'hsl(var(--gray-900))',
 				},
+				blue: {
+					600: 'hsl(var(--blue-600))',
+					700: 'hsl(var(--blue-700))',
+					DEFAULT: 'hsl(var(--blue-600))',
+					light: 'hsl(var(--gray-50))',
+				},
+				green: {
+					600: 'hsl(var(--green-600))',
+					DEFAULT: 'hsl(var(--green-600))',
+					light: 'hsl(var(--green-light))',
+				},
+				yellow: {
+					100: 'hsl(var(--yellow-100))',
+					700: 'hsl(var(--yellow-700))',
+					DEFAULT: 'hsl(var(--yellow-700))',
+					light: 'hsl(var(--yellow-100))',
+				},
+				red: {
+					50: 'hsl(var(--red-50))',
+					700: 'hsl(var(--red-700))',
+					DEFAULT: 'hsl(var(--red-700))',
+					light: 'hsl(var(--red-50))',
+				},
+				// Legacy colors for backward compatibility
 				purple: {
 					DEFAULT: 'hsl(var(--purple))',
 					light: 'hsl(var(--purple-light))',
 				},
-				green: {
-					DEFAULT: 'hsl(var(--green))',
-					light: 'hsl(var(--green-light))',
-				},
 				orange: {
 					DEFAULT: 'hsl(var(--orange))',
 					light: 'hsl(var(--orange-light))',
-				},
-				red: {
-					DEFAULT: 'hsl(var(--red))',
-					light: 'hsl(var(--red-light))',
-				},
-				yellow: {
-					DEFAULT: 'hsl(var(--yellow))',
-					light: 'hsl(var(--yellow-light))',
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',

@@ -64,8 +64,8 @@ export const FleetSidebar: React.FC = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-start space-x-2">
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Fleet Management</h2>
-            <p className="text-sm text-gray-600">Manage vehicles & operations</p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-1">Fleet Management</h2>
+            <p className="text-base font-normal text-gray-500">Manage vehicles & operations</p>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ export const FleetSidebar: React.FC = () => {
                 "flex items-center justify-between w-full p-3 rounded-lg text-sm transition-colors group",
                 isActive
                   ? "bg-blue-600 text-white"
-                  : "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-700 hover:bg-gray-50"
               )
             }
           >
@@ -90,8 +90,8 @@ export const FleetSidebar: React.FC = () => {
                 "w-4 h-4 flex-shrink-0"
               )} />
               <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">{item.title}</div>
-                <div className="text-xs truncate text-gray-500 group-[.bg-blue-600]:text-blue-100">{item.description}</div>
+                <div className="text-sm font-medium truncate">{item.title}</div>
+                <div className="text-xs font-normal truncate text-gray-500 group-[.bg-blue-600]:text-blue-100">{item.description}</div>
               </div>
             </div>
             {item.badge && (
