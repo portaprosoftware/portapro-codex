@@ -67,7 +67,9 @@ h1, h2, h3, h4 {
   align-items: center;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  color: var(--color-secondary);
+  color: #09090B;
+  font-size: 14px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
   text-decoration: none;
   transition: background .2s;
 }
@@ -76,7 +78,7 @@ h1, h2, h3, h4 {
 }
 .nav-item-active {
   background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end)) !important;
-  color: #FFF !important;
+  color: #FFFFFF !important;
 }
 
 /* Top "Dashboard / Jobs / …" pills */
