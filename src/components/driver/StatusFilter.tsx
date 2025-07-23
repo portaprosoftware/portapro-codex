@@ -11,7 +11,7 @@ interface StatusFilterProps {
 const statusOptions = [
   { value: 'all' as const, label: 'All', count: 0 },
   { value: 'assigned' as const, label: 'Assigned', count: 0 },
-  { value: 'in_progress' as const, label: 'In Progress', count: 0 },
+  { value: 'in-progress' as const, label: 'In Progress', count: 0 },
   { value: 'completed' as const, label: 'Completed', count: 0 }
 ];
 

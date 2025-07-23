@@ -28,8 +28,7 @@ export const DriverDashboard: React.FC = () => {
         .select(`
           *,
           customers (
-            name,
-            business_name
+            name
           )
         `)
         .eq('driver_id', user.id)
@@ -46,7 +45,6 @@ export const DriverDashboard: React.FC = () => {
   const filteredJobs = jobs?.filter(job => {
     const matchesSearch = !searchQuery || 
       job.customers?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.customers?.business_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.job_number.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || job.status === statusFilter;

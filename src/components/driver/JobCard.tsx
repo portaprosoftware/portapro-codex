@@ -11,13 +11,12 @@ interface Job {
   id: string;
   job_number: string;
   job_type: string;
-  status: JobStatus;
+  status: string;
   scheduled_date: string;
   scheduled_time?: string;
   notes?: string;
   customers: {
     name?: string;
-    business_name?: string;
   } | null;
 }
 
@@ -29,13 +28,13 @@ interface JobCardProps {
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-800',
   assigned: 'bg-blue-100 text-blue-800',
-  in_progress: 'bg-orange-100 text-orange-800',
+  'in-progress': 'bg-orange-100 text-orange-800',
   completed: 'bg-green-100 text-green-800',
   cancelled: 'bg-red-100 text-red-800'
 };
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
-  const customerName = job.customers?.business_name || job.customers?.name || 'Unknown Customer';
+  const customerName = job.customers?.name || 'Unknown Customer';
   const customerInitials = customerName
     .split(' ')
     .map(word => word.charAt(0))
@@ -73,8 +72,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             </div>
           </div>
           
-          <Badge className={statusColors[job.status]}>
-            {job.status.replace('_', ' ')}
+          <Badge className={statusColors[job.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}>
+            {job.status.replace(/-/g, ' ')}
           </Badge>
         </div>
 
