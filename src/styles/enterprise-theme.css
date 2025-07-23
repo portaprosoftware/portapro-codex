@@ -77,8 +77,12 @@ h1, h2, h3, h4 {
   background: var(--color-hover);
 }
 .nav-item-active {
-  background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end)) !important;
-  color: #FFFFFF !important;
+  background: hsl(var(--sidebar-accent)) !important;
+  color: hsl(var(--sidebar-accent-foreground)) !important;
+  font-weight: 500 !important;
+  height: 32px;
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
 /* Top "Dashboard / Jobs / …" pills */
