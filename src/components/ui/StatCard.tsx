@@ -2,6 +2,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCountUp } from '@/hooks/useCountUp';
 
 interface StatCardProps {
   title: string;
@@ -14,6 +15,8 @@ interface StatCardProps {
   subtitleColor?: string;
   chart?: React.ReactNode;
   className?: string;
+  animateValue?: boolean;
+  delay?: number;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -26,54 +29,77 @@ export const StatCard: React.FC<StatCardProps> = ({
   subtitle,
   subtitleColor = "text-gray-600",
   chart,
-  className
+  className,
+  animateValue = true,
+  delay = 0
 }) => {
+  // Extract numeric value for animation
+  const numericValue = typeof value === 'string' ? 
+    parseInt(value.replace(/[^0-9]/g, '')) || 0 : 
+    value;
+  
+  const animatedValue = useCountUp({
+    end: numericValue,
+    duration: 600,
+    delay: delay
+  });
+
+  // Format the animated value back to original format
+  const displayValue = animateValue && typeof value === 'number' ? 
+    animatedValue : 
+    typeof value === 'string' && animateValue ? 
+      value.replace(/[0-9,]+/, animatedValue.toLocaleString()) : 
+      value;
+
   return (
     <div className={cn(
-      "bg-white rounded-xl border border-gray-200 p-4 relative overflow-hidden transition-all duration-200 hover:shadow-md mb-6",
-      "hover:shadow-[0_1px_3px_rgba(0,0,0,0.1)]",
+      "relative overflow-hidden transition-all duration-300 ease-out",
+      "bg-gradient-to-b from-[#F6F9FF] to-white",
+      "rounded-xl border border-gray-200 shadow-sm",
+      "hover:shadow-md hover:-translate-y-1",
+      "p-6 mb-6",
       className
     )}>
       {/* Gradient left border */}
       <div 
-        className="absolute left-0 top-0 bottom-0 w-1"
+        className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
         style={{
           background: `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`
         }}
       />
       
       {/* Icon container */}
-      <div className="flex justify-end mb-3">
+      <div className="flex justify-end mb-4">
         <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm"
+          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-sm transition-all duration-200"
           style={{ 
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
           }}
         >
-          <Icon className="w-5 h-5 text-white" />
+          <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
         </div>
       </div>
       
       {/* Value */}
-      <div className="text-[32px] font-semibold text-gray-900 leading-none mb-1">
-        {value}
+      <div className="text-3xl font-bold text-gray-900 leading-none mb-2 font-sans">
+        {displayValue}
       </div>
       
       {/* Title */}
-      <div className="text-base font-semibold text-gray-900 mb-2">
+      <div className="text-base font-semibold text-gray-900 mb-2 font-sans">
         {title}
       </div>
       
       {/* Subtitle */}
       {subtitle && (
-        <div className={cn("text-sm font-normal", subtitleColor)}>
+        <div className={cn("text-sm font-medium font-sans", subtitleColor)}>
           {subtitle}
         </div>
       )}
       
       {/* Chart */}
       {chart && (
-        <div className="mt-3">
+        <div className="mt-4">
           {chart}
         </div>
       )}

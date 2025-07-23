@@ -63,9 +63,9 @@
     --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.5);
     
     /* Gradients - Updated for Enterprise Theme */
-    --gradient-primary: linear-gradient(135deg, #1C44BC 0%, #2F80ED 100%);
-    --gradient-hero: linear-gradient(135deg, #1C44BC 0%, #2F80ED 50%, #6B7280 100%);
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+    --gradient-primary: linear-gradient(135deg, #2F4F9A 0%, #1E3A8A 100%);
+    --gradient-hero: linear-gradient(135deg, #2F4F9A 0%, #1E3A8A 50%, #6B7280 100%);
+    --gradient-card: linear-gradient(180deg, #F6F9FF 0%, #FFFFFF 100%);
     
     /* Transitions */
     --transition-smooth: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -115,33 +115,52 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #f9fafb;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
 /* Enterprise Theme Overrides */
 @layer utilities {
   .gradient-primary {
-    background: linear-gradient(20deg, #1C44BC, #2F80ED);
+    background: linear-gradient(135deg, #2F4F9A, #1E3A8A);
   }
   
   .btn-enterprise {
-    @apply font-medium text-white rounded-lg transition-all duration-200 hover:shadow-md;
-    background: linear-gradient(20deg, #1C44BC, #2F80ED);
+    @apply font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+    background: linear-gradient(135deg, #2F4F9A, #1E3A8A);
+    font-family: 'Inter', sans-serif;
+    will-change: transform, box-shadow;
+  }
+  
+  .btn-enterprise:hover {
+    background: linear-gradient(135deg, #1E3A8A, #2F4F9A);
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 border border-gray-200 rounded-xl font-semibold transition-all duration-200 hover:bg-gray-200 hover:shadow-md hover:-translate-y-0.5;
+    font-family: 'Inter', sans-serif;
+    will-change: transform, box-shadow;
   }
   
   .card-enterprise {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm p-4;
+    @apply border border-gray-200 rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md;
+    background: linear-gradient(180deg, #F6F9FF 0%, #FFFFFF 100%);
   }
   
   .nav-enterprise {
-    @apply flex items-center px-3 py-2 text-gray-500 rounded-lg transition-colors duration-200;
+    @apply flex items-center px-3 py-2 text-gray-500 rounded-lg transition-all duration-200 font-medium;
+    font-family: 'Inter', sans-serif;
   }
   
   .nav-enterprise-active {
     @apply text-white;
-    background: linear-gradient(20deg, #1C44BC, #2F80ED);
+    background: linear-gradient(135deg, #2F4F9A, #1E3A8A);
+  }
+  
+  .font-sans {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
