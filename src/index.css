@@ -131,20 +131,32 @@
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
   }
   
-  /* Sidebar Navigation Styling */
-  .sidebar .nav-item {
-    @apply font-semibold text-base; /* bold & larger text */
-    @apply py-3 px-4; /* chunkier padding */
-    @apply flex items-center gap-3; /* proper alignment and spacing */
-    @apply transition-all duration-200; /* smooth transitions */
+  /* Sidebar Navigation Styling - Exact pixel values with !important */
+  .sidebar .sidebar-nav .nav-item {
+    font-weight: 600 !important;         /* semibold */
+    font-size: 0.875rem !important;      /* 14px exactly */
+    line-height: 1.25rem !important;     /* 20px line-height */
+    padding: 0.75rem 1rem !important;    /* 12px top/bottom, 16px left/right */
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;             /* 12px gap */
+    transition: all 0.2s ease !important;
+    border-radius: 0.5rem !important;    /* rounded-lg */
   }
   
-  .sidebar .nav-item.active {
-    @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg;
+  .sidebar .sidebar-nav .nav-item.active {
+    background-color: transparent !important;              /* wipe any flat bg */
+    background-image: linear-gradient(                     /* force the gradient */
+      to right,
+      #2563EB 0%,
+      #1D4ED8 100%
+    ) !important;
+    color: #ffffff !important;
   }
   
-  .sidebar .nav-item:not(.active):hover {
-    @apply bg-gray-100 text-gray-800;
+  .sidebar .sidebar-nav .nav-item:not(.active):hover {
+    background-color: #F3F4F6 !important;  /* gray-100 */
+    color: #1F2937 !important;             /* gray-800 */
   }
   
   /* Global Primary Button Override - Flat Blue Only */
