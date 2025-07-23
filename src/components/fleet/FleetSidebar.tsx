@@ -19,35 +19,17 @@ import { Badge } from "@/components/ui/badge";
 const navigationItems = [
   {
     title: "Fleet Overview",
-    href: "/fleet",
+    href: "/fleet-management",
     icon: Truck,
     description: "All vehicles",
     end: true
   },
   {
-    title: "Load Management",
-    href: "/fleet/loads",
-    icon: Package,
-    description: "Vehicle capacity & loads",
-    badge: "3"
-  },
-  {
-    title: "Analytics",
-    href: "/fleet/analytics",
-    icon: BarChart3,
-    description: "Performance insights"
-  },
-  {
-    title: "Capacity Config",
-    href: "/fleet/capacity",
-    icon: Settings,
-    description: "Vehicle configurations"
-  },
-  {
-    title: "Compliance Reports",
-    href: "/fleet/compliance-reports",
-    icon: Shield,
-    description: "Compliance monitoring"
+    title: "Compliance",
+    href: "/fleet/compliance",
+    icon: AlertTriangle,
+    description: "Insurance & Registration...",
+    badge: "6"
   },
   {
     title: "Assignments",
@@ -61,13 +43,6 @@ const navigationItems = [
     icon: Wrench,
     description: "Service & repairs",
     badge: "1"
-  },
-  {
-    title: "Compliance",
-    href: "/fleet/compliance",
-    icon: AlertTriangle,
-    description: "Insurance & Registration",
-    badge: "6"
   },
   {
     title: "Fuel",
@@ -85,18 +60,17 @@ const navigationItems = [
 
 export const FleetSidebar: React.FC = () => {
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-full">
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-2">
-          <Truck className="w-6 h-6 text-blue-600" />
-          <div>
-            <h2 className="font-bold text-gray-900">Fleet Management</h2>
+    <div className="w-64 bg-white border-r border-gray-200 h-full flex-shrink-0">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-start space-x-2">
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">Fleet Management</h2>
             <p className="text-sm text-gray-600">Manage vehicles & operations</p>
           </div>
         </div>
       </div>
 
-      <nav className="p-4 space-y-1">
+      <nav className="p-4 space-y-2">
         {navigationItems.map((item) => (
           <NavLink
             key={item.href}
@@ -104,22 +78,27 @@ export const FleetSidebar: React.FC = () => {
             end={item.end}
             className={({ isActive }) =>
               cn(
-                "flex items-center justify-between w-full p-3 rounded-lg text-sm transition-colors",
+                "flex items-center justify-between w-full p-3 rounded-lg text-sm transition-colors group",
                 isActive
-                  ? "bg-blue-50 text-blue-700 border border-blue-200"
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
               )
             }
           >
-            <div className="flex items-center space-x-3">
-              <item.icon className="w-5 h-5" />
-              <div>
-                <div className="font-medium">{item.title}</div>
-                <div className="text-xs text-gray-500">{item.description}</div>
+            <div className="flex items-center space-x-3 min-w-0 flex-1">
+              <item.icon className={cn(
+                "w-4 h-4 flex-shrink-0"
+              )} />
+              <div className="min-w-0 flex-1">
+                <div className="font-medium truncate">{item.title}</div>
+                <div className="text-xs truncate text-gray-500 group-[.bg-blue-600]:text-blue-100">{item.description}</div>
               </div>
             </div>
             {item.badge && (
-              <Badge variant="destructive" className="h-5 text-xs">
+              <Badge 
+                variant="destructive" 
+                className="h-5 text-xs flex-shrink-0 ml-2"
+              >
                 {item.badge}
               </Badge>
             )}

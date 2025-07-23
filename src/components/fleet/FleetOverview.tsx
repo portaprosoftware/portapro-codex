@@ -8,6 +8,7 @@ import { VehicleCard } from "./VehicleCard";
 import { VehicleDetailModal } from "./VehicleDetailModal";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
+import { FleetSidebar } from "./FleetSidebar";
 import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -73,37 +74,16 @@ export const FleetOverview: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
-          <p className="text-gray-600 mt-1">All vehicles</p>
+    <div className="flex h-full">
+      <FleetSidebar />
+      <div className="flex-1 space-y-6 p-6">
+        {/* Page Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Fleet Overview</h1>
+            <p className="text-gray-600 mt-1">{statusCounts.all} of {statusCounts.all} vehicles</p>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant={pageMode === "overview" ? "default" : "outline"}
-            onClick={() => setPageMode("overview")}
-          >
-            <Truck className="w-4 h-4 mr-2" />
-            Overview
-          </Button>
-          <Button
-            variant={pageMode === "management" ? "default" : "outline"}
-            onClick={() => setPageMode("management")}
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Manage
-          </Button>
-          <Button
-            variant={pageMode === "fuel" ? "default" : "outline"}
-            onClick={() => setPageMode("fuel")}
-          >
-            <Fuel className="w-4 h-4 mr-2" />
-            Fuel
-          </Button>
-        </div>
-      </div>
 
       {/* Search and Controls */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
@@ -190,6 +170,7 @@ export const FleetOverview: React.FC = () => {
           }}
         />
       )}
+      </div>
     </div>
   );
 };
