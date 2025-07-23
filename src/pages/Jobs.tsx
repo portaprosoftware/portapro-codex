@@ -141,275 +141,290 @@ const JobsPage: React.FC = () => {
   };
 
   return (
-    <div className="container-modern py-6 space-y-6">
-      <PageHeader title="Jobs" subtitle="Schedule and manage job assignments" />
-      
-      {/* Jobs Sub-Navigation */}
-      <div className="flex justify-between items-center">
-        <TabNav ariaLabel="Jobs views">
-          <TabNav.Item 
-            to="/jobs/calendar" 
-            isActive={activeTab === 'calendar'}
-            onClick={() => navigateToTab('calendar')}
-          >
-            <CalendarIcon className="w-4 h-4 mr-2" />
-            Calendar
-          </TabNav.Item>
-          <TabNav.Item 
-            to="/jobs/dispatch" 
-            isActive={activeTab === 'dispatch'}
-            onClick={() => navigateToTab('dispatch')}
-          >
-            <ClipboardList className="w-4 h-4 mr-2" />
-            Dispatch
-          </TabNav.Item>
-          <TabNav.Item 
-            to="/jobs/map" 
-            isActive={activeTab === 'map'}
-            onClick={() => navigateToTab('map')}
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Map
-          </TabNav.Item>
-        </TabNav>
-
-        {/* Actions */}
-        {activeTab === 'calendar' && (
-          <div className="flex items-center space-x-3">
-            <FiltersFlyout
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedDriver={selectedDriver}
-              onDriverChange={setSelectedDriver}
-              selectedJobType={selectedJobType}
-              onJobTypeChange={setSelectedJobType}
-              selectedStatus={selectedStatus}
-              onStatusChange={setSelectedStatus}
-              drivers={drivers}
-            />
-            <Button 
-              onClick={() => setIsJobWizardOpen(true)}
-              className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Schedule Job
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {activeTab === 'calendar' && (
-        <div className="space-y-6">
-          {/* Enhanced Calendar Header */}
-          <div className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] rounded-2xl p-6 text-white shadow-lg">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-4">
-                  <h3 className="text-xl font-bold">Going Out</h3>
-                  <DateNavigator
-                    date={selectedDateOut}
-                    onDateChange={setSelectedDateOut}
-                    label="Going Out"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <DateNavigator
-                  date={selectedDateBack}
-                  onDateChange={setSelectedDateBack}
-                  label="Coming Back"
-                />
-                <h3 className="text-xl font-bold">Coming Back</h3>
-              </div>
-            </div>
-          </div>
-
-          {/* Two Column Layout */}
-          <div className="grid grid-cols-2 gap-6">
-            {/* Going Out Column */}
-            <div className="space-y-4">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
-                <div className="p-4 border-b border-gray-100">
-                  <h4 className="font-semibold text-gray-900 flex items-center">
-                    <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full mr-2"></div>
-                    Outgoing Jobs ({filterJobs(outgoingJobs).length})
-                  </h4>
-                </div>
-                
-                <div className="p-4">
-                  {filterJobs(outgoingJobs).length > 0 ? (
-                    <div className="space-y-4">
-                      {filterJobs(outgoingJobs).map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          onStart={handleJobStart}
-                          onStatusUpdate={handleJobStatusUpdate}
-                          onEquipmentAssign={handleEquipmentAssign}
-                          compact
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium">No jobs scheduled</p>
-                      <p className="text-sm">No outgoing jobs for this date</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Coming Back Column */}
-            <div className="space-y-4">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
-                <div className="p-4 border-b border-gray-100">
-                  <h4 className="font-semibold text-gray-900 flex items-center">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mr-2"></div>
-                    Incoming Jobs ({incomingJobs.length})
-                  </h4>
-                </div>
-                
-                <div className="p-4">
-                  {incomingJobs.length > 0 ? (
-                    <div className="space-y-4">
-                      {incomingJobs.map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          onStart={handleJobStart}
-                          onStatusUpdate={handleJobStatusUpdate}
-                          compact
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium">No pickups scheduled</p>
-                      <p className="text-sm">No incoming jobs for this date</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container-modern py-8 space-y-8">
+        {/* Page Header with Enhanced Typography */}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-gray-900 font-inter">Jobs</h1>
+          <p className="text-gray-600 text-base font-inter">Schedule and manage job assignments</p>
         </div>
-      )}
-      
-      {activeTab === 'dispatch' && (
-        <div className="flex gap-6">
-          {/* Left Panel: Unassigned Jobs */}
-          <div className="w-72 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center mb-4">
-              <AlertTriangle className="w-5 h-5 text-orange-500 mr-2" />
-              <h3 className="text-lg font-semibold">Unassigned Jobs</h3>
-              <Badge className="ml-2 bg-orange-500 text-white">{unassignedJobs.length}</Badge>
-            </div>
-            
-            <div className="space-y-3">
-              {unassignedJobs.map(job => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  onView={handleJobView}
-                  onStart={handleJobStart}
-                  onStatusUpdate={handleJobStatusUpdate}
-                  compact
-                />
-              ))}
-            </div>
-            
-            {unassignedJobs.length === 0 && (
-              <div className="text-center py-10">
-                <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-lg font-medium text-gray-500">No unassigned jobs</p>
-                <p className="text-gray-400 text-sm">All jobs have been assigned to drivers</p>
-              </div>
-            )}
+        
+        {/* Jobs Sub-Navigation with Enhanced Spacing */}
+        <div className="flex justify-between items-center pt-4">
+          <div className="enterprise-tabs">
+            <TabNav ariaLabel="Jobs views">
+              <TabNav.Item 
+                to="/jobs/calendar" 
+                isActive={activeTab === 'calendar'}
+                onClick={() => navigateToTab('calendar')}
+              >
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                Calendar
+              </TabNav.Item>
+              <TabNav.Item 
+                to="/jobs/dispatch" 
+                isActive={activeTab === 'dispatch'}
+                onClick={() => navigateToTab('dispatch')}
+              >
+                <ClipboardList className="w-4 h-4 mr-2" />
+                Dispatch
+              </TabNav.Item>
+              <TabNav.Item 
+                to="/jobs/map" 
+                isActive={activeTab === 'map'}
+                onClick={() => navigateToTab('map')}
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Map
+              </TabNav.Item>
+            </TabNav>
           </div>
 
-          {/* Main Panel: Dispatch Board */}
-          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200">
-            {/* Header */}
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold">Dispatch Board</h2>
-                  <p className="text-sm text-gray-600">Manage driver schedules and job assignments</p>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <DateNavigator
-                    date={dispatchDate}
-                    onDateChange={setDispatchDate}
-                    label="Dispatch Date"
-                  />
+          {/* Actions with Enhanced Spacing */}
+          {activeTab === 'calendar' && (
+            <div className="flex items-center space-x-4">
+              <FiltersFlyout
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                selectedDriver={selectedDriver}
+                onDriverChange={setSelectedDriver}
+                selectedJobType={selectedJobType}
+                onJobTypeChange={setSelectedJobType}
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
+                drivers={drivers}
+              />
+              <Button 
+                onClick={() => setIsJobWizardOpen(true)}
+                className="btn-enterprise"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Schedule Job
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Content Area with Enhanced Spacing */}
+        <div className="space-y-8">
+          {activeTab === 'calendar' && (
+            <div className="space-y-8">
+              {/* Enhanced Calendar Header */}
+              <div className="enterprise-gradient-header">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-12">
+                    <div className="flex items-center space-x-4">
+                      <h2 className="text-xl font-semibold text-white font-inter">Going Out</h2>
+                      <DateNavigator
+                        date={selectedDateOut}
+                        onDateChange={setSelectedDateOut}
+                        label="Going Out"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <DateNavigator
+                      date={selectedDateBack}
+                      onDateChange={setSelectedDateBack}
+                      label="Coming Back"
+                    />
+                    <h2 className="text-xl font-semibold text-white font-inter">Coming Back</h2>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Driver Columns */}
-            <div className="p-6">
-              <div className="grid grid-cols-3 gap-6">
-                {drivers.slice(0, 3).map(driver => {
-                  const driverJobs = getJobsByDriver(driver.id);
-                  
-                  return (
-                    <div key={driver.id} className="space-y-4">
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                            <User className="w-5 h-5 text-gray-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              {driver.first_name} {driver.last_name}
-                            </h4>
-                            <Badge className={driverJobs.length > 0 ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-600"}>
-                              {driverJobs.length} assigned
-                            </Badge>
-                          </div>
+
+              {/* Two Column Layout with Enhanced Spacing */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Going Out Column */}
+                <div className="space-y-6">
+                  <div className="enterprise-card">
+                    <div className="enterprise-card-header">
+                      <h3 className="text-lg font-semibold text-gray-900 font-inter flex items-center">
+                        <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full mr-3"></div>
+                        Outgoing Jobs ({filterJobs(outgoingJobs).length})
+                      </h3>
+                    </div>
+                    
+                    <div className="enterprise-card-content">
+                      {filterJobs(outgoingJobs).length > 0 ? (
+                        <div className="space-y-4">
+                          {filterJobs(outgoingJobs).map(job => (
+                            <JobCard
+                              key={job.id}
+                              job={job}
+                              onView={handleJobView}
+                              onStart={handleJobStart}
+                              onStatusUpdate={handleJobStatusUpdate}
+                              onEquipmentAssign={handleEquipmentAssign}
+                              compact
+                            />
+                          ))}
                         </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {driverJobs.map(job => (
-                          <JobCard
-                            key={job.id}
-                            job={job}
-                            onView={handleJobView}
-                            onStart={handleJobStart}
-                            onStatusUpdate={handleJobStatusUpdate}
-                            compact
-                          />
-                        ))}
-                      </div>
-                      
-                      {driverJobs.length === 0 && (
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 min-h-[200px] flex items-center justify-center">
-                          <div className="text-center text-gray-400">
-                            <ClipboardList className="w-8 h-8 mx-auto mb-2" />
-                            <p className="text-sm">Drop jobs here to assign to {driver.first_name}</p>
-                          </div>
+                      ) : (
+                        <div className="enterprise-empty-state">
+                          <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                          <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
+                          <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
                         </div>
                       )}
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
+
+                {/* Coming Back Column */}
+                <div className="space-y-6">
+                  <div className="enterprise-card">
+                    <div className="enterprise-card-header">
+                      <h3 className="text-lg font-semibold text-gray-900 font-inter flex items-center">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mr-3"></div>
+                        Incoming Jobs ({incomingJobs.length})
+                      </h3>
+                    </div>
+                    
+                    <div className="enterprise-card-content">
+                      {incomingJobs.length > 0 ? (
+                        <div className="space-y-4">
+                          {incomingJobs.map(job => (
+                            <JobCard
+                              key={job.id}
+                              job={job}
+                              onView={handleJobView}
+                              onStart={handleJobStart}
+                              onStatusUpdate={handleJobStatusUpdate}
+                              compact
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="enterprise-empty-state">
+                          <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                          <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
+                          <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+          
+          {activeTab === 'dispatch' && (
+            <div className="flex gap-8">
+              {/* Left Panel: Unassigned Jobs with Enhanced Spacing */}
+              <div className="w-80 enterprise-card">
+                <div className="enterprise-card-header">
+                  <div className="flex items-center">
+                    <AlertTriangle className="w-5 h-5 text-orange-500 mr-3" />
+                    <h2 className="text-xl font-semibold text-gray-900 font-inter">Unassigned Jobs</h2>
+                    <Badge className="ml-3 bg-orange-500 text-white font-inter">{unassignedJobs.length}</Badge>
+                  </div>
+                </div>
+                
+                <div className="enterprise-card-content">
+                  <div className="space-y-4">
+                    {unassignedJobs.map(job => (
+                      <JobCard
+                        key={job.id}
+                        job={job}
+                        onView={handleJobView}
+                        onStart={handleJobStart}
+                        onStatusUpdate={handleJobStatusUpdate}
+                        compact
+                      />
+                    ))}
+                  </div>
+                  
+                  {unassignedJobs.length === 0 && (
+                    <div className="enterprise-empty-state">
+                      <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg font-medium text-gray-500 font-inter">No unassigned jobs</p>
+                      <p className="text-gray-400 text-sm font-inter">All jobs have been assigned to drivers</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Panel: Dispatch Board with Enhanced Spacing */}
+              <div className="flex-1 enterprise-card">
+                {/* Header */}
+                <div className="enterprise-card-header border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900 font-inter">Dispatch Board</h2>
+                      <p className="text-sm text-gray-600 font-inter mt-1">Manage driver schedules and job assignments</p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <DateNavigator
+                        date={dispatchDate}
+                        onDateChange={setDispatchDate}
+                        label="Dispatch Date"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Driver Columns with Enhanced Spacing */}
+                <div className="enterprise-card-content">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {drivers.slice(0, 3).map(driver => {
+                      const driverJobs = getJobsByDriver(driver.id);
+                      
+                      return (
+                        <div key={driver.id} className="space-y-4">
+                          <div className="enterprise-driver-header">
+                            <div className="flex items-center">
+                              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                                <User className="w-5 h-5 text-gray-600" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-900 font-inter">
+                                  {driver.first_name} {driver.last_name}
+                                </h4>
+                                <Badge className={driverJobs.length > 0 ? "bg-blue-500 text-white font-inter" : "bg-gray-300 text-gray-600 font-inter"}>
+                                  {driverJobs.length} assigned
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-4">
+                            {driverJobs.map(job => (
+                              <JobCard
+                                key={job.id}
+                                job={job}
+                                onView={handleJobView}
+                                onStart={handleJobStart}
+                                onStatusUpdate={handleJobStatusUpdate}
+                                compact
+                              />
+                            ))}
+                          </div>
+                          
+                          {driverJobs.length === 0 && (
+                            <div className="enterprise-drop-zone">
+                              <div className="text-center text-gray-400">
+                                <ClipboardList className="w-8 h-8 mx-auto mb-2" />
+                                <p className="text-sm font-inter">Drop jobs here to assign to {driver.first_name}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {activeTab === 'map' && (
+            <JobsMapPage />
+          )}
         </div>
-      )}
-      
-      {activeTab === 'map' && (
-        <JobsMapPage />
-      )}
+      </div>
       
       {/* Job Creation Wizard */}
       <JobCreationWizard 

@@ -110,7 +110,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   if (compact) {
     return (
-      <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 border-l-4 border-l-transparent hover:border-l-blue-500 bg-gradient-to-b from-[#F6F9FF] to-white">
+      <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white border-l-4 border-l-transparent hover:border-l-blue-500">
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center space-x-3">
@@ -122,17 +122,17 @@ export const JobCard: React.FC<JobCardProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-sm text-gray-900">{job.job_number}</span>
+                  <span className="font-bold text-sm text-gray-900 font-inter">{job.job_number}</span>
                   <span className="text-xs text-gray-500">•</span>
-                  <span className="font-semibold text-sm text-gray-900 truncate">{job.customers.name}</span>
+                  <span className="font-semibold text-sm text-gray-900 truncate font-inter">{job.customers.name}</span>
                 </div>
-                <div className={cn("text-xs font-medium", jobTypeInfo.textColor)}>
+                <div className={cn("text-xs font-medium font-inter", jobTypeInfo.textColor)}>
                   {jobTypeInfo.label}
                 </div>
               </div>
             </div>
             
-            <Badge className={cn("text-white text-xs", statusInfo.color)}>
+            <Badge className={cn("text-white text-xs font-inter", statusInfo.color)}>
               {statusInfo.label}
             </Badge>
           </div>
@@ -140,26 +140,26 @@ export const JobCard: React.FC<JobCardProps> = ({
           <div className="space-y-1 mb-3">
             <div className="flex items-center text-xs text-gray-600">
               <Clock className="w-3 h-3 mr-1" />
-              {format(new Date(job.scheduled_date), 'MMM d')}
-              {job.scheduled_time && ` at ${job.scheduled_time}`}
+              <span className="font-inter">{format(new Date(job.scheduled_date), 'MMM d')}</span>
+              {job.scheduled_time && <span className="font-inter"> at {job.scheduled_time}</span>}
             </div>
             {job.profiles && (
               <div className="flex items-center text-xs text-gray-600">
                 <User className="w-3 h-3 mr-1" />
-                {job.profiles.first_name} {job.profiles.last_name}
+                <span className="font-inter">{job.profiles.first_name} {job.profiles.last_name}</span>
               </div>
             )}
           </div>
           
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1 text-xs">
+            <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1 text-xs font-inter">
               <Eye className="w-3 h-3 mr-1" />
               View
             </Button>
             <Button 
               size="sm" 
               onClick={handleStartJob}
-              className="flex-1 bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white text-xs"
+              className="flex-1 btn-enterprise text-xs"
             >
               <Play className="w-3 h-3 mr-1" />
               {job.status === 'assigned' ? 'Start' : 'View'}
@@ -171,7 +171,7 @@ export const JobCard: React.FC<JobCardProps> = ({
   }
 
   return (
-    <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 border-l-4 border-l-transparent hover:border-l-blue-500 bg-gradient-to-b from-[#F6F9FF] to-white">
+    <Card className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white border-l-4 border-l-transparent hover:border-l-blue-500">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
@@ -182,13 +182,13 @@ export const JobCard: React.FC<JobCardProps> = ({
               <JobTypeIcon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <CardTitle className="text-lg font-bold">{job.job_number}</CardTitle>
-              <span className={cn("text-sm font-medium", jobTypeInfo.textColor)}>
+              <CardTitle className="text-lg font-bold font-inter">{job.job_number}</CardTitle>
+              <span className={cn("text-sm font-medium font-inter", jobTypeInfo.textColor)}>
                 {jobTypeInfo.label}
               </span>
             </div>
           </div>
-          <Badge className={cn("text-white", statusInfo.color)}>
+          <Badge className={cn("text-white font-inter", statusInfo.color)}>
             {statusInfo.label}
           </Badge>
         </div>
@@ -196,11 +196,11 @@ export const JobCard: React.FC<JobCardProps> = ({
       
       <CardContent className="space-y-4">
         <div>
-          <h4 className="font-semibold text-gray-900 mb-2">{job.customers.name}</h4>
+          <h4 className="font-semibold text-gray-900 mb-2 font-inter">{job.customers.name}</h4>
           {job.customers.service_street && (
             <div className="flex items-start text-sm text-gray-600">
               <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-              <span>
+              <span className="font-inter">
                 {job.customers.service_street}
                 {job.customers.service_city && `, ${job.customers.service_city}`}
                 {job.customers.service_state && `, ${job.customers.service_state}`}
@@ -212,7 +212,7 @@ export const JobCard: React.FC<JobCardProps> = ({
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center text-gray-600">
             <Clock className="w-4 h-4 mr-2" />
-            <span>
+            <span className="font-inter">
               {format(new Date(job.scheduled_date), 'MMM d, yyyy')}
               {job.scheduled_time && ` at ${job.scheduled_time}`}
             </span>
@@ -221,41 +221,41 @@ export const JobCard: React.FC<JobCardProps> = ({
           {job.profiles && (
             <div className="flex items-center text-gray-600">
               <User className="w-4 h-4 mr-2" />
-              <span>{job.profiles.first_name} {job.profiles.last_name}</span>
+              <span className="font-inter">{job.profiles.first_name} {job.profiles.last_name}</span>
             </div>
           )}
         </div>
         
         {job.vehicles && (
           <div className="text-sm text-gray-600">
-            <strong>Vehicle:</strong> {job.vehicles.license_plate} ({job.vehicles.vehicle_type})
+            <strong className="font-inter">Vehicle:</strong> <span className="font-inter">{job.vehicles.license_plate} ({job.vehicles.vehicle_type})</span>
           </div>
         )}
         
         {job.notes && (
-          <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            <strong>Notes:</strong> {job.notes}
+          <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+            <strong className="font-inter">Notes:</strong> <span className="font-inter">{job.notes}</span>
           </div>
         )}
         
         <div className="flex space-x-2 pt-2">
-          <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1">
+          <Button variant="outline" size="sm" onClick={handleViewJob} className="flex-1 font-inter">
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </Button>
           
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1 font-inter">
             <Phone className="w-4 h-4 mr-2" />
             Call
           </Button>
           
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1 font-inter">
             <MessageSquare className="w-4 h-4 mr-2" />
             Message
           </Button>
           
           {onEquipmentAssign && (
-            <Button variant="outline" size="sm" onClick={() => onEquipmentAssign(job.id)} className="flex-1">
+            <Button variant="outline" size="sm" onClick={() => onEquipmentAssign(job.id)} className="flex-1 font-inter">
               <Package className="w-4 h-4 mr-2" />
               Equipment
             </Button>
@@ -264,7 +264,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           <Button 
             size="sm" 
             onClick={handleStartJob}
-            className="flex-1 bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] hover:from-[#1E3A8A] hover:to-[#2F4F9A] text-white"
+            className="flex-1 btn-enterprise"
           >
             <Play className="w-4 h-4 mr-2" />
             {job.status === 'assigned' ? 'Start Job' : 'Continue'}
