@@ -142,44 +142,48 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="container-modern py-6 space-y-6">
-      <PageHeader title="Jobs" subtitle="Schedule and manage job assignments">
-        <div className="flex items-center space-x-4">
-          <TabNav>
-            <TabNav.Item 
-              to="/jobs/calendar" 
-              isActive={activeTab === 'calendar'}
-              onClick={() => navigateToTab('calendar')}
-            >
-              <CalendarIcon className="w-4 h-4 mr-2" />
-              Calendar
-            </TabNav.Item>
-            <TabNav.Item 
-              to="/jobs/dispatch" 
-              isActive={activeTab === 'dispatch'}
-              onClick={() => navigateToTab('dispatch')}
-            >
-              <ClipboardList className="w-4 h-4 mr-2" />
-              Dispatch
-            </TabNav.Item>
-            <TabNav.Item 
-              to="/jobs/map" 
-              isActive={activeTab === 'map'}
-              onClick={() => navigateToTab('map')}
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              Map
-            </TabNav.Item>
-          </TabNav>
+      <PageHeader title="Jobs" subtitle="Schedule and manage job assignments" />
+      
+      {/* Jobs Sub-Navigation */}
+      <div className="flex justify-between items-center">
+        <TabNav ariaLabel="Jobs views">
+          <TabNav.Item 
+            to="/jobs/calendar" 
+            isActive={activeTab === 'calendar'}
+            onClick={() => navigateToTab('calendar')}
+          >
+            <CalendarIcon className="w-4 h-4 mr-2" />
+            Calendar
+          </TabNav.Item>
+          <TabNav.Item 
+            to="/jobs/dispatch" 
+            isActive={activeTab === 'dispatch'}
+            onClick={() => navigateToTab('dispatch')}
+          >
+            <ClipboardList className="w-4 h-4 mr-2" />
+            Dispatch
+          </TabNav.Item>
+          <TabNav.Item 
+            to="/jobs/map" 
+            isActive={activeTab === 'map'}
+            onClick={() => navigateToTab('map')}
+          >
+            <MapPin className="w-4 h-4 mr-2" />
+            Map
+          </TabNav.Item>
+        </TabNav>
 
+        {/* Create Job Button - Only show in Calendar view */}
+        {activeTab === 'calendar' && (
           <Button 
             onClick={() => setIsJobWizardOpen(true)}
             className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Job
+            Schedule Job
           </Button>
-        </div>
-      </PageHeader>
+        )}
+      </div>
 
       {activeTab === 'calendar' && (
         <div className="space-y-6">

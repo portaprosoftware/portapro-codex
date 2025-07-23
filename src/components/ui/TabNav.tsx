@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface TabNavProps {
+  ariaLabel?: string;
   children: React.ReactNode;
 }
 
@@ -15,25 +16,30 @@ interface TabNavItemProps {
 
 const TabNavItem: React.FC<TabNavItemProps> = ({ to, isActive, children, onClick }) => {
   return (
-    <Button 
-      variant={isActive ? 'default' : 'ghost'}
-      size="sm"
+    <button
       className={cn(
-        "rounded-full px-5",
-        isActive && "bg-gradient-to-r from-blue-500 to-blue-600"
+        "px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200",
+        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+        isActive 
+          ? "bg-blue-600 text-white shadow-sm" 
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       )}
       onClick={onClick}
+      aria-current={isActive ? "page" : undefined}
     >
       {children}
-    </Button>
+    </button>
   );
 };
 
-export const TabNav: React.FC<TabNavProps> & { Item: typeof TabNavItem } = ({ children }) => {
+export const TabNav: React.FC<TabNavProps> & { Item: typeof TabNavItem } = ({ 
+  ariaLabel = "Navigation tabs", 
+  children 
+}) => {
   return (
-    <div className="flex items-center space-x-2">
+    <nav aria-label={ariaLabel} className="flex items-center space-x-2 overflow-x-auto">
       {children}
-    </div>
+    </nav>
   );
 };
 
