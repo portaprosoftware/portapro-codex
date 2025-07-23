@@ -317,20 +317,24 @@ const QuotesInvoices: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Export Modals */}
+      {/* Export Modals - Temporarily disabled until we have selected items */}
+      {/*
       <QuoteExportModal 
         isOpen={showQuoteExport} 
         onClose={() => setShowQuoteExport(false)} 
+        quote={{ id: '', quote_number: '', customers: { name: '', email: '' } }}
       />
       <QuoteExportModal 
         isOpen={showQuickBooksExport} 
         onClose={() => setShowQuickBooksExport(false)}
-        isQuickBooks={true}
+        quote={{ id: '', quote_number: '', customers: { name: '', email: '' } }}
       />
       <InvoiceExportModal 
         isOpen={showInvoiceExport} 
         onClose={() => setShowInvoiceExport(false)} 
+        invoice={{ id: '', invoice_number: '', customers: { name: '', email: '' } }}
       />
+      */}
 
       {/* Creation Wizards */}
       <QuoteCreationWizard 

@@ -209,7 +209,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
             setShowCreateInvoice(false);
             setSelectedQuoteForInvoice(null);
           }}
-          fromQuote={selectedQuoteForInvoice}
+          fromQuoteId={selectedQuoteForInvoice.id}
         />
       )}
       

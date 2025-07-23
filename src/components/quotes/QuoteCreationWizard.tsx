@@ -89,13 +89,13 @@ export function QuoteCreationWizard({ isOpen, onClose }: QuoteCreationWizardProp
   const { data: products = [] } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const response: any = await (supabase as any)
         .from('products')
         .select('id, name, default_price_per_day')
         .eq('is_active', true)
         .order('name');
-      if (error) throw error;
-      return data || [];
+      if (response.error) throw response.error;
+      return response.data || [];
     }
   });
 
@@ -103,13 +103,13 @@ export function QuoteCreationWizard({ isOpen, onClose }: QuoteCreationWizardProp
   const { data: services = [] } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const response: any = await supabase
         .from('routine_maintenance_services')
         .select('id, name, per_visit_cost, per_hour_cost, flat_rate_cost')
         .eq('is_active', true)
         .order('name');
-      if (error) throw error;
-      return data || [];
+      if (response.error) throw response.error;
+      return response.data || [];
     }
   });
 
