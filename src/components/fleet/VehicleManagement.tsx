@@ -38,7 +38,7 @@ interface Vehicle {
   vin?: string;
   status: string;
   last_known_location?: any;
-  mileage?: number;
+  current_mileage?: number;
   created_at: string;
   notes?: string;
 }
@@ -63,20 +63,10 @@ export const VehicleManagement = () => {
   });
 
   const createVehicleMutation = useMutation({
-    mutationFn: async (vehicleData: {
-      license_plate: string;
-      vehicle_type: string;
-      make?: string;
-      model?: string;
-      year?: number;
-      vin?: string;
-      status: string;
-      current_mileage?: number;
-      notes?: string;
-    }) => {
+    mutationFn: async (vehicleData: any) => {
       const { data, error } = await supabase
         .from("vehicles")
-        .insert([vehicleData])
+        .insert(vehicleData)
         .select()
         .single();
       
@@ -148,7 +138,7 @@ export const VehicleManagement = () => {
       year: vehicle?.year || new Date().getFullYear(),
       vin: vehicle?.vin || "",
       status: vehicle?.status || "active",
-      current_mileage: vehicle?.mileage || 0,
+      current_mileage: vehicle?.current_mileage || 0,
       notes: vehicle?.notes || ""
     });
 

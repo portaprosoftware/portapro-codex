@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,13 +11,12 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "maintenance" | "retired";
-type PageMode = "overview" | "management" | "fuel";
 
 export const FleetOverview: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageMode, setPageMode] = useState<PageMode>("overview");
+  const [pageMode, setPageMode] = useState("overview");
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
