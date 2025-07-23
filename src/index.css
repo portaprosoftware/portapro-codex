@@ -159,24 +159,38 @@
     color: #1F2937 !important;             /* gray-800 */
   }
   
-  /* Global Primary Button Override - Flat Blue Only */
+  /* Global Button Override - All buttons become solid PortaPro blue */
+  button,
+  .btn,
   .btn-primary {
-    background-image: none !important; /* remove any gradient */
-    background-color: #2563eb !important; /* blue-600 */
-    color: white !important;
-    font-weight: 500 !important;
-    border-radius: 0.375rem !important; /* rounded-md */
-    padding: 0.5rem 1rem !important; /* px-4 py-2 */
-    border: none !important;
-    transition: all 0.2s ease !important;
-    font-family: 'Inter', sans-serif !important;
-  }
-  
-  .btn-primary:hover {
+    /* Flat blue background */
     background-image: none !important;
-    background-color: #1d4ed8 !important; /* blue-700 */
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    background-color: #2563EB !important;  /* your software blue */
+    color: #FFFFFF !important;             /* white text */
+    font-weight: 500 !important;           /* medium weight */
+    border: none !important;               /* remove any gradient border */
+    padding: 0.5rem 1rem !important;       /* 8px top/bottom, 16px left/right */
+    border-radius: 0.375rem !important;    /* 6px rounded corners */
+  }
+
+  /* Hover / focus state for all buttons */
+  button:hover,
+  .btn:hover,
+  .btn-primary:hover,
+  button:focus,
+  .btn:focus,
+  .btn-primary:focus {
+    background-color: #1D4ED8 !important;  /* darker blue on hover/focus */
+    outline: none !important;
+  }
+
+  /* Disabled state if needed */
+  button:disabled,
+  .btn:disabled,
+  .btn-primary:disabled {
+    background-color: #A5B4FC !important;  /* lightened blue */
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
   }
   
   .btn-enterprise {
