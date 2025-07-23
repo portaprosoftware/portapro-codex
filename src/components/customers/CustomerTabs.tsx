@@ -5,6 +5,9 @@ import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerNotesPanel } from './CustomerNotesPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
+import { CustomerJobsTab } from './CustomerJobsTab';
+import { CustomerFinancialTab } from './CustomerFinancialTab';
+import { CustomerCommunicationTab } from './CustomerCommunicationTab';
 
 interface Customer {
   id: string;
@@ -59,24 +62,15 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       </TabsContent>
 
       <TabsContent value="jobs" className="mt-6">
-        <div className="bg-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Job History</h3>
-          <p className="text-muted-foreground">Job history coming soon...</p>
-        </div>
+        <CustomerJobsTab customerId={customer.id} />
       </TabsContent>
 
       <TabsContent value="financial" className="mt-6">
-        <div className="bg-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Financial Records</h3>
-          <p className="text-muted-foreground">Financial records coming soon...</p>
-        </div>
+        <CustomerFinancialTab customerId={customer.id} />
       </TabsContent>
 
       <TabsContent value="communication" className="mt-6">
-        <div className="bg-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Communication History</h3>
-          <p className="text-muted-foreground">Communication history coming soon...</p>
-        </div>
+        <CustomerCommunicationTab customerId={customer.id} />
       </TabsContent>
     </Tabs>
   );
