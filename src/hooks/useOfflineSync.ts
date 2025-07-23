@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface QueuedAction {
   id: string;
-  type: 'status_update' | 'notes' | 'photo' | 'signature';
+  type: 'job_creation' | 'status_update' | 'notes' | 'photo' | 'signature';
   jobId: string;
   data: any;
   timestamp: number;
@@ -116,6 +116,25 @@ export function useOfflineSync() {
 
   const processAction = async (action: QueuedAction): Promise<void> => {
     switch (action.type) {
+      case 'job_creation':
+        // Generate job number
+        const jobTypePrefix = {
+          'delivery': 'DEL',
+          'pickup': 'PKP',
+          'service': 'SVC'
+        }[action.data.job_type];
+        const jobNumber = `${jobTypePrefix}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+        
+        await supabase
+          .from('jobs')
+          .insert({
+            ...action.data,
+            job_number: jobNumber,
+            status: 'assigned',
+            timezone: action.data.timezone || 'America/New_York'
+          });
+        break;
+        
       case 'status_update':
         await supabase
           .from('jobs')
