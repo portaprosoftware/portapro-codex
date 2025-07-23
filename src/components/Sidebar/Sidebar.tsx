@@ -68,7 +68,7 @@ const Sidebar = () => {
     <aside className={styles.sidebar}>
       {/* Logo Section */}
       <div className={styles.logo}>
-        <Logo showText={true} className="w-full" />
+        <Logo showText={false} className="w-full" />
       </div>
 
       {/* Navigation Section */}
