@@ -122,11 +122,11 @@ export const JobCard: React.FC<JobCardProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-sm text-gray-900 font-inter">{job.job_number}</span>
-                  <span className="text-xs text-gray-500">•</span>
-                  <span className="font-semibold text-sm text-gray-900 truncate font-inter">{job.customers.name}</span>
+                  <span className="enterprise-card-title text-sm mb-0">{job.job_number}</span>
+                  <span className="enterprise-caption-text">•</span>
+                  <span className="enterprise-card-title text-sm truncate mb-0">{job.customers.name}</span>
                 </div>
-                <div className={cn("text-xs font-medium font-inter", jobTypeInfo.textColor)}>
+                <div className={cn("enterprise-caption-text font-medium", jobTypeInfo.textColor)}>
                   {jobTypeInfo.label}
                 </div>
               </div>
@@ -138,15 +138,15 @@ export const JobCard: React.FC<JobCardProps> = ({
           </div>
           
           <div className="space-y-1 mb-3">
-            <div className="flex items-center text-xs text-gray-600">
+            <div className="flex items-center enterprise-caption-text">
               <Clock className="w-3 h-3 mr-1" />
-              <span className="font-inter">{format(new Date(job.scheduled_date), 'MMM d')}</span>
-              {job.scheduled_time && <span className="font-inter"> at {job.scheduled_time}</span>}
+              <span>{format(new Date(job.scheduled_date), 'MMM d')}</span>
+              {job.scheduled_time && <span> at {job.scheduled_time}</span>}
             </div>
             {job.profiles && (
-              <div className="flex items-center text-xs text-gray-600">
+              <div className="flex items-center enterprise-caption-text">
                 <User className="w-3 h-3 mr-1" />
-                <span className="font-inter">{job.profiles.first_name} {job.profiles.last_name}</span>
+                <span>{job.profiles.first_name} {job.profiles.last_name}</span>
               </div>
             )}
           </div>

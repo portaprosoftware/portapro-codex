@@ -145,8 +145,8 @@ const JobsPage: React.FC = () => {
       <div className="container-modern py-8 space-y-8">
         {/* Page Header with Enhanced Typography */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900 font-inter">Jobs</h1>
-          <p className="text-gray-600 text-base font-inter">Schedule and manage job assignments</p>
+          <h1 className="enterprise-page-title">Jobs</h1>
+          <p className="enterprise-body-text text-lg">Schedule and manage job assignments</p>
         </div>
         
         {/* Jobs Sub-Navigation with Enhanced Spacing */}
@@ -214,7 +214,7 @@ const JobsPage: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-12">
                     <div className="flex items-center space-x-4">
-                      <h2 className="text-xl font-semibold text-white font-inter">Going Out</h2>
+                      <h2 className="enterprise-section-header text-white mb-0">Going Out</h2>
                       <DateNavigator
                         date={selectedDateOut}
                         onDateChange={setSelectedDateOut}
@@ -229,7 +229,7 @@ const JobsPage: React.FC = () => {
                       onDateChange={setSelectedDateBack}
                       label="Coming Back"
                     />
-                    <h2 className="text-xl font-semibold text-white font-inter">Coming Back</h2>
+                    <h2 className="enterprise-section-header text-white mb-0">Coming Back</h2>
                   </div>
                 </div>
               </div>
@@ -240,7 +240,7 @@ const JobsPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="enterprise-card">
                     <div className="enterprise-card-header">
-                      <h3 className="text-lg font-semibold text-gray-900 font-inter flex items-center">
+                      <h3 className="enterprise-card-title flex items-center mb-0">
                         <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full mr-3"></div>
                         Outgoing Jobs ({filterJobs(outgoingJobs).length})
                       </h3>
@@ -276,7 +276,7 @@ const JobsPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="enterprise-card">
                     <div className="enterprise-card-header">
-                      <h3 className="text-lg font-semibold text-gray-900 font-inter flex items-center">
+                      <h3 className="enterprise-card-title flex items-center mb-0">
                         <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mr-3"></div>
                         Incoming Jobs ({incomingJobs.length})
                       </h3>
@@ -317,7 +317,7 @@ const JobsPage: React.FC = () => {
                 <div className="enterprise-card-header">
                   <div className="flex items-center">
                     <AlertTriangle className="w-5 h-5 text-orange-500 mr-3" />
-                    <h2 className="text-xl font-semibold text-gray-900 font-inter">Unassigned Jobs</h2>
+                    <h2 className="enterprise-section-header mb-0">Unassigned Jobs</h2>
                     <Badge className="ml-3 bg-orange-500 text-white font-inter">{unassignedJobs.length}</Badge>
                   </div>
                 </div>
@@ -352,8 +352,8 @@ const JobsPage: React.FC = () => {
                 <div className="enterprise-card-header border-b border-gray-200">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900 font-inter">Dispatch Board</h2>
-                      <p className="text-sm text-gray-600 font-inter mt-1">Manage driver schedules and job assignments</p>
+                      <h2 className="enterprise-section-header mb-0">Dispatch Board</h2>
+                      <p className="enterprise-body-text mt-1">Manage driver schedules and job assignments</p>
                     </div>
                     
                     <div className="flex items-center space-x-4">
