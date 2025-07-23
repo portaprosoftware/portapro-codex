@@ -102,17 +102,17 @@ export function NotificationPreferencesSection() {
   React.useEffect(() => {
     if (preferences) {
       form.reset({
-        email_notifications: preferences.email_notifications ?? true,
-        sms_notifications: preferences.sms_notifications ?? false,
-        push_notifications: preferences.push_notifications ?? true,
-        job_assignments: preferences.job_assignments ?? true,
-        maintenance_alerts: preferences.maintenance_alerts ?? true,
-        invoice_reminders: preferences.invoice_reminders ?? true,
-        quote_updates: preferences.quote_updates ?? true,
-        system_updates: preferences.system_updates ?? false,
-        marketing_emails: preferences.marketing_emails ?? false,
+        email_notifications: preferences.job_status_change_email ?? true,
+        sms_notifications: preferences.job_status_change_sms ?? false,
+        push_notifications: true,  // Not in existing schema
+        job_assignments: preferences.job_status_change_email ?? true,
+        maintenance_alerts: preferences.maintenance_email_7_day ?? true,
+        invoice_reminders: preferences.overdue_job_email ?? true,
+        quote_updates: true,  // Use default since field doesn't exist
+        system_updates: false,  // Not in existing schema
+        marketing_emails: false,  // Not in existing schema
         phone_number: preferences.phone_number || "",
-        email_address: preferences.email_address || "",
+        email_address: "",  // Use default since field doesn't exist
       });
     }
   }, [preferences, form]);
@@ -125,7 +125,11 @@ export function NotificationPreferencesSection() {
         .from("notification_preferences")
         .upsert({
           user_id: user.id,
-          ...data,
+          job_status_change_email: data.email_notifications,
+          job_status_change_sms: data.sms_notifications,
+          maintenance_email_7_day: data.maintenance_alerts,
+          overdue_job_email: data.invoice_reminders,
+          phone_number: data.phone_number || null,
         }, { onConflict: "user_id" });
       
       if (error) throw error;

@@ -81,10 +81,10 @@ export function PricingRulesSection() {
       const { error } = await supabase
         .from("pricing_rules")
         .insert({
-          rule_name: data.rule_name,
+          name: data.rule_name,
           rule_type: data.rule_type,
-          discount_type: data.discount_type,
-          discount_value: data.discount_value,
+          adjustment_type: data.discount_type,
+          adjustment_value: data.discount_value,
           start_date: data.start_date || null,
           end_date: data.end_date || null,
           is_active: data.is_active,
