@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
@@ -14,18 +14,11 @@ import MarketingHub from './pages/MarketingHub';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
 
-const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-
-if (!clerkPubKey) {
-  throw new Error("REACT_APP_CLERK_PUBLISHABLE_KEY is not defined in the environment variables.");
-}
-
 const App = () => {
   return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <Router>
-        <div className="min-h-screen bg-background font-sans antialiased">
-          <Routes>
+    <Router>
+      <div className="min-h-screen bg-background font-sans antialiased">
+        <Routes>
             <Route
               path="/"
               element={
@@ -134,10 +127,9 @@ const App = () => {
                 </SignedOut>
               }
             />
-          </Routes>
-        </div>
-      </Router>
-    </ClerkProvider>
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
