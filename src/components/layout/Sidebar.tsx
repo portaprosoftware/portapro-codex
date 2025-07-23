@@ -90,7 +90,7 @@ const Sidebar = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-2 rounded-lg text-sm font-medium font-inter transition-colors ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
                         : 'hover:bg-gray-100'
                     }`
                   }
