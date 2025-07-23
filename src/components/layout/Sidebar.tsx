@@ -14,7 +14,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useClerk, useUser } from "@clerk/clerk-react";
+import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
 
 interface MenuItem {
   icon: React.ComponentType<any>;
@@ -26,7 +26,6 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useClerk();
-  const { user } = useUser();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -47,16 +46,12 @@ const Sidebar = () => {
     { icon: Wrench, label: "Maintenance Hub", path: "/maintenance-hub" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
     { icon: Megaphone, label: "Marketing Hub", path: "/marketing-hub" },
+    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (
-    <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen py-4">
-      <div className="px-6 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">PortaPro</h1>
-        <p className="text-sm text-gray-500">Welcome, {user?.firstName}!</p>
-      </div>
-
-      <nav className="flex-1">
+    <div className="flex flex-col w-64 bg-white border-r border-gray-200 h-screen">
+      <nav className="flex-1 py-4">
         <ul>
           {menuItems.map((item, index) => (
             <li key={index}>
@@ -74,22 +69,20 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="mt-auto px-6 py-4">
-        <div className="border-t border-gray-200 pt-4">
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `nav-item ${isActive ? 'nav-item-active' : ''}`
-            }
-          >
-            <Settings className="w-5 h-5 mr-3" />
-            Settings
-          </NavLink>
+      <div className="px-6 py-4 border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: "w-8 h-8"
+              }
+            }}
+          />
           <button
             onClick={handleSignOut}
-            className="nav-item w-full text-left"
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <LogOut className="w-5 h-5 mr-3" />
+            <LogOut className="w-5 h-5 mr-2" />
             Sign Out
           </button>
         </div>
