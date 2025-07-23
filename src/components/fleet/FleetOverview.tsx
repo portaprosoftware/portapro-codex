@@ -9,6 +9,7 @@ import { VehicleDetailModal } from "./VehicleDetailModal";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
 import { FleetSidebar } from "./FleetSidebar";
+import { AddVehicleModal } from "./AddVehicleModal";
 import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ export const FleetOverview: React.FC = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [pageMode, setPageMode] = useState("overview");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -76,7 +78,7 @@ export const FleetOverview: React.FC = () => {
   return (
     <div className="flex h-full">
       <FleetSidebar />
-      <div className="flex-1 space-y-6 p-6">
+      <div className="flex-1 space-y-6 p-6 ml-2">
         {/* Page Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -114,9 +116,9 @@ export const FleetOverview: React.FC = () => {
             <List className="w-4 h-4 mr-2" />
             List
           </Button>
-          <Button onClick={() => setPageMode("management")}>
+          <Button onClick={() => setIsAddVehicleModalOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Manage Vehicles
+            Add Vehicle
           </Button>
         </div>
       </div>
@@ -170,6 +172,12 @@ export const FleetOverview: React.FC = () => {
           }}
         />
       )}
+
+      {/* Add Vehicle Modal */}
+      <AddVehicleModal
+        isOpen={isAddVehicleModalOpen}
+        onClose={() => setIsAddVehicleModalOpen(false)}
+      />
       </div>
     </div>
   );
