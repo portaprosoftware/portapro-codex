@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -390,19 +389,6 @@ const JobsMapView: React.FC = () => {
     });
   };
 
-  const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
-    switch (tab) {
-      case 'calendar':
-        navigate('/jobs/calendar');
-        break;
-      case 'map':
-        navigate('/jobs/map');
-        break;
-      default:
-        navigate('/jobs');
-        break;
-    }
-  };
 
   const goToPreviousDay = () => {
     setCurrentDate(subDays(currentDate, 1));
