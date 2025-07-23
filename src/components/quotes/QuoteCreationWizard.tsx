@@ -91,11 +91,15 @@ export function QuoteCreationWizard({ isOpen, onClose }: QuoteCreationWizardProp
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, default_price_per_day')
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data;
+      return data as Array<{
+        id: string;
+        name: string;
+        default_price_per_day: number;
+      }>;
     }
   });
 
@@ -105,11 +109,17 @@ export function QuoteCreationWizard({ isOpen, onClose }: QuoteCreationWizardProp
     queryFn: async () => {
       const { data, error } = await supabase
         .from('routine_maintenance_services')
-        .select('*')
+        .select('id, name, per_visit_cost, per_hour_cost, flat_rate_cost')
         .eq('is_active', true)
         .order('name');
       if (error) throw error;
-      return data;
+      return data as Array<{
+        id: string;
+        name: string;
+        per_visit_cost: number;
+        per_hour_cost: number;
+        flat_rate_cost: number;
+      }>;
     }
   });
 
