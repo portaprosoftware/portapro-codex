@@ -88,17 +88,13 @@ const Sidebar = () => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `nav-item flex items-center px-3 py-2 rounded-lg text-sm font-medium font-inter transition-colors ${
-                      isActive
-                        ? 'active'
-                        : 'hover:bg-gray-100'
-                    }`
+                    `nav-item ${isActive ? 'active' : ''}`
                   }
                   style={({ isActive }) => ({
                     color: isActive ? '#ffffff' : '#09090B'
                   })}
                 >
-                  <item.icon className="w-5 h-5 mr-3" />
+                  <item.icon className="w-5 h-5" />
                   {item.label}
                 </NavLink>
               </li>
