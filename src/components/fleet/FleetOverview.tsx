@@ -126,7 +126,10 @@ export const FleetOverview: React.FC = () => {
             <List className="w-4 h-4 mr-2" />
             List
           </Button>
-          <Button onClick={() => setPageMode("management")}>
+          <Button onClick={() => {
+            console.log("Manage button clicked, switching to management mode");
+            setPageMode("management");
+          }}>
             <Plus className="w-4 h-4 mr-2" />
             Manage Vehicles
           </Button>
