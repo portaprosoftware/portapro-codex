@@ -69,7 +69,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col z-50">
+    <div className="sidebar fixed left-0 top-0 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col z-50">
       {/* Logo Section */}
       <div className="p-6 flex-shrink-0 w-full">
         <Logo showText={true} className="w-full" />
@@ -81,16 +81,16 @@ const Sidebar = () => {
           <h3 className="text-sm font-semibold font-inter" style={{ color: '#09090B' }}>Navigation</h3>
         </div>
         
-        <nav className="px-3">
+        <nav className="sidebar-nav px-3">
           <ul className="space-y-1">
             {menuItems.map((item, index) => (
               <li key={index}>
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center px-3 py-2 rounded-lg text-sm font-medium font-inter transition-colors ${
+                    `nav-item flex items-center px-3 py-2 rounded-lg text-sm font-medium font-inter transition-colors ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
+                        ? 'active'
                         : 'hover:bg-gray-100'
                     }`
                   }
