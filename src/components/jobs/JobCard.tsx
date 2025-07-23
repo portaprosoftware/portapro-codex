@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare } from 'lucide-react';
+import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +37,7 @@ interface JobCardProps {
   onView?: (jobId: string) => void;
   onStart?: (jobId: string) => void;
   onStatusUpdate?: (jobId: string, status: string) => void;
+  onEquipmentAssign?: (jobId: string) => void;
   compact?: boolean;
 }
 
@@ -59,6 +60,7 @@ export const JobCard: React.FC<JobCardProps> = ({
   onView,
   onStart,
   onStatusUpdate,
+  onEquipmentAssign,
   compact = false
 }) => {
   const handleViewJob = () => {
@@ -218,6 +220,13 @@ export const JobCard: React.FC<JobCardProps> = ({
             <MessageSquare className="w-4 h-4 mr-2" />
             Message
           </Button>
+          
+          {onEquipmentAssign && (
+            <Button variant="outline" size="sm" onClick={() => onEquipmentAssign(job.id)} className="flex-1">
+              <Package className="w-4 h-4 mr-2" />
+              Equipment
+            </Button>
+          )}
           
           <Button 
             size="sm" 

@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { JobCreationWizard } from '@/components/jobs/JobCreationWizard';
+import { JobDetailModal } from '@/components/jobs/JobDetailModal';
+import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
 import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
 import { useQuery } from '@tanstack/react-query';
@@ -22,8 +24,11 @@ const JobsPage: React.FC = () => {
   const [selectedDateBack, setSelectedDateBack] = useState(new Date());
   const [dispatchDate, setDispatchDate] = useState(new Date());
   
-  // Job Creation Wizard state
+  // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
+  const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,17 +97,22 @@ const JobsPage: React.FC = () => {
   };
 
   const handleJobView = (jobId: string) => {
-    // TODO: Implement job detail view
-    console.log('View job:', jobId);
+    setSelectedJobId(jobId);
+    setIsJobDetailOpen(true);
   };
 
   const handleJobStart = (jobId: string) => {
-    // TODO: Implement job start functionality
-    console.log('Start job:', jobId);
+    setSelectedJobId(jobId);
+    setIsJobDetailOpen(true);
   };
 
   const handleJobStatusUpdate = (jobId: string, status: string) => {
     updateJobStatusMutation.mutate({ jobId, status });
+  };
+
+  const handleEquipmentAssign = (jobId: string) => {
+    setSelectedJobId(jobId);
+    setIsEquipmentModalOpen(true);
   };
 
   // Filter jobs based on search and filters
@@ -291,6 +301,7 @@ const JobsPage: React.FC = () => {
                         onView={handleJobView}
                         onStart={handleJobStart}
                         onStatusUpdate={handleJobStatusUpdate}
+                        onEquipmentAssign={handleEquipmentAssign}
                         compact
                       />
                     ))}
@@ -492,6 +503,26 @@ const JobsPage: React.FC = () => {
       <JobCreationWizard 
         open={isJobWizardOpen}
         onOpenChange={setIsJobWizardOpen}
+      />
+      
+      {/* Job Detail Modal */}
+      <JobDetailModal
+        jobId={selectedJobId}
+        open={isJobDetailOpen}
+        onOpenChange={(open) => {
+          setIsJobDetailOpen(open);
+          if (!open) setSelectedJobId(null);
+        }}
+      />
+      
+      {/* Equipment Assignment Modal */}
+      <EquipmentAssignmentModal
+        jobId={selectedJobId}
+        open={isEquipmentModalOpen}
+        onOpenChange={(open) => {
+          setIsEquipmentModalOpen(open);
+          if (!open) setSelectedJobId(null);
+        }}
       />
     </div>
   );
