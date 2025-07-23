@@ -1,21 +1,46 @@
-
 import React, { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon, Building2, Users, Bell, DollarSign, Clock, Calendar } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  Settings2, 
+  Users, 
+  Clock, 
+  Calendar, 
+  Bell, 
+  DollarSign,
+  QrCode,
+  ChevronDown,
+  Building2
+} from "lucide-react";
+import { CompanySettingsSection } from "@/components/settings/CompanySettingsSection";
+import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection";
+import { UserManagementSection } from "@/components/settings/UserManagementSection";
+import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
+import { PricingRulesSection } from "@/components/settings/PricingRulesSection";
 import { DriverWorkingHoursSection } from "@/components/settings/DriverWorkingHoursSection";
 import { DriverTimeOffSection } from "@/components/settings/DriverTimeOffSection";
 import { QRFeedbackSection } from "@/components/settings/QRFeedbackSection";
-import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection";
 import { useUserRole } from "@/hooks/useUserRole";
 
-type SettingsSection = 'overview' | 'driver-hours' | 'driver-timeoff' | 'qr-feedback' | 'business-hours';
+type SettingsSection = 
+  | 'company'
+  | 'business-hours' 
+  | 'user-management' 
+  | 'notifications' 
+  | 'pricing-rules'
+  | 'driver-hours'
+  | 'time-off'
+  | 'qr-feedback';
 
 export default function Settings() {
-  const [activeSection, setActiveSection] = useState<SettingsSection>('overview');
   const { hasAdminAccess } = useUserRole();
+  const [activeSection, setActiveSection] = useState<SettingsSection>('company');
 
   if (!hasAdminAccess) {
     return (
@@ -30,166 +55,73 @@ export default function Settings() {
     );
   }
 
+  const settingsSections = [
+    { key: 'company' as const, label: 'Company Settings', icon: Building2 },
+    { key: 'user-management' as const, label: 'User Management', icon: Users },
+    { key: 'driver-hours' as const, label: 'Driver Working Hours', icon: Clock },
+    { key: 'time-off' as const, label: 'Time Off Management', icon: Calendar },
+    { key: 'notifications' as const, label: 'Notifications', icon: Bell },
+    { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
+    { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
+    { key: 'qr-feedback' as const, label: 'QR Feedback', icon: QrCode },
+  ];
+
+  const currentSection = settingsSections.find(section => section.key === activeSection);
+
   const renderSection = () => {
     switch (activeSection) {
-      case 'driver-hours':
-        return <DriverWorkingHoursSection onBack={() => setActiveSection('overview')} />;
-      case 'driver-timeoff':
-        return <DriverTimeOffSection onBack={() => setActiveSection('overview')} />;
-      case 'qr-feedback':
-        return <QRFeedbackSection />;
+      case 'company':
+        return <CompanySettingsSection />;
       case 'business-hours':
         return <BusinessHoursSection />;
+      case 'user-management':
+        return <UserManagementSection />;
+      case 'notifications':
+        return <NotificationPreferencesSection />;
+      case 'pricing-rules':
+        return <PricingRulesSection />;
+      case 'driver-hours':
+        return <DriverWorkingHoursSection onBack={() => setActiveSection('company')} />;
+      case 'time-off':
+        return <DriverTimeOffSection onBack={() => setActiveSection('company')} />;
+      case 'qr-feedback':
+        return <QRFeedbackSection />;
       default:
-        return (
-          <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-                <SettingsIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 font-inter">Settings</h1>
-                <p className="text-gray-600 font-inter">Manage your company settings and preferences</p>
-              </div>
-            </div>
-
-            {/* Main Settings Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-                      <Building2 className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="font-inter">Active</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-inter text-gray-900">Company Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 font-inter">Company information and configuration</p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('business-hours')}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="font-inter">Configured</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-inter text-gray-900">Business Hours</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 font-inter">Operating hours and schedules</p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="font-inter">3 Users</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-inter text-gray-900">User Management</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 font-inter">Users, roles and permissions</p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600">
-                      <Bell className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="font-inter">Enabled</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-inter text-gray-900">Notifications</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 font-inter">Alert preferences and settings</p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
-                      <DollarSign className="w-6 h-6 text-white" />
-                    </div>
-                    <Badge variant="secondary" className="font-inter">2 Rules</Badge>
-                  </div>
-                  <CardTitle className="text-lg font-inter text-gray-900">Pricing Rules</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 font-inter">Discount and pricing management</p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            {/* Driver Management Section */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900 font-inter">Driver Management</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('driver-hours')}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-                        <Clock className="w-6 h-6 text-white" />
-                      </div>
-                      <Badge variant="secondary" className="font-inter">Active</Badge>
-                    </div>
-                    <CardTitle className="text-lg font-inter text-gray-900">Driver Working Hours</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 font-inter">Manage driver schedules and working hours</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('driver-timeoff')}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
-                        <Calendar className="w-6 h-6 text-white" />
-                      </div>
-                      <Badge variant="secondary" className="font-inter">Active</Badge>
-                    </div>
-                    <CardTitle className="text-lg font-inter text-gray-900">Time Off Management</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 font-inter">Review and manage driver time-off requests</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('qr-feedback')}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
-                        <Bell className="w-6 h-6 text-white" />
-                      </div>
-                      <Badge variant="secondary" className="font-inter">Active</Badge>
-                    </div>
-                    <CardTitle className="text-lg font-inter text-gray-900">QR Feedback</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 font-inter">Configure QR code feedback notifications and settings</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        );
+        return null;
     }
   };
 
   return (
     <Layout>
-      {renderSection()}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Settings</h1>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                {currentSection && <currentSection.icon className="h-4 w-4" />}
+                {currentSection?.label || 'Select Section'}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {settingsSections.map((section) => (
+                <DropdownMenuItem
+                  key={section.key}
+                  onClick={() => setActiveSection(section.key)}
+                  className="flex items-center gap-2"
+                >
+                  <section.icon className="h-4 w-4" />
+                  {section.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        {renderSection()}
+      </div>
     </Layout>
   );
 }

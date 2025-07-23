@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { Building2, Upload, Save, Mail, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -36,6 +36,8 @@ const timezones = [
 ];
 
 export function CompanySettingsSection() {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const queryClient = useQueryClient();
 
   const { data: companySettings, isLoading } = useQuery({
@@ -77,7 +79,7 @@ export function CompanySettingsSection() {
   }, [companySettings, form]);
 
   const updateCompanySettings = useMutation({
-    mutationFn: async (data: CompanySettingsFormData) => {
+    mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
       const { error } = await supabase
         .from("company_settings")
         .update(data)
@@ -94,6 +96,65 @@ export function CompanySettingsSection() {
       console.error("Error updating company settings:", error);
     },
   });
+
+  const uploadLogoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('company-logos')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('company-logos')
+        .getPublicUrl(data.path);
+
+      return publicUrl;
+    },
+    onSuccess: (logoUrl) => {
+      const formData = form.getValues();
+      updateCompanySettings.mutate({ ...formData, company_logo: logoUrl });
+      setLogoFile(null);
+      setLogoPreview(null);
+    },
+    onError: (error) => {
+      console.error('Error uploading logo:', error);
+      toast.error("Failed to upload logo. Please try again.");
+    },
+  });
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select a valid image file");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+      
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoUpload = () => {
+    if (logoFile) {
+      uploadLogoMutation.mutate(logoFile);
+    }
+  };
 
   const onSubmit = (data: CompanySettingsFormData) => {
     updateCompanySettings.mutate(data);
@@ -235,20 +296,24 @@ export function CompanySettingsSection() {
                 control={form.control}
                 name="support_email"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Support Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="support@example.com" 
-                          className="pl-10"
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                     <FormItem>
+                       <FormLabel>Support Email</FormLabel>
+                       <FormControl>
+                         <div className="relative">
+                           <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                           <Input 
+                             placeholder="support@example.com" 
+                             className="pl-10"
+                             {...field} 
+                           />
+                         </div>
+                       </FormControl>
+                       <p className="text-xs text-muted-foreground">
+                         This email address will be used for marketing communications, customer correspondence, 
+                         and as the reply-to address for quotes and invoices.
+                       </p>
+                       <FormMessage />
+                     </FormItem>
                 )}
               />
 
@@ -272,24 +337,53 @@ export function CompanySettingsSection() {
         <CardHeader>
           <CardTitle>Company Logo</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-border rounded-lg bg-muted/50">
-              <div className="text-center">
-                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Upload Logo</p>
-              </div>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted">
+              {logoPreview ? (
+                <img 
+                  src={logoPreview} 
+                  alt="Logo preview" 
+                  className="w-full h-full object-contain rounded-lg"
+                />
+              ) : companySettings?.company_logo ? (
+                <img 
+                  src={companySettings.company_logo} 
+                  alt="Current logo" 
+                  className="w-full h-full object-contain rounded-lg"
+                />
+              ) : (
+                <Upload className="h-8 w-8 text-muted-foreground" />
+              )}
             </div>
-            <div className="space-y-2">
-              <Button variant="outline" size="sm">
-                <Upload className="w-4 h-4 mr-2" />
-                Choose File
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Recommended: 400x400px, PNG or JPG format
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                className="hidden"
+                id="logo-upload"
+              />
+              <Label htmlFor="logo-upload" className="cursor-pointer">
+                <Button variant="outline" asChild>
+                  <span>Choose Logo</span>
+                </Button>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-2">
+                Recommended: 200x200px, JPG or PNG, max 5MB
               </p>
             </div>
           </div>
+          
+          {logoFile && (
+            <Button 
+              onClick={handleLogoUpload}
+              disabled={uploadLogoMutation.isPending}
+              className="w-full"
+            >
+              {uploadLogoMutation.isPending ? "Uploading..." : "Upload Logo"}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>

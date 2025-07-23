@@ -5377,6 +5377,15 @@ export type Database = {
       }
     }
     Functions: {
+      add_job_note: {
+        Args: {
+          job_uuid: string
+          driver_uuid: string
+          note_content: string
+          note_category?: string
+        }
+        Returns: string
+      }
       adjust_master_stock: {
         Args: {
           product_uuid: string
@@ -5572,6 +5581,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_job_notes: {
+        Args: { job_uuid: string }
+        Returns: {
+          id: string
+          job_id: string
+          driver_id: string
+          note_text: string
+          note_type: string
+          created_at: string
+        }[]
+      }
       get_maintenance_analytics: {
         Args: { days_back?: number }
         Returns: Json
@@ -5646,6 +5666,17 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      log_job_status_change: {
+        Args: {
+          job_uuid: string
+          changed_by_uuid: string
+          new_status_value: string
+          lat?: number
+          lng?: number
+          change_notes?: string
+        }
+        Returns: string
       }
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>
