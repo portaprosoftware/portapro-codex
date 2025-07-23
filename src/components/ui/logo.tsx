@@ -23,19 +23,19 @@ export const Logo: React.FC<LogoProps> = ({ className = "", showText = true }) =
 
   return (
     <div className={`flex flex-col items-start gap-2 w-full ${className}`}>
-      <div className="w-full h-12 bg-gradient-primary rounded-lg flex items-center justify-center shadow-md overflow-hidden">
+      <div className="w-full h-12 flex items-center justify-start overflow-hidden">
         {companySettings?.company_logo ? (
           <img 
             src={companySettings.company_logo} 
             alt="Company logo" 
-            className="w-full h-full object-contain p-2"
+            className="h-full w-auto object-contain"
           />
         ) : (
-          <div className="w-8 h-4 bg-white rounded-sm"></div>
+          <div className="w-8 h-4 bg-gradient-primary rounded-sm"></div>
         )}
       </div>
       {showText && (
-        <span className="font-inter font-medium text-sm text-foreground text-left leading-tight w-full">
+        <span className="font-inter font-normal text-base text-foreground text-left leading-tight w-full">
           {companySettings?.company_name || "PortaPro"}
         </span>
       )}

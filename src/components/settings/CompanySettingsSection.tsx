@@ -128,13 +128,15 @@ export function CompanySettingsSection() {
       console.log("Generated public URL:", publicUrl);
       return publicUrl;
     },
-    onSuccess: (logoUrl) => {
+    onSuccess: async (logoUrl) => {
       console.log("Logo upload successful, updating company settings with URL:", logoUrl);
       const formData = form.getValues();
-      updateCompanySettings.mutate({ ...formData, company_logo: logoUrl });
+      await updateCompanySettings.mutateAsync({ ...formData, company_logo: logoUrl });
+      await queryClient.invalidateQueries({ queryKey: ["company-settings"] });
       setLogoFile(null);
       setLogoPreview(null);
       setShowLogoModal(false);
+      toast.success("Logo updated successfully!");
     },
     onError: (error) => {
       console.error('Error uploading logo:', error);
