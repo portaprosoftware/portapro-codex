@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerNotesPanel } from './CustomerNotesPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
+import { ServiceLocationTab } from './ServiceLocationTab';
 
 interface Customer {
   id: string;
@@ -54,10 +55,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       </TabsContent>
 
       <TabsContent value="locations" className="mt-6">
-        <div className="bg-card rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Service Locations</h3>
-          <p className="text-muted-foreground">Service location management coming soon...</p>
-        </div>
+        <ServiceLocationTab customerId={customer.id} />
       </TabsContent>
 
       <TabsContent value="jobs" className="mt-6">
