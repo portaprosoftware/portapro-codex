@@ -22,9 +22,10 @@ interface Vehicle {
 interface VehicleCardProps {
   vehicle: Vehicle;
   viewMode: "grid" | "list";
+  onManage?: (vehicle: Vehicle) => void;
 }
 
-export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode }) => {
+export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onManage }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -57,7 +58,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode }) =
             <Badge className={cn("capitalize", getStatusColor(vehicle.status))}>
               {vehicle.status}
             </Badge>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => onManage?.(vehicle)}>
               <Settings className="w-4 h-4 mr-2" />
               Manage
             </Button>
@@ -98,7 +99,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode }) =
           </div>
         </div>
 
-        <Button variant="outline" size="sm" className="w-full">
+        <Button variant="outline" size="sm" className="w-full" onClick={() => onManage?.(vehicle)}>
           <Settings className="w-4 h-4 mr-2" />
           Manage Vehicle
         </Button>

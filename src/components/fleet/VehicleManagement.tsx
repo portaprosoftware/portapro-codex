@@ -43,9 +43,9 @@ interface Vehicle {
   notes?: string;
 }
 
-export const VehicleManagement = () => {
+export const VehicleManagement = ({ selectedVehicle, onBack }: { selectedVehicle?: Vehicle | null; onBack?: () => void }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const queryClient = useQueryClient();
 
@@ -107,7 +107,7 @@ export const VehicleManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      setSelectedVehicle(null);
+      setEditingVehicle(null);
       toast.success("Vehicle updated successfully!");
     },
     onError: (error: any) => {
@@ -292,9 +292,16 @@ export const VehicleManagement = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Vehicle Management</h1>
-          <p className="text-muted-foreground">Manage your fleet vehicles</p>
+        <div className="flex items-center space-x-4">
+          {onBack && (
+            <Button variant="outline" onClick={onBack}>
+              ← Back to Overview
+            </Button>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">Vehicle Management</h1>
+            <p className="text-muted-foreground">Manage your fleet vehicles</p>
+          </div>
         </div>
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogTrigger asChild>
@@ -359,7 +366,7 @@ export const VehicleManagement = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setSelectedVehicle(vehicle)}
+                      onClick={() => setEditingVehicle(vehicle)}
                     >
                       <Edit className="w-3 h-3 mr-1" />
                       Edit
@@ -434,16 +441,16 @@ export const VehicleManagement = () => {
       </Tabs>
 
       {/* Edit Vehicle Modal */}
-      <Dialog open={!!selectedVehicle} onOpenChange={() => setSelectedVehicle(null)}>
+      <Dialog open={!!editingVehicle} onOpenChange={() => setEditingVehicle(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Edit Vehicle: {selectedVehicle?.license_plate}</DialogTitle>
+            <DialogTitle>Edit Vehicle: {editingVehicle?.license_plate}</DialogTitle>
           </DialogHeader>
-          {selectedVehicle && (
+          {editingVehicle && (
             <VehicleForm
-              vehicle={selectedVehicle}
-              onSubmit={(data) => updateVehicleMutation.mutate({ ...data, id: selectedVehicle.id })}
-              onCancel={() => setSelectedVehicle(null)}
+              vehicle={editingVehicle}
+              onSubmit={(data) => updateVehicleMutation.mutate({ ...data, id: editingVehicle.id })}
+              onCancel={() => setEditingVehicle(null)}
             />
           )}
         </DialogContent>

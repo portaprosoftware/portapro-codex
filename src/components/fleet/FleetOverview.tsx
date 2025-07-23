@@ -16,6 +16,7 @@ export const FleetOverview: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [pageMode, setPageMode] = useState("overview");
 
   const { data: vehicles, isLoading } = useQuery({
@@ -55,9 +56,13 @@ export const FleetOverview: React.FC = () => {
     );
   }
 
-  // Handle page mode switching
+  const handleManageVehicle = (vehicle: any) => {
+    console.log("Managing vehicle:", vehicle);
+    setSelectedVehicle(vehicle);
+    setPageMode("management");
+  };
   if (pageMode === "management") {
-    return <VehicleManagement />;
+    return <VehicleManagement selectedVehicle={selectedVehicle} onBack={() => setPageMode("overview")} />;
   }
 
   if (pageMode === "fuel") {
@@ -163,6 +168,7 @@ export const FleetOverview: React.FC = () => {
             key={vehicle.id}
             vehicle={vehicle}
             viewMode={viewMode}
+            onManage={handleManageVehicle}
           />
         ))}
       </div>

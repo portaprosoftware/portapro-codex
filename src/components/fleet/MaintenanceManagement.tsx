@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatCard } from "@/components/ui/StatCard";
 import { AlertTriangle, Clock, Settings, DollarSign, Wrench } from "lucide-react";
@@ -254,17 +256,97 @@ export const MaintenanceManagement: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card className="p-6 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Maintenance Notifications</h3>
-            <p className="text-gray-600">Notification management coming soon.</p>
-          </Card>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">Maintenance Notifications</h3>
+              <Button variant="outline">
+                <Settings className="w-4 h-4 mr-2" />
+                Configure Settings
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h4 className="font-medium text-gray-900 mb-4">Email Notifications</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">7-day reminders</span>
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Day-of reminders</span>
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Overdue alerts</span>
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" defaultChecked />
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <h4 className="font-medium text-gray-900 mb-4">SMS Notifications</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Critical overdue items</span>
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Same-day reminders</span>
+                    <input type="checkbox" className="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card className="p-6 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Maintenance Settings</h3>
-            <p className="text-gray-600">Settings configuration coming soon.</p>
-          </Card>
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium text-gray-900">Maintenance Settings</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h4 className="font-medium text-gray-900 mb-4">Default Maintenance Intervals</h4>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="oil_change">Oil Change (miles)</Label>
+                    <Input id="oil_change" type="number" defaultValue="5000" />
+                  </div>
+                  <div>
+                    <Label htmlFor="tire_rotation">Tire Rotation (miles)</Label>
+                    <Input id="tire_rotation" type="number" defaultValue="7500" />
+                  </div>
+                  <div>
+                    <Label htmlFor="brake_inspection">Brake Inspection (miles)</Label>
+                    <Input id="brake_inspection" type="number" defaultValue="12000" />
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <h4 className="font-medium text-gray-900 mb-4">Notification Timing</h4>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="reminder_days">Advance reminder (days)</Label>
+                    <Input id="reminder_days" type="number" defaultValue="7" />
+                  </div>
+                  <div>
+                    <Label htmlFor="notification_time">Daily notification time</Label>
+                    <Input id="notification_time" type="time" defaultValue="08:00" />
+                  </div>
+                  <div>
+                    <Label htmlFor="contact_email">Notification email</Label>
+                    <Input id="contact_email" type="email" placeholder="maintenance@company.com" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="flex justify-end">
+              <Button>Save Settings</Button>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
