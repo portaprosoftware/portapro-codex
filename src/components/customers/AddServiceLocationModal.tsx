@@ -88,7 +88,18 @@ export function AddServiceLocationModal({
         .from('customer_service_locations')
         .insert({
           customer_id: customerId,
-          ...data,
+          location_name: data.location_name,
+          location_description: data.location_description,
+          street: data.street,
+          street2: data.street2,
+          city: data.city,
+          state: data.state,
+          zip: data.zip,
+          access_instructions: data.access_instructions,
+          onsite_contact_name: data.onsite_contact_name,
+          onsite_contact_phone: data.onsite_contact_phone,
+          is_active: data.is_active,
+          is_default: data.is_default,
         });
 
       if (error) throw error;

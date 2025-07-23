@@ -123,7 +123,15 @@ export function AddDropPinModal({
 
       const { error } = await supabase
         .from('service_location_coordinates')
-        .insert(data);
+        .insert({
+          service_location_id: data.service_location_id,
+          point_name: data.point_name,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          category: data.category,
+          description: data.description,
+          is_primary: data.is_primary,
+        });
 
       if (error) throw error;
 

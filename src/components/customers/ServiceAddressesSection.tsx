@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ServiceLocationCard } from './ServiceLocationCard';
 import { AddServiceLocationModal } from './AddServiceLocationModal';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ServiceAddressesSectionProps {
