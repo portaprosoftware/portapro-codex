@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Plus, LayoutGrid, List, QrCode, Search, ExternalLink, BarChart3 } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, ExternalLink, BarChart3, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductGrid } from "@/components/inventory/ProductGrid";
 import { ProductDetail } from "@/components/inventory/ProductDetail";
+import { InventoryMapView } from "@/components/inventory/InventoryMapView";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -122,14 +123,39 @@ const Inventory: React.FC = () => {
         </div>
       </div>
 
-      {/* Product Grid */}
-      <ProductGrid 
-        filter={activeFilter}
-        viewType={viewType}
-        hideInactive={hideInactive}
-        searchQuery={searchQuery}
-        onProductSelect={setSelectedProduct}
-      />
+      {/* Main Content Tabs */}
+      <Tabs defaultValue="products" className="space-y-4">
+        <TabsList className="grid w-fit grid-cols-2">
+          <TabsTrigger value="products" className="flex items-center gap-2">
+            <LayoutGrid className="w-4 h-4" />
+            Products
+          </TabsTrigger>
+          <TabsTrigger value="map" className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Location Map
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="products" className="space-y-4">
+          <ProductGrid 
+            filter={activeFilter}
+            viewType={viewType}
+            hideInactive={hideInactive}
+            searchQuery={searchQuery}
+            onProductSelect={setSelectedProduct}
+          />
+        </TabsContent>
+
+        <TabsContent value="map" className="space-y-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Equipment Locations</h3>
+              <p className="text-gray-600 text-sm">Real-time view of where your equipment is currently deployed</p>
+            </div>
+            <InventoryMapView />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
