@@ -85,15 +85,36 @@ const mockDrivers = [
 ];
 
 const statusColors = {
-  assigned: '#3366FF',
-  in_progress: '#FF9933',
-  completed: '#33CC66'
+  assigned: '#3B82F6',    // Blue
+  in_progress: '#F97316', // Orange  
+  completed: '#10B981',   // Green
+  cancelled: '#6B7280',   // Gray
+  overdue: '#EF4444'      // Red
 };
 
 const statusLabels = {
-  assigned: 'A',
-  in_progress: 'P',
-  completed: 'C'
+  assigned: 'Assigned',
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  overdue: 'Overdue'
+};
+
+const jobTypeLetters = {
+  delivery: 'D',
+  pickup: 'P', 
+  service: 'S',
+  return: 'R',
+  cleaning: 'C',
+  maintenance: 'M',
+  inspection: 'I'
+};
+
+const driverColors = {
+  'Jason Wells': '#3B82F6',    // Blue
+  'Grady Green': '#EF4444',    // Red
+  'Kygo Jones': '#10B981',     // Green
+  'Unassigned': '#6B7280'      // Gray
 };
 
 const JobsMapView: React.FC = () => {
@@ -281,6 +302,8 @@ const JobsMapView: React.FC = () => {
           ['==', ['get', 'status'], 'assigned'], statusColors.assigned,
           ['==', ['get', 'status'], 'in_progress'], statusColors.in_progress,
           ['==', ['get', 'status'], 'completed'], statusColors.completed,
+          ['==', ['get', 'status'], 'cancelled'], statusColors.cancelled,
+          ['==', ['get', 'status'], 'overdue'], statusColors.overdue,
           '#666666'
         ],
         'circle-stroke-width': 2,
@@ -657,6 +680,71 @@ const JobsMapView: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Map Legend */}
+      <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Job Type Letters */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">Job Type Letters</h4>
+            <div className="text-sm text-gray-600 space-y-1">
+              <div>D=Delivery, P=Pickup, S=Service, R=Return, C=Cleaning, M=Maintenance, I=Inspection</div>
+            </div>
+          </div>
+          
+          {/* Status/Driver Colors */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">
+              {viewMode === 'status' ? 'Job Status Colors' : 'Driver Colors'}
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              {viewMode === 'status' ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.assigned}}></div>
+                    <span className="text-sm text-gray-600">Assigned</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.in_progress}}></div>
+                    <span className="text-sm text-gray-600">In Progress</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.completed}}></div>
+                    <span className="text-sm text-gray-600">Completed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.cancelled}}></div>
+                    <span className="text-sm text-gray-600">Cancelled</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.overdue}}></div>
+                    <span className="text-sm text-gray-600">Overdue</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: driverColors['Jason Wells']}}></div>
+                    <span className="text-sm text-gray-600">Jason Wells</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: driverColors['Grady Green']}}></div>
+                    <span className="text-sm text-gray-600">Grady Green</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: driverColors['Kygo Jones']}}></div>
+                    <span className="text-sm text-gray-600">Kygo Jones</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: driverColors['Unassigned']}}></div>
+                    <span className="text-sm text-gray-600">Unassigned</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* OpenWeather API Key Input Modal */}
