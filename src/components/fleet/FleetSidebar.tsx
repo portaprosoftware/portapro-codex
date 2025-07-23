@@ -60,51 +60,49 @@ const navigationItems = [
 
 export const FleetSidebar: React.FC = () => {
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-full flex-shrink-0">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-start space-x-2">
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">Fleet Management</h2>
-            <p className="text-base font-normal text-gray-500">Manage vehicles & operations</p>
-          </div>
-        </div>
+    <aside className="w-64 bg-card border-r flex flex-col">
+      {/* Header */}
+      <div className="p-6 border-b">
+        <h2 className="text-lg font-semibold">Fleet Management</h2>
       </div>
 
-      <nav className="p-4 space-y-2">
-        {navigationItems.map((item) => (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            end={item.end}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center justify-between w-full p-3 rounded-lg text-sm transition-colors group",
-                isActive
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-700 hover:bg-gray-50"
-              )
-            }
-          >
-            <div className="flex items-center space-x-3 min-w-0 flex-1">
-              <item.icon className={cn(
-                "w-4 h-4 flex-shrink-0"
-              )} />
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium truncate">{item.title}</div>
-                <div className="text-xs font-normal truncate text-gray-500 group-[.bg-blue-600]:text-blue-100">{item.description}</div>
-              </div>
-            </div>
-            {item.badge && (
-              <Badge 
-                variant="destructive" 
-                className="h-5 text-xs flex-shrink-0 ml-2"
+      {/* Navigation */}
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {navigationItems.map((item) => (
+            <li key={item.href}>
+              <NavLink
+                to={item.href}
+                end={item.end}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center justify-between p-3 rounded-lg transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  )
+                }
               >
-                {item.badge}
-              </Badge>
-            )}
-          </NavLink>
-        ))}
+                <div className="flex items-center space-x-3">
+                  <item.icon className="h-4 w-4" />
+                  <div>
+                    <div className="text-sm font-medium">{item.title}</div>
+                    <div className="text-xs text-muted-foreground">{item.description}</div>
+                  </div>
+                </div>
+                {item.badge && (
+                  <Badge 
+                    variant="destructive" 
+                    className="text-xs"
+                  >
+                    {item.badge}
+                  </Badge>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </nav>
-    </div>
+    </aside>
   );
 };

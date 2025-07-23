@@ -14,7 +14,7 @@ import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
-type StatusFilter = "all" | "active" | "maintenance" | "retired";
+type StatusFilter = "all" | "available" | "in_service" | "maintenance";
 
 export const FleetOverview: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -49,9 +49,9 @@ export const FleetOverview: React.FC = () => {
 
   const statusCounts = {
     all: vehicles?.length || 0,
-    active: vehicles?.filter(v => v.status === "active").length || 0,
+    available: vehicles?.filter(v => v.status === "available").length || 0,
+    in_service: vehicles?.filter(v => v.status === "in_service").length || 0,
     maintenance: vehicles?.filter(v => v.status === "maintenance").length || 0,
-    retired: vehicles?.filter(v => v.status === "retired").length || 0,
   };
 
   if (isLoading) {
@@ -76,83 +76,111 @@ export const FleetOverview: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full bg-gray-50">
+    <div className="flex h-screen bg-background">
       <FleetSidebar />
-      <div className="flex-1 max-w-7xl mx-auto px-8 py-6 space-y-6">
-        {/* Page Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Fleet Overview</h1>
-            <p className="text-base font-normal text-gray-500 mt-1">{statusCounts.all} of {statusCounts.all} vehicles</p>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-card border-b px-6 py-4">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-xl font-semibold mb-4">Fleet Overview</h1>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="bg-card p-4 rounded-lg border shadow-sm">
+                <div className="text-sm text-muted-foreground">Total Vehicles</div>
+                <div className="text-2xl font-bold">{vehicles?.length || 0}</div>
+              </div>
+              <div className="bg-card p-4 rounded-lg border shadow-sm">
+                <div className="text-sm text-muted-foreground">Available</div>
+                <div className="text-2xl font-bold text-green-600">{statusCounts.available}</div>
+              </div>
+              <div className="bg-card p-4 rounded-lg border shadow-sm">
+                <div className="text-sm text-muted-foreground">In Service</div>
+                <div className="text-2xl font-bold text-blue-600">{statusCounts.in_service}</div>
+              </div>
+              <div className="bg-card p-4 rounded-lg border shadow-sm">
+                <div className="text-sm text-muted-foreground">Maintenance</div>
+                <div className="text-2xl font-bold text-orange-600">{statusCounts.maintenance}</div>
+              </div>
+            </div>
           </div>
         </div>
 
-      {/* Search and Controls */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search vehicles..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 pl-10 text-base font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-          />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={cn(
-              "inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-              viewMode === "grid"
-                ? "bg-blue-600 text-white"
-                : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
-            )}
-          >
-            <Grid className="w-4 h-4 mr-2" />
-            Icons
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={cn(
-              "inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-              viewMode === "list"
-                ? "bg-blue-600 text-white"
-                : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
-            )}
-          >
-            <List className="w-4 h-4 mr-2" />
-            List
-          </button>
-          <button
-            onClick={() => setIsAddVehicleModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Vehicle
-          </button>
-        </div>
-      </div>
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-7xl mx-auto p-6">
+            {/* Controls */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              {/* Search */}
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Search vehicles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                />
+              </div>
+              
+              {/* View Mode */}
+              <div className="flex border rounded-md">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "px-3 py-2 text-sm font-medium rounded-l-md transition-colors",
+                    viewMode === "grid"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background hover:bg-muted"
+                  )}
+                >
+                  <Grid className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={cn(
+                    "px-3 py-2 text-sm font-medium rounded-r-md transition-colors",
+                    viewMode === "list"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background hover:bg-muted"
+                  )}
+                >
+                  <List className="h-4 w-4" />
+                </button>
+              </div>
+              
+              {/* Add Vehicle */}
+              <Button
+                onClick={() => setIsAddVehicleModalOpen(true)}
+                className="bg-gradient-primary text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Vehicle
+              </Button>
+            </div>
 
-      {/* Status Filter Pills */}
-      <div className="flex flex-wrap gap-2">
-        {Object.entries(statusCounts).map(([status, count]) => (
-          <button
-            key={status}
-            onClick={() => setStatusFilter(status as StatusFilter)}
-            className={cn(
-              "inline-flex items-center py-1 px-3 text-sm font-semibold rounded-full transition-colors",
-              statusFilter === status
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            )}
-          >
-            <span className="capitalize">{status}</span>
-            <span className="ml-1">({count})</span>
-          </button>
-        ))}
-      </div>
+            {/* Status Filters */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={cn(
+                    "inline-flex items-center text-sm font-medium py-1.5 px-3 rounded-full transition-colors",
+                    statusFilter === status
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  )}
+                >
+                  {status === 'all' ? 'All' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {status !== 'all' && (
+                    <span className="ml-1">
+                      ({statusCounts[status]})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
 
       {/* Vehicle Grid/List */}
       <div className={cn(
@@ -193,6 +221,8 @@ export const FleetOverview: React.FC = () => {
         isOpen={isAddVehicleModalOpen}
         onClose={() => setIsAddVehicleModalOpen(false)}
       />
+          </div>
+        </div>
       </div>
     </div>
   );
