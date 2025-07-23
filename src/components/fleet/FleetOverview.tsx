@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VehicleCard } from "./VehicleCard";
+import { VehicleDetailModal } from "./VehicleDetailModal";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
 import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
@@ -18,6 +20,7 @@ export const FleetOverview: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [pageMode, setPageMode] = useState("overview");
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -57,12 +60,12 @@ export const FleetOverview: React.FC = () => {
   }
 
   const handleManageVehicle = (vehicle: any) => {
-    console.log("Managing vehicle:", vehicle);
     setSelectedVehicle(vehicle);
-    setPageMode("management");
+    setIsVehicleModalOpen(true);
   };
+
   if (pageMode === "management") {
-    return <VehicleManagement selectedVehicle={selectedVehicle} onBack={() => setPageMode("overview")} />;
+    return <VehicleManagement onBack={() => setPageMode("overview")} />;
   }
 
   if (pageMode === "fuel") {
@@ -131,10 +134,7 @@ export const FleetOverview: React.FC = () => {
             <List className="w-4 h-4 mr-2" />
             List
           </Button>
-          <Button onClick={() => {
-            console.log("Manage button clicked, switching to management mode");
-            setPageMode("management");
-          }}>
+          <Button onClick={() => setPageMode("management")}>
             <Plus className="w-4 h-4 mr-2" />
             Manage Vehicles
           </Button>
@@ -158,7 +158,7 @@ export const FleetOverview: React.FC = () => {
 
       {/* Vehicle Grid/List */}
       <div className={cn(
-        "gap-4",
+        "gap-6",
         viewMode === "grid" 
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
           : "space-y-4"
@@ -177,6 +177,18 @@ export const FleetOverview: React.FC = () => {
         <div className="text-center py-12">
           <p className="text-gray-500">No vehicles found matching your criteria.</p>
         </div>
+      )}
+
+      {/* Vehicle Detail Modal */}
+      {selectedVehicle && (
+        <VehicleDetailModal
+          vehicle={selectedVehicle}
+          isOpen={isVehicleModalOpen}
+          onClose={() => {
+            setIsVehicleModalOpen(false);
+            setSelectedVehicle(null);
+          }}
+        />
       )}
     </div>
   );
