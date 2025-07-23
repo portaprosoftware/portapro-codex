@@ -22,8 +22,8 @@
   --font-family:        "Inter", sans-serif;
   --font-size-base:     14px;
   --font-size-lg:       16px;
-  --font-weight-normal: 400;
-  --font-weight-bold:   500;
+  --font-weight-normal: 500;
+  --font-weight-bold:   600;
   
   /* Spacing */
   --space-1: 4px;
@@ -70,6 +70,7 @@ h1, h2, h3, h4 {
   color: #09090B;
   font-size: 14px;
   font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-weight: 600;
   text-decoration: none;
   transition: background .2s;
 }
@@ -79,7 +80,7 @@ h1, h2, h3, h4 {
 .nav-item-active {
   background: linear-gradient(20deg, var(--color-primary-start), var(--color-primary-end)) !important;
   color: #FFFFFF !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   height: 32px;
   padding: 8px 12px;
   border-radius: 6px;
