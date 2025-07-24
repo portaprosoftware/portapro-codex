@@ -45,78 +45,67 @@ const items: NavigationItem[] = [
   { 
     title: 'Dashboard', 
     url: '/', 
-    icon: Home,
-    description: 'Overview and quick actions'
+    icon: Home
   },
   { 
     title: 'Jobs', 
     url: '/jobs', 
     icon: Calendar,
-    description: 'Schedule and manage jobs',
     permission: 'staff',
     badge: '12'
   },
   { 
     title: 'Customers', 
-    url: '/customers', 
+    url: '/customer-hub', 
     icon: Users,
-    description: 'Customer management',
     permission: 'staff'
   },
   { 
     title: 'Inventory', 
     url: '/inventory', 
     icon: Package,
-    description: 'Track units and supplies',
     permission: 'staff'
   },
   { 
     title: 'Fleet Management', 
-    url: '/fleet', 
+    url: '/fleet-management', 
     icon: Truck,
-    description: 'Vehicles and maintenance',
     permission: 'admin'
   },
   { 
     title: 'Maintenance', 
-    url: '/maintenance', 
+    url: '/maintenance-hub', 
     icon: Wrench,
-    description: 'Service and repairs',
     permission: 'admin'
   },
   { 
     title: 'Quotes & Invoices', 
     url: '/quotes-invoices', 
     icon: FileText,
-    description: 'Billing and estimates',
     permission: 'admin'
   },
   { 
     title: 'Analytics', 
     url: '/analytics', 
     icon: BarChart3,
-    description: 'Reports and insights',
     permission: 'admin'
   },
   { 
     title: 'Marketing', 
-    url: '/marketing', 
+    url: '/marketing-hub', 
     icon: TrendingUp,
-    description: 'Campaigns and outreach',
     permission: 'admin'
   },
   { 
     title: 'Communications', 
     url: '/communications', 
     icon: MessageSquare,
-    description: 'Customer portal and chat',
     permission: 'admin'
   },
   { 
     title: 'Settings', 
     url: '/settings', 
     icon: Settings,
-    description: 'System configuration',
     permission: 'owner'
   },
 ];
@@ -169,12 +158,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                       className="w-full flex items-center gap-3 px-3 py-2 text-left"
                     >
                       <item.icon className="h-4 w-4" />
-                      <div className="flex-1">
-                        <span className="font-medium">{item.title}</span>
-                        {item.description && (
-                          <div className="text-xs text-muted-foreground">{item.description}</div>
-                        )}
-                      </div>
+                       <span className="text-sm font-medium">{item.title}</span>
                       {item.badge && (
                         <Badge 
                           variant="outline" 
