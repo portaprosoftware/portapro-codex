@@ -4,6 +4,77 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOfflineSync } from "./useOfflineSync";
 
+async function processJobConsumables(jobId: string, consumablesData: any) {
+  const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
+
+  if (billingMethod === 'per-use' && items.length > 0) {
+    // Create job_consumables records and update stock
+    for (const item of items) {
+      if (item.consumableId && item.quantity > 0) {
+        // Create job consumable record
+        await supabase.from('job_consumables').insert({
+          job_id: jobId,
+          consumable_id: item.consumableId,
+          quantity: item.quantity,
+          unit_price: item.unitPrice,
+          line_total: item.total,
+          used_by: null // Will be set when job is completed
+        });
+
+        // Update consumable stock (prevent negative values)
+        const { data: currentStock } = await supabase
+          .from('consumables')
+          .select('on_hand_qty')
+          .eq('id', item.consumableId)
+          .single();
+        
+        const newQuantity = Math.max(0, (currentStock?.on_hand_qty || 0) - item.quantity);
+        
+        await supabase.from('consumables')
+          .update({ on_hand_qty: newQuantity })
+          .eq('id', item.consumableId);
+      }
+    }
+  } else if (billingMethod === 'bundle' && selectedBundle) {
+    // Handle bundle processing - get bundle items and create records
+    const { data: bundleItems } = await supabase
+      .from('consumable_bundle_items')
+      .select('*, consumables(*)')
+      .eq('bundle_id', selectedBundle);
+
+    if (bundleItems) {
+      for (const bundleItem of bundleItems) {
+        // Create job consumable record
+        await supabase.from('job_consumables').insert({
+          job_id: jobId,
+          consumable_id: bundleItem.consumable_id,
+          quantity: bundleItem.quantity,
+          unit_price: bundleItem.consumables.unit_price,
+          line_total: bundleItem.quantity * bundleItem.consumables.unit_price,
+          used_by: null
+        });
+
+        // Update stock (prevent negative values)
+        const { data: currentStock } = await supabase
+          .from('consumables')
+          .select('on_hand_qty')
+          .eq('id', bundleItem.consumable_id)
+          .single();
+        
+        const newQuantity = Math.max(0, (currentStock?.on_hand_qty || 0) - bundleItem.quantity);
+        
+        await supabase.from('consumables')
+          .update({ on_hand_qty: newQuantity })
+          .eq('id', bundleItem.consumable_id);
+      }
+    }
+  } else if (billingMethod === 'subscription' && subscriptionEnabled) {
+    // For subscription, we might not track specific items unless they're manually added
+    // This is for internal tracking only, no stock updates needed unless specific items are logged
+    console.log('Subscription plan active - no automatic stock adjustments');
+  }
+}
+
 interface JobFormData {
   customer_id: string;
   job_type: 'delivery' | 'pickup' | 'service';
@@ -14,6 +85,9 @@ interface JobFormData {
   driver_id?: string;
   vehicle_id?: string;
   timezone?: string;
+  billing_method?: string;
+  subscription_plan?: string;
+  consumables_data?: any;
 }
 
 export function useJobs(filters?: {
@@ -83,10 +157,12 @@ export function useCreateJob() {
 
       const jobNumber = `${jobTypePrefix}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
 
-      const { data, error } = await supabase
+      const { consumables_data, ...jobDataForDB } = jobData;
+
+      const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
-          ...jobData,
+          ...jobDataForDB,
           job_number: jobNumber,
           status: 'assigned',
           timezone: jobData.timezone || 'America/New_York'
@@ -95,7 +171,13 @@ export function useCreateJob() {
         .single();
 
       if (error) throw error;
-      return data;
+
+      // Handle consumables processing
+      if (consumables_data && newJob) {
+        await processJobConsumables(newJob.id, consumables_data);
+      }
+
+      return newJob;
     },
     onSuccess: (data) => {
       if (data) {

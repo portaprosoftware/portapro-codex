@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Edit, User, Briefcase, Calendar, MapPin, Truck, Package } from 'lucide-react';
+import { CheckCircle, Edit, User, Briefcase, Calendar, MapPin, Truck, Package, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ReviewStepProps {
@@ -17,6 +16,21 @@ interface ReviewStepProps {
       date: Date | null;
       time: string;
       timezone: string;
+    };
+    consumables: {
+      billingMethod: 'per-use' | 'bundle' | 'subscription';
+      items: Array<{
+        id: string;
+        consumableId: string;
+        name: string;
+        quantity: number;
+        unitPrice: number;
+        total: number;
+        stockAvailable: number;
+      }>;
+      selectedBundle: string | null;
+      subscriptionEnabled: boolean;
+      subtotal: number;
     };
     location: {
       address: string;
@@ -104,6 +118,70 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data, onEdit }) => {
     },
     {
       step: 4,
+      title: 'Consumables & Pricing',
+      icon: DollarSign,
+      content: (
+        <div>
+          {data.consumables.billingMethod === 'per-use' && (
+            <div>
+              <div className="font-medium text-gray-900 mb-2">Per-Use Billing</div>
+              {data.consumables.items.length > 0 ? (
+                <div className="space-y-1">
+                  {data.consumables.items.slice(0, 3).map((item) => (
+                    <div key={item.id} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">{item.name}</span>
+                      <Badge variant="outline">{item.quantity} × ${item.unitPrice.toFixed(2)}</Badge>
+                    </div>
+                  ))}
+                  {data.consumables.items.length > 3 && (
+                    <div className="text-sm text-gray-500">+{data.consumables.items.length - 3} more...</div>
+                  )}
+                  <div className="pt-2 border-t">
+                    <div className="flex justify-between font-medium">
+                      <span>Subtotal:</span>
+                      <span>${data.consumables.subtotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-500">No items selected</div>
+              )}
+            </div>
+          )}
+          {data.consumables.billingMethod === 'bundle' && (
+            <div>
+              <div className="font-medium text-gray-900 mb-2">Bundle Pricing</div>
+              {data.consumables.selectedBundle ? (
+                <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+                  ${data.consumables.subtotal.toFixed(2)} Bundle
+                </Badge>
+              ) : (
+                <div className="text-gray-500">No bundle selected</div>
+              )}
+            </div>
+          )}
+          {data.consumables.billingMethod === 'subscription' && (
+            <div>
+              <div className="font-medium text-gray-900 mb-2">Subscription Plan</div>
+              {data.consumables.subscriptionEnabled ? (
+                <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                  Unlimited Consumables ($200/month)
+                </Badge>
+              ) : (
+                <div className="text-gray-500">Subscription not enabled</div>
+              )}
+            </div>
+          )}
+        </div>
+      ),
+      isComplete: (
+        (data.consumables.billingMethod === 'per-use' && data.consumables.items.length > 0) ||
+        (data.consumables.billingMethod === 'bundle' && data.consumables.selectedBundle !== null) ||
+        (data.consumables.billingMethod === 'subscription' && data.consumables.subscriptionEnabled)
+      ),
+    },
+    {
+      step: 5,
       title: 'Location',
       icon: MapPin,
       content: data.location.address ? (
@@ -126,7 +204,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data, onEdit }) => {
       isComplete: data.location.address.length > 0,
     },
     {
-      step: 5,
+      step: 6,
       title: 'Driver & Vehicle',
       icon: Truck,
       content: (
@@ -148,7 +226,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ data, onEdit }) => {
       isComplete: data.assignment.driverId !== null,
     },
     {
-      step: 6,
+      step: 7,
       title: 'Equipment & Services',
       icon: Package,
       content: data.equipment.items.length > 0 ? (

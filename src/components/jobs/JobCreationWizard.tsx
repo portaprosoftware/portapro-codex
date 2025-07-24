@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomerStep } from './steps/CustomerStep';
 import { JobTypeStep } from './steps/JobTypeStep';
 import { DateTimeStep } from './steps/DateTimeStep';
+import { ConsumablesPricingStep } from './steps/ConsumablesPricingStep';
 import { LocationStep } from './steps/LocationStep';
 import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ReviewStep } from './steps/ReviewStep';
@@ -31,6 +32,21 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
       date: null as Date | null,
       time: '09:00',
       timezone: 'America/New_York'
+    },
+    consumables: {
+      billingMethod: 'per-use' as 'per-use' | 'bundle' | 'subscription',
+      items: [] as Array<{
+        id: string;
+        consumableId: string;
+        name: string;
+        quantity: number;
+        unitPrice: number;
+        total: number;
+        stockAvailable: number;
+      }>,
+      selectedBundle: null as string | null,
+      subscriptionEnabled: false,
+      subtotal: 0
     },
     location: {
       address: '',
@@ -57,9 +73,10 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
     { id: 1, title: 'Customer', component: CustomerStep },
     { id: 2, title: 'Job Type', component: JobTypeStep },
     { id: 3, title: 'Date & Time', component: DateTimeStep },
-    { id: 4, title: 'Location', component: LocationStep },
-    { id: 5, title: 'Assignment', component: DriverVehicleStep },
-    { id: 6, title: 'Review', component: ReviewStep }
+    { id: 4, title: 'Consumables & Pricing', component: ConsumablesPricingStep },
+    { id: 5, title: 'Location', component: LocationStep },
+    { id: 6, title: 'Assignment', component: DriverVehicleStep },
+    { id: 7, title: 'Review', component: ReviewStep }
   ];
 
   const currentStepData = steps.find(step => step.id === currentStep);
@@ -70,9 +87,14 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
       case 1: return formData.customer !== null;
       case 2: return formData.jobType !== null;
       case 3: return formData.dateTime.date !== null;
-      case 4: return formData.location.address.length > 0;
-      case 5: return true; // Assignment is optional
-      case 6: return true;
+      case 4: return (
+        (formData.consumables.billingMethod === 'per-use' && formData.consumables.items.length > 0) ||
+        (formData.consumables.billingMethod === 'bundle' && formData.consumables.selectedBundle !== null) ||
+        (formData.consumables.billingMethod === 'subscription' && formData.consumables.subscriptionEnabled)
+      );
+      case 5: return formData.location.address.length > 0;
+      case 6: return true; // Assignment is optional
+      case 7: return true;
       default: return false;
     }
   };
@@ -107,7 +129,10 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
       special_instructions: formData.location.specialInstructions || undefined,
       driver_id: formData.assignment.driverId || undefined,
       vehicle_id: formData.assignment.vehicleId || undefined,
-      timezone: formData.dateTime.timezone
+      timezone: formData.dateTime.timezone,
+      billing_method: formData.consumables.billingMethod,
+      subscription_plan: formData.consumables.subscriptionEnabled ? 'unlimited_consumables' : undefined,
+      consumables_data: formData.consumables
     };
 
     await createJobMutation.mutateAsync(jobData);
@@ -122,6 +147,13 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
         date: null,
         time: '09:00',
         timezone: 'America/New_York'
+      },
+      consumables: {
+        billingMethod: 'per-use',
+        items: [],
+        selectedBundle: null,
+        subscriptionEnabled: false,
+        subtotal: 0
       },
       location: {
         address: '',
@@ -191,8 +223,9 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
                   currentStep === 1 ? formData.customer :
                   currentStep === 2 ? formData.jobType :
                   currentStep === 3 ? formData.dateTime :
-                  currentStep === 4 ? formData.location :
-                  currentStep === 5 ? formData.assignment :
+                  currentStep === 4 ? formData.consumables :
+                  currentStep === 5 ? formData.location :
+                  currentStep === 6 ? formData.assignment :
                   formData
                 }
                 onUpdate={(value: any) => {
@@ -200,11 +233,12 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
                     1: 'customer',
                     2: 'jobType',
                     3: 'dateTime',
-                    4: 'location',
-                    5: 'assignment'
+                    4: 'consumables',
+                    5: 'location',
+                    6: 'assignment'
                   };
                   
-                  if (currentStep === 6) {
+                  if (currentStep === 7) {
                     // Review step doesn't update, just calls edit
                     return;
                   }
@@ -212,7 +246,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
                   const field = fieldMap[currentStep as keyof typeof fieldMap];
                   updateFormData(field, value);
                 }}
-                onEdit={currentStep === 6 ? handleStepEdit : undefined}
+                onEdit={currentStep === 7 ? handleStepEdit : undefined}
               />
             )}
           </div>

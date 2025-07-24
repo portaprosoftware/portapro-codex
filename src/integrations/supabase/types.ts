@@ -335,6 +335,120 @@ export type Database = {
         }
         Relationships: []
       }
+      consumable_bundle_items: {
+        Row: {
+          bundle_id: string
+          consumable_id: string
+          created_at: string
+          id: string
+          quantity: number
+        }
+        Insert: {
+          bundle_id: string
+          consumable_id: string
+          created_at?: string
+          id?: string
+          quantity?: number
+        }
+        Update: {
+          bundle_id?: string
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumable_bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_bundle_items_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consumable_bundles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      consumable_notification_settings: {
+        Row: {
+          business_hours_only: boolean
+          created_at: string
+          dashboard_alerts: boolean
+          email_notifications: boolean
+          email_recipients: string[] | null
+          id: string
+          low_stock_enabled: boolean
+          low_stock_threshold_days: number
+          notification_frequency: string
+          sms_notifications: boolean
+          sms_recipients: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          business_hours_only?: boolean
+          created_at?: string
+          dashboard_alerts?: boolean
+          email_notifications?: boolean
+          email_recipients?: string[] | null
+          id?: string
+          low_stock_enabled?: boolean
+          low_stock_threshold_days?: number
+          notification_frequency?: string
+          sms_notifications?: boolean
+          sms_recipients?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          business_hours_only?: boolean
+          created_at?: string
+          dashboard_alerts?: boolean
+          email_notifications?: boolean
+          email_recipients?: string[] | null
+          id?: string
+          low_stock_enabled?: boolean
+          low_stock_threshold_days?: number
+          notification_frequency?: string
+          sms_notifications?: boolean
+          sms_recipients?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       consumable_stock_adjustments: {
         Row: {
           adjusted_by: string | null
@@ -2229,6 +2343,7 @@ export type Database = {
       jobs: {
         Row: {
           actual_completion_time: string | null
+          billing_method: string | null
           created_at: string
           customer_id: string
           date_returned: string | null
@@ -2247,6 +2362,7 @@ export type Database = {
           service_schedule_info: Json | null
           special_instructions: string | null
           status: string
+          subscription_plan: string | null
           timezone: string | null
           total_price: number | null
           updated_at: string
@@ -2254,6 +2370,7 @@ export type Database = {
         }
         Insert: {
           actual_completion_time?: string | null
+          billing_method?: string | null
           created_at?: string
           customer_id: string
           date_returned?: string | null
@@ -2272,6 +2389,7 @@ export type Database = {
           service_schedule_info?: Json | null
           special_instructions?: string | null
           status?: string
+          subscription_plan?: string | null
           timezone?: string | null
           total_price?: number | null
           updated_at?: string
@@ -2279,6 +2397,7 @@ export type Database = {
         }
         Update: {
           actual_completion_time?: string | null
+          billing_method?: string | null
           created_at?: string
           customer_id?: string
           date_returned?: string | null
@@ -2297,6 +2416,7 @@ export type Database = {
           service_schedule_info?: Json | null
           special_instructions?: string | null
           status?: string
+          subscription_plan?: string | null
           timezone?: string | null
           total_price?: number | null
           updated_at?: string
