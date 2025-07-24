@@ -15,8 +15,8 @@ import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
-import { FiltersFlyout } from '@/components/jobs/FiltersFlyout';
-import { DateNavigator } from '@/components/jobs/DateNavigator';
+import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
+import { InlineFilters } from '@/components/jobs/InlineFilters';
 import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -284,11 +284,11 @@ const JobsPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Actions with Enhanced Spacing */}
+        {/* Filters Bar - Locked to Second Card */}
         {activeTab === 'calendar' && (
           <div className="bg-white rounded-lg border shadow-sm p-6">
-            <div className="flex items-center space-x-4">
-              <FiltersFlyout
+            <div className="flex items-center justify-between">
+              <InlineFilters
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
                 selectedDriver={selectedDriver}
@@ -301,7 +301,7 @@ const JobsPage: React.FC = () => {
               />
               <Button 
                 onClick={() => setIsJobWizardOpen(true)}
-                className="btn-enterprise"
+                className="btn-enterprise ml-4"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Schedule Job
@@ -313,103 +313,85 @@ const JobsPage: React.FC = () => {
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
           {activeTab === 'calendar' && (
-            <div className="space-y-4">
-              {/* Enhanced Calendar Header */}
-              <div className="enterprise-gradient-header">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-12">
+            <div className="space-y-6">
+              {/* Going Out Card */}
+              <div className="bg-white rounded-lg border shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <h2 className="enterprise-section-header text-white mb-0">Going Out</h2>
-                      <DateNavigator
-                        date={selectedDateOut}
-                        onDateChange={setSelectedDateOut}
-                        label="Going Out"
-                      />
+                      <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full"></div>
+                      <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
                     </div>
+                    <EnhancedDateNavigator
+                      date={selectedDateOut}
+                      onDateChange={setSelectedDateOut}
+                      label="Going Out"
+                    />
                   </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <DateNavigator
+                </div>
+                
+                <div className="p-6">
+                  {filterJobs(outgoingJobs).length > 0 ? (
+                    <div className="space-y-4">
+                      {filterJobs(outgoingJobs).map(job => (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          onEquipmentAssign={handleEquipmentAssign}
+                          compact
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="enterprise-empty-state">
+                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
+                      <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Coming Back Card */}
+              <div className="bg-white rounded-lg border shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full"></div>
+                      <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
+                    </div>
+                    <EnhancedDateNavigator
                       date={selectedDateBack}
                       onDateChange={setSelectedDateBack}
                       label="Coming Back"
                     />
-                    <h2 className="enterprise-section-header text-white mb-0">Coming Back</h2>
                   </div>
                 </div>
-              </div>
-
-              {/* Two Column Layout with Enhanced Spacing */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Going Out Column */}
-                <div className="space-y-6">
-                  <div className="enterprise-card">
-                    <div className="enterprise-card-header">
-                      <h3 className="enterprise-card-title flex items-center mb-0">
-                        <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full mr-3"></div>
-                        Outgoing Jobs ({filterJobs(outgoingJobs).length})
-                      </h3>
+                
+                <div className="p-6">
+                  {incomingJobs.length > 0 ? (
+                    <div className="space-y-4">
+                      {incomingJobs.map(job => (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          compact
+                        />
+                      ))}
                     </div>
-                    
-                    <div className="enterprise-card-content">
-                      {filterJobs(outgoingJobs).length > 0 ? (
-                        <div className="space-y-4">
-                          {filterJobs(outgoingJobs).map(job => (
-                            <JobCard
-                              key={job.id}
-                              job={job}
-                              onView={handleJobView}
-                              onStart={handleJobStart}
-                              onStatusUpdate={handleJobStatusUpdate}
-                              onEquipmentAssign={handleEquipmentAssign}
-                              compact
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="enterprise-empty-state">
-                          <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                          <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
-                          <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
-                        </div>
-                      )}
+                  ) : (
+                    <div className="enterprise-empty-state">
+                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
+                      <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
                     </div>
-                  </div>
-                </div>
-
-                {/* Coming Back Column */}
-                <div className="space-y-6">
-                  <div className="enterprise-card">
-                    <div className="enterprise-card-header">
-                      <h3 className="enterprise-card-title flex items-center mb-0">
-                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mr-3"></div>
-                        Incoming Jobs ({incomingJobs.length})
-                      </h3>
-                    </div>
-                    
-                    <div className="enterprise-card-content">
-                      {incomingJobs.length > 0 ? (
-                        <div className="space-y-4">
-                          {incomingJobs.map(job => (
-                            <JobCard
-                              key={job.id}
-                              job={job}
-                              onView={handleJobView}
-                              onStart={handleJobStart}
-                              onStatusUpdate={handleJobStatusUpdate}
-                              compact
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="enterprise-empty-state">
-                          <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                          <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
-                          <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
