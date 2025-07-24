@@ -261,6 +261,20 @@ export function EditDropPinModal({
     }
   };
 
+  // Filter valid service locations - ensure both id and location_name exist and are not empty
+  const validServiceLocations = serviceLocations?.filter(location => 
+    location?.id && 
+    location?.location_name && 
+    location.id.toString().trim() !== '' && 
+    location.location_name.trim() !== ''
+  ) || [];
+
+  // Filter valid categories - ensure name exists and is not empty after trimming
+  const validCategories = categories?.filter(category => 
+    category?.name && 
+    category.name.trim() !== ''
+  ) || [];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
@@ -318,7 +332,7 @@ export function EditDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {serviceLocations?.filter(location => location.id && location.location_name).map((location) => (
+                          {validServiceLocations.map((location) => (
                             <SelectItem key={location.id} value={location.id}>
                               {location.location_name}
                             </SelectItem>
@@ -357,7 +371,7 @@ export function EditDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories?.filter(category => category.name && category.name.trim() !== '').map((category) => (
+                          {validCategories.map((category) => (
                             <SelectItem key={category.id} value={category.name}>
                               <div className="flex items-center gap-2">
                                 <div 
