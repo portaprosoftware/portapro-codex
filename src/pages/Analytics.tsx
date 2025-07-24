@@ -70,7 +70,7 @@ const Analytics = () => {
   };
 
   return (
-    <div className="max-w-none px-6 py-6 min-h-screen bg-gray-50">
+    <div className="max-w-none px-6 py-6 min-h-screen bg-background">
       {/* Header */}
       <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between">
@@ -104,7 +104,7 @@ const Analytics = () => {
       />
 
       {/* Section Tabs */}
-      <div className="bg-white border-b border-gray-200 px-6 -mx-6 mb-6">
+      <div className="bg-white border-b border-gray-200 px-6 -mx-6 mb-6 rounded-t-lg">
         <div className="flex space-x-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
@@ -127,7 +127,7 @@ const Analytics = () => {
       </div>
 
       {/* Main Content */}
-      <div className="space-y-6">
+      <div className="space-y-6 bg-white rounded-b-lg p-6 border border-t-0 shadow-sm">
         {renderActiveSection()}
       </div>
 

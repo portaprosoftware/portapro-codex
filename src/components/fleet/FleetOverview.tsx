@@ -8,7 +8,6 @@ import { VehicleCard } from "./VehicleCard";
 import { VehicleDetailModal } from "./VehicleDetailModal";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
-import { FleetSidebar } from "./FleetSidebar";
 import { AddVehicleModal } from "./AddVehicleModal";
 import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";

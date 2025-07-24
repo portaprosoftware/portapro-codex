@@ -142,15 +142,15 @@ const MarketingHub: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-2 mb-8 overflow-x-auto">
+        <div className="flex space-x-3 mb-8 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 rounded-md font-medium transition-colors whitespace-nowrap ${
+              className={`px-8 py-3 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-primary text-white shadow-sm'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               {tab.label}

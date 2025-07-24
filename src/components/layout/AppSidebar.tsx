@@ -17,7 +17,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
-import { UserButton } from '@clerk/clerk-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
+import { Logo } from '@/components/ui/logo';
 import { 
   Sidebar,
   SidebarContent,
@@ -108,6 +109,7 @@ const items: NavigationItem[] = [
 
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
+  const { user } = useUser();
   const location = useLocation();
 
   // Fetch today's jobs count for badge
@@ -148,9 +150,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-white" />
-          </div>
+          <Logo showText={false} />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">PortaPro</h1>
             <p className="text-xs text-gray-500">Portable Toilet Management</p>
@@ -160,6 +160,9 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       
       <SidebarContent>
         <SidebarGroup>
+          <div className="px-4 py-2">
+            <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Navigation</h2>
+          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {visibleItems.map((item) => (
@@ -205,7 +208,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             }}
           />
           <div className="text-sm text-gray-600">
-            User Menu
+            {user?.firstName || user?.emailAddresses?.[0]?.emailAddress || 'User'}
           </div>
         </div>
       </div>
