@@ -33,7 +33,7 @@ const mockJobs = [
     jobType: 'Delivery',
     status: 'assigned',
     driverId: 1,
-    scheduledDate: new Date(2025, 6, 22),
+    scheduledDate: new Date(2025, 6, 20), // Make overdue
     driverName: 'Grady Green',
     location: { lat: 40.4406, lng: -79.9959 },
     address: '123 Farm Road, Butler, PA'
@@ -43,7 +43,7 @@ const mockJobs = [
     customerId: 124,
     customerName: 'BlueWave Festival',
     jobType: 'Service',
-    status: 'assigned',
+    status: 'in_progress',
     driverId: 2,
     scheduledDate: new Date(2025, 6, 22),
     driverName: 'Jason Wells',
@@ -55,12 +55,36 @@ const mockJobs = [
     customerId: 125,
     customerName: 'Mountain View Resort',
     jobType: 'Pickup',
-    status: 'assigned',
+    status: 'completed',
     driverId: 1,
     scheduledDate: new Date(2025, 6, 22),
     driverName: 'Grady Green',
     location: { lat: 40.3868, lng: -79.8963 },
     address: '789 Resort Lane, Mt. Lebanon, PA'
+  },
+  {
+    id: 'CAN-555',
+    customerId: 126,
+    customerName: 'City Park Event',
+    jobType: 'Delivery',
+    status: 'cancelled',
+    driverId: 2,
+    scheduledDate: new Date(2025, 6, 22),
+    driverName: 'Jason Wells',
+    location: { lat: 40.4044, lng: -79.9514 },
+    address: '321 Park Avenue, Pittsburgh, PA'
+  },
+  {
+    id: 'LTE-333',
+    customerId: 127,
+    customerName: 'Corporate Campus',
+    jobType: 'Service',
+    status: 'completed',
+    driverId: 1,
+    scheduledDate: new Date(2025, 6, 21), // Will be marked as completed late
+    driverName: 'Grady Green',
+    location: { lat: 40.4361, lng: -79.9481 },
+    address: '555 Corporate Drive, Pittsburgh, PA'
   }
 ];
 
@@ -88,7 +112,7 @@ const statusColors = {
   in_progress: '#F97316', // Orange  
   completed: '#10B981',   // Green
   completed_late: '#6B7280', // Gray
-  cancelled: '#6B7280',   // Gray
+  cancelled: '#1F2937',   // Dark gray/black for cancelled
   overdue: '#EF4444'      // Red
 };
 
@@ -426,11 +450,23 @@ const JobsMapView: React.FC = () => {
     }
   };
 
-  // Calculate stats
+  // Calculate stats with overdue and completed_late logic
   const totalJobs = mockJobs.length;
   const completedJobs = mockJobs.filter(job => job.status === 'completed').length;
   const inProgressJobs = mockJobs.filter(job => job.status === 'in_progress').length;
   const assignedJobs = mockJobs.filter(job => job.status === 'assigned').length;
+  const cancelledJobs = mockJobs.filter(job => job.status === 'cancelled').length;
+  const overdueJobs = mockJobs.filter(job => {
+    const currentDate = new Date();
+    const scheduledDate = new Date(job.scheduledDate);
+    scheduledDate.setHours(23, 59, 59, 999);
+    return (job.status === 'assigned' || job.status === 'in_progress') && scheduledDate < currentDate;
+  }).length;
+  const completedLateJobs = mockJobs.filter(job => {
+    if (job.status !== 'completed') return false;
+    // For demo purposes, assume some completed jobs were late
+    return Math.random() > 0.7; // Randomly mark ~30% as late for demo
+  }).length;
   const totalDrivers = mockDrivers.length;
 
   return (
@@ -531,20 +567,35 @@ const JobsMapView: React.FC = () => {
       </div>
 
       {/* Summary Badges */}
-      <div className="flex items-center space-x-3">
-        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
+      <div className="flex items-center space-x-3 flex-wrap">
+        <Badge className="bg-gradient-to-r from-white to-gray-100 text-black border px-3 py-1 rounded-full font-bold">
           Total Jobs: {totalJobs}
         </Badge>
-        <Badge className="bg-gradient-green text-white px-3 py-1 rounded-full font-bold">
+        <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold">
           Completed: {completedJobs}
         </Badge>
-        <Badge className="bg-gradient-orange text-white px-3 py-1 rounded-full font-bold">
+        <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold">
           In Progress: {inProgressJobs}
         </Badge>
-        <Badge className="bg-gradient-blue text-white px-3 py-1 rounded-full font-bold">
+        <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full font-bold">
           Assigned: {assignedJobs}
         </Badge>
-        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
+        {overdueJobs > 0 && (
+          <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full font-bold">
+            Overdue: {overdueJobs}
+          </Badge>
+        )}
+        {cancelledJobs > 0 && (
+          <Badge className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-3 py-1 rounded-full font-bold">
+            Cancelled: {cancelledJobs}
+          </Badge>
+        )}
+        {completedLateJobs > 0 && (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-1 rounded-full font-bold">
+            Completed Late: {completedLateJobs}
+          </Badge>
+        )}
+        <Badge className="bg-gradient-to-r from-white to-gray-100 text-black border px-3 py-1 rounded-full font-bold">
           Total Drivers on Map Today: {totalDrivers}
         </Badge>
       </div>
