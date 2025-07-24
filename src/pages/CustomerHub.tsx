@@ -157,7 +157,7 @@ const CustomerHub: React.FC = () => {
                   <TableCell className="font-medium">
                     <Link 
                       to={`/customers/${customer.id}`}
-                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                      className="text-blue-600 hover:text-blue-800 transition-colors font-bold"
                     >
                       {customer.name}
                     </Link>
@@ -174,7 +174,7 @@ const CustomerHub: React.FC = () => {
                   <TableCell>{customer.phone || '-'}</TableCell>
                   <TableCell>{customer.email || '-'}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="bg-pink-100 text-pink-800">
+                    <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-medium px-3 py-1 rounded-full">
                       Low (0)
                     </Badge>
                   </TableCell>
