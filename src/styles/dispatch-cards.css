@@ -11,12 +11,20 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dispatch-job-card p,
 .dispatch-job-card span {
   word-wrap: break-word;
   overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.dispatch-job-card .truncate {
+  max-width: 100%;
 }
 
 /* Drag and drop visual feedback */
@@ -46,10 +54,17 @@
   background-color: #ffffff;
 }
 
+/* Column sizing constraints */
+.driver-column .dispatch-job-card {
+  max-width: 280px;
+  width: 100%;
+}
+
 /* Responsive text sizing for dispatch cards */
 @media (max-width: 768px) {
   .dispatch-job-card {
     font-size: 0.75rem;
+    max-width: 100%;
   }
   
   .dispatch-job-card .job-title {

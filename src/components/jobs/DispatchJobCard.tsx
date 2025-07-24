@@ -61,7 +61,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md",
+        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full",
         isDragging && "shadow-lg border-blue-300 bg-blue-50"
       )}
       onClick={onClick}
@@ -93,7 +93,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
       {job.customers.service_street && (
         <div className="flex items-start mb-2">
           <MapPin className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0 mr-1" />
-          <p className="text-xs text-gray-600 line-clamp-2 break-words">
+          <p className="text-xs text-gray-600 line-clamp-2 break-words overflow-hidden">
             {job.customers.service_street}
             {job.customers.service_city && `, ${job.customers.service_city}`}
           </p>
@@ -131,7 +131,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
       {/* Notes - if present, show truncated */}
       {job.notes && (
         <div className="mt-2 pt-2 border-t border-gray-100">
-          <p className="text-xs text-gray-500 line-clamp-2 break-words">
+          <p className="text-xs text-gray-500 line-clamp-2 break-words overflow-hidden">
             {job.notes}
           </p>
         </div>

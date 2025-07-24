@@ -96,7 +96,7 @@ const JobsPage: React.FC = () => {
     }
   });
 
-  // Set the active tab based on route
+  // Set the active tab based on route and force reinitialization
   useEffect(() => {
     if (location.pathname.includes('/calendar')) {
       setActiveTab('calendar');
@@ -106,6 +106,17 @@ const JobsPage: React.FC = () => {
       setActiveTab('dispatch');
     }
   }, [location.pathname]);
+
+  // Force refresh of drag context when returning to dispatch tab
+  useEffect(() => {
+    if (activeTab === 'dispatch') {
+      // Small delay to ensure component is fully mounted
+      const timer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab, queryClient]);
 
   const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
     setActiveTab(tab);
@@ -148,7 +159,6 @@ const JobsPage: React.FC = () => {
 
     // Check if drop destination exists
     if (!destination) {
-      console.log('No destination found for drag operation');
       return;
     }
 
@@ -157,22 +167,18 @@ const JobsPage: React.FC = () => {
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
-      console.log('Item dropped in same position');
       return;
     }
 
     // Validate job exists in current data
     const jobExists = dispatchJobs.find(job => job.id === draggableId);
     if (!jobExists) {
-      console.error('Job not found:', draggableId);
       toast.error('Job not found. Please refresh the page.');
       return;
     }
 
     const jobId = draggableId;
     const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
-
-    console.log('Updating job assignment:', { jobId, from: source.droppableId, to: destination.droppableId, newDriverId });
     
     updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
   }, [updateJobAssignmentMutation, dispatchJobs]);
@@ -382,7 +388,7 @@ const JobsPage: React.FC = () => {
           {activeTab === 'dispatch' && (
             <DragDropContext 
               onDragEnd={handleDragEnd}
-              key={`drag-context-${dispatchDate.getTime()}`}
+              key={`drag-context-${activeTab}-${Date.now()}`}
             >
               <div className="bg-white">
                 {/* Dispatch Header */}
@@ -465,12 +471,18 @@ const JobsPage: React.FC = () => {
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className={`min-h-[200px] ${snapshot.isDraggingOver ? 'bg-blue-50' : ''}`}
+                            className={cn(
+                              "min-h-[200px] border-2 border-dashed rounded-lg p-2 droppable-area transition-all duration-200",
+                              snapshot.isDraggingOver 
+                                ? "border-orange-400 bg-orange-50 is-dragging-over" 
+                                : "border-gray-300 bg-gray-50"
+                            )}
                           >
                             {unassignedJobs.length === 0 ? (
                               <div className="text-center py-8 text-gray-500">
                                 <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                                 <p className="text-sm">No unassigned jobs</p>
+                                <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
                               </div>
                             ) : (
                               unassignedJobs.map((job, index) => (
