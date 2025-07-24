@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
-import { JobCreationWizard } from '@/components/jobs/JobCreationWizard';
+import { EnhancedJobWizard } from '@/components/jobs/EnhancedJobWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -671,11 +671,17 @@ const JobsPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Job Creation Wizard */}
-      <JobCreationWizard 
-        open={isJobWizardOpen}
-        onOpenChange={setIsJobWizardOpen}
-      />
+      {/* Enhanced Job Creation Wizard */}
+      {isJobWizardOpen && (
+        <EnhancedJobWizard 
+          onComplete={(data) => {
+            console.log('Job creation data:', data);
+            setIsJobWizardOpen(false);
+            // TODO: Create job with the enhanced data
+          }}
+          onCancel={() => setIsJobWizardOpen(false)}
+        />
+      )}
       
       {/* Job Detail Modal */}
       <JobDetailModal
