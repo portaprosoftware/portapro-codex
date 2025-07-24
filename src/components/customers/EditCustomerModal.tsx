@@ -14,12 +14,69 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' },
+];
+
 const customerSchema = z.object({
   name: z.string().min(1, 'Company name is required'),
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
   phone: z.string().optional(),
   customer_type: z.enum(['events_festivals', 'sports_recreation', 'municipal_government', 'commercial', 'construction', 'emergency_disaster_relief', 'private_events_weddings', 'not_selected']).optional(),
-  address: z.string().optional(),
+  service_street: z.string().min(1, 'Street address is required'),
+  service_street_2: z.string().optional(),
+  service_city: z.string().min(1, 'City is required'),
+  service_state: z.string().min(1, 'State is required'),
+  service_zip: z.string().min(1, 'ZIP code is required'),
   billing_address: z.string().optional(),
   billing_city: z.string().optional(),
   billing_state: z.string().optional(),
@@ -79,6 +136,21 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmText, setConfirmText] = useState('');
 
+  // Parse existing address into components
+  const parseAddress = (address?: string) => {
+    if (!address) return { street: '', street2: '', city: '', state: '', zip: '' };
+    const parts = address.split(',').map(part => part.trim());
+    return {
+      street: parts[0] || '',
+      street2: '',
+      city: parts[1] || '',
+      state: parts[2] || '',
+      zip: parts[3] || ''
+    };
+  };
+
+  const serviceAddress = parseAddress(customer.address);
+
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -86,7 +158,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       email: customer.email || '',
       phone: customer.phone || '',
       customer_type: customer.customer_type as any || '',
-      address: customer.address || '',
+      service_street: serviceAddress.street,
+      service_street_2: serviceAddress.street2,
+      service_city: serviceAddress.city,
+      service_state: serviceAddress.state,
+      service_zip: serviceAddress.zip,
       billing_address: customer.billing_address || '',
       billing_city: customer.billing_city || '',
       billing_state: customer.billing_state || '',
@@ -102,19 +178,32 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
+      // Combine service address fields
+      const serviceAddressString = `${data.service_street}${data.service_street_2 ? `, ${data.service_street_2}` : ''}, ${data.service_city}, ${data.service_state}, ${data.service_zip}`;
+      
       // If billing doesn't differ, copy service address to billing
       if (!data.billing_differs_from_service) {
-        const serviceAddressParts = data.address?.split(',') || [];
-        data.billing_address = serviceAddressParts[0]?.trim() || '';
-        data.billing_city = serviceAddressParts[1]?.trim() || '';
-        data.billing_state = serviceAddressParts[2]?.trim() || '';
-        data.billing_zip = serviceAddressParts[3]?.trim() || '';
+        data.billing_address = data.service_street + (data.service_street_2 ? `, ${data.service_street_2}` : '');
+        data.billing_city = data.service_city;
+        data.billing_state = data.service_state;
+        data.billing_zip = data.service_zip;
       }
       
       const { error } = await supabase
         .from('customers')
         .update({
-          ...data,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          customer_type: data.customer_type,
+          address: serviceAddressString,
+          billing_address: data.billing_address,
+          billing_city: data.billing_city,
+          billing_state: data.billing_state,
+          billing_zip: data.billing_zip,
+          notes: data.notes,
+          billing_differs_from_service: data.billing_differs_from_service,
+          deposit_required: data.deposit_required,
           updated_at: new Date().toISOString(),
         })
         .eq('id', customer.id);
@@ -174,12 +263,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
   // Sync billing address when toggle changes
   useEffect(() => {
-    if (!billingDiffers && form.getValues('address')) {
-      const serviceAddressParts = form.getValues('address')?.split(',') || [];
-      form.setValue('billing_address', serviceAddressParts[0]?.trim() || '');
-      form.setValue('billing_city', serviceAddressParts[1]?.trim() || '');
-      form.setValue('billing_state', serviceAddressParts[2]?.trim() || '');
-      form.setValue('billing_zip', serviceAddressParts[3]?.trim() || '');
+    if (!billingDiffers) {
+      form.setValue('billing_address', form.getValues('service_street') + (form.getValues('service_street_2') ? `, ${form.getValues('service_street_2')}` : ''));
+      form.setValue('billing_city', form.getValues('service_city'));
+      form.setValue('billing_state', form.getValues('service_state'));
+      form.setValue('billing_zip', form.getValues('service_zip'));
     }
   }, [billingDiffers, form]);
 
@@ -289,19 +377,89 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
               {/* Service Address */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Service Address</h3>
+                
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="service_street"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>Street Address *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter service address" />
+                        <Input {...field} placeholder="123 Main St" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="service_street_2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address 2</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Apt, Suite, Unit, Building (optional)" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="service_city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City *</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="City" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="service_state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {US_STATES.map((state) => (
+                              <SelectItem key={state.value} value={state.value}>
+                                {state.value} - {state.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="service_zip"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ZIP Code *</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="12345" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
 
               {/* Billing Address Toggle */}
@@ -329,21 +487,22 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
               {billingDiffers && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Billing Address</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="billing_address"
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Street Address *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="123 Main St" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  
+                  <FormField
+                    control={form.control}
+                    name="billing_address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address *</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="123 Main St" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
                       name="billing_city"
@@ -351,7 +510,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormItem>
                           <FormLabel>City *</FormLabel>
                           <FormControl>
-                            <Input placeholder="City" {...field} />
+                            <Input {...field} placeholder="City" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -364,9 +523,20 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>State *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="State" {...field} />
-                          </FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select state" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {US_STATES.map((state) => (
+                                <SelectItem key={state.value} value={state.value}>
+                                  {state.value} - {state.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -379,7 +549,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormItem>
                           <FormLabel>ZIP Code *</FormLabel>
                           <FormControl>
-                            <Input placeholder="12345" {...field} />
+                            <Input {...field} placeholder="12345" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
