@@ -1,6 +1,7 @@
 
-import React from "react";
-import Sidebar from "../Sidebar/Sidebar";
+import React, { useState } from "react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
 
 interface LayoutProps {
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { role, user } = useUserRole();
+  const [activeSection, setActiveSection] = useState<string>('/');
 
   if (!role && user) {
     return (
@@ -32,11 +34,21 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="h-screen overflow-hidden flex" style={{ backgroundColor: '#f9fafb' }}>
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
+        <AppSidebar 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection} 
+        />
+        <div className="flex-1 flex flex-col">
+          <header className="h-12 flex items-center border-b bg-background">
+            <SidebarTrigger className="ml-2" />
+          </header>
+          <main className="flex-1 overflow-y-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
