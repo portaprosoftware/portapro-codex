@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import { formatDateSafe } from '@/lib/dateUtils';
 import { MapPin, Clock, Phone, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -83,7 +84,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
           <div className="space-y-2 mb-4">
             <div className="flex items-center text-sm text-gray-600">
               <Clock className="w-4 h-4 mr-2" />
-              {format(new Date(job.scheduled_date), 'MMM d')}
+              {formatDateSafe(job.scheduled_date, 'short')}
               {job.scheduled_time && ` at ${job.scheduled_time}`}
             </div>
             

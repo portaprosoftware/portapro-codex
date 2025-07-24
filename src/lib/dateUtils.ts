@@ -31,3 +31,29 @@ export const subtractDaysFromDate = (date: Date, days: number): Date => {
   newDate.setDate(newDate.getDate() - days);
   return newDate;
 };
+
+/**
+ * Formats a date string (YYYY-MM-DD) to display format without timezone issues
+ * This function parses the date string directly and formats it using the date components
+ */
+export const formatDateSafe = (dateString: string, formatType: 'short' | 'long' = 'short'): string => {
+  // Parse YYYY-MM-DD directly to avoid timezone conversion
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day); // month is 0-indexed
+  
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  
+  const longMonthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  
+  if (formatType === 'long') {
+    return `${longMonthNames[month - 1]} ${day}, ${year}`;
+  }
+  
+  return `${monthNames[month - 1]} ${day}`;
+};

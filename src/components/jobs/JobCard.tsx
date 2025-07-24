@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { formatDateSafe } from '@/lib/dateUtils';
 
 interface JobCardProps {
   job: {
@@ -169,7 +170,7 @@ export const JobCard: React.FC<JobCardProps> = ({
         <div className="space-y-1 mb-3">
           <div className="flex items-center enterprise-caption-text">
             <Clock className="w-3 h-3 mr-1" />
-            <span>{format(new Date(job.scheduled_date), 'MMM d')}</span>
+            <span>{formatDateSafe(job.scheduled_date, 'short')}</span>
             {job.scheduled_time && <span> at {job.scheduled_time}</span>}
           </div>
           {job.profiles && (
@@ -261,7 +262,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           <div className="flex items-center enterprise-body-text">
             <Clock className="w-4 h-4 mr-2" />
             <span>
-              {format(new Date(job.scheduled_date), 'MMM d, yyyy')}
+              {formatDateSafe(job.scheduled_date, 'long')}
               {job.scheduled_time && ` at ${job.scheduled_time}`}
             </span>
           </div>
