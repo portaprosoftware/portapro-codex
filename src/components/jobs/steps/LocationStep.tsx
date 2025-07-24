@@ -45,13 +45,16 @@ export const LocationStep: React.FC<LocationStepProps> = ({ data, onUpdate }) =>
           onUpdate({
             ...data,
             coordinates: { lat: latitude, lng: longitude },
+            address: data.address || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
           });
-          // TODO: Reverse geocode to get address
         },
         (error) => {
           console.error('Error getting location:', error);
+          alert('Unable to get your current location. Please enter the address manually.');
         }
       );
+    } else {
+      alert('Geolocation is not supported by this browser.');
     }
   };
 

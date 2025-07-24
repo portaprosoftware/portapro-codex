@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomerStep } from './steps/CustomerStep';
 import { JobTypeStep } from './steps/JobTypeStep';
-import { DateTimeStep } from './steps/DateTimeStep';
+import { DeliveryPickupScheduleStep } from './steps/enhanced/DeliveryPickupScheduleStep';
 import { ConsumablesPricingStep } from './steps/ConsumablesPricingStep';
 import { LocationStep } from './steps/LocationStep';
 import { DriverVehicleStep } from './steps/DriverVehicleStep';
@@ -28,10 +28,27 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
   const [formData, setFormData] = useState({
     customer: null as any,
     jobType: null as 'delivery' | 'pickup' | 'service' | null,
-    dateTime: {
-      date: null as Date | null,
-      time: '09:00',
-      timezone: 'America/New_York'
+    schedule: {
+      jobType: 'delivery' as 'delivery' | 'pickup' | 'service' | 'estimate',
+      timezone: 'America/New_York',
+      deliveryDate: null as Date | null,
+      deliveryTime: '09:00',
+      addDeliveryTime: false,
+      returnScheduleEnabled: false,
+      fullPickupDate: null as Date | null,
+      fullPickupTime: '14:00',
+      addFullPickupTime: false,
+      partialPickupsEnabled: false,
+      partialPickups: [] as Array<{
+        id: string;
+        date: Date | null;
+        time: string;
+        addTime: boolean;
+        label: string;
+      }>,
+      serviceDate: null as Date | null,
+      serviceTime: '09:00',
+      addServiceTime: false
     },
     consumables: {
       billingMethod: 'per-use' as 'per-use' | 'bundle' | 'subscription',
@@ -72,7 +89,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
   const steps = [
     { id: 1, title: 'Customer', component: CustomerStep },
     { id: 2, title: 'Job Type', component: JobTypeStep },
-    { id: 3, title: 'Date & Time', component: DateTimeStep },
+    { id: 3, title: 'Schedule', component: DeliveryPickupScheduleStep },
     { id: 4, title: 'Consumables & Pricing', component: ConsumablesPricingStep },
     { id: 5, title: 'Location', component: LocationStep },
     { id: 6, title: 'Assignment', component: DriverVehicleStep },
@@ -86,7 +103,17 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
     switch (currentStep) {
       case 1: return formData.customer !== null;
       case 2: return formData.jobType !== null;
-      case 3: return formData.dateTime.date !== null;
+      case 3: {
+        const { schedule } = formData;
+        if (schedule.jobType === 'delivery') {
+          return schedule.deliveryDate !== null;
+        } else if (schedule.jobType === 'pickup') {
+          return schedule.fullPickupDate !== null;
+        } else if (schedule.jobType === 'service' || schedule.jobType === 'estimate') {
+          return schedule.serviceDate !== null;
+        }
+        return false;
+      }
       case 4: return (
         (formData.consumables.billingMethod === 'per-use' && formData.consumables.items.length > 0) ||
         (formData.consumables.billingMethod === 'bundle' && formData.consumables.selectedBundle !== null) ||
@@ -116,20 +143,36 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!formData.customer || !formData.jobType || !formData.dateTime.date) {
+    const { schedule } = formData;
+    let primaryDate: Date | null = null;
+    let primaryTime = '09:00';
+
+    // Determine primary date based on job type
+    if (schedule.jobType === 'delivery') {
+      primaryDate = schedule.deliveryDate;
+      primaryTime = schedule.addDeliveryTime ? schedule.deliveryTime : '09:00';
+    } else if (schedule.jobType === 'pickup') {
+      primaryDate = schedule.fullPickupDate;
+      primaryTime = schedule.addFullPickupTime ? schedule.fullPickupTime : '09:00';
+    } else if (schedule.jobType === 'service' || schedule.jobType === 'estimate') {
+      primaryDate = schedule.serviceDate;
+      primaryTime = schedule.addServiceTime ? schedule.serviceTime : '09:00';
+    }
+
+    if (!formData.customer || !formData.jobType || !primaryDate) {
       return;
     }
 
     const jobData = {
       customer_id: formData.customer.id,
       job_type: formData.jobType,
-      scheduled_date: formData.dateTime.date.toISOString().split('T')[0],
-      scheduled_time: formData.dateTime.time,
+      scheduled_date: primaryDate.toISOString().split('T')[0],
+      scheduled_time: primaryTime,
       notes: formData.location.specialInstructions || undefined,
       special_instructions: formData.location.specialInstructions || undefined,
       driver_id: formData.assignment.driverId || undefined,
       vehicle_id: formData.assignment.vehicleId || undefined,
-      timezone: formData.dateTime.timezone,
+      timezone: schedule.timezone,
       billing_method: formData.consumables.billingMethod,
       subscription_plan: formData.consumables.subscriptionEnabled ? 'unlimited_consumables' : undefined,
       consumables_data: formData.consumables
@@ -143,10 +186,21 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
     setFormData({
       customer: null,
       jobType: null,
-      dateTime: {
-        date: null,
-        time: '09:00',
-        timezone: 'America/New_York'
+      schedule: {
+        jobType: 'delivery',
+        timezone: 'America/New_York',
+        deliveryDate: null,
+        deliveryTime: '09:00',
+        addDeliveryTime: false,
+        returnScheduleEnabled: false,
+        fullPickupDate: null,
+        fullPickupTime: '14:00',
+        addFullPickupTime: false,
+        partialPickupsEnabled: false,
+        partialPickups: [],
+        serviceDate: null,
+        serviceTime: '09:00',
+        addServiceTime: false
       },
       consumables: {
         billingMethod: 'per-use',
@@ -210,7 +264,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
                 data={
                   currentStep === 1 ? formData.customer :
                   currentStep === 2 ? formData.jobType :
-                  currentStep === 3 ? formData.dateTime :
+                  currentStep === 3 ? { ...formData.schedule, jobType: formData.jobType || 'delivery' } :
                   currentStep === 4 ? formData.consumables :
                   currentStep === 5 ? formData.location :
                   currentStep === 6 ? formData.assignment :
@@ -220,7 +274,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
                   const fieldMap = {
                     1: 'customer',
                     2: 'jobType',
-                    3: 'dateTime',
+                    3: 'schedule',
                     4: 'consumables',
                     5: 'location',
                     6: 'assignment'
