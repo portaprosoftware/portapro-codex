@@ -9,9 +9,11 @@ import { ConsumableQRGenerator } from './ConsumableQRGenerator';
 import { ConsumableRequestsManager } from './ConsumableRequestsManager';
 import { JobConsumablesTracker } from './JobConsumablesTracker';
 import { ConsumableNotificationsPanel } from './ConsumableNotificationsPanel';
+import { AdvancedConsumableAnalytics } from './AdvancedConsumableAnalytics';
+import { ConsumablePWAManager } from './ConsumablePWAManager';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, QrCode, Bell, MapPin, Package } from 'lucide-react';
+import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Consumable {
@@ -76,7 +78,7 @@ export const ConsumablesInventory: React.FC = () => {
       />
       
       <Tabs defaultValue="inventory" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="inventory">
             <Package className="w-4 h-4 mr-2" />
             Inventory
@@ -96,6 +98,14 @@ export const ConsumablesInventory: React.FC = () => {
           <TabsTrigger value="notifications">
             <Bell className="w-4 h-4 mr-2" />
             Notifications
+          </TabsTrigger>
+          <TabsTrigger value="analytics">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger value="pwa">
+            <Smartphone className="w-4 h-4 mr-2" />
+            Mobile PWA
           </TabsTrigger>
         </TabsList>
 
@@ -132,6 +142,14 @@ export const ConsumablesInventory: React.FC = () => {
 
         <TabsContent value="notifications">
           <ConsumableNotificationsPanel />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <AdvancedConsumableAnalytics />
+        </TabsContent>
+
+        <TabsContent value="pwa">
+          <ConsumablePWAManager />
         </TabsContent>
       </Tabs>
 
