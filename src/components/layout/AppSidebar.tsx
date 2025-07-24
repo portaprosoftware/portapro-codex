@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -14,7 +15,8 @@ import {
   Wrench,
   Building2,
   Megaphone,
-  MessageSquare
+  MessageSquare,
+  ShoppingBag
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -55,7 +57,6 @@ const items: NavigationItem[] = [
     url: '/jobs', 
     icon: CalendarDays,
     permission: 'staff'
-    // badge will be added dynamically
   },
   { 
     title: 'Customers', 
@@ -67,6 +68,12 @@ const items: NavigationItem[] = [
     title: 'Inventory', 
     url: '/inventory', 
     icon: Package2,
+    permission: 'staff'
+  },
+  { 
+    title: 'Consumables', 
+    url: '/consumables', 
+    icon: ShoppingBag,
     permission: 'staff'
   },
   { 
