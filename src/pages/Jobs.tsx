@@ -101,6 +101,8 @@ const JobsPage: React.FC = () => {
   useEffect(() => {
     if (location.pathname.includes('/calendar')) {
       setActiveTab('calendar');
+    } else if (location.pathname.includes('/dispatch')) {
+      setActiveTab('dispatch');
     } else if (location.pathname.includes('/map')) {
       setActiveTab('map');
     } else if (location.pathname === '/jobs') {
@@ -136,6 +138,9 @@ const JobsPage: React.FC = () => {
     switch (tab) {
       case 'calendar':
         navigate('/jobs/calendar');
+        break;
+      case 'dispatch':
+        navigate('/jobs/dispatch');
         break;
       case 'map':
         navigate('/jobs/map');
