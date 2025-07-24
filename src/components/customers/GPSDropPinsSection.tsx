@@ -21,9 +21,15 @@ import {
   Crosshair,
   RotateCcw,
   Satellite,
-  Map as MapIcon,
-  Mountain
+  Map as MapIcon
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { useToast } from '@/hooks/use-toast';
@@ -50,7 +56,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [editingCoordinate, setEditingCoordinate] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite' | 'terrain'>('streets');
+  const [mapStyle, setMapStyle] = useState<'satellite' | 'streets'>('satellite');
   const [selectedCoordinate, setSelectedCoordinate] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [clickToAdd, setClickToAdd] = useState(false);
@@ -172,12 +178,12 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const getMapStyle = (style: string) => {
     switch (style) {
       case 'satellite': return 'mapbox://styles/mapbox/satellite-v9';
-      case 'terrain': return 'mapbox://styles/mapbox/outdoors-v12';
       default: return 'mapbox://styles/mapbox/streets-v12';
     }
   };
 
   const getDefaultCenter = (): [number, number] => {
+    // Use existing coordinates average if available
     if (coordinates && coordinates.length > 0) {
       const avgLat = coordinates.reduce((sum, coord) => sum + coord.latitude, 0) / coordinates.length;
       const avgLng = coordinates.reduce((sum, coord) => sum + coord.longitude, 0) / coordinates.length;
@@ -251,6 +257,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
       markerEl.addEventListener('click', () => {
         setSelectedCoordinate(coord);
+        setMapStyle('satellite'); // Switch to satellite when clicking pins
       });
 
       markers.current.push(marker);
@@ -450,31 +457,25 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                 </CardTitle>
                 
                 <div className="flex items-center gap-1 lg:gap-2">
-                  {/* Mobile-Optimized Map Style Selector */}
+                  {/* Simplified Map Style Toggle */}
                   <div className="flex rounded-lg overflow-hidden border">
-                    <Button
-                      variant={mapStyle === 'streets' ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setMapStyle('streets')}
-                      className="rounded-none p-1 lg:p-2"
-                    >
-                      <MapIcon className="w-3 h-3" />
-                    </Button>
                     <Button
                       variant={mapStyle === 'satellite' ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setMapStyle('satellite')}
-                      className="rounded-none p-1 lg:p-2"
+                      className="rounded-none px-2 lg:px-3 py-1 lg:py-2 text-xs"
                     >
-                      <Satellite className="w-3 h-3" />
+                      <Satellite className="w-3 h-3 mr-1" />
+                      Satellite
                     </Button>
                     <Button
-                      variant={mapStyle === 'terrain' ? "default" : "ghost"}
+                      variant={mapStyle === 'streets' ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setMapStyle('terrain')}
-                      className="rounded-none p-1 lg:p-2"
+                      onClick={() => setMapStyle('streets')}
+                      className="rounded-none px-2 lg:px-3 py-1 lg:py-2 text-xs"
                     >
-                      <Mountain className="w-3 h-3" />
+                      <MapIcon className="w-3 h-3 mr-1" />
+                      Road
                     </Button>
                   </div>
 
@@ -529,26 +530,24 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                 </div>
                 
                 {categories && categories.length > 0 && (
-                  <div className="flex gap-1 flex-wrap">
-                    <Button
-                      variant={selectedCategory === null ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(null)}
-                      className="touch-manipulation text-xs lg:text-sm h-8"
-                    >
-                      All
-                    </Button>
-                    {categories.map((cat) => (
-                      <Button
-                        key={cat.category_name}
-                        variant={selectedCategory === cat.category_name ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setSelectedCategory(cat.category_name)}
-                        className="touch-manipulation text-xs lg:text-sm h-8"
-                      >
-                        {cat.category_name} ({cat.point_count})
-                      </Button>
-                    ))}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Filter className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs font-medium text-foreground">Filter by Category</span>
+                    </div>
+                    <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? null : value)}>
+                      <SelectTrigger className="w-full h-8 text-xs">
+                        <SelectValue placeholder="All categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.category_name} value={cat.category_name} className="text-xs">
+                            {cat.category_name} ({cat.point_count})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 )}
               </div>

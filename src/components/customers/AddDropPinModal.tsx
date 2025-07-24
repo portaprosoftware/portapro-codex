@@ -74,9 +74,16 @@ export function AddDropPinModal({
 }: AddDropPinModalProps) {
   const { toast } = useToast();
   const mapContainer = useRef<HTMLDivElement>(null);
+
+  const getMapStyleUrl = (style: 'satellite' | 'streets') => {
+    return style === 'satellite' 
+      ? 'mapbox://styles/mapbox/satellite-v9'
+      : 'mapbox://styles/mapbox/streets-v12';
+  };
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+  const [mapStyle, setMapStyle] = useState<'satellite' | 'streets'>('satellite');
   
   const form = useForm<DropPinForm>({
     resolver: zodResolver(dropPinSchema),
@@ -122,10 +129,14 @@ export function AddDropPinModal({
     const initialLat = initialCoordinates?.lat || 40.4406;
     const initialLng = initialCoordinates?.lng || -79.9959;
 
+    // Use initial coordinates for centering
+    const centerLng = initialLng;
+    const centerLat = initialLat;
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [initialLng, initialLat],
+      style: getMapStyleUrl(mapStyle),
+      center: [centerLng, centerLat],
       zoom: 16
     });
 
@@ -155,6 +166,13 @@ export function AddDropPinModal({
       }
     };
   }, [isOpen, mapboxToken, initialCoordinates]);
+
+  // Update map style when changed
+  useEffect(() => {
+    if (map.current) {
+      map.current.setStyle(getMapStyleUrl(mapStyle));
+    }
+  }, [mapStyle]);
 
   // Watch for coordinate changes and update marker position
   useEffect(() => {
@@ -245,9 +263,25 @@ export function AddDropPinModal({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Map Section */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm font-medium">Interactive Map</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span className="text-sm font-medium">Interactive Map</span>
+              </div>
+              <div className="flex rounded-lg overflow-hidden border text-xs">
+                <button 
+                  onClick={() => setMapStyle('satellite')}
+                  className={`px-2 py-1 ${mapStyle === 'satellite' ? 'bg-primary text-primary-foreground' : 'bg-background'}`}
+                >
+                  Satellite
+                </button>
+                <button 
+                  onClick={() => setMapStyle('streets')}
+                  className={`px-2 py-1 ${mapStyle === 'streets' ? 'bg-primary text-primary-foreground' : 'bg-background'}`}
+                >
+                  Road
+                </button>
+              </div>
             </div>
             <div 
               ref={mapContainer} 
@@ -369,15 +403,20 @@ export function AddDropPinModal({
               />
             </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={getCurrentLocation}
-                  className="w-full"
-                >
-                  <Crosshair className="w-4 h-4 mr-2" />
-                  Use Current Location
-                </Button>
+                <div className="space-y-2">
+                  <div className="text-sm text-muted-foreground text-center">
+                    Driver On-site? Click to save current coordinates.
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={getCurrentLocation}
+                    className="w-full"
+                  >
+                    <Crosshair className="w-4 h-4 mr-2" />
+                    Use Current Location
+                  </Button>
+                </div>
 
             <FormField
               control={form.control}
