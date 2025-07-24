@@ -242,45 +242,51 @@ const JobsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-none px-6 py-6 space-y-6">
-        {/* Page Header with Enhanced Typography */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
-          <p className="text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
+        {/* Page Header with Navigation Pills */}
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
+            </div>
+            
+            {/* Jobs Sub-Navigation Pills */}
+            <div className="flex items-center space-x-4">
+              <div className="enterprise-tabs">
+                <TabNav ariaLabel="Jobs views">
+                  <TabNav.Item 
+                    to="/jobs/calendar" 
+                    isActive={activeTab === 'calendar'}
+                    onClick={() => navigateToTab('calendar')}
+                  >
+                    <CalendarIcon className="w-4 h-4" />
+                    Calendar
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/jobs/dispatch" 
+                    isActive={activeTab === 'dispatch'}
+                    onClick={() => navigateToTab('dispatch')}
+                  >
+                    <ClipboardList className="w-4 h-4" />
+                    Dispatch
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/jobs/map" 
+                    isActive={activeTab === 'map'}
+                    onClick={() => navigateToTab('map')}
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Map
+                  </TabNav.Item>
+                </TabNav>
+              </div>
+            </div>
+          </div>
         </div>
         
-        {/* Jobs Sub-Navigation with Enhanced Spacing */}
-        <div className="flex items-center space-x-4">
-          <div className="enterprise-tabs">
-            <TabNav ariaLabel="Jobs views">
-              <TabNav.Item 
-                to="/jobs/calendar" 
-                isActive={activeTab === 'calendar'}
-                onClick={() => navigateToTab('calendar')}
-              >
-                <CalendarIcon className="w-4 h-4" />
-                Calendar
-              </TabNav.Item>
-              <TabNav.Item 
-                to="/jobs/dispatch" 
-                isActive={activeTab === 'dispatch'}
-                onClick={() => navigateToTab('dispatch')}
-              >
-                <ClipboardList className="w-4 h-4" />
-                Dispatch
-              </TabNav.Item>
-              <TabNav.Item 
-                to="/jobs/map" 
-                isActive={activeTab === 'map'}
-                onClick={() => navigateToTab('map')}
-              >
-                <MapPin className="w-4 h-4" />
-                Map
-              </TabNav.Item>
-            </TabNav>
-          </div>
-
-          {/* Actions with Enhanced Spacing */}
-          {activeTab === 'calendar' && (
+        {/* Actions with Enhanced Spacing */}
+        {activeTab === 'calendar' && (
+          <div className="bg-white rounded-lg border shadow-sm p-6">
             <div className="flex items-center space-x-4">
               <FiltersFlyout
                 searchTerm={searchTerm}
@@ -301,8 +307,8 @@ const JobsPage: React.FC = () => {
                 Schedule Job
               </Button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
