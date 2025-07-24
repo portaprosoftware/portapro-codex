@@ -4,6 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronLeft, ChevronRight, CalendarIcon } from 'lucide-react';
 import { format, addDays, subDays } from 'date-fns';
+import { addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
 
 interface EnhancedDateNavigatorProps {
   date: Date;
@@ -19,15 +20,11 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handlePrevious = () => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() - 1);
-    onDateChange(newDate);
+    onDateChange(subtractDaysFromDate(date, 1));
   };
 
   const handleNext = () => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1);
-    onDateChange(newDate);
+    onDateChange(addDaysToDate(date, 1));
   };
 
   const handleQuickSelect = (days: number) => {

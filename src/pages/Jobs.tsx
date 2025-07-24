@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
+import { formatDateForQuery, addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
 import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Button } from '@/components/ui/button';
@@ -67,19 +68,19 @@ const JobsPage: React.FC = () => {
 
   // Get jobs for calendar view
   const { data: outgoingJobs = [] } = useJobs({
-    date: format(selectedDateOut, 'yyyy-MM-dd'),
+    date: formatDateForQuery(selectedDateOut),
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: selectedStatus !== 'all' ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
   const { data: incomingJobs = [] } = useJobs({
-    date: format(selectedDateBack, 'yyyy-MM-dd'),
+    date: formatDateForQuery(selectedDateBack),
     job_type: 'pickup'
   });
 
   const { data: dispatchJobs = [] } = useJobs({
-    date: format(dispatchDate, 'yyyy-MM-dd')
+    date: formatDateForQuery(dispatchDate)
   });
 
   // Get drivers for filter
@@ -412,18 +413,28 @@ const JobsPage: React.FC = () => {
                       </Button>
                       <h2 className="text-lg font-semibold text-gray-900">Dispatch Board</h2>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="p-1">
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <span className="font-medium text-sm text-gray-900">
-                          {format(dispatchDate, 'MMMM do, yyyy')}
-                        </span>
-                        <Button variant="ghost" size="sm" className="p-1">
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
+                     <div className="flex items-center gap-4">
+                       <div className="flex items-center gap-2">
+                         <Button 
+                           variant="ghost" 
+                           size="sm" 
+                           className="p-1"
+                           onClick={() => setDispatchDate(prev => subtractDaysFromDate(prev, 1))}
+                         >
+                           <ChevronLeft className="h-4 w-4" />
+                         </Button>
+                         <span className="font-medium text-sm text-gray-900">
+                           {format(dispatchDate, 'MMMM do, yyyy')}
+                         </span>
+                         <Button 
+                           variant="ghost" 
+                           size="sm" 
+                           className="p-1"
+                           onClick={() => setDispatchDate(prev => addDaysToDate(prev, 1))}
+                         >
+                           <ChevronRight className="h-4 w-4" />
+                         </Button>
+                       </div>
                       <Button 
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
                         onClick={() => setIsJobWizardOpen(true)}
