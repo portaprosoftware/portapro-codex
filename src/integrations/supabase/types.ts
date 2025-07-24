@@ -5578,6 +5578,54 @@ export type Database = {
           },
         ]
       }
+      vehicle_damage_logs: {
+        Row: {
+          created_at: string
+          damage_type: string
+          description: string
+          id: string
+          image_path: string | null
+          reported_at: string
+          reported_by: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          damage_type?: string
+          description: string
+          id?: string
+          image_path?: string | null
+          reported_at?: string
+          reported_by?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          damage_type?: string
+          description?: string
+          id?: string
+          image_path?: string | null
+          reported_at?: string
+          reported_by?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicle_documents: {
         Row: {
           cost: number | null

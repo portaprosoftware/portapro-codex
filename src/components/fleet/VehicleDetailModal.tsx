@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,10 @@ import {
   MapPin,
   FileText,
   Upload,
-  X
+  X,
+  AlertTriangle,
+  Camera,
+  Trash2
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -53,7 +56,28 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [currentVehicleImage, setCurrentVehicleImage] = useState(vehicle.vehicle_image);
+  const [damageImage, setDamageImage] = useState<File | null>(null);
+  const [damageImagePreview, setDamageImagePreview] = useState<string | null>(null);
+  const [damageDescription, setDamageDescription] = useState("");
+  const [damageSeverity, setDamageSeverity] = useState("minor");
+  const [isUploadingDamage, setIsUploadingDamage] = useState(false);
   const queryClient = useQueryClient();
+
+  // Query damage logs
+  const { data: damageLogs = [] } = useQuery({
+    queryKey: ["vehicle-damage-logs", vehicle.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicle_damage_logs")
+        .select("*")
+        .eq("vehicle_id", vehicle.id)
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const [formData, setFormData] = useState({
     license_plate: vehicle.license_plate,
@@ -115,8 +139,9 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
       
       return { uploadData, vehicleData };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      setCurrentVehicleImage(data.uploadData.path);
       setVehicleImage(null);
       setImagePreview(null);
       setIsUploadingImage(false);
@@ -125,6 +150,89 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
     onError: (error: any) => {
       setIsUploadingImage(false);
       toast.error(error.message || "Failed to upload photo");
+    }
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentVehicleImage) return;
+      
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('vehicle-images')
+        .remove([currentVehicleImage]);
+      
+      if (storageError) throw storageError;
+      
+      // Update vehicle record
+      const { error: updateError } = await supabase
+        .from("vehicles")
+        .update({ vehicle_image: null })
+        .eq("id", vehicle.id);
+      
+      if (updateError) throw updateError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      setCurrentVehicleImage(null);
+      toast.success("Vehicle photo deleted successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete photo");
+    }
+  });
+
+  const uploadDamageMutation = useMutation({
+    mutationFn: async () => {
+      if (!damageDescription.trim()) {
+        throw new Error("Damage description is required");
+      }
+      
+      let imagePath = null;
+      
+      if (damageImage) {
+        setIsUploadingDamage(true);
+        
+        // Upload damage image to storage
+        const fileExt = damageImage.name.split('.').pop();
+        const fileName = `${vehicle.id}-damage-${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('vehicle-damage-images')
+          .upload(fileName, damageImage);
+        
+        if (uploadError) throw uploadError;
+        imagePath = uploadData.path;
+      }
+      
+      // Create damage log entry
+      const { data, error } = await supabase
+        .from("vehicle_damage_logs")
+        .insert({
+          vehicle_id: vehicle.id,
+          description: damageDescription.trim(),
+          severity: damageSeverity,
+          image_path: imagePath,
+          damage_type: "general"
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicle-damage-logs", vehicle.id] });
+      setDamageDescription("");
+      setDamageImage(null);
+      setDamageImagePreview(null);
+      setDamageSeverity("minor");
+      setIsUploadingDamage(false);
+      toast.success("Damage log added successfully!");
+    },
+    onError: (error: any) => {
+      setIsUploadingDamage(false);
+      toast.error(error.message || "Failed to add damage log");
     }
   });
 
@@ -167,6 +275,34 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
     return data.publicUrl;
   };
 
+  const handleDamageImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("File size must be less than 50MB");
+        return;
+      }
+      setDamageImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setDamageImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeDamageImage = () => {
+    setDamageImage(null);
+    setDamageImagePreview(null);
+  };
+
+  const getDamageImageUrl = (imagePath: string) => {
+    const { data } = supabase.storage
+      .from('vehicle-damage-images')
+      .getPublicUrl(imagePath);
+    return data.publicUrl;
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -177,6 +313,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
         return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       default:
         return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case "minor":
+        return "bg-green-100 text-green-800";
+      case "moderate":
+        return "bg-yellow-100 text-yellow-800";
+      case "major":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -211,11 +360,12 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="fuel">Fuel</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
+            <TabsTrigger value="damage">Damage Log</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
           </TabsList>
 
@@ -337,37 +487,49 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
                 {/* Vehicle Image Section */}
                 <Card>
                   <CardContent className="p-6">
-                    <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative overflow-hidden">
-                      {vehicle.vehicle_image && !imagePreview ? (
-                        <img
-                          src={getVehicleImageUrl(vehicle.vehicle_image)}
-                          alt="Vehicle"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : imagePreview ? (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={imagePreview}
-                            alt="Vehicle preview"
-                            className="w-full h-full object-cover"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="absolute top-2 right-2"
-                            onClick={removeImage}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <Truck className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-500">Vehicle Photo</p>
-                        </div>
-                      )}
-                    </div>
+                     <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative overflow-hidden">
+                       {currentVehicleImage && !imagePreview ? (
+                         <div className="relative w-full h-full">
+                           <img
+                             src={getVehicleImageUrl(currentVehicleImage)}
+                             alt="Vehicle"
+                             className="w-full h-full object-cover"
+                           />
+                           <Button
+                             type="button"
+                             variant="destructive"
+                             size="sm"
+                             className="absolute top-2 right-2"
+                             onClick={() => deleteImageMutation.mutate()}
+                             disabled={deleteImageMutation.isPending}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
+                         </div>
+                       ) : imagePreview ? (
+                         <div className="relative w-full h-full">
+                           <img
+                             src={imagePreview}
+                             alt="Vehicle preview"
+                             className="w-full h-full object-cover"
+                           />
+                           <Button
+                             type="button"
+                             variant="destructive"
+                             size="sm"
+                             className="absolute top-2 right-2"
+                             onClick={removeImage}
+                           >
+                             <X className="w-4 h-4" />
+                           </Button>
+                         </div>
+                       ) : (
+                         <div className="text-center">
+                           <Truck className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                           <p className="text-gray-500">Vehicle Photo</p>
+                         </div>
+                       )}
+                     </div>
                     
                     {/* Photo Upload Section */}
                     <div className="space-y-2">
@@ -489,6 +651,136 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
                 <p className="text-gray-500 text-center py-8">No assignments found</p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="damage">
+            <div className="space-y-4">
+              {/* Add New Damage Log */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    Report New Damage
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="damage-description">Description</Label>
+                    <Textarea
+                      id="damage-description"
+                      placeholder="Describe the damage or issue..."
+                      value={damageDescription}
+                      onChange={(e) => setDamageDescription(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="damage-severity">Severity</Label>
+                    <Select value={damageSeverity} onValueChange={setDamageSeverity}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="minor">Minor</SelectItem>
+                        <SelectItem value="moderate">Moderate</SelectItem>
+                        <SelectItem value="major">Major</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Damage Photo Section */}
+                  <div className="space-y-2">
+                    <Label>Photo (Optional)</Label>
+                    {damageImagePreview && (
+                      <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                        <img
+                          src={damageImagePreview}
+                          alt="Damage preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1"
+                          onClick={removeDamageImage}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.webp"
+                        onChange={handleDamageImageChange}
+                        className="hidden"
+                        id="damage-image-input"
+                      />
+                      <label
+                        htmlFor="damage-image-input"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium"
+                      >
+                        <Camera className="w-4 h-4" />
+                        Add Photo
+                      </label>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => uploadDamageMutation.mutate()}
+                    disabled={!damageDescription.trim() || isUploadingDamage}
+                    className="w-full"
+                  >
+                    {isUploadingDamage ? "Adding..." : "Add Damage Log"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Existing Damage Logs */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Damage History
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {damageLogs.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">No damage logs found</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {damageLogs.map((log: any) => (
+                        <div key={log.id} className="border rounded-lg p-4 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium">{log.description}</p>
+                              <p className="text-sm text-gray-500">
+                                {format(new Date(log.created_at), "MMM dd, yyyy 'at' h:mm a")}
+                              </p>
+                            </div>
+                            <Badge className={cn("text-xs", getSeverityColor(log.severity))}>
+                              {log.severity}
+                            </Badge>
+                          </div>
+                          
+                          {log.image_path && (
+                            <div className="w-32 h-32 border rounded-lg overflow-hidden">
+                              <img
+                                src={getDamageImageUrl(log.image_path)}
+                                alt="Damage photo"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="documents">
