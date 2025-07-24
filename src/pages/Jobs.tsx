@@ -249,7 +249,7 @@ const JobsPage: React.FC = () => {
         </div>
         
         {/* Jobs Sub-Navigation with Enhanced Spacing */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-4">
           <div className="enterprise-tabs">
             <TabNav ariaLabel="Jobs views">
               <TabNav.Item 
@@ -257,7 +257,7 @@ const JobsPage: React.FC = () => {
                 isActive={activeTab === 'calendar'}
                 onClick={() => navigateToTab('calendar')}
               >
-                <CalendarIcon className="w-4 h-4 mr-2" />
+                <CalendarIcon className="w-4 h-4" />
                 Calendar
               </TabNav.Item>
               <TabNav.Item 
@@ -265,7 +265,7 @@ const JobsPage: React.FC = () => {
                 isActive={activeTab === 'dispatch'}
                 onClick={() => navigateToTab('dispatch')}
               >
-                <ClipboardList className="w-4 h-4 mr-2" />
+                <ClipboardList className="w-4 h-4" />
                 Dispatch
               </TabNav.Item>
               <TabNav.Item 
@@ -273,7 +273,7 @@ const JobsPage: React.FC = () => {
                 isActive={activeTab === 'map'}
                 onClick={() => navigateToTab('map')}
               >
-                <MapPin className="w-4 h-4 mr-2" />
+                <MapPin className="w-4 h-4" />
                 Map
               </TabNav.Item>
             </TabNav>
