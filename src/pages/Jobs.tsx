@@ -244,8 +244,8 @@ const JobsPage: React.FC = () => {
       <div className="container-modern py-4 space-y-4">
         {/* Page Header with Enhanced Typography */}
         <div className="space-y-1">
-          <h1 className="enterprise-page-title">Jobs</h1>
-          <p className="enterprise-body-text text-lg">Schedule and manage job assignments</p>
+          <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
+          <p className="text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
         </div>
         
         {/* Jobs Sub-Navigation with Enhanced Spacing */}

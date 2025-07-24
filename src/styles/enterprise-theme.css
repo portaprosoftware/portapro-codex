@@ -275,12 +275,9 @@
 /* Enhanced Tab System - Phase 5 Refined Interactions */
 .enterprise-tabs {
   display: flex;
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 4px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  will-change: transform;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 .enterprise-tabs .tab-nav-item {
