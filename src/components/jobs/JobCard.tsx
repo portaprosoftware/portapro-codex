@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw } from 'lucide-react';
+import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw, Undo2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatDateSafe } from '@/lib/dateUtils';
@@ -39,6 +39,7 @@ interface JobCardProps {
   onStart?: (jobId: string) => void;
   onStatusUpdate?: (jobId: string, status: string) => void;
   onEquipmentAssign?: (jobId: string) => void;
+  onReverse?: (jobId: string) => void;
   compact?: boolean;
 }
 
@@ -93,6 +94,7 @@ export const JobCard: React.FC<JobCardProps> = ({
   onStart,
   onStatusUpdate,
   onEquipmentAssign,
+  onReverse,
   compact = false
 }) => {
   // Determine display status with overdue logic
@@ -141,6 +143,17 @@ export const JobCard: React.FC<JobCardProps> = ({
   };
 
   const isJobCompleted = job.status === 'completed';
+  const showReverseButton = job.status === 'in-progress' || job.status === 'completed';
+
+  const handleReverse = () => {
+    if (job.status === 'completed') {
+      onReverse?.(job.id);
+      onStatusUpdate?.(job.id, 'in-progress');
+    } else if (job.status === 'in-progress') {
+      onReverse?.(job.id);
+      onStatusUpdate?.(job.id, 'assigned');
+    }
+  };
 
   if (compact) {
     return (
@@ -179,8 +192,22 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <div className={cn("enterprise-status-badge", displayStatus)}>
-            {statusInfo.label}
+          <div className="flex items-center space-x-2">
+            {showReverseButton && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReverse}
+                className="px-2 py-1 h-6 text-xs border-gray-300 hover:border-gray-400"
+                aria-label={`Reverse job ${job.job_number}`}
+              >
+                <Undo2 className="w-3 h-3 mr-1" />
+                Reverse
+              </Button>
+            )}
+            <div className={cn("enterprise-status-badge", displayStatus)}>
+              {statusInfo.label}
+            </div>
           </div>
         </div>
         
@@ -255,8 +282,25 @@ export const JobCard: React.FC<JobCardProps> = ({
               </span>
             </div>
           </div>
-          <div className={cn("enterprise-status-badge", displayStatus)}>
-            {statusInfo.label}
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              {showReverseButton && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReverse}
+                  className="px-3 py-1 h-8 text-xs border-gray-300 hover:border-gray-400"
+                  aria-label={`Reverse job ${job.job_number}`}
+                >
+                  <Undo2 className="w-4 h-4 mr-2" />
+                  Reverse
+                </Button>
+              )}
+            </div>
+            <div className={cn("enterprise-status-badge", displayStatus)}>
+              {statusInfo.label}
+            </div>
           </div>
         </div>
       </div>
