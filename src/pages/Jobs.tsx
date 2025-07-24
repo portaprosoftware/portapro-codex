@@ -103,9 +103,11 @@ const JobsPage: React.FC = () => {
     } else if (location.pathname.includes('/map')) {
       setActiveTab('map');
     } else if (location.pathname === '/jobs') {
-      setActiveTab('dispatch');
+      // Default to calendar view for /jobs route
+      setActiveTab('calendar');
+      navigate('/jobs/calendar', { replace: true });
     }
-  }, [location.pathname]);
+  }, [location.pathname, navigate]);
 
   // Force refresh of drag context when returning to dispatch tab
   useEffect(() => {
@@ -313,13 +315,12 @@ const JobsPage: React.FC = () => {
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
           {activeTab === 'calendar' && (
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Going Out Card */}
               <div className="bg-white rounded-lg border shadow-sm">
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full"></div>
                       <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
                     </div>
                     <EnhancedDateNavigator
@@ -360,7 +361,6 @@ const JobsPage: React.FC = () => {
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full"></div>
                       <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
                     </div>
                     <EnhancedDateNavigator

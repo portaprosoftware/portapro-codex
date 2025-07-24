@@ -181,7 +181,6 @@ export const JobCard: React.FC<JobCardProps> = ({
             className="flex-1 btn-enterprise text-xs"
             aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `View job ${job.job_number}`}
           >
-            <Play className="w-3 h-3 mr-1" />
             {job.status === 'assigned' ? 'Start' : 'View'}
           </Button>
         </div>
@@ -322,8 +321,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             className="flex-1 btn-enterprise"
             aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `Continue job ${job.job_number}`}
           >
-            <Play className="w-4 h-4 mr-2" />
-            {job.status === 'assigned' ? 'Start Job' : 'Continue'}
+            {job.status === 'assigned' ? 'Start' : 'Continue'}
           </Button>
         </div>
       </div>

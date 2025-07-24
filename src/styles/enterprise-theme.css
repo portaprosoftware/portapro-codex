@@ -202,27 +202,33 @@
 }
 
 .enterprise-status-badge.in_progress {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: #f59e0b;
+  color: #ffffff;
+  border: 1px solid #f59e0b;
 }
 
 .enterprise-status-badge.completed {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: #10b981;
+  color: #ffffff;
+  border: 1px solid #10b981;
 }
 
 .enterprise-status-badge.cancelled {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ef4444;
 }
 
 .enterprise-status-badge.pending {
-  background: rgba(251, 191, 36, 0.1);
-  color: #d97706;
-  border: 1px solid rgba(251, 191, 36, 0.2);
+  background: #f59e0b;
+  color: #ffffff;
+  border: 1px solid #f59e0b;
+}
+
+.enterprise-status-badge.overdue {
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ef4444;
 }
 
 /* Enhanced Gradient Header */
