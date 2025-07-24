@@ -163,23 +163,67 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current) return;
 
-    mapboxgl.accessToken = mapboxToken;
+    const initializeMap = async () => {
+      mapboxgl.accessToken = mapboxToken;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: getMapStyle(mapStyle),
-      center: getDefaultCenter(),
-      zoom: 12
-    });
+      const center = await getDefaultCenter();
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.addControl(new mapboxgl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
-      showUserHeading: true
-    }), 'top-right');
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current!,
+        style: getMapStyle(mapStyle),
+        center: center,
+        zoom: 12
+      });
 
-    // Click handler removed - GPS pins are only added through the Add Drop-Pin modal
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      map.current.addControl(new mapboxgl.GeolocateControl({
+        positionOptions: { enableHighAccuracy: true },
+        trackUserLocation: true,
+        showUserHeading: true
+      }), 'top-right');
+
+      // Enhanced immediate zoom and bounds behavior for better pin visibility
+      // Set up a callback to handle bounds fitting when coordinates are available
+      const handleBoundsFitting = () => {
+        if (!map.current || !coordinates || coordinates.length === 0) return;
+        
+        if (coordinates.length === 1) {
+          // Single pin - zoom to it with high zoom level
+          const coord = coordinates[0];
+          map.current.flyTo({
+            center: [coord.longitude, coord.latitude],
+            zoom: 16,
+            duration: 1000
+          });
+        } else {
+          // Multiple pins - fit all pins in view
+          const bounds = new mapboxgl.LngLatBounds();
+          coordinates.forEach(coord => {
+            bounds.extend([coord.longitude, coord.latitude]);
+          });
+          
+          // Enhanced padding for mobile vs desktop
+          const isMobile = window.innerWidth < 768;
+          const padding = isMobile 
+            ? { top: 80, bottom: 80, left: 20, right: 20 }
+            : { top: 100, bottom: 100, left: 100, right: 100 };
+            
+          map.current.fitBounds(bounds, { 
+            padding, 
+            maxZoom: 16,
+            duration: 1000
+          });
+        }
+      };
+
+      // Handle bounds fitting after map is loaded
+      map.current.on('load', handleBoundsFitting);
+      
+      // Also handle immediate fitting if data is already available
+      setTimeout(handleBoundsFitting, 500);
+    };
+
+    initializeMap();
 
     return () => {
       if (map.current) {
@@ -187,7 +231,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         map.current = null;
       }
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, serviceLocations]);
 
   // Update map style
   useEffect(() => {
@@ -200,8 +244,89 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   useEffect(() => {
     if (map.current && coordinates) {
       updateMapMarkers();
+      
+      // Fix any Kansas placeholder pins when coordinates load
+      fixKansasPlaceholderPins();
     }
   }, [coordinates]);
+
+  // Function to fix existing placeholder pins with Kansas coordinates
+  const fixKansasPlaceholderPins = async () => {
+    if (!coordinates || !serviceLocations) return;
+    
+    // Check if there are any Kansas placeholder pins
+    const kansasPins = coordinates.filter(coord => 
+      coord.latitude === 39.8283 && coord.longitude === -98.5795
+    );
+    
+    if (kansasPins.length === 0) return;
+    
+    // Get target coordinates for the customer
+    const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+    let targetCoordinates: [number, number] | null = null;
+
+    // Check if we already have GPS coordinates stored
+    if (primaryLocation?.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+      const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        targetCoordinates = [lng, lat];
+      }
+    }
+
+    // If no stored coordinates, try to geocode the address
+    if (!targetCoordinates && primaryLocation?.street && primaryLocation?.city && primaryLocation?.state) {
+      const fullAddress = [
+        primaryLocation.street,
+        primaryLocation.street2,
+        primaryLocation.city,
+        primaryLocation.state,
+        primaryLocation.zip
+      ].filter(Boolean).join(' ');
+
+      try {
+        const geocoded = await geocodeAddress(fullAddress);
+        if (geocoded) {
+          targetCoordinates = geocoded;
+          
+          // Store the geocoded coordinates for future use
+          await supabase
+            .from('customer_service_locations')
+            .update({ 
+              gps_coordinates: `${geocoded[0]},${geocoded[1]}` 
+            })
+            .eq('id', primaryLocation.id);
+        }
+      } catch (error) {
+        console.error('Error geocoding address:', error);
+      }
+    }
+
+    // If we have target coordinates, update the Kansas pins
+    if (targetCoordinates) {
+      const [targetLng, targetLat] = targetCoordinates;
+      
+      const updatePromises = kansasPins.map(pin => 
+        supabase
+          .from('service_location_coordinates')
+          .update({
+            latitude: targetLat,
+            longitude: targetLng,
+            description: 'Pin location updated to customer address'
+          })
+          .eq('id', pin.id)
+      );
+
+      await Promise.all(updatePromises);
+      
+      // Refetch coordinates to show the updated locations
+      refetch();
+      
+      toast({
+        title: "Location Updated",
+        description: `${kansasPins.length} placeholder pins moved to customer location`,
+      });
+    }
+  };
 
   const getMapStyle = (style: string) => {
     switch (style) {
@@ -210,14 +335,68 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     }
   };
 
-  const getDefaultCenter = (): [number, number] => {
-    // First try to use primary service location
+  // Geocoding function to convert address to coordinates
+  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+    if (!mapboxToken || !address.trim()) return null;
+    
+    try {
+      const encodedAddress = encodeURIComponent(address.trim());
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
+      );
+      
+      if (!response.ok) throw new Error('Geocoding failed');
+      
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        const [lng, lat] = data.features[0].center;
+        return [lng, lat];
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+    }
+    
+    return null;
+  };
+
+  const getDefaultCenter = async (): Promise<[number, number]> => {
+    // First try to use primary service location with stored GPS coordinates
     if (serviceLocations && serviceLocations.length > 0) {
       const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+      
+      // Check if we already have GPS coordinates stored
       if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
         const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
         if (!isNaN(lat) && !isNaN(lng)) {
           return [lng, lat];
+        }
+      }
+      
+      // If no GPS coordinates, try to geocode the address
+      if (primaryLocation && primaryLocation.street && primaryLocation.city && primaryLocation.state) {
+        const fullAddress = [
+          primaryLocation.street,
+          primaryLocation.street2,
+          primaryLocation.city,
+          primaryLocation.state,
+          primaryLocation.zip
+        ].filter(Boolean).join(' ');
+        
+        const geocoded = await geocodeAddress(fullAddress);
+        if (geocoded) {
+          // Store the geocoded coordinates for future use
+          try {
+            await supabase
+              .from('customer_service_locations')
+              .update({ 
+                gps_coordinates: `${geocoded[0]},${geocoded[1]}` 
+              })
+              .eq('id', primaryLocation.id);
+          } catch (error) {
+            console.error('Error storing geocoded coordinates:', error);
+          }
+          
+          return geocoded;
         }
       }
     }
@@ -228,6 +407,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       const avgLng = coordinates.reduce((sum, coord) => sum + coord.longitude, 0) / coordinates.length;
       return [avgLng, avgLat];
     }
+    
     return [-79.9959, 40.4406]; // Default to Pittsburgh
   };
 
@@ -341,9 +521,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     return categoryData?.color || '#EF4444'; // Default red if category not found
   };
 
-  const recenterMap = () => {
+  const recenterMap = async () => {
     if (map.current) {
-      const center = getDefaultCenter();
+      const center = await getDefaultCenter();
       map.current.flyTo({ center, zoom: 12 });
     }
   };

@@ -177,7 +177,7 @@ export function ManageCategoriesModal({
     enabled: isOpen
   });
 
-  // Create new category mutation
+  // Create new category mutation with automatic placeholder pin correction
   const createCategoryMutation = useMutation({
     mutationFn: async ({ name, color }: { name: string; color: string }) => {
       const { data, error } = await supabase
@@ -192,6 +192,10 @@ export function ManageCategoriesModal({
         .single();
       
       if (error) throw error;
+      
+      // Fix any existing placeholder pins with Kansas coordinates for this customer
+      await fixPlaceholderPinLocations();
+      
       return data;
     },
     onSuccess: () => {
@@ -212,6 +216,106 @@ export function ManageCategoriesModal({
       });
     }
   });
+
+  // Function to fix placeholder pins that were created with Kansas coordinates
+  const fixPlaceholderPinLocations = async () => {
+    try {
+      // Get customer's service locations
+      const { data: serviceLocations } = await supabase
+        .from('customer_service_locations')
+        .select('*')
+        .eq('customer_id', customerId);
+
+      if (!serviceLocations || serviceLocations.length === 0) return;
+
+      // Get the primary service location
+      const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+      let targetCoordinates: [number, number] | null = null;
+
+      // Check if we already have GPS coordinates stored
+      if (primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+        const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          targetCoordinates = [lng, lat];
+        }
+      }
+
+      // If no stored coordinates, try to geocode the address
+      if (!targetCoordinates && primaryLocation.street && primaryLocation.city && primaryLocation.state) {
+        const fullAddress = [
+          primaryLocation.street,
+          primaryLocation.street2,
+          primaryLocation.city,
+          primaryLocation.state,
+          primaryLocation.zip
+        ].filter(Boolean).join(' ');
+
+        try {
+          // Get Mapbox token
+          const { data: tokenData } = await supabase.functions.invoke('get-mapbox-token');
+          const mapboxToken = tokenData?.token;
+
+          if (mapboxToken) {
+            const encodedAddress = encodeURIComponent(fullAddress.trim());
+            const response = await fetch(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.features && data.features.length > 0) {
+                const [lng, lat] = data.features[0].center;
+                targetCoordinates = [lng, lat];
+
+                // Store the geocoded coordinates for future use
+                await supabase
+                  .from('customer_service_locations')
+                  .update({ 
+                    gps_coordinates: `${lng},${lat}` 
+                  })
+                  .eq('id', primaryLocation.id);
+              }
+            }
+          }
+        } catch (geocodeError) {
+          console.error('Geocoding error:', geocodeError);
+        }
+      }
+
+      // If we have target coordinates, update any placeholder pins with Kansas coordinates
+      if (targetCoordinates) {
+        const [targetLng, targetLat] = targetCoordinates;
+
+        // Find placeholder pins with Kansas coordinates (39.8283, -98.5795)
+        const { data: placeholderPins } = await supabase
+          .from('service_location_coordinates')
+          .select('id, service_location_id')
+          .in('service_location_id', serviceLocations.map(loc => loc.id))
+          .eq('latitude', 39.8283)
+          .eq('longitude', -98.5795);
+
+        if (placeholderPins && placeholderPins.length > 0) {
+          // Update each placeholder pin to use the customer's actual coordinates
+          const updatePromises = placeholderPins.map(pin => 
+            supabase
+              .from('service_location_coordinates')
+              .update({
+                latitude: targetLat,
+                longitude: targetLng,
+                description: 'Pin location updated to customer address'
+              })
+              .eq('id', pin.id)
+          );
+
+          await Promise.all(updatePromises);
+
+          console.log(`Updated ${placeholderPins.length} placeholder pins to customer location`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fixing placeholder pin locations:', error);
+    }
+  };
 
   // Delete category mutation
   const deleteCategoryMutation = useMutation({

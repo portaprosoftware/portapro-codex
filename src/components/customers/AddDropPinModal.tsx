@@ -140,35 +140,101 @@ export function AddDropPinModal({
 
     mapboxgl.accessToken = mapboxToken;
 
-    const initialLat = initialCoordinates?.lat || 40.4406;
-    const initialLng = initialCoordinates?.lng || -79.9959;
-
-    // Use initial coordinates for centering
-    const centerLng = initialLng;
-    const centerLat = initialLat;
-
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: getMapStyleUrl(mapStyle),
-      center: [centerLng, centerLat],
-      zoom: 16
-    });
-
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    // Add draggable marker
-    marker.current = new mapboxgl.Marker({ draggable: true })
-      .setLngLat([initialLng, initialLat])
-      .addTo(map.current);
-
-    // Update form values when marker is dragged
-    marker.current.on('dragend', () => {
-      if (marker.current) {
-        const lngLat = marker.current.getLngLat();
-        form.setValue('latitude', parseFloat(lngLat.lat.toFixed(6)));
-        form.setValue('longitude', parseFloat(lngLat.lng.toFixed(6)));
+    // Get default coordinates from customer's default service location
+    const getDefaultCoordinatesForModal = async (): Promise<[number, number]> => {
+      // If initial coordinates provided, use them
+      if (initialCoordinates?.lat && initialCoordinates?.lng) {
+        return [initialCoordinates.lng, initialCoordinates.lat];
       }
-    });
+      
+      // Try to use primary service location with stored GPS coordinates
+      if (serviceLocations && serviceLocations.length > 0) {
+        const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+        
+        if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+          const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            return [lng, lat];
+          }
+        }
+        
+        // If no GPS coordinates, try to geocode the address
+        if (primaryLocation && primaryLocation.street && primaryLocation.city && primaryLocation.state && mapboxToken) {
+          const fullAddress = [
+            primaryLocation.street,
+            primaryLocation.street2,
+            primaryLocation.city,
+            primaryLocation.state,
+            primaryLocation.zip
+          ].filter(Boolean).join(' ');
+          
+          try {
+            const encodedAddress = encodeURIComponent(fullAddress.trim());
+            const response = await fetch(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
+            );
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.features && data.features.length > 0) {
+                const [lng, lat] = data.features[0].center;
+                
+                // Store the geocoded coordinates for future use
+                try {
+                  await supabase
+                    .from('customer_service_locations')
+                    .update({ 
+                      gps_coordinates: `${lng},${lat}` 
+                    })
+                    .eq('id', primaryLocation.id);
+                } catch (error) {
+                  console.error('Error storing geocoded coordinates:', error);
+                }
+                
+                return [lng, lat];
+              }
+            }
+          } catch (error) {
+            console.error('Geocoding error in modal:', error);
+          }
+        }
+      }
+      
+      return [-79.9959, 40.4406]; // Default to Pittsburgh
+    };
+
+    const initializeModalMap = async () => {
+      const [centerLng, centerLat] = await getDefaultCoordinatesForModal();
+
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current!,
+        style: getMapStyleUrl(mapStyle),
+        center: [centerLng, centerLat],
+        zoom: 16
+      });
+
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      // Add draggable marker at the center coordinates
+      marker.current = new mapboxgl.Marker({ draggable: true })
+        .setLngLat([centerLng, centerLat])
+        .addTo(map.current);
+
+      // Update form values when marker is dragged
+      marker.current.on('dragend', () => {
+        if (marker.current) {
+          const lngLat = marker.current.getLngLat();
+          form.setValue('latitude', parseFloat(lngLat.lat.toFixed(6)));
+          form.setValue('longitude', parseFloat(lngLat.lng.toFixed(6)));
+        }
+      });
+
+      // Set form values to the initial coordinates
+      form.setValue('latitude', centerLat);
+      form.setValue('longitude', centerLng);
+    };
+
+    initializeModalMap();
 
     return () => {
       if (map.current) {
