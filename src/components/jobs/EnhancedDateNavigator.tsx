@@ -20,15 +20,17 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handlePrevious = () => {
-    onDateChange(subtractDaysFromDate(date, 1));
+    const newDate = subtractDaysFromDate(date, 1);
+    onDateChange(newDate);
   };
 
   const handleNext = () => {
-    onDateChange(addDaysToDate(date, 1));
+    const newDate = addDaysToDate(date, 1);
+    onDateChange(newDate);
   };
 
   const handleQuickSelect = (days: number) => {
-    const newDate = addDays(new Date(), days);
+    const newDate = addDaysToDate(new Date(), days);
     onDateChange(newDate);
     setIsCalendarOpen(false);
   };
