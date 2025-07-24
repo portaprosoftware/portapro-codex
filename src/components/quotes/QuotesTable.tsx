@@ -83,18 +83,36 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      draft: { color: 'bg-gray-100 text-gray-800', label: 'Draft' },
-      sent: { color: 'bg-blue-100 text-blue-800', label: 'Sent' },
-      pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
-      accepted: { color: 'bg-green-100 text-green-800', label: 'Accepted' },
-      expired: { color: 'bg-red-100 text-red-800', label: 'Expired' },
-      rejected: { color: 'bg-red-100 text-red-800', label: 'Rejected' }
+      draft: { 
+        gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
+        label: 'Draft' 
+      },
+      sent: { 
+        gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+        label: 'Sent' 
+      },
+      pending: { 
+        gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+        label: 'Pending' 
+      },
+      accepted: { 
+        gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+        label: 'Accepted' 
+      },
+      expired: { 
+        gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+        label: 'Expired' 
+      },
+      rejected: { 
+        gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+        label: 'Rejected' 
+      }
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
     
     return (
-      <Badge className={`${config.color} border-0 font-medium px-3 py-1 rounded-full`}>
+      <Badge className={`${config.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
         {config.label}
       </Badge>
     );

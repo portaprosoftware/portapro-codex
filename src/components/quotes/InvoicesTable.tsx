@@ -57,17 +57,37 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusColors = {
-      'paid': 'bg-green-500 hover:bg-green-600',
-      'unpaid': 'bg-red-500 hover:bg-red-600',
-      'overdue': 'bg-orange-500 hover:bg-orange-600',
-      'cancelled': 'bg-gray-500 hover:bg-gray-600',
-      'partial': 'bg-yellow-500 hover:bg-yellow-600'
+    const statusConfig = {
+      'paid': { 
+        gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+        label: 'Paid' 
+      },
+      'unpaid': { 
+        gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+        label: 'Unpaid' 
+      },
+      'overdue': { 
+        gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+        label: 'Overdue' 
+      },
+      'cancelled': { 
+        gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
+        label: 'Cancelled' 
+      },
+      'partial': { 
+        gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+        label: 'Partial' 
+      }
+    };
+
+    const config = statusConfig[status as keyof typeof statusConfig] || {
+      gradient: 'bg-gradient-to-r from-blue-500 to-blue-600',
+      label: status.charAt(0).toUpperCase() + status.slice(1)
     };
 
     return (
-      <Badge className={`text-white ${statusColors[status as keyof typeof statusColors] || 'bg-blue-500'}`}>
-        {status}
+      <Badge className={`${config.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+        {config.label}
       </Badge>
     );
   };
