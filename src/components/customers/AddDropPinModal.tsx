@@ -265,30 +265,92 @@ export function AddDropPinModal({
     }
   };
 
-  // More robust filtering to ensure no empty string values
-  const validServiceLocations = serviceLocations?.filter(location => {
-    if (!location) return false;
+  // Ultra-robust filtering with extensive validation and logging
+  const validServiceLocations = React.useMemo(() => {
+    console.log('Raw serviceLocations:', serviceLocations);
     
-    const id = location.id;
-    const name = location.location_name;
+    if (!Array.isArray(serviceLocations)) {
+      console.warn('serviceLocations is not an array:', serviceLocations);
+      return [];
+    }
     
-    // Ensure both id and name exist and are not empty when converted to string
-    return id !== null && 
-           id !== undefined && 
-           name !== null && 
-           name !== undefined &&
-           String(id).trim() !== '' && 
-           String(name).trim() !== '';
-  }) || [];
+    const filtered = serviceLocations.filter((location, index) => {
+      console.log(`Checking location ${index}:`, location);
+      
+      if (!location) {
+        console.log(`Location ${index} is null/undefined`);
+        return false;
+      }
+      
+      const id = location.id;
+      const name = location.location_name;
+      
+      console.log(`Location ${index} - id:`, id, 'name:', name);
+      
+      // Check for null/undefined
+      if (id === null || id === undefined || name === null || name === undefined) {
+        console.log(`Location ${index} has null/undefined values`);
+        return false;
+      }
+      
+      // Convert to string and check for empty/whitespace
+      const idStr = String(id).trim();
+      const nameStr = String(name).trim();
+      
+      console.log(`Location ${index} - idStr:`, idStr, 'nameStr:', nameStr);
+      
+      const isValid = idStr !== '' && nameStr !== '' && idStr !== 'null' && idStr !== 'undefined' && nameStr !== 'null' && nameStr !== 'undefined';
+      
+      if (!isValid) {
+        console.log(`Location ${index} failed validation - idStr: "${idStr}", nameStr: "${nameStr}"`);
+      }
+      
+      return isValid;
+    });
+    
+    console.log('Filtered serviceLocations:', filtered);
+    return filtered;
+  }, [serviceLocations]);
 
-  const validCategories = categories?.filter(category => {
-    if (!category) return false;
+  const validCategories = React.useMemo(() => {
+    console.log('Raw categories:', categories);
     
-    const name = category.name;
-    return name !== null && 
-           name !== undefined && 
-           String(name).trim() !== '';
-  }) || [];
+    if (!Array.isArray(categories)) {
+      console.warn('categories is not an array:', categories);
+      return [];
+    }
+    
+    const filtered = categories.filter((category, index) => {
+      console.log(`Checking category ${index}:`, category);
+      
+      if (!category) {
+        console.log(`Category ${index} is null/undefined`);
+        return false;
+      }
+      
+      const name = category.name;
+      console.log(`Category ${index} - name:`, name);
+      
+      if (name === null || name === undefined) {
+        console.log(`Category ${index} has null/undefined name`);
+        return false;
+      }
+      
+      const nameStr = String(name).trim();
+      console.log(`Category ${index} - nameStr:`, nameStr);
+      
+      const isValid = nameStr !== '' && nameStr !== 'null' && nameStr !== 'undefined';
+      
+      if (!isValid) {
+        console.log(`Category ${index} failed validation - nameStr: "${nameStr}"`);
+      }
+      
+      return isValid;
+    });
+    
+    console.log('Filtered categories:', filtered);
+    return filtered;
+  }, [categories]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -347,11 +409,28 @@ export function AddDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {validServiceLocations.map((location) => (
-                            <SelectItem key={location.id} value={String(location.id)}>
-                              {location.location_name}
-                            </SelectItem>
-                          ))}
+                          {validServiceLocations.length === 0 ? (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                              No service locations available
+                            </div>
+                          ) : (
+                            validServiceLocations.map((location) => {
+                              const idValue = String(location.id);
+                              console.log('Rendering SelectItem with value:', idValue);
+                              
+                              // Final safety check before rendering
+                              if (!idValue || idValue.trim() === '') {
+                                console.error('Attempted to render SelectItem with empty value for location:', location);
+                                return null;
+                              }
+                              
+                              return (
+                                <SelectItem key={location.id} value={idValue}>
+                                  {location.location_name}
+                                </SelectItem>
+                              );
+                            })
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -386,17 +465,34 @@ export function AddDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {validCategories.map((category) => (
-                            <SelectItem key={category.id} value={String(category.name)}>
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-3 h-3 rounded-full border"
-                                  style={{ backgroundColor: category.color }}
-                                />
-                                {category.name}
-                              </div>
-                            </SelectItem>
-                          ))}
+                          {validCategories.length === 0 ? (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                              No categories available
+                            </div>
+                          ) : (
+                            validCategories.map((category) => {
+                              const nameValue = String(category.name);
+                              console.log('Rendering category SelectItem with value:', nameValue);
+                              
+                              // Final safety check before rendering
+                              if (!nameValue || nameValue.trim() === '') {
+                                console.error('Attempted to render SelectItem with empty value for category:', category);
+                                return null;
+                              }
+                              
+                              return (
+                                <SelectItem key={category.id} value={nameValue}>
+                                  <div className="flex items-center gap-2">
+                                    <div 
+                                      className="w-3 h-3 rounded-full border"
+                                      style={{ backgroundColor: category.color }}
+                                    />
+                                    {category.name}
+                                  </div>
+                                </SelectItem>
+                              );
+                            })
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
