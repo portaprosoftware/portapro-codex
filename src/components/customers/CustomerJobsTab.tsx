@@ -24,7 +24,7 @@ const JOB_TYPES = {
   delivery: { label: 'Delivery', icon: '📦' },
   pickup: { label: 'Pickup', icon: '🚚' },
   service: { label: 'Service', icon: '🔧' },
-  return: { label: 'Return', icon: '↩️' },
+  return: { label: 'Partial Pickup', icon: '↩️' },
 } as const;
 
 export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {

@@ -123,7 +123,7 @@ export const FiltersFlyout: React.FC<FiltersFlyoutProps> = ({
                 <option value="delivery">Delivery</option>
                 <option value="pickup">Pickup</option>
                 <option value="service">Service</option>
-                <option value="return">Return</option>
+                <option value="return">Partial Pickup</option>
               </select>
             </div>
 

@@ -67,7 +67,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <SelectItem value="delivery">Delivery</SelectItem>
           <SelectItem value="pickup">Pickup</SelectItem>
           <SelectItem value="service">Service</SelectItem>
-          <SelectItem value="return">Return</SelectItem>
+          <SelectItem value="return">Partial Pickup</SelectItem>
         </SelectContent>
       </Select>
 
