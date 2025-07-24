@@ -51,116 +51,119 @@ export const LiveClock: React.FC<LiveClockProps> = ({
   const clockSize = sizeClasses[size];
 
   return (
-    <div className={cn("flex items-center gap-4", className)}>
-      {/* Analog Clock */}
-      {showAnalog && (
-        <div className={cn(
-          "relative rounded-full bg-white border-4 border-gradient-primary shadow-lg",
-          clockSize
-        )}>
-          {/* Clock Face */}
-          <div className="absolute inset-0 rounded-full">
-            {/* Hour markers */}
-            {[...Array(12)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-0.5 h-3 bg-gray-600"
-                style={{
-                  top: '4px',
-                  left: '50%',
-                  transformOrigin: '50% 100%',
-                  transform: `translateX(-50%) rotate(${i * 30}deg)`,
-                }}
-              />
-            ))}
-            
-            {/* Hour Hand */}
+    <div className="relative">
+      <div 
+        className="relative flex items-center justify-center"
+        style={{
+          width: '80px',
+          height: '80px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle at 30% 30%, #FFFFFF, #F6F9FF)',
+          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.10)'
+        }}
+      >
+        {/* Clock ticks */}
+        {[...Array(12)].map((_, i) => {
+          const angle = (i * 30) - 90;
+          const isHour = i % 3 === 0;
+          const length = isHour ? 8 : 4;
+          const thickness = isHour ? 2 : 1;
+          const radius = 40;
+          
+          return (
             <div
-              className="absolute w-1 bg-gray-800 rounded-full shadow-sm"
+              key={i}
+              className="absolute"
               style={{
-                height: size === 'sm' ? '20px' : size === 'md' ? '28px' : '36px',
-                top: size === 'sm' ? '12px' : size === 'md' ? '20px' : '28px',
-                left: '50%',
-                transformOrigin: '50% 100%',
-                transform: `translateX(-50%) rotate(${hourAngle}deg)`,
-                transition: 'transform 0.5s ease-in-out',
-              }}
-            />
-            
-            {/* Minute Hand */}
-            <div
-              className="absolute w-0.5 bg-gray-700 rounded-full shadow-sm"
-              style={{
-                height: size === 'sm' ? '26px' : size === 'md' ? '36px' : '48px',
-                top: size === 'sm' ? '6px' : size === 'md' ? '12px' : '16px',
-                left: '50%',
-                transformOrigin: '50% 100%',
-                transform: `translateX(-50%) rotate(${minuteAngle}deg)`,
-                transition: 'transform 0.5s ease-in-out',
-              }}
-            />
-            
-            {/* Second Hand */}
-            {showSeconds && (
-              <div
-                className="absolute w-px bg-red-500 rounded-full"
-                style={{
-                  height: size === 'sm' ? '28px' : size === 'md' ? '40px' : '52px',
-                  top: size === 'sm' ? '4px' : size === 'md' ? '8px' : '12px',
-                  left: '50%',
-                  transformOrigin: '50% 90%',
-                  transform: `translateX(-50%) rotate(${secondAngle}deg)`,
-                  transition: seconds === 0 ? 'none' : 'transform 0.1s ease-out',
-                }}
-              />
-            )}
-            
-            {/* Center dot */}
-            <div 
-              className="absolute bg-gray-800 rounded-full"
-              style={{
-                width: size === 'sm' ? '4px' : size === 'md' ? '6px' : '8px',
-                height: size === 'sm' ? '4px' : size === 'md' ? '6px' : '8px',
                 top: '50%',
                 left: '50%',
-                transform: 'translate(-50%, -50%)',
+                transformOrigin: '0 0',
+                transform: `rotate(${angle}deg) translate(${radius - length}px, -${thickness/2}px)`,
+                width: `${length}px`,
+                height: `${thickness}px`,
+                backgroundColor: '#64748B',
+                opacity: 0.6,
               }}
             />
-          </div>
-        </div>
-      )}
-
-      {/* Digital Clock */}
-      {showDigital && (
-        <div className="text-center">
-          <div className={cn(
-            "font-mono font-bold text-gray-800",
-            size === 'sm' && "text-lg",
-            size === 'md' && "text-2xl",
-            size === 'lg' && "text-3xl"
-          )}>
-            {localTime.toLocaleTimeString('en-US', {
-              hour12: true,
-              hour: 'numeric',
-              minute: '2-digit',
-              ...(showSeconds && { second: '2-digit' })
-            })}
-          </div>
-          <div className={cn(
-            "text-gray-500 font-medium",
-            size === 'sm' && "text-xs",
-            size === 'md' && "text-sm",
-            size === 'lg' && "text-base"
-          )}>
-            {localTime.toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            })}
-          </div>
-        </div>
-      )}
+          );
+        })}
+        
+        {/* Hour hand */}
+        <div
+          className="absolute bg-slate-700 rounded-full"
+          style={{
+            width: '3px',
+            height: '20px',
+            top: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translate(-50%, -100%) rotate(${hourAngle}deg)`,
+            transition: 'transform 0.5s ease-in-out',
+            zIndex: 3,
+          }}
+        />
+        
+        {/* Minute hand */}
+        <div
+          className="absolute bg-slate-600 rounded-full"
+          style={{
+            width: '2px',
+            height: '28px',
+            top: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translate(-50%, -100%) rotate(${minuteAngle}deg)`,
+            transition: 'transform 0.5s ease-in-out',
+            zIndex: 2,
+          }}
+        />
+        
+        {/* Second hand */}
+        <div
+          className="absolute bg-red-500 rounded-full"
+          style={{
+            width: '1px',
+            height: '32px',
+            top: '50%',
+            left: '50%',
+            transformOrigin: '50% 100%',
+            transform: `translate(-50%, -100%) rotate(${secondAngle}deg)`,
+            transition: seconds === 0 ? 'none' : 'transform 0.1s ease-out',
+            zIndex: 4,
+          }}
+        />
+        
+        {/* Center dot */}
+        <div
+          className="absolute bg-slate-800 rounded-full"
+          style={{
+            width: '6px',
+            height: '6px',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 5,
+          }}
+        />
+      </div>
+      
+      {/* Digital time overlay */}
+      <div 
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap"
+        style={{ 
+          background: 'linear-gradient(135deg, #2F4F9A 0%, #1E3A8A 100%)',
+          fontSize: '8px'
+        }}
+      >
+        {localTime.toLocaleString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZone: timeZone,
+        })}
+      </div>
     </div>
   );
 };
