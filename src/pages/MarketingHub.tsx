@@ -189,7 +189,7 @@ const MarketingHub: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`px-10 py-4 rounded-lg font-medium text-sm transition-colors whitespace-nowrap min-w-fit ${
                 activeTab === tab.id
-                  ? 'bg-gradient-primary text-white shadow-sm'
+                  ? 'bg-gradient-primary text-white font-bold shadow-sm'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
