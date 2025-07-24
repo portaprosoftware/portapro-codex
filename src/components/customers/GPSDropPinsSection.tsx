@@ -182,37 +182,54 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         showUserHeading: true
       }), 'top-right');
 
-      // Enhanced immediate zoom and bounds behavior for better pin visibility
-      // Set up a callback to handle bounds fitting when coordinates are available
+      // Enhanced bounds fitting with validation
       const handleBoundsFitting = () => {
         if (!map.current || !coordinates || coordinates.length === 0) return;
         
-        if (coordinates.length === 1) {
-          // Single pin - zoom to it with high zoom level
-          const coord = coordinates[0];
-          map.current.flyTo({
-            center: [coord.longitude, coord.latitude],
-            zoom: 16,
-            duration: 1000
-          });
-        } else {
-          // Multiple pins - fit all pins in view
-          const bounds = new mapboxgl.LngLatBounds();
-          coordinates.forEach(coord => {
-            bounds.extend([coord.longitude, coord.latitude]);
-          });
-          
-          // Enhanced padding for mobile vs desktop
-          const isMobile = window.innerWidth < 768;
-          const padding = isMobile 
-            ? { top: 80, bottom: 80, left: 20, right: 20 }
-            : { top: 100, bottom: 100, left: 100, right: 100 };
+        // Validate all coordinates before using them
+        const validCoords = coordinates.filter(coord => 
+          coord && 
+          typeof coord.latitude === 'number' && 
+          typeof coord.longitude === 'number' && 
+          !isNaN(coord.latitude) && 
+          !isNaN(coord.longitude) &&
+          coord.latitude >= -90 && coord.latitude <= 90 &&
+          coord.longitude >= -180 && coord.longitude <= 180
+        );
+        
+        if (validCoords.length === 0) return;
+        
+        try {
+          if (validCoords.length === 1) {
+            // Single pin - zoom to it with high zoom level
+            const coord = validCoords[0];
+            map.current.flyTo({
+              center: [coord.longitude, coord.latitude],
+              zoom: 16,
+              duration: 1000
+            });
+          } else {
+            // Multiple pins - fit all pins in view
+            const bounds = new mapboxgl.LngLatBounds();
             
-          map.current.fitBounds(bounds, { 
-            padding, 
-            maxZoom: 16,
-            duration: 1000
-          });
+            validCoords.forEach(coord => {
+              bounds.extend([coord.longitude, coord.latitude]);
+            });
+            
+            // Enhanced padding for mobile vs desktop
+            const isMobile = window.innerWidth < 768;
+            const padding = isMobile 
+              ? { top: 80, bottom: 80, left: 20, right: 20 }
+              : { top: 100, bottom: 100, left: 100, right: 100 };
+              
+            map.current.fitBounds(bounds, { 
+              padding, 
+              maxZoom: 16,
+              duration: 1000
+            });
+          }
+        } catch (error) {
+          console.error('Error fitting bounds:', error);
         }
       };
 
@@ -350,7 +367,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       const data = await response.json();
       if (data.features && data.features.length > 0) {
         const [lng, lat] = data.features[0].center;
-        return [lng, lat];
+        if (typeof lng === 'number' && typeof lat === 'number' && !isNaN(lng) && !isNaN(lat)) {
+          return [lng, lat];
+        }
       }
     } catch (error) {
       console.error('Geocoding error:', error);
@@ -360,55 +379,72 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   };
 
   const getDefaultCenter = async (): Promise<[number, number]> => {
-    // First try to use primary service location with stored GPS coordinates
-    if (serviceLocations && serviceLocations.length > 0) {
-      const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
-      
-      // Check if we already have GPS coordinates stored
-      if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
-        const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
-        if (!isNaN(lat) && !isNaN(lng)) {
-          return [lng, lat];
-        }
-      }
-      
-      // If no GPS coordinates, try to geocode the address
-      if (primaryLocation && primaryLocation.street && primaryLocation.city && primaryLocation.state) {
-        const fullAddress = [
-          primaryLocation.street,
-          primaryLocation.street2,
-          primaryLocation.city,
-          primaryLocation.state,
-          primaryLocation.zip
-        ].filter(Boolean).join(' ');
+    // Default fallback coordinates (Pittsburgh)
+    const fallbackCoords: [number, number] = [-79.9959, 40.4406];
+    
+    try {
+      // First try to use primary service location with stored GPS coordinates
+      if (serviceLocations && serviceLocations.length > 0) {
+        const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
         
-        const geocoded = await geocodeAddress(fullAddress);
-        if (geocoded) {
-          // Store the geocoded coordinates for future use
-          try {
-            await supabase
-              .from('customer_service_locations')
-              .update({ 
-                gps_coordinates: `${geocoded[0]},${geocoded[1]}` 
-              })
-              .eq('id', primaryLocation.id);
-          } catch (error) {
-            console.error('Error storing geocoded coordinates:', error);
+        // Check if we already have GPS coordinates stored
+        if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+          const coords = primaryLocation.gps_coordinates.split(',').map(Number);
+          if (coords.length === 2 && !isNaN(coords[1]) && !isNaN(coords[0])) {
+            return [coords[0], coords[1]];
           }
+        }
+        
+        // If no GPS coordinates, try to geocode the address
+        if (primaryLocation && primaryLocation.street && primaryLocation.city && primaryLocation.state) {
+          const fullAddress = [
+            primaryLocation.street,
+            primaryLocation.street2,
+            primaryLocation.city,
+            primaryLocation.state,
+            primaryLocation.zip
+          ].filter(Boolean).join(' ');
           
-          return geocoded;
+          const geocoded = await geocodeAddress(fullAddress);
+          if (geocoded) {
+            // Store the geocoded coordinates for future use
+            try {
+              await supabase
+                .from('customer_service_locations')
+                .update({ 
+                  gps_coordinates: `${geocoded[0]},${geocoded[1]}` 
+                })
+                .eq('id', primaryLocation.id);
+              
+              return geocoded;
+            } catch (error) {
+              console.error('Error storing geocoded coordinates:', error);
+              return geocoded; // Still return the geocoded coords even if storage fails
+            }
+          }
         }
       }
+      
+      // Fallback to coordinates average if available
+      if (coordinates && coordinates.length > 0) {
+        const validCoords = coordinates.filter(coord => 
+          typeof coord.latitude === 'number' && typeof coord.longitude === 'number' &&
+          !isNaN(coord.latitude) && !isNaN(coord.longitude)
+        );
+        
+        if (validCoords.length > 0) {
+          const avgLat = validCoords.reduce((sum, coord) => sum + coord.latitude, 0) / validCoords.length;
+          const avgLng = validCoords.reduce((sum, coord) => sum + coord.longitude, 0) / validCoords.length;
+          if (!isNaN(avgLat) && !isNaN(avgLng)) {
+            return [avgLng, avgLat];
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error in getDefaultCenter:', error);
     }
     
-    // Fallback to coordinates average if available
-    if (coordinates && coordinates.length > 0) {
-      const avgLat = coordinates.reduce((sum, coord) => sum + coord.latitude, 0) / coordinates.length;
-      const avgLng = coordinates.reduce((sum, coord) => sum + coord.longitude, 0) / coordinates.length;
-      return [avgLng, avgLat];
-    }
-    
-    return [-79.9959, 40.4406]; // Default to Pittsburgh
+    return fallbackCoords;
   };
 
   const updateMapMarkers = () => {
