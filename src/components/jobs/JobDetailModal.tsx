@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { 
   CalendarIcon, 
   Clock, 
@@ -19,8 +20,11 @@ import {
   X,
   Phone,
   Mail,
-  MessageSquare
+  MessageSquare,
+  Trash2,
+  MoreVertical
 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,6 +43,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   onOpenChange
 }) => {
   const [editingSections, setEditingSections] = useState<{[key: string]: boolean}>({});
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -171,6 +176,36 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         variant: "destructive",
       });
       console.error('Job update error:', error);
+    }
+  });
+
+  // Delete job mutation
+  const deleteJobMutation = useMutation({
+    mutationFn: async () => {
+      if (!jobId) throw new Error('No job ID');
+      
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Job Deleted",
+        description: "Job has been deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete job",
+        variant: "destructive",
+      });
+      console.error('Job delete error:', error);
     }
   });
 
@@ -313,6 +348,61 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 )}
               </div>
             </div>
+            
+            {/* Actions Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem 
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Job
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-white">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Job</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the job and all associated data.
+                        <br /><br />
+                        Type "delete" below to confirm:
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <Input
+                      value={deleteConfirmText}
+                      onChange={(e) => setDeleteConfirmText(e.target.value)}
+                      placeholder="Type 'delete' to confirm"
+                      className="mt-2"
+                    />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          if (deleteConfirmText === 'delete') {
+                            deleteJobMutation.mutate();
+                            setDeleteConfirmText('');
+                          }
+                        }}
+                        disabled={deleteConfirmText !== 'delete' || deleteJobMutation.isPending}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        {deleteJobMutation.isPending ? 'Deleting...' : 'Delete Job'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </DialogHeader>
 
@@ -394,13 +484,12 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="assigned">Assigned</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
+                           <SelectContent>
+                             <SelectItem value="assigned">Assigned</SelectItem>
+                             <SelectItem value="in_progress">In Progress</SelectItem>
+                             <SelectItem value="completed">Completed</SelectItem>
+                             <SelectItem value="cancelled">Cancelled</SelectItem>
+                           </SelectContent>
                         </Select>
                       </div>
                     </>
