@@ -26,6 +26,7 @@ import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
 import Consumables from './pages/Consumables';
 import PurchaseOrders from './pages/PurchaseOrders';
+import { ConsumableRequestPage } from './pages/ConsumableRequestPage';
 import { DriverLayout } from './components/driver/DriverLayout';
 import { DriverDashboardPage } from './pages/DriverDashboardPage';
 import { DriverMapPage } from './pages/DriverMapPage';
@@ -93,6 +94,7 @@ const App = () => {
             
             {/* Public QR Scan Route - Outside authentication */}
             <Route path="/scan/:unitId" element={<ScanFeedback />} />
+            <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
             
             <Route
               path="*"

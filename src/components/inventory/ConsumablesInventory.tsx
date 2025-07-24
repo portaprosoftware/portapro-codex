@@ -5,8 +5,13 @@ import { ConsumablesDashboard } from './ConsumablesDashboard';
 import { AddConsumableModal } from './AddConsumableModal';
 import { EditConsumableModal } from './EditConsumableModal';
 import { ReceiveStockModal } from './ReceiveStockModal';
+import { ConsumableQRGenerator } from './ConsumableQRGenerator';
+import { ConsumableRequestsManager } from './ConsumableRequestsManager';
+import { JobConsumablesTracker } from './JobConsumablesTracker';
+import { ConsumableNotificationsPanel } from './ConsumableNotificationsPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Package } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, QrCode, Bell, MapPin, Package } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Consumable {
@@ -66,26 +71,69 @@ export const ConsumablesInventory: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <PageHeader
-        title="Consumables Inventory"
-        subtitle="Manage consumable supplies and stock levels"
+        title="Consumables Management System"
+        subtitle="Advanced consumables tracking, QR integration, and job usage monitoring"
       />
       
-      <div className="flex justify-between items-center">
-        <div className="flex gap-4">
-          <Button onClick={() => setShowAddModal(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Consumable
-          </Button>
-        </div>
-      </div>
+      <Tabs defaultValue="inventory" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="inventory">
+            <Package className="w-4 h-4 mr-2" />
+            Inventory
+          </TabsTrigger>
+          <TabsTrigger value="qr-codes">
+            <QrCode className="w-4 h-4 mr-2" />
+            QR Codes
+          </TabsTrigger>
+          <TabsTrigger value="requests">
+            <MapPin className="w-4 h-4 mr-2" />
+            Requests
+          </TabsTrigger>
+          <TabsTrigger value="job-tracking">
+            <Package className="w-4 h-4 mr-2" />
+            Job Usage
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="w-4 h-4 mr-2" />
+            Notifications
+          </TabsTrigger>
+        </TabsList>
 
-      <ConsumablesDashboard 
-        consumables={consumables || []}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onReceiveStock={handleReceiveStock}
-        onRefetch={refetch}
-      />
+        <TabsContent value="inventory" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-4">
+              <Button onClick={() => setShowAddModal(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Consumable
+              </Button>
+            </div>
+          </div>
+
+          <ConsumablesDashboard 
+            consumables={consumables || []}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+            onReceiveStock={handleReceiveStock}
+            onRefetch={refetch}
+          />
+        </TabsContent>
+
+        <TabsContent value="qr-codes">
+          <ConsumableQRGenerator />
+        </TabsContent>
+
+        <TabsContent value="requests">
+          <ConsumableRequestsManager />
+        </TabsContent>
+
+        <TabsContent value="job-tracking">
+          <JobConsumablesTracker />
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <ConsumableNotificationsPanel />
+        </TabsContent>
+      </Tabs>
 
       <AddConsumableModal 
         isOpen={showAddModal}
