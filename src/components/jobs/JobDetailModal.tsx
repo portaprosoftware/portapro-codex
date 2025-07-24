@@ -245,7 +245,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     size="sm" 
                     onClick={handleSave}
                     disabled={updateJobMutation.isPending}
-                    className="bg-gradient-to-r from-[#3366FF] to-[#6699FF]"
+                    className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
                   >
                     <Save className="w-4 h-4 mr-2" />
                     {updateJobMutation.isPending ? 'Saving...' : 'Save'}

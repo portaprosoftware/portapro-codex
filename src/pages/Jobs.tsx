@@ -436,7 +436,7 @@ const JobsPage: React.FC = () => {
                          </Button>
                        </div>
                       <Button 
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
+                        className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 text-sm"
                         onClick={() => setIsJobWizardOpen(true)}
                       >
                         + Schedule

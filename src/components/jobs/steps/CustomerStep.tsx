@@ -279,7 +279,7 @@ export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) =>
             <Button 
               onClick={handleCreateCustomer}
               disabled={!newCustomer.name || !newCustomer.serviceStreet}
-              className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
             >
               Create Customer
             </Button>
