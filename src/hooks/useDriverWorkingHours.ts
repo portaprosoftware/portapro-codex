@@ -31,6 +31,17 @@ export function useDriverWorkingHours(driverId?: string) {
   });
 }
 
+export function useDriversWithHours() {
+  return useQuery({
+    queryKey: ['drivers-with-hours'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_drivers_with_hours');
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
 export function useUpdateDriverWorkingHours() {
   const queryClient = useQueryClient();
   const { toast } = useToast();

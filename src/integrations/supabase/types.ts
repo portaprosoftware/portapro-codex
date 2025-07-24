@@ -1447,7 +1447,15 @@ export type Database = {
           start_time?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "driver_working_hours_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_campaigns: {
         Row: {
@@ -6064,6 +6072,15 @@ export type Database = {
           email_count: number
           sms_count: number
           both_count: number
+        }[]
+      }
+      get_drivers_with_hours: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          first_name: string
+          last_name: string
+          working_hours: Json
         }[]
       }
       get_inventory_breakdown: {

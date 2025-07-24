@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Clock, Edit, Users, CheckCircle } from "lucide-react";
 import { EditDriverHoursModal } from "./EditDriverHoursModal";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useDriversWithHours } from "@/hooks/useDriverWorkingHours";
 
 interface DriverWorkingHoursSectionProps {
   onBack: () => void;
@@ -17,24 +16,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
   const [editingDriver, setEditingDriver] = useState<string | null>(null);
 
-  const { data: drivers, isLoading } = useQuery({
-    queryKey: ['drivers-for-hours'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          user_roles!inner(role),
-          driver_working_hours(*)
-        `)
-        .eq('user_roles.role', 'driver');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { data: drivers, isLoading } = useDriversWithHours();
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -53,7 +35,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
   };
 
   const getDriverStatus = (driver: any) => {
-    const workingHours = driver.driver_working_hours;
+    const workingHours = driver.working_hours || [];
     if (!workingHours || workingHours.length === 0) {
       return { text: "No Hours Set", variant: "destructive" as const };
     }
