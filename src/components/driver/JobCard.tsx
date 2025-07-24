@@ -28,11 +28,11 @@ interface JobCardProps {
 }
 
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  assigned: 'bg-blue-100 text-blue-800',
-  'in-progress': 'bg-orange-100 text-orange-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800'
+  pending: 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0',
+  assigned: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0',
+  'in-progress': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0',
+  completed: 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0',
+  cancelled: 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0'
 };
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
@@ -76,7 +76,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
               </div>
             </div>
             
-            <Badge className={statusColors[job.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}>
+            <Badge className={`${statusColors[job.status as keyof typeof statusColors] || 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0'} font-medium px-3 py-1 rounded-full`}>
               {job.status.replace(/-/g, ' ')}
             </Badge>
           </div>
