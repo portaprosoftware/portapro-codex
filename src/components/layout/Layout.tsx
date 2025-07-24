@@ -34,16 +34,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
         <AppSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection} 
         />
         <div className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center border-b bg-background">
-            <SidebarTrigger className="ml-2" />
-          </header>
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>

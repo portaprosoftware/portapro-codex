@@ -138,7 +138,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const visibleItems = getVisibleItems();
 
   return (
-    <Sidebar>
+    <Sidebar className="w-64 border-r">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
