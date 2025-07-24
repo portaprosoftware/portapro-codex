@@ -35,9 +35,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="h-screen overflow-hidden flex" style={{ backgroundColor: '#f9fafb' }}>
       <Sidebar />
       <main className="flex-1 ml-64 overflow-y-auto">
-        <div className="p-3">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   );

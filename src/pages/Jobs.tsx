@@ -241,7 +241,7 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container-modern py-4 space-y-4">
+      <div className="max-w-none px-6 py-6 space-y-6">
         {/* Page Header with Enhanced Typography */}
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
