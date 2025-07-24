@@ -25,6 +25,75 @@ const Dashboard = () => {
   // Mock data for sparkline (jobs over the past week)
   const jobsSparklineData = [2, 3, 1, 4, 2, 5, 3];
 
+  // Fetch inventory data for total units card
+  const { data: inventoryData } = useQuery({
+    queryKey: ['dashboard-inventory'],
+    queryFn: async () => {
+      const [productsResult, itemsResult] = await Promise.all([
+        supabase.from('products').select('id, stock_total'),
+        supabase.from('product_items').select('id')
+      ]);
+      
+      if (productsResult.error) throw productsResult.error;
+      if (itemsResult.error) throw itemsResult.error;
+      
+      const totalProducts = productsResult.data?.length || 0;
+      const totalUnits = productsResult.data?.reduce((sum, product) => sum + (product.stock_total || 0), 0) || 0;
+      
+      return { totalProducts, totalUnits };
+    }
+  });
+
+  // Fetch jobs data for jobs today card
+  const { data: jobsData } = useQuery({
+    queryKey: ['dashboard-jobs-today'],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('job_type')
+        .eq('scheduled_date', today);
+      
+      if (error) throw error;
+      
+      const jobsByType = data?.reduce((acc, job) => {
+        acc[job.job_type] = (acc[job.job_type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+      
+      return {
+        total: data?.length || 0,
+        deliveries: jobsByType.delivery || 0,
+        returns: jobsByType.return || 0,
+        pickups: jobsByType.pickup || 0,
+        services: jobsByType.service || 0
+      };
+    }
+  });
+
+  // Fetch expiring documents data
+  const { data: documentsData } = useQuery({
+    queryKey: ['dashboard-expiring-docs'],
+    queryFn: async () => {
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30);
+      
+      const { data, error } = await supabase
+        .from('vehicle_compliance_documents')
+        .select('vehicle_id, expiration_date')
+        .lte('expiration_date', futureDate.toISOString().split('T')[0]);
+      
+      if (error) throw error;
+      
+      const uniqueVehicles = new Set(data?.map(doc => doc.vehicle_id));
+      
+      return {
+        affectedVehicles: uniqueVehicles.size,
+        totalDocuments: data?.length || 0
+      };
+    }
+  });
+
   // Fetch company settings for timezone
   const { data: companySettings } = useQuery({
     queryKey: ['company-settings'],
@@ -57,7 +126,7 @@ const Dashboard = () => {
   }, [companySettings?.company_timezone]);
   
   return (
-    <div className="space-y-8 font-sans">
+    <div className="p-6 space-y-8 font-sans">
       {/* Hero Banner */}
       <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-8 transition-all duration-300 hover:shadow-md">
         <div className="flex items-center justify-between">
@@ -75,7 +144,7 @@ const Dashboard = () => {
           
           {/* Digital Date and Time - Center */}
           <div className="text-center flex-shrink-0">
-            <div className="text-2xl font-bold text-gray-900 font-mono">
+            <div className="text-2xl font-bold text-gray-900 font-sans">
               {currentTime.toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -103,12 +172,14 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Row 1 */}
         <StatCard
-          title="Total Units"
-          value={10}
+          title="Total Inventory"
+          value={`${inventoryData?.totalProducts || 0} products`}
           icon={Package}
           gradientFrom="#3366FF"
           gradientTo="#6699FF"
           iconBg="#3366FF"
+          subtitle={`${inventoryData?.totalUnits || 0} total units`}
+          subtitleColor="text-gray-600"
           delay={0}
         />
         
@@ -124,11 +195,13 @@ const Dashboard = () => {
         
         <StatCard
           title="Jobs Today"
-          value={3}
+          value={jobsData?.total || 0}
           icon={Calendar}
           gradientFrom="#3366FF"
           gradientTo="#6699FF"
           iconBg="#3366FF"
+          subtitle={`${jobsData?.deliveries || 0} deliveries, ${jobsData?.returns || 0} returns, ${jobsData?.pickups || 0} pickups, ${jobsData?.services || 0} services`}
+          subtitleColor="text-gray-600"
           chart={<Sparkline data={jobsSparklineData} color="#3366FF" />}
           delay={200}
         />
@@ -181,11 +254,13 @@ const Dashboard = () => {
         
         <StatCard
           title="Expiring Documents"
-          value={4}
+          value={documentsData?.affectedVehicles || 0}
           icon={FileX}
           gradientFrom="#FF8822"
           gradientTo="#FFA044"
           iconBg="#FF8822"
+          subtitle={`${documentsData?.totalDocuments || 0} documents expiring`}
+          subtitleColor="text-orange-600"
           chart={<ProgressBar overdue={1} expiring={3} total={4} />}
           delay={700}
         />

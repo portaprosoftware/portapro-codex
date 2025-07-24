@@ -17,7 +17,7 @@ export const Clock: React.FC = () => {
   const hourAngle = ((time.getHours() % 12) * 30) + (time.getMinutes() * 0.5) - 90;
 
   return (
-    <div className="relative w-20 h-20">
+    <div className="relative w-32 h-32">
       <svg className="w-full h-full" viewBox="0 0 100 100">
         {/* Hour markers */}
         {[...Array(12)].map((_, i) => (
@@ -28,7 +28,7 @@ export const Clock: React.FC = () => {
             x2="50"
             y2="18"
             stroke="#334155"
-            strokeWidth="2"
+            strokeWidth="1"
             strokeLinecap="round"
             transform={`rotate(${i * 30} 50 50)`}
           />
@@ -45,7 +45,7 @@ export const Clock: React.FC = () => {
                 x2="50"
                 y2="14"
                 stroke="#94A3B8"
-                strokeWidth="1"
+                strokeWidth="0.5"
                 strokeLinecap="round"
                 transform={`rotate(${i * 6} 50 50)`}
               />
@@ -61,7 +61,7 @@ export const Clock: React.FC = () => {
           x2="50"
           y2="30"
           stroke="#334155"
-          strokeWidth="4"
+          strokeWidth="2.5"
           strokeLinecap="round"
           transform={`rotate(${hourAngle} 50 50)`}
           style={{ 
@@ -77,7 +77,7 @@ export const Clock: React.FC = () => {
           x2="50"
           y2="20"
           stroke="#334155"
-          strokeWidth="3"
+          strokeWidth="2"
           strokeLinecap="round"
           transform={`rotate(${minuteAngle} 50 50)`}
           style={{ 
