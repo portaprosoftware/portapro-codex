@@ -17,13 +17,16 @@ import { SpecialInstructionsReviewStep } from './steps/enhanced/SpecialInstructi
 
 // Combined wizard data interface
 interface WizardData {
-  // Step 1: Job Type & Timezone
+  // Step 1: Customer Selection
+  selectedCustomer?: any;
+  
+  // Step 2: Job Type & Timezone
   jobType: 'delivery' | 'pickup' | 'service' | 'estimate';
   timezone: string;
   customerTimezone: string;
   timezoneSource: 'company' | 'customer' | 'custom';
   
-  // Step 2: Schedule
+  // Step 3: Schedule
   deliveryDate?: Date;
   deliveryTime?: string;
   hasDeliveryTime: boolean;
@@ -41,7 +44,7 @@ interface WizardData {
   serviceDate?: Date;
   serviceTime?: string;
   
-  // Step 3: Location & Contacts
+  // Step 4: Location & Contacts
   selectedLocation?: any;
   customLocation?: {
     coordinates: [number, number];
@@ -50,7 +53,7 @@ interface WizardData {
   };
   selectedContacts: any[];
   
-  // Step 4: Inventory & Consumables
+  // Step 5: Inventory & Consumables
   bulkItems: any[];
   selectSpecificUnits: boolean;
   selectedUnits: any[];
@@ -62,16 +65,16 @@ interface WizardData {
   inventorySubtotal: number;
   consumablesSubtotal: number;
   
-  // Step 5: Services & Frequency
+  // Step 6: Services & Frequency
   selectedServices: any[];
   servicesSubtotal: number;
   
-  // Step 6: Crew Assignment
+  // Step 7: Crew Assignment
   selectedDriver?: any;
   selectedVehicle?: any;
   hasConflicts: boolean;
   
-  // Step 7: Special Instructions & Review
+  // Step 8: Special Instructions & Review
   specialInstructions: string;
   additionalContacts: any[];
   quickAddContact?: any;
@@ -84,13 +87,14 @@ interface EnhancedJobWizardProps {
 }
 
 const STEPS = [
-  { id: 1, title: 'Job Type & Timezone', description: 'Select job type and timezone' },
-  { id: 2, title: 'Schedule', description: 'Set delivery and pickup dates' },
-  { id: 3, title: 'Location & Contacts', description: 'Choose location and contacts' },
-  { id: 4, title: 'Inventory & Consumables', description: 'Select equipment and supplies' },
-  { id: 5, title: 'Services & Frequency', description: 'Add services and set frequency' },
-  { id: 6, title: 'Crew Assignment', description: 'Assign driver and vehicle' },
-  { id: 7, title: 'Review & Create', description: 'Final review and creation' }
+  { id: 1, title: 'Select Customer', description: 'Choose the customer for this job' },
+  { id: 2, title: 'Job Type & Timezone', description: 'Select job type and timezone' },
+  { id: 3, title: 'Schedule', description: 'Set delivery and pickup dates' },
+  { id: 4, title: 'Location & Contacts', description: 'Choose location and contacts' },
+  { id: 5, title: 'Inventory & Consumables', description: 'Select equipment and supplies' },
+  { id: 6, title: 'Services & Frequency', description: 'Add services and set frequency' },
+  { id: 7, title: 'Crew Assignment', description: 'Assign driver and vehicle' },
+  { id: 8, title: 'Review & Create', description: 'Final review and creation' }
 ];
 
 export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
@@ -100,7 +104,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [data, setData] = useState<WizardData>({
-    // Default values
+    selectedCustomer: undefined,
     jobType: 'delivery',
     timezone: 'America/New_York',
     customerTimezone: 'America/New_York',
@@ -136,8 +140,10 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1:
-        return data.jobType && data.timezone;
+        return data.selectedCustomer;
       case 2:
+        return data.jobType && data.timezone;
+      case 3:
         // Validate based on job type
         if (data.jobType === 'delivery') {
           return data.deliveryDate && (!data.returnScheduleEnabled || data.fullPickupDate);
@@ -147,15 +153,15 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           return data.serviceDate;
         }
         return true;
-      case 3:
-        return data.selectedLocation;
       case 4:
-        return true; // Optional step
+        return data.selectedLocation;
       case 5:
         return true; // Optional step
       case 6:
-        return !data.hasConflicts; // Cannot proceed with conflicts
+        return true; // Optional step
       case 7:
+        return !data.hasConflicts; // Cannot proceed with conflicts
+      case 8:
         return true; // Final step
       default:
         return true;
@@ -193,6 +199,20 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     switch (currentStep) {
       case 1:
         return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-foreground mb-2">Select Customer</h2>
+              <p className="text-muted-foreground">Choose the customer for this job</p>
+            </div>
+            {/* TODO: Add CustomerStep component */}
+            <div className="p-8 border border-dashed border-border rounded-lg text-center">
+              <p className="text-muted-foreground">Customer selection component will be added here</p>
+            </div>
+          </div>
+        );
+      
+      case 2:
+        return (
           <JobTypeTimezoneStep
             data={{
               jobType: data.jobType,
@@ -202,7 +222,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 2:
+      case 3:
         return (
           <DeliveryPickupScheduleStep
             data={{
@@ -225,7 +245,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 3:
+      case 4:
         return (
           <LocationContactsStep
             data={{
@@ -239,7 +259,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 4:
+      case 5:
         return (
           <InventoryConsumablesStep
             data={{
@@ -258,7 +278,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 5:
+      case 6:
         return (
           <ServicesFrequencyStep
             data={{
@@ -269,7 +289,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 6:
+      case 7:
         return (
           <CrewAssignmentStep
             data={{
@@ -282,7 +302,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 7:
+      case 8:
         return (
           <SpecialInstructionsReviewStep
             data={{
@@ -326,8 +346,8 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
   const progress = (currentStep / STEPS.length) * 100;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-background rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-end z-50">
+      <div className="bg-background h-full w-1/2 shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between mb-4">
@@ -370,7 +390,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+        <div className="p-6 flex-1 overflow-y-auto">
           {renderCurrentStep()}
         </div>
 
