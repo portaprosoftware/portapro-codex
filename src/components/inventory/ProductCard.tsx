@@ -107,7 +107,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       <div className="mt-4">
         <Button
           onClick={onSelect}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full bg-gradient-ocean text-white hover:brightness-110"
         >
           <Eye className="w-4 h-4 mr-2" />
           View

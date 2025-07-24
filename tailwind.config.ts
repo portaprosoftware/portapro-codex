@@ -119,6 +119,7 @@ export default {
 				'gradient-hero': 'var(--gradient-hero)',
 				'gradient-card': 'var(--gradient-card)',
 				'gradient-blue': 'var(--gradient-blue)',
+				'gradient-ocean': 'var(--gradient-ocean)',
 				'gradient-purple': 'var(--gradient-purple)',
 				'gradient-green': 'var(--gradient-green)',
 				'gradient-orange': 'var(--gradient-orange)',
