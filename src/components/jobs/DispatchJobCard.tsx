@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { MapPin, Clock, User, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface DispatchJobCardProps {
   job: {
@@ -12,6 +13,7 @@ interface DispatchJobCardProps {
     status: string;
     scheduled_date: string;
     scheduled_time?: string;
+    actual_completion_time?: string;
     notes?: string;
     customers: {
       id: string;
@@ -42,13 +44,6 @@ const jobTypeConfig = {
   return: { color: 'bg-purple-500', label: 'Return' }
 };
 
-const statusConfig = {
-  assigned: { color: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', label: 'Assigned' },
-  in_progress: { color: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', label: 'In Progress' },
-  completed: { color: 'bg-gradient-to-r from-green-500 to-green-600 text-white', label: 'Completed' },
-  overdue: { color: 'bg-gradient-to-r from-red-500 to-red-600 text-white', label: 'Overdue' },
-  cancelled: { color: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', label: 'Cancelled' }
-};
 
 export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   job,
@@ -56,7 +51,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   isDragging = false
 }) => {
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
-  const statusInfo = statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned;
+  const statusInfo = getJobStatusInfo(job);
 
   return (
     <div 
@@ -74,7 +69,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
             {job.job_number}
           </span>
         </div>
-        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.color)}>
+        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.gradient)}>
           {statusInfo.label}
         </Badge>
       </div>

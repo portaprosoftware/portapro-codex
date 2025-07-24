@@ -7,6 +7,7 @@ import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, S
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatDateSafe } from '@/lib/dateUtils';
+import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface JobCardProps {
   job: {
@@ -16,6 +17,7 @@ interface JobCardProps {
     status: string;
     scheduled_date: string;
     scheduled_time?: string;
+    actual_completion_time?: string;
     notes?: string;
     customers: {
       id: string;
@@ -95,13 +97,13 @@ const statusConfig = {
     gradient: 'bg-gradient-green', 
     label: 'Completed' 
   },
+  completed_late: { 
+    gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
+    label: 'Job Completed Late' 
+  },
   cancelled: { 
     gradient: 'bg-gradient-red', 
     label: 'Cancelled' 
-  },
-  pending: { 
-    gradient: 'bg-gradient-yellow', 
-    label: 'Pending' 
   },
   overdue: { 
     gradient: 'bg-gradient-red', 
@@ -118,23 +120,9 @@ export const JobCard: React.FC<JobCardProps> = ({
   onReverse,
   compact = false
 }) => {
-  // Determine display status with overdue logic
-  const getDisplayStatus = (job: any) => {
-    const currentDate = new Date();
-    const scheduledDate = new Date(job.scheduled_date);
-    
-    // Only show overdue for assigned jobs that have passed their scheduled date
-    // Don't override in-progress or completed jobs
-    if (job.status === 'assigned' && scheduledDate < currentDate) {
-      return 'overdue';
-    }
-    
-    return job.status;
-  };
-
-  const displayStatus = getDisplayStatus(job);
+  // Use unified status logic
+  const statusInfo = getJobStatusInfo(job);
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
-  const statusInfo = statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.pending;
   const JobTypeIcon = jobTypeInfo.icon;
 
   const handleViewJob = () => {

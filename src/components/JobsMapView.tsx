@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { getJobStatusConfig } from '@/lib/jobStatusUtils';
 
 // Mock data for demonstration
 const mockJobs = [
@@ -86,6 +87,7 @@ const statusColors = {
   assigned: '#3B82F6',    // Blue
   in_progress: '#F97316', // Orange  
   completed: '#10B981',   // Green
+  completed_late: '#6B7280', // Gray
   cancelled: '#6B7280',   // Gray
   overdue: '#EF4444'      // Red
 };
@@ -94,6 +96,7 @@ const statusLabels = {
   assigned: 'Assigned',
   in_progress: 'In Progress',
   completed: 'Completed',
+  completed_late: 'Job Completed Late',
   cancelled: 'Cancelled',
   overdue: 'Overdue'
 };
@@ -292,6 +295,7 @@ const JobsMapView: React.FC = () => {
           ['==', ['get', 'status'], 'assigned'], statusColors.assigned,
           ['==', ['get', 'status'], 'in_progress'], statusColors.in_progress,
           ['==', ['get', 'status'], 'completed'], statusColors.completed,
+          ['==', ['get', 'status'], 'completed_late'], statusColors.completed_late,
           ['==', ['get', 'status'], 'cancelled'], statusColors.cancelled,
           ['==', ['get', 'status'], 'overdue'], statusColors.overdue,
           '#666666'
@@ -659,6 +663,10 @@ const JobsMapView: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.completed}}></div>
                     <span className="text-sm text-gray-600">Completed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.completed_late}}></div>
+                    <span className="text-sm text-gray-600">Job Completed Late</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{backgroundColor: statusColors.cancelled}}></div>
