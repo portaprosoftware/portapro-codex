@@ -562,7 +562,8 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const filteredCoordinates = coordinates?.filter(coord => {
     const matchesSearch = coord.point_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          coord.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || coord.category === selectedCategory;
+    const matchesCategory = !selectedCategory || 
+                           (selectedCategory === 'uncategorized' ? (!coord.category || coord.category === '') : coord.category === selectedCategory);
     return matchesSearch && matchesCategory;
   }) || [];
 
@@ -723,7 +724,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="">Uncategorized</SelectItem>
+                        <SelectItem value="uncategorized">Uncategorized</SelectItem>
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.name}>
                             <div className="flex items-center gap-2">
