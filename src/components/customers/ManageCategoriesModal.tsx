@@ -4,18 +4,19 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Plus, 
@@ -491,39 +492,52 @@ export function ManageCategoriesModal({
   };
 
   const ColorPicker = ({ color, onChange }: { color: string; onChange: (color: string) => void }) => (
-    <div className="flex flex-wrap gap-1 p-2 border rounded-lg bg-muted/50">
-      {AVAILABLE_COLORS.map((availableColor) => (
-        <button
-          key={availableColor}
-          type="button"
-          className={`w-6 h-6 rounded-full border-2 transition-all ${
-            color === availableColor ? 'border-foreground scale-110' : 'border-transparent hover:scale-105'
-          }`}
-          style={{ backgroundColor: availableColor }}
-          onClick={() => onChange(availableColor)}
-          title={availableColor}
-        />
-      ))}
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-16 h-8 p-0 border-2"
+          style={{ backgroundColor: color }}
+        >
+          <span className="sr-only">Select color</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-3" align="start">
+        <div className="grid grid-cols-4 gap-2 max-w-[200px]">
+          {AVAILABLE_COLORS.map((availableColor) => (
+            <button
+              key={availableColor}
+              type="button"
+              className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
+                color === availableColor ? 'border-foreground scale-110' : 'border-muted-foreground/20'
+              }`}
+              style={{ backgroundColor: availableColor }}
+              onClick={() => onChange(availableColor)}
+              title={availableColor}
+            />
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Manage Categories</DialogTitle>
-          <DialogDescription>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent className="w-full sm:w-1/2 sm:max-w-2xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Manage Categories</SheetTitle>
+          <SheetDescription>
             Create custom categories with colors or choose from pre-built templates for organizing your GPS coordinates
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <Tabs defaultValue="custom" className="w-full flex-1 overflow-hidden">
+        <Tabs defaultValue="custom" className="w-full mt-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="custom">Custom Categories</TabsTrigger>
             <TabsTrigger value="templates">Template Ideas</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="custom" className="space-y-4 overflow-y-auto max-h-[60vh]">
+          <TabsContent value="custom" className="space-y-4 mt-4">
             <div className="space-y-4">
               {/* Add New Category */}
               <Card>
@@ -579,21 +593,10 @@ export function ManageCategoriesModal({
                           <div className="flex items-center gap-2">
                             {!category.is_default && (
                               <>
-                                <div className="relative group">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1 h-auto"
-                                  >
-                                    <Palette className="w-3 h-3" />
-                                  </Button>
-                                  <div className="absolute top-full right-0 mt-1 hidden group-hover:block z-50">
-                                    <ColorPicker 
-                                      color={category.color} 
-                                      onChange={(color) => handleColorChange(category.id, color)} 
-                                    />
-                                  </div>
-                                </div>
+                                <ColorPicker 
+                                  color={category.color} 
+                                  onChange={(color) => handleColorChange(category.id, color)} 
+                                />
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -619,8 +622,8 @@ export function ManageCategoriesModal({
             </div>
           </TabsContent>
 
-          <TabsContent value="templates" className="space-y-4 overflow-y-auto max-h-[60vh]">
-            <div className="grid grid-cols-2 gap-4">
+          <TabsContent value="templates" className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {TEMPLATE_CATEGORIES.map((template) => (
                 <Card 
                   key={template.name} 
@@ -682,7 +685,7 @@ export function ManageCategoriesModal({
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                  <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto">
                     {selectedTemplate.categories.map((category) => (
                       <div key={category} className="flex items-center space-x-2">
                         <Checkbox
@@ -705,7 +708,7 @@ export function ManageCategoriesModal({
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <div className="flex justify-end gap-2 pt-4 border-t mt-6">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
@@ -720,7 +723,7 @@ export function ManageCategoriesModal({
             Done
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
