@@ -24,6 +24,7 @@ const buttonVariants = cva(
         success: "bg-gradient-green text-white shadow-md",
         warning: "bg-gradient-orange text-white shadow-md",
         purple: "bg-gradient-purple text-white shadow-md",
+        ocean: "bg-gradient-ocean text-white shadow-md",
       },
       size: {
         default: "h-12 px-6 py-3",

@@ -113,7 +113,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
       {/* Action Button */}
       <Button
         onClick={() => onManage?.(vehicle)}
-        className="w-full mt-4 bg-gradient-ocean text-white hover:brightness-110"
+        variant="ocean"
+        className="w-full mt-4"
       >
         Manage
       </Button>
