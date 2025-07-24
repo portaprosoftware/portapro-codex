@@ -256,8 +256,8 @@
   
   /* Enterprise Buttons */
   .btn-enterprise {
-    @apply font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
-    background: var(--gradient-primary);
+    @apply font-bold text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+    background: linear-gradient(to right, #1d4ed8, #1e40af);
     font-family: 'Inter', sans-serif;
     will-change: transform, box-shadow;
   }
