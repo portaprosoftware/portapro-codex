@@ -148,6 +148,17 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #f9fafb;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-weight: 600;
+  }
+  
+  /* Make all text content bold */
+  h1, h2, h3, h4, h5, h6, p, span, div, td, th, li, a, button, input, label {
+    font-weight: 600 !important;
+  }
+  
+  /* Extra bold for numbers specifically */
+  .number, [data-number], .text-lg, .text-xl, .text-2xl, .text-3xl {
+    font-weight: 700 !important;
   }
 }
 
