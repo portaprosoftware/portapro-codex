@@ -47,7 +47,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         </SelectTrigger>
         <SelectContent className="bg-white border shadow-lg z-50">
           <SelectItem value="all">All Drivers</SelectItem>
-          {drivers.map(driver => (
+          {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
             <SelectItem key={driver.id} value={driver.id}>
               {driver.first_name} {driver.last_name}
             </SelectItem>
