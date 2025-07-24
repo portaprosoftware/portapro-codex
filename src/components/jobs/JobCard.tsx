@@ -79,13 +79,34 @@ const jobTypeConfig = {
 };
 
 const statusConfig = {
-  assigned: { color: 'bg-blue-500', label: 'Assigned' },
-  in_progress: { color: 'bg-orange-500', label: 'In Progress' },
-  'in-progress': { color: 'bg-orange-500', label: 'In Progress' },
-  completed: { color: 'bg-green-500', label: 'Completed' },
-  cancelled: { color: 'bg-red-500', label: 'Cancelled' },
-  pending: { color: 'bg-yellow-500', label: 'Pending' },
-  overdue: { color: 'bg-red-500', label: 'Overdue' }
+  assigned: { 
+    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+    label: 'Assigned' 
+  },
+  in_progress: { 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    label: 'In Progress' 
+  },
+  'in-progress': { 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    label: 'In Progress' 
+  },
+  completed: { 
+    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+    label: 'Completed' 
+  },
+  cancelled: { 
+    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    label: 'Cancelled' 
+  },
+  pending: { 
+    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+    label: 'Pending' 
+  },
+  overdue: { 
+    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    label: 'Overdue' 
+  }
 };
 
 export const JobCard: React.FC<JobCardProps> = ({
@@ -205,9 +226,9 @@ export const JobCard: React.FC<JobCardProps> = ({
                 Reverse
               </Button>
             )}
-            <div className={cn("enterprise-status-badge", displayStatus)}>
+            <Badge className={`${statusInfo.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
               {statusInfo.label}
-            </div>
+            </Badge>
           </div>
         </div>
         
@@ -298,9 +319,9 @@ export const JobCard: React.FC<JobCardProps> = ({
                 </Button>
               )}
             </div>
-            <div className={cn("enterprise-status-badge", displayStatus)}>
+            <Badge className={`${statusInfo.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
               {statusInfo.label}
-            </div>
+            </Badge>
           </div>
         </div>
       </div>
