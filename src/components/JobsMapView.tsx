@@ -528,19 +528,19 @@ const JobsMapView: React.FC = () => {
 
       {/* Summary Badges */}
       <div className="flex items-center space-x-3">
-        <Badge className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/90 text-white px-3 py-1 rounded-full">
+        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
           Total Jobs: {totalJobs}
         </Badge>
-        <Badge className="bg-[#33CC66] hover:bg-[#33CC66]/90 text-white px-3 py-1 rounded-full">
+        <Badge className="bg-gradient-green text-white px-3 py-1 rounded-full font-bold">
           Completed: {completedJobs}
         </Badge>
-        <Badge className="bg-[#FF9933] hover:bg-[#FF9933]/90 text-white px-3 py-1 rounded-full">
+        <Badge className="bg-gradient-orange text-white px-3 py-1 rounded-full font-bold">
           In Progress: {inProgressJobs}
         </Badge>
-        <Badge className="bg-[#3366FF] hover:bg-[#3366FF]/90 text-white px-3 py-1 rounded-full">
+        <Badge className="bg-gradient-blue text-white px-3 py-1 rounded-full font-bold">
           Assigned: {assignedJobs}
         </Badge>
-        <Badge className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/90 text-white px-3 py-1 rounded-full">
+        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
           Total Drivers on Map Today: {totalDrivers}
         </Badge>
       </div>
