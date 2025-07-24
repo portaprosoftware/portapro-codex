@@ -1,5 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Home, 
   Calendar, 
@@ -51,8 +53,8 @@ const items: NavigationItem[] = [
     title: 'Jobs', 
     url: '/jobs', 
     icon: Calendar,
-    permission: 'staff',
-    badge: '12'
+    permission: 'staff'
+    // badge will be added dynamically
   },
   { 
     title: 'Customers', 
@@ -108,6 +110,21 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
   const location = useLocation();
 
+  // Fetch today's jobs count for badge
+  const { data: todaysJobsCount } = useQuery({
+    queryKey: ['todays-jobs-count'],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('id', { count: 'exact' })
+        .eq('scheduled_date', today);
+      
+      if (error) throw error;
+      return data?.length || 0;
+    }
+  });
+
   const getVisibleItems = () => {
     return items.filter(item => {
       if (!item.permission) return true;
@@ -115,6 +132,12 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       if (item.permission === 'admin') return hasAdminAccess;
       if (item.permission === 'staff') return hasStaffAccess;
       return false;
+    }).map(item => {
+      // Add dynamic badge for Jobs
+      if (item.title === 'Jobs' && todaysJobsCount !== undefined && todaysJobsCount > 0) {
+        return { ...item, badge: todaysJobsCount.toString() };
+      }
+      return item;
     });
   };
 
