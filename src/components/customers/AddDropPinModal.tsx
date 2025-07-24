@@ -265,19 +265,30 @@ export function AddDropPinModal({
     }
   };
 
-  // Filter valid service locations - ensure both id and location_name exist and are not empty
-  const validServiceLocations = serviceLocations?.filter(location => 
-    location?.id && 
-    location?.location_name && 
-    location.id.toString().trim() !== '' && 
-    location.location_name.trim() !== ''
-  ) || [];
+  // More robust filtering to ensure no empty string values
+  const validServiceLocations = serviceLocations?.filter(location => {
+    if (!location) return false;
+    
+    const id = location.id;
+    const name = location.location_name;
+    
+    // Ensure both id and name exist and are not empty when converted to string
+    return id !== null && 
+           id !== undefined && 
+           name !== null && 
+           name !== undefined &&
+           String(id).trim() !== '' && 
+           String(name).trim() !== '';
+  }) || [];
 
-  // Filter valid categories - ensure name exists and is not empty after trimming
-  const validCategories = categories?.filter(category => 
-    category?.name && 
-    category.name.trim() !== ''
-  ) || [];
+  const validCategories = categories?.filter(category => {
+    if (!category) return false;
+    
+    const name = category.name;
+    return name !== null && 
+           name !== undefined && 
+           String(name).trim() !== '';
+  }) || [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -337,7 +348,7 @@ export function AddDropPinModal({
                         </FormControl>
                         <SelectContent>
                           {validServiceLocations.map((location) => (
-                            <SelectItem key={location.id} value={location.id}>
+                            <SelectItem key={location.id} value={String(location.id)}>
                               {location.location_name}
                             </SelectItem>
                           ))}
@@ -376,7 +387,7 @@ export function AddDropPinModal({
                         </FormControl>
                         <SelectContent>
                           {validCategories.map((category) => (
-                            <SelectItem key={category.id} value={category.name}>
+                            <SelectItem key={category.id} value={String(category.name)}>
                               <div className="flex items-center gap-2">
                                 <div 
                                   className="w-3 h-3 rounded-full border"
