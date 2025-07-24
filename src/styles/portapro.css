@@ -1,9 +1,9 @@
 
 /* Container and Layout Utilities */
 .container-modern {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Animation for slide-in panels */
