@@ -38,11 +38,11 @@ interface DispatchJobCardProps {
 }
 
 const jobTypeConfig = {
-  delivery: { color: 'bg-violet-500', label: 'Delivery' },
-  pickup: { color: 'bg-emerald-600', label: 'Pickup' },
-  'partial-pickup': { color: 'bg-orange-400', label: 'Partial Pickup' },
-  service: { color: 'bg-slate-500', label: 'Service' },
-  return: { color: 'bg-gray-500', label: 'Return' }
+  delivery: { color: 'bg-blue-500', borderColor: 'border-l-blue-500', label: 'Delivery' },
+  pickup: { color: 'bg-emerald-600', borderColor: 'border-l-emerald-600', label: 'Pickup' },
+  'partial-pickup': { color: 'bg-orange-400', borderColor: 'border-l-orange-400', label: 'Partial Pickup' },
+  service: { color: 'bg-green-500', borderColor: 'border-l-green-500', label: 'Service' },
+  return: { color: 'bg-gray-500', borderColor: 'border-l-gray-500', label: 'Return' }
 };
 
 
@@ -59,7 +59,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
       className={cn(
         "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full border-l-4",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
-        jobTypeInfo.color.replace('bg-', 'border-l-')
+        jobTypeInfo.borderColor
       )}
       onClick={onClick}
     >
