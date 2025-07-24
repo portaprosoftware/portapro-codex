@@ -58,7 +58,7 @@ interface Job {
 
 export const JobConsumablesTracker: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<string>('');
+  const [selectedJob, setSelectedJob] = useState<string>('all');
   const [formData, setFormData] = useState({
     job_id: '',
     consumable_id: '',
@@ -207,7 +207,7 @@ export const JobConsumablesTracker: React.FC = () => {
     });
   };
 
-  const filteredJobConsumables = selectedJob 
+  const filteredJobConsumables = selectedJob && selectedJob !== 'all'
     ? jobConsumables?.filter(jc => jc.job_id === selectedJob)
     : jobConsumables;
 
@@ -234,7 +234,7 @@ export const JobConsumablesTracker: React.FC = () => {
                     <SelectValue placeholder="All jobs" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All jobs</SelectItem>
+                    <SelectItem value="all">All jobs</SelectItem>
                     {recentJobs?.map(job => (
                       <SelectItem key={job.id} value={job.id}>
                         {job.job_type} - {job.customers?.name} ({new Date(job.scheduled_date).toLocaleDateString()})
