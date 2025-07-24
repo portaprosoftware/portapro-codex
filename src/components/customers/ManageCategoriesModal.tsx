@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -26,14 +26,18 @@ import {
   Trees, 
   HardHat,
   Trash2,
-  Check
+  Check,
+  Palette
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface Category {
+interface PinCategory {
   id: string;
   name: string;
-  description?: string;
+  color: string;
+  is_default: boolean;
 }
 
 interface TemplateCategory {
@@ -50,6 +54,30 @@ interface ManageCategoriesModalProps {
   existingCategories: Array<{ category_name: string; point_count: number }>;
   onCategoriesUpdated: () => void;
 }
+
+// Predefined color palette
+const AVAILABLE_COLORS = [
+  '#EF4444', // Red (default)
+  '#F97316', // Orange
+  '#F59E0B', // Amber
+  '#EAB308', // Yellow
+  '#84CC16', // Lime
+  '#22C55E', // Green
+  '#10B981', // Emerald
+  '#14B8A6', // Teal
+  '#06B6D4', // Cyan
+  '#0EA5E9', // Sky
+  '#3B82F6', // Blue
+  '#6366F1', // Indigo
+  '#8B5CF6', // Violet
+  '#A855F7', // Purple
+  '#D946EF', // Fuchsia
+  '#EC4899', // Pink
+  '#F43F5E', // Rose
+  '#6B7280', // Gray
+  '#374151', // Dark Gray
+  '#1F2937', // Very Dark Gray
+];
 
 const TEMPLATE_CATEGORIES: TemplateCategory[] = [
   {
@@ -126,26 +154,157 @@ export function ManageCategoriesModal({
   existingCategories,
   onCategoriesUpdated
 }: ManageCategoriesModalProps) {
-  const [customCategories, setCustomCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryColor, setNewCategoryColor] = useState('#EF4444');
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateCategory | null>(null);
   const [selectedTemplateCategories, setSelectedTemplateCategories] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch existing categories for this customer
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ['pin-categories', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('pin_categories')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('name');
+      
+      if (error) throw error;
+      return data as PinCategory[];
+    },
+    enabled: isOpen
+  });
+
+  // Create new category mutation
+  const createCategoryMutation = useMutation({
+    mutationFn: async ({ name, color }: { name: string; color: string }) => {
+      const { data, error } = await supabase
+        .from('pin_categories')
+        .insert({
+          customer_id: customerId,
+          name: name.trim(),
+          color,
+          is_default: false
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pin-categories', customerId] });
+      setNewCategoryName('');
+      setNewCategoryColor('#EF4444');
+      toast({
+        title: "Success",
+        description: "Category created successfully",
+      });
+    },
+    onError: (error) => {
+      console.error('Error creating category:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create category",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete category mutation
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      const { error } = await supabase
+        .from('pin_categories')
+        .delete()
+        .eq('id', categoryId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pin-categories', customerId] });
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting category:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Update category color mutation
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ categoryId, color }: { categoryId: string; color: string }) => {
+      const { error } = await supabase
+        .from('pin_categories')
+        .update({ color })
+        .eq('id', categoryId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pin-categories', customerId] });
+      toast({
+        title: "Success",
+        description: "Category color updated successfully",
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating category:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update category color",
+        variant: "destructive",
+      });
+    }
+  });
 
   const handleAddCustomCategory = () => {
     if (!newCategoryName.trim()) return;
     
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name: newCategoryName.trim()
-    };
+    // Check if category already exists
+    const exists = categories.some(cat => 
+      cat.name.toLowerCase() === newCategoryName.trim().toLowerCase()
+    );
     
-    setCustomCategories([...customCategories, newCategory]);
-    setNewCategoryName('');
+    if (exists) {
+      toast({
+        title: "Error",
+        description: "A category with this name already exists",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    createCategoryMutation.mutate({
+      name: newCategoryName.trim(),
+      color: newCategoryColor
+    });
   };
 
-  const handleRemoveCustomCategory = (id: string) => {
-    setCustomCategories(customCategories.filter(cat => cat.id !== id));
+  const handleDeleteCategory = (categoryId: string, categoryName: string) => {
+    if (categoryName === 'Uncategorized') {
+      toast({
+        title: "Error",
+        description: "Cannot delete the default Uncategorized category",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    deleteCategoryMutation.mutate(categoryId);
+  };
+
+  const handleColorChange = (categoryId: string, color: string) => {
+    updateCategoryMutation.mutate({ categoryId, color });
   };
 
   const handleTemplateSelection = (template: TemplateCategory) => {
@@ -227,74 +386,136 @@ export function ManageCategoriesModal({
     });
   };
 
+  const ColorPicker = ({ color, onChange }: { color: string; onChange: (color: string) => void }) => (
+    <div className="flex flex-wrap gap-1 p-2 border rounded-lg bg-muted/50">
+      {AVAILABLE_COLORS.map((availableColor) => (
+        <button
+          key={availableColor}
+          type="button"
+          className={`w-6 h-6 rounded-full border-2 transition-all ${
+            color === availableColor ? 'border-foreground scale-110' : 'border-transparent hover:scale-105'
+          }`}
+          style={{ backgroundColor: availableColor }}
+          onClick={() => onChange(availableColor)}
+          title={availableColor}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Manage Categories</DialogTitle>
           <DialogDescription>
-            Create custom categories or choose from pre-built templates for organizing your GPS coordinates
+            Create custom categories with colors or choose from pre-built templates for organizing your GPS coordinates
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="custom" className="w-full">
+        <Tabs defaultValue="custom" className="w-full flex-1 overflow-hidden">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="custom">Custom Categories</TabsTrigger>
             <TabsTrigger value="templates">Template Ideas</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="custom" className="space-y-4">
+          <TabsContent value="custom" className="space-y-4 overflow-y-auto max-h-[60vh]">
             <div className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Enter category name..."
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddCustomCategory()}
-                  className="flex-1"
-                />
-                <Button onClick={handleAddCustomCategory} disabled={!newCategoryName.trim()}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add
-                </Button>
-              </div>
-
-              {existingCategories.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium mb-2">Existing Categories</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {existingCategories.map((cat) => (
-                      <Badge key={cat.category_name} variant="secondary">
-                        {cat.category_name} ({cat.point_count})
-                      </Badge>
-                    ))}
+              {/* Add New Category */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Add New Category</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter category name..."
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddCustomCategory()}
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={handleAddCustomCategory} 
+                      disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add
+                    </Button>
                   </div>
-                </div>
-              )}
-
-              {customCategories.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium mb-2">New Categories</h4>
-                  <div className="space-y-2">
-                    {customCategories.map((cat) => (
-                      <div key={cat.id} className="flex items-center justify-between p-2 border rounded">
-                        <span className="text-sm">{cat.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveCustomCategory(cat.id)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
+                  <div>
+                    <label className="text-xs font-medium mb-2 block">Category Color</label>
+                    <ColorPicker color={newCategoryColor} onChange={setNewCategoryColor} />
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Existing Categories */}
+              {isLoading ? (
+                <div className="text-center text-muted-foreground">Loading categories...</div>
+              ) : categories.length > 0 ? (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Your Categories</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {categories.map((category) => (
+                        <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-4 h-4 rounded-full border"
+                              style={{ backgroundColor: category.color }}
+                            />
+                            <span className="text-sm font-medium">{category.name}</span>
+                            {category.is_default && (
+                              <Badge variant="secondary" className="text-xs">Default</Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {!category.is_default && (
+                              <>
+                                <div className="relative group">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="p-1 h-auto"
+                                  >
+                                    <Palette className="w-3 h-3" />
+                                  </Button>
+                                  <div className="absolute top-full right-0 mt-1 hidden group-hover:block z-50">
+                                    <ColorPicker 
+                                      color={category.color} 
+                                      onChange={(color) => handleColorChange(category.id, color)} 
+                                    />
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteCategory(category.id, category.name)}
+                                  disabled={deleteCategoryMutation.isPending}
+                                  className="p-1 h-auto text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No categories found. Add your first category above.
                 </div>
               )}
             </div>
           </TabsContent>
 
-          <TabsContent value="templates" className="space-y-4">
+          <TabsContent value="templates" className="space-y-4 overflow-y-auto max-h-[60vh]">
             <div className="grid grid-cols-2 gap-4">
               {TEMPLATE_CATEGORIES.map((template) => (
                 <Card 
@@ -385,7 +606,6 @@ export function ManageCategoriesModal({
             Close
           </Button>
           <Button onClick={() => {
-            // This would save the categories - placeholder for now
             onCategoriesUpdated();
             onClose();
             toast({
@@ -393,7 +613,7 @@ export function ManageCategoriesModal({
               description: "Categories updated successfully",
             });
           }}>
-            Save Changes
+            Done
           </Button>
         </div>
       </DialogContent>

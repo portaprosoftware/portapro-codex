@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, Crosshair } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 const dropPinSchema = z.object({
   service_location_id: z.string().min(1, 'Service location is required'),
@@ -54,14 +55,7 @@ interface EditDropPinModalProps {
   onSuccess: () => void;
 }
 
-const CATEGORIES = [
-  { value: 'units', label: 'Unit Placement' },
-  { value: 'access', label: 'Access Point' },
-  { value: 'delivery', label: 'Delivery Zone' },
-  { value: 'parking', label: 'Parking Area' },
-  { value: 'utilities', label: 'Utilities' },
-  { value: 'other', label: 'Other' },
-];
+// Categories will be loaded dynamically from database
 
 export function EditDropPinModal({ 
   customerId,
@@ -84,6 +78,22 @@ export function EditDropPinModal({
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [mapStyle, setMapStyle] = useState<'satellite' | 'streets'>('satellite');
   
+  // Load categories for this customer
+  const { data: categories = [] } = useQuery({
+    queryKey: ['pin-categories', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('pin_categories')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen
+  });
+
   const form = useForm<DropPinForm>({
     resolver: zodResolver(dropPinSchema),
     defaultValues: {
@@ -222,6 +232,10 @@ export function EditDropPinModal({
           .neq('id', coordinate.id);
       }
 
+      // Get the category color for the pin
+      const selectedCategory = categories.find(cat => cat.name === data.category);
+      const pinColor = selectedCategory?.color || '#EF4444'; // Default red
+
       const { error } = await supabase
         .from('service_location_coordinates')
         .update({
@@ -232,6 +246,7 @@ export function EditDropPinModal({
           category: data.category,
           description: data.description,
           is_primary: data.is_primary,
+          pin_color: pinColor,
         })
         .eq('id', coordinate.id);
 
@@ -344,9 +359,15 @@ export function EditDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {CATEGORIES.map((category) => (
-                            <SelectItem key={category.value} value={category.value}>
-                              {category.label}
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.name}>
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full border"
+                                  style={{ backgroundColor: category.color }}
+                                />
+                                {category.name}
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>

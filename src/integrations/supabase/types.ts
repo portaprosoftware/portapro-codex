@@ -3353,6 +3353,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pin_categories: {
+        Row: {
+          color: string
+          created_at: string
+          customer_id: string
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pricing_rules: {
         Row: {
           adjustment_type: string
@@ -4718,6 +4748,7 @@ export type Database = {
           is_primary: boolean | null
           latitude: number
           longitude: number
+          pin_color: string | null
           point_name: string
           service_location_id: string
           updated_at: string
@@ -4730,6 +4761,7 @@ export type Database = {
           is_primary?: boolean | null
           latitude: number
           longitude: number
+          pin_color?: string | null
           point_name: string
           service_location_id: string
           updated_at?: string
@@ -4742,6 +4774,7 @@ export type Database = {
           is_primary?: boolean | null
           latitude?: number
           longitude?: number
+          pin_color?: string | null
           point_name?: string
           service_location_id?: string
           updated_at?: string

@@ -130,11 +130,14 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     enabled: !!serviceLocations && serviceLocations.length > 0,
   });
 
-  const { data: categories } = useQuery({
-    queryKey: ['coordinate-categories', customerId],
+  const { data: categories = [] } = useQuery({
+    queryKey: ['pin-categories', customerId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('get_customer_categories', { customer_uuid: customerId });
+        .from('pin_categories')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('name');
       
       if (error) throw error;
       return data;
@@ -332,15 +335,10 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   };
 
   const getCategoryColor = (category: string | null) => {
-    const colors: Record<string, string> = {
-      'units': '#3B82F6',
-      'access': '#10B981',
-      'delivery': '#F59E0B',
-      'parking': '#8B5CF6',
-      'utilities': '#EF4444',
-      'other': '#6B7280',
-    };
-    return colors[category || 'other'] || colors.other;
+    if (!category) return '#EF4444'; // Default red for uncategorized
+    
+    const categoryData = categories.find(cat => cat.name === category);
+    return categoryData?.color || '#EF4444'; // Default red if category not found
   };
 
   const recenterMap = () => {
@@ -725,9 +723,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Categories</SelectItem>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.category_name} value={cat.category_name} className="text-xs">
-                            {cat.category_name} ({cat.point_count})
+                        <SelectItem value="">Uncategorized</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.name}>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full border"
+                                style={{ backgroundColor: category.color }}
+                              />
+                              {category.name}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -1039,7 +1044,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         onClose={() => setIsManageCategoriesOpen(false)}
         customerId={customerId}
         customerName={customer?.name || 'Unknown'}
-        existingCategories={categories || []}
+        existingCategories={[]}
         onCategoriesUpdated={refetch}
       />
     </div>
