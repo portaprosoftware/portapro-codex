@@ -30,13 +30,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
   const getStatusClasses = (status: string) => {
     switch (status?.toLowerCase()) {
       case "available":
-        return "bg-green-600 text-white";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       case "maintenance":
-        return "bg-orange-100 text-orange-700";
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
       case "in_service":
-        return "bg-blue-600 text-white";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
       default:
-        return "bg-red-100 text-red-700";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
     }
   };
 

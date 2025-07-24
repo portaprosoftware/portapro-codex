@@ -91,13 +91,13 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "badge-green";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       case "maintenance":
-        return "badge-orange";
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
       case "retired":
-        return "badge-red";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       default:
-        return "badge-blue";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
     }
   };
 

@@ -271,13 +271,13 @@ export const VehicleManagement = ({ selectedVehicle, onBack }: { selectedVehicle
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       case "maintenance":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold border-0";
       case "retired":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 

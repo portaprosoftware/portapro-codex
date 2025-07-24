@@ -57,15 +57,15 @@ export const FleetCompliance: React.FC = () => {
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
       case "overdue":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       case "critical":
-        return "bg-orange-100 text-orange-800 border-orange-200";
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
       case "warning":
-        return "bg-amber-100 text-amber-800 border-amber-200";
+        return "bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold border-0";
       case "good":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 
