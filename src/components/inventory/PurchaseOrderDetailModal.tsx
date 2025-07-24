@@ -39,7 +39,7 @@ export const PurchaseOrderDetailModal: React.FC<PurchaseOrderDetailModalProps> =
       if (!order) return;
       
       const { error } = await supabase
-        .from('purchase_orders')
+        .from('purchase_orders' as any)
         .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', order.id);
 

@@ -47,7 +47,7 @@ export const CreatePurchaseOrderModal: React.FC<CreatePurchaseOrderModalProps> =
         .order('name');
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     }
   });
 
@@ -99,7 +99,7 @@ export const CreatePurchaseOrderModal: React.FC<CreatePurchaseOrderModalProps> =
     updatedItems[index] = { ...updatedItems[index], [field]: value };
     
     if (field === 'consumable_id') {
-      const consumable = consumables?.find(c => c.id === value);
+      const consumable = (consumables as any)?.find((c: any) => c.id === value);
       if (consumable) {
         updatedItems[index].consumable_name = consumable.name;
         updatedItems[index].unit_cost = consumable.unit_cost;
@@ -227,11 +227,11 @@ export const CreatePurchaseOrderModal: React.FC<CreatePurchaseOrderModalProps> =
                               <SelectValue placeholder="Select consumable" />
                             </SelectTrigger>
                             <SelectContent>
-                              {consumables?.map((consumable) => (
-                                <SelectItem key={consumable.id} value={consumable.id}>
-                                  {consumable.name}
-                                </SelectItem>
-                              ))}
+                            {(consumables as any)?.map((consumable: any) => (
+                              <SelectItem key={consumable.id} value={consumable.id}>
+                                {consumable.name}
+                              </SelectItem>
+                            ))}
                             </SelectContent>
                           </Select>
                         </TableCell>

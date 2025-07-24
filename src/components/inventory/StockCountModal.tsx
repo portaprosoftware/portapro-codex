@@ -45,36 +45,36 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
   const { data: consumables, isLoading } = useQuery({
     queryKey: ['consumables-for-count', categoryFilter],
     queryFn: async () => {
-      let query = supabase
-        .from('consumables')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
+    let query = supabase
+      .from('consumables' as any)
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
 
       if (categoryFilter !== 'all') {
         query = query.eq('category', categoryFilter);
       }
       
-      const { data, error } = await query;
-      if (error) throw error;
-      
-      const items: CountItem[] = (data || []).map(consumable => ({
-        id: consumable.id,
-        name: consumable.name,
-        category: consumable.category,
-        system_qty: consumable.on_hand_qty,
-        counted_qty: 0,
-        variance: 0,
-        counted: false
-      }));
-      
-      setCountItems(items);
-      return data || [];
+    const { data, error } = await query;
+    if (error) throw error;
+    
+    const items: CountItem[] = (data || []).map((consumable: any) => ({
+      id: consumable.id,
+      name: consumable.name,
+      category: consumable.category,
+      system_qty: consumable.on_hand_qty,
+      counted_qty: 0,
+      variance: 0,
+      counted: false
+    }));
+    
+    setCountItems(items);
+    return (data || []) as any[];
     },
     enabled: isOpen
   });
 
-  const categories = [...new Set(consumables?.map(c => c.category) || [])];
+  const categories = [...new Set((consumables as any)?.map((c: any) => c.category) || [])];
 
   const stockCountMutation = useMutation({
     mutationFn: async (countData: any) => {
@@ -101,8 +101,8 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
       // Log all adjustments
       for (const adjustment of adjustments) {
         const { error: logError } = await supabase
-          .from('consumable_stock_adjustments')
-          .insert(adjustment);
+          .from('consumable_stock_adjustments' as any)
+          .insert(adjustment as any);
 
         if (logError) {
           console.error('Error logging adjustment:', logError);
@@ -111,8 +111,8 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
 
         // Update consumable stock
         const { error: updateError } = await supabase
-          .from('consumables')
-          .update({ on_hand_qty: adjustment.new_quantity })
+          .from('consumables' as any)
+          .update({ on_hand_qty: adjustment.new_quantity } as any)
           .eq('id', adjustment.consumable_id);
 
         if (updateError) {
@@ -235,7 +235,7 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map(category => (
+                  {(categories as string[]).map(category => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>

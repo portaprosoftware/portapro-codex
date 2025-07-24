@@ -31,12 +31,12 @@ export const PurchaseOrders: React.FC = () => {
     queryKey: ['purchase-orders'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('purchase_orders')
+        .from('purchase_orders' as any)
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return (data || []) as PurchaseOrder[];
+      return (data || []) as unknown as PurchaseOrder[];
     }
   });
 

@@ -35,19 +35,19 @@ export const StockTransferModal: React.FC<StockTransferModalProps> = ({
     queryKey: ['consumables-for-transfer'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('consumables')
+        .from('consumables' as any)
         .select('*')
         .eq('is_active', true)
         .gt('on_hand_qty', 0)
         .order('name');
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
     enabled: isOpen
   });
 
-  const selectedConsumable = consumables?.find(c => c.id === consumableId);
+  const selectedConsumable = (consumables as any)?.find((c: any) => c.id === consumableId);
 
   const transferMutation = useMutation({
     mutationFn: async (transferData: any) => {
@@ -61,7 +61,7 @@ export const StockTransferModal: React.FC<StockTransferModalProps> = ({
 
       // Log the stock transfer as an adjustment
       const { error: logError } = await supabase
-        .from('consumable_stock_adjustments')
+        .from('consumable_stock_adjustments' as any)
         .insert({
           consumable_id: consumableId,
           adjustment_type: 'transfer',
@@ -71,7 +71,7 @@ export const StockTransferModal: React.FC<StockTransferModalProps> = ({
           reason: `Transfer: ${fromLocation} → ${toLocation}`,
           notes: `${reason}. ${notes}`.trim(),
           adjusted_by: null // Will be set by auth context if available
-        });
+        } as any);
 
       if (logError) {
         console.error('Error logging transfer:', logError);
@@ -173,7 +173,7 @@ export const StockTransferModal: React.FC<StockTransferModalProps> = ({
                 <SelectValue placeholder="Select consumable to transfer" />
               </SelectTrigger>
               <SelectContent>
-                {consumables?.map((consumable) => (
+                {(consumables as any)?.map((consumable: any) => (
                   <SelectItem key={consumable.id} value={consumable.id}>
                     {consumable.name} (Available: {consumable.on_hand_qty})
                   </SelectItem>
