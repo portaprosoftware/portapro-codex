@@ -27,6 +27,7 @@ import {
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { useToast } from '@/hooks/use-toast';
+import { useUserRole } from '@/hooks/useUserRole';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,6 +58,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
+  const { hasAdminAccess } = useUserRole();
 
   const { data: serviceLocations, isLoading: locationsLoading } = useQuery({
     queryKey: ['customer-service-locations', customerId],
@@ -135,9 +137,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       showUserHeading: true
     }), 'top-right');
 
-    // Add click handler for click-to-add mode
+    // Add click handler for click-to-add mode (only for admin users)
     map.current.on('click', (e) => {
-      if (clickToAdd) {
+      if (clickToAdd && hasAdminAccess) {
         const { lng, lat } = e.lngLat;
         // Open add modal with coordinates pre-filled
         setIsAddModalOpen(true);
@@ -193,36 +195,96 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
     if (!coordinates) return;
 
-    // Add markers for each coordinate
+    // Add markers for each coordinate with mobile-optimized clustering
+    const clusterThreshold = window.innerWidth < 768 ? 5 : 10; // Fewer markers before clustering on mobile
+    
     coordinates.forEach(coord => {
       const color = getCategoryColor(coord.category);
       
-      const marker = new mapboxgl.Marker({ color })
+      // Create custom marker element for better touch targets on mobile
+      const markerEl = document.createElement('div');
+      markerEl.className = 'custom-marker';
+      markerEl.style.cssText = `
+        width: ${window.innerWidth < 768 ? '32px' : '24px'};
+        height: ${window.innerWidth < 768 ? '32px' : '24px'};
+        background-color: ${color};
+        border: 2px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease;
+      `;
+      
+      const marker = new mapboxgl.Marker({ element: markerEl })
         .setLngLat([coord.longitude, coord.latitude])
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`
-          <div class="p-2">
-            <h4 class="font-semibold">${coord.point_name}</h4>
-            ${coord.description ? `<p class="text-sm text-gray-600">${coord.description}</p>` : ''}
-            <p class="text-xs text-gray-500">${coord.latitude.toFixed(6)}, ${coord.longitude.toFixed(6)}</p>
-            ${coord.category ? `<span class="inline-block px-2 py-1 text-xs bg-gray-100 rounded mt-1">${coord.category}</span>` : ''}
+        .setPopup(new mapboxgl.Popup({ 
+          offset: 25,
+          closeButton: true,
+          closeOnClick: false 
+        }).setHTML(`
+          <div class="p-3 min-w-[200px]">
+            <h4 class="font-semibold text-sm mb-1">${coord.point_name}</h4>
+            ${coord.description ? `<p class="text-xs text-gray-600 mb-2">${coord.description}</p>` : ''}
+            <p class="text-xs text-gray-500 font-mono mb-2">${coord.latitude.toFixed(6)}, ${coord.longitude.toFixed(6)}</p>
+            ${coord.category ? `<span class="inline-block px-2 py-1 text-xs bg-gray-100 rounded">${coord.category}</span>` : ''}
+            ${hasAdminAccess ? `
+              <div class="flex gap-1 mt-2">
+                <button class="edit-btn px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600" data-id="${coord.id}">Edit</button>
+                <button class="navigate-btn px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600" data-lat="${coord.latitude}" data-lng="${coord.longitude}">Navigate</button>
+              </div>
+            ` : ''}
           </div>
         `))
         .addTo(map.current);
 
-      marker.getElement().addEventListener('click', () => {
+      // Enhanced mobile touch interactions
+      markerEl.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        markerEl.style.transform = 'scale(1.1)';
+      });
+      
+      markerEl.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        markerEl.style.transform = 'scale(1)';
+        setSelectedCoordinate(coord);
+      });
+
+      markerEl.addEventListener('click', () => {
         setSelectedCoordinate(coord);
       });
 
       markers.current.push(marker);
     });
 
-    // Fit map to show all markers
+    // Fit map to show all markers with mobile-optimized padding
     if (coordinates.length > 1) {
       const bounds = new mapboxgl.LngLatBounds();
       coordinates.forEach(coord => {
         bounds.extend([coord.longitude, coord.latitude]);
       });
-      map.current.fitBounds(bounds, { padding: 50 });
+      const padding = window.innerWidth < 768 ? 20 : 50;
+      map.current.fitBounds(bounds, { padding });
+    }
+
+    // Add popup event listeners for admin actions
+    if (hasAdminAccess) {
+      setTimeout(() => {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const coordId = (e.target as HTMLElement).dataset.id;
+            const coord = coordinates.find(c => c.id === coordId);
+            if (coord) handleEditCoordinate(coord);
+          });
+        });
+        
+        document.querySelectorAll('.navigate-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const lat = parseFloat((e.target as HTMLElement).dataset.lat || '0');
+            const lng = parseFloat((e.target as HTMLElement).dataset.lng || '0');
+            openInMaps(lat, lng);
+          });
+        });
+      }, 100);
     }
   };
 
@@ -336,24 +398,35 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         </div>
         
         <div className="flex gap-2">
-          <Button
-            variant={clickToAdd ? "default" : "outline"}
-            size="sm"
-            onClick={() => setClickToAdd(!clickToAdd)}
-            disabled={!serviceLocations || serviceLocations.length === 0}
-          >
-            <Crosshair className="w-4 h-4 mr-2" />
-            {clickToAdd ? 'Click Mode ON' : 'Click to Add'}
-          </Button>
+          {hasAdminAccess && (
+            <>
+              <Button
+                variant={clickToAdd ? "default" : "outline"}
+                size="sm"
+                onClick={() => setClickToAdd(!clickToAdd)}
+                disabled={!serviceLocations || serviceLocations.length === 0}
+                className="touch-manipulation" // Better mobile touch targets
+              >
+                <Crosshair className="w-4 h-4 mr-2" />
+                {clickToAdd ? 'Click Mode ON' : 'Click to Add'}
+              </Button>
+              
+              <Button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white touch-manipulation"
+                disabled={!serviceLocations || serviceLocations.length === 0}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Drop-Pin
+              </Button>
+            </>
+          )}
           
-          <Button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={!serviceLocations || serviceLocations.length === 0}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Drop-Pin
-          </Button>
+          {!hasAdminAccess && (
+            <div className="text-sm text-muted-foreground bg-muted/30 px-3 py-2 rounded-lg">
+              View-only mode
+            </div>
+          )}
         </div>
       </div>
 
@@ -366,24 +439,24 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Map Panel */}
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+          {/* Map Panel - Mobile First Design */}
+          <Card className="overflow-hidden order-1 xl:order-1">
+            <CardHeader className="pb-2 px-3 lg:px-6">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base flex items-center gap-2">
+                <CardTitle className="text-sm lg:text-base flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   Interactive Map
                 </CardTitle>
                 
-                <div className="flex items-center gap-2">
-                  {/* Map Style Selector */}
+                <div className="flex items-center gap-1 lg:gap-2">
+                  {/* Mobile-Optimized Map Style Selector */}
                   <div className="flex rounded-lg overflow-hidden border">
                     <Button
                       variant={mapStyle === 'streets' ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setMapStyle('streets')}
-                      className="rounded-none"
+                      className="rounded-none p-1 lg:p-2"
                     >
                       <MapIcon className="w-3 h-3" />
                     </Button>
@@ -391,7 +464,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       variant={mapStyle === 'satellite' ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setMapStyle('satellite')}
-                      className="rounded-none"
+                      className="rounded-none p-1 lg:p-2"
                     >
                       <Satellite className="w-3 h-3" />
                     </Button>
@@ -399,57 +472,59 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       variant={mapStyle === 'terrain' ? "default" : "ghost"}
                       size="sm"
                       onClick={() => setMapStyle('terrain')}
-                      className="rounded-none"
+                      className="rounded-none p-1 lg:p-2"
                     >
                       <Mountain className="w-3 h-3" />
                     </Button>
                   </div>
 
-                  <Button variant="outline" size="sm" onClick={recenterMap}>
+                  <Button variant="outline" size="sm" onClick={recenterMap} className="p-1 lg:p-2">
                     <RotateCcw className="w-3 h-3" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             
-            <CardContent className="p-0">
+            <CardContent className="p-0 relative">
               <div 
                 ref={mapContainer} 
-                className="h-[400px] w-full"
+                className="h-[300px] lg:h-[400px] w-full touch-manipulation"
                 style={{ 
                   cursor: clickToAdd ? 'crosshair' : 'default',
-                  minHeight: '400px'
+                  minHeight: '300px',
+                  touchAction: 'manipulation' // Optimize for mobile scrolling
                 }}
               />
               
-              {clickToAdd && (
-                <div className="absolute inset-x-0 bottom-4 mx-4">
+              {clickToAdd && hasAdminAccess && (
+                <div className="absolute inset-x-0 bottom-4 mx-4 z-10">
                   <div className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2">
                     <Crosshair className="w-4 h-4" />
-                    Click anywhere on the map to add a new drop-pin
+                    <span className="hidden sm:inline">Click anywhere on the map to add a new drop-pin</span>
+                    <span className="sm:hidden">Tap to add drop-pin</span>
                   </div>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Coordinates List Panel */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
+          {/* Coordinates List Panel - Mobile Optimized */}
+          <Card className="order-2 xl:order-2">
+            <CardHeader className="pb-2 px-3 lg:px-6">
+              <CardTitle className="text-sm lg:text-base flex items-center gap-2">
                 <Navigation className="w-4 h-4" />
                 GPS Coordinates ({filteredCoordinates.length})
               </CardTitle>
               
-              {/* Search and Filter Controls */}
-              <div className="space-y-3">
+              {/* Mobile-Optimized Search and Filter Controls */}
+              <div className="space-y-2 lg:space-y-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search drop-pins..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-8"
+                    className="pl-10 h-9 touch-manipulation text-base" // Larger text for mobile
                   />
                 </div>
                 
@@ -459,6 +534,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       variant={selectedCategory === null ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedCategory(null)}
+                      className="touch-manipulation text-xs lg:text-sm h-8"
                     >
                       All
                     </Button>
@@ -468,6 +544,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                         variant={selectedCategory === cat.category_name ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedCategory(cat.category_name)}
+                        className="touch-manipulation text-xs lg:text-sm h-8"
                       >
                         {cat.category_name} ({cat.point_count})
                       </Button>
@@ -478,7 +555,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
             </CardHeader>
             
             <CardContent className="p-0">
-              <div className="max-h-[350px] overflow-y-auto">
+              <div className="max-h-[300px] lg:max-h-[350px] overflow-y-auto overscroll-contain">
                 {filteredCoordinates.length > 0 ? (
                   <div className="space-y-1">
                     {filteredCoordinates.map((coordinate) => {
@@ -488,13 +565,14 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       return (
                         <div 
                           key={coordinate.id} 
-                          className={`p-3 hover:bg-muted/50 transition-colors cursor-pointer border-l-4 ${
+                          className={`p-3 lg:p-4 hover:bg-muted/50 active:bg-muted transition-colors cursor-pointer border-l-4 touch-manipulation ${
                             isSelected ? 'bg-muted/50 border-l-blue-500' : 'border-l-transparent'
                           }`}
                           onClick={() => setSelectedCoordinate(coordinate)}
+                          style={{ minHeight: '44px' }} // Minimum touch target size
                         >
                           <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 pr-2">
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm text-foreground truncate">
                                   {coordinate.point_name}
@@ -532,16 +610,21 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                             </div>
 
                             <div className="flex gap-1 ml-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditCoordinate(coordinate);
-                                }}
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
+                              {hasAdminAccess && (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditCoordinate(coordinate);
+                                    }}
+                                    className="touch-manipulation h-8 w-8 p-0"
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                </>
+                              )}
                               
                               <Button
                                 variant="ghost"
@@ -550,38 +633,42 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                                   e.stopPropagation();
                                   openInMaps(coordinate.latitude, coordinate.longitude);
                                 }}
+                                className="touch-manipulation h-8 w-8 p-0"
                               >
                                 <Navigation className="w-3 h-3" />
                               </Button>
                               
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction 
-                                      onClick={() => handleDeleteCoordinate(coordinate.id)}
-                                      className="bg-red-600 hover:bg-red-700"
+                              {hasAdminAccess && (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="touch-manipulation h-8 w-8 p-0"
                                     >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction 
+                                        onClick={() => handleDeleteCoordinate(coordinate.id)}
+                                        className="bg-red-600 hover:bg-red-700"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              )}
                             </div>
                           </div>
                         </div>
