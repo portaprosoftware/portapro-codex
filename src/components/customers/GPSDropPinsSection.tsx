@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { 
@@ -21,7 +22,11 @@ import {
   Crosshair,
   RotateCcw,
   Satellite,
-  Map as MapIcon
+  Map as MapIcon,
+  MoreVertical,
+  Download,
+  Copy,
+  MoveVertical
 } from 'lucide-react';
 import {
   Select,
@@ -30,6 +35,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { useToast } from '@/hooks/use-toast';
@@ -60,11 +71,29 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [selectedCoordinate, setSelectedCoordinate] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [clickToAdd, setClickToAdd] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkActionDialogOpen, setIsBulkActionDialogOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<'delete' | 'move' | null>(null);
+  const [newCategoryForBulk, setNewCategoryForBulk] = useState<string>('');
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
   const { hasAdminAccess } = useUserRole();
+
+  const { data: customer } = useQuery({
+    queryKey: ['customer', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customers')
+        .select('name')
+        .eq('id', customerId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: serviceLocations, isLoading: locationsLoading } = useQuery({
     queryKey: ['customer-service-locations', customerId],
@@ -367,6 +396,135 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
   };
 
+  // Bulk selection functions
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(filteredCoordinates.map(coord => coord.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleSelectCoordinate = (coordinateId: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
+    if (checked) {
+      newSelected.add(coordinateId);
+    } else {
+      newSelected.delete(coordinateId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  // Bulk actions
+  const handleBulkDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('service_location_coordinates')
+        .delete()
+        .in('id', Array.from(selectedIds));
+
+      if (error) throw error;
+      
+      refetch();
+      setSelectedIds(new Set());
+      toast({
+        title: "Success",
+        description: `${selectedIds.size} GPS drop-pins deleted successfully`,
+      });
+    } catch (error) {
+      console.error('Error deleting coordinates:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete GPS drop-pins",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkMoveCategory = async (newCategory: string) => {
+    try {
+      const { error } = await supabase
+        .from('service_location_coordinates')
+        .update({ category: newCategory })
+        .in('id', Array.from(selectedIds));
+
+      if (error) throw error;
+      
+      refetch();
+      setSelectedIds(new Set());
+      toast({
+        title: "Success",
+        description: `${selectedIds.size} GPS drop-pins moved to ${newCategory} category`,
+      });
+    } catch (error) {
+      console.error('Error moving coordinates:', error);
+      toast({
+        title: "Error",
+        description: "Failed to move GPS drop-pins",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const exportCoordinatesCSV = () => {
+    const selectedCoords = filteredCoordinates.filter(coord => selectedIds.has(coord.id));
+    const csvData = selectedCoords.map(coord => {
+      const serviceLocation = serviceLocations?.find(loc => loc.id === coord.service_location_id);
+      return {
+        'Customer Name': customer?.name || 'Unknown',
+        'Service Location': serviceLocation?.location_name || 'Unknown',
+        'GPS Coordinate Name': coord.point_name,
+        'Category': coord.category || 'Uncategorized',
+        'Latitude': coord.latitude,
+        'Longitude': coord.longitude,
+        'Description': coord.description || '',
+        'Created Date': new Date(coord.created_at).toLocaleDateString()
+      };
+    });
+
+    const headers = Object.keys(csvData[0] || {});
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => headers.map(header => `"${row[header as keyof typeof row]}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gps-coordinates-${customer?.name || 'export'}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    setSelectedIds(new Set());
+    toast({
+      title: "Success",
+      description: `${selectedIds.size} coordinates exported to CSV`,
+    });
+  };
+
+  const copyCoordinates = () => {
+    const selectedCoords = filteredCoordinates.filter(coord => selectedIds.has(coord.id));
+    const textData = selectedCoords.map(coord => {
+      const serviceLocation = serviceLocations?.find(loc => loc.id === coord.service_location_id);
+      return `${customer?.name || 'Unknown'} - ${coord.point_name}\nCategory: ${coord.category || 'Uncategorized'}\nLocation: ${serviceLocation?.location_name || 'Unknown'}\nCoordinates: ${coord.latitude}, ${coord.longitude}\nDescription: ${coord.description || 'N/A'}\n`;
+    }).join('\n---\n');
+
+    navigator.clipboard.writeText(textData).then(() => {
+      setSelectedIds(new Set());
+      toast({
+        title: "Success",
+        description: `${selectedIds.size} coordinates copied to clipboard`,
+      });
+    }).catch(() => {
+      toast({
+        title: "Error",
+        description: "Failed to copy coordinates",
+        variant: "destructive",
+      });
+    });
+  };
+
   const filteredCoordinates = coordinates?.filter(coord => {
     const matchesSearch = coord.point_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          coord.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -554,6 +712,76 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
             </CardHeader>
             
             <CardContent className="p-0">
+              {/* Bulk Selection Header */}
+              {hasAdminAccess && filteredCoordinates.length > 0 && (
+                <div className="px-3 lg:px-4 py-2 border-b bg-muted/30 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={selectedIds.size === filteredCoordinates.length && filteredCoordinates.length > 0}
+                      onCheckedChange={handleSelectAll}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <span className="text-sm font-medium">
+                      {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select All'}
+                    </span>
+                  </div>
+                  
+                  {selectedIds.size >= 2 && (
+                    <div className="flex items-center gap-1">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-8 px-2">
+                            <Trash2 className="w-3 h-3 mr-1" />
+                            Delete All
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete GPS Drop-Pins</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {selectedIds.size} GPS drop-pins? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={handleBulkDelete}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete All
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      
+                      <Select onValueChange={handleBulkMoveCategory}>
+                        <SelectTrigger className="h-8 w-auto min-w-[120px]">
+                          <SelectValue placeholder="Move to..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="units">Units</SelectItem>
+                          <SelectItem value="access">Access</SelectItem>
+                          <SelectItem value="delivery">Delivery</SelectItem>
+                          <SelectItem value="parking">Parking</SelectItem>
+                          <SelectItem value="utilities">Utilities</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Button variant="outline" size="sm" onClick={exportCoordinatesCSV} className="h-8 px-2">
+                        <Download className="w-3 h-3 mr-1" />
+                        CSV
+                      </Button>
+                      
+                      <Button variant="outline" size="sm" onClick={copyCoordinates} className="h-8 px-2">
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="max-h-[300px] lg:max-h-[350px] overflow-y-auto overscroll-contain">
                 {filteredCoordinates.length > 0 ? (
                   <div className="space-y-1">
@@ -564,14 +792,25 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                       return (
                         <div 
                           key={coordinate.id} 
-                          className={`p-3 lg:p-4 hover:bg-muted/50 active:bg-muted transition-colors cursor-pointer border-l-4 touch-manipulation ${
+                          className={`p-3 lg:p-4 hover:bg-muted/50 active:bg-muted transition-colors border-l-4 touch-manipulation ${
                             isSelected ? 'bg-muted/50 border-l-blue-500' : 'border-l-transparent'
                           }`}
-                          onClick={() => setSelectedCoordinate(coordinate)}
                           style={{ minHeight: '44px' }} // Minimum touch target size
                         >
                           <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0 pr-2">
+                            <div className="flex items-start gap-3">
+                              {hasAdminAccess && (
+                                <Checkbox
+                                  checked={selectedIds.has(coordinate.id)}
+                                  onCheckedChange={(checked) => handleSelectCoordinate(coordinate.id, checked as boolean)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                                />
+                              )}
+                              <div 
+                                className="flex-1 min-w-0 cursor-pointer" 
+                                onClick={() => setSelectedCoordinate(coordinate)}
+                              >
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm text-foreground truncate">
                                   {coordinate.point_name}
@@ -606,68 +845,76 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                                   </span>
                                 )}
                               </div>
+                              </div>
                             </div>
 
-                            <div className="flex gap-1 ml-2">
-                              {hasAdminAccess && (
-                                <>
-                                  <Button
-                                    variant="ghost"
+                            <div className="flex items-center gap-1">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
                                     size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleEditCoordinate(coordinate);
-                                    }}
+                                    onClick={(e) => e.stopPropagation()}
                                     className="touch-manipulation h-8 w-8 p-0"
                                   >
-                                    <Edit className="w-3 h-3" />
+                                    <MoreVertical className="w-3 h-3" />
                                   </Button>
-                                </>
-                              )}
-                              
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openInMaps(coordinate.latitude, coordinate.longitude);
-                                }}
-                                className="touch-manipulation h-8 w-8 p-0"
-                              >
-                                <Navigation className="w-3 h-3" />
-                              </Button>
-                              
-                              {hasAdminAccess && (
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="touch-manipulation h-8 w-8 p-0"
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-40">
+                                  {hasAdminAccess && (
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditCoordinate(coordinate);
+                                      }}
                                     >
-                                      <Trash2 className="w-3 h-3" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction 
-                                        onClick={() => handleDeleteCoordinate(coordinate.id)}
-                                        className="bg-red-600 hover:bg-red-700"
-                                      >
-                                        Delete
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
+                                      <Edit className="w-3 h-3 mr-2" />
+                                      Edit
+                                    </DropdownMenuItem>
+                                  )}
+                                  
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openInMaps(coordinate.latitude, coordinate.longitude);
+                                    }}
+                                  >
+                                    <Navigation className="w-3 h-3 mr-2" />
+                                    Navigate
+                                  </DropdownMenuItem>
+                                  
+                                  {hasAdminAccess && (
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem
+                                          onClick={(e) => e.preventDefault()}
+                                          className="text-red-600 focus:text-red-600"
+                                        >
+                                          <Trash2 className="w-3 h-3 mr-2" />
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction 
+                                            onClick={() => handleDeleteCoordinate(coordinate.id)}
+                                            className="bg-red-600 hover:bg-red-700"
+                                          >
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </div>
                         </div>
