@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { CustomerStep } from './steps/CustomerStep';
 import { JobTypeStep } from './steps/JobTypeStep';
 import { DateTimeStep } from './steps/DateTimeStep';
@@ -21,6 +22,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
   open,
   onOpenChange
 }) => {
+  const isMobile = useIsMobile();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     customer: null as any,
@@ -146,93 +148,110 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
   const progress = (currentStep / steps.length) * 100;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Create New Job</DialogTitle>
-        </DialogHeader>
-
-        {/* Progress Bar */}
-        <div className="mb-6">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
-              Step {currentStep} of {steps.length}
-            </span>
-            <span className="text-sm text-gray-500">
-              {currentStepData?.title}
-            </span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-
-        {/* Step Content */}
-        <div className="mb-6">
-          {StepComponent && (
-            <StepComponent
-              data={
-                currentStep === 1 ? formData.customer :
-                currentStep === 2 ? formData.jobType :
-                currentStep === 3 ? formData.dateTime :
-                currentStep === 4 ? formData.location :
-                currentStep === 5 ? formData.assignment :
-                formData
-              }
-              onUpdate={(value: any) => {
-                const fieldMap = {
-                  1: 'customer',
-                  2: 'jobType',
-                  3: 'dateTime',
-                  4: 'location',
-                  5: 'assignment'
-                };
-                
-                if (currentStep === 6) {
-                  // Review step doesn't update, just calls edit
-                  return;
-                }
-                
-                const field = fieldMap[currentStep as keyof typeof fieldMap];
-                updateFormData(field, value);
-              }}
-              onEdit={currentStep === 6 ? handleStepEdit : undefined}
-            />
-          )}
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-between">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent 
+        side="right" 
+        className={`${isMobile ? 'w-full' : 'w-1/2'} max-w-none overflow-y-auto`}
+      >
+        {/* Close Button */}
+        <div className="absolute top-4 left-4 z-10">
           <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
+            variant="ghost"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+            className="h-8 w-8 p-0"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            <X className="h-4 w-4" />
           </Button>
+        </div>
 
-          <div className="flex space-x-2">
-            {currentStep < steps.length ? (
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={!canProceed() || createJobMutation.isPending}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-              >
-                <Check className="w-4 h-4 mr-2" />
-                {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
-              </Button>
+        <SheetHeader className="space-y-3 pr-12">
+          <SheetTitle className="text-xl font-semibold">Create New Job</SheetTitle>
+        </SheetHeader>
+
+        <div className="mt-6 space-y-6">
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span className="text-sm font-medium text-gray-700">
+                Step {currentStep} of {steps.length}
+              </span>
+              <span className="text-sm text-gray-500">
+                {currentStepData?.title}
+              </span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          {/* Step Content */}
+          <div className="flex-1">
+            {StepComponent && (
+              <StepComponent
+                data={
+                  currentStep === 1 ? formData.customer :
+                  currentStep === 2 ? formData.jobType :
+                  currentStep === 3 ? formData.dateTime :
+                  currentStep === 4 ? formData.location :
+                  currentStep === 5 ? formData.assignment :
+                  formData
+                }
+                onUpdate={(value: any) => {
+                  const fieldMap = {
+                    1: 'customer',
+                    2: 'jobType',
+                    3: 'dateTime',
+                    4: 'location',
+                    5: 'assignment'
+                  };
+                  
+                  if (currentStep === 6) {
+                    // Review step doesn't update, just calls edit
+                    return;
+                  }
+                  
+                  const field = fieldMap[currentStep as keyof typeof fieldMap];
+                  updateFormData(field, value);
+                }}
+                onEdit={currentStep === 6 ? handleStepEdit : undefined}
+              />
             )}
           </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+
+            <div className="flex space-x-2">
+              {currentStep < steps.length ? (
+                <Button
+                  onClick={handleNext}
+                  disabled={!canProceed()}
+                  className="bg-gradient-to-r from-[#3366FF] to-[#6699FF] hover:from-[#2952CC] hover:to-[#5580E6] text-white"
+                >
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!canProceed() || createJobMutation.isPending}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
