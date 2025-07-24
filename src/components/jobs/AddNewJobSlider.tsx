@@ -1,18 +1,23 @@
 
 import React from 'react';
-import { JobCreationWizard } from './JobCreationWizard';
+import { EnhancedJobWizard } from './EnhancedJobWizard';
 
 interface AddNewJobSliderProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Legacy component - replaced by JobCreationWizard
+// Legacy component - now uses EnhancedJobWizard
 export const AddNewJobSlider: React.FC<AddNewJobSliderProps> = ({ open, onOpenChange }) => {
+  if (!open) return null;
+  
   return (
-    <JobCreationWizard 
-      open={open}
-      onOpenChange={onOpenChange}
+    <EnhancedJobWizard 
+      onComplete={(data) => {
+        console.log('Job creation data:', data);
+        onOpenChange(false);
+      }}
+      onCancel={() => onOpenChange(false)}
     />
   );
 };

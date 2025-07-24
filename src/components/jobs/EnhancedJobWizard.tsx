@@ -48,7 +48,7 @@ interface WizardData {
   // Step 4: Location & Contacts
   selectedLocation?: any;
   customLocation?: {
-    coordinates: [number, number];
+    coordinates: { lat: number; lng: number } | null;
     address: string;
     saveToProfile: boolean;
   };
@@ -155,7 +155,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
         }
         return true;
       case 4:
-        return data.selectedLocation;
+        return data.selectedLocation || (data.customLocation?.address && data.customLocation.address.length > 0);
       case 5:
         return true; // Optional step
       case 6:
@@ -257,13 +257,20 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
         return (
           <LocationContactsStep
             data={{
-              selectedLocationId: data.selectedLocation?.id,
-              selectedContactIds: data.selectedContacts.map(c => c.id),
-              customerId: customerId || '',
-              newLocationData: { address: '', coordinates: { lat: 0, lng: 0 }, saveToProfile: false },
-              specialInstructions: ''
+              customerId: data.selectedCustomer?.id || null,
+              selectedLocationId: data.selectedLocation?.id || null,
+              selectedContactIds: data.selectedContacts?.map(c => c.id) || [],
+              newLocationData: data.customLocation || null,
+              specialInstructions: data.specialInstructions || ''
             }}
-            onUpdate={(stepData) => updateStepData(stepData)}
+            onUpdate={(stepData) => {
+              updateStepData({
+                selectedLocation: stepData.selectedLocationId ? { id: stepData.selectedLocationId } : null,
+                selectedContacts: stepData.selectedContactIds.map(id => ({ id })),
+                customLocation: stepData.newLocationData,
+                specialInstructions: stepData.specialInstructions
+              });
+            }}
           />
         );
       
