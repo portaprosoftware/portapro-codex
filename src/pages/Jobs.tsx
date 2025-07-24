@@ -304,7 +304,7 @@ const JobsPage: React.FC = () => {
               />
               <Button 
                 onClick={() => setIsJobWizardOpen(true)}
-                className="btn-enterprise ml-4"
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ml-4"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Schedule Job
