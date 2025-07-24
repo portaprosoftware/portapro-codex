@@ -21,6 +21,19 @@ const CUSTOMER_TYPES = {
   "emergency_disaster_relief": { label: "Emergency & Disaster Relief", color: "#CC3333" }
 };
 
+const getCustomerTypeGradient = (type: string) => {
+  switch (type) {
+    case 'commercial': return 'from-blue-500 to-blue-600';
+    case 'events_festivals': return 'from-purple-500 to-purple-600';
+    case 'sports_recreation': return 'from-green-500 to-green-600';
+    case 'municipal_government': return 'from-blue-500 to-blue-600';
+    case 'private_events_weddings': return 'from-pink-500 to-pink-600';
+    case 'construction': return 'from-orange-500 to-orange-600';
+    case 'emergency_disaster_relief': return 'from-red-500 to-red-600';
+    default: return 'from-gray-500 to-gray-600';
+  }
+};
+
 const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
@@ -164,20 +177,14 @@ const CustomerHub: React.FC = () => {
                       {customer.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] ? (
-                      <Badge 
-                        style={{ 
-                          backgroundColor: CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].color,
-                          color: 'white'
-                        }}
-                        className="rounded-md px-3 py-1"
-                      >
-                        {CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].label}
-                      </Badge>
-                    ) : (
-                      <span className="text-gray-500">-</span>
-                    )}
+                   <TableCell>
+                     {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] ? (
+                       <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+                         {CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].label}
+                       </Badge>
+                     ) : (
+                       <span className="text-gray-500">-</span>
+                     )}
                   </TableCell>
                   <TableCell>{customer.phone || '-'}</TableCell>
                   <TableCell>{customer.email || '-'}</TableCell>

@@ -28,15 +28,15 @@ interface CustomerInfoPanelProps {
 export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const getCustomerTypeColor = (type?: string) => {
-    switch (type) {
-      case 'commercial': return 'bg-blue-100 text-blue-800';
-      case 'residential': return 'bg-green-100 text-green-800';
-      case 'government': return 'bg-purple-100 text-purple-800';
-      case 'event': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+   const getCustomerTypeColor = (type?: string) => {
+     switch (type) {
+       case 'commercial': return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+       case 'residential': return 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+       case 'government': return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+       case 'event': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+       default: return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+     }
+   };
 
   const formatAddress = (address?: string, city?: string, state?: string, zip?: string) => {
     const parts = [address, city, state, zip].filter(Boolean);
