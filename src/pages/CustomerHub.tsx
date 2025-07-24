@@ -174,7 +174,7 @@ const CustomerHub: React.FC = () => {
                   <TableCell>{customer.phone || '-'}</TableCell>
                   <TableCell>{customer.email || '-'}</TableCell>
                   <TableCell>
-                    <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-medium px-3 py-1 rounded-full">
+                    <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full">
                       Low (0)
                     </Badge>
                   </TableCell>
