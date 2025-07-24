@@ -150,16 +150,13 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   
-  /* Make all text content bold - override all Tailwind font-weight classes */
-  * {
-    font-weight: 600 !important;
+  /* Emoji icons should be bold */
+  .emoji-icon {
+    font-weight: 700 !important;
   }
   
-  /* Extra bold for headings and important numbers */
-  h1, h2, h3, h4, h5, h6, 
-  .text-lg, .text-xl, .text-2xl, .text-3xl, .text-4xl,
-  .font-bold, .font-semibold, .font-medium,
-  [class*="text-"], [class*="font-"] {
+  /* Headings should remain bold */
+  h1, h2, h3, h4, h5, h6 {
     font-weight: 700 !important;
   }
 }

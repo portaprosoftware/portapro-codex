@@ -62,7 +62,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">✉️</span>
+            <span className="text-lg emoji-icon">✉️</span>
             <span className="text-sm text-gray-600">Email</span>
           </div>
           <span 
@@ -75,7 +75,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">💬</span>
+            <span className="text-lg emoji-icon">💬</span>
             <span className="text-sm text-gray-600">SMS</span>
           </div>
           <span 
@@ -88,7 +88,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">📈</span>
+            <span className="text-lg emoji-icon">📈</span>
             <span className="text-sm text-gray-600">Both</span>
           </div>
           <span 
