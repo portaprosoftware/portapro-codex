@@ -152,12 +152,12 @@ const CustomerHub: React.FC = () => {
               filteredCustomers.map((customer, index) => (
                 <TableRow 
                   key={customer.id} 
-                  className={`transition-colors hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                  className={`transition-colors hover:bg-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                 >
                   <TableCell className="font-medium">
                     <Link 
                       to={`/customers/${customer.id}`}
-                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                      className="text-blue-600 hover:text-blue-800 transition-colors"
                     >
                       {customer.name}
                     </Link>
