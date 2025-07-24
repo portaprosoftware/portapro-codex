@@ -1,6 +1,7 @@
 
 import React from "react";
-import Sidebar from "../Sidebar/Sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
 
 interface LayoutProps {
@@ -32,11 +33,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="h-screen overflow-hidden flex" style={{ backgroundColor: '#f9fafb' }}>
-      <Sidebar />
-      <main className="flex-1 ml-64 overflow-y-auto">
-        {children}
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen bg-gray-50 flex w-full">
+        <AppSidebar />
+        <main className="flex-1 p-6 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
