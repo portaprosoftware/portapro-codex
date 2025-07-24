@@ -4,6 +4,7 @@ import { Edit, Trash2, Mail, Phone, Star, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { EditContactModal } from './EditContactModal';
 
 interface CustomerContact {
@@ -29,6 +30,7 @@ interface CustomerContactCardProps {
 
 export function CustomerContactCard({ contact, onDelete, customerId }: CustomerContactCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const getContactTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
@@ -41,9 +43,8 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this contact?')) {
-      onDelete(contact.id);
-    }
+    onDelete(contact.id);
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -112,14 +113,34 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
               >
                 <Edit className="w-4 h-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDelete}
-                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this contact? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </CardContent>
