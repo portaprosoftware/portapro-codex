@@ -237,6 +237,8 @@ const Dashboard = () => {
           gradientFrom="#FFAA33"
           gradientTo="#FFCC55"
           iconBg="#FFAA33"
+          subtitle="Month to date fuel expenses"
+          subtitleColor="text-gray-600"
           delay={500}
         />
         
@@ -259,7 +261,7 @@ const Dashboard = () => {
           gradientFrom="#FF8822"
           gradientTo="#FFA044"
           iconBg="#FF8822"
-          subtitle={`${documentsData?.totalDocuments || 0} documents expiring`}
+          subtitle={`${documentsData?.totalDocuments || 0} documents (30 days)`}
           subtitleColor="text-orange-600"
           chart={<ProgressBar overdue={1} expiring={3} total={4} />}
           delay={700}

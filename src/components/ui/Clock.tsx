@@ -19,49 +19,29 @@ export const Clock: React.FC = () => {
   return (
     <div className="relative w-32 h-32">
       <svg className="w-full h-full" viewBox="0 0 100 100">
-        {/* Hour markers */}
-        {[...Array(12)].map((_, i) => (
+        {/* Hour markers - only main 4 positions */}
+        {[0, 3, 6, 9].map((hour) => (
           <line
-            key={i}
+            key={hour}
             x1="50"
-            y1="10"
+            y1="12"
             x2="50"
-            y2="18"
+            y2="20"
             stroke="#334155"
-            strokeWidth="1"
+            strokeWidth="1.5"
             strokeLinecap="round"
-            transform={`rotate(${i * 30} 50 50)`}
+            transform={`rotate(${hour * 30} 50 50)`}
           />
         ))}
-        
-        {/* Minute markers */}
-        {[...Array(60)].map((_, i) => {
-          if (i % 5 !== 0) {
-            return (
-              <line
-                key={i}
-                x1="50"
-                y1="10"
-                x2="50"
-                y2="14"
-                stroke="#94A3B8"
-                strokeWidth="0.5"
-                strokeLinecap="round"
-                transform={`rotate(${i * 6} 50 50)`}
-              />
-            );
-          }
-          return null;
-        })}
         
         {/* Hour hand */}
         <line
           x1="50"
           y1="50"
           x2="50"
-          y2="30"
+          y2="32"
           stroke="#334155"
-          strokeWidth="2.5"
+          strokeWidth="2"
           strokeLinecap="round"
           transform={`rotate(${hourAngle} 50 50)`}
           style={{ 
@@ -75,9 +55,9 @@ export const Clock: React.FC = () => {
           x1="50"
           y1="50"
           x2="50"
-          y2="20"
+          y2="22"
           stroke="#334155"
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinecap="round"
           transform={`rotate(${minuteAngle} 50 50)`}
           style={{ 
@@ -86,25 +66,8 @@ export const Clock: React.FC = () => {
           }}
         />
         
-        {/* Second hand */}
-        <line
-          x1="50"
-          y1="50"
-          x2="50"
-          y2="15"
-          stroke="#EF4444"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          transform={`rotate(${secondAngle} 50 50)`}
-          style={{ 
-            transition: 'transform 0.1s ease-out',
-            willChange: 'transform'
-          }}
-        />
-        
         {/* Center dot */}
-        <circle cx="50" cy="50" r="3" fill="#334155" />
-        <circle cx="50" cy="50" r="1.5" fill="#EF4444" />
+        <circle cx="50" cy="50" r="2" fill="#334155" />
       </svg>
     </div>
   );

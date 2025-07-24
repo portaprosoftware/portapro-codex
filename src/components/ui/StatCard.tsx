@@ -71,13 +71,14 @@ export const StatCard: React.FC<StatCardProps> = ({
       {/* Icon container */}
       <div className="flex justify-end mb-3">
         <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm transition-all duration-200 animate-fade-in animate-scale-in"
+          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all duration-200 animate-fade-in animate-scale-in"
           style={{ 
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
-            animationDelay: `${delay}ms`
+            animationDelay: `${delay}ms`,
+            boxShadow: `0 8px 20px -8px ${gradientFrom}40`
           }}
         >
-          <Icon className="w-5 h-5 text-white" strokeWidth={1.5} />
+          <Icon className="w-6 h-6 text-white" strokeWidth={2} />
         </div>
       </div>
       

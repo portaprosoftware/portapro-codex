@@ -32,9 +32,9 @@ export const Header: React.FC = () => {
         
         <div className="flex items-center gap-4">
           {user && role && (
-            <Badge variant={getRoleBadgeVariant(role)} className="capitalize">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium capitalize shadow-sm">
               {role}
-            </Badge>
+            </div>
           )}
           
           <NotificationBell />
