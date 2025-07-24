@@ -43,11 +43,11 @@ const jobTypeConfig = {
 };
 
 const statusConfig = {
-  assigned: { color: 'bg-blue-100 text-blue-800', label: 'Assigned' },
-  in_progress: { color: 'bg-orange-100 text-orange-800', label: 'In Progress' },
-  completed: { color: 'bg-green-100 text-green-800', label: 'Completed' },
-  cancelled: { color: 'bg-red-100 text-red-800', label: 'Cancelled' },
-  pending: { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' }
+  assigned: { color: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', label: 'Assigned' },
+  in_progress: { color: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', label: 'In Progress' },
+  completed: { color: 'bg-gradient-to-r from-green-500 to-green-600 text-white', label: 'Completed' },
+  overdue: { color: 'bg-gradient-to-r from-red-500 to-red-600 text-white', label: 'Overdue' },
+  cancelled: { color: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', label: 'Cancelled' }
 };
 
 export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
@@ -56,7 +56,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   isDragging = false
 }) => {
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
-  const statusInfo = statusConfig[job.status as keyof typeof statusConfig] || statusConfig.pending;
+  const statusInfo = statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned;
 
   return (
     <div 
