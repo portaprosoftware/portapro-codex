@@ -24,6 +24,7 @@ import FleetComplianceReportsPage from './pages/FleetComplianceReportsPage';
 import FleetFuel from './pages/FleetFuel';
 import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
+import Consumables from './pages/Consumables';
 import { DriverLayout } from './components/driver/DriverLayout';
 import { DriverDashboardPage } from './pages/DriverDashboardPage';
 import { DriverMapPage } from './pages/DriverMapPage';
@@ -63,6 +64,7 @@ const App = () => {
                     <Route path="/jobs/dispatch" element={<Jobs />} />
                     <Route path="/jobs/map" element={<Jobs />} />
                     <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/consumables" element={<Consumables />} />
                     <Route path="/customer-hub" element={<CustomerHub />} />
                     <Route path="/customers/:id" element={<CustomerDetail />} />
                     <Route path="/quotes-invoices" element={<QuotesInvoices />} />
