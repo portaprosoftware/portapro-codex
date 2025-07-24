@@ -82,10 +82,18 @@ export const ConsumablesInventory: React.FC = () => {
       />
       
       <Tabs defaultValue="inventory" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-10">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="inventory">
             <Package className="w-4 h-4 mr-2" />
             Inventory
+          </TabsTrigger>
+          <TabsTrigger value="reports">
+            <FileText className="w-4 h-4 mr-2" />
+            Reports
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="w-4 h-4 mr-2" />
+            Alerts
           </TabsTrigger>
           <TabsTrigger value="qr-codes">
             <QrCode className="w-4 h-4 mr-2" />
@@ -99,10 +107,6 @@ export const ConsumablesInventory: React.FC = () => {
             <Package className="w-4 h-4 mr-2" />
             Job Usage
           </TabsTrigger>
-          <TabsTrigger value="notifications">
-            <Bell className="w-4 h-4 mr-2" />
-            Notifications
-          </TabsTrigger>
           <TabsTrigger value="analytics">
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics
@@ -110,18 +114,6 @@ export const ConsumablesInventory: React.FC = () => {
           <TabsTrigger value="pwa">
             <Smartphone className="w-4 h-4 mr-2" />
             Mobile PWA
-          </TabsTrigger>
-          <TabsTrigger value="integrations">
-            <Globe className="w-4 h-4 mr-2" />
-            Integrations
-          </TabsTrigger>
-          <TabsTrigger value="collaboration">
-            <Users className="w-4 h-4 mr-2" />
-            Collaboration
-          </TabsTrigger>
-          <TabsTrigger value="reporting">
-            <FileText className="w-4 h-4 mr-2" />
-            Enterprise Reports
           </TabsTrigger>
         </TabsList>
 
@@ -144,6 +136,14 @@ export const ConsumablesInventory: React.FC = () => {
           />
         </TabsContent>
 
+        <TabsContent value="reports">
+          <ConsumablesReportsTab />
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <ConsumableNotificationsPanel />
+        </TabsContent>
+
         <TabsContent value="qr-codes">
           <ConsumableQRGenerator />
         </TabsContent>
@@ -156,28 +156,12 @@ export const ConsumablesInventory: React.FC = () => {
           <JobConsumablesTracker />
         </TabsContent>
 
-        <TabsContent value="notifications">
-          <ConsumableNotificationsPanel />
-        </TabsContent>
-
         <TabsContent value="analytics">
           <AdvancedConsumableAnalytics />
         </TabsContent>
 
         <TabsContent value="pwa">
           <ConsumablePWAManager />
-        </TabsContent>
-
-        <TabsContent value="integrations">
-          <EnterpriseIntegrationsHub />
-        </TabsContent>
-
-        <TabsContent value="collaboration">
-          <RealTimeCollaborationSystem />
-        </TabsContent>
-
-        <TabsContent value="reporting">
-          <EnterpriseReportingSystem />
         </TabsContent>
       </Tabs>
 
