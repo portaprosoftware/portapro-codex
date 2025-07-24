@@ -140,7 +140,7 @@ const Dashboard = () => {
               Here's what's happening with your rental business today.
             </p>
             {role && (
-              <Badge variant="secondary" className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] text-white hover:from-[#1E3A8A] hover:to-[#2F4F9A] font-sans font-medium">
+              <Badge className="bg-gradient-blue text-white font-bold">
                 Role: {role.charAt(0).toUpperCase() + role.slice(1)}
               </Badge>
             )}
