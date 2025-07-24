@@ -23,7 +23,7 @@ const TabNavItem: React.FC<TabNavItemProps> = ({ to, isActive, children, onClick
         "focus:outline-none",
         "transform hover:-translate-y-0.5",
         isActive 
-          ? "bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white font-bold shadow-sm" 
+          ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
           : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
       )}
       onClick={onClick}
