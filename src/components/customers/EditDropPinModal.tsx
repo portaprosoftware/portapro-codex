@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,13 +45,13 @@ const dropPinSchema = z.object({
 
 type DropPinForm = z.infer<typeof dropPinSchema>;
 
-interface AddDropPinModalProps {
+interface EditDropPinModalProps {
   customerId: string;
   serviceLocations: any[];
+  coordinate: any;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  initialCoordinates?: { lat: number; lng: number };
 }
 
 const CATEGORIES = [
@@ -64,14 +63,14 @@ const CATEGORIES = [
   { value: 'other', label: 'Other' },
 ];
 
-export function AddDropPinModal({ 
+export function EditDropPinModal({ 
   customerId,
   serviceLocations,
+  coordinate,
   isOpen, 
   onClose, 
-  onSuccess,
-  initialCoordinates
-}: AddDropPinModalProps) {
+  onSuccess 
+}: EditDropPinModalProps) {
   const { toast } = useToast();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -81,13 +80,13 @@ export function AddDropPinModal({
   const form = useForm<DropPinForm>({
     resolver: zodResolver(dropPinSchema),
     defaultValues: {
-      service_location_id: '',
-      point_name: '',
-      latitude: initialCoordinates?.lat || 0,
-      longitude: initialCoordinates?.lng || 0,
-      category: '',
-      description: '',
-      is_primary: false,
+      service_location_id: coordinate?.service_location_id || '',
+      point_name: coordinate?.point_name || '',
+      latitude: coordinate?.latitude || 0,
+      longitude: coordinate?.longitude || 0,
+      category: coordinate?.category || '',
+      description: coordinate?.description || '',
+      is_primary: coordinate?.is_primary || false,
     },
   });
 
@@ -115,17 +114,14 @@ export function AddDropPinModal({
 
   // Initialize map when modal opens and token is available
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current) return;
+    if (!isOpen || !mapboxToken || !mapContainer.current || !coordinate) return;
 
     mapboxgl.accessToken = mapboxToken;
-
-    const initialLat = initialCoordinates?.lat || 40.4406;
-    const initialLng = initialCoordinates?.lng || -79.9959;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [initialLng, initialLat],
+      center: [coordinate.longitude, coordinate.latitude],
       zoom: 16
     });
 
@@ -133,7 +129,7 @@ export function AddDropPinModal({
 
     // Add draggable marker
     marker.current = new mapboxgl.Marker({ draggable: true })
-      .setLngLat([initialLng, initialLat])
+      .setLngLat([coordinate.longitude, coordinate.latitude])
       .addTo(map.current);
 
     // Update form values when marker is dragged
@@ -154,7 +150,7 @@ export function AddDropPinModal({
         marker.current = null;
       }
     };
-  }, [isOpen, mapboxToken, initialCoordinates]);
+  }, [isOpen, mapboxToken, coordinate]);
 
   // Watch for coordinate changes and update marker position
   useEffect(() => {
@@ -200,18 +196,21 @@ export function AddDropPinModal({
   };
 
   const onSubmit = async (data: DropPinForm) => {
+    if (!coordinate) return;
+
     try {
       // If this is being set as primary, remove primary from other coordinates for this location
       if (data.is_primary) {
         await supabase
           .from('service_location_coordinates')
           .update({ is_primary: false })
-          .eq('service_location_id', data.service_location_id);
+          .eq('service_location_id', data.service_location_id)
+          .neq('id', coordinate.id);
       }
 
       const { error } = await supabase
         .from('service_location_coordinates')
-        .insert({
+        .update({
           service_location_id: data.service_location_id,
           point_name: data.point_name,
           latitude: data.latitude,
@@ -219,17 +218,17 @@ export function AddDropPinModal({
           category: data.category,
           description: data.description,
           is_primary: data.is_primary,
-        });
+        })
+        .eq('id', coordinate.id);
 
       if (error) throw error;
 
-      form.reset();
       onSuccess();
     } catch (error) {
-      console.error('Error adding drop-pin:', error);
+      console.error('Error updating drop-pin:', error);
       toast({
         title: "Error",
-        description: "Failed to add GPS drop-pin",
+        description: "Failed to update GPS drop-pin",
         variant: "destructive",
       });
     }
@@ -239,7 +238,7 @@ export function AddDropPinModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add GPS Drop-Pin</DialogTitle>
+          <DialogTitle>Edit GPS Drop-Pin</DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -263,111 +262,111 @@ export function AddDropPinModal({
           <div>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="service_location_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Service Location *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a service location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {serviceLocations.map((location) => (
-                        <SelectItem key={location.id} value={location.id}>
-                          {location.location_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="service_location_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Location *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a service location" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {serviceLocations.map((location) => (
+                            <SelectItem key={location.id} value={location.id}>
+                              {location.location_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="point_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Point Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Main Entrance, Unit Area A" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="point_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Point Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Main Entrance, Unit Area A" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {CATEGORIES.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CATEGORIES.map((category) => (
+                            <SelectItem key={category.value} value={category.value}>
+                              {category.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="latitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Latitude *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.000001"
-                        placeholder="0.000000"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="latitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Latitude *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.000001"
+                            placeholder="0.000000"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="longitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Longitude *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.000001"
-                        placeholder="0.000000"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="longitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Longitude *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.000001"
+                            placeholder="0.000000"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <Button
                   type="button"
@@ -379,39 +378,39 @@ export function AddDropPinModal({
                   Use Current Location
                 </Button>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Optional description or notes about this location"
-                      rows={2}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Optional description or notes about this location"
+                          rows={2}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="is_primary"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel>Set as Primary GPS Point</FormLabel>
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="is_primary"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel>Set as Primary GPS Point</FormLabel>
+                    </FormItem>
+                  )}
+                />
 
                 <div className="flex justify-end gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={onClose}>
@@ -422,7 +421,7 @@ export function AddDropPinModal({
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                     disabled={form.formState.isSubmitting}
                   >
-                    {form.formState.isSubmitting ? 'Adding...' : 'Add Drop-Pin'}
+                    {form.formState.isSubmitting ? 'Updating...' : 'Update Drop-Pin'}
                   </Button>
                 </div>
               </form>
