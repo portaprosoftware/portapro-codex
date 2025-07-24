@@ -308,9 +308,9 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
       color: 'bg-gradient-green',
       label: 'Service'
     },
-    return: {
+    'partial-pickup': {
       color: 'bg-gradient-purple',
-      label: 'Return'
+      label: 'Partial Pickup'
     }
   };
 
