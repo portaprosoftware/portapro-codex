@@ -183,7 +183,7 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="right" 
-        className={`${isMobile ? 'w-full' : 'w-3/4'} max-w-none overflow-y-auto`}
+        className={`${isMobile ? 'w-full' : 'w-3/4 sm:max-w-none'} max-w-none overflow-y-auto`}
       >
         <SheetHeader className="space-y-3">
           <SheetTitle className="text-xl font-semibold">Create New Job</SheetTitle>
