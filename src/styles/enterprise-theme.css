@@ -231,6 +231,18 @@
   border: 1px solid #ef4444;
 }
 
+.enterprise-status-badge.assigned {
+  background: #3b82f6;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+}
+
+.enterprise-status-badge.in-progress {
+  background: #f59e0b;
+  color: #ffffff;
+  border: 1px solid #f59e0b;
+}
+
 /* Enhanced Gradient Header */
 .enterprise-gradient-header {
   background: var(--gradient-primary);

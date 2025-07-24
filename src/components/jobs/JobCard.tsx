@@ -79,9 +79,11 @@ const jobTypeConfig = {
 const statusConfig = {
   assigned: { color: 'bg-blue-500', label: 'Assigned' },
   in_progress: { color: 'bg-orange-500', label: 'In Progress' },
+  'in-progress': { color: 'bg-orange-500', label: 'In Progress' },
   completed: { color: 'bg-green-500', label: 'Completed' },
   cancelled: { color: 'bg-red-500', label: 'Cancelled' },
-  pending: { color: 'bg-yellow-500', label: 'Pending' }
+  pending: { color: 'bg-yellow-500', label: 'Pending' },
+  overdue: { color: 'bg-red-500', label: 'Overdue' }
 };
 
 export const JobCard: React.FC<JobCardProps> = ({
@@ -92,8 +94,22 @@ export const JobCard: React.FC<JobCardProps> = ({
   onEquipmentAssign,
   compact = false
 }) => {
+  // Determine display status with overdue logic
+  const getDisplayStatus = (job: any) => {
+    const currentDate = new Date();
+    const scheduledDate = new Date(job.scheduled_date);
+    
+    // If job is not completed and scheduled date has passed, show as overdue
+    if (job.status !== 'completed' && scheduledDate < currentDate) {
+      return 'overdue';
+    }
+    
+    return job.status;
+  };
+
+  const displayStatus = getDisplayStatus(job);
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
-  const statusInfo = statusConfig[job.status as keyof typeof statusConfig] || statusConfig.pending;
+  const statusInfo = statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.pending;
   const JobTypeIcon = jobTypeInfo.icon;
 
   const handleViewJob = () => {
@@ -145,7 +161,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <div className={cn("enterprise-status-badge", job.status)}>
+          <div className={cn("enterprise-status-badge", displayStatus)}>
             {statusInfo.label}
           </div>
         </div>
@@ -220,7 +236,7 @@ export const JobCard: React.FC<JobCardProps> = ({
               </span>
             </div>
           </div>
-          <div className={cn("enterprise-status-badge", job.status)}>
+          <div className={cn("enterprise-status-badge", displayStatus)}>
             {statusInfo.label}
           </div>
         </div>
