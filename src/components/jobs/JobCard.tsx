@@ -100,8 +100,9 @@ export const JobCard: React.FC<JobCardProps> = ({
     const currentDate = new Date();
     const scheduledDate = new Date(job.scheduled_date);
     
-    // If job is not completed and scheduled date has passed, show as overdue
-    if (job.status !== 'completed' && scheduledDate < currentDate) {
+    // Only show overdue for assigned jobs that have passed their scheduled date
+    // Don't override in-progress or completed jobs
+    if (job.status === 'assigned' && scheduledDate < currentDate) {
       return 'overdue';
     }
     
