@@ -568,7 +568,7 @@ const JobsMapView: React.FC = () => {
 
       {/* Summary Badges */}
       <div className="space-y-3">
-        {/* Total Badges */}
+        {/* Total Badges - Always Visible */}
         <div className="flex items-center space-x-3 flex-wrap">
           <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
             Total Jobs: {totalJobs}
@@ -578,57 +578,38 @@ const JobsMapView: React.FC = () => {
           </Badge>
         </div>
 
-        {/* Job Status Colors Legend */}
-        <div className="flex items-center space-x-4 flex-wrap">
-          <span className="text-sm font-medium text-gray-700">Job Status Colors:</span>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            <span className="text-sm text-gray-600">Assigned</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <span className="text-sm text-gray-600">In Progress</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-sm text-gray-600">Completed</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-            <span className="text-sm text-gray-600">Job Completed Late</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-black"></div>
-            <span className="text-sm text-gray-600">Cancelled</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className="text-sm text-gray-600">Overdue</span>
-          </div>
-        </div>
-
-        {/* Status Count Badges */}
+        {/* Status Count Badges - Only Show if Count >= 1 */}
         <div className="flex items-center space-x-3 flex-wrap">
-          <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full font-bold">
-            Assigned: {assignedJobs}
-          </Badge>
-          <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold">
-            In Progress: {inProgressJobs}
-          </Badge>
-          <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold">
-            Completed: {completedJobs}
-          </Badge>
+          {assignedJobs > 0 && (
+            <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full font-bold">
+              Assigned: {assignedJobs}
+            </Badge>
+          )}
+          {inProgressJobs > 0 && (
+            <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full font-bold">
+              In Progress: {inProgressJobs}
+            </Badge>
+          )}
+          {completedJobs > 0 && (
+            <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold">
+              Completed: {completedJobs}
+            </Badge>
+          )}
           {completedLateJobs > 0 && (
             <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-1 rounded-full font-bold">
               Completed Late: {completedLateJobs}
             </Badge>
           )}
-          <Badge className="bg-gradient-to-r from-black to-gray-800 text-white px-3 py-1 rounded-full font-bold">
-            Cancelled: {cancelledJobs}
-          </Badge>
-          <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full font-bold">
-            Overdue: {overdueJobs}
-          </Badge>
+          {cancelledJobs > 0 && (
+            <Badge className="bg-gradient-to-r from-black to-gray-800 text-white px-3 py-1 rounded-full font-bold">
+              Cancelled: {cancelledJobs}
+            </Badge>
+          )}
+          {overdueJobs > 0 && (
+            <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full font-bold">
+              Overdue: {overdueJobs}
+            </Badge>
+          )}
         </div>
       </div>
 
