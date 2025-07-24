@@ -18,7 +18,9 @@ import { ConsumablesReportsTab } from './ConsumablesReportsTab';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone, Globe, Users, FileText } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Plus, QrCode, Bell, MapPin, Package, FileText, CheckSquare, ChevronDown } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Consumable {
@@ -43,6 +45,7 @@ export const ConsumablesInventory: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
+  const isMobile = useIsMobile();
 
   const { data: consumables, isLoading, refetch } = useQuery({
     queryKey: ['consumables'],
@@ -83,40 +86,79 @@ export const ConsumablesInventory: React.FC = () => {
       />
       
       <Tabs defaultValue="inventory" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
-          <TabsTrigger value="inventory">
-            <Package className="w-4 h-4 mr-2" />
-            Inventory
-          </TabsTrigger>
-          <TabsTrigger value="reports">
-            <FileText className="w-4 h-4 mr-2" />
-            Reports
-          </TabsTrigger>
-          <TabsTrigger value="notifications">
-            <Bell className="w-4 h-4 mr-2" />
-            Alerts
-          </TabsTrigger>
-          <TabsTrigger value="qr-codes">
-            <QrCode className="w-4 h-4 mr-2" />
-            QR Codes
-          </TabsTrigger>
-          <TabsTrigger value="requests">
-            <MapPin className="w-4 h-4 mr-2" />
-            Requests
-          </TabsTrigger>
-          <TabsTrigger value="job-tracking">
-            <Package className="w-4 h-4 mr-2" />
-            Job Usage
-          </TabsTrigger>
-          <TabsTrigger value="analytics">
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Analytics
-          </TabsTrigger>
-          <TabsTrigger value="pwa">
-            <Smartphone className="w-4 h-4 mr-2" />
-            Mobile PWA
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center gap-1">
+          <TabsList className="flex-1">
+            <TabsTrigger value="inventory">
+              <Package className="w-4 h-4 mr-2" />
+              Inventory
+            </TabsTrigger>
+            {!isMobile && (
+              <>
+                <TabsTrigger value="usage">
+                  <CheckSquare className="w-4 h-4 mr-2" />
+                  Usage
+                </TabsTrigger>
+                <TabsTrigger value="requests">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Requests
+                </TabsTrigger>
+                <TabsTrigger value="reports">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Reports
+                </TabsTrigger>
+              </>
+            )}
+          </TabsList>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-10 px-3 py-1.5 text-sm font-medium">
+                More
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {isMobile && (
+                <>
+                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="usage"]') as HTMLElement)?.click()}>
+                    <CheckSquare className="w-4 h-4 mr-2" />
+                    Usage
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="requests"]') as HTMLElement)?.click()}>
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Requests
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="reports"]') as HTMLElement)?.click()}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Reports
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuItem onSelect={() => (document.querySelector('[value="alerts"]') as HTMLElement)?.click()}>
+                <Bell className="w-4 h-4 mr-2" />
+                Alerts
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => (document.querySelector('[value="qr-codes"]') as HTMLElement)?.click()}>
+                <QrCode className="w-4 h-4 mr-2" />
+                QR Codes
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => (document.querySelector('[value="mobile-pwa"]') as HTMLElement)?.click()}>
+                <Package className="w-4 h-4 mr-2" />
+                Mobile PWA
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Hidden triggers for dropdown functionality */}
+          <div className="hidden">
+            <TabsTrigger value="usage">Usage</TabsTrigger>
+            <TabsTrigger value="requests">Requests</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="alerts">Alerts</TabsTrigger>
+            <TabsTrigger value="qr-codes">QR Codes</TabsTrigger>
+            <TabsTrigger value="mobile-pwa">Mobile PWA</TabsTrigger>
+          </div>
+        </div>
 
         <TabsContent value="inventory" className="space-y-6">
           <div className="flex justify-between items-center">
@@ -137,11 +179,19 @@ export const ConsumablesInventory: React.FC = () => {
           />
         </TabsContent>
 
+        <TabsContent value="usage">
+          <JobConsumablesTracker />
+        </TabsContent>
+
+        <TabsContent value="requests">
+          <ConsumableRequestsManager />
+        </TabsContent>
+
         <TabsContent value="reports">
           <ConsumablesReportsTab />
         </TabsContent>
 
-        <TabsContent value="notifications">
+        <TabsContent value="alerts">
           <ConsumableNotificationsPanel />
         </TabsContent>
 
@@ -149,19 +199,7 @@ export const ConsumablesInventory: React.FC = () => {
           <ConsumableQRGenerator />
         </TabsContent>
 
-        <TabsContent value="requests">
-          <ConsumableRequestsManager />
-        </TabsContent>
-
-        <TabsContent value="job-tracking">
-          <JobConsumablesTracker />
-        </TabsContent>
-
-        <TabsContent value="analytics">
-          <AdvancedConsumableAnalytics />
-        </TabsContent>
-
-        <TabsContent value="pwa">
+        <TabsContent value="mobile-pwa">
           <ConsumablePWAManager />
         </TabsContent>
       </Tabs>
