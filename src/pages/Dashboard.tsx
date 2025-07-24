@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
-import { LiveClock } from "@/components/ui/LiveClock";
+import { MinimalClock } from "@/components/ui/MinimalClock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { DonutChart } from "@/components/ui/DonutChart";
@@ -167,11 +167,9 @@ const Dashboard = () => {
           
           {/* Analog Clock - Right */}
           <div className="flex-shrink-0">
-            <LiveClock 
-              showDigital={false} 
-              showAnalog={true} 
+            <MinimalClock 
               timeZone={companySettings?.company_timezone || 'America/New_York'}
-              size="lg"
+              size={120}
             />
           </div>
         </div>
