@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CustomerTypeCard } from "@/components/CustomerTypeCard";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -65,21 +65,6 @@ const CustomerHub: React.FC = () => {
     });
   }, [customers, searchTerm, selectedType]);
 
-  // Calculate customer type breakdown
-  const customerTypeBreakdown = useMemo(() => {
-    const breakdown = Object.keys(CUSTOMER_TYPES).map(type => {
-      const typeCustomers = customers.filter(c => c.customer_type === type);
-      return {
-        type,
-        ...CUSTOMER_TYPES[type as keyof typeof CUSTOMER_TYPES],
-        count: typeCustomers.length,
-        email: Math.floor(typeCustomers.length * 0.6), // Mock data
-        sms: Math.floor(typeCustomers.length * 0.3), // Mock data
-        both: Math.floor(typeCustomers.length * 0.1) // Mock data
-      };
-    });
-    return breakdown;
-  }, [customers]);
 
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
@@ -209,15 +194,6 @@ const CustomerHub: React.FC = () => {
         </Table>
       </div>
 
-      {/* Customer Types Dashboard */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium text-gray-900">Customer Types Breakdown</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {customerTypeBreakdown.map((typeData) => (
-            <CustomerTypeCard key={typeData.type} {...typeData} />
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
