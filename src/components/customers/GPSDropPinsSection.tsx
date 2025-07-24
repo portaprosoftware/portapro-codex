@@ -259,6 +259,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
   // Update map markers when coordinates change
   useEffect(() => {
+    console.log('Coordinates updated:', coordinates);
+    console.log('Map current:', !!map.current);
+    
     if (map.current && coordinates) {
       updateMapMarkers();
       
@@ -448,18 +451,44 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   };
 
   const updateMapMarkers = () => {
-    if (!map.current) return;
+    console.log('updateMapMarkers called - Map exists:', !!map.current, 'Coordinates:', coordinates?.length);
+    
+    if (!map.current) {
+      console.warn('No map instance available');
+      return;
+    }
 
     // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    if (!coordinates) return;
+    if (!coordinates || coordinates.length === 0) {
+      console.log('No coordinates to display');
+      return;
+    }
 
     // Add markers for each coordinate with mobile-optimized clustering
     const clusterThreshold = window.innerWidth < 768 ? 5 : 10; // Fewer markers before clustering on mobile
     
-    coordinates.forEach(coord => {
+    coordinates.forEach((coord, index) => {
+      // Validate coordinates before using them
+      if (!coord || typeof coord.latitude !== 'number' || typeof coord.longitude !== 'number') {
+        console.warn(`Invalid coordinate at index ${index}:`, coord);
+        return;
+      }
+      
+      if (isNaN(coord.latitude) || isNaN(coord.longitude)) {
+        console.warn(`NaN coordinates at index ${index}:`, coord);
+        return;
+      }
+      
+      if (coord.latitude < -90 || coord.latitude > 90 || coord.longitude < -180 || coord.longitude > 180) {
+        console.warn(`Out of range coordinates at index ${index}:`, coord);
+        return;
+      }
+      
+      console.log(`Adding marker ${index + 1}/${coordinates.length}:`, coord.point_name, [coord.longitude, coord.latitude]);
+      
       const color = getCategoryColor(coord.category);
       
       // Create custom marker element for better touch targets on mobile
@@ -474,58 +503,92 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         cursor: pointer;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         transition: transform 0.2s ease;
+        z-index: 1000;
       `;
       
-      const marker = new mapboxgl.Marker({ element: markerEl })
-        .setLngLat([coord.longitude, coord.latitude])
-        .setPopup(new mapboxgl.Popup({ 
-          offset: 25,
-          closeButton: true,
-          closeOnClick: false 
-        }).setHTML(`
-          <div class="p-3 min-w-[200px]">
-            <h4 class="font-semibold text-sm mb-1">${coord.point_name}</h4>
-            ${coord.description ? `<p class="text-xs text-gray-600 mb-2">${coord.description}</p>` : ''}
-            <p class="text-xs text-gray-500 font-mono mb-2">${coord.latitude.toFixed(6)}, ${coord.longitude.toFixed(6)}</p>
-            ${coord.category ? `<span class="inline-block px-2 py-1 text-xs bg-gray-100 rounded">${coord.category}</span>` : ''}
-            ${hasAdminAccess ? `
-              <div class="flex gap-1 mt-2">
-                <button class="edit-btn px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600" data-id="${coord.id}">Edit</button>
-                <button class="navigate-btn px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600" data-lat="${coord.latitude}" data-lng="${coord.longitude}">Navigate</button>
-              </div>
-            ` : ''}
-          </div>
-        `))
-        .addTo(map.current);
+      try {
+        const marker = new mapboxgl.Marker({ element: markerEl })
+          .setLngLat([coord.longitude, coord.latitude])
+          .setPopup(new mapboxgl.Popup({ 
+            offset: 25,
+            closeButton: true,
+            closeOnClick: false 
+          }).setHTML(`
+            <div class="p-3 min-w-[200px]">
+              <h4 class="font-semibold text-sm mb-1">${coord.point_name}</h4>
+              ${coord.description ? `<p class="text-xs text-gray-600 mb-2">${coord.description}</p>` : ''}
+              <p class="text-xs text-gray-500 font-mono mb-2">${coord.latitude.toFixed(6)}, ${coord.longitude.toFixed(6)}</p>
+              ${coord.category ? `<span class="inline-block px-2 py-1 text-xs bg-gray-100 rounded">${coord.category}</span>` : ''}
+              ${hasAdminAccess ? `
+                <div class="flex gap-1 mt-2">
+                  <button class="edit-btn px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600" data-id="${coord.id}">Edit</button>
+                  <button class="navigate-btn px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600" data-lat="${coord.latitude}" data-lng="${coord.longitude}">Navigate</button>
+                </div>
+              ` : ''}
+            </div>
+          `))
+          .addTo(map.current!);
 
-      // Enhanced mobile touch interactions
-      markerEl.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        markerEl.style.transform = 'scale(1.1)';
-      });
-      
-      markerEl.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        markerEl.style.transform = 'scale(1)';
-        setSelectedCoordinate(coord);
-      });
+        // Enhanced mobile touch interactions
+        markerEl.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          markerEl.style.transform = 'scale(1.1)';
+        });
+        
+        markerEl.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          markerEl.style.transform = 'scale(1)';
+          setSelectedCoordinate(coord);
+        });
 
-      markerEl.addEventListener('click', () => {
-        setSelectedCoordinate(coord);
-        setMapStyle('satellite'); // Switch to satellite when clicking pins
-      });
+        markerEl.addEventListener('click', () => {
+          setSelectedCoordinate(coord);
+          setMapStyle('satellite'); // Switch to satellite when clicking pins
+        });
 
-      markers.current.push(marker);
+        markers.current.push(marker);
+        console.log(`Successfully added marker for ${coord.point_name}`);
+      } catch (error) {
+        console.error(`Error adding marker for ${coord.point_name}:`, error);
+      }
     });
 
     // Fit map to show all markers with mobile-optimized padding
-    if (coordinates.length > 1) {
-      const bounds = new mapboxgl.LngLatBounds();
-      coordinates.forEach(coord => {
-        bounds.extend([coord.longitude, coord.latitude]);
-      });
-      const padding = window.innerWidth < 768 ? 20 : 50;
-      map.current.fitBounds(bounds, { padding });
+    const validCoords = coordinates.filter(coord => 
+      coord && 
+      typeof coord.latitude === 'number' && 
+      typeof coord.longitude === 'number' && 
+      !isNaN(coord.latitude) && 
+      !isNaN(coord.longitude) &&
+      coord.latitude >= -90 && coord.latitude <= 90 &&
+      coord.longitude >= -180 && coord.longitude <= 180
+    );
+    
+    console.log('Valid coordinates for bounds:', validCoords.length, 'out of', coordinates.length);
+    
+    if (validCoords.length > 1) {
+      try {
+        const bounds = new mapboxgl.LngLatBounds();
+        validCoords.forEach(coord => {
+          bounds.extend([coord.longitude, coord.latitude]);
+        });
+        const padding = window.innerWidth < 768 ? 20 : 50;
+        map.current!.fitBounds(bounds, { padding, maxZoom: 16 });
+        console.log('Map bounds fitted to', validCoords.length, 'coordinates');
+      } catch (error) {
+        console.error('Error fitting bounds:', error);
+      }
+    } else if (validCoords.length === 1) {
+      try {
+        const coord = validCoords[0];
+        map.current!.flyTo({
+          center: [coord.longitude, coord.latitude],
+          zoom: 16
+        });
+        console.log('Map centered on single coordinate:', coord.point_name);
+      } catch (error) {
+        console.error('Error centering on single coordinate:', error);
+      }
     }
 
     // Add popup event listeners for admin actions
