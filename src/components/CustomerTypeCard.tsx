@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,14 +22,32 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
 }) => {
   const getTypeGradient = (type: string) => {
     const typeGradients = {
-      'residential': 'bg-gradient-to-r from-blue-500 to-blue-600',
-      'commercial': 'bg-gradient-to-r from-purple-500 to-purple-600',
+      'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600',
+      'sports_recreation': 'bg-gradient-to-r from-green-500 to-green-600', 
+      'municipal_government': 'bg-gradient-to-r from-blue-500 to-blue-600',
+      'commercial': 'bg-gradient-to-r from-gray-600 to-gray-700',
       'construction': 'bg-gradient-to-r from-orange-500 to-orange-600',
-      'event': 'bg-gradient-to-r from-green-500 to-green-600',
-      'emergency': 'bg-gradient-to-r from-red-500 to-red-600'
+      'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600',
+      'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600'
     };
     return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600';
   };
+
+  const getChannelColors = (type: string) => {
+    const channelColors = {
+      'events_festivals': { email: '#8A2BE2', sms: '#8A2BE2', both: '#8A2BE2' },
+      'sports_recreation': { email: '#22C55E', sms: '#22C55E', both: '#22C55E' },
+      'municipal_government': { email: '#3B82F6', sms: '#3B82F6', both: '#3B82F6' },
+      'commercial': { email: '#22C55E', sms: '#8A2BE2', both: '#F97316' },
+      'construction': { email: '#F97316', sms: '#F97316', both: '#F97316' },
+      'emergency_disaster_relief': { email: '#EF4444', sms: '#EF4444', both: '#EF4444' },
+      'private_events_weddings': { email: '#22C55E', sms: '#8A2BE2', both: '#F97316' }
+    };
+    return channelColors[type as keyof typeof channelColors] || { email: '#6B7280', sms: '#6B7280', both: '#6B7280' };
+  };
+
+  const colors = getChannelColors(type);
+
   return (
     <div className="bg-white rounded-md border shadow-sm p-4 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
       {/* Card Header */}
@@ -50,7 +67,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
           </div>
           <span 
             className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: '#33CC66', color: 'white' }}
+            style={{ backgroundColor: colors.email, color: 'white' }}
           >
             {email}
           </span>
@@ -63,7 +80,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
           </div>
           <span 
             className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: '#8A2BE2', color: 'white' }}
+            style={{ backgroundColor: colors.sms, color: 'white' }}
           >
             {sms}
           </span>
@@ -76,7 +93,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
           </div>
           <span 
             className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: '#FF6600', color: 'white' }}
+            style={{ backgroundColor: colors.both, color: 'white' }}
           >
             {both}
           </span>
