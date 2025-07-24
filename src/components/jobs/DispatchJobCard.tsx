@@ -74,7 +74,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
             {job.job_number}
           </span>
         </div>
-        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0", statusInfo.color)}>
+        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.color)}>
           {statusInfo.label}
         </Badge>
       </div>

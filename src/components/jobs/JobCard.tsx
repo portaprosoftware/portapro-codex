@@ -226,7 +226,7 @@ export const JobCard: React.FC<JobCardProps> = ({
                 Reverse
               </Button>
             )}
-            <Badge className={`${statusInfo.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+            <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
               {statusInfo.label}
             </Badge>
           </div>
@@ -319,7 +319,7 @@ export const JobCard: React.FC<JobCardProps> = ({
                 </Button>
               )}
             </div>
-            <Badge className={`${statusInfo.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+            <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
               {statusInfo.label}
             </Badge>
           </div>
