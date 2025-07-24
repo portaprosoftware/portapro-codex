@@ -140,7 +140,7 @@ export const FiltersFlyout: React.FC<FiltersFlyoutProps> = ({
                 <option value="assigned">Assigned</option>
                 <option value="in_progress">In Progress</option>
                 <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
+                
               </select>
             </div>
           </div>

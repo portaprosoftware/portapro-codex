@@ -81,7 +81,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <SelectItem value="assigned">Assigned</SelectItem>
           <SelectItem value="in_progress">In Progress</SelectItem>
           <SelectItem value="completed">Completed</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
+          
         </SelectContent>
       </Select>
     </div>
