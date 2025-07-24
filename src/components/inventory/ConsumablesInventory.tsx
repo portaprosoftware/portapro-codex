@@ -92,22 +92,27 @@ export const ConsumablesInventory: React.FC = () => {
               <Package className="w-4 h-4 mr-2" />
               Inventory
             </TabsTrigger>
-            {!isMobile && (
-              <>
-                <TabsTrigger value="usage">
-                  <CheckSquare className="w-4 h-4 mr-2" />
-                  Usage
-                </TabsTrigger>
-                <TabsTrigger value="requests">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Requests
-                </TabsTrigger>
-                <TabsTrigger value="reports">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Reports
-                </TabsTrigger>
-              </>
-            )}
+            <TabsTrigger value="usage" className={isMobile ? "hidden" : ""}>
+              <CheckSquare className="w-4 h-4 mr-2" />
+              Usage
+            </TabsTrigger>
+            <TabsTrigger value="requests" className={isMobile ? "hidden" : ""}>
+              <MapPin className="w-4 h-4 mr-2" />
+              Requests
+            </TabsTrigger>
+            <TabsTrigger value="reports" className={isMobile ? "hidden" : ""}>
+              <FileText className="w-4 h-4 mr-2" />
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="alerts" className="hidden">
+              Alerts
+            </TabsTrigger>
+            <TabsTrigger value="qr-codes" className="hidden">
+              QR Codes
+            </TabsTrigger>
+            <TabsTrigger value="mobile-pwa" className="hidden">
+              Mobile PWA
+            </TabsTrigger>
           </TabsList>
           
           <DropdownMenu>
@@ -148,16 +153,6 @@ export const ConsumablesInventory: React.FC = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          {/* Hidden triggers for dropdown functionality */}
-          <div className="hidden">
-            <TabsTrigger value="usage">Usage</TabsTrigger>
-            <TabsTrigger value="requests">Requests</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-            <TabsTrigger value="alerts">Alerts</TabsTrigger>
-            <TabsTrigger value="qr-codes">QR Codes</TabsTrigger>
-            <TabsTrigger value="mobile-pwa">Mobile PWA</TabsTrigger>
-          </div>
         </div>
 
         <TabsContent value="inventory" className="space-y-6">
