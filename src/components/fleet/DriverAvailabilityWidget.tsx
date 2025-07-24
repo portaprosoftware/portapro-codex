@@ -18,8 +18,8 @@ interface Driver {
 
 interface DriverAvailabilityWidgetProps {
   selectedDate?: Date;
-  selectedDriver?: string;
-  onDriverSelect?: (driverId: string) => void;
+  selectedDriver?: any;
+  onDriverSelect?: (driver: any) => void;
   selectionMode?: boolean;
   className?: string;
 }
@@ -71,17 +71,29 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
       const dateStr = selectedDate.toISOString().split('T')[0];
       const { data, error } = await supabase
         .from("jobs")
-        .select("driver_id")
+        .select(`
+          driver_id,
+          scheduled_time,
+          job_type,
+          customers!inner(name)
+        `)
         .eq("scheduled_date", dateStr)
         .in("status", ["assigned", "in_progress"]);
       
       if (error) throw error;
       return data.reduce((acc, job) => {
         if (job.driver_id) {
-          acc[job.driver_id] = (acc[job.driver_id] || 0) + 1;
+          if (!acc[job.driver_id]) {
+            acc[job.driver_id] = [];
+          }
+          acc[job.driver_id].push({
+            scheduled_time: job.scheduled_time,
+            job_type: job.job_type,
+            customer_name: job.customers?.name || 'Unknown Customer'
+          });
         }
         return acc;
-      }, {} as Record<string, number>);
+      }, {} as Record<string, any[]>);
     },
   });
 
@@ -91,10 +103,10 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
 
   const getDriverStatus = (driverId: string) => {
     const hasAssignment = assignments?.includes(driverId);
-    const jobCount = jobs?.[driverId] || 0;
+    const jobList = jobs?.[driverId] || [];
     
-    if (hasAssignment && jobCount > 0) return "busy";
-    if (hasAssignment || jobCount > 0) return "scheduled";
+    if (hasAssignment && jobList.length > 0) return "busy";
+    if (hasAssignment || jobList.length > 0) return "scheduled";
     return "available";
   };
 
@@ -157,8 +169,8 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {filteredDrivers?.map((driver) => {
           const status = getDriverStatus(driver.id);
-          const jobCount = jobs?.[driver.id] || 0;
-          const isSelected = selectedDriver === driver.id;
+          const jobList = jobs?.[driver.id] || [];
+          const isSelected = selectedDriver?.id === driver.id;
           
           return (
             <Card
@@ -171,7 +183,13 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
               )}
               onClick={() => {
                 if (selectionMode && onDriverSelect) {
-                  onDriverSelect(driver.id);
+                  const driverWithDetails = {
+                    ...driver,
+                    availability_status: getStatusText(status),
+                    working_hours: "08:00:00 - 17:00:00",
+                    scheduled_jobs: jobList
+                  };
+                  onDriverSelect(driverWithDetails);
                 }
               }}
             >
@@ -193,11 +211,11 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
                   </div>
                   
                   <div className="flex items-center space-x-4 mt-1">
-                    {jobCount > 0 && (
+                    {jobList.length > 0 && (
                       <div className="flex items-center space-x-1">
                         <Calendar className="w-3 h-3 text-muted-foreground" />
                         <span className="text-xs text-muted-foreground">
-                          {jobCount} job{jobCount > 1 ? 's' : ''}
+                          {jobList.length} job{jobList.length > 1 ? 's' : ''}
                         </span>
                       </div>
                     )}

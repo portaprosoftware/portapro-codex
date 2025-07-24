@@ -36,8 +36,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("date");
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
-  const [selectedVehicle, setSelectedVehicle] = useState<string>("");
-  const [selectedDriver, setSelectedDriver] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
   const [startMileage, setStartMileage] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
 
@@ -49,8 +49,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       const { error } = await supabase
         .from("daily_vehicle_assignments")
         .insert({
-          vehicle_id: selectedVehicle,
-          driver_id: selectedDriver,
+          vehicle_id: selectedVehicle?.id,
+          driver_id: selectedDriver?.id,
           assignment_date: format(selectedDate, "yyyy-MM-dd"),
           start_mileage: startMileage ? parseInt(startMileage) : null,
           notes: notes.trim() || null
@@ -81,8 +81,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   const resetForm = () => {
     setCurrentStep("date");
     setSelectedDate(initialDate);
-    setSelectedVehicle("");
-    setSelectedDriver("");
+    setSelectedVehicle(null);
+    setSelectedDriver(null);
     setStartMileage("");
     setNotes("");
   };
@@ -197,33 +197,110 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             <div className="space-y-4">
               <div className="p-4 bg-accent/50 rounded-lg">
                 <h4 className="font-medium text-foreground mb-3">Assignment Summary</h4>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Date:</span>
                     <span className="text-foreground">{format(selectedDate, "PPP")}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Vehicle:</span>
-                    <span className="text-foreground">{selectedVehicle}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Driver:</span>
-                    <span className="text-foreground">{selectedDriver}</span>
-                  </div>
-                  {startMileage && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Starting Mileage:</span>
-                      <span className="text-foreground">{parseInt(startMileage).toLocaleString()} mi</span>
-                    </div>
-                  )}
-                  {notes && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Notes:</span>
-                      <span className="text-foreground">{notes}</span>
-                    </div>
-                  )}
                 </div>
               </div>
+
+              {/* Vehicle Details */}
+              {selectedVehicle && (
+                <div className="p-4 bg-accent/50 rounded-lg">
+                  <h4 className="font-medium text-foreground mb-3">Vehicle Details</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">License Plate:</span>
+                      <span className="text-foreground font-medium">{selectedVehicle.license_plate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Vehicle:</span>
+                      <span className="text-foreground">{selectedVehicle.year || ''} {selectedVehicle.make} {selectedVehicle.model}</span>
+                    </div>
+                    {selectedVehicle.nickname && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Nickname:</span>
+                        <span className="text-foreground">"{selectedVehicle.nickname}"</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Type:</span>
+                      <span className="text-foreground">{selectedVehicle.vehicle_type}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Status:</span>
+                      <span className="text-foreground capitalize">{selectedVehicle.status}</span>
+                    </div>
+                    {selectedVehicle.current_mileage && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Current Mileage:</span>
+                        <span className="text-foreground">{selectedVehicle.current_mileage.toLocaleString()} mi</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Driver Details */}
+              {selectedDriver && (
+                <div className="p-4 bg-accent/50 rounded-lg">
+                  <h4 className="font-medium text-foreground mb-3">Driver Details</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Driver:</span>
+                      <span className="text-foreground font-medium">{selectedDriver.first_name} {selectedDriver.last_name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Status:</span>
+                      <span className="text-foreground capitalize">{selectedDriver.availability_status || 'Available'}</span>
+                    </div>
+                    {selectedDriver.working_hours && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Working Hours:</span>
+                        <span className="text-foreground">{selectedDriver.working_hours}</span>
+                      </div>
+                    )}
+                    {selectedDriver.scheduled_jobs && selectedDriver.scheduled_jobs.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground">Scheduled Jobs:</span>
+                        <div className="mt-1 space-y-1">
+                          {selectedDriver.scheduled_jobs.map((job: any, index: number) => (
+                            <div key={index} className="text-xs bg-background/50 p-2 rounded">
+                              <div className="flex justify-between">
+                                <span>{job.scheduled_time}</span>
+                                <span className="text-muted-foreground">{job.job_type}</span>
+                              </div>
+                              <div className="text-muted-foreground">{job.customer_name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Assignment Details */}
+              {(startMileage || notes) && (
+                <div className="p-4 bg-accent/50 rounded-lg">
+                  <h4 className="font-medium text-foreground mb-3">Assignment Details</h4>
+                  <div className="space-y-2 text-sm">
+                    {startMileage && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Starting Mileage:</span>
+                        <span className="text-foreground">{parseInt(startMileage).toLocaleString()} mi</span>
+                      </div>
+                    )}
+                    {notes && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Notes:</span>
+                        <span className="text-foreground">{notes}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );

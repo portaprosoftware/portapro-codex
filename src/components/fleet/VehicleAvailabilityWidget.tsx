@@ -12,6 +12,8 @@ interface Vehicle {
   license_plate: string;
   make: string;
   model: string;
+  year?: number;
+  nickname?: string;
   vehicle_type: string;
   status: string;
   current_mileage?: number;
@@ -20,8 +22,8 @@ interface Vehicle {
 
 interface VehicleAvailabilityWidgetProps {
   selectedDate?: Date;
-  selectedVehicle?: string;
-  onVehicleSelect?: (vehicleId: string) => void;
+  selectedVehicle?: any;
+  onVehicleSelect?: (vehicle: any) => void;
   selectionMode?: boolean;
   className?: string;
 }
@@ -118,7 +120,7 @@ export const VehicleAvailabilityWidget: React.FC<VehicleAvailabilityWidgetProps>
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {filteredVehicles?.map((vehicle) => {
           const status = getVehicleStatus(vehicle.id);
-          const isSelected = selectedVehicle === vehicle.id;
+          const isSelected = selectedVehicle?.id === vehicle.id;
           
           return (
             <Card
@@ -131,7 +133,7 @@ export const VehicleAvailabilityWidget: React.FC<VehicleAvailabilityWidgetProps>
               )}
               onClick={() => {
                 if (selectionMode && onVehicleSelect) {
-                  onVehicleSelect(vehicle.id);
+                  onVehicleSelect(vehicle);
                 }
               }}
             >
