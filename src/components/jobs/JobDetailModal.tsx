@@ -129,8 +129,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         status: job.status || ''
       });
       setAssignmentForm({
-        driver_id: job.driver_id || '',
-        vehicle_id: job.vehicle_id || ''
+        driver_id: job.driver_id || 'unassigned',
+        vehicle_id: job.vehicle_id || 'unassigned'
       });
       setNotesForm({
         notes: job.notes || '',
@@ -190,8 +190,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         });
       } else if (section === 'assignment') {
         setAssignmentForm({
-          driver_id: job.driver_id || '',
-          vehicle_id: job.vehicle_id || ''
+          driver_id: job.driver_id || 'unassigned',
+          vehicle_id: job.vehicle_id || 'unassigned'
         });
       } else if (section === 'notes') {
         setNotesForm({
@@ -210,7 +210,12 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
       updates = scheduleForm;
       sectionName = 'Schedule';
     } else if (section === 'assignment') {
-      updates = assignmentForm;
+      // Convert "unassigned" back to null for database storage
+      const processedForm = {
+        driver_id: assignmentForm.driver_id === 'unassigned' ? null : assignmentForm.driver_id,
+        vehicle_id: assignmentForm.vehicle_id === 'unassigned' ? null : assignmentForm.vehicle_id
+      };
+      updates = processedForm;
       sectionName = 'Assignment';
     } else if (section === 'notes') {
       updates = notesForm;
@@ -466,7 +471,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             <SelectValue placeholder="Select driver" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">No driver assigned</SelectItem>
+                            <SelectItem value="unassigned">No driver assigned</SelectItem>
                             {drivers.map(driver => (
                               <SelectItem key={driver.id} value={driver.id}>
                                 {driver.first_name} {driver.last_name}
@@ -482,7 +487,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             <SelectValue placeholder="Select vehicle" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">No vehicle assigned</SelectItem>
+                            <SelectItem value="unassigned">No vehicle assigned</SelectItem>
                             {vehicles.map(vehicle => (
                               <SelectItem key={vehicle.id} value={vehicle.id}>
                                 {vehicle.license_plate} ({vehicle.vehicle_type})
