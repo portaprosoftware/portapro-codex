@@ -150,9 +150,11 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   
-  /* Emoji icons should be bold */
+  /* Emoji icons should appear bold with text-shadow */
   .emoji-icon {
     font-weight: 700 !important;
+    text-shadow: 0.5px 0.5px 0px currentColor, -0.5px -0.5px 0px currentColor;
+    font-size: 1.1em;
   }
   
   /* Headings should remain bold */
