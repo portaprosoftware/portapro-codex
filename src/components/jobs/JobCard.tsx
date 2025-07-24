@@ -119,8 +119,8 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   const handleStartJob = () => {
     if (job.status === 'assigned') {
-      onStatusUpdate?.(job.id, 'in_progress');
-    } else if (job.status === 'in_progress' || job.status === 'in-progress') {
+      onStatusUpdate?.(job.id, 'in-progress');
+    } else if (job.status === 'in-progress') {
       onStatusUpdate?.(job.id, 'completed');
     }
     // If completed, do nothing (button will be disabled)
@@ -130,7 +130,6 @@ export const JobCard: React.FC<JobCardProps> = ({
     switch (job.status) {
       case 'assigned':
         return 'Start Job';
-      case 'in_progress':
       case 'in-progress':
         return 'Complete Job';
       case 'completed':
