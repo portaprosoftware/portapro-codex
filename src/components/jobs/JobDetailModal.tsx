@@ -30,6 +30,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface JobDetailModalProps {
   jobId: string | null;
@@ -264,36 +265,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     });
   };
 
-  const statusConfig = {
-    assigned: { 
-      gradient: 'bg-gradient-blue', 
-      label: 'Assigned' 
-    },
-    in_progress: { 
-      gradient: 'bg-gradient-orange', 
-      label: 'In Progress' 
-    },
-    'in-progress': { 
-      gradient: 'bg-gradient-orange', 
-      label: 'In Progress' 
-    },
-    completed: { 
-      gradient: 'bg-gradient-green', 
-      label: 'Completed' 
-    },
-    cancelled: { 
-      gradient: 'bg-gradient-red', 
-      label: 'Cancelled' 
-    },
-    pending: { 
-      gradient: 'bg-gradient-yellow', 
-      label: 'Pending' 
-    },
-    overdue: { 
-      gradient: 'bg-gradient-red', 
-      label: 'Overdue' 
-    }
-  };
 
   const jobTypeConfig = {
     delivery: {
@@ -314,9 +285,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    return statusConfig[status as keyof typeof statusConfig]?.gradient || 'bg-gray-500';
-  };
 
   const getJobTypeColor = (type: string) => {
     return jobTypeConfig[type as keyof typeof jobTypeConfig]?.color || 'bg-gray-500';
@@ -338,9 +306,21 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               <div className="flex items-center space-x-2 mt-2">
                 {job && (
                   <>
-                    <Badge className={cn("text-xs text-white rounded-full", getStatusColor(job.status))}>
-                      {job.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
+                    {(() => {
+                      const statusInfo = getDualJobStatusInfo(job);
+                      return (
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full text-xs`}>
+                            {statusInfo.primary.label}
+                          </Badge>
+                          {statusInfo.secondary && (
+                            <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-medium px-2 py-0.5 rounded-full text-xs`}>
+                              {statusInfo.secondary.label}
+                            </Badge>
+                          )}
+                        </div>
+                      );
+                    })()}
                     <Badge className={cn("text-xs text-white rounded-full", getJobTypeColor(job.job_type))}>
                       {job.job_type.toUpperCase()}
                     </Badge>
@@ -712,7 +692,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                               </p>
                             )}
                           </div>
-                          <Badge className={getStatusColor(assignment.status)}>
+                          <Badge className="bg-gradient-blue text-white border-0 font-medium px-2 py-1 rounded-full text-xs">
                             {assignment.status.replace('_', ' ').toUpperCase()}
                           </Badge>
                         </div>

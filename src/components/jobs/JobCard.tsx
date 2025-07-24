@@ -7,7 +7,7 @@ import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, S
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatDateSafe } from '@/lib/dateUtils';
-import { getJobStatusInfo } from '@/lib/jobStatusUtils';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface JobCardProps {
   job: {
@@ -120,8 +120,8 @@ export const JobCard: React.FC<JobCardProps> = ({
   onReverse,
   compact = false
 }) => {
-  // Use unified status logic
-  const statusInfo = getJobStatusInfo(job);
+  // Use unified dual status logic
+  const statusInfo = getDualJobStatusInfo(job);
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
   const JobTypeIcon = jobTypeInfo.icon;
 
@@ -201,9 +201,16 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
-            {statusInfo.label}
-          </Badge>
+          <div className="flex flex-col gap-1">
+            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+              {statusInfo.primary.label}
+            </Badge>
+            {statusInfo.secondary && (
+              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs`}>
+                {statusInfo.secondary.label}
+              </Badge>
+            )}
+          </div>
         </div>
         
         <div className="space-y-1 mb-3">
@@ -293,9 +300,16 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
-            {statusInfo.label}
-          </Badge>
+          <div className="flex flex-col gap-1">
+            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+              {statusInfo.primary.label}
+            </Badge>
+            {statusInfo.secondary && (
+              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs`}>
+                {statusInfo.secondary.label}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
       
