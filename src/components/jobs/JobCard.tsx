@@ -304,24 +304,22 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              {showReverseButton && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleReverse}
-                  className="px-3 py-1 h-8 text-xs border-gray-300 hover:border-gray-400"
-                  aria-label={`Reverse job ${job.job_number}`}
-                >
-                  <Undo2 className="w-4 h-4 mr-2" />
-                  Reverse
-                </Button>
-              )}
-            </div>
+          <div className="flex flex-col items-end space-y-2">
             <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
               {statusInfo.label}
             </Badge>
+            {showReverseButton && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReverse}
+                className="px-3 py-1 h-8 text-xs border-gray-300 hover:border-gray-400"
+                aria-label={`Reverse job ${job.job_number}`}
+              >
+                <Undo2 className="w-4 h-4 mr-2" />
+                Reverse
+              </Button>
+            )}
           </div>
         </div>
       </div>
