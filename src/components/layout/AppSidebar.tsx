@@ -14,9 +14,9 @@ import {
   TrendingUp,
   MessageSquare
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
-import {
+import { UserButton } from '@clerk/clerk-react';
+import { 
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -24,29 +24,33 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 import { Badge } from "@/components/ui/badge";
 
 interface NavigationItem {
   title: string;
-  href: string;
+  url: string;
   icon: React.ElementType;
   description?: string;
   badge?: string | number;
   permission?: 'owner' | 'admin' | 'staff';
 }
 
-const navigationItems: NavigationItem[] = [
+interface AppSidebarProps {
+  activeSection?: string;
+  onSectionChange?: (section: string) => void;
+}
+
+const items: NavigationItem[] = [
   { 
     title: 'Dashboard', 
-    href: '/', 
+    url: '/', 
     icon: Home,
     description: 'Overview and quick actions'
   },
   { 
     title: 'Jobs', 
-    href: '/jobs', 
+    url: '/jobs', 
     icon: Calendar,
     description: 'Schedule and manage jobs',
     permission: 'staff',
@@ -54,77 +58,75 @@ const navigationItems: NavigationItem[] = [
   },
   { 
     title: 'Customers', 
-    href: '/customers', 
+    url: '/customers', 
     icon: Users,
     description: 'Customer management',
     permission: 'staff'
   },
   { 
     title: 'Inventory', 
-    href: '/inventory', 
+    url: '/inventory', 
     icon: Package,
     description: 'Track units and supplies',
     permission: 'staff'
   },
   { 
     title: 'Fleet Management', 
-    href: '/fleet', 
+    url: '/fleet', 
     icon: Truck,
     description: 'Vehicles and maintenance',
     permission: 'admin'
   },
   { 
     title: 'Maintenance', 
-    href: '/maintenance', 
+    url: '/maintenance', 
     icon: Wrench,
     description: 'Service and repairs',
     permission: 'admin'
   },
   { 
     title: 'Quotes & Invoices', 
-    href: '/quotes-invoices', 
+    url: '/quotes-invoices', 
     icon: FileText,
     description: 'Billing and estimates',
     permission: 'admin'
   },
   { 
     title: 'Analytics', 
-    href: '/analytics', 
+    url: '/analytics', 
     icon: BarChart3,
     description: 'Reports and insights',
     permission: 'admin'
   },
   { 
     title: 'Marketing', 
-    href: '/marketing', 
+    url: '/marketing', 
     icon: TrendingUp,
     description: 'Campaigns and outreach',
     permission: 'admin'
   },
   { 
     title: 'Communications', 
-    href: '/communications', 
+    url: '/communications', 
     icon: MessageSquare,
     description: 'Customer portal and chat',
     permission: 'admin'
   },
   { 
     title: 'Settings', 
-    href: '/settings', 
+    url: '/settings', 
     icon: Settings,
     description: 'System configuration',
     permission: 'owner'
   },
 ];
 
-export const AppSidebar: React.FC = () => {
-  const { state } = useSidebar();
+export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
   const location = useLocation();
-  const collapsed = state === "collapsed";
 
   const getVisibleItems = () => {
-    return navigationItems.filter(item => {
+    return items.filter(item => {
       if (!item.permission) return true;
       if (item.permission === 'owner') return isOwner;
       if (item.permission === 'admin') return hasAdminAccess;
@@ -138,17 +140,15 @@ export const AppSidebar: React.FC = () => {
   return (
     <Sidebar>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
             <Building2 className="w-5 h-5 text-white" />
           </div>
-          {!collapsed && (
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">PortaPro</h1>
-              <p className="text-xs text-gray-500">Portable Toilet Management</p>
-            </div>
-          )}
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">PortaPro</h1>
+            <p className="text-xs text-gray-500">Portable Toilet Management</p>
+          </div>
         </div>
       </div>
       
@@ -157,34 +157,31 @@ export const AppSidebar: React.FC = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {visibleItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    isActive={location.pathname === item.href}
-                    className={location.pathname === item.href ? 'nav-item-active' : ''}
+                    isActive={activeSection === item.url || location.pathname === item.url}
+                    className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
                   >
                     <NavLink
-                      to={item.href}
+                      to={item.url}
+                      onClick={() => onSectionChange?.(item.url)}
                       className="w-full flex items-center gap-3 px-3 py-2 text-left"
                     >
                       <item.icon className="h-4 w-4" />
-                      {!collapsed && (
-                        <>
-                          <div className="flex-1">
-                            <div className="font-medium">{item.title}</div>
-                            {item.description && (
-                              <div className="text-xs text-muted-foreground">{item.description}</div>
-                            )}
-                          </div>
-                          {item.badge && (
-                            <Badge 
-                              variant={location.pathname === item.href ? "secondary" : "outline"} 
-                              className="ml-auto"
-                            >
-                              {item.badge}
-                            </Badge>
-                          )}
-                        </>
+                      <div className="flex-1">
+                        <span className="font-medium">{item.title}</span>
+                        {item.description && (
+                          <div className="text-xs text-muted-foreground">{item.description}</div>
+                        )}
+                      </div>
+                      {item.badge && (
+                        <Badge 
+                          variant="outline" 
+                          className="ml-auto"
+                        >
+                          {item.badge}
+                        </Badge>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -194,6 +191,23 @@ export const AppSidebar: React.FC = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200 mt-auto">
+        <div className="flex items-center gap-3">
+          <UserButton 
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "w-8 h-8",
+                userButtonPopoverCard: "shadow-lg"
+              }
+            }}
+          />
+          <div className="text-sm text-gray-600">
+            User Menu
+          </div>
+        </div>
+      </div>
     </Sidebar>
   );
-};
+}
