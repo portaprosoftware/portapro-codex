@@ -169,11 +169,18 @@
     @apply bg-gray-100 text-gray-800 border border-gray-200;
   }
 
-  /* Phase 5: Navigation Active States */
+  /* CRITICAL: Navigation Active State */
   .nav-item-active {
-    @apply text-white;
-    background: var(--gradient-primary);
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(90deg, #1C44BC 20%, #2F80ED 80%) !important;
+    color: #fff !important;
+  }
+
+  .nav-item-active:hover {
+    background: linear-gradient(90deg, #1639A1 20%, #2571D9 80%) !important;
+  }
+
+  .nav-item-active * {
+    color: #fff !important;
   }
   
   
