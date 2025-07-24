@@ -183,21 +183,9 @@ export const JobCreationWizard: React.FC<JobCreationWizardProps> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="right" 
-        className={`${isMobile ? 'w-full' : 'w-1/2'} max-w-none overflow-y-auto`}
+        className={`${isMobile ? 'w-full' : 'w-3/4'} max-w-none overflow-y-auto`}
       >
-        {/* Close Button */}
-        <div className="absolute top-4 left-4 z-10">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onOpenChange(false)}
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <SheetHeader className="space-y-3 pr-12">
+        <SheetHeader className="space-y-3">
           <SheetTitle className="text-xl font-semibold">Create New Job</SheetTitle>
         </SheetHeader>
 
