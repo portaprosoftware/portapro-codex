@@ -18,7 +18,9 @@ import {
   Wrench,
   Calendar,
   MapPin,
-  FileText
+  FileText,
+  Upload,
+  X
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,7 @@ interface Vehicle {
   current_mileage?: number;
   created_at: string;
   notes?: string;
+  vehicle_image?: string;
 }
 
 interface VehicleDetailModalProps {
@@ -47,6 +50,9 @@ interface VehicleDetailModalProps {
 export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle, isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [vehicleImage, setVehicleImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -83,9 +89,82 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
     }
   });
 
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      setIsUploadingImage(true);
+      
+      // Upload image to Supabase storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${vehicle.id}-${Date.now()}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('vehicle-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Update vehicle record with image path
+      const { data: vehicleData, error: updateError } = await supabase
+        .from("vehicles")
+        .update({ vehicle_image: uploadData.path })
+        .eq("id", vehicle.id)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+      
+      return { uploadData, vehicleData };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      setVehicleImage(null);
+      setImagePreview(null);
+      setIsUploadingImage(false);
+      toast.success("Vehicle photo uploaded successfully!");
+    },
+    onError: (error: any) => {
+      setIsUploadingImage(false);
+      toast.error(error.message || "Failed to upload photo");
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateVehicleMutation.mutate(formData);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("File size must be less than 50MB");
+        return;
+      }
+      setVehicleImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setVehicleImage(null);
+    setImagePreview(null);
+  };
+
+  const handleUploadPhoto = () => {
+    if (vehicleImage) {
+      uploadImageMutation.mutate(vehicleImage);
+    }
+  };
+
+  const getVehicleImageUrl = (imagePath: string) => {
+    const { data } = supabase.storage
+      .from('vehicle-images')
+      .getPublicUrl(imagePath);
+    return data.publicUrl;
   };
 
   const getStatusColor = (status: string) => {
@@ -255,17 +334,71 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
               </form>
             ) : (
               <div className="space-y-6">
-                {/* Vehicle Image Placeholder */}
+                {/* Vehicle Image Section */}
                 <Card>
                   <CardContent className="p-6">
-                    <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                      <div className="text-center">
-                        <Truck className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-500">Vehicle Photo</p>
-                        <Button variant="outline" size="sm" className="mt-2">
-                          Upload Photo
-                        </Button>
+                    <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative overflow-hidden">
+                      {vehicle.vehicle_image && !imagePreview ? (
+                        <img
+                          src={getVehicleImageUrl(vehicle.vehicle_image)}
+                          alt="Vehicle"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : imagePreview ? (
+                        <div className="relative w-full h-full">
+                          <img
+                            src={imagePreview}
+                            alt="Vehicle preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={removeImage}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <Truck className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-500">Vehicle Photo</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Photo Upload Section */}
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept=".png,.jpg,.jpeg,.webp"
+                            onChange={handleImageChange}
+                            className="hidden"
+                            id="vehicle-image-input"
+                          />
+                          <label
+                            htmlFor="vehicle-image-input"
+                            className="inline-flex items-center justify-center gap-2 h-10 px-4 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium w-full"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Choose Photo
+                          </label>
+                        </div>
+                        {vehicleImage && (
+                          <Button
+                            onClick={handleUploadPhoto}
+                            disabled={isUploadingImage}
+                            className="bg-gradient-primary text-white"
+                          >
+                            {isUploadingImage ? "Uploading..." : "Upload"}
+                          </Button>
+                        )}
                       </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 50MB</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>

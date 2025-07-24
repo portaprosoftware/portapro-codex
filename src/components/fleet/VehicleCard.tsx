@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Calendar, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Vehicle {
   id: string;
@@ -18,6 +19,7 @@ interface Vehicle {
   last_known_location?: any;
   created_at: string;
   current_mileage?: number;
+  vehicle_image?: string;
 }
 
 interface VehicleCardProps {
@@ -40,13 +42,28 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
     }
   };
 
+  const getVehicleImageUrl = (imagePath: string) => {
+    const { data } = supabase.storage
+      .from('vehicle-images')
+      .getPublicUrl(imagePath);
+    return data.publicUrl;
+  };
+
   if (viewMode === "list") {
     return (
       <div className="bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="h-12 w-12 bg-muted rounded-md flex items-center justify-center">
-              <Truck className="h-6 w-6 text-muted-foreground" />
+            <div className="h-12 w-12 bg-muted rounded-md flex items-center justify-center overflow-hidden">
+              {vehicle.vehicle_image ? (
+                <img
+                  src={getVehicleImageUrl(vehicle.vehicle_image)}
+                  alt="Vehicle"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Truck className="h-6 w-6 text-muted-foreground" />
+              )}
             </div>
             
             <div>
@@ -78,9 +95,17 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
 
   return (
     <div className="bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow p-6">
-      {/* Vehicle Image Placeholder */}
-      <div className="h-32 w-full bg-muted rounded-md mb-4 flex items-center justify-center">
-        <Truck className="h-8 w-8 text-muted-foreground" />
+      {/* Vehicle Image */}
+      <div className="h-32 w-full bg-muted rounded-md mb-4 flex items-center justify-center overflow-hidden">
+        {vehicle.vehicle_image ? (
+          <img
+            src={getVehicleImageUrl(vehicle.vehicle_image)}
+            alt="Vehicle"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Truck className="h-8 w-8 text-muted-foreground" />
+        )}
       </div>
       
       {/* License Plate */}
