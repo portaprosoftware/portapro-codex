@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AssignmentCreationWizard } from "./AssignmentCreationWizard";
 import { Calendar as CalendarIcon, Plus, User, Truck } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 export const VehicleAssignments: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   const { data: assignments, isLoading } = useQuery({
     queryKey: ["daily-vehicle-assignments", selectedDate],
@@ -92,7 +94,7 @@ export const VehicleAssignments: React.FC = () => {
           </Popover>
         </div>
         
-        <Button>
+        <Button onClick={() => setIsWizardOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           New Assignment
         </Button>
@@ -151,7 +153,7 @@ export const VehicleAssignments: React.FC = () => {
             <Truck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No assignments for this date</h3>
             <p className="text-gray-600 mb-4">Create vehicle assignments to track daily usage and mileage.</p>
-            <Button>Create Assignment</Button>
+            <Button onClick={() => setIsWizardOpen(true)}>Create Assignment</Button>
           </Card>
         )}
       </div>
@@ -175,6 +177,13 @@ export const VehicleAssignments: React.FC = () => {
           </p>
         </Card>
       </div>
+
+      {/* Assignment Creation Wizard */}
+      <AssignmentCreationWizard
+        open={isWizardOpen}
+        onOpenChange={setIsWizardOpen}
+        initialDate={selectedDate}
+      />
     </div>
   );
 };
