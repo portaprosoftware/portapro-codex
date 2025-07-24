@@ -36,8 +36,8 @@ export default {
 				blue: {
 					DEFAULT: 'hsl(var(--blue-500))',
 					500: 'hsl(var(--blue-500))',
-					600: 'hsl(217, 91%, 55%)',
-					700: 'hsl(217, 91%, 50%)',
+					600: 'hsl(230, 85%, 60%)',
+					700: 'hsl(230, 85%, 55%)',
 				},
 				
 				// Legacy colors for backward compatibility
