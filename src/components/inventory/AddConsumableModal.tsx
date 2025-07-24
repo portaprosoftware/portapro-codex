@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { CategorySelect } from '@/components/ui/category-select';
+import { BarcodeScannerModal } from '@/components/ui/barcode-scanner';
 import { toast } from '@/hooks/use-toast';
+import { ScanLine } from 'lucide-react';
 
 interface AddConsumableModalProps {
   isOpen: boolean;
@@ -34,6 +36,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const [showScannerModal, setShowScannerModal] = useState(false);
   const form = useForm<ConsumableFormData>({
     defaultValues: {
       name: '',
@@ -63,6 +66,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         description: 'Consumable created successfully'
       });
       form.reset();
+      setShowScannerModal(false);
       onClose();
     },
     onError: (error) => {
@@ -74,6 +78,11 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
       console.error('Error creating consumable:', error);
     }
   });
+
+  const handleScanResult = (scannedCode: string) => {
+    form.setValue('sku', scannedCode);
+    setShowScannerModal(false);
+  };
 
   const onSubmit = (data: ConsumableFormData) => {
     createConsumable.mutate(data);
@@ -130,7 +139,18 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                   <FormItem>
                     <FormLabel>SKU</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter SKU" />
+                      <div className="flex gap-2">
+                        <Input {...field} placeholder="Enter SKU" />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowScannerModal(true)}
+                          className="px-3"
+                        >
+                          <ScanLine className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -284,6 +304,12 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
             </div>
           </form>
         </Form>
+
+        <BarcodeScannerModal
+          isOpen={showScannerModal}
+          onClose={() => setShowScannerModal(false)}
+          onScanResult={handleScanResult}
+        />
       </DialogContent>
     </Dialog>
   );

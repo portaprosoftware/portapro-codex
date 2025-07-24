@@ -1,0 +1,12 @@
+/* Scanner active styles */
+body.scanner-active {
+  background: transparent !important;
+}
+
+body.scanner-active .background {
+  display: none;
+}
+
+body.scanner-active ion-app {
+  background: transparent !important;
+}
