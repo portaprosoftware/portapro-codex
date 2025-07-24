@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Clock } from "@/components/ui/Clock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+  const { role, user } = useUserRole();
   const [currentTime, setCurrentTime] = useState(new Date());
   
   // Mock data for sparkline (jobs over the past week)
@@ -132,14 +134,16 @@ const Dashboard = () => {
         <div className="flex items-center justify-between">
           <div className="space-y-4">
             <h1 className="text-3xl font-bold text-gray-900 font-sans">
-              Welcome back, Tyler!
+              Welcome back, {user?.firstName || 'User'}!
             </h1>
             <p className="text-lg text-gray-600 font-sans">
               Here's what's happening with your rental business today.
             </p>
-            <Badge variant="secondary" className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] text-white hover:from-[#1E3A8A] hover:to-[#2F4F9A] font-sans font-medium">
-              Role: Admin
-            </Badge>
+            {role && (
+              <Badge variant="secondary" className="bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] text-white hover:from-[#1E3A8A] hover:to-[#2F4F9A] font-sans font-medium">
+                Role: {role.charAt(0).toUpperCase() + role.slice(1)}
+              </Badge>
+            )}
           </div>
           
           {/* Digital Date and Time - Center */}

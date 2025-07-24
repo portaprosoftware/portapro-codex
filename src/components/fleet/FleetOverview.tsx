@@ -76,40 +76,37 @@ export const FleetOverview: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <FleetSidebar />
-      
+    <div className="max-w-none px-6 py-6 space-y-6">
+      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Fleet Overview</h1>
+            <p className="text-base text-gray-600 font-inter mt-1">Manage your fleet vehicles and operations</p>
+          </div>
+        </div>
+      </div>
+
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="bg-card border-b px-6 py-4">
-          <div className="max-w-7xl mx-auto">
-            <h1 className="text-xl font-semibold mb-4">Fleet Overview</h1>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-4">
-              <div className="bg-card p-4 rounded-lg border shadow-sm">
-                <div className="text-sm text-muted-foreground">Total Vehicles</div>
-                <div className="text-2xl font-bold">{vehicles?.length || 0}</div>
-              </div>
-              <div className="bg-card p-4 rounded-lg border shadow-sm">
-                <div className="text-sm text-muted-foreground">Available</div>
-                <div className="text-2xl font-bold text-green-600">{statusCounts.available}</div>
-              </div>
-              <div className="bg-card p-4 rounded-lg border shadow-sm">
-                <div className="text-sm text-muted-foreground">In Service</div>
-                <div className="text-2xl font-bold text-blue-600">{statusCounts.in_service}</div>
-              </div>
-              <div className="bg-card p-4 rounded-lg border shadow-sm">
-                <div className="text-sm text-muted-foreground">Maintenance</div>
-                <div className="text-2xl font-bold text-orange-600">{statusCounts.maintenance}</div>
-              </div>
-            </div>
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="bg-card p-4 rounded-lg border shadow-sm">
+            <div className="text-sm text-muted-foreground">Total Vehicles</div>
+            <div className="text-2xl font-bold">{vehicles?.length || 0}</div>
+          </div>
+          <div className="bg-card p-4 rounded-lg border shadow-sm">
+            <div className="text-sm text-muted-foreground">Available</div>
+            <div className="text-2xl font-bold text-green-600">{statusCounts.available}</div>
+          </div>
+          <div className="bg-card p-4 rounded-lg border shadow-sm">
+            <div className="text-sm text-muted-foreground">In Service</div>
+            <div className="text-2xl font-bold text-blue-600">{statusCounts.in_service}</div>
+          </div>
+          <div className="bg-card p-4 rounded-lg border shadow-sm">
+            <div className="text-sm text-muted-foreground">Maintenance</div>
+            <div className="text-2xl font-bold text-orange-600">{statusCounts.maintenance}</div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-7xl mx-auto p-6">
             {/* Controls */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               {/* Search */}
@@ -221,8 +218,6 @@ export const FleetOverview: React.FC = () => {
         isOpen={isAddVehicleModalOpen}
         onClose={() => setIsAddVehicleModalOpen(false)}
       />
-          </div>
-        </div>
       </div>
     </div>
   );

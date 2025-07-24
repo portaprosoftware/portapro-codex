@@ -97,12 +97,6 @@ const items: NavigationItem[] = [
     permission: 'admin'
   },
   { 
-    title: 'Communications', 
-    url: '/communications', 
-    icon: MessageSquare,
-    permission: 'admin'
-  },
-  { 
     title: 'Settings', 
     url: '/settings', 
     icon: Settings,

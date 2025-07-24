@@ -44,14 +44,12 @@ export default function Settings() {
 
   if (!hasAdminAccess) {
     return (
-      <Layout>
-        <div className="p-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground">You don't have permission to access settings.</p>
-          </div>
+      <div className="p-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+          <p className="text-muted-foreground">You don't have permission to access settings.</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
@@ -92,8 +90,7 @@ export default function Settings() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-none px-6 py-6 space-y-6">
+    <div className="max-w-none px-6 py-6 space-y-6">
         <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
@@ -126,6 +123,5 @@ export default function Settings() {
         
         {renderSection()}
       </div>
-    </Layout>
   );
 }
