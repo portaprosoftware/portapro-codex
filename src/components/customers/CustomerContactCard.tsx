@@ -32,11 +32,11 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
 
   const getContactTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'billing': return 'bg-green-100 text-green-800';
-      case 'on-site': return 'bg-blue-100 text-blue-800';
-      case 'emergency': return 'bg-red-100 text-red-800';
-      case 'management': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'billing': return 'bg-gradient-to-r from-green-600 to-green-700 text-white border-0 font-bold';
+      case 'on-site': return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-bold';
+      case 'emergency': return 'bg-gradient-to-r from-red-600 to-red-700 text-white border-0 font-bold';
+      case 'management': return 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-0 font-bold';
+      default: return 'bg-gradient-to-r from-gray-600 to-gray-700 text-white border-0 font-bold';
     }
   };
 
