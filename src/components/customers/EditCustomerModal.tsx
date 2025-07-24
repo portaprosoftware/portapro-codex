@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,8 +24,17 @@ const customerSchema = z.object({
   billing_city: z.string().optional(),
   billing_state: z.string().optional(),
   billing_zip: z.string().optional(),
-  important_information: z.string().optional(),
   notes: z.string().optional(),
+  billing_differs_from_service: z.boolean().optional(),
+  deposit_required: z.boolean().optional(),
+}).refine((data) => {
+  if (data.billing_differs_from_service) {
+    return data.billing_address && data.billing_city && data.billing_state && data.billing_zip;
+  }
+  return true;
+}, {
+  message: "Billing address fields are required when billing differs from service address",
+  path: ["billing_address"],
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -39,10 +50,11 @@ interface Customer {
   billing_city?: string;
   billing_state?: string;
   billing_zip?: string;
-  important_information?: string;
   notes?: string;
   created_at: string;
   updated_at: string;
+  billing_differs_from_service?: boolean;
+  deposit_required?: boolean;
 }
 
 interface EditCustomerModalProps {
@@ -64,6 +76,8 @@ const CUSTOMER_TYPES = [
 export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
@@ -77,13 +91,26 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       billing_city: customer.billing_city || '',
       billing_state: customer.billing_state || '',
       billing_zip: customer.billing_zip || '',
-      important_information: customer.important_information || '',
       notes: customer.notes || '',
+      billing_differs_from_service: customer.billing_differs_from_service || false,
+      deposit_required: customer.deposit_required ?? true,
     },
   });
 
+  const billingDiffers = form.watch('billing_differs_from_service');
+  const depositRequired = form.watch('deposit_required');
+
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
+      // If billing doesn't differ, copy service address to billing
+      if (!data.billing_differs_from_service) {
+        const serviceAddressParts = data.address?.split(',') || [];
+        data.billing_address = serviceAddressParts[0]?.trim() || '';
+        data.billing_city = serviceAddressParts[1]?.trim() || '';
+        data.billing_state = serviceAddressParts[2]?.trim() || '';
+        data.billing_zip = serviceAddressParts[3]?.trim() || '';
+      }
+      
       const { error } = await supabase
         .from('customers')
         .update({
@@ -113,85 +140,163 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
     },
   });
 
+  const handleDepositToggle = (checked: boolean) => {
+    if (!checked) {
+      // Turning deposit requirement ON (checked = false means deposit required = true)
+      form.setValue('deposit_required', true);
+    } else {
+      // Turning deposit requirement OFF - show confirmation
+      setShowConfirmDialog(true);
+    }
+  };
+
+  const confirmDepositChange = () => {
+    if (confirmText.toLowerCase() === 'no deposit') {
+      form.setValue('deposit_required', false);
+      setShowConfirmDialog(false);
+      setConfirmText('');
+      toast({
+        title: 'Deposit Requirement Updated',
+        description: 'Customer no longer requires a deposit',
+      });
+    } else {
+      toast({
+        title: 'Confirmation Failed',
+        description: 'Please type "no deposit" exactly to confirm',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const onSubmit = (data: CustomerFormData) => {
     updateCustomerMutation.mutate(data);
   };
 
+  // Sync billing address when toggle changes
+  useEffect(() => {
+    if (!billingDiffers && form.getValues('address')) {
+      const serviceAddressParts = form.getValues('address')?.split(',') || [];
+      form.setValue('billing_address', serviceAddressParts[0]?.trim() || '');
+      form.setValue('billing_city', serviceAddressParts[1]?.trim() || '');
+      form.setValue('billing_state', serviceAddressParts[2]?.trim() || '');
+      form.setValue('billing_zip', serviceAddressParts[3]?.trim() || '');
+    }
+  }, [billingDiffers, form]);
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Edit Customer Information</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Customer Information</DialogTitle>
+          </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            
-            {/* Contact Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Contact Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name *</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter company name" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="customer_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Customer Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              
+              {/* Contact Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Contact Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company Name *</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select customer type" />
-                          </SelectTrigger>
+                          <Input {...field} placeholder="Enter company name" />
                         </FormControl>
-                        <SelectContent>
-                          {CUSTOMER_TYPES.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
+                  <FormField
+                    control={form.control}
+                    name="customer_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Customer Type</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select customer type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {CUSTOMER_TYPES.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" placeholder="Enter email address" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Enter phone number" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* General Notes */}
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="notes"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
+                    <FormItem className="mt-4">
+                      <FormLabel>General Notes</FormLabel>
                       <FormControl>
-                        <Input {...field} type="email" placeholder="Enter email address" />
+                        <Textarea
+                          {...field}
+                          placeholder="e.g., gate code is 1234, special access instructions..."
+                          rows={3}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
 
+              {/* Service Address */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Service Address</h3>
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Address</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter phone number" />
+                        <Input {...field} placeholder="Enter service address" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -199,139 +304,162 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                 />
               </div>
 
-              {/* General Notes */}
+              {/* Billing Address Toggle */}
               <FormField
                 control={form.control}
-                name="notes"
+                name="billing_differs_from_service"
                 render={({ field }) => (
-                  <FormItem className="mt-4">
-                    <FormLabel>General Notes</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Billing address differs from service address
+                      </FormLabel>
+                    </div>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="e.g., gate code is 1234, special access instructions..."
-                        rows={3}
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Service Address */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Service Address</h3>
+              {/* Conditional Billing Address Fields */}
+              {billingDiffers && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Billing Address</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="billing_address"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>Street Address *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="123 Main St" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="billing_city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="City" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="billing_state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="State" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="billing_zip"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="12345" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Deposit Toggle */}
               <FormField
                 control={form.control}
-                name="address"
+                name="deposit_required"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Deposit not required
+                      </FormLabel>
+                    </div>
                     <FormControl>
-                      <Input {...field} placeholder="Enter service address" />
+                      <Switch
+                        checked={!field.value}
+                        onCheckedChange={handleDepositToggle}
+                      />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Billing Address */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Billing Address</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="billing_address"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Street Address</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter billing address" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="billing_city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter city" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="billing_state"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>State</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter state" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="billing_zip"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>ZIP Code</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter ZIP code" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="flex justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={updateCustomerMutation.isPending}>
+                  {updateCustomerMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
               </div>
-            </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
-            {/* Important Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Important Information</h3>
-              <FormField
-                control={form.control}
-                name="important_information"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Enter any important information about this customer..."
-                        rows={4}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={updateCustomerMutation.isPending}>
-                {updateCustomerMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="border-green-200">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-green-800">Confirm No Deposit Required</AlertDialogTitle>
+            <AlertDialogDescription className="text-green-600">
+              Are you sure this customer does not require a deposit? This will change their credit status.
+              <br /><br />
+              Type <strong>"no deposit"</strong> to confirm:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-4">
+            <Input
+              placeholder="Type 'no deposit' to confirm"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              className="border-green-300 focus:border-green-500"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setShowConfirmDialog(false);
+                setConfirmText('');
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDepositChange}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

@@ -1171,6 +1171,7 @@ export type Database = {
           address: string | null
           billing_address: string | null
           billing_city: string | null
+          billing_differs_from_service: boolean
           billing_state: string | null
           billing_street: string | null
           billing_street2: string | null
@@ -1179,6 +1180,7 @@ export type Database = {
           created_at: string
           credit_not_approved: boolean | null
           customer_type: Database["public"]["Enums"]["customer_type"] | null
+          deposit_required: boolean
           email: string | null
           id: string
           important_information: string | null
@@ -1198,6 +1200,7 @@ export type Database = {
           address?: string | null
           billing_address?: string | null
           billing_city?: string | null
+          billing_differs_from_service?: boolean
           billing_state?: string | null
           billing_street?: string | null
           billing_street2?: string | null
@@ -1206,6 +1209,7 @@ export type Database = {
           created_at?: string
           credit_not_approved?: boolean | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
+          deposit_required?: boolean
           email?: string | null
           id?: string
           important_information?: string | null
@@ -1225,6 +1229,7 @@ export type Database = {
           address?: string | null
           billing_address?: string | null
           billing_city?: string | null
+          billing_differs_from_service?: boolean
           billing_state?: string | null
           billing_street?: string | null
           billing_street2?: string | null
@@ -1233,6 +1238,7 @@ export type Database = {
           created_at?: string
           credit_not_approved?: boolean | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
+          deposit_required?: boolean
           email?: string | null
           id?: string
           important_information?: string | null

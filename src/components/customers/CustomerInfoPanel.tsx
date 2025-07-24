@@ -20,6 +20,8 @@ interface Customer {
   notes?: string;
   created_at: string;
   updated_at: string;
+  billing_differs_from_service?: boolean;
+  deposit_required?: boolean;
 }
 
 interface CustomerInfoPanelProps {
@@ -29,15 +31,30 @@ interface CustomerInfoPanelProps {
 export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
 
-   const getCustomerTypeColor = (type?: string) => {
-     switch (type) {
-       case 'commercial': return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-medium px-3 py-1 rounded-full';
-       case 'residential': return 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-medium px-3 py-1 rounded-full';
-       case 'government': return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-medium px-3 py-1 rounded-full';
-       case 'event': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-medium px-3 py-1 rounded-full';
-       default: return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-medium px-3 py-1 rounded-full';
-     }
-   };
+  const getCustomerTypeColor = (type?: string) => {
+    switch (type) {
+      case 'commercial': return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+      case 'residential': return 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+      case 'government': return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+      case 'event': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+      default: return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-medium px-3 py-1 rounded-full';
+    }
+  };
+
+  const getDepositStatusBadge = () => {
+    if (customer.deposit_required === false) {
+      return (
+        <Badge variant="success" className="font-bold">
+          No Deposit Needed
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="destructive" className="font-bold">
+        Deposit Required
+      </Badge>
+    );
+  };
 
   const formatAddress = (address?: string, city?: string, state?: string, zip?: string) => {
     const parts = [address, city, state, zip].filter(Boolean);
@@ -181,13 +198,11 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
           <CardTitle className="text-lg font-semibold">Account Status</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Credit Status</span>
-            <Badge className="bg-green-100 text-green-800">Good Standing</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Deposit Required</span>
-            <span className="text-foreground">No</span>
+          <div className="space-y-3">
+            <div>
+              <span className="text-muted-foreground block mb-2">Credit Status</span>
+              {getDepositStatusBadge()}
+            </div>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Customer Since</span>
