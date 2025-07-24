@@ -310,3 +310,14 @@
     }
   }
 }
+
+/* Primary button styling */
+.btn-primary {
+  background: linear-gradient(135deg, hsl(var(--btn-start)), hsl(var(--btn-end)));
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, hsl(var(--btn-end)), hsl(var(--btn-start)));
+}
