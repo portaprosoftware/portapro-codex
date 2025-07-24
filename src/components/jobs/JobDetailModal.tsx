@@ -182,24 +182,62 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     }
   };
 
+  const statusConfig = {
+    assigned: { 
+      gradient: 'bg-gradient-blue', 
+      label: 'Assigned' 
+    },
+    in_progress: { 
+      gradient: 'bg-gradient-orange', 
+      label: 'In Progress' 
+    },
+    'in-progress': { 
+      gradient: 'bg-gradient-orange', 
+      label: 'In Progress' 
+    },
+    completed: { 
+      gradient: 'bg-gradient-green', 
+      label: 'Completed' 
+    },
+    cancelled: { 
+      gradient: 'bg-gradient-red', 
+      label: 'Cancelled' 
+    },
+    pending: { 
+      gradient: 'bg-gradient-yellow', 
+      label: 'Pending' 
+    },
+    overdue: { 
+      gradient: 'bg-gradient-red', 
+      label: 'Overdue' 
+    }
+  };
+
+  const jobTypeConfig = {
+    delivery: {
+      color: 'bg-gradient-blue',
+      label: 'Delivery'
+    },
+    pickup: {
+      color: 'bg-gradient-orange',
+      label: 'Pickup'
+    },
+    service: {
+      color: 'bg-gradient-green',
+      label: 'Service'
+    },
+    return: {
+      color: 'bg-gradient-purple',
+      label: 'Return'
+    }
+  };
+
   const getStatusColor = (status: string) => {
-    const colors = {
-      assigned: 'bg-[#3366FF] text-white',
-      in_progress: 'bg-[#FF9933] text-white',
-      completed: 'bg-[#33CC66] text-white',
-      cancelled: 'bg-red-500 text-white',
-      pending: 'bg-yellow-500 text-white'
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-500 text-white';
+    return statusConfig[status as keyof typeof statusConfig]?.gradient || 'bg-gray-500';
   };
 
   const getJobTypeColor = (type: string) => {
-    const colors = {
-      delivery: 'text-blue-600',
-      pickup: 'text-green-600',
-      service: 'text-orange-600'
-    };
-    return colors[type as keyof typeof colors] || 'text-gray-600';
+    return jobTypeConfig[type as keyof typeof jobTypeConfig]?.color || 'bg-gray-500';
   };
 
   if (!job && !isLoading) {
@@ -218,12 +256,12 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               <div className="flex items-center space-x-2 mt-2">
                 {job && (
                   <>
-                    <Badge className={cn("text-xs", getStatusColor(job.status))}>
+                    <Badge className={cn("text-xs text-white rounded-full", getStatusColor(job.status))}>
                       {job.status.replace('_', ' ').toUpperCase()}
                     </Badge>
-                    <span className={cn("text-sm font-medium", getJobTypeColor(job.job_type))}>
+                    <Badge className={cn("text-xs text-white rounded-full", getJobTypeColor(job.job_type))}>
                       {job.job_type.toUpperCase()}
-                    </span>
+                    </Badge>
                   </>
                 )}
               </div>
