@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 interface WorkingHour {
   driver_id: string;
   day_of_week: number;
-  is_working: boolean;
+  is_active: boolean;
   start_time: string;
   end_time: string;
 }

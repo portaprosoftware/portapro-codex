@@ -15,32 +15,36 @@ import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import { EditUserModal } from "./EditUserModal";
 
 const userFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  role: z.enum(["owner", "dispatch", "driver", "customer"]),
+  role: z.enum(["owner", "dispatcher", "driver", "customer", "admin"]),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
   owner: "bg-gradient-primary",
-  dispatch: "bg-gradient-secondary", 
+  dispatcher: "bg-gradient-secondary", 
   driver: "bg-gradient-accent",
   customer: "bg-gradient-warning",
+  admin: "bg-gradient-destructive",
 };
 
 const roleLabels = {
   owner: "Owner",
-  dispatch: "Dispatch",
+  dispatcher: "Dispatcher",
   driver: "Driver", 
   customer: "Customer",
+  admin: "Admin",
 };
 
 export function UserManagementSection() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const { isOwner } = useUserRole();
@@ -94,7 +98,7 @@ export function UserManagementSection() {
         .from("user_roles")
         .insert({
           user_id: profileId,
-          role: data.role === "dispatch" ? "dispatcher" : data.role,
+          role: data.role,
         });
 
       if (roleError) throw roleError;
@@ -248,7 +252,8 @@ export function UserManagementSection() {
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="driver">Driver</SelectItem>
-                            <SelectItem value="dispatch">Dispatch</SelectItem>
+                            <SelectItem value="dispatcher">Dispatcher</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
                             <SelectItem value="owner">Owner</SelectItem>
                           </SelectContent>
@@ -297,7 +302,8 @@ export function UserManagementSection() {
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="owner">Owner</SelectItem>
-              <SelectItem value="dispatch">Dispatch</SelectItem>
+              <SelectItem value="dispatcher">Dispatcher</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="driver">Driver</SelectItem>
               <SelectItem value="customer">Customer</SelectItem>
             </SelectContent>
@@ -351,7 +357,11 @@ export function UserManagementSection() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => setEditingUser(user)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button 
@@ -368,6 +378,15 @@ export function UserManagementSection() {
               ))}
             </TableBody>
           </Table>
+        )}
+
+        {/* Edit User Modal */}
+        {editingUser && (
+          <EditUserModal
+            user={editingUser}
+            open={!!editingUser}
+            onOpenChange={(open) => !open && setEditingUser(null)}
+          />
         )}
       </CardContent>
     </Card>

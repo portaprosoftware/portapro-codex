@@ -18,7 +18,7 @@ interface EditDriverHoursModalProps {
 
 interface DaySchedule {
   day_of_week: number;
-  is_working: boolean;
+  is_active: boolean;
   start_time: string;
   end_time: string;
 }
@@ -72,7 +72,7 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
         const existing = existingHours.find((h: any) => h.day_of_week === day.key);
         return existing || {
           day_of_week: day.key,
-          is_working: false,
+          is_active: false,
           start_time: '09:00',
           end_time: '17:00'
         };
@@ -119,9 +119,9 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
     }
   });
 
-  const handleDayToggle = (dayIndex: number, isWorking: boolean) => {
+  const handleDayToggle = (dayIndex: number, isActive: boolean) => {
     setSchedule(prev => prev.map((day, index) => 
-      index === dayIndex ? { ...day, is_working: isWorking } : day
+      index === dayIndex ? { ...day, is_active: isActive } : day
     ));
   };
 
@@ -134,7 +134,7 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
   const applyTemplate = (template: typeof QUICK_TEMPLATES[0]) => {
     setSchedule(prev => prev.map((day, index) => ({
       ...day,
-      is_working: template.pattern[index]
+      is_active: template.pattern[index]
     })));
   };
 
@@ -213,7 +213,7 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
                   <div key={day.key} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
                       <div className="w-20">
-                        <Badge variant={daySchedule.is_working ? "default" : "secondary"}>
+                        <Badge variant={daySchedule.is_active ? "default" : "secondary"}>
                           {day.short}
                         </Badge>
                       </div>
@@ -221,15 +221,15 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
                         {day.label}
                       </div>
                       <Switch
-                        checked={daySchedule.is_working}
+                        checked={daySchedule.is_active}
                         onCheckedChange={(checked) => handleDayToggle(index, checked)}
                       />
                       <span className="text-sm text-muted-foreground">
-                        {daySchedule.is_working ? 'Working' : 'Off'}
+                        {daySchedule.is_active ? 'Working' : 'Off'}
                       </span>
                     </div>
 
-                    {daySchedule.is_working && (
+                    {daySchedule.is_active && (
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
                           <Label className="text-sm">Start:</Label>

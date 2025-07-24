@@ -58,7 +58,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
       return { text: "No Hours Set", variant: "destructive" as const };
     }
     
-    const activeDays = workingHours.filter((h: any) => h.is_working).length;
+    const activeDays = workingHours.filter((h: any) => h.is_active).length;
     return { 
       text: `Hours Set (${activeDays} days)`, 
       variant: "default" as const 
