@@ -106,6 +106,8 @@ export function UserManagementSection() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
       toast.success("User created successfully");
       setIsCreateModalOpen(false);
       form.reset();
@@ -136,6 +138,8 @@ export function UserManagementSection() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
       toast.success("User deleted successfully");
     },
     onError: (error) => {

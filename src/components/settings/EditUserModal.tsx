@@ -71,7 +71,8 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
-      queryClient.invalidateQueries({ queryKey: ["drivers-for-hours"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
       toast.success("User updated successfully");
       onOpenChange(false);
     },

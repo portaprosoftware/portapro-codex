@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 interface WorkingHour {
   driver_id: string;
@@ -32,7 +33,9 @@ export function useDriverWorkingHours(driverId?: string) {
 }
 
 export function useDriversWithHours() {
-  return useQuery({
+  const queryClient = useQueryClient();
+  
+  const query = useQuery({
     queryKey: ['drivers-with-hours'],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_drivers_with_hours');
@@ -40,6 +43,52 @@ export function useDriversWithHours() {
       return data;
     },
   });
+
+  // Set up real-time subscriptions for automatic updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('driver-data-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_roles'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'driver_working_hours'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  return query;
 }
 
 export function useUpdateDriverWorkingHours() {
@@ -67,7 +116,8 @@ export function useUpdateDriverWorkingHours() {
         description: "Driver working hours updated successfully",
       });
       queryClient.invalidateQueries({ queryKey: ['driver-working-hours'] });
-      queryClient.invalidateQueries({ queryKey: ['drivers-for-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
     },
     onError: (error) => {
       toast({
