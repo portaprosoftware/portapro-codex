@@ -93,7 +93,7 @@ export default function Settings() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="max-w-none px-6 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Settings</h1>
           

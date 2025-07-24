@@ -130,8 +130,7 @@ const MarketingHub: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="max-w-none px-6 py-6 min-h-screen bg-gray-50">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Marketing Hub</h1>
@@ -288,7 +287,6 @@ const MarketingHub: React.FC = () => {
             </p>
           </div>
         )}
-      </div>
     </div>
   );
 };
