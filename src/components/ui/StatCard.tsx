@@ -57,7 +57,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       "bg-gradient-to-b from-[#F6F9FF] to-white",
       "rounded-xl border border-gray-200 shadow-sm",
       "hover:shadow-md hover:-translate-y-1",
-      "p-6 mb-6",
+      "p-4 mb-4",
       className
     )}>
       {/* Gradient left border */}
@@ -69,37 +69,37 @@ export const StatCard: React.FC<StatCardProps> = ({
       />
       
       {/* Icon container */}
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-3">
         <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-sm transition-all duration-200"
+          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm transition-all duration-200"
           style={{ 
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
           }}
         >
-          <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
+          <Icon className="w-5 h-5 text-white" strokeWidth={1.5} />
         </div>
       </div>
       
       {/* Value */}
-      <div className="text-3xl font-bold text-gray-900 leading-none mb-2 font-sans">
+      <div className="text-2xl font-bold text-gray-900 leading-none mb-1 font-sans">
         {displayValue}
       </div>
       
       {/* Title */}
-      <div className="text-base font-semibold text-gray-900 mb-2 font-sans">
+      <div className="text-sm font-semibold text-gray-900 mb-1 font-sans">
         {title}
       </div>
       
       {/* Subtitle */}
       {subtitle && (
-        <div className={cn("text-sm font-medium font-sans", subtitleColor)}>
+        <div className={cn("text-xs font-medium font-sans", subtitleColor)}>
           {subtitle}
         </div>
       )}
       
       {/* Chart */}
       {chart && (
-        <div className="mt-4">
+        <div className="mt-3">
           {chart}
         </div>
       )}

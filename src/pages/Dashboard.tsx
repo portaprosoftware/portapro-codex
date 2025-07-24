@@ -1,5 +1,7 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Clock } from "@/components/ui/Clock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -18,8 +20,41 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
   // Mock data for sparkline (jobs over the past week)
   const jobsSparklineData = [2, 3, 1, 4, 2, 5, 3];
+
+  // Fetch company settings for timezone
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('company_timezone')
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Update time based on company timezone
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const timezone = companySettings?.company_timezone || 'America/New_York';
+      
+      // Create time in company timezone
+      const timeInTimezone = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+      setCurrentTime(timeInTimezone);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [companySettings?.company_timezone]);
   
   return (
     <div className="space-y-8 font-sans">
@@ -38,6 +73,26 @@ const Dashboard = () => {
             </Badge>
           </div>
           
+          {/* Digital Date and Time - Center */}
+          <div className="text-center flex-shrink-0">
+            <div className="text-2xl font-bold text-gray-900 font-mono">
+              {currentTime.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+              })}
+            </div>
+            <div className="text-base text-gray-600 font-sans">
+              {currentTime.toLocaleDateString([], { 
+                weekday: 'long',
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </div>
+          </div>
+          
+          {/* Analog Clock - Right */}
           <div className="flex-shrink-0">
             <Clock />
           </div>
@@ -45,7 +100,7 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Row 1 */}
         <StatCard
           title="Total Units"
