@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, Calculator, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getCategoryLabel } from '@/lib/consumableCategories';
 
 interface StockCountModalProps {
   isOpen: boolean;
@@ -74,7 +75,7 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
     enabled: isOpen
   });
 
-  const categories = [...new Set((consumables as any)?.map((c: any) => c.category) || [])];
+  const existingCategories = [...new Set((consumables as any)?.map((c: any) => c.category) || [])];
 
   const stockCountMutation = useMutation({
     mutationFn: async (countData: any) => {
@@ -235,9 +236,9 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {(categories as string[]).map(category => (
+                  {(existingCategories as string[]).map(category => (
                     <SelectItem key={category} value={category}>
-                      {category}
+                      {getCategoryLabel(category)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -308,7 +309,7 @@ export const StockCountModal: React.FC<StockCountModalProps> = ({
                   {filteredItems.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell>{item.category}</TableCell>
+                      <TableCell>{getCategoryLabel(item.category)}</TableCell>
                       <TableCell>{item.system_qty}</TableCell>
                       <TableCell>
                         <Input

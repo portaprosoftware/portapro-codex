@@ -15,6 +15,7 @@ import { EnterpriseIntegrationsHub } from './EnterpriseIntegrationsHub';
 import { RealTimeCollaborationSystem } from './RealTimeCollaborationSystem';
 import { EnterpriseReportingSystem } from './EnterpriseReportingSystem';
 import { ConsumablesReportsTab } from './ConsumablesReportsTab';
+import { CategoryMigrationAlert } from './CategoryMigrationAlert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone, Globe, Users, FileText } from 'lucide-react';
@@ -118,6 +119,8 @@ export const ConsumablesInventory: React.FC = () => {
         </TabsList>
 
         <TabsContent value="inventory" className="space-y-6">
+          <CategoryMigrationAlert />
+          
           <div className="flex justify-between items-center">
             <div className="flex gap-4">
               <Button onClick={() => setShowAddModal(true)}>

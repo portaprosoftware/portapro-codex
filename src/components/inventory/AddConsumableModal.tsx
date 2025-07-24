@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
+import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 
 interface AddConsumableModalProps {
   isOpen: boolean;
@@ -29,17 +30,6 @@ interface ConsumableFormData {
   notes?: string;
 }
 
-const categories = [
-  'Cleaning Supplies',
-  'Maintenance',
-  'Office Supplies',
-  'Safety Equipment',
-  'Tools',
-  'Parts',
-  'Chemicals',
-  'Paper Products',
-  'Other'
-];
 
 export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
   isOpen,
@@ -129,9 +119,12 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map(category => (
-                          <SelectItem key={category} value={category}>
-                            {category}
+                        {CONSUMABLE_CATEGORIES.map(category => (
+                          <SelectItem key={category.value} value={category.value}>
+                            <div className="flex flex-col">
+                              <span>{category.label}</span>
+                              <span className="text-xs text-muted-foreground">{category.description}</span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Edit, Package, TrendingDown, DollarSign } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { getCategoryLabel } from '@/lib/consumableCategories';
 
 interface Consumable {
   id: string;
@@ -160,7 +161,7 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                       </div>
                     </td>
                     <td className="p-2">
-                      <Badge variant="outline">{consumable.category}</Badge>
+                      <Badge variant="outline">{getCategoryLabel(consumable.category)}</Badge>
                     </td>
                     <td className="p-2 text-sm">{consumable.sku || '-'}</td>
                     <td className="p-2">
