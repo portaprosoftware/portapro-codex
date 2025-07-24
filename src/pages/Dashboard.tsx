@@ -167,7 +167,7 @@ const Dashboard = () => {
           
           {/* Analog Clock - Right */}
           <div className="flex-shrink-0">
-            <Clock />
+            <Clock timezone={companySettings?.company_timezone || 'America/New_York'} />
           </div>
         </div>
       </div>

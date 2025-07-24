@@ -1,16 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
 
-export const Clock: React.FC = () => {
+interface ClockProps {
+  timezone?: string;
+}
+
+export const Clock: React.FC<ClockProps> = ({ timezone = 'America/New_York' }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
+    const updateTime = () => {
+      const now = new Date();
+      // Create time in specified timezone
+      const timeInTimezone = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+      setTime(timeInTimezone);
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [timezone]);
 
   const secondAngle = (time.getSeconds() * 6) - 90;
   const minuteAngle = (time.getMinutes() * 6) + (time.getSeconds() * 0.1) - 90;
