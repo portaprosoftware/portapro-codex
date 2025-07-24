@@ -118,6 +118,15 @@ const JobsPage: React.FC = () => {
     }
   }, [activeTab, queryClient]);
 
+  // Create stable key for drag context that only changes when we actually need to reinitialize
+  const [dragContextKey, setDragContextKey] = useState(0);
+  
+  useEffect(() => {
+    if (activeTab === 'dispatch') {
+      setDragContextKey(prev => prev + 1);
+    }
+  }, [activeTab]);
+
   const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
     setActiveTab(tab);
     
@@ -155,10 +164,14 @@ const JobsPage: React.FC = () => {
 
   // Handle drag and drop with error handling and validation
   const handleDragEnd = useCallback((result: DropResult) => {
+    console.log('Drag operation completed:', result);
+    console.log('Available dispatch jobs:', dispatchJobs.map(j => ({ id: j.id, job_number: j.job_number })));
+    
     const { destination, source, draggableId } = result;
 
     // Check if drop destination exists
     if (!destination) {
+      console.log('No destination - drag cancelled');
       return;
     }
 
@@ -167,18 +180,29 @@ const JobsPage: React.FC = () => {
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
+      console.log('Same position - no change needed');
       return;
     }
 
     // Validate job exists in current data
     const jobExists = dispatchJobs.find(job => job.id === draggableId);
     if (!jobExists) {
+      console.error('Job not found in dispatchJobs:', draggableId);
+      console.error('Available job IDs:', dispatchJobs.map(j => j.id));
       toast.error('Job not found. Please refresh the page.');
       return;
     }
 
     const jobId = draggableId;
     const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
+    
+    console.log('Updating job assignment:', { 
+      jobId, 
+      from: source.droppableId, 
+      to: destination.droppableId, 
+      newDriverId,
+      jobNumber: jobExists.job_number 
+    });
     
     updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
   }, [updateJobAssignmentMutation, dispatchJobs]);
@@ -388,7 +412,7 @@ const JobsPage: React.FC = () => {
           {activeTab === 'dispatch' && (
             <DragDropContext 
               onDragEnd={handleDragEnd}
-              key={`drag-context-${activeTab}-${Date.now()}`}
+              key={`drag-context-${dragContextKey}`}
             >
               <div className="bg-white">
                 {/* Dispatch Header */}
