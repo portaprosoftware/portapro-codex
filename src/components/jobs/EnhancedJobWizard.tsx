@@ -196,12 +196,9 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           <JobTypeTimezoneStep
             data={{
               jobType: data.jobType,
-              timezone: data.timezone,
-              customerTimezone: data.customerTimezone,
-              timezoneSource: data.timezoneSource
+              timezone: data.timezone
             }}
             onUpdate={(stepData) => updateStepData(stepData)}
-            customerId={customerId}
           />
         );
       
@@ -212,11 +209,10 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
               jobType: data.jobType,
               deliveryDate: data.deliveryDate,
               deliveryTime: data.deliveryTime,
-              hasDeliveryTime: data.hasDeliveryTime,
               returnScheduleEnabled: data.returnScheduleEnabled,
               fullPickupDate: data.fullPickupDate,
               fullPickupTime: data.fullPickupTime,
-              partialPickupEnabled: data.partialPickupEnabled,
+              partialPickupsEnabled: data.partialPickupEnabled,
               partialPickups: data.partialPickups,
               serviceDate: data.serviceDate,
               serviceTime: data.serviceTime
@@ -231,8 +227,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           <LocationContactsStep
             data={{
               selectedLocationId: data.selectedLocation?.id,
-              customLocation: data.customLocation,
-              selectedContacts: data.selectedContacts
+              selectedContactIds: data.selectedContacts.map(c => c.id)
             }}
             onUpdate={(stepData) => updateStepData(stepData)}
             customerId={customerId}
