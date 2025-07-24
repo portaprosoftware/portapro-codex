@@ -55,8 +55,6 @@ interface EditDropPinModalProps {
   onSuccess: () => void;
 }
 
-// Categories will be loaded dynamically from database
-
 export function EditDropPinModal({ 
   customerId,
   serviceLocations,
@@ -89,7 +87,7 @@ export function EditDropPinModal({
         .order('name');
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: isOpen
   });
@@ -320,7 +318,7 @@ export function EditDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {serviceLocations.map((location) => (
+                          {serviceLocations?.filter(location => location.id && location.location_name).map((location) => (
                             <SelectItem key={location.id} value={location.id}>
                               {location.location_name}
                             </SelectItem>
@@ -359,7 +357,7 @@ export function EditDropPinModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {categories.map((category) => (
+                          {categories?.filter(category => category.name && category.name.trim() !== '').map((category) => (
                             <SelectItem key={category.id} value={category.name}>
                               <div className="flex items-center gap-2">
                                 <div 

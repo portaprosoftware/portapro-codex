@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -56,8 +55,6 @@ interface AddDropPinModalProps {
   initialCoordinates?: { lat: number; lng: number };
 }
 
-// Categories will be loaded dynamically from database
-
 export function AddDropPinModal({ 
   customerId,
   serviceLocations,
@@ -90,7 +87,7 @@ export function AddDropPinModal({
         .order('name');
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: isOpen
   });
@@ -312,117 +309,117 @@ export function AddDropPinModal({
           <div>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="service_location_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Service Location *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a service location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {serviceLocations.map((location) => (
-                        <SelectItem key={location.id} value={location.id}>
-                          {location.location_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="service_location_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Location *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a service location" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {serviceLocations?.filter(location => location.id && location.location_name).map((location) => (
+                            <SelectItem key={location.id} value={location.id}>
+                              {location.location_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="point_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Point Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Main Entrance, Unit Area A" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="point_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Point Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Main Entrance, Unit Area A" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full border"
-                              style={{ backgroundColor: category.color }}
-                            />
-                            {category.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories?.filter(category => category.name && category.name.trim() !== '').map((category) => (
+                            <SelectItem key={category.id} value={category.name}>
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full border"
+                                  style={{ backgroundColor: category.color }}
+                                />
+                                {category.name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="latitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Latitude *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.000001"
-                        placeholder="0.000000"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="latitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Latitude *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.000001"
+                            placeholder="0.000000"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="longitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Longitude *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.000001"
-                        placeholder="0.000000"
-                        {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="longitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Longitude *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.000001"
+                            placeholder="0.000000"
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <div className="space-y-2">
                   <div className="text-sm text-muted-foreground text-center">
@@ -439,39 +436,39 @@ export function AddDropPinModal({
                   </Button>
                 </div>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Optional description or notes about this location"
-                      rows={2}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Optional description or notes about this location"
+                          rows={2}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="is_primary"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel>Set as Primary GPS Point</FormLabel>
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="is_primary"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel>Set as Primary GPS Point</FormLabel>
+                    </FormItem>
+                  )}
+                />
 
                 <div className="flex justify-end gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={onClose}>
