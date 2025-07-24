@@ -31,6 +31,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
+import { JobConsumablesTab } from './JobConsumablesTab';
 
 interface JobDetailModalProps {
   jobId: string | null;
@@ -806,6 +807,14 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </Card>
           </div>
         ) : null}
+
+        {/* Consumables Tab */}
+        <div className="space-y-4">
+          <div className="border-b">
+            <h3 className="text-lg font-semibold pb-2">Consumables Used</h3>
+          </div>
+          <JobConsumablesTab jobId={jobId || ''} />
+        </div>
       </DialogContent>
     </Dialog>
   );
