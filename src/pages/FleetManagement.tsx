@@ -1,12 +1,12 @@
 
 import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { FleetOverview } from "@/components/fleet/FleetOverview";
 
 export default function FleetManagement() {
   return (
-    <Layout>
+    <FleetLayout>
       <FleetOverview />
-    </Layout>
+    </FleetLayout>
   );
 }

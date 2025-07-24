@@ -3,17 +3,17 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Home, 
-  Calendar, 
-  Package, 
-  Users, 
+  LayoutDashboard, 
+  CalendarDays, 
+  Package2, 
+  Users2, 
   Truck, 
-  Settings,
+  Settings2,
   FileText,
-  BarChart3,
+  BarChart4,
   Wrench,
   Building2,
-  TrendingUp,
+  Megaphone,
   MessageSquare
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -48,25 +48,25 @@ const items: NavigationItem[] = [
   { 
     title: 'Dashboard', 
     url: '/', 
-    icon: Home
+    icon: LayoutDashboard
   },
   { 
     title: 'Jobs', 
     url: '/jobs', 
-    icon: Calendar,
+    icon: CalendarDays,
     permission: 'staff'
     // badge will be added dynamically
   },
   { 
     title: 'Customers', 
     url: '/customer-hub', 
-    icon: Users,
+    icon: Users2,
     permission: 'staff'
   },
   { 
     title: 'Inventory', 
     url: '/inventory', 
-    icon: Package,
+    icon: Package2,
     permission: 'staff'
   },
   { 
@@ -90,19 +90,19 @@ const items: NavigationItem[] = [
   { 
     title: 'Analytics', 
     url: '/analytics', 
-    icon: BarChart3,
+    icon: BarChart4,
     permission: 'admin'
   },
   { 
     title: 'Marketing', 
     url: '/marketing-hub', 
-    icon: TrendingUp,
+    icon: Megaphone,
     permission: 'admin'
   },
   { 
     title: 'Settings', 
     url: '/settings', 
-    icon: Settings,
+    icon: Settings2,
     permission: 'owner'
   },
 ];
