@@ -213,23 +213,9 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            {showReverseButton && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleReverse}
-                className="px-2 py-1 h-6 text-xs border-gray-300 hover:border-gray-400"
-                aria-label={`Reverse job ${job.job_number}`}
-              >
-                <Undo2 className="w-3 h-3 mr-1" />
-                Reverse
-              </Button>
-            )}
-            <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
-              {statusInfo.label}
-            </Badge>
-          </div>
+          <Badge className={`${statusInfo.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+            {statusInfo.label}
+          </Badge>
         </div>
         
         <div className="space-y-1 mb-3">
@@ -245,6 +231,21 @@ export const JobCard: React.FC<JobCardProps> = ({
             </div>
           )}
         </div>
+        
+        {showReverseButton && (
+          <div className="mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReverse}
+              className="w-full px-2 py-1 h-6 text-xs border-gray-300 hover:border-gray-400"
+              aria-label={`Reverse job ${job.job_number}`}
+            >
+              <Undo2 className="w-3 h-3 mr-1" />
+              Reverse
+            </Button>
+          </div>
+        )}
         
         <div className="flex space-x-2">
           <Button 
