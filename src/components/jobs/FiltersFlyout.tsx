@@ -114,34 +114,104 @@ export const FiltersFlyout: React.FC<FiltersFlyoutProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Job Type
               </label>
-              <select
-                value={selectedJobType}
-                onChange={(e) => onJobTypeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Job Types</option>
-                <option value="delivery">Delivery</option>
-                <option value="pickup">Pickup</option>
-                <option value="service">Service</option>
-                <option value="return">Partial Pickup</option>
-              </select>
+              <div className="space-y-2">
+                <button
+                  onClick={() => onJobTypeChange('all')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedJobType === 'all' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                  }`}
+                >
+                  All Job Types
+                </button>
+                <button
+                  onClick={() => onJobTypeChange('delivery')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedJobType === 'delivery' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  Delivery
+                </button>
+                <button
+                  onClick={() => onJobTypeChange('pickup')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedJobType === 'pickup' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                  Pickup
+                </button>
+                <button
+                  onClick={() => onJobTypeChange('service')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedJobType === 'service' ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  Service
+                </button>
+                <button
+                  onClick={() => onJobTypeChange('return')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedJobType === 'return' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                  Partial Pickup
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Status
               </label>
-              <select
-                value={selectedStatus}
-                onChange={(e) => onStatusChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Statuses</option>
-                <option value="assigned">Assigned</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                
-              </select>
+              <div className="space-y-2">
+                <button
+                  onClick={() => onStatusChange('all')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedStatus === 'all' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                  }`}
+                >
+                  All Statuses
+                </button>
+                <button
+                  onClick={() => onStatusChange('assigned')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedStatus === 'assigned' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  Assigned
+                </button>
+                <button
+                  onClick={() => onStatusChange('in_progress')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedStatus === 'in_progress' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                  In Progress
+                </button>
+                <button
+                  onClick={() => onStatusChange('completed')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedStatus === 'completed' ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  Completed
+                </button>
+                <button
+                  onClick={() => onStatusChange('cancelled')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
+                    selectedStatus === 'cancelled' ? 'border-gray-500 bg-gray-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                  Cancelled
+                </button>
+              </div>
             </div>
           </div>
         </div>

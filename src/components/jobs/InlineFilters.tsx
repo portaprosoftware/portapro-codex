@@ -64,10 +64,30 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         </SelectTrigger>
         <SelectContent className="bg-white border shadow-lg z-50">
           <SelectItem value="all">All Job Types</SelectItem>
-          <SelectItem value="delivery">Delivery</SelectItem>
-          <SelectItem value="pickup">Pickup</SelectItem>
-          <SelectItem value="service">Service</SelectItem>
-          <SelectItem value="return">Partial Pickup</SelectItem>
+          <SelectItem value="delivery">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              Delivery
+            </div>
+          </SelectItem>
+          <SelectItem value="pickup">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+              Pickup
+            </div>
+          </SelectItem>
+          <SelectItem value="service">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              Service
+            </div>
+          </SelectItem>
+          <SelectItem value="return">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+              Partial Pickup
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
 
@@ -78,10 +98,30 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         </SelectTrigger>
         <SelectContent className="bg-white border shadow-lg z-50">
           <SelectItem value="all">All Statuses</SelectItem>
-          <SelectItem value="assigned">Assigned</SelectItem>
-          <SelectItem value="in_progress">In Progress</SelectItem>
-          <SelectItem value="completed">Completed</SelectItem>
-          
+          <SelectItem value="assigned">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              Assigned
+            </div>
+          </SelectItem>
+          <SelectItem value="in_progress">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+              In Progress
+            </div>
+          </SelectItem>
+          <SelectItem value="completed">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              Completed
+            </div>
+          </SelectItem>
+          <SelectItem value="cancelled">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+              Cancelled
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
