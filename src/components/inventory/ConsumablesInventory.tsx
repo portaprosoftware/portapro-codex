@@ -11,9 +11,12 @@ import { JobConsumablesTracker } from './JobConsumablesTracker';
 import { ConsumableNotificationsPanel } from './ConsumableNotificationsPanel';
 import { AdvancedConsumableAnalytics } from './AdvancedConsumableAnalytics';
 import { ConsumablePWAManager } from './ConsumablePWAManager';
+import { EnterpriseIntegrationsHub } from './EnterpriseIntegrationsHub';
+import { RealTimeCollaborationSystem } from './RealTimeCollaborationSystem';
+import { EnterpriseReportingSystem } from './EnterpriseReportingSystem';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone } from 'lucide-react';
+import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone, Globe, Users, FileText } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Consumable {
@@ -78,7 +81,7 @@ export const ConsumablesInventory: React.FC = () => {
       />
       
       <Tabs defaultValue="inventory" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="inventory">
             <Package className="w-4 h-4 mr-2" />
             Inventory
@@ -106,6 +109,18 @@ export const ConsumablesInventory: React.FC = () => {
           <TabsTrigger value="pwa">
             <Smartphone className="w-4 h-4 mr-2" />
             Mobile PWA
+          </TabsTrigger>
+          <TabsTrigger value="integrations">
+            <Globe className="w-4 h-4 mr-2" />
+            Integrations
+          </TabsTrigger>
+          <TabsTrigger value="collaboration">
+            <Users className="w-4 h-4 mr-2" />
+            Collaboration
+          </TabsTrigger>
+          <TabsTrigger value="reporting">
+            <FileText className="w-4 h-4 mr-2" />
+            Enterprise Reports
           </TabsTrigger>
         </TabsList>
 
@@ -150,6 +165,18 @@ export const ConsumablesInventory: React.FC = () => {
 
         <TabsContent value="pwa">
           <ConsumablePWAManager />
+        </TabsContent>
+
+        <TabsContent value="integrations">
+          <EnterpriseIntegrationsHub />
+        </TabsContent>
+
+        <TabsContent value="collaboration">
+          <RealTimeCollaborationSystem />
+        </TabsContent>
+
+        <TabsContent value="reporting">
+          <EnterpriseReportingSystem />
         </TabsContent>
       </Tabs>
 

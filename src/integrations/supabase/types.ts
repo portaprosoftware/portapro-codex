@@ -335,6 +335,125 @@ export type Database = {
         }
         Relationships: []
       }
+      consumable_stock_adjustments: {
+        Row: {
+          adjusted_by: string | null
+          adjustment_type: string
+          consumable_id: string
+          created_at: string
+          id: string
+          new_quantity: number
+          notes: string | null
+          previous_quantity: number
+          quantity_change: number
+          reason: string
+          reference_id: string | null
+        }
+        Insert: {
+          adjusted_by?: string | null
+          adjustment_type: string
+          consumable_id: string
+          created_at?: string
+          id?: string
+          new_quantity: number
+          notes?: string | null
+          previous_quantity: number
+          quantity_change: number
+          reason: string
+          reference_id?: string | null
+        }
+        Update: {
+          adjusted_by?: string | null
+          adjustment_type?: string
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          new_quantity?: number
+          notes?: string | null
+          previous_quantity?: number
+          quantity_change?: number
+          reason?: string
+          reference_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumable_stock_adjustments_adjusted_by_fkey"
+            columns: ["adjusted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_adjustments_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consumables: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          on_hand_qty: number
+          reorder_threshold: number
+          sku: string | null
+          supplier_info: Json | null
+          unit_cost: number
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          on_hand_qty?: number
+          reorder_threshold?: number
+          sku?: string | null
+          supplier_info?: Json | null
+          unit_cost?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          on_hand_qty?: number
+          reorder_threshold?: number
+          sku?: string | null
+          supplier_info?: Json | null
+          unit_cost?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coordinate_equipment_assignments: {
         Row: {
           coordinate_id: string
@@ -1834,6 +1953,67 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_consumables: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          id: string
+          job_id: string
+          line_total: number
+          notes: string | null
+          quantity: number
+          unit_price: number
+          used_at: string
+          used_by: string | null
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          id?: string
+          job_id: string
+          line_total: number
+          notes?: string | null
+          quantity: number
+          unit_price: number
+          used_at?: string
+          used_by?: string | null
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          job_id?: string
+          line_total?: number
+          notes?: string | null
+          quantity?: number
+          unit_price?: number
+          used_at?: string
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_consumables_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_consumables_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_consumables_used_by_fkey"
+            columns: ["used_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3486,6 +3666,105 @@ export type Database = {
           },
         ]
       }
+      purchase_order_items: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          id: string
+          line_total: number
+          purchase_order_id: string
+          quantity: number
+          unit_cost: number
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          id?: string
+          line_total: number
+          purchase_order_id: string
+          quantity: number
+          unit_cost: number
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          line_total?: number
+          purchase_order_id?: string
+          quantity?: number
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          order_date: string
+          received_by: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string
+          received_by?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string
+          received_by?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_received_by_fkey"
+            columns: ["received_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth_key: string
@@ -3521,6 +3800,82 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      qr_consumable_requests: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          customer_email: string | null
+          customer_message: string | null
+          customer_phone: string | null
+          id: string
+          is_read: boolean
+          photo_url: string | null
+          priority: string
+          processed_at: string | null
+          processed_by: string | null
+          quantity: number
+          status: string
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          customer_email?: string | null
+          customer_message?: string | null
+          customer_phone?: string | null
+          id?: string
+          is_read?: boolean
+          photo_url?: string | null
+          priority?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          quantity?: number
+          status?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_message?: string | null
+          customer_phone?: string | null
+          id?: string
+          is_read?: boolean
+          photo_url?: string | null
+          priority?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          quantity?: number
+          status?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_consumable_requests_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qr_consumable_requests_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qr_consumable_requests_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       qr_feedback: {
         Row: {
@@ -5775,6 +6130,15 @@ export type Database = {
     }
     Enums: {
       app_role: "owner" | "dispatcher" | "driver" | "customer" | "admin"
+      consumable_category:
+        | "sanitizer"
+        | "deodorizer"
+        | "paper_products"
+        | "cleaning_supplies"
+        | "chemicals"
+        | "hardware"
+        | "tools"
+        | "other"
       customer_type:
         | "events_festivals"
         | "sports_recreation"
@@ -5912,6 +6276,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["owner", "dispatcher", "driver", "customer", "admin"],
+      consumable_category: [
+        "sanitizer",
+        "deodorizer",
+        "paper_products",
+        "cleaning_supplies",
+        "chemicals",
+        "hardware",
+        "tools",
+        "other",
+      ],
       customer_type: [
         "events_festivals",
         "sports_recreation",
