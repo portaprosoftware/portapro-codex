@@ -27,15 +27,34 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
+				// Reference Blue Gradient System
+				'btn-start': 'hsl(var(--btn-start))',
+				'btn-end': 'hsl(var(--btn-end))',
+				
+				// Feature Colors (enhanced blue variations)
+				blue: {
+					DEFAULT: 'hsl(var(--blue-500))',
+					500: 'hsl(var(--blue-500))',
+					600: 'hsl(217, 91%, 55%)',
+					700: 'hsl(217, 91%, 50%)',
+				},
+				
 				// Legacy colors for backward compatibility
 				purple: {
 					DEFAULT: 'hsl(var(--purple))',
 					light: 'hsl(var(--purple-light))',
+					500: 'hsl(var(--purple-500))',
 				},
 				orange: {
 					DEFAULT: 'hsl(var(--orange))',
 					light: 'hsl(var(--orange-light))',
+					500: 'hsl(var(--orange-500))',
 				},
+				green: {
+					500: 'hsl(var(--green-500))',
+				},
+				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
@@ -96,8 +115,14 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-secondary': 'var(--gradient-secondary)',
 				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)'
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-blue': 'var(--gradient-blue)',
+				'gradient-purple': 'var(--gradient-purple)',
+				'gradient-green': 'var(--gradient-green)',
+				'gradient-orange': 'var(--gradient-orange)',
+				'gradient-red': 'var(--gradient-red)'
 			},
 			transitionProperty: {
 				'smooth': 'var(--transition-smooth)',
