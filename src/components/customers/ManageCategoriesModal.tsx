@@ -29,6 +29,11 @@ import {
   Check,
   Palette
 } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -491,20 +496,37 @@ export function ManageCategoriesModal({
   };
 
   const ColorPicker = ({ color, onChange }: { color: string; onChange: (color: string) => void }) => (
-    <div className="flex flex-wrap gap-1 p-2 border rounded-lg bg-muted/50">
-      {AVAILABLE_COLORS.map((availableColor) => (
+    <Popover>
+      <PopoverTrigger asChild>
         <button
-          key={availableColor}
           type="button"
-          className={`w-6 h-6 rounded-full border-2 transition-all ${
-            color === availableColor ? 'border-foreground scale-110' : 'border-transparent hover:scale-105'
-          }`}
-          style={{ backgroundColor: availableColor }}
-          onClick={() => onChange(availableColor)}
-          title={availableColor}
-        />
-      ))}
-    </div>
+          className="flex items-center gap-2 px-3 py-2 border rounded-md hover:bg-muted/50 transition-colors"
+        >
+          <div 
+            className="w-5 h-5 rounded-full border-2 border-muted-foreground" 
+            style={{ backgroundColor: color }}
+          />
+          <Palette className="w-4 h-4" />
+          <span className="text-sm">Color</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-3" align="start">
+        <div className="grid grid-cols-10 gap-1">
+          {AVAILABLE_COLORS.map((availableColor) => (
+            <button
+              key={availableColor}
+              type="button"
+              className={`w-6 h-6 rounded-full border-2 transition-all ${
+                color === availableColor ? 'border-foreground scale-110' : 'border-transparent hover:scale-105'
+              }`}
+              style={{ backgroundColor: availableColor }}
+              onClick={() => onChange(availableColor)}
+              title={availableColor}
+            />
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 
   return (
@@ -579,21 +601,10 @@ export function ManageCategoriesModal({
                           <div className="flex items-center gap-2">
                             {!category.is_default && (
                               <>
-                                <div className="relative group">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1 h-auto"
-                                  >
-                                    <Palette className="w-3 h-3" />
-                                  </Button>
-                                  <div className="absolute top-full right-0 mt-1 hidden group-hover:block z-50">
-                                    <ColorPicker 
-                                      color={category.color} 
-                                      onChange={(color) => handleColorChange(category.id, color)} 
-                                    />
-                                  </div>
-                                </div>
+                                <ColorPicker 
+                                  color={category.color} 
+                                  onChange={(color) => handleColorChange(category.id, color)} 
+                                />
                                 <Button
                                   variant="ghost"
                                   size="sm"
