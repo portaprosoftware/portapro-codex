@@ -41,7 +41,7 @@ export default function CustomerDetail() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-2xl font-bold text-foreground mb-4">Customer not found</h1>
         <Link to="/customers">
-          <Button variant="outline">
+          <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Customers
           </Button>
@@ -76,7 +76,7 @@ export default function CustomerDetail() {
               </p>
             </div>
             <Link to="/customers">
-              <Button variant="outline">
+              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Customers
               </Button>

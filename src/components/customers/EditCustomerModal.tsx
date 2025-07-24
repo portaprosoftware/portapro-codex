@@ -23,6 +23,7 @@ const customerSchema = z.object({
   billing_state: z.string().optional(),
   billing_zip: z.string().optional(),
   important_information: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -39,6 +40,7 @@ interface Customer {
   billing_state?: string;
   billing_zip?: string;
   important_information?: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -76,6 +78,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       billing_state: customer.billing_state || '',
       billing_zip: customer.billing_zip || '',
       important_information: customer.important_information || '',
+      notes: customer.notes || '',
     },
   });
 
@@ -195,6 +198,25 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                   )}
                 />
               </div>
+
+              {/* General Notes */}
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem className="mt-4">
+                    <FormLabel>General Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="e.g., gate code is 1234, special access instructions..."
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* Service Address */}

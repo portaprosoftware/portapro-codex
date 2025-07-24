@@ -80,7 +80,7 @@ const CustomerHub: React.FC = () => {
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
-            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
               <Plus className="w-4 h-4" />
               Add Customer
             </Button>

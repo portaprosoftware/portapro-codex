@@ -17,6 +17,7 @@ interface Customer {
   billing_zip?: string;
   customer_type?: string;
   important_information?: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -77,9 +78,8 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold">Contact Information</CardTitle>
           <Button
-            variant="outline"
-            size="sm"
             onClick={() => setShowEditModal(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
           >
             <Edit className="w-4 h-4 mr-2" />
             Edit
@@ -107,6 +107,14 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <label className="text-sm font-medium text-muted-foreground">Phone</label>
               <p className="text-foreground">{customer.phone || 'Not provided'}</p>
             </div>
+          </div>
+          
+          {/* General Notes */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <label className="text-sm font-medium text-muted-foreground">General Notes</label>
+            <p className="text-foreground mt-1">
+              {customer.notes || 'gate code is 1234'}
+            </p>
           </div>
         </CardContent>
       </Card>
