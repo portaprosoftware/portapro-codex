@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Home, 
   Calendar, 
@@ -120,6 +120,7 @@ const navigationItems: NavigationItem[] = [
 export const AppSidebar: React.FC = () => {
   const { state } = useSidebar();
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
+  const location = useLocation();
   const collapsed = state === "collapsed";
 
   const getVisibleItems = () => {
@@ -135,7 +136,8 @@ export const AppSidebar: React.FC = () => {
   const visibleItems = getVisibleItems();
 
   return (
-    <Sidebar className="border-r border-gray-200 bg-white">
+    <Sidebar>
+      {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
@@ -149,49 +151,43 @@ export const AppSidebar: React.FC = () => {
           )}
         </div>
       </div>
-
-      <SidebarContent className="px-3 py-4">
+      
+      <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {visibleItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <NavLink to={item.href} className="block">
-                    {({ isActive }) => (
-                      <SidebarMenuButton
-                        isActive={isActive}
-                        className={cn(
-                          "w-full justify-start gap-3 h-11 px-3",
-                          isActive
-                            ? "nav-item-active text-white"
-                            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                        )}
-                      >
-                        <item.icon className="w-5 h-5 flex-shrink-0" strokeWidth={2} />
-                        {!collapsed && (
-                          <>
-                            <div className="flex-1 text-left">
-                              <div className="font-medium">{item.title}</div>
-                              {item.description && (
-                                <div className="text-xs text-gray-500">{item.description}</div>
-                              )}
-                            </div>
-                            {item.badge && (
-                              <Badge 
-                                variant={isActive ? "secondary" : "info"} 
-                                className="ml-auto"
-                              >
-                                {item.badge}
-                              </Badge>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.href}
+                    className={location.pathname === item.href ? 'nav-item-active' : ''}
+                  >
+                    <NavLink
+                      to={item.href}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-left"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {!collapsed && (
+                        <>
+                          <div className="flex-1">
+                            <div className="font-medium">{item.title}</div>
+                            {item.description && (
+                              <div className="text-xs text-muted-foreground">{item.description}</div>
                             )}
-                          </>
-                        )}
-                        {collapsed && item.badge && (
-                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
-                        )}
-                      </SidebarMenuButton>
-                    )}
-                  </NavLink>
+                          </div>
+                          {item.badge && (
+                            <Badge 
+                              variant={location.pathname === item.href ? "secondary" : "outline"} 
+                              className="ml-auto"
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
