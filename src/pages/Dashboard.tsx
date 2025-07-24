@@ -179,9 +179,9 @@ const Dashboard = () => {
           title="Total Inventory"
           value={`${inventoryData?.totalProducts || 0} products`}
           icon={Package}
-          gradientFrom="#3366FF"
-          gradientTo="#6699FF"
-          iconBg="#3366FF"
+          gradientFrom="#2563eb"
+          gradientTo="#1d4ed8"
+          iconBg="#2563eb"
           subtitle={`${inventoryData?.totalUnits || 0} total units`}
           subtitleColor="text-gray-600"
           delay={0}
@@ -191,9 +191,9 @@ const Dashboard = () => {
           title="Active Customers"
           value={8}
           icon={Users}
-          gradientFrom="#9B51E0"
-          gradientTo="#BB66E0"
-          iconBg="#9B51E0"
+          gradientFrom="#7c3aed"
+          gradientTo="#6d28d9"
+          iconBg="#7c3aed"
           delay={100}
         />
         
@@ -201,12 +201,12 @@ const Dashboard = () => {
           title="Jobs Today"
           value={jobsData?.total || 0}
           icon={Calendar}
-          gradientFrom="#3366FF"
-          gradientTo="#6699FF"
-          iconBg="#3366FF"
+          gradientFrom="#2563eb"
+          gradientTo="#1d4ed8"
+          iconBg="#2563eb"
           subtitle={`${jobsData?.deliveries || 0} deliveries, ${jobsData?.returns || 0} returns, ${jobsData?.pickups || 0} pickups, ${jobsData?.services || 0} services`}
           subtitleColor="text-gray-600"
-          chart={<Sparkline data={jobsSparklineData} color="#3366FF" />}
+          chart={<Sparkline data={jobsSparklineData} color="#2563eb" />}
           delay={200}
         />
         
@@ -214,9 +214,9 @@ const Dashboard = () => {
           title="Monthly Revenue"
           value="$8,400"
           icon={DollarSign}
-          gradientFrom="#33CC66"
-          gradientTo="#66DD88"
-          iconBg="#33CC66"
+          gradientFrom="#16a34a"
+          gradientTo="#15803d"
+          iconBg="#16a34a"
           delay={300}
         />
         
@@ -225,9 +225,9 @@ const Dashboard = () => {
           title="Fleet Vehicles"
           value={8}
           icon={Truck}
-          gradientFrom="#6666FF"
-          gradientTo="#8888FF"
-          iconBg="#6666FF"
+          gradientFrom="#4f46e5"
+          gradientTo="#4338ca"
+          iconBg="#4f46e5"
           subtitle="7 active, 1 maintenance"
           subtitleColor="text-gray-600"
           chart={<DonutChart active={7} maintenance={1} />}
@@ -238,9 +238,9 @@ const Dashboard = () => {
           title="Fuel Cost"
           value="$1,245"
           icon={Fuel}
-          gradientFrom="#FFAA33"
-          gradientTo="#FFCC55"
-          iconBg="#FFAA33"
+          gradientFrom="#ea580c"
+          gradientTo="#dc2626"
+          iconBg="#ea580c"
           subtitle="Month to date fuel expenses"
           subtitleColor="text-gray-600"
           delay={500}
@@ -250,9 +250,9 @@ const Dashboard = () => {
           title="Maintenance Alerts"
           value={2}
           icon={AlertTriangle}
-          gradientFrom="#FF4444"
-          gradientTo="#FF6666"
-          iconBg="#FF4444"
+          gradientFrom="#dc2626"
+          gradientTo="#b91c1c"
+          iconBg="#dc2626"
           subtitle="Due within 7 days"
           subtitleColor="text-red-600"
           delay={600}
@@ -262,9 +262,9 @@ const Dashboard = () => {
           title="Expiring Documents"
           value={documentsData?.affectedVehicles || 0}
           icon={FileX}
-          gradientFrom="#FF8822"
-          gradientTo="#FFA044"
-          iconBg="#FF8822"
+          gradientFrom="#ea580c"
+          gradientTo="#dc2626"
+          iconBg="#ea580c"
           subtitle={`${documentsData?.totalDocuments || 0} documents (30 days)`}
           subtitleColor="text-orange-600"
           chart={<ProgressBar overdue={1} expiring={3} total={4} />}
