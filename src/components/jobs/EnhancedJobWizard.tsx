@@ -223,20 +223,33 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
             data={{
               jobType: data.jobType,
               timezone: data.timezone,
-              deliveryDate: data.deliveryDate,
-              deliveryTime: data.deliveryTime,
-              addDeliveryTime: data.hasDeliveryTime,
-              returnScheduleEnabled: data.returnScheduleEnabled,
-              fullPickupDate: data.fullPickupDate,
-              fullPickupTime: data.fullPickupTime,
+              deliveryDate: data.deliveryDate || null,
+              deliveryTime: data.deliveryTime || '09:00',
+              addDeliveryTime: data.hasDeliveryTime || false,
+              returnScheduleEnabled: data.returnScheduleEnabled || false,
+              fullPickupDate: data.fullPickupDate || null,
+              fullPickupTime: data.fullPickupTime || '14:00',
               addFullPickupTime: Boolean(data.fullPickupTime),
-              partialPickupsEnabled: data.partialPickupEnabled,
-              partialPickups: data.partialPickups,
-              serviceDate: data.serviceDate,
-              serviceTime: data.serviceTime,
+              partialPickupsEnabled: data.partialPickupEnabled || false,
+              partialPickups: data.partialPickups || [],
+              serviceDate: data.serviceDate || null,
+              serviceTime: data.serviceTime || '09:00',
               addServiceTime: Boolean(data.serviceTime)
             }}
-            onUpdate={(stepData) => updateStepData(stepData)}
+            onUpdate={(stepData) => {
+              updateStepData({
+                deliveryDate: stepData.deliveryDate,
+                deliveryTime: stepData.deliveryTime,
+                hasDeliveryTime: stepData.addDeliveryTime,
+                returnScheduleEnabled: stepData.returnScheduleEnabled,
+                fullPickupDate: stepData.fullPickupDate,
+                fullPickupTime: stepData.fullPickupTime,
+                partialPickupEnabled: stepData.partialPickupsEnabled,
+                partialPickups: stepData.partialPickups,
+                serviceDate: stepData.serviceDate,
+                serviceTime: stepData.serviceTime
+              });
+            }}
           />
         );
       
