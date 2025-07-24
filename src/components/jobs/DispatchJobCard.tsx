@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { MapPin, Clock, User, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { getJobStatusInfo } from '@/lib/jobStatusUtils';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface DispatchJobCardProps {
   job: {
@@ -51,7 +51,7 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   isDragging = false
 }) => {
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
-  const statusInfo = getJobStatusInfo(job);
+  const statusInfo = getDualJobStatusInfo(job);
 
   return (
     <div 
@@ -69,9 +69,16 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
             {job.job_number}
           </span>
         </div>
-        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.gradient)}>
-          {statusInfo.label}
-        </Badge>
+        <div className="flex flex-col gap-1">
+          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.primary.gradient)}>
+            {statusInfo.primary.label}
+          </Badge>
+          {statusInfo.secondary && (
+            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold", statusInfo.secondary.gradient)}>
+              {statusInfo.secondary.label}
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Customer Name */}

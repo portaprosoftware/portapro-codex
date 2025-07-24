@@ -18,6 +18,7 @@ import {
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
 import { useToast } from '@/hooks/use-toast';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface Job {
   id: string;
@@ -39,28 +40,6 @@ interface JobDetailModalProps {
   onStatusUpdate: () => void;
 }
 
-const statusConfig = {
-  pending: { 
-    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
-    label: 'Pending' 
-  },
-  assigned: { 
-    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
-    label: 'Assigned' 
-  },
-  'in-progress': { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
-    label: 'In Progress' 
-  },
-  completed: { 
-    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
-    label: 'Completed' 
-  },
-  cancelled: { 
-    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
-    label: 'Cancelled' 
-  }
-};
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   job,
@@ -77,6 +56,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   if (!job) return null;
 
   const customerName = job.customers?.name || 'Unknown Customer';
+  const statusInfo = getDualJobStatusInfo(job);
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsUpdating(true);
@@ -139,9 +119,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>{job.job_number}</span>
-            <Badge className={`${(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status }).gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
-              {(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status.replace(/-/g, ' ') }).label}
-            </Badge>
+            <div className="flex flex-col gap-1">
+              <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+                {statusInfo.primary.label}
+              </Badge>
+              {statusInfo.secondary && (
+                <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full text-xs`}>
+                  {statusInfo.secondary.label}
+                </Badge>
+              )}
+            </div>
           </DialogTitle>
         </DialogHeader>
 

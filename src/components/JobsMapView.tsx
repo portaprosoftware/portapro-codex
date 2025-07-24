@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { getJobStatusConfig } from '@/lib/jobStatusUtils';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 // Mock data for demonstration
 const mockJobs = [
@@ -575,18 +575,32 @@ const JobsMapView: React.FC = () => {
               <div className="flex-1">
                 {selectedPin.type === 'job' ? (
                   <>
-                    <div className="flex items-center space-x-2 mb-2">
+                    <div className="flex items-center justify-between mb-2">
                       <span className="font-semibold text-gray-900">{selectedPin.data.id}</span>
-                      <Badge 
-                        className={cn(
-                          "text-white text-xs",
-                          selectedPin.data.status === 'assigned' && "bg-[#3366FF]",
-                          selectedPin.data.status === 'in_progress' && "bg-[#FF9933]",
-                          selectedPin.data.status === 'completed' && "bg-[#33CC66]"
-                        )}
-                      >
-                        {selectedPin.data.status.replace('_', ' ')}
-                      </Badge>
+                      <div className="flex flex-col gap-1">
+                        {(() => {
+                          const mockJob = {
+                            id: selectedPin.data.id,
+                            status: selectedPin.data.status,
+                            scheduled_date: new Date().toISOString(),
+                            actual_completion_time: selectedPin.data.status === 'completed' ? new Date().toISOString() : undefined
+                          };
+                          const statusInfo = getDualJobStatusInfo(mockJob);
+                          
+                          return (
+                            <>
+                              <Badge className={cn("text-white text-xs", statusInfo.primary.gradient)}>
+                                {statusInfo.primary.label}
+                              </Badge>
+                              {statusInfo.secondary && (
+                                <Badge className={cn("text-white text-xs", statusInfo.secondary.gradient)}>
+                                  {statusInfo.secondary.label}
+                                </Badge>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <p className="font-medium text-gray-900 text-sm">{selectedPin.data.customerName}</p>
                     <p className="text-sm text-gray-500">{selectedPin.data.jobType}</p>

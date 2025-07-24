@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobStatus } from '@/types';
 import { JobDetailModal } from './JobDetailModal';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 interface Job {
   id: string;
@@ -27,32 +28,11 @@ interface JobCardProps {
   onStatusUpdate: () => void;
 }
 
-const statusConfig = {
-  pending: { 
-    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
-    label: 'Pending' 
-  },
-  assigned: { 
-    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
-    label: 'Assigned' 
-  },
-  'in-progress': { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
-    label: 'In Progress' 
-  },
-  completed: { 
-    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
-    label: 'Completed' 
-  },
-  cancelled: { 
-    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
-    label: 'Cancelled' 
-  }
-};
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   const [showDetail, setShowDetail] = useState(false);
   const customerName = job.customers?.name || 'Unknown Customer';
+  const statusInfo = getDualJobStatusInfo(job);
   const customerInitials = customerName
     .split(' ')
     .map(word => word.charAt(0))
@@ -91,9 +71,16 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
               </div>
             </div>
             
-            <Badge className={`${(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status }).gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
-              {(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status.replace(/-/g, ' ') }).label}
-            </Badge>
+            <div className="flex flex-col gap-1">
+              <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+                {statusInfo.primary.label}
+              </Badge>
+              {statusInfo.secondary && (
+                <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full text-xs`}>
+                  {statusInfo.secondary.label}
+                </Badge>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2 mb-4">

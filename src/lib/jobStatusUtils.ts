@@ -101,11 +101,42 @@ export const getJobStatusConfig = () => ({
 });
 
 /**
- * Get status info for a job
+ * Get status info for a job (returns primary display status)
  */
 export const getJobStatusInfo = (job: Job) => {
   const displayStatus = getDisplayStatus(job);
   const statusConfig = getJobStatusConfig();
   
   return statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.assigned;
+};
+
+/**
+ * Get dual status info for overdue jobs (returns both overdue and original status)
+ */
+export const getDualJobStatusInfo = (job: Job) => {
+  const statusConfig = getJobStatusConfig();
+  
+  // If job is completed, only show completion status
+  if (job.status === 'completed') {
+    const displayStatus = getDisplayStatus(job);
+    return {
+      primary: statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.completed,
+      secondary: null
+    };
+  }
+  
+  // For non-completed jobs, check if overdue
+  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
+    return {
+      primary: statusConfig.overdue,
+      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned
+    };
+  }
+  
+  // For cancelled or regular jobs, only show single status
+  const displayStatus = getDisplayStatus(job);
+  return {
+    primary: statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.assigned,
+    secondary: null
+  };
 };
