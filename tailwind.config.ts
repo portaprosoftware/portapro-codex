@@ -123,6 +123,7 @@ export default {
 				'gradient-purple': 'var(--gradient-purple)',
 				'gradient-green': 'var(--gradient-green)',
 				'gradient-orange': 'var(--gradient-orange)',
+				'gradient-yellow': 'var(--gradient-yellow)',
 				'gradient-red': 'var(--gradient-red)'
 			},
 			transitionProperty: {

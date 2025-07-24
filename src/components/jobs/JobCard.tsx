@@ -80,31 +80,31 @@ const jobTypeConfig = {
 
 const statusConfig = {
   assigned: { 
-    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+    gradient: 'bg-gradient-blue', 
     label: 'Assigned' 
   },
   in_progress: { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    gradient: 'bg-gradient-orange', 
     label: 'In Progress' 
   },
   'in-progress': { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    gradient: 'bg-gradient-orange', 
     label: 'In Progress' 
   },
   completed: { 
-    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+    gradient: 'bg-gradient-green', 
     label: 'Completed' 
   },
   cancelled: { 
-    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    gradient: 'bg-gradient-red', 
     label: 'Cancelled' 
   },
   pending: { 
-    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+    gradient: 'bg-gradient-yellow', 
     label: 'Pending' 
   },
   overdue: { 
-    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    gradient: 'bg-gradient-red', 
     label: 'Overdue' 
   }
 };
