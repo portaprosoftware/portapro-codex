@@ -9,7 +9,7 @@ import { Sparkline } from "@/components/ui/Sparkline";
 import { DonutChart } from "@/components/ui/DonutChart";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/badge";
-import { LowStockWidget } from "@/components/dashboard/LowStockWidget";
+import { ConsumablesAlertCard } from "@/components/dashboard/ConsumablesAlertCard";
 import { 
   Package, 
   Users, 
@@ -276,15 +276,8 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Additional Dashboard Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          {/* Future: Additional widgets can go here */}
-        </div>
-        <div>
-          <LowStockWidget />
-        </div>
-      </div>
+      {/* Fixed Consumables Alert Card */}
+      <ConsumablesAlertCard />
     </div>
   );
 };
