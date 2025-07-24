@@ -176,7 +176,8 @@ export const JobCard: React.FC<JobCardProps> = ({
     return (
       <div 
         className={cn(
-          "enterprise-job-card group cursor-pointer",
+          "enterprise-job-card group cursor-pointer border-l-4",
+          jobTypeInfo.borderColor,
           job.job_type
         )}
         tabIndex={0}
@@ -278,7 +279,8 @@ export const JobCard: React.FC<JobCardProps> = ({
   return (
     <div 
       className={cn(
-        "enterprise-job-card group cursor-pointer",
+        "enterprise-job-card group cursor-pointer border-l-4",
+        jobTypeInfo.borderColor,
         job.job_type
       )}
       tabIndex={0}

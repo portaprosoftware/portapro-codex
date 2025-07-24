@@ -57,8 +57,9 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full",
-        isDragging && "shadow-lg border-blue-300 bg-blue-50"
+        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full border-l-4",
+        isDragging && "shadow-lg border-blue-300 bg-blue-50",
+        jobTypeInfo.color.replace('bg-', 'border-l-')
       )}
       onClick={onClick}
     >
