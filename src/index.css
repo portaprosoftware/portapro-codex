@@ -239,17 +239,19 @@
 
   /* Navigation */
   .nav-item-active {
-    background: var(--gradient-primary) !important;
+    background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
     color: #fff !important;
+    font-weight: 700 !important;
   }
 
   .nav-item-active:hover {
-    background: var(--gradient-primary) !important;
+    background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
     filter: brightness(1.1);
   }
 
   .nav-item-active * {
     color: #fff !important;
+    font-weight: 700 !important;
   }
   
   /* Enterprise Buttons */
