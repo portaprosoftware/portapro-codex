@@ -568,8 +568,11 @@ const JobsMapView: React.FC = () => {
 
       {/* Summary Badges */}
       <div className="flex items-center space-x-3 flex-wrap">
-        <Badge className="bg-gradient-to-r from-white to-gray-100 text-black border px-3 py-1 rounded-full font-bold">
+        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
           Total Jobs: {totalJobs}
+        </Badge>
+        <Badge className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-1 rounded-full font-bold">
+          Total Drivers on Map Today: {totalDrivers}
         </Badge>
         <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold">
           Completed: {completedJobs}
@@ -595,9 +598,6 @@ const JobsMapView: React.FC = () => {
             Completed Late: {completedLateJobs}
           </Badge>
         )}
-        <Badge className="bg-gradient-to-r from-white to-gray-100 text-black border px-3 py-1 rounded-full font-bold">
-          Total Drivers on Map Today: {totalDrivers}
-        </Badge>
       </div>
 
       {/* Map Container */}
