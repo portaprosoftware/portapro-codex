@@ -9,36 +9,30 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 220 100% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    /* Reference Blue Gradient System */
+    --btn-start: 214 83% 56%;  /* #2F80ED rich blue */
+    --btn-end: 195 84% 65%;    /* #56CCF2 lighter blue */
+    
+    --primary: 214 83% 56%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 214 83% 56%;
     --radius: 0.5rem;
-    
-    /* CRITICAL: Essential gradient variables */
-    --btn-start: 214 83% 56%;
-    --btn-end: 195 84% 65%;
-    --gradient-primary: linear-gradient(135deg, hsl(var(--btn-start)) 0%, hsl(var(--btn-end)) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(220, 77%, 45%) 0%, hsl(221, 82%, 50%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(220, 77%, 50%) 0%, hsl(221, 82%, 55%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(220, 77%, 48%) 0%, hsl(221, 82%, 53%) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(220, 77%, 45%) 0%, hsl(221, 82%, 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220, 77%, 48%) 0%, hsl(220, 80%, 50%) 50%, hsl(221, 82%, 53%) 100%);
-    
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -101,8 +95,8 @@
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 240 5.9% 90%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
   .dark {

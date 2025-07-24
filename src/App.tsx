@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
@@ -55,11 +54,9 @@ const App = () => {
             path="/"
             element={
               <SignedIn>
-                <SidebarProvider>
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                </SidebarProvider>
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </SignedIn>
             }
           />
@@ -67,11 +64,9 @@ const App = () => {
               path="/jobs"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Jobs />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -79,11 +74,9 @@ const App = () => {
               path="/jobs/calendar"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Jobs />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -91,11 +84,9 @@ const App = () => {
               path="/jobs/map"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Jobs />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <Jobs />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -103,11 +94,9 @@ const App = () => {
               path="/inventory"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Inventory />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <Inventory />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -115,11 +104,9 @@ const App = () => {
               path="/customer-hub"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <CustomerHub />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <CustomerHub />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -127,11 +114,9 @@ const App = () => {
               path="/customers/:id"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <CustomerDetail />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <CustomerDetail />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -139,11 +124,9 @@ const App = () => {
               path="/quotes-invoices"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <QuotesInvoices />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <QuotesInvoices />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -151,11 +134,9 @@ const App = () => {
               path="/fleet-management"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetManagement />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetManagement />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -163,11 +144,9 @@ const App = () => {
               path="/fleet"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetManagement />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetManagement />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -175,11 +154,9 @@ const App = () => {
               path="/fleet/assignments"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetAssignmentsPage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetAssignmentsPage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -187,11 +164,9 @@ const App = () => {
               path="/fleet/compliance"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetCompliancePage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetCompliancePage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -199,11 +174,9 @@ const App = () => {
               path="/fleet/loads"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetLoadsPage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetLoadsPage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -211,11 +184,9 @@ const App = () => {
               path="/fleet/analytics"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetAnalyticsPage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetAnalyticsPage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -223,11 +194,9 @@ const App = () => {
               path="/fleet/capacity"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetCapacityPage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetCapacityPage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -235,11 +204,9 @@ const App = () => {
               path="/fleet/compliance-reports"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetComplianceReportsPage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetComplianceReportsPage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -247,11 +214,9 @@ const App = () => {
               path="/fleet/fuel"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetFuel />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetFuel />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -259,11 +224,9 @@ const App = () => {
               path="/fleet/files"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetFiles />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetFiles />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -271,11 +234,9 @@ const App = () => {
               path="/fleet/maintenance"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <FleetMaintenancePage />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <FleetMaintenancePage />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -283,11 +244,9 @@ const App = () => {
               path="/maintenance-hub"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <MaintenanceHub />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <MaintenanceHub />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -295,11 +254,9 @@ const App = () => {
               path="/marketing-hub"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <MarketingHub />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <MarketingHub />
+                  </Layout>
                 </SignedIn>
               }
             />
@@ -307,11 +264,9 @@ const App = () => {
               path="/analytics" 
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Analytics />
-                    </Layout>
-                  </SidebarProvider>
+                  <Layout>
+                    <Analytics />
+                  </Layout>
                 </SignedIn>
               } 
             />
@@ -319,11 +274,7 @@ const App = () => {
               path="/settings"
               element={
                 <SignedIn>
-                  <SidebarProvider>
-                    <Layout>
-                      <Settings />
-                    </Layout>
-                  </SidebarProvider>
+                  <Settings />
                 </SignedIn>
               }
             />
