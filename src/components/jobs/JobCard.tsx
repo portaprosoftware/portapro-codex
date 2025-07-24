@@ -120,10 +120,27 @@ export const JobCard: React.FC<JobCardProps> = ({
   const handleStartJob = () => {
     if (job.status === 'assigned') {
       onStatusUpdate?.(job.id, 'in_progress');
-    } else {
-      onStart?.(job.id);
+    } else if (job.status === 'in_progress' || job.status === 'in-progress') {
+      onStatusUpdate?.(job.id, 'completed');
+    }
+    // If completed, do nothing (button will be disabled)
+  };
+
+  const getJobButtonText = () => {
+    switch (job.status) {
+      case 'assigned':
+        return 'Start Job';
+      case 'in_progress':
+      case 'in-progress':
+        return 'Complete Job';
+      case 'completed':
+        return 'Job Complete';
+      default:
+        return 'View Job';
     }
   };
+
+  const isJobCompleted = job.status === 'completed';
 
   if (compact) {
     return (
@@ -195,10 +212,11 @@ export const JobCard: React.FC<JobCardProps> = ({
           <Button 
             size="sm" 
             onClick={handleStartJob}
-            className="flex-1 btn-enterprise text-xs"
-            aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `View job ${job.job_number}`}
+            disabled={isJobCompleted}
+            className={`flex-1 text-xs ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'btn-enterprise'}`}
+            aria-label={`${getJobButtonText()} ${job.job_number}`}
           >
-            {job.status === 'assigned' ? 'Start' : 'View'}
+            {getJobButtonText()}
           </Button>
         </div>
       </div>
@@ -335,10 +353,11 @@ export const JobCard: React.FC<JobCardProps> = ({
           <Button 
             size="sm" 
             onClick={handleStartJob}
-            className="flex-1 btn-enterprise"
-            aria-label={job.status === 'assigned' ? `Start job ${job.job_number}` : `Continue job ${job.job_number}`}
+            disabled={isJobCompleted}
+            className={`flex-1 ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'btn-enterprise'}`}
+            aria-label={`${getJobButtonText()} ${job.job_number}`}
           >
-            {job.status === 'assigned' ? 'Start' : 'Continue'}
+            {getJobButtonText()}
           </Button>
         </div>
       </div>
