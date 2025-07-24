@@ -86,7 +86,7 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
     };
 
     return (
-      <Badge className={`${config.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+      <Badge className={`${config.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
         {config.label}
       </Badge>
     );

@@ -112,7 +112,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
     
     return (
-      <Badge className={`${config.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+      <Badge className={`${config.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
         {config.label}
       </Badge>
     );
