@@ -35,8 +35,8 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
 
     if (isOutOfStock) {
       return (
-        <Badge className="bg-red-100 text-red-700 border-red-200">
-          <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+        <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0">
+          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
           Out of stock
         </Badge>
       );
@@ -44,16 +44,16 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
 
     if (isLowStock) {
       return (
-        <Badge className="bg-amber-100 text-amber-700 border-amber-200">
-          <span className="w-2 h-2 bg-amber-500 rounded-full mr-1"></span>
+        <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold border-0">
+          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
           Low Stock
         </Badge>
       );
     }
 
     return (
-      <Badge className="bg-green-100 text-green-700 border-green-200">
-        <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+      <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
+        <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
         {availableCount}/{product.stock_total}
       </Badge>
     );
