@@ -1,0 +1,58 @@
+/* Dispatch Job Card Styles */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ensure text wrapping and prevent overflow */
+.dispatch-job-card {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.dispatch-job-card p,
+.dispatch-job-card span {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Drag and drop visual feedback */
+.droppable-area {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.droppable-area.is-dragging-over {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Dragging item styles */
+.dragging-item {
+  transform: rotate(3deg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Driver column styling */
+.driver-column {
+  min-height: 400px;
+  background-color: #fafafa;
+}
+
+.driver-column.has-jobs {
+  background-color: #ffffff;
+}
+
+/* Responsive text sizing for dispatch cards */
+@media (max-width: 768px) {
+  .dispatch-job-card {
+    font-size: 0.75rem;
+  }
+  
+  .dispatch-job-card .job-title {
+    font-size: 0.875rem;
+  }
+}

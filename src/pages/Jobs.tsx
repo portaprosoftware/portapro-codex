@@ -14,6 +14,7 @@ import { JobCreationWizard } from '@/components/jobs/JobCreationWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
+import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
 import { FiltersFlyout } from '@/components/jobs/FiltersFlyout';
 import { DateNavigator } from '@/components/jobs/DateNavigator';
 import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
@@ -141,26 +142,40 @@ const JobsPage: React.FC = () => {
     setIsEquipmentModalOpen(true);
   };
 
-  // Handle drag and drop
+  // Handle drag and drop with error handling and validation
   const handleDragEnd = useCallback((result: DropResult) => {
     const { destination, source, draggableId } = result;
 
+    // Check if drop destination exists
     if (!destination) {
+      console.log('No destination found for drag operation');
       return;
     }
 
+    // Check if item was moved to same position
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
+      console.log('Item dropped in same position');
+      return;
+    }
+
+    // Validate job exists in current data
+    const jobExists = dispatchJobs.find(job => job.id === draggableId);
+    if (!jobExists) {
+      console.error('Job not found:', draggableId);
+      toast.error('Job not found. Please refresh the page.');
       return;
     }
 
     const jobId = draggableId;
     const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
 
+    console.log('Updating job assignment:', { jobId, from: source.droppableId, to: destination.droppableId, newDriverId });
+    
     updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
-  }, [updateJobAssignmentMutation]);
+  }, [updateJobAssignmentMutation, dispatchJobs]);
 
   // Filter jobs based on search and filters
   const filterJobs = (jobs: any[]) => {
@@ -365,7 +380,10 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'dispatch' && (
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext 
+              onDragEnd={handleDragEnd}
+              key={`drag-context-${dispatchDate.getTime()}`}
+            >
               <div className="bg-white">
                 {/* Dispatch Header */}
                 <div className="border-b border-gray-200 p-4">
@@ -464,13 +482,11 @@ const JobsPage: React.FC = () => {
                                       {...provided.dragHandleProps}
                                       className={`mb-3 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                     >
-                                      <JobCard
-                                        job={job}
-                                        onView={handleJobView}
-                                        onStart={handleJobStart}
-                                        onStatusUpdate={handleJobStatusUpdate}
-                                        compact
-                                      />
+                                       <DispatchJobCard
+                                         job={job}
+                                         onClick={() => handleJobView(job.id)}
+                                         isDragging={snapshot.isDragging}
+                                       />
                                     </div>
                                   )}
                                 </Draggable>
@@ -583,13 +599,11 @@ const JobsPage: React.FC = () => {
                                                 {...provided.dragHandleProps}
                                                 className={snapshot.isDragging ? 'opacity-50' : ''}
                                               >
-                                                <JobCard
-                                                  job={job}
-                                                  onView={handleJobView}
-                                                  onStart={handleJobStart}
-                                                  onStatusUpdate={handleJobStatusUpdate}
-                                                  compact
-                                                />
+                                                 <DispatchJobCard
+                                                   job={job}
+                                                   onClick={() => handleJobView(job.id)}
+                                                   isDragging={snapshot.isDragging}
+                                                 />
                                               </div>
                                             )}
                                           </Draggable>
