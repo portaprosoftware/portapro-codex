@@ -261,7 +261,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             size="sm" 
             onClick={handleStartJob}
             disabled={isJobCompleted}
-            className={`flex-1 text-xs ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'btn-enterprise'}`}
+            className={`flex-1 text-xs ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'}`}
             aria-label={`${getJobButtonText()} ${job.job_number}`}
           >
             {getJobButtonText()}
@@ -419,7 +419,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             size="sm" 
             onClick={handleStartJob}
             disabled={isJobCompleted}
-            className={`flex-1 ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'btn-enterprise'}`}
+            className={`flex-1 ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'}`}
             aria-label={`${getJobButtonText()} ${job.job_number}`}
           >
             {getJobButtonText()}
