@@ -29,15 +29,20 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   return (
     <div className="flex items-center gap-4 flex-wrap">
       {/* Search Input */}
-      <div className="relative flex-1 min-w-64">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-        <Input
-          type="text"
-          placeholder="Search by job number or customer..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex-1 min-w-64">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Search by job number or customer
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            type="text"
+            placeholder="Enter search terms..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10"
+          />
+        </div>
       </div>
 
       {/* Driver Filter */}
