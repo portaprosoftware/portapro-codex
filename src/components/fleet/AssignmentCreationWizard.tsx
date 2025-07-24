@@ -13,10 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { VehicleAvailabilityWidget } from "./VehicleAvailabilityWidget";
-import { DriverAvailabilityWidget } from "./DriverAvailabilityWidget";
-import { CalendarIcon, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { VehicleSelectionModal } from "./VehicleSelectionModal";
+import { DriverSelectionModal } from "./DriverSelectionModal";
+import { CalendarIcon, ChevronLeft, ChevronRight, Check, Truck, User, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +41,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
   const [startMileage, setStartMileage] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
+  const [driverModalOpen, setDriverModalOpen] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -145,24 +148,111 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
 
       case "vehicle":
         return (
-          <VehicleAvailabilityWidget
-            selectedDate={selectedDate}
-            selectedVehicle={selectedVehicle}
-            onVehicleSelect={setSelectedVehicle}
-            selectionMode
-            className="h-full"
-          />
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold">Select Vehicle</h3>
+            
+            {selectedVehicle ? (
+              <div className="p-4 border rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Truck className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{selectedVehicle.license_plate}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                        {selectedVehicle.nickname && ` "${selectedVehicle.nickname}"`}
+                      </p>
+                      <Badge variant="outline" className="text-xs mt-1">
+                        {selectedVehicle.vehicle_type}
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setVehicleModalOpen(true)}
+                  >
+                    Change Vehicle
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Truck className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground mb-4">No vehicle selected</p>
+                <Button onClick={() => setVehicleModalOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Select Vehicle
+                </Button>
+              </div>
+            )}
+          </div>
         );
 
       case "driver":
         return (
-          <DriverAvailabilityWidget
-            selectedDate={selectedDate}
-            selectedDriver={selectedDriver}
-            onDriverSelect={setSelectedDriver}
-            selectionMode
-            className="h-full"
-          />
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold">Select Driver</h3>
+            
+            {selectedDriver ? (
+              <div className="p-4 border rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-12 h-12">
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                        {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold">
+                        {selectedDriver.first_name} {selectedDriver.last_name}
+                      </h4>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            selectedDriver.status === "available" 
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : selectedDriver.status === "scheduled"
+                              ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                              : "bg-red-50 text-red-700 border-red-200"
+                          }`}
+                        >
+                          {selectedDriver.status === "available" ? "Available" : 
+                           selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {selectedDriver.scheduledJobs?.length || 0} scheduled jobs
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDriverModalOpen(true)}
+                  >
+                    Change Driver
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <User className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground mb-4">No driver selected</p>
+                <Button onClick={() => setDriverModalOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Select Driver
+                </Button>
+              </div>
+            )}
+          </div>
         );
 
       case "details":
@@ -390,6 +480,24 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
           </Button>
         </div>
       </SheetContent>
+
+      {/* Vehicle Selection Modal */}
+      <VehicleSelectionModal
+        open={vehicleModalOpen}
+        onOpenChange={setVehicleModalOpen}
+        selectedDate={selectedDate}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={setSelectedVehicle}
+      />
+
+      {/* Driver Selection Modal */}
+      <DriverSelectionModal
+        open={driverModalOpen}
+        onOpenChange={setDriverModalOpen}
+        selectedDate={selectedDate}
+        selectedDriver={selectedDriver}
+        onDriverSelect={setSelectedDriver}
+      />
     </Sheet>
   );
 };
