@@ -324,19 +324,71 @@
   }
 
   .enterprise-job-card.delivery {
-    border-left: 4px solid hsl(var(--blue-500));
+    position: relative;
+    border-left: none;
+  }
+
+  .enterprise-job-card.delivery::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-blue);
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
   }
 
   .enterprise-job-card.pickup {
-    border-left: 4px solid hsl(var(--orange-500));
+    position: relative;
+    border-left: none;
+  }
+
+  .enterprise-job-card.pickup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-orange);
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
   }
 
   .enterprise-job-card.service {
-    border-left: 4px solid hsl(var(--green-500));
+    position: relative;
+    border-left: none;
+  }
+
+  .enterprise-job-card.service::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-green);
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
   }
 
   .enterprise-job-card.maintenance {
-    border-left: 4px solid hsl(var(--purple-500));
+    position: relative;
+    border-left: none;
+  }
+
+  .enterprise-job-card.maintenance::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-purple);
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
   }
 
   /* Status Badges */

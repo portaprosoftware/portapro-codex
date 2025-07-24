@@ -45,31 +45,31 @@ interface JobCardProps {
 
 const jobTypeConfig = {
   delivery: {
-    color: 'bg-emerald-500',
-    lightColor: 'bg-emerald-50',
-    textColor: 'text-emerald-700',
-    borderColor: 'border-emerald-500',
+    color: 'bg-gradient-blue',
+    lightColor: 'bg-blue-50',
+    textColor: 'text-blue-700',
+    borderColor: 'border-blue-500',
     icon: Truck,
     label: 'Delivery'
   },
   pickup: {
-    color: 'bg-blue-500',
-    lightColor: 'bg-blue-50',
-    textColor: 'text-blue-700',
-    borderColor: 'border-blue-500',
+    color: 'bg-gradient-orange',
+    lightColor: 'bg-orange-50',
+    textColor: 'text-orange-700',
+    borderColor: 'border-orange-500',
     icon: Package,
     label: 'Pickup'
   },
   service: {
-    color: 'bg-orange-500',
-    lightColor: 'bg-orange-50',
-    textColor: 'text-orange-700',
-    borderColor: 'border-orange-500',
+    color: 'bg-gradient-green',
+    lightColor: 'bg-green-50',
+    textColor: 'text-green-700',
+    borderColor: 'border-green-500',
     icon: Settings,
     label: 'Service'
   },
   return: {
-    color: 'bg-purple-500',
+    color: 'bg-gradient-purple',
     lightColor: 'bg-purple-50',
     textColor: 'text-purple-700',
     borderColor: 'border-purple-500',
