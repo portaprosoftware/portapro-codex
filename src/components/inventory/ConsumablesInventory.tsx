@@ -15,7 +15,6 @@ import { EnterpriseIntegrationsHub } from './EnterpriseIntegrationsHub';
 import { RealTimeCollaborationSystem } from './RealTimeCollaborationSystem';
 import { EnterpriseReportingSystem } from './EnterpriseReportingSystem';
 import { ConsumablesReportsTab } from './ConsumablesReportsTab';
-import { ConsumableNotificationsPanel } from './ConsumableNotificationsPanel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, QrCode, Bell, MapPin, Package, BarChart3, Smartphone, Globe, Users, FileText } from 'lucide-react';

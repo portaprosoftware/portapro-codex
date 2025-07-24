@@ -19,7 +19,7 @@ export const LowStockWidget: React.FC = () => {
       const { data, error } = await supabase
         .from('consumables')
         .select('*')
-        .lt('on_hand_qty', supabase.raw('reorder_threshold'))
+        .filter('on_hand_qty', 'lt', 'reorder_threshold')
         .eq('is_active', true)
         .order('on_hand_qty', { ascending: true })
         .limit(5);
@@ -37,7 +37,7 @@ export const LowStockWidget: React.FC = () => {
         supabase
           .from('consumables')
           .select('id', { count: 'exact' })
-          .lt('on_hand_qty', supabase.raw('reorder_threshold'))
+          .filter('on_hand_qty', 'lt', 'reorder_threshold')
           .eq('is_active', true),
         supabase
           .from('consumables')
