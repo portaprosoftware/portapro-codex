@@ -920,6 +920,7 @@ export type Database = {
           note_text: string
           tags: string[] | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -930,6 +931,7 @@ export type Database = {
           note_text: string
           tags?: string[] | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -940,6 +942,7 @@ export type Database = {
           note_text?: string
           tags?: string[] | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -954,6 +957,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -6143,6 +6153,21 @@ export type Database = {
         Returns: {
           category_name: string
           point_count: number
+        }[]
+      }
+      get_customer_notes_with_users: {
+        Args: { customer_uuid: string }
+        Returns: {
+          id: string
+          customer_id: string
+          note_text: string
+          is_important: boolean
+          created_at: string
+          updated_at: string
+          created_by: string
+          user_first_name: string
+          user_last_name: string
+          user_email: string
         }[]
       }
       get_customer_type_counts: {
