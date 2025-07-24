@@ -208,7 +208,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[900px] h-[600px] max-w-none overflow-y-auto">
         <DialogHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -264,15 +264,37 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
           </div>
         ) : job ? (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="customer">Customer</TabsTrigger>
-              <TabsTrigger value="equipment">Equipment</TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
-            </TabsList>
+          <div>
+            {/* Custom Tab Navigation */}
+            <nav className="flex items-center space-x-1 mb-6">
+              {[
+                { id: 'details', label: 'Details' },
+                { id: 'customer', label: 'Customer' },
+                { id: 'equipment', label: 'Equipment' },
+                { id: 'history', label: 'History' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter",
+                    "flex items-center gap-2",
+                    "focus:outline-none",
+                    "transform hover:-translate-y-0.5",
+                    activeTab === tab.id
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => setActiveTab(tab.id)}
+                  aria-current={activeTab === tab.id ? "page" : undefined}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
 
-            <TabsContent value="details" className="space-y-6">
+            {/* Tab Content */}
+            {activeTab === 'details' && (
+              <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 {/* Schedule Information */}
                 <Card>
@@ -455,9 +477,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   )}
                 </CardContent>
               </Card>
-            </TabsContent>
+              </div>
+            )}
 
-            <TabsContent value="customer" className="space-y-6">
+            {activeTab === 'customer' && (
+              <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Customer Information</CardTitle>
@@ -516,9 +540,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+              </div>
+            )}
 
-            <TabsContent value="equipment" className="space-y-6">
+            {activeTab === 'equipment' && (
+              <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center">
@@ -570,9 +596,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   )}
                 </CardContent>
               </Card>
-            </TabsContent>
+              </div>
+            )}
 
-            <TabsContent value="history" className="space-y-6">
+            {activeTab === 'history' && (
+              <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Job History</CardTitle>
@@ -584,8 +612,9 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-          </Tabs>
+              </div>
+            )}
+          </div>
         ) : null}
       </DialogContent>
     </Dialog>
