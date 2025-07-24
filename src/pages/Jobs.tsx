@@ -241,15 +241,15 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container-modern py-8 space-y-8">
+      <div className="container-modern py-4 space-y-4">
         {/* Page Header with Enhanced Typography */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           <h1 className="enterprise-page-title">Jobs</h1>
           <p className="enterprise-body-text text-lg">Schedule and manage job assignments</p>
         </div>
         
         {/* Jobs Sub-Navigation with Enhanced Spacing */}
-        <div className="flex justify-between items-center pt-4">
+        <div className="flex justify-between items-center">
           <div className="enterprise-tabs">
             <TabNav ariaLabel="Jobs views">
               <TabNav.Item 
@@ -305,9 +305,9 @@ const JobsPage: React.FC = () => {
         </div>
 
         {/* Content Area with Enhanced Spacing */}
-        <div className="space-y-8">
+        <div className="space-y-4">
           {activeTab === 'calendar' && (
-            <div className="space-y-8">
+            <div className="space-y-4">
               {/* Enhanced Calendar Header */}
               <div className="enterprise-gradient-header">
                 <div className="flex justify-between items-center">
@@ -334,7 +334,7 @@ const JobsPage: React.FC = () => {
               </div>
 
               {/* Two Column Layout with Enhanced Spacing */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Going Out Column */}
                 <div className="space-y-6">
                   <div className="enterprise-card">

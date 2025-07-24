@@ -8,7 +8,7 @@
   line-height: 1.2;
   letter-spacing: -0.025em;
   color: hsl(var(--foreground));
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .enterprise-section-header {
@@ -18,7 +18,7 @@
   line-height: 1.3;
   letter-spacing: -0.015em;
   color: hsl(var(--foreground));
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .enterprise-card-title {
