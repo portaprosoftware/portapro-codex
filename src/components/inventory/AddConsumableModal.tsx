@@ -7,10 +7,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { CategorySelect } from '@/components/ui/category-select';
 import { toast } from '@/hooks/use-toast';
-import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 
 interface AddConsumableModalProps {
   isOpen: boolean;
@@ -112,23 +111,13 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {CONSUMABLE_CATEGORIES.map(category => (
-                          <SelectItem key={category.value} value={category.value}>
-                            <div className="flex flex-col">
-                              <span>{category.label}</span>
-                              <span className="text-xs text-muted-foreground">{category.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <CategorySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Select category"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
