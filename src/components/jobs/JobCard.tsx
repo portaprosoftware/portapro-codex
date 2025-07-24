@@ -47,34 +47,42 @@ interface JobCardProps {
 
 const jobTypeConfig = {
   delivery: {
-    color: 'bg-gradient-blue',
-    lightColor: 'bg-blue-50',
-    textColor: 'text-blue-700',
-    borderColor: 'border-blue-500',
+    color: 'bg-gray-700',
+    lightColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+    borderColor: 'border-gray-500',
     icon: Truck,
     label: 'Delivery'
   },
   pickup: {
-    color: 'bg-gradient-orange',
-    lightColor: 'bg-orange-50',
-    textColor: 'text-orange-700',
-    borderColor: 'border-orange-500',
+    color: 'bg-black',
+    lightColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+    borderColor: 'border-gray-500',
     icon: Package,
     label: 'Pickup'
   },
+  'partial-pickup': {
+    color: 'bg-gray-800',
+    lightColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+    borderColor: 'border-gray-500',
+    icon: Package,
+    label: 'Partial Pickup'
+  },
   service: {
-    color: 'bg-gradient-green',
-    lightColor: 'bg-green-50',
-    textColor: 'text-green-700',
-    borderColor: 'border-green-500',
+    color: 'bg-gray-600',
+    lightColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+    borderColor: 'border-gray-500',
     icon: Settings,
     label: 'Service'
   },
   return: {
-    color: 'bg-gradient-purple',
-    lightColor: 'bg-purple-50',
-    textColor: 'text-purple-700',
-    borderColor: 'border-purple-500',
+    color: 'bg-gray-700',
+    lightColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+    borderColor: 'border-gray-500',
     icon: RotateCcw,
     label: 'Return'
   }
