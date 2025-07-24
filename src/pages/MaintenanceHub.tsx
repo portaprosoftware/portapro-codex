@@ -35,19 +35,19 @@ export default function MaintenanceHub() {
         <TabsList className="bg-white rounded-full p-1 shadow-sm border">
           <TabsTrigger 
             value="reports" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:border-l-4 data-[state=active]:border-l-blue-500 rounded-full px-6 py-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-l-4 data-[state=active]:border-l-blue-300 rounded-full px-6 py-2"
           >
             Maintenance Reports
           </TabsTrigger>
           <TabsTrigger 
             value="services"
-            className="data-[state=active]:bg-gray-100 data-[state=active]:border-l-4 data-[state=active]:border-l-blue-500 rounded-full px-6 py-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-l-4 data-[state=active]:border-l-blue-300 rounded-full px-6 py-2"
           >
             Services Provided
           </TabsTrigger>
           <TabsTrigger 
             value="templates"
-            className="data-[state=active]:bg-gray-100 data-[state=active]:border-l-4 data-[state=active]:border-l-blue-500 rounded-full px-6 py-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-l-4 data-[state=active]:border-l-blue-300 rounded-full px-6 py-2"
           >
             Report Templates
           </TabsTrigger>

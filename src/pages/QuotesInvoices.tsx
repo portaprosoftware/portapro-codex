@@ -110,13 +110,13 @@ const QuotesInvoices: React.FC = () => {
         <TabsList className="grid w-fit grid-cols-2 bg-muted/50">
           <TabsTrigger 
             value="quotes" 
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white px-6 py-2 rounded-md"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold px-6 py-2 rounded-md"
           >
             Quotes
           </TabsTrigger>
           <TabsTrigger 
             value="invoices" 
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white px-6 py-2 rounded-md"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold px-6 py-2 rounded-md"
           >
             Invoices
           </TabsTrigger>
