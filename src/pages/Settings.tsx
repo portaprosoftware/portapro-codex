@@ -94,11 +94,14 @@ export default function Settings() {
   return (
     <Layout>
       <div className="max-w-none px-6 py-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+        <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Settings</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Configure your application settings</p>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
                 {currentSection && <currentSection.icon className="h-4 w-4" />}
                 {currentSection?.label || 'Select Section'}
@@ -117,7 +120,8 @@ export default function Settings() {
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenu>
+          </div>
         </div>
         
         {renderSection()}

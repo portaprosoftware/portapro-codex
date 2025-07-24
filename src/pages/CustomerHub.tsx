@@ -71,20 +71,22 @@ const CustomerHub: React.FC = () => {
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold text-gray-900">Customer Hub</h1>
-          <p className="text-gray-600 mt-1">Manage all your customer data in one place</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Upload className="w-4 h-4" />
-            Import CSV
-          </Button>
-          <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
-            <Plus className="w-4 h-4" />
-            Add Customer
-          </Button>
+      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Customer Hub</h1>
+            <p className="text-base text-gray-600 font-inter mt-1">Manage all your customer data in one place</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Upload className="w-4 h-4" />
+              Import CSV
+            </Button>
+            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+              <Plus className="w-4 h-4" />
+              Add Customer
+            </Button>
+          </div>
         </div>
       </div>
 

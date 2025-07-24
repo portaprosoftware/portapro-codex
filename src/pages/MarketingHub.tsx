@@ -132,9 +132,13 @@ const MarketingHub: React.FC = () => {
   return (
     <div className="max-w-none px-6 py-6 min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Marketing Hub</h1>
-          <p className="text-gray-600">Manage customer segments, campaigns, and communications</p>
+        <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Marketing Hub</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Manage customer segments, campaigns, and communications</p>
+            </div>
+          </div>
         </div>
 
         {/* Navigation Tabs */}

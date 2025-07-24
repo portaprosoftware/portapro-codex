@@ -94,13 +94,15 @@ const QuotesInvoices: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="max-w-none px-6 py-6 space-y-6">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-foreground">Quotes & Invoices Management</h1>
-        <p className="text-base text-muted-foreground">
-          Create and manage quotes and invoices with inventory and maintenance services
-        </p>
+      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Quotes & Invoices Management</h1>
+            <p className="text-base text-gray-600 font-inter mt-1">Create and manage quotes and invoices with inventory and maintenance services</p>
+          </div>
+        </div>
       </div>
 
       {/* Main Tabs */}

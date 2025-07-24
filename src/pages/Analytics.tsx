@@ -72,11 +72,11 @@ const Analytics = () => {
   return (
     <div className="max-w-none px-6 py-6 min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 -mx-6 mb-6">
+      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-            <p className="text-gray-600">Executive dashboard and insights</p>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Analytics</h1>
+            <p className="text-base text-gray-600 font-inter mt-1">Executive dashboard and insights</p>
           </div>
           <Button
             onClick={() => setIsReportBuilderOpen(true)}

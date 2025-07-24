@@ -33,17 +33,19 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 font-inter">
+    <div className="max-w-none px-6 py-6 space-y-6 font-inter">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-600 mt-1">Browse your rental product catalog with real-time status tracking</p>
+      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Products</h1>
+            <p className="text-base text-gray-600 font-inter mt-1">Browse your rental product catalog with real-time status tracking</p>
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            New Item
+          </Button>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          New Item
-        </Button>
       </div>
 
       {/* Filter Bar */}
