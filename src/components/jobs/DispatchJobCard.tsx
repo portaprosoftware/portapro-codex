@@ -38,11 +38,11 @@ interface DispatchJobCardProps {
 }
 
 const jobTypeConfig = {
-  delivery: { color: 'bg-gray-700', label: 'Delivery' },
-  pickup: { color: 'bg-black', label: 'Pickup' },
-  'partial-pickup': { color: 'bg-gray-800', label: 'Partial Pickup' },
-  service: { color: 'bg-gray-600', label: 'Service' },
-  return: { color: 'bg-gray-700', label: 'Return' }
+  delivery: { color: 'bg-indigo-500', label: 'Delivery' },
+  pickup: { color: 'bg-pink-500', label: 'Pickup' },
+  'partial-pickup': { color: 'bg-amber-500', label: 'Partial Pickup' },
+  service: { color: 'bg-teal-500', label: 'Service' },
+  return: { color: 'bg-gray-500', label: 'Return' }
 };
 
 
