@@ -39,12 +39,27 @@ interface JobDetailModalProps {
   onStatusUpdate: () => void;
 }
 
-const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  assigned: 'bg-blue-100 text-blue-800',
-  'in-progress': 'bg-orange-100 text-orange-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800'
+const statusConfig = {
+  pending: { 
+    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+    label: 'Pending' 
+  },
+  assigned: { 
+    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+    label: 'Assigned' 
+  },
+  'in-progress': { 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    label: 'In Progress' 
+  },
+  completed: { 
+    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+    label: 'Completed' 
+  },
+  cancelled: { 
+    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    label: 'Cancelled' 
+  }
 };
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({
@@ -124,8 +139,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>{job.job_number}</span>
-            <Badge className={statusColors[job.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}>
-              {job.status.replace(/-/g, ' ')}
+            <Badge className={`${(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status }).gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+              {(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status.replace(/-/g, ' ') }).label}
             </Badge>
           </DialogTitle>
         </DialogHeader>

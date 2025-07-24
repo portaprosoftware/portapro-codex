@@ -27,12 +27,27 @@ interface JobCardProps {
   onStatusUpdate: () => void;
 }
 
-const statusColors = {
-  pending: 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0',
-  assigned: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0',
-  'in-progress': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0',
-  completed: 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0',
-  cancelled: 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0'
+const statusConfig = {
+  pending: { 
+    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
+    label: 'Pending' 
+  },
+  assigned: { 
+    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+    label: 'Assigned' 
+  },
+  'in-progress': { 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    label: 'In Progress' 
+  },
+  completed: { 
+    gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
+    label: 'Completed' 
+  },
+  cancelled: { 
+    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    label: 'Cancelled' 
+  }
 };
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
@@ -76,8 +91,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
               </div>
             </div>
             
-            <Badge className={`${statusColors[job.status as keyof typeof statusColors] || 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0'} font-medium px-3 py-1 rounded-full`}>
-              {job.status.replace(/-/g, ' ')}
+            <Badge className={`${(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status }).gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+              {(statusConfig[job.status as keyof typeof statusConfig] || { gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', label: job.status.replace(/-/g, ' ') }).label}
             </Badge>
           </div>
 
