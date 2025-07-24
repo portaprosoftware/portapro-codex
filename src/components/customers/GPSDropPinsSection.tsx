@@ -19,14 +19,16 @@ import {
   Trash2,
   Filter,
   Layers,
-  Crosshair,
   RotateCcw,
   Satellite,
   Map as MapIcon,
   MoreVertical,
   Download,
   Copy,
-  MoveVertical
+  MoveVertical,
+  Settings,
+  ExternalLink,
+  Navigation2
 } from 'lucide-react';
 import {
   Select,
@@ -40,9 +42,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
+import { ManageCategoriesModal } from './ManageCategoriesModal';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
 import {
@@ -64,13 +68,13 @@ interface GPSDropPinsSectionProps {
 export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false);
   const [editingCoordinate, setEditingCoordinate] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [mapStyle, setMapStyle] = useState<'satellite' | 'streets'>('satellite');
   const [selectedCoordinate, setSelectedCoordinate] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
-  const [clickToAdd, setClickToAdd] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkActionDialogOpen, setIsBulkActionDialogOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<'delete' | 'move' | null>(null);
@@ -172,15 +176,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       showUserHeading: true
     }), 'top-right');
 
-    // Add click handler for click-to-add mode (only for admin users)
-    map.current.on('click', (e) => {
-      if (clickToAdd && hasAdminAccess) {
-        const { lng, lat } = e.lngLat;
-        // Open add modal with coordinates pre-filled
-        setIsAddModalOpen(true);
-        setClickToAdd(false);
-      }
-    });
+    // Click handler removed - GPS pins are only added through the Add Drop-Pin modal
 
     return () => {
       if (map.current) {
@@ -212,7 +208,18 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   };
 
   const getDefaultCenter = (): [number, number] => {
-    // Use existing coordinates average if available
+    // First try to use primary service location
+    if (serviceLocations && serviceLocations.length > 0) {
+      const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+      if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+        const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          return [lng, lat];
+        }
+      }
+    }
+    
+    // Fallback to coordinates average if available
     if (coordinates && coordinates.length > 0) {
       const avgLat = coordinates.reduce((sum, coord) => sum + coord.latitude, 0) / coordinates.length;
       const avgLng = coordinates.reduce((sum, coord) => sum + coord.longitude, 0) / coordinates.length;
@@ -346,7 +353,6 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const handleDropPinAdded = () => {
     refetch();
     setIsAddModalOpen(false);
-    setClickToAdd(false);
     toast({
       title: "Success",
       description: "GPS drop-pin added successfully",
@@ -392,8 +398,38 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     }
   };
 
-  const openInMaps = (lat: number, lng: number) => {
-    window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
+  const openInMaps = (lat: number, lng: number, provider: 'google' | 'apple' | 'waze' | 'mapbox' = 'google') => {
+    const urls = {
+      google: `https://maps.google.com/?q=${lat},${lng}`,
+      apple: `https://maps.apple.com/?q=${lat},${lng}`,
+      waze: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
+      mapbox: `https://api.mapbox.com/directions/v5/mapbox/driving/${lng},${lat}?access_token=${mapboxToken}`
+    };
+    
+    if (provider === 'mapbox' && mapboxToken) {
+      // Use Mapbox Directions API for internal navigation
+      window.open(urls.mapbox, '_blank');
+    } else {
+      window.open(urls[provider], '_blank');
+    }
+  };
+
+  const copyPointDetails = (coordinate: any) => {
+    const serviceLocation = serviceLocations?.find(loc => loc.id === coordinate.service_location_id);
+    const textData = `${customer?.name || 'Unknown'} - ${coordinate.point_name}\nCategory: ${coordinate.category || 'Uncategorized'}\nLocation: ${serviceLocation?.location_name || 'Unknown'}\nCoordinates: ${coordinate.latitude}, ${coordinate.longitude}\nDescription: ${coordinate.description || 'N/A'}\n`;
+
+    navigator.clipboard.writeText(textData).then(() => {
+      toast({
+        title: "Success", 
+        description: "Coordinate details copied to clipboard",
+      });
+    }).catch(() => {
+      toast({
+        title: "Error",
+        description: "Failed to copy coordinate details",
+        variant: "destructive",
+      });
+    });
   };
 
   // Bulk selection functions
@@ -566,14 +602,13 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           {hasAdminAccess && (
             <>
               <Button
-                variant={clickToAdd ? "default" : "outline"}
+                variant="outline"
                 size="sm"
-                onClick={() => setClickToAdd(!clickToAdd)}
-                disabled={!serviceLocations || serviceLocations.length === 0}
-                className="touch-manipulation" // Better mobile touch targets
+                onClick={() => setIsManageCategoriesOpen(true)}
+                className="touch-manipulation"
               >
-                <Crosshair className="w-4 h-4 mr-2" />
-                {clickToAdd ? 'Click Mode ON' : 'Click to Add'}
+                <Settings className="w-4 h-4 mr-2" />
+                Manage Categories
               </Button>
               
               <Button 
@@ -649,21 +684,12 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                 ref={mapContainer} 
                 className="h-[300px] lg:h-[400px] w-full touch-manipulation"
                 style={{ 
-                  cursor: clickToAdd ? 'crosshair' : 'default',
+                  cursor: 'default',
                   minHeight: '300px',
                   touchAction: 'manipulation' // Optimize for mobile scrolling
                 }}
               />
               
-              {clickToAdd && hasAdminAccess && (
-                <div className="absolute inset-x-0 bottom-4 mx-4 z-10">
-                  <div className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2">
-                    <Crosshair className="w-4 h-4" />
-                    <span className="hidden sm:inline">Click anywhere on the map to add a new drop-pin</span>
-                    <span className="sm:hidden">Tap to add drop-pin</span>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -728,31 +754,31 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                   
                   {selectedIds.size >= 2 && (
                     <div className="flex items-center gap-1">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="h-8 px-2">
-                            <Trash2 className="w-3 h-3 mr-1" />
-                            Delete All
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete GPS Drop-Pins</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete {selectedIds.size} GPS drop-pins? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={handleBulkDelete}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Delete All
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                        <AlertDialog>
+                         <AlertDialogTrigger asChild>
+                           <Button variant="outline" size="sm" className="h-8 px-2">
+                             <Trash2 className="w-3 h-3 mr-1" />
+                             Delete
+                           </Button>
+                         </AlertDialogTrigger>
+                         <AlertDialogContent>
+                           <AlertDialogHeader>
+                             <AlertDialogTitle>Delete GPS Drop-Pins</AlertDialogTitle>
+                             <AlertDialogDescription>
+                               Are you sure you want to delete {selectedIds.size} GPS drop-pins? This action cannot be undone.
+                             </AlertDialogDescription>
+                           </AlertDialogHeader>
+                           <AlertDialogFooter>
+                             <AlertDialogCancel>Cancel</AlertDialogCancel>
+                             <AlertDialogAction 
+                               onClick={handleBulkDelete}
+                               className="bg-red-600 hover:bg-red-700"
+                             >
+                               Delete
+                             </AlertDialogAction>
+                           </AlertDialogFooter>
+                         </AlertDialogContent>
+                       </AlertDialog>
                       
                       <Select onValueChange={handleBulkMoveCategory}>
                         <SelectTrigger className="h-8 w-auto min-w-[120px]">
@@ -873,15 +899,64 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                                     </DropdownMenuItem>
                                   )}
                                   
-                                  <DropdownMenuItem
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      openInMaps(coordinate.latitude, coordinate.longitude);
-                                    }}
-                                  >
-                                    <Navigation className="w-3 h-3 mr-2" />
-                                    Navigate
-                                  </DropdownMenuItem>
+                                   <DropdownMenu>
+                                     <DropdownMenuTrigger asChild>
+                                       <DropdownMenuItem
+                                         onSelect={(e) => e.preventDefault()}
+                                       >
+                                         <Navigation className="w-3 h-3 mr-2" />
+                                         Navigate
+                                         <ExternalLink className="w-3 h-3 ml-auto" />
+                                       </DropdownMenuItem>
+                                     </DropdownMenuTrigger>
+                                     <DropdownMenuContent side="right" align="start">
+                                       <DropdownMenuItem
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           openInMaps(coordinate.latitude, coordinate.longitude, 'google');
+                                         }}
+                                       >
+                                         Google Maps
+                                       </DropdownMenuItem>
+                                       <DropdownMenuItem
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           openInMaps(coordinate.latitude, coordinate.longitude, 'apple');
+                                         }}
+                                       >
+                                         Apple Maps
+                                       </DropdownMenuItem>
+                                       <DropdownMenuItem
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           openInMaps(coordinate.latitude, coordinate.longitude, 'waze');
+                                         }}
+                                       >
+                                         Waze
+                                       </DropdownMenuItem>
+                                       <DropdownMenuItem
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           openInMaps(coordinate.latitude, coordinate.longitude, 'mapbox');
+                                         }}
+                                       >
+                                         <Navigation2 className="w-3 h-3 mr-2" />
+                                         Internal Navigation
+                                       </DropdownMenuItem>
+                                     </DropdownMenuContent>
+                                   </DropdownMenu>
+                                   
+                                   <DropdownMenuItem
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       copyPointDetails(coordinate);
+                                     }}
+                                   >
+                                     <Copy className="w-3 h-3 mr-2" />
+                                     Copy Point Details
+                                   </DropdownMenuItem>
+                                   
+                                   <DropdownMenuSeparator />
                                   
                                   {hasAdminAccess && (
                                     <AlertDialog>
@@ -941,10 +1016,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         customerId={customerId}
         serviceLocations={serviceLocations || []}
         isOpen={isAddModalOpen}
-        onClose={() => {
-          setIsAddModalOpen(false);
-          setClickToAdd(false);
-        }}
+        onClose={() => setIsAddModalOpen(false)}
         onSuccess={handleDropPinAdded}
       />
 
@@ -961,6 +1033,15 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           onSuccess={handleDropPinUpdated}
         />
       )}
+
+      <ManageCategoriesModal
+        isOpen={isManageCategoriesOpen}
+        onClose={() => setIsManageCategoriesOpen(false)}
+        customerId={customerId}
+        customerName={customer?.name || 'Unknown'}
+        existingCategories={categories || []}
+        onCategoriesUpdated={refetch}
+      />
     </div>
   );
 }
