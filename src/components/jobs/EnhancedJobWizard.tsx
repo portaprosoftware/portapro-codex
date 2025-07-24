@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Import all enhanced steps
+import { CustomerStep } from './steps/CustomerStep';
 import { JobTypeTimezoneStep } from './steps/enhanced/JobTypeTimezoneStep';
 import { DeliveryPickupScheduleStep } from './steps/enhanced/DeliveryPickupScheduleStep';
 import { LocationContactsStep } from './steps/enhanced/LocationContactsStep';
@@ -199,16 +200,10 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold text-foreground mb-2">Select Customer</h2>
-              <p className="text-muted-foreground">Choose the customer for this job</p>
-            </div>
-            {/* TODO: Add CustomerStep component */}
-            <div className="p-8 border border-dashed border-border rounded-lg text-center">
-              <p className="text-muted-foreground">Customer selection component will be added here</p>
-            </div>
-          </div>
+          <CustomerStep
+            data={data.selectedCustomer}
+            onUpdate={(customer) => updateStepData({ selectedCustomer: customer })}
+          />
         );
       
       case 2:
