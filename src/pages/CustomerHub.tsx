@@ -164,9 +164,9 @@ const CustomerHub: React.FC = () => {
                   </TableCell>
                    <TableCell>
                      {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] ? (
-                       <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-medium px-3 py-1 rounded-full`}>
-                         {CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].label}
-                       </Badge>
+                        <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+                          {CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].label}
+                        </Badge>
                      ) : (
                        <span className="text-gray-500">-</span>
                      )}
