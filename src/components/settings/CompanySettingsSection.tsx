@@ -9,6 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Building2, Upload, Save, Mail, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +24,11 @@ const companySettingsSchema = z.object({
   company_name: z.string().min(1, "Company name is required"),
   company_email: z.string().email("Invalid email address").optional().or(z.literal("")),
   company_phone: z.string().optional(),
-  company_address: z.string().optional(),
+  company_street: z.string().min(1, "Street address is required"),
+  company_street2: z.string().optional(),
+  company_city: z.string().min(1, "City is required"),
+  company_state: z.string().min(1, "State is required"),
+  company_zipcode: z.string().min(1, "Zipcode is required"),
   company_timezone: z.string().min(1, "Timezone is required"),
   support_email: z.string().email("Invalid email address").optional().or(z.literal("")),
 });
@@ -35,6 +43,59 @@ const timezones = [
   { value: "America/Phoenix", label: "Arizona Time" },
   { value: "America/Anchorage", label: "Alaska Time" },
   { value: "Pacific/Honolulu", label: "Hawaii Time" },
+];
+
+const US_STATES = [
+  { value: "AL", label: "AL - Alabama" },
+  { value: "AK", label: "AK - Alaska" },
+  { value: "AZ", label: "AZ - Arizona" },
+  { value: "AR", label: "AR - Arkansas" },
+  { value: "CA", label: "CA - California" },
+  { value: "CO", label: "CO - Colorado" },
+  { value: "CT", label: "CT - Connecticut" },
+  { value: "DE", label: "DE - Delaware" },
+  { value: "FL", label: "FL - Florida" },
+  { value: "GA", label: "GA - Georgia" },
+  { value: "HI", label: "HI - Hawaii" },
+  { value: "ID", label: "ID - Idaho" },
+  { value: "IL", label: "IL - Illinois" },
+  { value: "IN", label: "IN - Indiana" },
+  { value: "IA", label: "IA - Iowa" },
+  { value: "KS", label: "KS - Kansas" },
+  { value: "KY", label: "KY - Kentucky" },
+  { value: "LA", label: "LA - Louisiana" },
+  { value: "ME", label: "ME - Maine" },
+  { value: "MD", label: "MD - Maryland" },
+  { value: "MA", label: "MA - Massachusetts" },
+  { value: "MI", label: "MI - Michigan" },
+  { value: "MN", label: "MN - Minnesota" },
+  { value: "MS", label: "MS - Mississippi" },
+  { value: "MO", label: "MO - Missouri" },
+  { value: "MT", label: "MT - Montana" },
+  { value: "NE", label: "NE - Nebraska" },
+  { value: "NV", label: "NV - Nevada" },
+  { value: "NH", label: "NH - New Hampshire" },
+  { value: "NJ", label: "NJ - New Jersey" },
+  { value: "NM", label: "NM - New Mexico" },
+  { value: "NY", label: "NY - New York" },
+  { value: "NC", label: "NC - North Carolina" },
+  { value: "ND", label: "ND - North Dakota" },
+  { value: "OH", label: "OH - Ohio" },
+  { value: "OK", label: "OK - Oklahoma" },
+  { value: "OR", label: "OR - Oregon" },
+  { value: "PA", label: "PA - Pennsylvania" },
+  { value: "RI", label: "RI - Rhode Island" },
+  { value: "SC", label: "SC - South Carolina" },
+  { value: "SD", label: "SD - South Dakota" },
+  { value: "TN", label: "TN - Tennessee" },
+  { value: "TX", label: "TX - Texas" },
+  { value: "UT", label: "UT - Utah" },
+  { value: "VT", label: "VT - Vermont" },
+  { value: "VA", label: "VA - Virginia" },
+  { value: "WA", label: "WA - Washington" },
+  { value: "WV", label: "WV - West Virginia" },
+  { value: "WI", label: "WI - Wisconsin" },
+  { value: "WY", label: "WY - Wyoming" }
 ];
 
 export function CompanySettingsSection() {
@@ -63,7 +124,11 @@ export function CompanySettingsSection() {
       company_name: "",
       company_email: "",
       company_phone: "",
-      company_address: "",
+      company_street: "",
+      company_street2: "",
+      company_city: "",
+      company_state: "",
+      company_zipcode: "",
       company_timezone: "America/New_York",
       support_email: "",
     },
@@ -75,7 +140,11 @@ export function CompanySettingsSection() {
         company_name: companySettings.company_name || "",
         company_email: companySettings.company_email || "",
         company_phone: companySettings.company_phone || "",
-        company_address: companySettings.company_address || "",
+        company_street: companySettings.company_address || "", // Fallback to existing address field for now
+        company_street2: "",
+        company_city: "",
+        company_state: "",
+        company_zipcode: "",
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
       });
@@ -289,26 +358,145 @@ export function CompanySettingsSection() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="company_address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company Address</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Textarea 
-                          placeholder="Enter complete company address"
-                          className="pl-10"
+              {/* Company Address Fields */}
+              <div className="space-y-6">
+                <h3 className="text-lg font-medium text-foreground">Company Address</h3>
+                
+                <FormField
+                  control={form.control}
+                  name="company_street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address *</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                          <Input 
+                            placeholder="123 Main Street"
+                            className="pl-10"
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="company_street2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street 2 (Optional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Suite 100, Apt 2B, etc."
                           {...field} 
                         />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="company_city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="New York"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="company_state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State *</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value
+                                  ? US_STATES.find(
+                                      (state) => state.value === field.value
+                                    )?.label
+                                  : "Select state"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-white border shadow-md z-50">
+                            <Command>
+                              <CommandInput placeholder="Search states..." />
+                              <CommandList>
+                                <CommandEmpty>No state found.</CommandEmpty>
+                                <CommandGroup>
+                                  {US_STATES.map((state) => (
+                                    <CommandItem
+                                      value={state.label}
+                                      key={state.value}
+                                      onSelect={() => {
+                                        form.setValue("company_state", state.value)
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          state.value === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                      {state.label}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="company_zipcode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Zipcode *</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="12345"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
               <FormField
                 control={form.control}
