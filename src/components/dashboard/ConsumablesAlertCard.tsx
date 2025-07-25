@@ -79,7 +79,7 @@ export const ConsumablesAlertCard: React.FC = () => {
               <div className="text-3xl font-bold text-orange-600">
                 {totalStats?.lowStockCount || 0}
               </div>
-              <div className="text-sm text-gray-600">Need Reorder</div>
+              <div className="text-sm text-gray-600">Low Stock - Need Reorder</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900">

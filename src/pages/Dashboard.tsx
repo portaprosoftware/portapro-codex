@@ -32,18 +32,21 @@ const Dashboard = () => {
   const { data: inventoryData } = useQuery({
     queryKey: ['dashboard-inventory'],
     queryFn: async () => {
-      const [productsResult, itemsResult] = await Promise.all([
+      const [productsResult, itemsResult, maintenanceItemsResult] = await Promise.all([
         supabase.from('products').select('id, stock_total'),
-        supabase.from('product_items').select('id')
+        supabase.from('product_items').select('id'),
+        supabase.from('product_items').select('id').eq('status', 'maintenance')
       ]);
       
       if (productsResult.error) throw productsResult.error;
       if (itemsResult.error) throw itemsResult.error;
+      if (maintenanceItemsResult.error) throw maintenanceItemsResult.error;
       
       const totalProducts = productsResult.data?.length || 0;
       const totalUnits = productsResult.data?.reduce((sum, product) => sum + (product.stock_total || 0), 0) || 0;
+      const maintenanceItems = maintenanceItemsResult.data?.length || 0;
       
-      return { totalProducts, totalUnits };
+      return { totalProducts, totalUnits, maintenanceItems };
     }
   });
 
@@ -67,9 +70,28 @@ const Dashboard = () => {
       return {
         total: data?.length || 0,
         deliveries: jobsByType.delivery || 0,
-        returns: jobsByType.return || 0,
         pickups: jobsByType.pickup || 0,
-        services: jobsByType.service || 0
+        services: jobsByType.service || 0,
+        partialPickups: jobsByType.partial_pickup || 0,
+        surveys: jobsByType['on_site_survey'] || 0
+      };
+    }
+  });
+
+  // Fetch customers data
+  const { data: customersData } = useQuery({
+    queryKey: ['dashboard-customers'],
+    queryFn: async () => {
+      const { data, error, count } = await supabase
+        .from('customers')
+        .select('*', { count: 'exact' });
+      
+      if (error) throw error;
+      
+      // For now, assume all customers are active - you can add logic later to filter by activity
+      return {
+        total: count || 0,
+        active: 8 // Keeping the current active count for now
       };
     }
   });
@@ -186,18 +208,20 @@ const Dashboard = () => {
           gradientFrom="#3b82f6"
           gradientTo="#2563eb"
           iconBg="#3b82f6"
-          subtitle={`${inventoryData?.totalUnits || 0} total units`}
+          subtitle={`${inventoryData?.totalUnits || 0} total units, ${inventoryData?.maintenanceItems || 0} in maintenance`}
           subtitleColor="text-gray-600"
           delay={0}
         />
         
         <StatCard
           title="Active Customers"
-          value={8}
+          value={customersData?.active || 8}
           icon={Users}
           gradientFrom="#8b5cf6"
           gradientTo="#7c3aed"
           iconBg="#8b5cf6"
+          subtitle={`${customersData?.total || 0} total customers`}
+          subtitleColor="text-gray-600"
           delay={100}
         />
         
@@ -208,7 +232,7 @@ const Dashboard = () => {
           gradientFrom="#3b82f6"
           gradientTo="#2563eb"
           iconBg="#3b82f6"
-          subtitle={`${jobsData?.deliveries || 0} deliveries, ${jobsData?.returns || 0} returns, ${jobsData?.pickups || 0} pickups, ${jobsData?.services || 0} services`}
+          subtitle={`${jobsData?.deliveries || 0} deliveries, ${jobsData?.pickups || 0} pickups, ${jobsData?.services || 0} services • ${jobsData?.partialPickups || 0} partial pickups • ${jobsData?.surveys || 0} on-site surveys/estimates`}
           subtitleColor="text-gray-600"
           chart={<Sparkline data={jobsSparklineData} color="#3b82f6" />}
           delay={200}
