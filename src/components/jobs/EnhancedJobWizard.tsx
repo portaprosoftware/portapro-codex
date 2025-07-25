@@ -24,8 +24,9 @@ interface WizardData {
   // Step 2: Job Type & Timezone
   jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
   timezone: string;
-  customerTimezone: string;
-  timezoneSource: 'company' | 'customer' | 'custom';
+  customerTimezone?: string;
+  timezoneSource?: 'company' | 'customer' | 'custom';
+  dualTimezoneMode?: boolean;
   
   // Step 3: Schedule
   deliveryDate?: Date;
@@ -108,8 +109,9 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     selectedCustomer: undefined,
     jobType: 'delivery',
     timezone: 'America/New_York',
-    customerTimezone: 'America/New_York',
+    customerTimezone: undefined,
     timezoneSource: 'company',
+    dualTimezoneMode: false,
     hasDeliveryTime: false,
     returnScheduleEnabled: false,
     partialPickupEnabled: false,
@@ -211,7 +213,8 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           <JobTypeTimezoneStep
             data={{
               jobType: data.jobType,
-              timezone: data.timezone
+              timezone: data.timezone,
+              selectedCustomer: data.selectedCustomer
             }}
             onUpdate={(stepData) => updateStepData(stepData)}
           />

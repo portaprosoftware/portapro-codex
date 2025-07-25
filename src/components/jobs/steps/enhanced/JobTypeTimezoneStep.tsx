@@ -5,6 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { getTimezoneFromZip, getCompanyTimezone, timezoneOptions, formatTimezoneLabel } from '@/lib/timezoneUtils';
+import { TimezoneCard } from '../TimezoneCard';
+import { supabase } from '@/integrations/supabase/client';
 
 interface JobTypeTimezoneStepProps {
   data: {
@@ -12,12 +14,15 @@ interface JobTypeTimezoneStepProps {
     timezone: string;
     customerZip?: string;
     customerState?: string;
+    selectedCustomer?: any;
   };
   onUpdate: (data: { 
     jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null; 
     timezone: string;
     customerZip?: string;
     customerState?: string;
+    customerTimezone?: string;
+    dualTimezoneMode?: boolean;
   }) => void;
   allowEarlyPickup?: boolean;
 }
@@ -45,13 +50,6 @@ const jobTypes = [
     color: 'orange',
   },
   {
-    id: 'partial-pickup' as const,
-    name: 'Partial Pickup',
-    description: 'Pick up some equipment from customer location',
-    icon: Package,
-    color: 'purple',
-  },
-  {
     id: 'on-site-survey' as const,
     name: 'On-Site Survey/Estimate',
     description: 'Site visit for assessment and estimation',
@@ -66,16 +64,58 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
   allowEarlyPickup = false 
 }) => {
   const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
+  const [customerTimezone, setCustomerTimezone] = useState<string | null>(null);
+  const [customerZip, setCustomerZip] = useState<string | null>(null);
+  const [dualTimezoneMode, setDualTimezoneMode] = useState(false);
   const companyTimezone = getCompanyTimezone();
+
+  // Fetch customer timezone from default service location
+  useEffect(() => {
+    const fetchCustomerTimezone = async () => {
+      if (data.selectedCustomer?.id) {
+        try {
+          const { data: serviceLocation, error } = await supabase
+            .from('customer_service_locations')
+            .select('zip, state')
+            .eq('customer_id', data.selectedCustomer.id)
+            .eq('is_default', true)
+            .single();
+
+          if (error) {
+            console.log('No default service location found:', error);
+            return;
+          }
+
+          if (serviceLocation?.zip) {
+            const detected = getTimezoneFromZip(serviceLocation.zip, serviceLocation.state);
+            setCustomerTimezone(detected);
+            setCustomerZip(serviceLocation.zip);
+            setDetectedTimezone(detected);
+            
+            // Auto-set timezone if not already set or is company default
+            if (!data.timezone || data.timezone === companyTimezone) {
+              onUpdate({ ...data, timezone: detected, customerTimezone: detected, customerZip: serviceLocation.zip });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching customer timezone:', error);
+        }
+      }
+    };
+
+    fetchCustomerTimezone();
+  }, [data.selectedCustomer?.id]);
 
   useEffect(() => {
     if (data.customerZip) {
       const detected = getTimezoneFromZip(data.customerZip, data.customerState);
       setDetectedTimezone(detected);
+      setCustomerTimezone(detected);
+      setCustomerZip(data.customerZip);
       
       // Auto-set timezone if not already set
       if (!data.timezone || data.timezone === companyTimezone) {
-        onUpdate({ ...data, timezone: detected });
+        onUpdate({ ...data, timezone: detected, customerTimezone: detected });
       }
     }
   }, [data.customerZip, data.customerState]);
@@ -85,11 +125,17 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
   };
 
   const handleTimezoneSelect = (timezone: string) => {
-    onUpdate({ ...data, timezone });
+    onUpdate({ ...data, timezone, dualTimezoneMode });
+  };
+
+  const handleDualTimezoneModeChange = (enabled: boolean) => {
+    setDualTimezoneMode(enabled);
+    onUpdate({ ...data, dualTimezoneMode: enabled });
   };
 
   const isTimezoneDetected = detectedTimezone && detectedTimezone !== companyTimezone;
   const isCustomerTimezoneSelected = data.timezone === detectedTimezone;
+  const timezoneMatch = customerTimezone === companyTimezone;
 
   return (
     <div className="space-y-6">
@@ -98,6 +144,18 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
         <h2 className="text-2xl font-semibold text-foreground mb-2">Job Type & Timezone</h2>
         <p className="text-muted-foreground">What type of job are you scheduling and in which timezone?</p>
       </div>
+
+      {/* Timezone Card */}
+      {data.selectedCustomer && (
+        <TimezoneCard
+          companyTimezone={companyTimezone}
+          customerTimezone={customerTimezone}
+          customerZip={customerZip}
+          timezoneMatch={timezoneMatch}
+          dualTimezoneMode={dualTimezoneMode}
+          onDualTimezoneModeChange={handleDualTimezoneModeChange}
+        />
+      )}
 
       {/* Job Type Selection */}
       <div className="space-y-4">
@@ -220,7 +278,9 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
               <SelectItem value={detectedTimezone}>
                 <div className="flex items-center justify-between w-full">
                   <span>{formatTimezoneLabel(detectedTimezone)}</span>
-                  <Badge className="ml-2 bg-blue-100 text-blue-800">Customer</Badge>
+                  <Badge className="ml-2 bg-blue-100 text-blue-800">
+                    {timezoneMatch ? 'Same' : 'Customer'}
+                  </Badge>
                 </div>
               </SelectItem>
             )}
