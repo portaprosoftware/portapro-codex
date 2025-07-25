@@ -140,11 +140,11 @@ export function CompanySettingsSection() {
         company_name: companySettings.company_name || "",
         company_email: companySettings.company_email || "",
         company_phone: companySettings.company_phone || "",
-        company_street: companySettings.company_address || "", // Fallback to existing address field for now
-        company_street2: "",
-        company_city: "",
-        company_state: "",
-        company_zipcode: "",
+        company_street: companySettings.company_street || companySettings.company_address || "",
+        company_street2: companySettings.company_street2 || "",
+        company_city: companySettings.company_city || "",
+        company_state: companySettings.company_state || "",
+        company_zipcode: companySettings.company_zipcode || "",
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
       });
@@ -153,16 +153,20 @@ export function CompanySettingsSection() {
 
   const updateCompanySettings = useMutation({
     mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
+      // Use upsert to handle both create and update cases
       const { error } = await supabase
         .from("company_settings")
-        .update(data)
-        .eq("id", companySettings?.id);
+        .upsert({
+          id: companySettings?.id || '08751fa1-759f-4bfd-afd3-37a6d6b4f86f', // Use existing ID or default
+          ...data
+        });
       
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company-settings"] });
       setShowSuccessMessage(true);
+      toast.success("Company settings updated successfully!");
     },
     onError: (error) => {
       toast.error("Failed to update company settings");

@@ -157,7 +157,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
     <Sidebar className="w-64 border-r">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-start">
           <Logo showText={false} />
         </div>
       </div>
