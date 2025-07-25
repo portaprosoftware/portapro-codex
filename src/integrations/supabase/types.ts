@@ -6195,6 +6195,10 @@ export type Database = {
         }
         Returns: Json
       }
+      auto_fix_storage_location_issues: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       auto_populate_location_coordinates: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -6313,6 +6317,10 @@ export type Database = {
       generate_report_number: {
         Args: { template_type: string }
         Returns: string
+      }
+      generate_storage_location_report: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_available_units: {
         Args: { product_type_id: string; start_date: string; end_date: string }
@@ -6506,6 +6514,10 @@ export type Database = {
         }
         Returns: string
       }
+      migrate_consumables_to_default_location: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       migrate_customer_zip_codes: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -6594,6 +6606,10 @@ export type Database = {
           customer_name: string
           customer_email: string
         }[]
+      }
+      validate_storage_location_integrity: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
     }
     Enums: {
