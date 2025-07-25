@@ -63,6 +63,11 @@ export const getDisplayStatus = (job: Job): string => {
  * Status configuration for consistent styling across all components
  */
 export const getJobStatusConfig = () => ({
+  unassigned: { 
+    gradient: 'bg-gradient-to-r from-gray-400 to-gray-500 text-black font-bold', 
+    label: 'Unassigned',
+    color: '#9CA3AF'
+  },
   assigned: { 
     gradient: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', 
     label: 'Assigned',

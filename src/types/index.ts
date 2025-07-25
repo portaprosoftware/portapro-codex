@@ -12,7 +12,7 @@ export interface User {
 }
 
 // Common status types
-export type JobStatus = "pending" | "assigned" | "in-progress" | "completed" | "cancelled";
+export type JobStatus = "pending" | "unassigned" | "assigned" | "in-progress" | "completed" | "cancelled";
 export type VehicleStatus = "available" | "maintenance" | "in_use" | "retired";
 export type InventoryStatus = "in_stock" | "low_stock" | "out_of_stock";
 

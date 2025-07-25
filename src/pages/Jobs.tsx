@@ -46,12 +46,17 @@ const JobsPage: React.FC = () => {
   const updateJobStatusMutation = useUpdateJobStatus();
   const queryClient = useQueryClient();
 
-  // Mutation to update job assignment
+  // Mutation to update job assignment and status
   const updateJobAssignmentMutation = useMutation({
-    mutationFn: async ({ jobId, driverId }: { jobId: string; driverId: string | null }) => {
+    mutationFn: async ({ jobId, driverId, status }: { jobId: string; driverId: string | null; status?: string }) => {
+      const updateData: any = { driver_id: driverId };
+      if (status) {
+        updateData.status = status;
+      }
+      
       const { error } = await supabase
         .from('jobs')
-        .update({ driver_id: driverId })
+        .update(updateData)
         .eq('id', jobId);
       
       if (error) throw error;
@@ -203,16 +208,18 @@ const JobsPage: React.FC = () => {
 
     const jobId = draggableId;
     const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
+    const newStatus = destination.droppableId === 'unassigned' ? 'unassigned' : 'assigned';
     
     console.log('Updating job assignment:', { 
       jobId, 
       from: source.droppableId, 
       to: destination.droppableId, 
       newDriverId,
+      newStatus,
       jobNumber: jobExists.job_number 
     });
     
-    updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
+    updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId, status: newStatus });
   }, [updateJobAssignmentMutation, dispatchJobs]);
 
   // Filter jobs based on search and filters
@@ -240,11 +247,12 @@ const JobsPage: React.FC = () => {
 
   // Get job status counts
   const getJobStatusCounts = () => {
+    const unassigned = dispatchJobs.filter(job => !job.driver_id || job.status === 'unassigned').length;
     const assigned = dispatchJobs.filter(job => job.driver_id && job.status === 'assigned').length;
     const inProgress = dispatchJobs.filter(job => job.status === 'in_progress').length;
     const completed = dispatchJobs.filter(job => job.status === 'completed').length;
     
-    return { assigned, inProgress, completed };
+    return { unassigned, assigned, inProgress, completed };
   };
 
   return (
@@ -548,6 +556,9 @@ const JobsPage: React.FC = () => {
                           <span className="text-sm font-medium">1 job</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
+                          <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-black border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                            Unassigned: {getJobStatusCounts().unassigned}
+                          </Badge>
                           <Badge className="bg-gradient-blue text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Assigned: {getJobStatusCounts().assigned}
                           </Badge>

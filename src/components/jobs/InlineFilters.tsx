@@ -79,6 +79,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         </SelectTrigger>
         <SelectContent className="bg-white border shadow-lg z-50">
           <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="unassigned">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              Unassigned
+            </div>
+          </SelectItem>
           <SelectItem value="assigned">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-500"></div>
