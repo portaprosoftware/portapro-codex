@@ -69,18 +69,23 @@ export default function CustomerDetail() {
           </Breadcrumb>
           
           <div className="flex items-center justify-between mt-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">{customer.name}</h1>
-              <p className="text-muted-foreground mt-1">
-                {customer.customer_type || 'Customer'} • {customer.email} • {customer.phone}
-              </p>
+            <div className="flex items-center gap-4">
+              <Link to="/customers">
+                <Button 
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Customer List
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">{customer.name}</h1>
+                <p className="text-muted-foreground mt-1">
+                  {customer.customer_type || 'Customer'} • {customer.email} • {customer.phone}
+                </p>
+              </div>
             </div>
-            <Link to="/customers">
-              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Customers
-              </Button>
-            </Link>
           </div>
         </div>
       </div>

@@ -52,7 +52,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
     <div className="bg-white rounded-md border shadow-sm p-4 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
       {/* Card Header */}
       <div className="flex items-center justify-between mb-4">
-        <Badge className={`${getTypeGradient(type)} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+        <Badge className={`${getTypeGradient(type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
           {label}
         </Badge>
         <span className="text-lg font-semibold text-gray-900">{count}</span>
