@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -59,6 +60,25 @@ const CONTACT_TYPES = [
 
 export function EditContactModal({ isOpen, onClose, contact, customerId }: EditContactModalProps) {
   const queryClient = useQueryClient();
+  
+  // Check for existing primary contact
+  const { data: existingPrimaryContact } = useQuery({
+    queryKey: ['primary-contact', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customer_contacts')
+        .select('id')
+        .eq('customer_id', customerId)
+        .eq('is_primary', true)
+        .neq('id', contact.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const hasPrimaryContact = !!existingPrimaryContact;
   
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -263,14 +283,25 @@ export function EditContactModal({ isOpen, onClose, contact, customerId }: EditC
               control={form.control}
               name="is_primary"
               render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <FormLabel>Primary Contact</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
+                <FormItem className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Set as primary contact</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={!field.value && hasPrimaryContact}
+                      />
+                    </FormControl>
+                  </div>
+                  {!field.value && hasPrimaryContact && (
+                    <div className="flex items-start gap-2 p-3 bg-muted rounded-md">
+                      <X className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-muted-foreground">
+                        Primary contact already selected for another contact - disable to enable this contact as primary
+                      </p>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

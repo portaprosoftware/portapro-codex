@@ -38,6 +38,7 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
       case 'on-site': return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-bold';
       case 'emergency': return 'bg-gradient-to-r from-red-600 to-red-700 text-white border-0 font-bold';
       case 'management': return 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-0 font-bold';
+      case 'operations': return 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-0 font-bold';
       default: return 'bg-gradient-to-r from-gray-600 to-gray-700 text-white border-0 font-bold';
     }
   };
@@ -66,6 +67,11 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
                 <Badge className={getContactTypeColor(contact.contact_type)}>
                   {contact.contact_type}
                 </Badge>
+                {contact.is_primary && (
+                  <Badge className="bg-gradient-to-r from-black to-gray-800 text-white border-0 font-bold">
+                    Primary
+                  </Badge>
+                )}
               </div>
 
               {contact.title && (
