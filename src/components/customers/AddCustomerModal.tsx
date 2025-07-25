@@ -187,8 +187,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
             deposit_required: data.deposit_required,
           }
         ])
-        .select()
-        .single();
+        .select();
 
       if (error) throw error;
       return result;
