@@ -183,11 +183,7 @@ export const JobCard: React.FC<JobCardProps> = ({
   if (compact) {
     return (
       <div 
-        className={cn(
-          "enterprise-job-card group cursor-pointer border-l-4",
-          jobTypeInfo.borderColor,
-          job.job_type
-        )}
+      className="enterprise-job-card group cursor-pointer"
         tabIndex={0}
         role="button"
         aria-label={`Job ${job.job_number} for ${job.customers.name}`}
@@ -200,11 +196,8 @@ export const JobCard: React.FC<JobCardProps> = ({
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-3">
-            <div className={cn(
-              "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200",
-              jobTypeInfo.color
-            )}>
-              <JobTypeIcon className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 bg-gray-100">
+              <JobTypeIcon className="w-4 h-4 text-gray-600" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
@@ -212,7 +205,7 @@ export const JobCard: React.FC<JobCardProps> = ({
                 <span className="enterprise-caption-text">•</span>
                 <span className="enterprise-card-title text-sm truncate mb-0">{job.customers.name}</span>
               </div>
-              <div className={cn("enterprise-caption-text font-medium", jobTypeInfo.textColor)}>
+              <div className="enterprise-caption-text font-medium">
                 {jobTypeInfo.label}
               </div>
             </div>
@@ -286,11 +279,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <div 
-      className={cn(
-        "enterprise-job-card group cursor-pointer border-l-4",
-        jobTypeInfo.borderColor,
-        job.job_type
-      )}
+      className="enterprise-job-card group cursor-pointer"
       tabIndex={0}
       role="button"
       aria-label={`Job ${job.job_number} for ${job.customers.name}`}
@@ -304,15 +293,12 @@ export const JobCard: React.FC<JobCardProps> = ({
       <div className="mb-4">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center space-x-3">
-            <div className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
-              jobTypeInfo.color
-            )}>
-              <JobTypeIcon className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 bg-gray-100">
+              <JobTypeIcon className="w-5 h-5 text-gray-600" />
             </div>
             <div>
               <h3 className="enterprise-card-title mb-1">{job.job_number}</h3>
-              <span className={cn("enterprise-caption-text font-medium", jobTypeInfo.textColor)}>
+              <span className="enterprise-caption-text font-medium">
                 {jobTypeInfo.label}
               </span>
             </div>

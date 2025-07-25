@@ -129,34 +129,30 @@ export const FiltersFlyout: React.FC<FiltersFlyoutProps> = ({
                     selectedJobType === 'delivery' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                   }`}
                 >
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                   Delivery
                 </button>
                 <button
                   onClick={() => onJobTypeChange('pickup')}
                   className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
-                    selectedJobType === 'pickup' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300'
+                    selectedJobType === 'pickup' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                   }`}
                 >
-                  <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
                   Pickup
                 </button>
                 <button
                   onClick={() => onJobTypeChange('service')}
                   className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
-                    selectedJobType === 'service' ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                    selectedJobType === 'service' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                   }`}
                 >
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
                   Service
                 </button>
                 <button
                   onClick={() => onJobTypeChange('return')}
                   className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
-                    selectedJobType === 'return' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'
+                    selectedJobType === 'return' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
                   }`}
                 >
-                  <div className="w-2 h-2 rounded-full bg-orange-400"></div>
                   Partial Pickup
                 </button>
               </div>
