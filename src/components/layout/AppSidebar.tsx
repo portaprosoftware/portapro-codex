@@ -157,12 +157,8 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
     <Sidebar className="w-64 border-r">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center">
           <Logo showText={false} />
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">PortaPro</h1>
-            <p className="text-xs text-gray-500">Portable Toilet Management</p>
-          </div>
         </div>
       </div>
       
