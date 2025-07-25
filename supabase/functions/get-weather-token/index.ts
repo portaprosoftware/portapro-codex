@@ -27,23 +27,20 @@ serve(async (req) => {
       )
     }
 
-    // Generate radar frame timestamps (last 2 hours, 10-minute intervals)
+    // Return current precipitation layer data
     const now = new Date()
-    const frames = []
-    for (let i = 12; i >= 0; i--) {
-      const timestamp = new Date(now.getTime() - (i * 10 * 60 * 1000))
-      frames.push({
-        timestamp: Math.floor(timestamp.getTime() / 1000),
-        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`,
-        type: 'precipitation'
-      })
-    }
-
+    
     return new Response(
       JSON.stringify({ 
         success: true,
         weatherKey: openWeatherApiKey,
-        radarFrames: frames,
+        currentLayer: {
+          id: 'current-weather-radar',
+          sourceId: 'current-weather-radar-source',
+          url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`,
+          type: 'precipitation',
+          timestamp: Math.floor(now.getTime() / 1000)
+        },
         currentTime: Math.floor(now.getTime() / 1000)
       }),
       { 

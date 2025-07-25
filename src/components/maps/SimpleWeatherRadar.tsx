@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, Cloud } from 'lucide-react';
+import { RefreshCw, Cloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { weatherService, WeatherRadarLayer } from '@/lib/weatherService';
 
@@ -10,24 +10,23 @@ interface SimpleWeatherRadarProps {
 }
 
 export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadarProps) {
-  const [frames, setFrames] = useState<WeatherRadarLayer[]>([]);
-  const [currentFrame, setCurrentFrame] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [currentLayer, setCurrentLayer] = useState<WeatherRadarLayer | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
-  // Load radar data
+  // Load current radar layer
   const loadRadarData = useCallback(async () => {
     if (!enabled || !map) return;
 
     setIsLoading(true);
     try {
-      const layers = await weatherService.getRadarLayers();
-      if (layers.length > 0) {
-        setFrames(layers);
-        setCurrentFrame(0);
-        console.log('Loaded', layers.length, 'weather radar frames');
+      const layer = await weatherService.getCurrentLayer();
+      if (layer) {
+        setCurrentLayer(layer);
+        setLastRefresh(new Date());
+        console.log('Loaded current weather radar layer');
       } else {
-        console.log('No weather radar frames available');
+        console.log('No weather radar layer available');
         onError?.('Weather radar data unavailable');
       }
     } catch (error) {
@@ -38,124 +37,111 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     }
   }, [enabled, map, onError]);
 
-  // Initialize radar data
+  // Auto-refresh every 5 minutes
   useEffect(() => {
+    if (!enabled) return;
+
     loadRadarData();
-  }, [loadRadarData]);
+    const interval = setInterval(() => {
+      loadRadarData();
+    }, 5 * 60 * 1000); // 5 minutes
 
-  // Add radar layers to map
-  const addRadarLayers = useCallback(() => {
-    if (!map || !frames.length) return;
+    return () => clearInterval(interval);
+  }, [enabled, loadRadarData]);
 
-    frames.forEach((frame, index) => {
-      const { id, sourceId, url } = frame;
+  // Add radar layer to map
+  const addRadarLayer = useCallback(() => {
+    if (!map || !currentLayer) return;
 
-      // Remove existing layer and source
-      if (map.getLayer(id)) {
-        map.removeLayer(id);
-      }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
-      }
+    const { id, sourceId, url } = currentLayer;
 
-      // Add new source and layer
-      map.addSource(sourceId, {
-        type: 'raster',
-        tiles: [url],
-        tileSize: 256,
-        attribution: '© OpenWeatherMap'
-      });
+    // Remove existing layer and source
+    if (map.getLayer(id)) {
+      map.removeLayer(id);
+    }
+    if (map.getSource(sourceId)) {
+      map.removeSource(sourceId);
+    }
 
-      map.addLayer({
-        id,
-        type: 'raster',
-        source: sourceId,
-        paint: {
-          'raster-opacity': index === currentFrame ? 0.8 : 0,
-          'raster-fade-duration': 300
-        }
-      });
+    // Add new source and layer
+    map.addSource(sourceId, {
+      type: 'raster',
+      tiles: [url],
+      tileSize: 256,
+      attribution: '© OpenWeatherMap'
     });
-  }, [map, frames, currentFrame]);
 
-  // Remove all radar layers
-  const removeRadarLayers = useCallback(() => {
-    if (!map || !frames.length) return;
-
-    frames.forEach(frame => {
-      const { id, sourceId } = frame;
-      if (map.getLayer(id)) {
-        map.removeLayer(id);
-      }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
+    map.addLayer({
+      id,
+      type: 'raster',
+      source: sourceId,
+      paint: {
+        'raster-opacity': 0.8,
+        'raster-fade-duration': 300
       }
     });
-  }, [map, frames]);
 
-  // Update layer visibility when frame changes
-  useEffect(() => {
-    if (!map || !frames.length) return;
+    console.log('Added weather radar layer to map');
+  }, [map, currentLayer]);
 
-    frames.forEach((frame, index) => {
-      const { id } = frame;
-      if (map.getLayer(id)) {
-        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? 0.8 : 0);
-      }
-    });
-  }, [map, frames, currentFrame]);
+  // Remove radar layer
+  const removeRadarLayer = useCallback(() => {
+    if (!map || !currentLayer) return;
+
+    const { id, sourceId } = currentLayer;
+    if (map.getLayer(id)) {
+      map.removeLayer(id);
+    }
+    if (map.getSource(sourceId)) {
+      map.removeSource(sourceId);
+    }
+
+    console.log('Removed weather radar layer from map');
+  }, [map, currentLayer]);
 
   // Handle enabled/disabled state
   useEffect(() => {
-    if (enabled && frames.length > 0) {
-      addRadarLayers();
+    if (enabled && currentLayer) {
+      addRadarLayer();
     } else {
-      removeRadarLayers();
+      removeRadarLayer();
     }
 
     return () => {
       if (!enabled) {
-        removeRadarLayers();
+        removeRadarLayer();
       }
     };
-  }, [enabled, addRadarLayers, removeRadarLayers, frames.length]);
+  }, [enabled, addRadarLayer, removeRadarLayer, currentLayer]);
 
-  // Animation loop - 1 second like TV weather
-  useEffect(() => {
-    if (!isAnimating || !enabled || frames.length <= 1) return;
+  // Manual refresh handler
+  const handleRefresh = () => {
+    loadRadarData();
+  };
 
-    const interval = setInterval(() => {
-      setCurrentFrame(prev => (prev + 1) % frames.length);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isAnimating, enabled, frames.length]);
-
-  // Format timestamp for display
-  const formatTime = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleTimeString([], { 
+  // Format time for display
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { 
       hour: '2-digit', 
       minute: '2-digit' 
     });
-  };
-
-  const getRadarTimeRange = () => {
-    if (frames.length === 0) return '';
-    const firstTime = formatTime(frames[0].timestamp);
-    const lastTime = formatTime(frames[frames.length - 1].timestamp);
-    return `Radar: ${firstTime} - ${lastTime} (Past + Future)`;
   };
 
   if (!enabled) return null;
 
   return (
     <>
-      {/* Radar Time Badge */}
-      {frames.length > 0 && (
+      {/* Radar Status Badge */}
+      {currentLayer && (
         <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg z-10 text-sm font-medium">
           <div className="flex items-center space-x-2">
             <Cloud className="w-4 h-4" />
-            <span>{getRadarTimeRange()}</span>
+            <span>Live Weather Radar</span>
+            {lastRefresh && (
+              <span className="text-blue-200">
+                • Updated {formatTime(lastRefresh)}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -163,34 +149,36 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
       {/* Controls */}
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-10">
         {isLoading && (
-          <div className="text-sm text-gray-600 mb-2">
-            Loading weather radar...
+          <div className="text-sm text-gray-600 mb-2 flex items-center space-x-2">
+            <RefreshCw className="w-4 h-4 animate-spin" />
+            <span>Loading weather radar...</span>
           </div>
         )}
         
-        {frames.length === 0 && !isLoading && (
+        {!currentLayer && !isLoading && (
           <div className="text-sm text-red-600 mb-2">
             Weather radar not available
           </div>
         )}
         
-        {frames.length > 0 && (
+        {currentLayer && !isLoading && (
           <div className="flex items-center space-x-2">
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setIsAnimating(!isAnimating)}
+              onClick={handleRefresh}
+              disabled={isLoading}
             >
-              {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
             <span className="text-xs text-gray-600">
-              {formatTime(frames[currentFrame]?.timestamp)}
+              Current
             </span>
           </div>
         )}
 
         {/* Legend */}
-        {frames.length > 0 && (
+        {currentLayer && (
           <div className="mt-3 pt-3 border-t">
             <div className="text-xs font-medium text-gray-700 mb-2">Weather Intensity</div>
             <div className="grid grid-cols-2 gap-1 text-xs">
