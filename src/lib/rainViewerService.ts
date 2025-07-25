@@ -1,95 +1,107 @@
 export interface RainViewerFrame {
-  url: string;
-  timestamp: number;
-  type: 'precipitation';
+  time: number;
+  path: string;
+  type?: 'past' | 'nowcast';
 }
 
-export interface RainViewerLayer {
-  id: string;
-  sourceId: string;
-  url: string;
-  timestamp: number;
-  type: 'precipitation';
+export interface RainViewerResponse {
+  version: string;
+  generated: number;
+  host: string;
+  radar: {
+    past: RainViewerFrame[];
+    nowcast: RainViewerFrame[];
+  };
 }
 
 class RainViewerService {
-  private frames: RainViewerFrame[] = [];
-  private isLoaded = false;
+  private readonly API_BASE = 'https://api.rainviewer.com/public/weather-maps.json';
+  private readonly TILE_BASE = 'https://tilecache.rainviewer.com';
+  private readonly API_TIMEOUT = 10000;
 
-  public async getRadarFrames(): Promise<RainViewerFrame[]> {
-    if (!this.isLoaded) {
-      await this.loadFrames();
-    }
-    return this.frames;
-  }
-
-  public async getRadarLayers(): Promise<RainViewerLayer[]> {
-    const frames = await this.getRadarFrames();
-    
-    // Limit to last 8 past + first 4 future frames (like working radar)
-    const limitedFrames = frames.slice(-12);
-    
-    return limitedFrames.map((frame, index) => ({
-      id: `rainviewer-radar-${index}`,
-      sourceId: `rainviewer-radar-source-${index}`,
-      url: frame.url,
-      timestamp: frame.timestamp,
-      type: frame.type
-    }));
-  }
-
-  private async loadFrames(): Promise<void> {
+  public async getRadarData(): Promise<RainViewerResponse | null> {
     try {
-      // Get RainViewer API data
-      const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-      const data = await response.json();
-      
-      if (!data.radar || !data.radar.past || !data.radar.nowcast) {
-        console.warn('No radar data available from RainViewer');
-        this.frames = [];
-        this.isLoaded = true;
-        return;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.API_TIMEOUT);
+
+      const response = await fetch(this.API_BASE, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const frames: RainViewerFrame[] = [];
-      const baseUrl = 'https://tilecache.rainviewer.com';
-
-      // Add past frames (RainViewer provides historical data)
-      data.radar.past.forEach((frame: any) => {
-        frames.push({
-          url: `${baseUrl}/v2/radar/${frame.time}/256/{z}/{x}/{y}/2/1_1.png`,
-          timestamp: frame.time,
-          type: 'precipitation'
-        });
-      });
-
-      // Add nowcast frames (RainViewer provides forecast data)
-      data.radar.nowcast.forEach((frame: any) => {
-        frames.push({
-          url: `${baseUrl}/v2/radar/${frame.time}/256/{z}/{x}/{y}/2/1_1.png`,
-          timestamp: frame.time,
-          type: 'precipitation'
-        });
-      });
-
-      this.frames = frames;
-      this.isLoaded = true;
+      const data = await response.json();
       
-      console.log('RainViewer loaded', this.frames.length, 'radar frames');
+      if (!data.radar?.past || !data.radar?.nowcast) {
+        console.warn('Invalid radar data structure from RainViewer');
+        return null;
+      }
+
+      return data;
     } catch (error) {
-      console.error('Failed to load RainViewer data:', error);
-      this.frames = [];
-      this.isLoaded = true;
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error('RainViewer API request timed out');
+      } else {
+        console.error('Failed to fetch RainViewer data:', error);
+      }
+      return null;
     }
   }
 
-  public async refreshData(): Promise<void> {
-    this.isLoaded = false;
-    await this.loadFrames();
+  public getCombinedRadarFrames(data: RainViewerResponse): RainViewerFrame[] {
+    const frames: RainViewerFrame[] = [];
+
+    // Get last 8 past frames (90 minutes)
+    if (data.radar?.past) {
+      data.radar.past.slice(-8).forEach(frame => {
+        if (this.validateFrame(frame)) {
+          frames.push({ ...frame, type: 'past' });
+        }
+      });
+    }
+
+    // Get first 4 future frames (30 minutes)
+    if (data.radar?.nowcast) {
+      data.radar.nowcast.slice(0, 4).forEach(frame => {
+        if (this.validateFrame(frame)) {
+          frames.push({ ...frame, type: 'nowcast' });
+        }
+      });
+    }
+
+    // Sort by timestamp to ensure correct order
+    return frames.sort((a, b) => a.time - b.time);
   }
 
-  public isAvailable(): boolean {
-    return this.frames.length > 0;
+  private validateFrame(frame: any): boolean {
+    return frame && 
+           typeof frame.time === 'number' && 
+           typeof frame.path === 'string' && 
+           frame.path.length > 0;
+  }
+
+  public generateTileUrl(frame: RainViewerFrame, colorScheme: number = 2): string {
+    return `${this.TILE_BASE}${frame.path}/256/{z}/{x}/{y}/${colorScheme}/1_1.png`;
+  }
+
+  public formatTimestampToAMPM(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  }
+
+  public async refreshData(): Promise<RainViewerResponse | null> {
+    return this.getRadarData();
   }
 }
 

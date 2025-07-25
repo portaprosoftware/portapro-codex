@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, Cloud, RefreshCw } from 'lucide-react';
+import { Play, Pause, CloudRain, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { rainViewerService, RainViewerLayer } from '@/lib/rainViewerService';
+import { rainViewerService, RainViewerFrame } from '@/lib/rainViewerService';
 
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map | null;
@@ -10,7 +10,7 @@ interface SimpleWeatherRadarProps {
 }
 
 export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadarProps) {
-  const [frames, setFrames] = useState<RainViewerLayer[]>([]);
+  const [frames, setFrames] = useState<RainViewerFrame[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,22 +27,26 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
 
     setIsLoading(true);
     try {
-      const layers = await rainViewerService.getRadarLayers();
-      if (layers.length > 0 && mountedRef.current) {
-        // Limit frames to last 8 past + first 4 future (like working radar)
-        const limitedLayers = layers.slice(-12); // Take last 12 frames
-        setFrames(limitedLayers);
-        
-        // Start from current time (find the frame closest to now)
-        const now = Date.now() / 1000;
-        const currentFrameIndex = limitedLayers.findIndex((layer, index) => {
-          if (index === limitedLayers.length - 1) return true; // Last frame if none found
-          return limitedLayers[index + 1].timestamp > now;
-        });
-        setCurrentFrame(Math.max(0, currentFrameIndex));
-        console.log('Loaded', limitedLayers.length, 'RainViewer radar frames');
+      const data = await rainViewerService.getRadarData();
+      if (data && mountedRef.current) {
+        const radarFrames = rainViewerService.getCombinedRadarFrames(data);
+        if (radarFrames.length > 0) {
+          setFrames(radarFrames);
+          
+          // Start from current time (find frame closest to now)
+          const now = Date.now() / 1000;
+          const currentFrameIndex = radarFrames.findIndex((frame, index) => {
+            if (index === radarFrames.length - 1) return true; // Last frame if none found
+            return radarFrames[index + 1].time > now;
+          });
+          setCurrentFrame(Math.max(0, currentFrameIndex));
+          console.log('Loaded', radarFrames.length, 'RainViewer radar frames');
+        } else {
+          console.log('No weather radar frames available');
+          onError?.('Weather radar data unavailable');
+        }
       } else {
-        console.log('No weather radar frames available');
+        console.log('No weather radar data available');
         onError?.('Weather radar data unavailable');
       }
     } catch (error) {
@@ -74,15 +78,18 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     try {
       frames.forEach((frame, index) => {
         // Create unique layer ID with instance ID and timestamp
-        const layerId = `radar-${instanceId.current}-${frame.timestamp}`;
-        const sourceId = `radar-source-${instanceId.current}-${frame.timestamp}`;
+        const layerId = `radar-${instanceId.current}-${frame.time}`;
+        const sourceId = `radar-source-${instanceId.current}-${frame.time}`;
         
         layerIds.current.push(layerId);
+
+        // Generate tile URL using the service
+        const tileUrl = rainViewerService.generateTileUrl(frame, 2);
 
         // Add new source and layer
         map.addSource(sourceId, {
           type: 'raster',
-          tiles: [frame.url],
+          tiles: [tileUrl],
           tileSize: 256,
           attribution: '© RainViewer'
         });
@@ -221,25 +228,22 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     };
   }, [removeRadarLayers]);
 
-  // Format timestamp for display
+  // Format timestamp for display using service
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+    return rainViewerService.formatTimestampToAMPM(timestamp);
   };
 
   const getRadarTimeRange = () => {
     if (frames.length === 0) return '';
-    const firstTime = formatTime(frames[0].timestamp);
-    const lastTime = formatTime(frames[frames.length - 1].timestamp);
-    return `Radar: ${firstTime} - ${lastTime}`;
+    const firstTime = formatTime(frames[0].time);
+    const lastTime = formatTime(frames[frames.length - 1].time);
+    return `${firstTime} - ${lastTime}`;
   };
 
   const getCurrentFrameStatus = () => {
     if (frames.length === 0) return '';
     const currentTime = Date.now() / 1000;
-    const frameTime = frames[currentFrame]?.timestamp;
+    const frameTime = frames[currentFrame]?.time;
     
     if (!frameTime) return '';
     
@@ -248,7 +252,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     } else if (frameTime > currentTime + 60) {
       return 'Future';
     } else {
-      return 'Current';
+      return 'Live';
     }
   };
 
@@ -256,37 +260,25 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
 
   return (
     <>
-      {/* Radar Time Badge */}
+      {/* Radar Time Display */}
       {frames.length > 0 && (
-        <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg z-10 text-sm font-medium">
-          <div className="flex items-center space-x-2">
-            <Cloud className="w-4 h-4" />
+        <div className="absolute top-4 left-4 bg-primary/90 text-primary-foreground px-3 py-2 rounded-lg shadow-lg z-10">
+          <div className="flex items-center space-x-2 text-sm font-medium">
+            <CloudRain className="w-4 h-4" />
             <span>{getRadarTimeRange()}</span>
           </div>
         </div>
       )}
 
-      {/* Controls */}
-      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-10">
-        {isLoading && (
-          <div className="text-sm text-gray-600 mb-2 flex items-center space-x-2">
-            <RefreshCw className="w-4 h-4 animate-spin" />
-            <span>Loading weather radar...</span>
-          </div>
-        )}
-        
-        {frames.length === 0 && !isLoading && (
-          <div className="text-sm text-red-600 mb-2">
-            Weather radar not available
-          </div>
-        )}
-        
-        {frames.length > 0 && (
+      {/* Animation Controls */}
+      {frames.length > 0 && (
+        <div className="absolute top-4 right-4 bg-background/95 border rounded-lg shadow-lg p-3 z-10">
           <div className="flex items-center space-x-2">
             <Button
               size="sm"
               variant="outline"
               onClick={() => setIsAnimating(!isAnimating)}
+              className="h-8 w-8 p-0"
             >
               {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
@@ -295,17 +287,27 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
               variant="outline"
               onClick={loadRadarData}
               disabled={isLoading}
+              className="h-8 w-8 p-0"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
-            <div className="text-xs text-gray-600">
-              <div>{formatTime(frames[currentFrame]?.timestamp)}</div>
-              <div className="text-xs text-blue-600 font-medium">{getCurrentFrameStatus()}</div>
+            <div className="text-xs text-muted-foreground min-w-[4rem] text-center">
+              <div className="font-medium">{formatTime(frames[currentFrame]?.time)}</div>
+              <div className="text-xs text-primary">{getCurrentFrameStatus()}</div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-      </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute top-4 right-4 bg-background/95 border rounded-lg shadow-lg p-3 z-10">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <RefreshCw className="w-4 h-4 animate-spin" />
+            <span>Loading radar...</span>
+          </div>
+        </div>
+      )}
     </>
   );
 }
