@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Navigation, Phone, Package, Calendar, Clock, Radar } from 'lucide-react';
+import { MapPin, Navigation, Phone, Package, Calendar, Clock, Cloud } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface InventoryLocation {
@@ -382,11 +382,18 @@ export const InventoryMapView: React.FC = () => {
 
       {/* Radar Toggle */}
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
-        <div className="flex items-center gap-2">
-          <Radar className="h-4 w-4" />
-          <span className="text-sm font-medium">Precipitation</span>
-          <Switch checked={radarEnabled} onCheckedChange={setRadarEnabled} />
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`h-8 w-8 p-0 transition-colors ${
+            radarEnabled 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'text-blue-600 hover:bg-blue-50'
+          }`}
+          onClick={() => setRadarEnabled(!radarEnabled)}
+        >
+          <Cloud className="w-4 h-4" />
+        </Button>
       </div>
 
       {/* Equipment Status Legend - Horizontal at bottom */}

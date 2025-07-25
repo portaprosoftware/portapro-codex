@@ -72,7 +72,7 @@ const JobsMapView: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [viewMode, setViewMode] = useState<'status' | 'driver'>('status');
-  const [weatherRadar, setWeatherRadar] = useState(false);
+  const [showWeatherRadar, setShowWeatherRadar] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPin, setSelectedPin] = useState<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -259,12 +259,12 @@ const JobsMapView: React.FC = () => {
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    if (weatherRadar && weatherApiKey) {
+    if (showWeatherRadar && weatherApiKey) {
       addWeatherOverlay();
     } else {
       removeWeatherOverlay();
     }
-  }, [weatherRadar, weatherApiKey, mapLoaded]);
+  }, [showWeatherRadar, weatherApiKey, mapLoaded]);
 
   const addWeatherOverlay = () => {
     if (!map.current || !weatherApiKey) return;
@@ -640,35 +640,19 @@ const JobsMapView: React.FC = () => {
 
           {/* Right Controls */}
           <div className="flex items-center space-x-4">
-            {/* Weather Radar Toggle with Opacity Control */}
-            <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
-              <CloudRain className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium">Precipitation Radar</span>
-              <Switch 
-                checked={weatherRadar} 
-                onCheckedChange={setWeatherRadar}
-              />
-              {weatherRadar && (
-                <div className="flex items-center space-x-2 ml-2 pl-2 border-l border-gray-300">
-                  <span className="text-xs">Opacity:</span>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="1"
-                    step="0.1"
-                    value={radarOpacity}
-                    onChange={(e) => {
-                      setRadarOpacity(parseFloat(e.target.value));
-                      if (map.current && map.current.getLayer('weather-precipitation')) {
-                        map.current.setPaintProperty('weather-precipitation', 'raster-opacity', parseFloat(e.target.value));
-                      }
-                    }}
-                    className="w-16"
-                  />
-                  <span className="text-xs">{Math.round(radarOpacity * 100)}%</span>
-                </div>
-              )}
-            </div>
+            {/* Weather Radar Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 w-8 p-0 transition-colors ${
+                showWeatherRadar 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : 'text-blue-600 hover:bg-blue-50'
+              }`}
+              onClick={() => setShowWeatherRadar(!showWeatherRadar)}
+            >
+              <Cloud className="w-4 h-4" />
+            </Button>
 
             {/* Refresh Button */}
             <Button 
@@ -766,7 +750,7 @@ const JobsMapView: React.FC = () => {
         {/* Weather Radar Overlay */}
         <SimpleWeatherRadar
           map={map.current}
-          enabled={radarEnabled}
+          enabled={showWeatherRadar}
           onError={(error) => toast.error(error)}
         />
 

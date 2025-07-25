@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Play, Pause, RotateCcw, Zap } from 'lucide-react';
+import { Play, Pause, Cloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { weatherService, WeatherRadarLayer } from '@/lib/weatherService';
-import { toast } from 'sonner';
 
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map | null;
@@ -15,9 +13,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
   const [frames, setFrames] = useState<WeatherRadarLayer[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
-  const [opacity, setOpacity] = useState(0.7);
   const [isLoading, setIsLoading] = useState(false);
-  const [animationSpeed, setAnimationSpeed] = useState(800); // milliseconds
 
   // Load radar data
   const loadRadarData = useCallback(async () => {
@@ -29,13 +25,13 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
       if (layers.length > 0) {
         setFrames(layers);
         setCurrentFrame(0);
-        console.log('Loaded', layers.length, 'radar frames');
+        console.log('Loaded', layers.length, 'weather radar frames');
       } else {
-        console.log('No radar frames available');
+        console.log('No weather radar frames available');
         onError?.('Weather radar data unavailable');
       }
     } catch (error) {
-      console.error('Failed to load radar data:', error);
+      console.error('Failed to load weather radar data:', error);
       onError?.('Failed to load weather radar');
     } finally {
       setIsLoading(false);
@@ -75,12 +71,12 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         type: 'raster',
         source: sourceId,
         paint: {
-          'raster-opacity': index === currentFrame ? opacity : 0,
+          'raster-opacity': index === currentFrame ? 0.8 : 0,
           'raster-fade-duration': 300
         }
       });
     });
-  }, [map, frames, currentFrame, opacity]);
+  }, [map, frames, currentFrame]);
 
   // Remove all radar layers
   const removeRadarLayers = useCallback(() => {
@@ -104,10 +100,10 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     frames.forEach((frame, index) => {
       const { id } = frame;
       if (map.getLayer(id)) {
-        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? opacity : 0);
+        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? 0.8 : 0);
       }
     });
-  }, [map, frames, currentFrame, opacity]);
+  }, [map, frames, currentFrame]);
 
   // Handle enabled/disabled state
   useEffect(() => {
@@ -124,16 +120,16 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     };
   }, [enabled, addRadarLayers, removeRadarLayers, frames.length]);
 
-  // Animation loop
+  // Animation loop - 1 second like TV weather
   useEffect(() => {
     if (!isAnimating || !enabled || frames.length <= 1) return;
 
     const interval = setInterval(() => {
       setCurrentFrame(prev => (prev + 1) % frames.length);
-    }, animationSpeed);
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [isAnimating, enabled, frames.length, animationSpeed]);
+  }, [isAnimating, enabled, frames.length]);
 
   // Format timestamp for display
   const formatTime = (timestamp: number) => {
@@ -143,138 +139,81 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     });
   };
 
+  const getRadarTimeRange = () => {
+    if (frames.length === 0) return '';
+    const firstTime = formatTime(frames[0].timestamp);
+    const lastTime = formatTime(frames[frames.length - 1].timestamp);
+    return `Radar: ${firstTime} - ${lastTime} (Past + Future)`;
+  };
+
   if (!enabled) return null;
 
   return (
-    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg border shadow-lg p-4 min-w-[280px] z-10">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-blue-600" />
-          <span className="font-semibold text-sm">Weather Radar</span>
+    <>
+      {/* Radar Time Badge */}
+      {frames.length > 0 && (
+        <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg z-10 text-sm font-medium">
+          <div className="flex items-center space-x-2">
+            <Cloud className="w-4 h-4" />
+            <span>{getRadarTimeRange()}</span>
+          </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={loadRadarData}
-          disabled={isLoading}
-          className="h-7 w-7 p-0"
-        >
-          <RotateCcw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
-        </Button>
-      </div>
+      )}
 
-      {isLoading ? (
-        <div className="text-center py-4">
-          <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-          <p className="text-xs text-gray-600">Loading radar data...</p>
-        </div>
-      ) : frames.length === 0 ? (
-        <div className="text-center py-4">
-          <p className="text-xs text-gray-600">No radar data available</p>
-        </div>
-      ) : (
-        <>
-          {/* Animation Controls */}
-          <div className="flex items-center justify-between mb-3">
+      {/* Controls */}
+      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-10">
+        {isLoading && (
+          <div className="text-sm text-gray-600 mb-2">
+            Loading weather radar...
+          </div>
+        )}
+        
+        {frames.length === 0 && !isLoading && (
+          <div className="text-sm text-red-600 mb-2">
+            Weather radar not available
+          </div>
+        )}
+        
+        {frames.length > 0 && (
+          <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
               size="sm"
+              variant="outline"
               onClick={() => setIsAnimating(!isAnimating)}
-              className="h-8 px-3"
             >
-              {isAnimating ? (
-                <Pause className="w-3 h-3 mr-1" />
-              ) : (
-                <Play className="w-3 h-3 mr-1" />
-              )}
-              {isAnimating ? 'Pause' : 'Play'}
+              {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
-            
-            <div className="text-xs text-gray-600">
-              Frame {currentFrame + 1} of {frames.length}
-            </div>
+            <span className="text-xs text-gray-600">
+              {formatTime(frames[currentFrame]?.timestamp)}
+            </span>
           </div>
+        )}
 
-          {/* Current Time Display */}
-          {frames[currentFrame] && (
-            <div className="text-center mb-3">
-              <div className="text-xs font-medium text-gray-800">
-                {formatTime(frames[currentFrame].timestamp)}
-              </div>
-            </div>
-          )}
-
-          {/* Frame Progress Bar */}
-          <div className="mb-3">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Progress</span>
-              <span>{Math.round(((currentFrame + 1) / frames.length) * 100)}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div 
-                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300" 
-                style={{ width: `${((currentFrame + 1) / frames.length) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Opacity Control */}
-          <div className="mb-3">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Opacity</span>
-              <span>{Math.round(opacity * 100)}%</span>
-            </div>
-            <Slider
-              value={[opacity]}
-              onValueChange={([value]) => setOpacity(value)}
-              max={1}
-              min={0.1}
-              step={0.1}
-              className="w-full"
-            />
-          </div>
-
-          {/* Animation Speed Control */}
-          <div>
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Speed</span>
-              <span>{animationSpeed < 500 ? 'Fast' : animationSpeed < 1000 ? 'Normal' : 'Slow'}</span>
-            </div>
-            <Slider
-              value={[2000 - animationSpeed]}
-              onValueChange={([value]) => setAnimationSpeed(2000 - value)}
-              max={1800}
-              min={200}
-              step={200}
-              className="w-full"
-            />
-          </div>
-
-          {/* Radar Legend */}
+        {/* Legend */}
+        {frames.length > 0 && (
           <div className="mt-3 pt-3 border-t">
-            <div className="text-xs font-medium text-gray-700 mb-2">Precipitation Intensity</div>
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-blue-400 rounded"></div>
+            <div className="text-xs font-medium text-gray-700 mb-2">Weather Intensity</div>
+            <div className="grid grid-cols-2 gap-1 text-xs">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-blue-300 rounded"></div>
                 <span>Light</span>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-green-400 rounded"></div>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded"></div>
                 <span>Moderate</span>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-yellow-400 rounded"></div>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-yellow-400 rounded"></div>
                 <span>Heavy</span>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-red-400 rounded"></div>
-                <span>Intense</span>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-red-500 rounded"></div>
+                <span>Severe</span>
               </div>
             </div>
           </div>
-        </>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
