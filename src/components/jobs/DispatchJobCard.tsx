@@ -38,11 +38,36 @@ interface DispatchJobCardProps {
 }
 
 const jobTypeConfig = {
-  delivery: { color: 'bg-blue-500', borderColor: 'border-l-blue-500', label: 'Delivery' },
-  pickup: { color: 'bg-emerald-600', borderColor: 'border-l-emerald-600', label: 'Pickup' },
-  'partial-pickup': { color: 'bg-orange-400', borderColor: 'border-l-orange-400', label: 'Partial Pickup' },
-  service: { color: 'bg-green-500', borderColor: 'border-l-green-500', label: 'Service' },
-  return: { color: 'bg-gray-500', borderColor: 'border-l-gray-500', label: 'Return' }
+  delivery: { 
+    color: 'bg-[hsl(var(--status-delivery))]', 
+    borderColor: 'border-l-[hsl(var(--status-delivery))]', 
+    label: 'Delivery' 
+  },
+  pickup: { 
+    color: 'bg-[hsl(var(--status-pickup))]', 
+    borderColor: 'border-l-[hsl(var(--status-pickup))]', 
+    label: 'Pickup' 
+  },
+  'partial-pickup': { 
+    color: 'bg-[hsl(var(--status-partial-pickup))]', 
+    borderColor: 'border-l-[hsl(var(--status-partial-pickup))]', 
+    label: 'Partial Pickup' 
+  },
+  service: { 
+    color: 'bg-[hsl(var(--status-service))]', 
+    borderColor: 'border-l-[hsl(var(--status-service))]', 
+    label: 'Service' 
+  },
+  'on-site-survey': { 
+    color: 'bg-[hsl(var(--status-survey))]', 
+    borderColor: 'border-l-[hsl(var(--status-survey))]', 
+    label: 'On-Site Survey/Estimate' 
+  },
+  return: { 
+    color: 'bg-[hsl(var(--status-cancelled))]', 
+    borderColor: 'border-l-[hsl(var(--status-cancelled))]', 
+    label: 'Return' 
+  }
 };
 
 

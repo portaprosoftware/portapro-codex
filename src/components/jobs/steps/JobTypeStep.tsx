@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { Briefcase, Truck, Package, Wrench } from 'lucide-react';
+import { Briefcase, Truck, Package, Wrench, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface JobTypeStepProps {
-  data: 'delivery' | 'pickup' | 'service' | null;
-  onUpdate: (jobType: 'delivery' | 'pickup' | 'service') => void;
+  data: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null;
+  onUpdate: (jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey') => void;
 }
 
 const jobTypes = [
@@ -14,21 +14,35 @@ const jobTypes = [
     name: 'Delivery',
     description: 'Deliver equipment to customer location',
     icon: Truck,
-    color: 'blue',
+    color: 'violet',
   },
   {
     id: 'pickup' as const,
     name: 'Pickup',
     description: 'Pick up equipment from customer location',
     icon: Package,
-    color: 'green',
+    color: 'magenta',
+  },
+  {
+    id: 'partial-pickup' as const,
+    name: 'Partial Pickup',
+    description: 'Pick up some equipment from customer location',
+    icon: Package,
+    color: 'lavender',
   },
   {
     id: 'service' as const,
     name: 'Service',
     description: 'Service existing equipment on-site',
     icon: Wrench,
-    color: 'orange',
+    color: 'brown',
+  },
+  {
+    id: 'on-site-survey' as const,
+    name: 'On-Site Survey/Estimate',
+    description: 'Site visit for assessment and estimation',
+    icon: Eye,
+    color: 'blue',
   },
 ];
 

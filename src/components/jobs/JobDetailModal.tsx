@@ -269,23 +269,27 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
   const jobTypeConfig = {
     delivery: {
-      color: 'bg-blue-500',
+      color: 'bg-[hsl(var(--status-delivery))]',
       label: 'Delivery'
     },
     pickup: {
-      color: 'bg-emerald-600',
+      color: 'bg-[hsl(var(--status-pickup))]',
       label: 'Pickup'
     },
     'partial-pickup': {
-      color: 'bg-orange-400',
+      color: 'bg-[hsl(var(--status-partial-pickup))]',
       label: 'Partial Pickup'
     },
     service: {
-      color: 'bg-green-500',
+      color: 'bg-[hsl(var(--status-service))]',
       label: 'Service'
     },
+    'on-site-survey': {
+      color: 'bg-[hsl(var(--status-survey))]',
+      label: 'On-Site Survey/Estimate'
+    },
     return: {
-      color: 'bg-gray-500',
+      color: 'bg-[hsl(var(--status-cancelled))]',
       label: 'Return'
     }
   };

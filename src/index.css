@@ -101,6 +101,14 @@
     --transition-bounce: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
+    /* Job Status Colors (H, S%, L%) */
+    --status-delivery: 270 50% 40%;        /* Deep Violet (#6A1B9A) */
+    --status-pickup: 329 69% 53%;          /* Magenta (#D81B60) */
+    --status-partial-pickup: 282 50% 65%;  /* Lavender (#BA68C8) */
+    --status-service: 19 40% 35%;          /* Brown (#6D4C41) */
+    --status-survey: 240 40% 40%;          /* Dark Blue (#4A5568) */
+    --status-cancelled: 0 0% 13%;          /* Black (#212121) */
+
     /* Sidebar System */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;

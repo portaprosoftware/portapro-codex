@@ -66,26 +66,32 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <SelectItem value="all">All Job Types</SelectItem>
           <SelectItem value="delivery">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-delivery))]"></div>
               Delivery
             </div>
           </SelectItem>
           <SelectItem value="pickup">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-pickup))]"></div>
               Pickup
+            </div>
+          </SelectItem>
+          <SelectItem value="partial-pickup">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-partial-pickup))]"></div>
+              Partial Pickup
             </div>
           </SelectItem>
           <SelectItem value="service">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-service))]"></div>
               Service
             </div>
           </SelectItem>
-          <SelectItem value="return">
+          <SelectItem value="on-site-survey">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-              Partial Pickup
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-survey))]"></div>
+              On-Site Survey/Estimate
             </div>
           </SelectItem>
         </SelectContent>

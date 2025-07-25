@@ -383,7 +383,9 @@ export const EnhancedJobScheduler: React.FC = () => {
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="delivery">Delivery</SelectItem>
                 <SelectItem value="pickup">Pickup</SelectItem>
+                <SelectItem value="partial-pickup">Partial Pickup</SelectItem>
                 <SelectItem value="service">Service</SelectItem>
+                <SelectItem value="on-site-survey">On-Site Survey/Estimate</SelectItem>
               </SelectContent>
             </Select>
 

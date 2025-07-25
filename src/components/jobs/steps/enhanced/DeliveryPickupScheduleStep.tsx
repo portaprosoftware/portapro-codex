@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { formatTimezoneLabel } from '@/lib/timezoneUtils';
 
 interface ScheduleData {
-  jobType: 'delivery' | 'pickup' | 'service' | 'estimate';
+  jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
   timezone: string;
   deliveryDate: Date | null;
   deliveryTime: string;
@@ -113,11 +113,11 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
         const timeStr = data.addFullPickupTime ? ` at ${data.fullPickupTime}` : '';
         parts.push(`Pickup: ${dateStr}${timeStr}`);
       }
-    } else if (data.jobType === 'service' || data.jobType === 'estimate') {
+    } else if (data.jobType === 'service' || data.jobType === 'on-site-survey') {
       if (data.serviceDate) {
         const dateStr = format(data.serviceDate, "MMMM do, yyyy");
         const timeStr = data.addServiceTime ? ` at ${data.serviceTime}` : '';
-        const label = data.jobType === 'service' ? 'Service' : 'Estimate';
+        const label = data.jobType === 'service' ? 'Service' : 'On-Site Survey/Estimate';
         parts.push(`${label}: ${dateStr}${timeStr}`);
       }
     }
@@ -221,7 +221,8 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
           {data.jobType === 'delivery' ? 'Delivery & Pickup Schedule' :
            data.jobType === 'pickup' ? 'Pickup Schedule' :
            data.jobType === 'service' ? 'Service Schedule' :
-           'Estimate Schedule'}
+           data.jobType === 'partial-pickup' ? 'Partial Pickup Schedule' :
+           'Survey/Estimate Schedule'}
         </h2>
         <p className="text-muted-foreground">
           Set the dates and times for your {data.jobType} job
@@ -352,8 +353,8 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
         />
       )}
 
-      {/* Service/Estimate Job Scheduling */}
-      {(data.jobType === 'service' || data.jobType === 'estimate') && (
+      {/* Service/Survey Job Scheduling */}
+      {(data.jobType === 'service' || data.jobType === 'on-site-survey') && (
         <DateTimePicker
           date={data.serviceDate}
           onDateChange={(date) => onUpdate({ ...data, serviceDate: date || null })}
@@ -361,7 +362,21 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
           onTimeChange={(time) => onUpdate({ ...data, serviceTime: time })}
           addTime={data.addServiceTime}
           onAddTimeChange={(addTime) => onUpdate({ ...data, addServiceTime: addTime })}
-          label={data.jobType === 'service' ? 'Service Date' : 'Estimate Date'}
+          label={data.jobType === 'service' ? 'Service Date' : 'Survey/Estimate Date'}
+          required
+        />
+      )}
+
+      {/* Partial Pickup Job Scheduling */}
+      {data.jobType === 'partial-pickup' && (
+        <DateTimePicker
+          date={data.fullPickupDate}
+          onDateChange={(date) => onUpdate({ ...data, fullPickupDate: date || null })}
+          time={data.fullPickupTime}
+          onTimeChange={(time) => onUpdate({ ...data, fullPickupTime: time })}
+          addTime={data.addFullPickupTime}
+          onAddTimeChange={(addTime) => onUpdate({ ...data, addFullPickupTime: addTime })}
+          label="Partial Pickup Date"
           required
         />
       )}

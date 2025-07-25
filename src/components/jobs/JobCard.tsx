@@ -47,42 +47,50 @@ interface JobCardProps {
 
 const jobTypeConfig = {
   delivery: {
-    color: 'bg-blue-500',
-    lightColor: 'bg-blue-50',
-    textColor: 'text-blue-700',
-    borderColor: 'border-l-blue-500',
+    color: 'bg-[hsl(var(--status-delivery))]',
+    lightColor: 'bg-[hsl(var(--status-delivery)/0.1)]',
+    textColor: 'text-[hsl(var(--status-delivery))]',
+    borderColor: 'border-l-[hsl(var(--status-delivery))]',
     icon: Truck,
     label: 'Delivery'
   },
   pickup: {
-    color: 'bg-emerald-600',
-    lightColor: 'bg-emerald-50',
-    textColor: 'text-emerald-700',
-    borderColor: 'border-l-emerald-600',
+    color: 'bg-[hsl(var(--status-pickup))]',
+    lightColor: 'bg-[hsl(var(--status-pickup)/0.1)]',
+    textColor: 'text-[hsl(var(--status-pickup))]',
+    borderColor: 'border-l-[hsl(var(--status-pickup))]',
     icon: Package,
     label: 'Pickup'
   },
   'partial-pickup': {
-    color: 'bg-orange-400',
-    lightColor: 'bg-orange-50',
-    textColor: 'text-orange-700',
-    borderColor: 'border-l-orange-400',
+    color: 'bg-[hsl(var(--status-partial-pickup))]',
+    lightColor: 'bg-[hsl(var(--status-partial-pickup)/0.1)]',
+    textColor: 'text-[hsl(var(--status-partial-pickup))]',
+    borderColor: 'border-l-[hsl(var(--status-partial-pickup))]',
     icon: Package,
     label: 'Partial Pickup'
   },
   service: {
-    color: 'bg-green-500',
-    lightColor: 'bg-green-50',
-    textColor: 'text-green-700',
-    borderColor: 'border-l-green-500',
+    color: 'bg-[hsl(var(--status-service))]',
+    lightColor: 'bg-[hsl(var(--status-service)/0.1)]',
+    textColor: 'text-[hsl(var(--status-service))]',
+    borderColor: 'border-l-[hsl(var(--status-service))]',
     icon: Settings,
     label: 'Service'
   },
+  'on-site-survey': {
+    color: 'bg-[hsl(var(--status-survey))]',
+    lightColor: 'bg-[hsl(var(--status-survey)/0.1)]',
+    textColor: 'text-[hsl(var(--status-survey))]',
+    borderColor: 'border-l-[hsl(var(--status-survey))]',
+    icon: Eye,
+    label: 'On-Site Survey/Estimate'
+  },
   return: {
-    color: 'bg-gray-500',
-    lightColor: 'bg-gray-50',
-    textColor: 'text-gray-700',
-    borderColor: 'border-l-gray-500',
+    color: 'bg-[hsl(var(--status-cancelled))]',
+    lightColor: 'bg-[hsl(var(--status-cancelled)/0.1)]',
+    textColor: 'text-[hsl(var(--status-cancelled))]',
+    borderColor: 'border-l-[hsl(var(--status-cancelled))]',
     icon: RotateCcw,
     label: 'Return'
   }

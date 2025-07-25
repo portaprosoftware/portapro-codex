@@ -22,7 +22,7 @@ interface WizardData {
   selectedCustomer?: any;
   
   // Step 2: Job Type & Timezone
-  jobType: 'delivery' | 'pickup' | 'service' | 'estimate';
+  jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
   timezone: string;
   customerTimezone: string;
   timezoneSource: 'company' | 'customer' | 'custom';
@@ -150,7 +150,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           return data.deliveryDate && (!data.returnScheduleEnabled || data.fullPickupDate);
         } else if (data.jobType === 'pickup') {
           return data.fullPickupDate;
-        } else if (data.jobType === 'service' || data.jobType === 'estimate') {
+        } else if (data.jobType === 'service' || data.jobType === 'on-site-survey') {
           return data.serviceDate;
         }
         return true;

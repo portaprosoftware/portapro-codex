@@ -8,13 +8,13 @@ import { getTimezoneFromZip, getCompanyTimezone, timezoneOptions, formatTimezone
 
 interface JobTypeTimezoneStepProps {
   data: {
-    jobType: 'delivery' | 'pickup' | 'service' | 'estimate' | null;
+    jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null;
     timezone: string;
     customerZip?: string;
     customerState?: string;
   };
   onUpdate: (data: { 
-    jobType: 'delivery' | 'pickup' | 'service' | 'estimate' | null; 
+    jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null; 
     timezone: string;
     customerZip?: string;
     customerState?: string;
@@ -45,11 +45,18 @@ const jobTypes = [
     color: 'orange',
   },
   {
-    id: 'estimate' as const,
+    id: 'partial-pickup' as const,
+    name: 'Partial Pickup',
+    description: 'Pick up some equipment from customer location',
+    icon: Package,
+    color: 'purple',
+  },
+  {
+    id: 'on-site-survey' as const,
     name: 'On-Site Survey/Estimate',
     description: 'Site visit for assessment and estimation',
     icon: MapPin,
-    color: 'purple',
+    color: 'blue',
   },
 ];
 
@@ -73,7 +80,7 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
     }
   }, [data.customerZip, data.customerState]);
 
-  const handleJobTypeSelect = (jobType: 'delivery' | 'pickup' | 'service' | 'estimate') => {
+  const handleJobTypeSelect = (jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey') => {
     onUpdate({ ...data, jobType });
   };
 
