@@ -97,6 +97,40 @@ const CustomerHub: React.FC = () => {
     
     setIsDeleting(true);
     try {
+      // First, delete all jobs associated with these customers
+      const { error: jobsError } = await supabase
+        .from('jobs')
+        .delete()
+        .in('customer_id', selectedCustomers);
+      
+      if (jobsError) {
+        console.error('Error deleting jobs:', jobsError);
+        // Continue anyway - some customers might not have jobs
+      }
+
+      // Then delete all customer contacts
+      const { error: contactsError } = await supabase
+        .from('customer_contacts')
+        .delete()
+        .in('customer_id', selectedCustomers);
+      
+      if (contactsError) {
+        console.error('Error deleting customer contacts:', contactsError);
+        // Continue anyway
+      }
+
+      // Then delete all customer service locations
+      const { error: locationsError } = await supabase
+        .from('customer_service_locations')
+        .delete()
+        .in('customer_id', selectedCustomers);
+      
+      if (locationsError) {
+        console.error('Error deleting customer service locations:', locationsError);
+        // Continue anyway
+      }
+
+      // Finally, delete the customers
       const { error } = await supabase
         .from('customers')
         .delete()
@@ -104,11 +138,11 @@ const CustomerHub: React.FC = () => {
       
       if (error) throw error;
       
-      toast.success(`Successfully deleted ${selectedCustomers.length} customer(s)`);
+      toast.success(`Successfully deleted ${selectedCustomers.length} customer(s) and their associated data`);
       setSelectedCustomers([]);
     } catch (error) {
       console.error('Error deleting customers:', error);
-      toast.error('Failed to delete customers');
+      toast.error('Failed to delete customers. Some may have dependencies that need to be removed first.');
     } finally {
       setIsDeleting(false);
     }
