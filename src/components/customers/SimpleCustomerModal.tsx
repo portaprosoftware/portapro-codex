@@ -261,18 +261,21 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
+                <PopoverContent className="w-[200px] p-0 z-50 bg-background border shadow-md">
                   <Command>
-                    <CommandInput placeholder="Search state..." />
-                    <CommandList>
+                    <CommandInput placeholder="Search state..." className="h-9" />
+                    <CommandList className="max-h-[200px] overflow-y-auto">
                       <CommandEmpty>No state found.</CommandEmpty>
                       <CommandGroup>
                         {US_STATES.map((state) => (
                           <CommandItem
                             key={state.value}
-                            value={state.value}
+                            value={state.label}
                             onSelect={(currentValue) => {
-                              handleInputChange('service_state', currentValue === formData.service_state ? "" : currentValue);
+                              const selectedState = US_STATES.find((s) => s.label.toLowerCase() === currentValue.toLowerCase());
+                              if (selectedState) {
+                                handleInputChange('service_state', selectedState.value);
+                              }
                               setStateOpen(false);
                             }}
                           >
