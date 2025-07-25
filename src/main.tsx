@@ -8,21 +8,6 @@ import './scanner.css'
 
 const PUBLISHABLE_KEY = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
-// Clear any cached Clerk auth state to reset everything
-if (typeof window !== 'undefined') {
-  // Clear Clerk cache
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith('clerk-') || key.includes('clerk')) {
-      localStorage.removeItem(key);
-    }
-  });
-  Object.keys(sessionStorage).forEach(key => {
-    if (key.startsWith('clerk-') || key.includes('clerk')) {
-      sessionStorage.removeItem(key);
-    }
-  });
-}
-
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");
 }
