@@ -170,7 +170,8 @@ const MarketingHub: React.FC = () => {
   };
 
   return (
-    <div className="max-w-none px-6 py-6 min-h-screen bg-background space-y-6">{/* Copy exact pattern from Analytics */}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
@@ -287,6 +288,7 @@ const MarketingHub: React.FC = () => {
             </p>
           </div>
         )}
+      </div>
     </div>
   );
 };
