@@ -79,7 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       {/* Product Image */}
       <div className="flex justify-center mb-4">
-        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <div className="w-40 h-40 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
           {product.base_image ? (
             <img
               src={product.base_image}
@@ -87,7 +87,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-12 h-12 bg-gray-300 rounded"></div>
+            <div className="w-24 h-24 bg-gray-300 rounded"></div>
           )}
         </div>
       </div>
