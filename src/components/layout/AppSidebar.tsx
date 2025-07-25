@@ -6,17 +6,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   LayoutDashboard, 
   CalendarDays, 
-  Package2, 
+  Package, 
   Users2, 
   Truck, 
   Settings2,
   FileText,
   BarChart4,
-  Wrench,
+  Soup,
   Building2,
   Megaphone,
   MessageSquare,
-  ShoppingBag
+  ScrollText
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -67,13 +67,13 @@ const items: NavigationItem[] = [
   { 
     title: 'Inventory', 
     url: '/inventory', 
-    icon: Package2,
+    icon: Package,
     permission: 'staff'
   },
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: ShoppingBag,
+    icon: ScrollText,
     permission: 'staff'
   },
   { 
@@ -85,7 +85,7 @@ const items: NavigationItem[] = [
   { 
     title: 'Maintenance', 
     url: '/maintenance-hub', 
-    icon: Wrench,
+    icon: Soup,
     permission: 'admin'
   },
   { 
