@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, Cloud, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { rainViewerService, RainViewerLayer } from '@/lib/rainViewerService';
@@ -14,25 +14,33 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [layersAdded, setLayersAdded] = useState(false);
+  
+  // Use refs for proper cleanup and tracking
+  const mountedRef = useRef(true);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const layerIds = useRef<string[]>([]);
+  const instanceId = useRef(Date.now().toString());
 
   // Load radar data
   const loadRadarData = useCallback(async () => {
-    if (!enabled || !map) return;
+    if (!enabled || !map || !mountedRef.current) return;
 
     setIsLoading(true);
     try {
       const layers = await rainViewerService.getRadarLayers();
-      if (layers.length > 0) {
-        setFrames(layers);
+      if (layers.length > 0 && mountedRef.current) {
+        // Limit frames to last 8 past + first 4 future (like working radar)
+        const limitedLayers = layers.slice(-12); // Take last 12 frames
+        setFrames(limitedLayers);
+        
         // Start from current time (find the frame closest to now)
         const now = Date.now() / 1000;
-        const currentFrameIndex = layers.findIndex((layer, index) => {
-          if (index === layers.length - 1) return true; // Last frame if none found
-          return layers[index + 1].timestamp > now;
+        const currentFrameIndex = limitedLayers.findIndex((layer, index) => {
+          if (index === limitedLayers.length - 1) return true; // Last frame if none found
+          return limitedLayers[index + 1].timestamp > now;
         });
         setCurrentFrame(Math.max(0, currentFrameIndex));
-        console.log('Loaded', layers.length, 'RainViewer radar frames');
+        console.log('Loaded', limitedLayers.length, 'RainViewer radar frames');
       } else {
         console.log('No weather radar frames available');
         onError?.('Weather radar data unavailable');
@@ -41,7 +49,9 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
       console.error('Failed to load weather radar data:', error);
       onError?.('Failed to load weather radar');
     } finally {
-      setIsLoading(false);
+      if (mountedRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [enabled, map, onError]);
 
@@ -59,80 +69,107 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
 
   // Add radar layers to map (only once)
   const addRadarLayers = useCallback(() => {
-    if (!map || !frames.length || layersAdded) return;
+    if (!map || !frames.length || layerIds.current.length > 0) return;
 
-    frames.forEach((frame, index) => {
-      const { id, sourceId, url } = frame;
+    try {
+      frames.forEach((frame, index) => {
+        // Create unique layer ID with instance ID and timestamp
+        const layerId = `radar-${instanceId.current}-${frame.timestamp}`;
+        const sourceId = `radar-source-${instanceId.current}-${frame.timestamp}`;
+        
+        layerIds.current.push(layerId);
 
-      // Add new source and layer
-      map.addSource(sourceId, {
-        type: 'raster',
-        tiles: [url],
-        tileSize: 256,
-        attribution: '© RainViewer'
+        // Add new source and layer
+        map.addSource(sourceId, {
+          type: 'raster',
+          tiles: [frame.url],
+          tileSize: 256,
+          attribution: '© RainViewer'
+        });
+
+        map.addLayer({
+          id: layerId,
+          type: 'raster',
+          source: sourceId,
+          paint: {
+            'raster-opacity': 0,
+            'raster-fade-duration': 200 // Shorter than animation interval
+          }
+        });
       });
 
-      map.addLayer({
-        id,
-        type: 'raster',
-        source: sourceId,
-        paint: {
-          'raster-opacity': 0,
-          'raster-fade-duration': 200
-        }
-      });
-    });
-
-    setLayersAdded(true);
-    console.log('Added', frames.length, 'radar layers');
-  }, [map, frames, layersAdded]);
+      console.log('Added', frames.length, 'radar layers with unique IDs');
+    } catch (error) {
+      console.error('Error adding radar layers:', error);
+      onError?.('Failed to add radar layers');
+    }
+  }, [map, frames, onError]);
 
   // Remove all radar layers
   const removeRadarLayers = useCallback(() => {
-    if (!map || !frames.length) return;
+    if (!map || layerIds.current.length === 0) return;
 
-    frames.forEach(frame => {
-      const { id, sourceId } = frame;
-      if (map.getLayer(id)) {
-        map.removeLayer(id);
-      }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
-      }
-    });
-    
-    setLayersAdded(false);
-    console.log('Removed radar layers');
-  }, [map, frames]);
+    try {
+      layerIds.current.forEach(layerId => {
+        const sourceId = layerId.replace('radar-', 'radar-source-');
+        
+        if (map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+        }
+        if (map.getSource(sourceId)) {
+          map.removeSource(sourceId);
+        }
+      });
+      
+      layerIds.current = [];
+      console.log('Removed radar layers');
+    } catch (error) {
+      console.error('Error removing radar layers:', error);
+    }
+  }, [map]);
 
-  // Update layer visibility when frame changes
-  const updateFrameVisibility = useCallback(() => {
-    if (!map || !frames.length || !layersAdded) return;
+  // Update frame visibility - key: hide all, then show current
+  const updateFrame = useCallback(() => {
+    if (!map || !frames.length || layerIds.current.length === 0) return;
 
-    frames.forEach((frame, index) => {
-      const { id } = frame;
-      if (map.getLayer(id)) {
-        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? 0.7 : 0);
+    try {
+      // Hide all layers first (prevents blinking)
+      layerIds.current.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'raster-opacity', 0);
+        }
+      });
+
+      // Show current frame
+      const currentLayerId = layerIds.current[currentFrame];
+      if (currentLayerId && map.getLayer(currentLayerId)) {
+        map.setPaintProperty(currentLayerId, 'raster-opacity', 0.7);
       }
-    });
-  }, [map, frames, currentFrame, layersAdded]);
+    } catch (error) {
+      console.error('Error updating frame:', error);
+    }
+  }, [map, frames.length, currentFrame]);
 
   // Add layers when frames are loaded
   useEffect(() => {
-    if (enabled && frames.length > 0 && !layersAdded) {
+    if (enabled && frames.length > 0 && layerIds.current.length === 0) {
       addRadarLayers();
     }
-  }, [enabled, frames.length, layersAdded, addRadarLayers]);
+  }, [enabled, frames.length, addRadarLayers]);
 
   // Update visibility when frame changes
   useEffect(() => {
-    updateFrameVisibility();
-  }, [updateFrameVisibility]);
+    updateFrame();
+  }, [updateFrame]);
 
   // Handle enabled/disabled state
   useEffect(() => {
     if (!enabled) {
       removeRadarLayers();
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
     }
 
     return () => {
@@ -142,16 +179,47 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     };
   }, [enabled, removeRadarLayers]);
 
-  // Animation loop - smooth 500ms intervals
+  // Animation loop - smooth 300ms intervals (like working radar)
   useEffect(() => {
-    if (!isAnimating || !enabled || frames.length <= 1 || !layersAdded) return;
+    // Clear existing animation
+    if (animationRef.current) {
+      clearInterval(animationRef.current);
+      animationRef.current = null;
+    }
 
-    const interval = setInterval(() => {
-      setCurrentFrame(prev => (prev + 1) % frames.length);
-    }, 500);
+    if (!isAnimating || !enabled || frames.length <= 1 || layerIds.current.length === 0) {
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, [isAnimating, enabled, frames.length, layersAdded]);
+    // Start new animation with 300ms interval
+    animationRef.current = setInterval(() => {
+      if (mountedRef.current) {
+        setCurrentFrame(prev => {
+          const next = (prev + 1) % frames.length;
+          return next;
+        });
+      }
+    }, 300); // 300ms interval like working radar
+
+    return () => {
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [isAnimating, enabled, frames.length, layerIds.current.length]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
+      removeRadarLayers();
+    };
+  }, [removeRadarLayers]);
 
   // Format timestamp for display
   const formatTime = (timestamp: number) => {

@@ -26,7 +26,10 @@ class RainViewerService {
   public async getRadarLayers(): Promise<RainViewerLayer[]> {
     const frames = await this.getRadarFrames();
     
-    return frames.map((frame, index) => ({
+    // Limit to last 8 past + first 4 future frames (like working radar)
+    const limitedFrames = frames.slice(-12);
+    
+    return limitedFrames.map((frame, index) => ({
       id: `rainviewer-radar-${index}`,
       sourceId: `rainviewer-radar-source-${index}`,
       url: frame.url,
