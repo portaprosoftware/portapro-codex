@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AddCustomerModal } from "@/components/customers/AddCustomerModal";
+import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -199,7 +199,7 @@ const CustomerHub: React.FC = () => {
         </Table>
       </div>
 
-      <AddCustomerModal 
+      <SimpleCustomerModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
       />
