@@ -85,7 +85,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         source: sourceId,
         paint: {
           'raster-opacity': index === currentFrame ? 0.8 : 0,
-          'raster-fade-duration': 300
+          'raster-fade-duration': 100
         }
       });
     });
@@ -133,13 +133,13 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     };
   }, [enabled, addRadarLayers, removeRadarLayers, frames.length]);
 
-  // Animation loop - 1 second intervals like TV weather
+  // Animation loop - TV weather speed (1.5 second intervals)
   useEffect(() => {
     if (!isAnimating || !enabled || frames.length <= 1) return;
 
     const interval = setInterval(() => {
       setCurrentFrame(prev => (prev + 1) % frames.length);
-    }, 1000);
+    }, 1500);
 
     return () => clearInterval(interval);
   }, [isAnimating, enabled, frames.length]);
