@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,10 +6,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -67,30 +66,46 @@ const US_STATES = [
 ];
 
 const customerSchema = z.object({
-  name: z.string().min(1, 'Company name is required'),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  name: z.string().min(1, "Company name is required"),
+  contact_first_name: z.string().min(1, "First name is required"),
+  contact_last_name: z.string().min(1, "Last name is required"),
+  type: z.string().min(1, "Customer type is required"),
+  email: z.string().email("Valid email is required").optional().or(z.literal("")),
   phone: z.string().optional(),
-  customer_type: z.enum(['events_festivals', 'sports_recreation', 'municipal_government', 'commercial', 'construction', 'emergency_disaster_relief', 'private_events_weddings']).optional(),
-  service_street: z.string().min(1, 'Street address is required'),
-  service_street_2: z.string().optional(),
-  service_city: z.string().min(1, 'City is required'),
-  service_state: z.string().min(1, 'State is required'),
-  service_zip: z.string().min(1, 'ZIP code is required'),
-  billing_address: z.string().optional(),
+  service_street: z.string().min(1, "Service street is required"),
+  service_street2: z.string().optional(),
+  service_city: z.string().min(1, "Service city is required"),
+  service_state: z.string().min(1, "Service state is required"),
+  service_zip: z.string().min(1, "Service ZIP is required"),
+  billing_differs_from_service: z.boolean().default(false),
+  billing_street: z.string().optional(),
+  billing_street2: z.string().optional(),
   billing_city: z.string().optional(),
   billing_state: z.string().optional(),
   billing_zip: z.string().optional(),
-  notes: z.string().optional(),
-  billing_differs_from_service: z.boolean().optional(),
-  deposit_required: z.boolean().optional(),
+  default_service_differs_from_main: z.boolean().default(false),
+  default_service_street: z.string().optional(),
+  default_service_street2: z.string().optional(),
+  default_service_city: z.string().optional(),
+  default_service_state: z.string().optional(),
+  default_service_zip: z.string().optional(),
+  deposit_required: z.boolean().default(false),
 }).refine((data) => {
   if (data.billing_differs_from_service) {
-    return data.billing_address && data.billing_city && data.billing_state && data.billing_zip;
+    return data.billing_street && data.billing_city && data.billing_state && data.billing_zip;
   }
   return true;
 }, {
-  message: "Billing address fields are required when billing differs from service address",
-  path: ["billing_address"],
+  message: "All billing address fields are required when billing differs from service address",
+  path: ["billing_street"],
+}).refine((data) => {
+  if (data.default_service_differs_from_main) {
+    return data.default_service_street && data.default_service_city && data.default_service_state && data.default_service_zip;
+  }
+  return true;
+}, {
+  message: "All default service address fields are required when default service differs from main address",
+  path: ["default_service_street"],
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -102,11 +117,10 @@ interface AddCustomerModalProps {
 
 const CUSTOMER_TYPES = [
   { value: 'events_festivals', label: 'Events & Festivals' },
-  { value: 'sports_recreation', label: 'Sports & Recreation' },
+  { value: 'construction', label: 'Construction' },
   { value: 'municipal_government', label: 'Municipal & Government' },
   { value: 'private_events_weddings', label: 'Private Events & Weddings' },
-  { value: 'construction', label: 'Construction' },
-  { value: 'commercial', label: 'Commercial' },
+  { value: 'sports_recreation', label: 'Sports & Recreation' },
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
 ];
 
@@ -117,81 +131,119 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      customer_type: undefined,
-      service_street: '',
-      service_street_2: '',
-      service_city: '',
-      service_state: '',
-      service_zip: '',
-      billing_address: '',
-      billing_city: '',
-      billing_state: '',
-      billing_zip: '',
-      notes: '',
+      name: "",
+      contact_first_name: "",
+      contact_last_name: "",
+      type: "",
+      email: "",
+      phone: "",
+      service_street: "",
+      service_street2: "",
+      service_city: "",
+      service_state: "",
+      service_zip: "",
       billing_differs_from_service: false,
-      deposit_required: true,
+      billing_street: "",
+      billing_street2: "",
+      billing_city: "",
+      billing_state: "",
+      billing_zip: "",
+      default_service_differs_from_main: false,
+      default_service_street: "",
+      default_service_street2: "",
+      default_service_city: "",
+      default_service_state: "",
+      default_service_zip: "",
+      deposit_required: false,
     },
   });
 
-  const billingDiffers = form.watch('billing_differs_from_service');
+  const billingDiffers = form.watch("billing_differs_from_service");
+  const defaultServiceDiffers = form.watch("default_service_differs_from_main");
 
   const createCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
-      // Combine service address fields
-      const serviceAddressString = `${data.service_street}${data.service_street_2 ? `, ${data.service_street_2}` : ''}, ${data.service_city}, ${data.service_state}, ${data.service_zip}`;
-      
-      // If billing doesn't differ, copy service address to billing
-      if (!data.billing_differs_from_service) {
-        data.billing_address = data.service_street + (data.service_street_2 ? `, ${data.service_street_2}` : '');
-        data.billing_city = data.service_city;
-        data.billing_state = data.service_state;
-        data.billing_zip = data.service_zip;
-      }
-      
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('customers')
-        .insert([{
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          customer_type: data.customer_type,
-          address: serviceAddressString,
-          billing_address: data.billing_address,
-          billing_city: data.billing_city,
-          billing_state: data.billing_state,
-          billing_zip: data.billing_zip,
-          notes: data.notes,
-          billing_differs_from_service: data.billing_differs_from_service,
-          deposit_required: data.deposit_required,
-        }]);
+        .insert([
+          {
+            name: data.name,
+            contact_first_name: data.contact_first_name,
+            contact_last_name: data.contact_last_name,
+            type: data.type,
+            email: data.email || null,
+            phone: data.phone || null,
+            service_street: data.service_street,
+            service_street2: data.service_street2 || null,
+            service_city: data.service_city,
+            service_state: data.service_state,
+            service_zip: data.service_zip,
+            billing_differs_from_service: data.billing_differs_from_service,
+            billing_street: data.billing_differs_from_service ? data.billing_street : data.service_street,
+            billing_street2: data.billing_differs_from_service ? (data.billing_street2 || null) : (data.service_street2 || null),
+            billing_city: data.billing_differs_from_service ? data.billing_city : data.service_city,
+            billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
+            billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
+            default_service_differs_from_main: data.default_service_differs_from_main,
+            default_service_street: data.default_service_differs_from_main ? data.default_service_street : null,
+            default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : null,
+            default_service_city: data.default_service_differs_from_main ? data.default_service_city : null,
+            default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
+            default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
+            deposit_required: data.deposit_required,
+          }
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
-        title: 'Success',
-        description: 'Customer created successfully.',
+        title: "Success",
+        description: "Customer created successfully.",
       });
       form.reset();
       onClose();
     },
     onError: (error) => {
       toast({
-        title: 'Error',
-        description: 'Failed to create customer.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to create customer.",
+        variant: "destructive",
       });
-      console.error('Error creating customer:', error);
+      console.error("Error creating customer:", error);
     },
   });
 
   const onSubmit = (data: CustomerFormData) => {
     createCustomerMutation.mutate(data);
   };
+
+  // Sync billing address fields when toggle is disabled
+  useEffect(() => {
+    if (!billingDiffers) {
+      const serviceValues = form.getValues();
+      form.setValue("billing_street", serviceValues.service_street);
+      form.setValue("billing_street2", serviceValues.service_street2);
+      form.setValue("billing_city", serviceValues.service_city);
+      form.setValue("billing_state", serviceValues.service_state);
+      form.setValue("billing_zip", serviceValues.service_zip);
+    }
+  }, [billingDiffers, form]);
+
+  // Clear default service address fields when toggle is disabled
+  useEffect(() => {
+    if (!defaultServiceDiffers) {
+      form.setValue("default_service_street", "");
+      form.setValue("default_service_street2", "");
+      form.setValue("default_service_city", "");
+      form.setValue("default_service_state", "");
+      form.setValue("default_service_zip", "");
+    }
+  }, [defaultServiceDiffers, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -214,19 +266,18 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     <FormItem>
                       <FormLabel>Company Name *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter company name" />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
-                  name="customer_type"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Customer Type</FormLabel>
+                      <FormLabel>Customer Type *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -245,7 +296,32 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     </FormItem>
                   )}
                 />
-
+                <FormField
+                  control={form.control}
+                  name="contact_first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contact_last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -253,13 +329,12 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} type="email" placeholder="Enter email address" />
+                        <Input {...field} type="email" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="phone"
@@ -267,67 +342,45 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter phone number" />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-
-              {/* General Notes */}
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem className="mt-4">
-                    <FormLabel>General Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="e.g., gate code is 1234, special access instructions..."
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             {/* Service Address */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Service Address</h3>
-              
-              <FormField
-                control={form.control}
-                name="service_street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street Address *</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="123 Main St" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="service_street_2"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street Address 2</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Apt, Suite, Unit, Building (optional)" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="service_street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="service_street2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Street Address 2</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="service_city"
@@ -335,13 +388,12 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     <FormItem>
                       <FormLabel>City *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="City" />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="service_state"
@@ -366,7 +418,6 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="service_zip"
@@ -374,7 +425,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                     <FormItem>
                       <FormLabel>ZIP Code *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="ZIP Code" />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -384,143 +435,254 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
             </div>
 
             {/* Billing Address Toggle */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={form.control}
-                  name="billing_differs_from_service"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        Billing address differs from service address
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <FormField
+                control={form.control}
+                name="billing_differs_from_service"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Billing address is different</FormLabel>
+                      <FormDescription>
+                        Use a different address for billing
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
-              {/* Billing Address Fields - Only show if toggle is on */}
-              {billingDiffers && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Billing Address</h3>
-                  
+            {/* Billing Address Fields */}
+            {billingDiffers && (
+              <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                <h4 className="text-sm font-medium text-muted-foreground">Billing Address</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="billing_address"
+                    name="billing_street"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Billing Street Address *</FormLabel>
+                        <FormLabel>Street Address *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="123 Billing St" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="billing_city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Billing City *</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="billing_street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address 2</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="billing_city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="billing_state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <Input {...field} placeholder="City" />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="billing_state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Billing State *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select state" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {US_STATES.map((state) => (
-                                <SelectItem key={state.value} value={state.value}>
-                                  {state.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="billing_zip"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Billing ZIP Code *</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="ZIP Code" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                          <SelectContent>
+                            {US_STATES.map((state) => (
+                              <SelectItem key={state.value} value={state.value}>
+                                {state.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="billing_zip"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ZIP Code *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
+              </div>
+            )}
+
+            {/* Default Service Address Toggle */}
+            <div className="space-y-4 pt-6 border-t border-border">
+              <FormField
+                control={form.control}
+                name="default_service_differs_from_main"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Default service address is different</FormLabel>
+                      <FormDescription>
+                        Use a different address for the default service location
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
 
-            {/* Deposit Requirement */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={form.control}
-                  name="deposit_required"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        Deposit required for this customer
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
+            {/* Default Service Address Fields */}
+            {defaultServiceDiffers && (
+              <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                <h4 className="text-sm font-medium text-muted-foreground">Default Service Address</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="default_service_street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="default_service_street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address 2</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="default_service_city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="default_service_state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select state" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {US_STATES.map((state) => (
+                              <SelectItem key={state.value} value={state.value}>
+                                {state.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="default_service_zip"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ZIP Code *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
+            )}
+
+            {/* Deposit Requirement */}
+            <div className="space-y-6 pt-6 border-t border-border">
+              <FormField
+                control={form.control}
+                name="deposit_required"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Deposit Required</FormLabel>
+                      <FormDescription>
+                        Require a deposit for this customer
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-2 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={createCustomerMutation.isPending}
-              >
+            <div className="flex justify-end space-x-2 pt-6 border-t border-border">
+              <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createCustomerMutation.isPending}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-              >
-                {createCustomerMutation.isPending ? 'Creating...' : 'Create Customer'}
+              <Button type="submit" disabled={createCustomerMutation.isPending}>
+                {createCustomerMutation.isPending ? "Creating..." : "Create Customer"}
               </Button>
             </div>
           </form>

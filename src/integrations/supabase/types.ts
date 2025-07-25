@@ -1188,6 +1188,12 @@ export type Database = {
           created_at: string
           credit_not_approved: boolean | null
           customer_type: Database["public"]["Enums"]["customer_type"] | null
+          default_service_city: string | null
+          default_service_differs_from_main: boolean | null
+          default_service_state: string | null
+          default_service_street: string | null
+          default_service_street2: string | null
+          default_service_zip: string | null
           deposit_required: boolean
           email: string | null
           id: string
@@ -1217,6 +1223,12 @@ export type Database = {
           created_at?: string
           credit_not_approved?: boolean | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
+          default_service_city?: string | null
+          default_service_differs_from_main?: boolean | null
+          default_service_state?: string | null
+          default_service_street?: string | null
+          default_service_street2?: string | null
+          default_service_zip?: string | null
           deposit_required?: boolean
           email?: string | null
           id?: string
@@ -1246,6 +1258,12 @@ export type Database = {
           created_at?: string
           credit_not_approved?: boolean | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
+          default_service_city?: string | null
+          default_service_differs_from_main?: boolean | null
+          default_service_state?: string | null
+          default_service_street?: string | null
+          default_service_street2?: string | null
+          default_service_zip?: string | null
           deposit_required?: boolean
           email?: string | null
           id?: string
@@ -6334,6 +6352,10 @@ export type Database = {
           change_notes?: string
         }
         Returns: string
+      }
+      migrate_customer_zip_codes: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>

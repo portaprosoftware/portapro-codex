@@ -6,13 +6,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Separator } from '@/components/ui/separator';
-import { Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -70,30 +67,46 @@ const US_STATES = [
 ];
 
 const customerSchema = z.object({
-  name: z.string().min(1, 'Company name is required'),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  name: z.string().min(1, "Company name is required"),
+  contact_first_name: z.string().min(1, "First name is required"),
+  contact_last_name: z.string().min(1, "Last name is required"),
+  type: z.string().min(1, "Customer type is required"),
+  email: z.string().email("Valid email is required").optional().or(z.literal("")),
   phone: z.string().optional(),
-  customer_type: z.enum(['events_festivals', 'sports_recreation', 'municipal_government', 'commercial', 'construction', 'emergency_disaster_relief', 'private_events_weddings', 'not_selected']).optional(),
-  service_street: z.string().min(1, 'Street address is required'),
-  service_street_2: z.string().optional(),
-  service_city: z.string().min(1, 'City is required'),
-  service_state: z.string().min(1, 'State is required'),
-  service_zip: z.string().min(1, 'ZIP code is required'),
-  billing_address: z.string().optional(),
+  service_street: z.string().min(1, "Service street is required"),
+  service_street2: z.string().optional(),
+  service_city: z.string().min(1, "Service city is required"),
+  service_state: z.string().min(1, "Service state is required"),
+  service_zip: z.string().min(1, "Service ZIP is required"),
+  billing_differs_from_service: z.boolean().default(false),
+  billing_street: z.string().optional(),
+  billing_street2: z.string().optional(),
   billing_city: z.string().optional(),
   billing_state: z.string().optional(),
   billing_zip: z.string().optional(),
-  notes: z.string().optional(),
-  billing_differs_from_service: z.boolean().optional(),
-  deposit_required: z.boolean().optional(),
+  default_service_differs_from_main: z.boolean().default(false),
+  default_service_street: z.string().optional(),
+  default_service_street2: z.string().optional(),
+  default_service_city: z.string().optional(),
+  default_service_state: z.string().optional(),
+  default_service_zip: z.string().optional(),
+  deposit_required: z.boolean().default(false),
 }).refine((data) => {
   if (data.billing_differs_from_service) {
-    return data.billing_address && data.billing_city && data.billing_state && data.billing_zip;
+    return data.billing_street && data.billing_city && data.billing_state && data.billing_zip;
   }
   return true;
 }, {
-  message: "Billing address fields are required when billing differs from service address",
-  path: ["billing_address"],
+  message: "All billing address fields are required when billing differs from service address",
+  path: ["billing_street"],
+}).refine((data) => {
+  if (data.default_service_differs_from_main) {
+    return data.default_service_street && data.default_service_city && data.default_service_state && data.default_service_zip;
+  }
+  return true;
+}, {
+  message: "All default service address fields are required when default service differs from main address",
+  path: ["default_service_street"],
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -101,19 +114,31 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 interface Customer {
   id: string;
   name: string;
+  contact_first_name: string;
+  contact_last_name: string;
+  type: string;
   email?: string;
   phone?: string;
-  customer_type?: string;
-  address?: string;
-  billing_address?: string;
+  service_street: string;
+  service_street2?: string;
+  service_city: string;
+  service_state: string;
+  service_zip: string;
+  billing_differs_from_service?: boolean;
+  billing_street?: string;
+  billing_street2?: string;
   billing_city?: string;
   billing_state?: string;
   billing_zip?: string;
-  notes?: string;
+  default_service_differs_from_main?: boolean;
+  default_service_street?: string;
+  default_service_street2?: string;
+  default_service_city?: string;
+  default_service_state?: string;
+  default_service_zip?: string;
+  deposit_required?: boolean;
   created_at: string;
   updated_at: string;
-  billing_differs_from_service?: boolean;
-  deposit_required?: boolean;
 }
 
 interface EditCustomerModalProps {
@@ -124,130 +149,124 @@ interface EditCustomerModalProps {
 
 const CUSTOMER_TYPES = [
   { value: 'events_festivals', label: 'Events & Festivals' },
-  { value: 'sports_recreation', label: 'Sports & Recreation' },
+  { value: 'construction', label: 'Construction' },
   { value: 'municipal_government', label: 'Municipal & Government' },
   { value: 'private_events_weddings', label: 'Private Events & Weddings' },
-  { value: 'construction', label: 'Construction' },
-  { value: 'commercial', label: 'Commercial' },
+  { value: 'sports_recreation', label: 'Sports & Recreation' },
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
 ];
 
 export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [confirmText, setConfirmText] = useState('');
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-
-  // Parse existing address into components
-  const parseAddress = (address?: string) => {
-    if (!address) return { street: '', street2: '', city: '', state: '', zip: '' };
-    const parts = address.split(',').map(part => part.trim());
-    return {
-      street: parts[0] || '',
-      street2: '',
-      city: parts[1] || '',
-      state: parts[2] || '',
-      zip: parts[3] || ''
-    };
-  };
-
-  const serviceAddress = parseAddress(customer.address);
+  const [showDepositConfirm, setShowDepositConfirm] = useState(false);
+  const [depositConfirmText, setDepositConfirmText] = useState('');
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
-      name: customer.name || '',
-      email: customer.email || '',
-      phone: customer.phone || '',
-      customer_type: customer.customer_type as any || '',
-      service_street: serviceAddress.street,
-      service_street_2: serviceAddress.street2,
-      service_city: serviceAddress.city,
-      service_state: serviceAddress.state,
-      service_zip: serviceAddress.zip,
-      billing_address: customer.billing_address || '',
-      billing_city: customer.billing_city || '',
-      billing_state: customer.billing_state || '',
-      billing_zip: customer.billing_zip || '',
-      notes: customer.notes || '',
-      billing_differs_from_service: customer.billing_differs_from_service || false,
-      deposit_required: customer.deposit_required ?? true,
+      name: customer?.name || "",
+      contact_first_name: customer?.contact_first_name || "",
+      contact_last_name: customer?.contact_last_name || "",
+      type: customer?.type || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
+      service_street: customer?.service_street || "",
+      service_street2: customer?.service_street2 || "",
+      service_city: customer?.service_city || "",
+      service_state: customer?.service_state || "",
+      service_zip: customer?.service_zip || "",
+      billing_differs_from_service: customer?.billing_differs_from_service || false,
+      billing_street: customer?.billing_street || "",
+      billing_street2: customer?.billing_street2 || "",
+      billing_city: customer?.billing_city || "",
+      billing_state: customer?.billing_state || "",
+      billing_zip: customer?.billing_zip || "",
+      default_service_differs_from_main: customer?.default_service_differs_from_main || false,
+      default_service_street: customer?.default_service_street || "",
+      default_service_street2: customer?.default_service_street2 || "",
+      default_service_city: customer?.default_service_city || "",
+      default_service_state: customer?.default_service_state || "",
+      default_service_zip: customer?.default_service_zip || "",
+      deposit_required: customer?.deposit_required || false,
     },
   });
 
-  const billingDiffers = form.watch('billing_differs_from_service');
-  const depositRequired = form.watch('deposit_required');
+  const billingDiffers = form.watch("billing_differs_from_service");
+  const defaultServiceDiffers = form.watch("default_service_differs_from_main");
 
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
-      // Combine service address fields
-      const serviceAddressString = `${data.service_street}${data.service_street_2 ? `, ${data.service_street_2}` : ''}, ${data.service_city}, ${data.service_state}, ${data.service_zip}`;
-      
-      // If billing doesn't differ, copy service address to billing
-      if (!data.billing_differs_from_service) {
-        data.billing_address = data.service_street + (data.service_street_2 ? `, ${data.service_street_2}` : '');
-        data.billing_city = data.service_city;
-        data.billing_state = data.service_state;
-        data.billing_zip = data.service_zip;
-      }
-      
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('customers')
         .update({
           name: data.name,
-          email: data.email,
-          phone: data.phone,
-          customer_type: data.customer_type,
-          address: serviceAddressString,
-          billing_address: data.billing_address,
-          billing_city: data.billing_city,
-          billing_state: data.billing_state,
-          billing_zip: data.billing_zip,
-          notes: data.notes,
+          contact_first_name: data.contact_first_name,
+          contact_last_name: data.contact_last_name,
+          type: data.type,
+          email: data.email || null,
+          phone: data.phone || null,
+          service_street: data.service_street,
+          service_street2: data.service_street2 || null,
+          service_city: data.service_city,
+          service_state: data.service_state,
+          service_zip: data.service_zip,
           billing_differs_from_service: data.billing_differs_from_service,
+          billing_street: data.billing_differs_from_service ? data.billing_street : data.service_street,
+          billing_street2: data.billing_differs_from_service ? (data.billing_street2 || null) : (data.service_street2 || null),
+          billing_city: data.billing_differs_from_service ? data.billing_city : data.service_city,
+          billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
+          billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
+          default_service_differs_from_main: data.default_service_differs_from_main,
+          default_service_street: data.default_service_differs_from_main ? data.default_service_street : null,
+          default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : null,
+          default_service_city: data.default_service_differs_from_main ? data.default_service_city : null,
+          default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
+          default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
           deposit_required: data.deposit_required,
-          updated_at: new Date().toISOString(),
         })
-        .eq('id', customer.id);
+        .eq('id', customer.id)
+        .select()
+        .single();
 
       if (error) throw error;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer', customer.id] });
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
-        title: 'Success',
-        description: 'Customer information updated successfully.',
+        title: "Success",
+        description: "Customer updated successfully.",
       });
       onClose();
     },
     onError: (error) => {
       toast({
-        title: 'Error',
-        description: 'Failed to update customer information.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to update customer.",
+        variant: "destructive",
       });
-      console.error('Error updating customer:', error);
+      console.error("Error updating customer:", error);
     },
   });
 
   const handleDepositToggle = (checked: boolean) => {
     if (!checked) {
-      // Turning deposit requirement ON (checked = false means deposit required = true)
-      form.setValue('deposit_required', true);
+      // Turning deposit requirement off - show confirmation
+      setShowDepositConfirm(true);
     } else {
-      // Turning deposit requirement OFF - show confirmation
-      setShowConfirmDialog(true);
+      form.setValue('deposit_required', true);
     }
   };
 
   const confirmDepositChange = () => {
-    if (confirmText.toLowerCase() === 'no deposit') {
+    if (depositConfirmText.toLowerCase() === 'no deposit') {
       form.setValue('deposit_required', false);
-      setShowConfirmDialog(false);
-      setConfirmText('');
+      setShowDepositConfirm(false);
+      setDepositConfirmText('');
       toast({
         title: 'Deposit Requirement Updated',
         description: 'Customer no longer requires a deposit',
@@ -292,7 +311,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
   const handleDeleteCustomer = () => {
     if (deleteConfirmText.toLowerCase() === 'delete customer') {
       deleteCustomerMutation.mutate();
-      setShowDeleteDialog(false);
+      setShowDeleteConfirm(false);
       setDeleteConfirmText('');
     } else {
       toast({
@@ -307,15 +326,28 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
     updateCustomerMutation.mutate(data);
   };
 
-  // Sync billing address when toggle changes
+  // Sync billing address fields when toggle is disabled
   useEffect(() => {
     if (!billingDiffers) {
-      form.setValue('billing_address', form.getValues('service_street') + (form.getValues('service_street_2') ? `, ${form.getValues('service_street_2')}` : ''));
-      form.setValue('billing_city', form.getValues('service_city'));
-      form.setValue('billing_state', form.getValues('service_state'));
-      form.setValue('billing_zip', form.getValues('service_zip'));
+      const serviceValues = form.getValues();
+      form.setValue("billing_street", serviceValues.service_street);
+      form.setValue("billing_street2", serviceValues.service_street2);
+      form.setValue("billing_city", serviceValues.service_city);
+      form.setValue("billing_state", serviceValues.service_state);
+      form.setValue("billing_zip", serviceValues.service_zip);
     }
   }, [billingDiffers, form]);
+
+  // Clear default service address fields when toggle is disabled
+  useEffect(() => {
+    if (!defaultServiceDiffers) {
+      form.setValue("default_service_street", "");
+      form.setValue("default_service_street2", "");
+      form.setValue("default_service_city", "");
+      form.setValue("default_service_state", "");
+      form.setValue("default_service_zip", "");
+    }
+  }, [defaultServiceDiffers, form]);
 
   return (
     <>
@@ -339,19 +371,18 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       <FormItem>
                         <FormLabel>Company Name *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Enter company name" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
-                    name="customer_type"
+                    name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Customer Type</FormLabel>
+                        <FormLabel>Customer Type *</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -370,7 +401,32 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       </FormItem>
                     )}
                   />
-
+                  <FormField
+                    control={form.control}
+                    name="contact_first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contact_last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="email"
@@ -378,13 +434,12 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" placeholder="Enter email address" />
+                          <Input {...field} type="email" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="phone"
@@ -392,67 +447,45 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       <FormItem>
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Enter phone number" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                {/* General Notes */}
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem className="mt-4">
-                      <FormLabel>General Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="e.g., gate code is 1234, special access instructions..."
-                          rows={3}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               {/* Service Address */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Service Address</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="service_street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street Address *</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="123 Main St" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="service_street_2"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street Address 2</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Apt, Suite, Unit, Building (optional)" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="service_street"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="service_street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address 2</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="service_city"
@@ -460,13 +493,12 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       <FormItem>
                         <FormLabel>City *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="City" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="service_state"
@@ -482,7 +514,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                           <SelectContent>
                             {US_STATES.map((state) => (
                               <SelectItem key={state.value} value={state.value}>
-                                {state.value} - {state.label}
+                                {state.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -491,7 +523,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="service_zip"
@@ -499,7 +530,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                       <FormItem>
                         <FormLabel>ZIP Code *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="12345" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -509,46 +540,60 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
               </div>
 
               {/* Billing Address Toggle */}
-              <FormField
-                control={form.control}
-                name="billing_differs_from_service"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Billing address differs from service address
-                      </FormLabel>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-4 pt-6 border-t border-border">
+                <FormField
+                  control={form.control}
+                  name="billing_differs_from_service"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Billing address is different</FormLabel>
+                        <FormDescription>
+                          Use a different address for billing
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              {/* Conditional Billing Address Fields */}
+              {/* Billing Address Fields */}
               {billingDiffers && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Billing Address</h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="billing_address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street Address *</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="123 Main St" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                  <h4 className="text-sm font-medium text-muted-foreground">Billing Address</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="billing_street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address *</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="billing_street2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address 2</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="billing_city"
@@ -556,13 +601,12 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormItem>
                           <FormLabel>City *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="City" />
+                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="billing_state"
@@ -578,7 +622,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                             <SelectContent>
                               {US_STATES.map((state) => (
                                 <SelectItem key={state.value} value={state.value}>
-                                  {state.value} - {state.label}
+                                  {state.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -587,7 +631,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="billing_zip"
@@ -595,7 +638,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormItem>
                           <FormLabel>ZIP Code *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="12345" />
+                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -605,51 +648,164 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                 </div>
               )}
 
-              {/* Deposit Toggle */}
-              <FormField
-                control={form.control}
-                name="deposit_required"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        Deposit not required
-                      </FormLabel>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={!field.value}
-                        onCheckedChange={handleDepositToggle}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              {/* Danger Zone */}
-              <Separator className="my-6" />
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-destructive">Danger Zone</h3>
-                <p className="text-sm text-muted-foreground">
-                  Permanently delete this customer. This action cannot be undone.
-                </p>
-                <Button 
-                  type="button" 
-                  variant="destructive" 
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="w-full sm:w-auto"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Customer
-                </Button>
+              {/* Default Service Address Toggle */}
+              <div className="space-y-4 pt-6 border-t border-border">
+                <FormField
+                  control={form.control}
+                  name="default_service_differs_from_main"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Default service address is different</FormLabel>
+                        <FormDescription>
+                          Use a different address for the default service location
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
+              {/* Default Service Address Fields */}
+              {defaultServiceDiffers && (
+                <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                  <h4 className="text-sm font-medium text-muted-foreground">Default Service Address</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="default_service_street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address *</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="default_service_street2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address 2</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="default_service_city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City *</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="default_service_state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select state" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {US_STATES.map((state) => (
+                                <SelectItem key={state.value} value={state.value}>
+                                  {state.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="default_service_zip"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code *</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Deposit Requirement */}
+              <div className="space-y-4 pt-6 border-t border-border">
+                <FormField
+                  control={form.control}
+                  name="deposit_required"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Deposit Required</FormLabel>
+                        <FormDescription>
+                          Require a deposit for this customer
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={handleDepositToggle}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Danger Zone */}
+              <div className="space-y-6 pt-6 border-t border-destructive/20">
+                <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-destructive mb-4">Danger Zone</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Once you delete a customer, there is no going back. Please be certain.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    Delete Customer
+                  </Button>
+                </div>
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex justify-end space-x-2 pt-6 border-t border-border">
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={updateCustomerMutation.isPending}>
-                  {updateCustomerMutation.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateCustomerMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </form>
@@ -657,79 +813,62 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         </DialogContent>
       </Dialog>
 
-      {/* Confirmation Dialog */}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="border-green-200">
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-green-800">Confirm No Deposit Required</AlertDialogTitle>
-            <AlertDialogDescription className="text-green-600">
-              Are you sure this customer does not require a deposit? This will change their credit status.
-              <br /><br />
-              Type <strong>"no deposit"</strong> to confirm:
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the customer
+              and all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-4">
+            <label className="text-sm font-medium">
+              Type "delete customer" to confirm:
+            </label>
             <Input
-              placeholder="Type 'no deposit' to confirm"
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              className="border-green-300 focus:border-green-500"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="delete customer"
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              onClick={() => {
-                setShowConfirmDialog(false);
-                setConfirmText('');
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDepositChange}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleDeleteCustomer}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Confirm
+              Delete Customer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="border-destructive">
+      {/* Deposit Confirmation Dialog */}
+      <AlertDialog open={showDepositConfirm} onOpenChange={setShowDepositConfirm}>
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-destructive">Delete Customer</AlertDialogTitle>
-            <AlertDialogDescription className="text-foreground">
-              This action will permanently delete <strong>{customer.name}</strong> and cannot be undone.
-              All associated data including jobs, quotes, and invoices will be affected.
-              <br /><br />
-              Type <strong>"delete customer"</strong> to confirm:
+            <AlertDialogTitle>Disable Deposit Requirement?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the deposit requirement for this customer.
+              Type "no deposit" to confirm this change.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-4">
+            <label className="text-sm font-medium">
+              Type "no deposit" to confirm:
+            </label>
             <Input
-              placeholder="Type 'delete customer' to confirm"
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              className="border-destructive focus:border-destructive"
+              value={depositConfirmText}
+              onChange={(e) => setDepositConfirmText(e.target.value)}
+              placeholder="no deposit"
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              onClick={() => {
-                setShowDeleteDialog(false);
-                setDeleteConfirmText('');
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCustomer}
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-              disabled={deleteCustomerMutation.isPending}
-            >
-              {deleteCustomerMutation.isPending ? 'Deleting...' : 'Delete Customer'}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDepositChange}>
+              Confirm Change
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
