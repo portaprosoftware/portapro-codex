@@ -158,35 +158,40 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
   const defaultServiceDiffers = form.watch("default_service_differs_from_main");
 
   const createCustomerMutation = useMutation({
-    mutationFn: async (data: CustomerFormData) => {
+    mutationFn: async (customerData: CustomerFormData) => {
+      const insertData = {
+        name: customerData.name,
+        customer_type: customerData.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
+        email: customerData.email || null,
+        phone: customerData.phone || null,
+        service_street: customerData.service_street,
+        service_street2: customerData.service_street2 || null,
+        service_city: customerData.service_city,
+        service_state: customerData.service_state,
+        service_zip: customerData.service_zip,
+        billing_differs_from_service: customerData.billing_differs_from_service,
+        billing_street: customerData.billing_differs_from_service ? customerData.billing_street : customerData.service_street,
+        billing_street2: customerData.billing_differs_from_service ? (customerData.billing_street2 || null) : (customerData.service_street2 || null),
+        billing_city: customerData.billing_differs_from_service ? customerData.billing_city : customerData.service_city,
+        billing_state: customerData.billing_differs_from_service ? customerData.billing_state : customerData.service_state,
+        billing_zip: customerData.billing_differs_from_service ? customerData.billing_zip : customerData.service_zip,
+        default_service_differs_from_main: customerData.default_service_differs_from_main,
+        default_service_street: customerData.default_service_differs_from_main ? customerData.default_service_street : customerData.service_street,
+        default_service_street2: customerData.default_service_differs_from_main ? (customerData.default_service_street2 || null) : (customerData.service_street2 || null),
+        default_service_city: customerData.default_service_differs_from_main ? customerData.default_service_city : customerData.service_city,
+        default_service_state: customerData.default_service_differs_from_main ? customerData.default_service_state : customerData.service_state,
+        default_service_zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : customerData.service_zip,
+        deposit_required: customerData.deposit_required,
+      };
+
       const { error } = await supabase
         .from('customers')
-        .insert({
-          name: data.name,
-          customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
-          email: data.email || null,
-          phone: data.phone || null,
-          service_street: data.service_street,
-          service_street2: data.service_street2 || null,
-          service_city: data.service_city,
-          service_state: data.service_state,
-          service_zip: data.service_zip,
-          billing_differs_from_service: data.billing_differs_from_service,
-          billing_street: data.billing_differs_from_service ? data.billing_street : data.service_street,
-          billing_street2: data.billing_differs_from_service ? (data.billing_street2 || null) : (data.service_street2 || null),
-          billing_city: data.billing_differs_from_service ? data.billing_city : data.service_city,
-          billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
-          billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
-          default_service_differs_from_main: data.default_service_differs_from_main,
-          default_service_street: data.default_service_differs_from_main ? data.default_service_street : data.service_street,
-          default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : (data.service_street2 || null),
-          default_service_city: data.default_service_differs_from_main ? data.default_service_city : data.service_city,
-          default_service_state: data.default_service_differs_from_main ? data.default_service_state : data.service_state,
-          default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : data.service_zip,
-          deposit_required: data.deposit_required,
-        });
+        .insert(insertData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -198,12 +203,12 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       onClose();
     },
     onError: (error) => {
+      console.error("Error creating customer:", error);
       toast({
-        title: "Error",
-        description: "Failed to create customer.",
+        title: "Error", 
+        description: "Failed to create customer. Please try again.",
         variant: "destructive",
       });
-      console.error("Error creating customer:", error);
     },
   });
 
