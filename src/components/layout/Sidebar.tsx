@@ -11,8 +11,8 @@ import {
   Megaphone,
   Settings,
   LogOut,
-  Shirt,
-  Waves,
+  SprayCan,
+  Wrench,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
@@ -45,12 +45,12 @@ const Sidebar = () => {
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Calendar, label: "Jobs", path: "/jobs" },
     { icon: Package, label: "Inventory", path: "/inventory" },
-    { icon: Shirt, label: "Consumables", path: "/consumables" },
+    { icon: SprayCan, label: "Consumables", path: "/consumables" },
     { icon: FileText, label: "Purchase Orders", path: "/purchase-orders" },
     { icon: Users, label: "Customer Hub", path: "/customer-hub" },
     { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
     { icon: Truck, label: "Fleet Management", path: "/fleet-management" },
-    { icon: Waves, label: "Maintenance Hub", path: "/maintenance-hub" },
+    { icon: Wrench, label: "Maintenance Hub", path: "/maintenance-hub" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
     { icon: Megaphone, label: "Marketing Hub", path: "/marketing-hub" },
     { icon: Settings, label: "Settings", path: "/settings" },

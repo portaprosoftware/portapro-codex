@@ -16,8 +16,8 @@ import {
   Building,
   Megaphone,
   MessageSquare,
-  Shirt,
-  Waves
+  SprayCan,
+  Wrench
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -78,7 +78,7 @@ const inventoryItems: NavigationItem[] = [
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: Shirt,
+    icon: SprayCan,
     permission: 'staff'
   },
   { 
@@ -99,7 +99,7 @@ const managementItems: NavigationItem[] = [
   { 
     title: 'Maintenance', 
     url: '/maintenance-hub', 
-    icon: Waves,
+    icon: Wrench,
     permission: 'admin'
   },
   { 
