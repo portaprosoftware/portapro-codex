@@ -97,11 +97,11 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
           </span>
         </div>
         <div className="flex flex-col gap-1">
-          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center", statusInfo.primary.gradient)}>
+          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
             {statusInfo.primary.label}
           </Badge>
           {statusInfo.secondary && (
-            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center", statusInfo.secondary.gradient)}>
+            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
               {statusInfo.secondary.label}
             </Badge>
           )}
