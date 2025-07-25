@@ -24,6 +24,7 @@ interface StorageLocationSelectorProps {
   disabled?: boolean;
   activeOnly?: boolean;
   includeAllSites?: boolean;
+  excludeLocationId?: string;
 }
 
 export function StorageLocationSelector({
@@ -32,7 +33,8 @@ export function StorageLocationSelector({
   placeholder = "Select storage site",
   disabled = false,
   activeOnly = true,
-  includeAllSites = false
+  includeAllSites = false,
+  excludeLocationId
 }: StorageLocationSelectorProps) {
   const { data: storageLocations, isLoading } = useQuery({
     queryKey: ['storage-locations', { activeOnly }],
@@ -88,7 +90,7 @@ export function StorageLocationSelector({
           </SelectItem>
         )}
         
-        {storageLocations?.map((location) => {
+        {storageLocations?.filter(location => location.id !== excludeLocationId).map((location) => {
           const display = formatLocationDisplay(location);
           return (
             <SelectItem key={location.id} value={location.id}>

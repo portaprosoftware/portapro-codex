@@ -50,9 +50,13 @@ export const BulkStockReceiving: React.FC = () => {
         throw new Error('Please add at least one item to receive');
       }
 
-      // Process each receiving item
+      if (!receivingData.storage_location_id) {
+        throw new Error('Storage location is required');
+      }
+
+      // Process each receiving item with location-specific stock management
       for (const item of receivingItems) {
-        // Log the stock adjustment
+        // Log the stock adjustment for audit trail
         const { error: logError } = await supabase
           .from('consumable_stock_adjustments' as any)
           .insert({
@@ -61,8 +65,8 @@ export const BulkStockReceiving: React.FC = () => {
             quantity_change: item.quantity,
             previous_quantity: 0, // Will be updated by trigger
             new_quantity: 0, // Will be updated by trigger
-            reason: `Bulk receiving from ${receivingSource || 'Unknown source'}`,
-            notes: notes,
+            reason: `Bulk receiving from ${receivingSource || 'Unknown source'} to ${receivingData.storage_location_id}`,
+            notes: receivingData.notes,
             adjusted_by: null // Will be set by auth context if available
           });
 
@@ -70,17 +74,75 @@ export const BulkStockReceiving: React.FC = () => {
           console.error('Error logging stock adjustment:', logError);
         }
 
-        // Update the consumable stock quantity
-        const { error: updateError } = await supabase
-          .from('consumables' as any)
-          .update({ 
-            on_hand_qty: (item.quantity as any)
-          } as any)
-          .eq('id', item.consumable_id);
+        // Update or create location-specific stock entry
+        const { data: existingLocationStock, error: queryError } = await supabase
+          .from('consumable_location_stock' as any)
+          .select('*')
+          .eq('consumable_id', item.consumable_id)
+          .eq('storage_location_id', receivingData.storage_location_id)
+          .maybeSingle();
 
-        if (updateError) {
-          console.error('Error updating consumable:', updateError);
-          throw updateError;
+        if (queryError && queryError.code !== 'PGRST116') {
+          console.error('Error querying location stock:', queryError);
+          throw queryError;
+        }
+
+        if (existingLocationStock) {
+          // Update existing location stock
+          const { error: updateLocationError } = await supabase
+            .from('consumable_location_stock' as any)
+            .update({
+              quantity: (existingLocationStock as any).quantity + item.quantity,
+              updated_at: new Date().toISOString()
+            })
+            .eq('consumable_id', item.consumable_id)
+            .eq('storage_location_id', receivingData.storage_location_id);
+
+          if (updateLocationError) {
+            console.error('Error updating location stock:', updateLocationError);
+            throw updateLocationError;
+          }
+        } else {
+          // Create new location stock entry
+          const { error: insertLocationError } = await supabase
+            .from('consumable_location_stock' as any)
+            .insert({
+              consumable_id: item.consumable_id,
+              storage_location_id: receivingData.storage_location_id,
+              quantity: item.quantity
+            });
+
+          if (insertLocationError) {
+            console.error('Error creating location stock:', insertLocationError);
+            throw insertLocationError;
+          }
+        }
+
+        // Update master stock (this will also trigger stock change logs)
+        const { data: currentConsumable, error: consumableQueryError } = await supabase
+          .from('consumables' as any)
+          .select('on_hand_qty')
+          .eq('id', item.consumable_id)
+          .single();
+
+        if (consumableQueryError) {
+          console.error('Error querying consumable:', consumableQueryError);
+          throw consumableQueryError;
+        }
+
+        if (currentConsumable) {
+          const { error: updateMasterError } = await supabase
+            .from('consumables' as any)
+            .update({ 
+              on_hand_qty: (currentConsumable as any).on_hand_qty + item.quantity,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', item.consumable_id);
+
+          if (updateMasterError) {
+            console.error('Error updating master stock:', updateMasterError);
+            throw updateMasterError;
+          }
         }
       }
 
@@ -89,7 +151,7 @@ export const BulkStockReceiving: React.FC = () => {
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: `Successfully received ${data.length} items`,
+        description: `Successfully received ${data.length} items to storage location`,
       });
       handleReset();
     },
@@ -151,12 +213,22 @@ export const BulkStockReceiving: React.FC = () => {
       return;
     }
 
+    if (!storageLocationId) {
+      toast({
+        title: "Validation Error",
+        description: "Please select a storage location",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
       await bulkReceiveMutation.mutateAsync({
         receiving_date: receivingDate,
         source: receivingSource,
+        storage_location_id: storageLocationId,
         notes: notes
       });
     } finally {
@@ -167,6 +239,7 @@ export const BulkStockReceiving: React.FC = () => {
   const handleReset = () => {
     setReceivingDate(new Date().toISOString().split('T')[0]);
     setReceivingSource('');
+    setStorageLocationId('');
     setNotes('');
     setReceivingItems([]);
   };
@@ -202,6 +275,19 @@ export const BulkStockReceiving: React.FC = () => {
                 required
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Storage Location *</Label>
+            <StorageLocationSelector
+              value={storageLocationId}
+              onValueChange={setStorageLocationId}
+            />
+            {!storageLocationId && (
+              <p className="text-sm text-muted-foreground">
+                Select the storage location where items will be received
+              </p>
+            )}
           </div>
 
           <div className="space-y-4">

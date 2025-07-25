@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -7,91 +7,197 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Package } from 'lucide-react';
+import { StorageLocationSelector } from './StorageLocationSelector';
+import { ArrowRightLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface StockTransferModalProps {
-  isOpen: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onClose: () => void;
+  consumableId?: string;
+  currentLocationId?: string;
 }
 
 export const StockTransferModal: React.FC<StockTransferModalProps> = ({
-  isOpen,
-  onClose
+  open,
+  onOpenChange,
+  onClose,
+  consumableId,
+  currentLocationId
 }) => {
-  const [consumableId, setConsumableId] = useState('');
+  const [selectedConsumableId, setSelectedConsumableId] = useState(consumableId || '');
+  const [fromLocationId, setFromLocationId] = useState(currentLocationId || '');
+  const [toLocationId, setToLocationId] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [fromLocation, setFromLocation] = useState('');
-  const [toLocation, setToLocation] = useState('');
-  const [transferDate, setTransferDate] = useState(new Date().toISOString().split('T')[0]);
-  const [reason, setReason] = useState('');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: consumables } = useQuery({
     queryKey: ['consumables-for-transfer'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('consumables' as any)
+        .from('consumables')
         .select('*')
         .eq('is_active', true)
-        .gt('on_hand_qty', 0)
         .order('name');
       
       if (error) throw error;
-      return (data || []) as any[];
-    },
-    enabled: isOpen
+      return data;
+    }
   });
 
-  const selectedConsumable = (consumables as any)?.find((c: any) => c.id === consumableId);
+  const { data: availableStock } = useQuery({
+    queryKey: ['location-stock', selectedConsumableId, fromLocationId],
+    queryFn: async () => {
+      if (!selectedConsumableId || !fromLocationId) return null;
+      
+      const { data, error } = await supabase
+        .from('consumable_location_stock')
+        .select('quantity')
+        .eq('consumable_id', selectedConsumableId)
+        .eq('storage_location_id', fromLocationId)
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data?.quantity || 0;
+    },
+    enabled: !!(selectedConsumableId && fromLocationId)
+  });
 
   const transferMutation = useMutation({
-    mutationFn: async (transferData: any) => {
-      if (!selectedConsumable) {
-        throw new Error('Please select a consumable');
+    mutationFn: async () => {
+      if (!selectedConsumableId) throw new Error('Please select a consumable');
+      if (!fromLocationId) throw new Error('Please select source location');
+      if (!toLocationId) throw new Error('Please select destination location');
+      if (fromLocationId === toLocationId) throw new Error('Source and destination must be different');
+      if (quantity <= 0) throw new Error('Quantity must be greater than 0');
+      if (quantity > (availableStock || 0)) throw new Error('Not enough stock available at source location');
+
+      // Remove stock from source location
+      const { data: sourceStock, error: sourceQueryError } = await supabase
+        .from('consumable_location_stock')
+        .select('quantity')
+        .eq('consumable_id', selectedConsumableId)
+        .eq('storage_location_id', fromLocationId)
+        .single();
+
+      if (sourceQueryError) throw sourceQueryError;
+
+      if (sourceStock.quantity < quantity) {
+        throw new Error('Insufficient stock at source location');
       }
 
-      if (quantity > selectedConsumable.on_hand_qty) {
-        throw new Error('Transfer quantity cannot exceed available stock');
+      // Update source location stock
+      const newSourceQuantity = sourceStock.quantity - quantity;
+      
+      if (newSourceQuantity === 0) {
+        // Remove the stock entry if quantity becomes 0
+        const { error: deleteError } = await supabase
+          .from('consumable_location_stock')
+          .delete()
+          .eq('consumable_id', selectedConsumableId)
+          .eq('storage_location_id', fromLocationId);
+
+        if (deleteError) throw deleteError;
+      } else {
+        // Update with new quantity
+        const { error: updateSourceError } = await supabase
+          .from('consumable_location_stock')
+          .update({ 
+            quantity: newSourceQuantity,
+            updated_at: new Date().toISOString()
+          })
+          .eq('consumable_id', selectedConsumableId)
+          .eq('storage_location_id', fromLocationId);
+
+        if (updateSourceError) throw updateSourceError;
       }
 
-      // Log the stock transfer as an adjustment
-      const { error: logError } = await supabase
-        .from('consumable_stock_adjustments' as any)
+      // Add stock to destination location
+      const { data: destStock, error: destQueryError } = await supabase
+        .from('consumable_location_stock')
+        .select('quantity')
+        .eq('consumable_id', selectedConsumableId)
+        .eq('storage_location_id', toLocationId)
+        .maybeSingle();
+
+      if (destQueryError && destQueryError.code !== 'PGRST116') throw destQueryError;
+
+      if (destStock) {
+        // Update existing destination stock
+        const { error: updateDestError } = await supabase
+          .from('consumable_location_stock')
+          .update({ 
+            quantity: destStock.quantity + quantity,
+            updated_at: new Date().toISOString()
+          })
+          .eq('consumable_id', selectedConsumableId)
+          .eq('storage_location_id', toLocationId);
+
+        if (updateDestError) throw updateDestError;
+      } else {
+        // Create new destination stock entry
+        const { error: insertDestError } = await supabase
+          .from('consumable_location_stock')
+          .insert({
+            consumable_id: selectedConsumableId,
+            storage_location_id: toLocationId,
+            quantity: quantity
+          });
+
+        if (insertDestError) throw insertDestError;
+      }
+
+      // Log the transfer as stock adjustments
+      const transferReason = `Stock transfer: ${quantity} units moved between locations`;
+      
+      // Log outbound adjustment
+      await supabase
+        .from('consumable_stock_adjustments')
         .insert({
-          consumable_id: consumableId,
-          adjustment_type: 'transfer',
-          quantity_change: 0, // No net change for transfers
-          previous_quantity: selectedConsumable.on_hand_qty,
-          new_quantity: selectedConsumable.on_hand_qty,
-          reason: `Transfer: ${fromLocation} → ${toLocation}`,
-          notes: `${reason}. ${notes}`.trim(),
-          adjusted_by: null // Will be set by auth context if available
-        } as any);
+          consumable_id: selectedConsumableId,
+          adjustment_type: 'transfer_out',
+          quantity_change: -quantity,
+          previous_quantity: sourceStock.quantity,
+          new_quantity: newSourceQuantity,
+          reason: transferReason,
+          notes: notes || `Transfer to destination location`
+        });
 
-      if (logError) {
-        console.error('Error logging transfer:', logError);
-        throw logError;
-      }
+      // Log inbound adjustment
+      await supabase
+        .from('consumable_stock_adjustments')
+        .insert({
+          consumable_id: selectedConsumableId,
+          adjustment_type: 'transfer_in',
+          quantity_change: quantity,
+          previous_quantity: destStock?.quantity || 0,
+          new_quantity: (destStock?.quantity || 0) + quantity,
+          reason: transferReason,
+          notes: notes || `Transfer from source location`
+        });
 
-      return transferData;
+      return { success: true };
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Stock transfer completed successfully",
+        description: `Successfully transferred ${quantity} units`,
       });
+      queryClient.invalidateQueries({ queryKey: ['location-stock'] });
+      queryClient.invalidateQueries({ queryKey: ['consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       handleReset();
       onClose();
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to complete stock transfer",
+        description: error.message || "Failed to process stock transfer",
         variant: "destructive",
       });
     }
@@ -99,193 +205,114 @@ export const StockTransferModal: React.FC<StockTransferModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!consumableId) {
-      toast({
-        title: "Validation Error",
-        description: "Please select a consumable",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!fromLocation.trim() || !toLocation.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter both from and to locations",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!reason.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a reason for the transfer",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     
     try {
-      await transferMutation.mutateAsync({
-        consumable_id: consumableId,
-        quantity,
-        from_location: fromLocation,
-        to_location: toLocation,
-        transfer_date: transferDate,
-        reason,
-        notes
-      });
+      await transferMutation.mutateAsync();
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleReset = () => {
-    setConsumableId('');
+    if (!consumableId) setSelectedConsumableId('');
+    if (!currentLocationId) setFromLocationId('');
+    setToLocationId('');
     setQuantity(1);
-    setFromLocation('');
-    setToLocation('');
-    setTransferDate(new Date().toISOString().split('T')[0]);
-    setReason('');
     setNotes('');
   };
 
+  const maxQuantity = availableStock || 0;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5" />
+            <ArrowRightLeft className="w-5 h-5" />
             Stock Transfer
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Consumable Selection */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="consumable">Consumable</Label>
-            <Select value={consumableId} onValueChange={setConsumableId}>
+            <Label>Consumable *</Label>
+            <Select
+              value={selectedConsumableId}
+              onValueChange={setSelectedConsumableId}
+              disabled={!!consumableId}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Select consumable to transfer" />
+                <SelectValue placeholder="Select consumable" />
               </SelectTrigger>
               <SelectContent>
-                {(consumables as any)?.map((consumable: any) => (
+                {consumables?.map((consumable) => (
                   <SelectItem key={consumable.id} value={consumable.id}>
-                    {consumable.name} (Available: {consumable.on_hand_qty})
+                    {consumable.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Quantity */}
           <div className="space-y-2">
-            <Label htmlFor="quantity">Quantity to Transfer</Label>
+            <Label>From Location *</Label>
+            <StorageLocationSelector
+              value={fromLocationId}
+              onValueChange={setFromLocationId}
+              disabled={!!currentLocationId}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>To Location *</Label>
+            <StorageLocationSelector
+              value={toLocationId}
+              onValueChange={setToLocationId}
+              excludeLocationId={fromLocationId}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="quantity">
+              Quantity * 
+              {maxQuantity > 0 && (
+                <span className="text-sm text-muted-foreground ml-2">
+                  (Available: {maxQuantity})
+                </span>
+              )}
+            </Label>
             <Input
               id="quantity"
               type="number"
               min="1"
-              max={selectedConsumable?.on_hand_qty || 999999}
+              max={maxQuantity}
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
               required
             />
-            {selectedConsumable && (
-              <p className="text-sm text-muted-foreground">
-                Available: {selectedConsumable.on_hand_qty} units
-              </p>
-            )}
           </div>
 
-          {/* Transfer Locations */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Transfer Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                <div className="space-y-2">
-                  <Label htmlFor="fromLocation">From Location</Label>
-                  <Input
-                    id="fromLocation"
-                    value={fromLocation}
-                    onChange={(e) => setFromLocation(e.target.value)}
-                    placeholder="e.g., Warehouse A"
-                    required
-                  />
-                </div>
-                
-                <div className="flex justify-center">
-                  <ArrowRight className="w-6 h-6 text-muted-foreground" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="toLocation">To Location</Label>
-                  <Input
-                    id="toLocation"
-                    value={toLocation}
-                    onChange={(e) => setToLocation(e.target.value)}
-                    placeholder="e.g., Warehouse B"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="transferDate">Transfer Date</Label>
-                <Input
-                  id="transferDate"
-                  type="date"
-                  value={transferDate}
-                  onChange={(e) => setTransferDate(e.target.value)}
-                  required
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Reason and Notes */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="reason">Reason for Transfer</Label>
-              <Select value={reason} onValueChange={setReason}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select reason" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="rebalancing">Stock Rebalancing</SelectItem>
-                  <SelectItem value="relocation">Location Relocation</SelectItem>
-                  <SelectItem value="maintenance">Maintenance/Repair</SelectItem>
-                  <SelectItem value="customer_request">Customer Request</SelectItem>
-                  <SelectItem value="seasonal">Seasonal Adjustment</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Enter any additional details about this transfer..."
-                rows={3}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Optional transfer notes..."
+              rows={2}
+            />
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Processing...' : 'Complete Transfer'}
+            <Button 
+              type="submit" 
+              disabled={isSubmitting || !selectedConsumableId || !fromLocationId || !toLocationId || quantity <= 0 || quantity > maxQuantity}
+            >
+              {isSubmitting ? 'Transferring...' : 'Transfer Stock'}
             </Button>
           </div>
         </form>
