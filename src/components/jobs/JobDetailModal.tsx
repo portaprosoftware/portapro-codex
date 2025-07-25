@@ -401,17 +401,15 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
             
             {/* Actions Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
-                {/* Status Quick Edit Menu */}
-                <div className="px-3 py-2 text-xs text-gray-500 border-b">
-                  Edit job status or delete job
-                </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Edit job status or delete job</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -507,6 +505,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </AlertDialog>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </div>
         </DialogHeader>
 

@@ -50,8 +50,8 @@ export const getDisplayStatus = (job: Job): string => {
     return isJobCompletedLate(job) ? 'completed_late' : 'completed';
   }
   
-  // For non-completed jobs (assigned, in-progress), check if overdue
-  if (job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') {
+  // For non-completed jobs (assigned, in-progress, unassigned), check if overdue
+  if (job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress' || job.status === 'unassigned') {
     return isJobOverdue(job) ? 'overdue' : job.status;
   }
   
@@ -131,10 +131,10 @@ export const getDualJobStatusInfo = (job: Job) => {
   }
   
   // For non-completed jobs, check if overdue
-  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
+  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress' || job.status === 'unassigned') && isJobOverdue(job)) {
     return {
       primary: statusConfig.overdue,
-      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned
+      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.unassigned
     };
   }
   
