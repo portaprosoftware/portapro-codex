@@ -130,51 +130,51 @@ export default function FleetFiles() {
           {/* Documents Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDocuments.map((doc) => (
-              <Card key={doc.id} className="p-4 hover:shadow-md transition-shadow">
-                <div className="space-y-4">
+              <Card key={doc.id} className="p-4 hover:shadow-md transition-shadow h-full">
+                <div className="space-y-4 h-full flex flex-col">
                   {/* Document Icon & Type */}
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-5 h-5 text-blue-600" />
-                      <Badge variant="secondary" className="text-xs">
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <Badge variant="secondary" className="text-xs truncate">
                         {doc.document_type}
                       </Badge>
                     </div>
                   </div>
 
                   {/* Document Details */}
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">{doc.category}</h3>
-                    <div className="text-sm text-gray-600">
-                      <div>{doc.vehicle_id}</div>
-                      <div>{doc.vehicle_name}</div>
+                  <div className="space-y-2 flex-1">
+                    <h3 className="font-medium text-gray-900 truncate">{doc.category}</h3>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <div className="truncate">{doc.vehicle_id}</div>
+                      <div className="truncate">{doc.vehicle_name}</div>
                     </div>
                     
                     {doc.document_number && (
                       <div className="text-sm">
                         <span className="text-gray-500">Document Number</span>
-                        <div className="font-medium">{doc.document_number}</div>
+                        <div className="font-medium truncate">{doc.document_number}</div>
                       </div>
                     )}
                     
                     <div className="text-sm">
                       <span className="text-gray-500">File</span>
-                      <div className="font-medium">{doc.file_name}</div>
+                      <div className="font-medium truncate" title={doc.file_name}>{doc.file_name}</div>
                       <div className="text-gray-500">{doc.file_size}</div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                    <Button variant="outline" size="sm" className="w-full sm:flex-1">
                       <Eye className="w-4 h-4 mr-1" />
                       View
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full sm:flex-1">
                       <Download className="w-4 h-4 mr-1" />
                       Download
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
                       <Trash2 className="w-4 h-4 text-red-600" />
                     </Button>
                   </div>
