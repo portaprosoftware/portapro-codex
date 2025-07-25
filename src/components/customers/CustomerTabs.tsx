@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
-import { CustomerNotesPanel } from './CustomerNotesPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
 import { CustomerJobsTab } from './CustomerJobsTab';
@@ -43,14 +42,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       </TabsList>
 
       <TabsContent value="overview" className="mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="lg:col-span-1">
-            <CustomerInfoPanel customer={customer} />
-          </div>
-          <div className="lg:col-span-1">
-            <CustomerNotesPanel customerId={customer.id} />
-          </div>
-        </div>
+        <CustomerInfoPanel customer={customer} />
       </TabsContent>
 
       <TabsContent value="contacts" className="mt-6">
