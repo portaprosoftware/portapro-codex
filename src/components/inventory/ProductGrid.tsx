@@ -22,61 +22,86 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   selectedLocationId = "all",
   onProductSelect
 }) => {
-  const { data: products, isLoading } = useQuery({
+  const { data: products, isLoading, error } = useQuery({
     queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId],
     queryFn: async () => {
-      let query = supabase
-        .from("products")
-        .select(`
-          *,
-          product_items(count),
-          product_location_stock(storage_location_id, quantity, storage_locations(id, name))
-        `);
+      try {
+        let query = supabase
+          .from("products")
+          .select(`
+            *,
+            product_items(count),
+            product_location_stock(storage_location_id, quantity, storage_locations(id, name))
+          `);
 
-      if (hideInactive) {
-        query = query.eq("track_inventory", true);
-      }
-
-      if (searchQuery) {
-        query = query.ilike("name", `%${searchQuery}%`);
-      }
-
-      // Filter by storage location if specified
-      if (selectedLocationId && selectedLocationId !== "all") {
-        query = query.eq("product_location_stock.storage_location_id", selectedLocationId);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      // Filter based on stock status and location
-      return data?.filter(product => {
-        // Get location-specific stock or fall back to master stock
-        let availableCount = product.stock_total;
-        let locationStock = 0;
-        
-        if (selectedLocationId && selectedLocationId !== "all" && product.product_location_stock) {
-          const locationData = product.product_location_stock.find((ls: any) => ls.storage_location_id === selectedLocationId);
-          locationStock = locationData?.quantity || 0;
-          availableCount = locationStock;
+        if (hideInactive) {
+          query = query.eq("track_inventory", true);
         }
-        
-        const isLowStock = availableCount <= product.low_stock_threshold;
-        const isOutOfStock = availableCount <= 0;
 
-        switch (filter) {
-          case "in_stock":
-            return availableCount > 0;
-          case "low_stock":
-            return isLowStock && !isOutOfStock;
-          case "out_of_stock":
-            return isOutOfStock;
-          case "available_now":
-            return availableCount > 0 && !isLowStock;
-          default:
-            return true;
+        if (searchQuery) {
+          query = query.ilike("name", `%${searchQuery}%`);
         }
-      }) || [];
+
+        // Filter by storage location if specified
+        if (selectedLocationId && selectedLocationId !== "all") {
+          query = query.eq("product_location_stock.storage_location_id", selectedLocationId);
+        }
+
+        const { data, error } = await query;
+        if (error) {
+          console.error("Database query error:", error);
+          throw error;
+        }
+
+        if (!data) {
+          console.warn("No data returned from products query");
+          return [];
+        }
+
+        // Filter based on stock status and location with improved error handling
+        return data.filter(product => {
+          try {
+            // Default to master stock, with fallback safety
+            let availableCount = product.stock_total || 0;
+            
+            // Handle location-specific filtering
+            if (selectedLocationId && selectedLocationId !== "all") {
+              if (product.product_location_stock && Array.isArray(product.product_location_stock)) {
+                const locationData = product.product_location_stock.find(
+                  (ls: any) => ls?.storage_location_id === selectedLocationId
+                );
+                availableCount = locationData?.quantity || 0;
+              } else {
+                // No location stock data - exclude from location-specific view
+                return false;
+              }
+            }
+            
+            const lowStockThreshold = product.low_stock_threshold || 5;
+            const isLowStock = availableCount <= lowStockThreshold;
+            const isOutOfStock = availableCount <= 0;
+
+            switch (filter) {
+              case "in_stock":
+                return availableCount > 0;
+              case "low_stock":
+                return isLowStock && !isOutOfStock;
+              case "out_of_stock":
+                return isOutOfStock;
+              case "available_now":
+                return availableCount > 0 && !isLowStock;
+              default:
+                return true;
+            }
+          } catch (productError) {
+            console.error("Error processing product:", product.id, productError);
+            return false; // Exclude problematic products from results
+          }
+        });
+      } catch (queryError) {
+        console.error("Products query failed:", queryError);
+        throw queryError;
+      }
     }
   });
 
@@ -90,10 +115,24 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     );
   }
 
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 mb-2">Error loading products</p>
+        <p className="text-gray-500 text-sm">Please try refreshing the page</p>
+      </div>
+    );
+  }
+
   if (!products?.length) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No products found matching your criteria.</p>
+        {selectedLocationId && selectedLocationId !== "all" && (
+          <p className="text-gray-400 text-sm mt-2">
+            Try selecting "All Locations" to see products without location assignments
+          </p>
+        )}
       </div>
     );
   }
