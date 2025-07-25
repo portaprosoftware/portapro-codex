@@ -15,7 +15,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   if (!role && user) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f9fafb' }}>
-        <div className="card text-center space-y-4">
+        <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
           <h2 className="text-2xl font-bold">Welcome {user.firstName}!</h2>
           <p>Please contact your administrator to set your role, or go to your Clerk dashboard and add:</p>
           <code className="block bg-gray-100 p-4 rounded">publicMetadata: {`{"role": "owner"}`}</code>

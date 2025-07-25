@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
+import { ErrorBoundary } from './components/ui/error-boundary';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
@@ -34,9 +35,12 @@ import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
 
 const App = () => {
+  console.log('App component rendering...');
+  
   return (
-    <Router>
-      <div className="min-h-screen bg-background font-sans antialiased">
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-background font-sans antialiased">
         <Routes>
           {/* Driver routes */}
           <Route
@@ -105,8 +109,9 @@ const App = () => {
               }
             />
         </Routes>
-      </div>
-    </Router>
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
