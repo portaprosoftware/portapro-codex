@@ -93,20 +93,31 @@ export const FleetSidebar: React.FC = () => {
                   )
                 }
               >
-                <div className="flex items-center space-x-3">
-                  <item.icon className="h-4 w-4" />
-                  <div>
-                    <div className="text-sm font-medium">{item.title}</div>
-                    <div className="text-xs text-muted-foreground">{item.description}</div>
-                  </div>
-                </div>
-                {item.badge && (
-                  <Badge 
-                    variant="destructive" 
-                    className="text-xs"
-                  >
-                    {item.badge}
-                  </Badge>
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      <item.icon className="h-4 w-4" />
+                      <div>
+                        <div className="text-sm font-medium">{item.title}</div>
+                        <div className={cn(
+                          "text-xs",
+                          isActive 
+                            ? "text-white font-bold" 
+                            : "text-muted-foreground"
+                        )}>
+                          {item.description}
+                        </div>
+                      </div>
+                    </div>
+                    {item.badge && (
+                      <Badge 
+                        variant="destructive" 
+                        className="text-xs"
+                      >
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </>
                 )}
               </NavLink>
             </li>
