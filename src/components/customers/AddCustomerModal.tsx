@@ -67,7 +67,7 @@ const US_STATES = [
 
 const customerSchema = z.object({
   name: z.string().min(1, "Company name is required"),
-  type: z.string().min(1, "Customer type is required"),
+  customer_type: z.string().min(1, "Customer type is required"),
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
   phone: z.string().optional(),
   service_street: z.string().min(1, "Service street is required"),
@@ -130,7 +130,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: "",
-      type: "",
+      customer_type: "",
       email: "",
       phone: "",
       service_street: "",
@@ -161,7 +161,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
     mutationFn: async (customerData: CustomerFormData) => {
       const insertData = {
         name: customerData.name,
-        customer_type: customerData.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
+        customer_type: customerData.customer_type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
         email: customerData.email || null,
         phone: customerData.phone || null,
         service_street: customerData.service_street,
@@ -269,7 +269,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="type"
+                  name="customer_type"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Customer Type *</FormLabel>
