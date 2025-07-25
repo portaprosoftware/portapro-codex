@@ -211,11 +211,11 @@ export const JobCard: React.FC<JobCardProps> = ({
           </div>
           
           <div className="flex flex-col gap-1">
-            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full text-center`}>
               {statusInfo.primary.label}
             </Badge>
             {statusInfo.secondary && (
-              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs`}>
+              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center`}>
                 {statusInfo.secondary.label}
               </Badge>
             )}
@@ -311,11 +311,11 @@ export const JobCard: React.FC<JobCardProps> = ({
           </div>
           
           <div className="flex flex-col gap-1">
-            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+            <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full text-center`}>
               {statusInfo.primary.label}
             </Badge>
             {statusInfo.secondary && (
-              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs`}>
+              <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center`}>
                 {statusInfo.secondary.label}
               </Badge>
             )}

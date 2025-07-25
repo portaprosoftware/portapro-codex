@@ -31,6 +31,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface NavigationItem {
   title: string;
@@ -188,8 +189,12 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                        <span className="text-sm font-medium">{item.title}</span>
                       {item.badge && (
                         <Badge 
-                          variant="outline" 
-                          className="ml-auto"
+                          className={cn(
+                            "ml-auto text-white border-0 font-bold",
+                            (activeSection === item.url || location.pathname === item.url) 
+                              ? "bg-gradient-to-r from-blue-600 to-blue-700" 
+                              : "bg-gray-500"
+                          )}
                         >
                           {item.badge}
                         </Badge>

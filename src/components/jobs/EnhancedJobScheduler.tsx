@@ -417,12 +417,6 @@ export const EnhancedJobScheduler: React.FC = () => {
           Week of {format(startOfWeek(currentWeek), 'MMM d, yyyy')}
         </h3>
         
-        <Button 
-          variant="outline" 
-          onClick={() => setCurrentWeek(addDays(currentWeek, 7))}
-        >
-          Next Week
-        </Button>
       </div>
 
       {/* Schedule Grid */}

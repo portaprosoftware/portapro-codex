@@ -84,14 +84,6 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
                 >
                   Tomorrow
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickSelect(7)}
-                  className="text-xs"
-                >
-                  Next Week
-                </Button>
               </div>
             </div>
             <Calendar
