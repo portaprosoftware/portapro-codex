@@ -25,6 +25,7 @@ import FleetComplianceReportsPage from './pages/FleetComplianceReportsPage';
 import FleetFuel from './pages/FleetFuel';
 import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
+import TestingPage from './pages/TestingPage';
 import Consumables from './pages/Consumables';
 import PurchaseOrders from './pages/PurchaseOrders';
 import { ConsumableRequestPage } from './pages/ConsumableRequestPage';
@@ -86,6 +87,7 @@ const App = () => {
                     <Route path="/fleet/fuel" element={<FleetFuel />} />
                     <Route path="/fleet/files" element={<FleetFiles />} />
                     <Route path="/fleet/maintenance" element={<FleetMaintenancePage />} />
+                    <Route path="/testing" element={<TestingPage />} />
                     <Route path="/maintenance-hub" element={<MaintenanceHub />} />
                     <Route path="/marketing-hub" element={<MarketingHub />} />
                     <Route path="/analytics" element={<Analytics />} />
