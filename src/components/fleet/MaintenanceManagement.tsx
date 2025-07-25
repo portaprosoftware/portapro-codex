@@ -28,6 +28,14 @@ interface MaintenanceRecord {
 }
 
 export const MaintenanceManagement: React.FC = () => {
+  return (
+    <div className="p-6 space-y-6">
+      <MaintenanceManagementContent />
+    </div>
+  );
+};
+
+const MaintenanceManagementContent: React.FC = () => {
   const { data: maintenanceRecords, isLoading } = useQuery({
     queryKey: ["maintenance-records"],
     queryFn: async () => {

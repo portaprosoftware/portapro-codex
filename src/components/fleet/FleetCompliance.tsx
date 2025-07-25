@@ -23,6 +23,14 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
+  return (
+    <div className="p-6 space-y-6">
+      <FleetComplianceContent />
+    </div>
+  );
+};
+
+const FleetComplianceContent: React.FC = () => {
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-compliance"],
     queryFn: async () => {

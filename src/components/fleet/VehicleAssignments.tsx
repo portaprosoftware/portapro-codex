@@ -16,6 +16,25 @@ export const VehicleAssignments: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isWizardOpen, setIsWizardOpen] = useState(false);
 
+  return (
+    <div className="p-6 space-y-6">
+      <VehicleAssignmentsContent 
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        isWizardOpen={isWizardOpen}
+        setIsWizardOpen={setIsWizardOpen}
+      />
+    </div>
+  );
+};
+
+const VehicleAssignmentsContent: React.FC<{
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+  isWizardOpen: boolean;
+  setIsWizardOpen: (open: boolean) => void;
+}> = ({ selectedDate, setSelectedDate, isWizardOpen, setIsWizardOpen }) => {
+
   const { data: assignments, isLoading } = useQuery({
     queryKey: ["daily-vehicle-assignments", selectedDate],
     queryFn: async () => {
