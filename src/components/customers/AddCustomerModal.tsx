@@ -154,7 +154,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       default_service_city: "",
       default_service_state: "",
       default_service_zip: "",
-      deposit_required: false,
+      deposit_required: true, // Default to ON
     },
   });
 
@@ -185,11 +185,11 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
             billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
             billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
             default_service_differs_from_main: data.default_service_differs_from_main,
-            default_service_street: data.default_service_differs_from_main ? data.default_service_street : null,
-            default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : null,
-            default_service_city: data.default_service_differs_from_main ? data.default_service_city : null,
-            default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
-            default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
+            default_service_street: data.default_service_differs_from_main ? data.default_service_street : data.service_street,
+            default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : (data.service_street2 || null),
+            default_service_city: data.default_service_differs_from_main ? data.default_service_city : data.service_city,
+            default_service_state: data.default_service_differs_from_main ? data.default_service_state : data.service_state,
+            default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : data.service_zip,
             deposit_required: data.deposit_required,
           }
         ])
@@ -234,14 +234,15 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
     }
   }, [billingDiffers, form]);
 
-  // Clear default service address fields when toggle is disabled
+  // Sync default service address fields when toggle is disabled
   useEffect(() => {
     if (!defaultServiceDiffers) {
-      form.setValue("default_service_street", "");
-      form.setValue("default_service_street2", "");
-      form.setValue("default_service_city", "");
-      form.setValue("default_service_state", "");
-      form.setValue("default_service_zip", "");
+      const serviceValues = form.getValues();
+      form.setValue("default_service_street", serviceValues.service_street);
+      form.setValue("default_service_street2", serviceValues.service_street2);
+      form.setValue("default_service_city", serviceValues.service_city);
+      form.setValue("default_service_state", serviceValues.service_state);
+      form.setValue("default_service_zip", serviceValues.service_zip);
     }
   }, [defaultServiceDiffers, form]);
 
