@@ -946,13 +946,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "customer_notes_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "customer_notes_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
@@ -6071,6 +6064,16 @@ export type Database = {
       dismiss_overdue_invoice: {
         Args: { invoice_uuid: string; dismiss_reason?: string }
         Returns: boolean
+      }
+      ensure_user_registered: {
+        Args: {
+          clerk_user_id_param: string
+          first_name_param?: string
+          last_name_param?: string
+          email_param?: string
+          role_param?: string
+        }
+        Returns: string
       }
       fix_orphaned_equipment_assignments: {
         Args: Record<PropertyKey, never>

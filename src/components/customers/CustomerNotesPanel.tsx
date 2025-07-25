@@ -54,13 +54,32 @@ export function CustomerNotesPanel({ customerId }: CustomerNotesPanelProps) {
 
   const addNoteMutation = useMutation({
     mutationFn: async ({ note_text, is_important }: { note_text: string; is_important: boolean }) => {
+      // First ensure the user is registered in the system
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Ensure user is registered with their Clerk ID
+      const { data: registrationData, error: registrationError } = await supabase
+        .rpc('ensure_user_registered', {
+          clerk_user_id_param: user.id,
+          first_name_param: user.firstName || null,
+          last_name_param: user.lastName || null,
+          email_param: user.primaryEmailAddress?.emailAddress || null,
+          role_param: 'owner'
+        });
+
+      if (registrationError) {
+        console.error('Error registering user:', registrationError);
+      }
+
       const { data, error } = await supabase
         .from('customer_notes')
         .insert({
           customer_id: customerId,
           note_text,
           is_important,
-          created_by: user?.id
+          created_by: user.id // Now using Clerk user ID directly
         })
         .select()
         .single();
