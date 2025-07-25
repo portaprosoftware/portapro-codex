@@ -52,10 +52,9 @@ interface EditContactModalProps {
 
 const CONTACT_TYPES = [
   { value: 'billing', label: 'Billing' },
-  { value: 'on-site', label: 'On-Site' },
+  { value: 'onsite', label: 'On-Site' },
+  { value: 'primary', label: 'Primary' },
   { value: 'emergency', label: 'Emergency' },
-  { value: 'management', label: 'Management' },
-  { value: 'operations', label: 'Operations' },
 ];
 
 export function EditContactModal({ isOpen, onClose, contact, customerId }: EditContactModalProps) {
