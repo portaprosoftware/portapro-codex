@@ -1062,7 +1062,6 @@ export type Database = {
       customer_service_locations: {
         Row: {
           access_instructions: string | null
-          cached_timezone: string | null
           city: string | null
           contact_person: string | null
           contact_phone: string | null
@@ -1081,13 +1080,11 @@ export type Database = {
           state: string | null
           street: string | null
           street2: string | null
-          timezone_updated_at: string | null
           updated_at: string | null
           zip: string | null
         }
         Insert: {
           access_instructions?: string | null
-          cached_timezone?: string | null
           city?: string | null
           contact_person?: string | null
           contact_phone?: string | null
@@ -1106,13 +1103,11 @@ export type Database = {
           state?: string | null
           street?: string | null
           street2?: string | null
-          timezone_updated_at?: string | null
           updated_at?: string | null
           zip?: string | null
         }
         Update: {
           access_instructions?: string | null
-          cached_timezone?: string | null
           city?: string | null
           contact_person?: string | null
           contact_phone?: string | null
@@ -1131,7 +1126,6 @@ export type Database = {
           state?: string | null
           street?: string | null
           street2?: string | null
-          timezone_updated_at?: string | null
           updated_at?: string | null
           zip?: string | null
         }
@@ -6429,10 +6423,6 @@ export type Database = {
           customer_name: string
           customer_email: string
         }[]
-      }
-      validate_zip_code: {
-        Args: { zip_input: string }
-        Returns: string
       }
     }
     Enums: {
