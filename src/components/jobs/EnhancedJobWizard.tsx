@@ -24,9 +24,6 @@ interface WizardData {
   // Step 2: Job Type & Timezone
   jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
   timezone: string;
-  customerTimezone?: string;
-  timezoneSource?: 'company' | 'customer' | 'custom';
-  dualTimezoneMode?: boolean;
   
   // Step 3: Schedule
   deliveryDate?: Date;
@@ -90,7 +87,7 @@ interface EnhancedJobWizardProps {
 
 const STEPS = [
   { id: 1, title: 'Select Customer', description: 'Choose the customer for this job' },
-  { id: 2, title: 'Job Type & Timezone', description: 'Select job type and timezone' },
+  { id: 2, title: 'Job Type', description: 'Select the type of job' },
   { id: 3, title: 'Schedule', description: 'Set delivery and pickup dates' },
   { id: 4, title: 'Location & Contacts', description: 'Choose location and contacts' },
   { id: 5, title: 'Inventory & Consumables', description: 'Select equipment and supplies' },
@@ -109,9 +106,6 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     selectedCustomer: undefined,
     jobType: 'delivery',
     timezone: 'America/New_York',
-    customerTimezone: undefined,
-    timezoneSource: 'company',
-    dualTimezoneMode: false,
     hasDeliveryTime: false,
     returnScheduleEnabled: false,
     partialPickupEnabled: false,
