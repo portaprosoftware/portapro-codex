@@ -15,20 +15,36 @@ import {
 interface Customer {
   id: string;
   name: string;
+  contact_first_name: string;
+  contact_last_name: string;
+  type: string;
   email?: string;
   phone?: string;
-  address?: string;
-  billing_address?: string;
+  service_street: string;
+  service_street2?: string;
+  service_city: string;
+  service_state: string;
+  service_zip: string;
+  billing_differs_from_service?: boolean;
+  billing_street?: string;
+  billing_street2?: string;
   billing_city?: string;
   billing_state?: string;
   billing_zip?: string;
+  default_service_differs_from_main?: boolean;
+  default_service_street?: string;
+  default_service_street2?: string;
+  default_service_city?: string;
+  default_service_state?: string;
+  default_service_zip?: string;
+  deposit_required?: boolean;
+  created_at: string;
+  updated_at: string;
+  // Legacy fields for backward compatibility
+  address?: string;
   customer_type?: string;
   important_information?: string;
   notes?: string;
-  created_at: string;
-  updated_at: string;
-  billing_differs_from_service?: boolean;
-  deposit_required?: boolean;
 }
 
 interface CustomerInfoPanelProps {
@@ -107,9 +123,14 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
     window.open(url, '_blank');
   };
 
-  const serviceAddress = formatAddress(customer.address);
+  const serviceAddress = formatAddress(
+    customer.service_street, 
+    customer.service_city, 
+    customer.service_state, 
+    customer.service_zip
+  );
   const billingAddress = formatAddress(
-    customer.billing_address,
+    customer.billing_street,
     customer.billing_city,
     customer.billing_state,
     customer.billing_zip
@@ -138,8 +159,8 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             <div>
               <label className="text-sm font-medium text-muted-foreground">Customer Type</label>
               <div className="mt-1">
-                <Badge className={getCustomerTypeColor(customer.customer_type)}>
-                  {customer.customer_type || 'Unknown'}
+                <Badge className={getCustomerTypeColor(customer.type)}>
+                  {customer.type || 'Unknown'}
                 </Badge>
               </div>
             </div>
@@ -210,7 +231,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                 <Copy className="w-4 h-4" />
               </Button>
             </div>
-            {customer.address && (
+            {customer.service_street && (
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"

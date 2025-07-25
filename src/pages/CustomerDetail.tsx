@@ -82,7 +82,7 @@ export default function CustomerDetail() {
               <div>
                 <h1 className="text-3xl font-bold text-foreground">{customer.name}</h1>
                 <p className="text-muted-foreground mt-1">
-                  {customer.customer_type || 'Customer'} • {customer.email} • {customer.phone}
+                  {(customer as any).type || customer.customer_type || 'Customer'} • {customer.email} • {customer.phone}
                 </p>
               </div>
             </div>
@@ -92,7 +92,17 @@ export default function CustomerDetail() {
 
       <div className="container mx-auto px-6 py-6">
         <CustomerStatsSection customerId={id!} />
-        <CustomerTabs customer={customer} />
+        <CustomerTabs customer={{
+          ...customer,
+          contact_first_name: (customer as any).contact_first_name || '',
+          contact_last_name: (customer as any).contact_last_name || '',
+          type: (customer as any).type || customer.customer_type || '',
+          service_street: (customer as any).service_street || customer.address?.split(',')[0] || '',
+          service_street2: (customer as any).service_street2 || '',
+          service_city: (customer as any).service_city || customer.address?.split(',')[1]?.trim() || '',
+          service_state: (customer as any).service_state || customer.address?.split(',')[2]?.trim() || '',
+          service_zip: (customer as any).service_zip || customer.address?.split(',')[3]?.trim() || '',
+        }} />
       </div>
     </div>
   );
