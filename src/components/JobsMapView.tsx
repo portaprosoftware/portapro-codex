@@ -25,68 +25,7 @@ import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
 // Mock data for demonstration
-const mockJobs = [
-  {
-    id: 'DEL-824',
-    customerId: 123,
-    customerName: 'Hickory Hollow Farm',
-    jobType: 'Delivery',
-    status: 'assigned',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 20), // Make overdue
-    driverName: 'Grady Green',
-    location: { lat: 40.4406, lng: -79.9959 },
-    address: '123 Farm Road, Butler, PA'
-  },
-  {
-    id: 'SVC-941',
-    customerId: 124,
-    customerName: 'BlueWave Festival',
-    jobType: 'Service',
-    status: 'in_progress',
-    driverId: 2,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Jason Wells',
-    location: { lat: 40.4173, lng: -79.9428 },
-    address: '456 Festival Grounds, Pittsburgh, PA'
-  },
-  {
-    id: 'PKP-122',
-    customerId: 125,
-    customerName: 'Mountain View Resort',
-    jobType: 'Pickup',
-    status: 'completed',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Grady Green',
-    location: { lat: 40.3868, lng: -79.8963 },
-    address: '789 Resort Lane, Mt. Lebanon, PA'
-  },
-  {
-    id: 'CAN-555',
-    customerId: 126,
-    customerName: 'City Park Event',
-    jobType: 'Delivery',
-    status: 'cancelled',
-    driverId: 2,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Jason Wells',
-    location: { lat: 40.4044, lng: -79.9514 },
-    address: '321 Park Avenue, Pittsburgh, PA'
-  },
-  {
-    id: 'LTE-333',
-    customerId: 127,
-    customerName: 'Corporate Campus',
-    jobType: 'Service',
-    status: 'completed',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 21), // Will be marked as completed late
-    driverName: 'Grady Green',
-    location: { lat: 40.4361, lng: -79.9481 },
-    address: '555 Corporate Drive, Pittsburgh, PA'
-  }
-];
+const mockJobs = [];
 
 const mockDrivers = [
   {
