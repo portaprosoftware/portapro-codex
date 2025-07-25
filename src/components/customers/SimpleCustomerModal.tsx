@@ -93,23 +93,34 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
   const createCustomerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       console.log('Mutation starting with data:', data);
+      
+      // Try the insert without any conflict resolution
+      const insertData = {
+        name: data.name,
+        customer_type: data.customer_type as any,
+        email: data.email || null,
+        phone: data.phone || null,
+        service_street: data.service_street,
+        service_city: data.service_city,
+        service_state: data.service_state,
+        service_zip: data.service_zip,
+        billing_differs_from_service: false,
+        deposit_required: true,
+      };
+      
+      console.log('Insert data being sent:', insertData);
+      
       const { error } = await supabase
         .from('customers')
-        .insert({
-          name: data.name,
-          customer_type: data.customer_type as any,
-          email: data.email || null,
-          phone: data.phone || null,
-          service_street: data.service_street,
-          service_city: data.service_city,
-          service_state: data.service_state,
-          service_zip: data.service_zip,
-          billing_differs_from_service: false,
-          deposit_required: true,
-        });
+        .insert(insertData);
 
       if (error) {
-        console.error('Insert error:', error);
+        console.error('Insert error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw new Error(error.message);
       }
       
