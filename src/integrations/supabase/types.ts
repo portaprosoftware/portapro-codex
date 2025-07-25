@@ -6233,6 +6233,10 @@ export type Database = {
         Args: { unit_id: string; start_date: string; end_date: string }
         Returns: boolean
       }
+      cleanup_duplicate_service_locations: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       clerk_user_has_role: {
         Args: { clerk_user_id: string; required_role: string }
         Returns: boolean

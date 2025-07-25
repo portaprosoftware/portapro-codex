@@ -52,6 +52,12 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
         .eq('id', location.id);
 
       if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Service location deleted successfully",
+      });
+      
       onDelete();
     } catch (error) {
       console.error('Error deleting location:', error);
@@ -163,29 +169,38 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             >
               <Edit className="w-4 h-4" />
             </Button>
-            {!location.is_locked && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete "{location.location_name}"? This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <p>Are you sure you want to delete "{location.location_name}"?</p>
+                    {location.is_default && (
+                      <p className="text-yellow-600 font-medium">
+                        ⚠️ This is the default service location for this customer.
+                      </p>
+                    )}
+                    {location.is_locked && (
+                      <p className="text-orange-600 font-medium">
+                        🔒 This is a system-generated location based on the customer's service address.
+                      </p>
+                    )}
+                    <p className="text-red-600">This action cannot be undone.</p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                    Delete Location
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
