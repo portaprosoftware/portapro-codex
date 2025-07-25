@@ -67,7 +67,9 @@ const US_STATES = [
 
 const customerSchema = z.object({
   name: z.string().min(1, "Company name is required"),
-  customer_type: z.string().min(1, "Customer type is required"),
+  contact_first_name: z.string().min(1, "First name is required"),
+  contact_last_name: z.string().min(1, "Last name is required"),
+  type: z.string().min(1, "Customer type is required"),
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
   phone: z.string().optional(),
   service_street: z.string().min(1, "Service street is required"),
@@ -130,7 +132,9 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: "",
-      customer_type: "",
+      contact_first_name: "",
+      contact_last_name: "",
+      type: "",
       email: "",
       phone: "",
       service_street: "",
@@ -159,9 +163,12 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: CustomerFormData) => {
-      const insertData = {
+      // First, create the customer
+      const customerInsertData = {
         name: customerData.name,
-        customer_type: customerData.customer_type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
+        contact_first_name: customerData.contact_first_name,
+        contact_last_name: customerData.contact_last_name,
+        type: customerData.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
         email: customerData.email || null,
         phone: customerData.phone || null,
         service_street: customerData.service_street,
@@ -176,25 +183,51 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         billing_state: customerData.billing_differs_from_service ? customerData.billing_state : customerData.service_state,
         billing_zip: customerData.billing_differs_from_service ? customerData.billing_zip : customerData.service_zip,
         default_service_differs_from_main: customerData.default_service_differs_from_main,
-        default_service_street: customerData.default_service_differs_from_main ? customerData.default_service_street : customerData.service_street,
-        default_service_street2: customerData.default_service_differs_from_main ? (customerData.default_service_street2 || null) : (customerData.service_street2 || null),
-        default_service_city: customerData.default_service_differs_from_main ? customerData.default_service_city : customerData.service_city,
-        default_service_state: customerData.default_service_differs_from_main ? customerData.default_service_state : customerData.service_state,
-        default_service_zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : customerData.service_zip,
+        default_service_street: customerData.default_service_differs_from_main ? customerData.default_service_street : null,
+        default_service_street2: customerData.default_service_differs_from_main ? (customerData.default_service_street2 || null) : null,
+        default_service_city: customerData.default_service_differs_from_main ? customerData.default_service_city : null,
+        default_service_state: customerData.default_service_differs_from_main ? customerData.default_service_state : null,
+        default_service_zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : null,
         deposit_required: customerData.deposit_required,
       };
 
-      const { data, error } = await supabase
+      const { data: customerData_result, error: customerError } = await supabase
         .from('customers')
-        .insert([insertData])
-        .select();
+        .insert([customerInsertData])
+        .select()
+        .single();
 
-      if (error) {
-        console.error('Supabase insert error:', error);
-        throw error;
+      if (customerError) {
+        console.error('Customer insert error:', customerError);
+        throw customerError;
       }
 
-      return data;
+      // Create the default service location
+      const serviceLocationData = {
+        customer_id: customerData_result.id,
+        location_name: customerData.name + ' - Main Location',
+        location_description: 'Auto-generated from customer service address',
+        street: customerData.default_service_differs_from_main ? customerData.default_service_street : customerData.service_street,
+        street2: customerData.default_service_differs_from_main ? (customerData.default_service_street2 || null) : (customerData.service_street2 || null),
+        city: customerData.default_service_differs_from_main ? customerData.default_service_city : customerData.service_city,
+        state: customerData.default_service_differs_from_main ? customerData.default_service_state : customerData.service_state,
+        zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : customerData.service_zip,
+        is_active: true,
+        is_default: true,
+        is_locked: true
+      };
+
+      const { error: serviceLocationError } = await supabase
+        .from('customer_service_locations')
+        .insert([serviceLocationData]);
+
+      if (serviceLocationError) {
+        console.error('Service location insert error:', serviceLocationError);
+        // Don't throw here - customer was created successfully
+        console.warn('Service location creation failed, but customer was created');
+      }
+
+      return customerData_result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -231,15 +264,14 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
     }
   }, [billingDiffers, form]);
 
-  // Sync default service address fields when toggle is disabled
+  // Clear default service address fields when toggle is disabled
   useEffect(() => {
     if (!defaultServiceDiffers) {
-      const serviceValues = form.getValues();
-      form.setValue("default_service_street", serviceValues.service_street);
-      form.setValue("default_service_street2", serviceValues.service_street2);
-      form.setValue("default_service_city", serviceValues.service_city);
-      form.setValue("default_service_state", serviceValues.service_state);
-      form.setValue("default_service_zip", serviceValues.service_zip);
+      form.setValue("default_service_street", "");
+      form.setValue("default_service_street2", "");
+      form.setValue("default_service_city", "");
+      form.setValue("default_service_state", "");
+      form.setValue("default_service_zip", "");
     }
   }, [defaultServiceDiffers, form]);
 
@@ -272,7 +304,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="customer_type"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Customer Type *</FormLabel>
@@ -290,6 +322,32 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contact_first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contact_last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -522,12 +580,12 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                 name="default_service_differs_from_main"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Default service address is different</FormLabel>
-                      <FormDescription>
-                        Use a different address for the default service location
-                      </FormDescription>
-                    </div>
+                     <div className="space-y-0.5">
+                       <FormLabel className="text-base">Default service address is different</FormLabel>
+                       <FormDescription>
+                         Use a different address for the default service location
+                       </FormDescription>
+                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
