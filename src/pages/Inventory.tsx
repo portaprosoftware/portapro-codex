@@ -35,7 +35,7 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <div className="max-w-none px-6 py-6 space-y-6 font-inter">
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6 font-inter">
       {/* Header */}
       <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between">
