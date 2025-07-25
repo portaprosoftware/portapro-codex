@@ -184,14 +184,17 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         deposit_required: customerData.deposit_required,
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('customers')
-        .insert(insertData);
+        .insert([insertData])
+        .select();
 
       if (error) {
         console.error('Supabase insert error:', error);
         throw error;
       }
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
