@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductGrid } from "@/components/inventory/ProductGrid";
 import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
+import { StorageLocationSelector } from "@/components/inventory/StorageLocationSelector";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const Inventory: React.FC = () => {
   const [hideInactive, setHideInactive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState<string>("all");
 
   const filters = [
     { key: "all" as FilterType, label: "All Products", color: "bg-blue-600 text-white", active: true },
@@ -69,9 +71,19 @@ const Inventory: React.FC = () => {
           ))}
         </div>
 
-        {/* View Controls & Search */}
+        {/* Location Filter & View Controls & Search */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
+            {/* Storage Location Filter */}
+            <div className="min-w-64">
+              <StorageLocationSelector
+                value={selectedLocationId}
+                onValueChange={setSelectedLocationId}
+                placeholder="Filter by storage site"
+                includeAllSites={true}
+              />
+            </div>
+            
             {/* View Toggle */}
             <div className="flex items-center gap-2">
               <Button
@@ -144,6 +156,7 @@ const Inventory: React.FC = () => {
             viewType={viewType}
             hideInactive={hideInactive}
             searchQuery={searchQuery}
+            selectedLocationId={selectedLocationId}
             onProductSelect={setSelectedProduct}
           />
         </TabsContent>

@@ -10,6 +10,7 @@ interface ProductGridProps {
   viewType: "grid" | "list";
   hideInactive: boolean;
   searchQuery: string;
+  selectedLocationId?: string;
   onProductSelect: (productId: string) => void;
 }
 
@@ -18,16 +19,19 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   viewType,
   hideInactive,
   searchQuery,
+  selectedLocationId = "all",
   onProductSelect
 }) => {
   const { data: products, isLoading } = useQuery({
-    queryKey: ["products", filter, hideInactive, searchQuery],
+    queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId],
     queryFn: async () => {
       let query = supabase
         .from("products")
         .select(`
           *,
-          product_items(count)
+          product_items(count),
+          product_location_stock!inner(storage_location_id, quantity),
+          storage_locations(id, name)
         `);
 
       if (hideInactive) {
@@ -38,12 +42,26 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         query = query.ilike("name", `%${searchQuery}%`);
       }
 
+      // Filter by storage location if specified
+      if (selectedLocationId && selectedLocationId !== "all") {
+        query = query.eq("product_location_stock.storage_location_id", selectedLocationId);
+      }
+
       const { data, error } = await query;
       if (error) throw error;
 
-      // Filter based on stock status
+      // Filter based on stock status and location
       return data?.filter(product => {
-        const availableCount = product.stock_total - product.stock_in_service;
+        // Get location-specific stock or fall back to master stock
+        let availableCount = product.stock_total;
+        let locationStock = 0;
+        
+        if (selectedLocationId && selectedLocationId !== "all" && product.product_location_stock) {
+          const locationData = product.product_location_stock.find((ls: any) => ls.storage_location_id === selectedLocationId);
+          locationStock = locationData?.quantity || 0;
+          availableCount = locationStock;
+        }
+        
         const isLowStock = availableCount <= product.low_stock_threshold;
         const isOutOfStock = availableCount <= 0;
 
