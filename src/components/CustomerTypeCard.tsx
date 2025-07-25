@@ -55,7 +55,9 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
         <Badge className={`${getTypeGradient(type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
           {label}
         </Badge>
-        <span className="text-lg font-semibold text-gray-900">{count}</span>
+        <div className={`${getTypeGradient(type)} text-white border-0 font-bold px-3 py-1 rounded-full text-lg`}>
+          {count}
+        </div>
       </div>
 
       {/* Channel Counts */}
@@ -65,10 +67,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
             <span className="text-lg emoji-icon">✉️</span>
             <span className="text-sm text-gray-600">Email</span>
           </div>
-          <span 
-            className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: colors.email, color: 'white' }}
-          >
+          <span className="text-sm text-gray-900 font-medium">
             {email}
           </span>
         </div>
@@ -78,10 +77,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
             <span className="text-lg emoji-icon">💬</span>
             <span className="text-sm text-gray-600">SMS</span>
           </div>
-          <span 
-            className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: colors.sms, color: 'white' }}
-          >
+          <span className="text-sm text-gray-900 font-medium">
             {sms}
           </span>
         </div>
@@ -91,10 +87,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
             <span className="text-lg emoji-icon">📈</span>
             <span className="text-sm text-gray-600">Both</span>
           </div>
-          <span 
-            className="font-medium text-sm px-2 py-1 rounded"
-            style={{ backgroundColor: colors.both, color: 'white' }}
-          >
+          <span className="text-sm text-gray-900 font-medium">
             {both}
           </span>
         </div>
