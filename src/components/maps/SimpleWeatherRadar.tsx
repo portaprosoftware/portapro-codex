@@ -133,13 +133,13 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     };
   }, [enabled, addRadarLayers, removeRadarLayers, frames.length]);
 
-  // Animation loop - TV weather speed (1.5 second intervals)
+  // Animation loop - smooth 500ms intervals
   useEffect(() => {
     if (!isAnimating || !enabled || frames.length <= 1) return;
 
     const interval = setInterval(() => {
       setCurrentFrame(prev => (prev + 1) % frames.length);
-    }, 1500);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [isAnimating, enabled, frames.length]);
