@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, Pause, Cloud, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { rainViewerService, RainViewerLayer } from '@/lib/rainViewerService';
+import { nwsRadarService, NWSRadarLayer } from '@/lib/nwsRadarService';
 
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map | null;
@@ -10,7 +10,7 @@ interface SimpleWeatherRadarProps {
 }
 
 export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadarProps) {
-  const [frames, setFrames] = useState<RainViewerLayer[]>([]);
+  const [frames, setFrames] = useState<NWSRadarLayer[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
 
     setIsLoading(true);
     try {
-      const layers = await rainViewerService.getRadarLayers();
+      const layers = await nwsRadarService.getRadarLayers();
       if (layers.length > 0 && mountedRef.current) {
         // Limit frames to last 8 past + first 4 future (like working radar)
         const limitedLayers = layers.slice(-12); // Take last 12 frames
@@ -40,7 +40,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
           return limitedLayers[index + 1].timestamp > now;
         });
         setCurrentFrame(Math.max(0, currentFrameIndex));
-        console.log('Loaded', limitedLayers.length, 'RainViewer radar frames');
+        console.log('Loaded', limitedLayers.length, 'NWS radar frames');
       } else {
         console.log('No weather radar frames available');
         onError?.('Weather radar data unavailable');
@@ -84,7 +84,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
           type: 'raster',
           tiles: [frame.url],
           tileSize: 256,
-          attribution: '© RainViewer'
+          attribution: '© NOAA/NWS'
         });
 
         map.addLayer({
