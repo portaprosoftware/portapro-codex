@@ -117,7 +117,7 @@ interface Customer {
 interface EditCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  customer: Customer;
+  customer: Customer | null;
 }
 
 const CUSTOMER_TYPES = [
@@ -149,35 +149,87 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
     };
   };
 
-  const serviceAddress = parseAddress(customer.address);
+  const serviceAddress = parseAddress(customer?.address);
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
-      name: customer.name || '',
-      email: customer.email || '',
-      phone: customer.phone || '',
-      customer_type: customer.customer_type as any || '',
+      name: customer?.name || '',
+      email: customer?.email || '',
+      phone: customer?.phone || '',
+      customer_type: customer?.customer_type as any || '',
       service_street: serviceAddress.street,
       service_street_2: serviceAddress.street2,
       service_city: serviceAddress.city,
       service_state: serviceAddress.state,
       service_zip: serviceAddress.zip,
-      billing_address: customer.billing_address || '',
-      billing_city: customer.billing_city || '',
-      billing_state: customer.billing_state || '',
-      billing_zip: customer.billing_zip || '',
-      notes: customer.notes || '',
-      billing_differs_from_service: customer.billing_differs_from_service || false,
-      deposit_required: customer.deposit_required ?? true,
+      billing_address: customer?.billing_address || '',
+      billing_city: customer?.billing_city || '',
+      billing_state: customer?.billing_state || '',
+      billing_zip: customer?.billing_zip || '',
+      notes: customer?.notes || '',
+      billing_differs_from_service: customer?.billing_differs_from_service || false,
+      deposit_required: customer?.deposit_required ?? true,
     },
   });
 
   const billingDiffers = form.watch('billing_differs_from_service');
   const depositRequired = form.watch('deposit_required');
 
+  const createCustomerMutation = useMutation({
+    mutationFn: async (data: CustomerFormData) => {
+      // Combine service address fields
+      const serviceAddressString = `${data.service_street}${data.service_street_2 ? `, ${data.service_street_2}` : ''}, ${data.service_city}, ${data.service_state}, ${data.service_zip}`;
+      
+      // If billing doesn't differ, copy service address to billing
+      if (!data.billing_differs_from_service) {
+        data.billing_address = data.service_street + (data.service_street_2 ? `, ${data.service_street_2}` : '');
+        data.billing_city = data.service_city;
+        data.billing_state = data.service_state;
+        data.billing_zip = data.service_zip;
+      }
+      
+      const { error } = await supabase
+        .from('customers')
+        .insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          customer_type: data.customer_type,
+          address: serviceAddressString,
+          billing_address: data.billing_address,
+          billing_city: data.billing_city,
+          billing_state: data.billing_state,
+          billing_zip: data.billing_zip,
+          notes: data.notes,
+          billing_differs_from_service: data.billing_differs_from_service,
+          deposit_required: data.deposit_required,
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      toast({
+        title: 'Success',
+        description: 'Customer created successfully.',
+      });
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'Failed to create customer.',
+        variant: 'destructive',
+      });
+      console.error('Error creating customer:', error);
+    },
+  });
+
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
+      if (!customer?.id) throw new Error('Customer ID is required for updates');
+      
       // Combine service address fields
       const serviceAddressString = `${data.service_street}${data.service_street_2 ? `, ${data.service_street_2}` : ''}, ${data.service_city}, ${data.service_state}, ${data.service_zip}`;
       
@@ -211,7 +263,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customer', customer.id] });
+      queryClient.invalidateQueries({ queryKey: ['customer', customer?.id] });
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
         title: 'Success',
@@ -258,7 +310,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
   };
 
   const onSubmit = (data: CustomerFormData) => {
-    updateCustomerMutation.mutate(data);
+    if (customer) {
+      updateCustomerMutation.mutate(data);
+    } else {
+      createCustomerMutation.mutate(data);
+    }
   };
 
   // Sync billing address when toggle changes
