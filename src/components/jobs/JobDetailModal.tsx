@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,9 +22,10 @@ import {
   Mail,
   MessageSquare,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  Settings
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,8 +47,36 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 }) => {
   const [editingSections, setEditingSections] = useState<{[key: string]: boolean}>({});
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Real-time subscription for job updates
+  useEffect(() => {
+    if (!jobId || !open) return;
+
+    const channel = supabase
+      .channel(`job-${jobId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'jobs',
+          filter: `id=eq.${jobId}`
+        },
+        (payload) => {
+          console.log('Job updated in real-time:', payload);
+          // Invalidate and refetch job data
+          queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [jobId, open, queryClient]);
 
   // Fetch job details
   const { data: job, isLoading } = useQuery({
@@ -266,6 +295,39 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     });
   };
 
+  // Quick status update mutation
+  const quickStatusUpdateMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      if (!jobId) throw new Error('No job ID');
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .update({ status: newStatus })
+        .eq('id', jobId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Status Updated",
+        description: "Job status updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update job status",
+        variant: "destructive",
+      });
+      console.error('Status update error:', error);
+    }
+  });
+
 
   const jobTypeConfig = {
     delivery: {
@@ -346,6 +408,59 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
+                {/* Status Quick Edit Menu */}
+                <div className="px-3 py-2 text-xs text-gray-500 border-b">
+                  Edit job status or delete job
+                </div>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Edit Job Status
+                    </DropdownMenuItem>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start" className="bg-white shadow-lg border z-50">
+                    <DropdownMenuItem 
+                      onClick={() => quickStatusUpdateMutation.mutate('unassigned')}
+                      disabled={quickStatusUpdateMutation.isPending}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div>
+                      Unassigned
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => quickStatusUpdateMutation.mutate('assigned')}
+                      disabled={quickStatusUpdateMutation.isPending}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
+                      Assigned
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => quickStatusUpdateMutation.mutate('in_progress')}
+                      disabled={quickStatusUpdateMutation.isPending}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-orange-500 mr-2"></div>
+                      In Progress
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => quickStatusUpdateMutation.mutate('completed')}
+                      disabled={quickStatusUpdateMutation.isPending}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                      Completed
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => quickStatusUpdateMutation.mutate('cancelled')}
+                      disabled={quickStatusUpdateMutation.isPending}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-gray-500 mr-2"></div>
+                      Cancelled
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenuSeparator />
+                
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <DropdownMenuItem 
@@ -474,6 +589,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                            <SelectContent>
+                             <SelectItem value="unassigned">Unassigned</SelectItem>
                              <SelectItem value="assigned">Assigned</SelectItem>
                              <SelectItem value="in_progress">In Progress</SelectItem>
                              <SelectItem value="completed">Completed</SelectItem>
