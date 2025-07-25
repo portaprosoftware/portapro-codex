@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { EnhancedJobWizard } from '@/components/jobs/EnhancedJobWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
+import { EditJobStatusModal } from '@/components/jobs/EditJobStatusModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
@@ -36,7 +37,9 @@ const JobsPage: React.FC = () => {
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
+  const [isEditStatusOpen, setIsEditStatusOpen] = useState(false);
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   
   // Filters
@@ -163,13 +166,13 @@ const JobsPage: React.FC = () => {
     setIsJobDetailOpen(true);
   };
 
-  const handleJobStart = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setIsJobDetailOpen(true);
-  };
-
-  const handleJobStatusUpdate = (jobId: string, status: string) => {
-    updateJobStatusMutation.mutate({ jobId, status });
+  const handleEditJobStatus = (jobId: string) => {
+    const job = [...outgoingJobs, ...incomingJobs, ...dispatchJobs].find(j => j.id === jobId);
+    if (job) {
+      setSelectedJob(job);
+      setSelectedJobId(jobId);
+      setIsEditStatusOpen(true);
+    }
   };
 
   const handleEquipmentAssign = (jobId: string) => {
@@ -351,15 +354,14 @@ const JobsPage: React.FC = () => {
                   {filterJobs(outgoingJobs).length > 0 ? (
                     <div className="space-y-4">
                       {filterJobs(outgoingJobs).map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          onStart={handleJobStart}
-                          onStatusUpdate={handleJobStatusUpdate}
-                          onEquipmentAssign={handleEquipmentAssign}
-                          compact
-                        />
+                         <JobCard
+                           key={job.id}
+                           job={job}
+                           onView={handleJobView}
+                           onEditStatus={handleEditJobStatus}
+                           onEquipmentAssign={handleEquipmentAssign}
+                           compact
+                         />
                       ))}
                     </div>
                   ) : (
@@ -391,14 +393,13 @@ const JobsPage: React.FC = () => {
                   {incomingJobs.length > 0 ? (
                     <div className="space-y-4">
                       {incomingJobs.map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          onStart={handleJobStart}
-                          onStatusUpdate={handleJobStatusUpdate}
-                          compact
-                        />
+                         <JobCard
+                           key={job.id}
+                           job={job}
+                           onView={handleJobView}
+                           onEditStatus={handleEditJobStatus}
+                           compact
+                         />
                       ))}
                     </div>
                   ) : (
@@ -529,13 +530,12 @@ const JobsPage: React.FC = () => {
                                       {...provided.dragHandleProps}
                                       className={`mb-3 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                     >
-                                       <DispatchJobCard
-                                         job={job}
-                                         onClick={() => handleJobView(job.id)}
-                                         onStatusUpdate={handleJobStatusUpdate}
-                                         onReverse={() => {}}
-                                         isDragging={snapshot.isDragging}
-                                       />
+                                        <DispatchJobCard
+                                          job={job}
+                                          onClick={() => handleJobView(job.id)}
+                                          onEditStatus={handleEditJobStatus}
+                                          isDragging={snapshot.isDragging}
+                                        />
                                     </div>
                                   )}
                                 </Draggable>
@@ -651,13 +651,12 @@ const JobsPage: React.FC = () => {
                                                 {...provided.dragHandleProps}
                                                 className={snapshot.isDragging ? 'opacity-50' : ''}
                                               >
-                                                 <DispatchJobCard
-                                                   job={job}
-                                                   onClick={() => handleJobView(job.id)}
-                                                   onStatusUpdate={handleJobStatusUpdate}
-                                                   onReverse={() => {}}
-                                                   isDragging={snapshot.isDragging}
-                                                 />
+                                                  <DispatchJobCard
+                                                    job={job}
+                                                    onClick={() => handleJobView(job.id)}
+                                                    onEditStatus={handleEditJobStatus}
+                                                    isDragging={snapshot.isDragging}
+                                                  />
                                               </div>
                                             )}
                                           </Draggable>
@@ -704,6 +703,20 @@ const JobsPage: React.FC = () => {
         onOpenChange={(open) => {
           setIsJobDetailOpen(open);
           if (!open) setSelectedJobId(null);
+        }}
+      />
+      
+      {/* Edit Job Status Modal */}
+      <EditJobStatusModal
+        jobId={selectedJobId}
+        job={selectedJob}
+        open={isEditStatusOpen}
+        onOpenChange={(open) => {
+          setIsEditStatusOpen(open);
+          if (!open) {
+            setSelectedJobId(null);
+            setSelectedJob(null);
+          }
         }}
       />
       

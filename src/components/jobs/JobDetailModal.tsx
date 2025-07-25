@@ -402,7 +402,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             
             {/* Actions Menu */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Edit job status or delete job</span>
+              <span className="text-xs text-gray-500">Delete job</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -410,54 +410,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      Edit Job Status
-                    </DropdownMenuItem>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="left" align="start" className="bg-white shadow-lg border z-50">
-                    <DropdownMenuItem 
-                      onClick={() => quickStatusUpdateMutation.mutate('unassigned')}
-                      disabled={quickStatusUpdateMutation.isPending}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div>
-                      Unassigned
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => quickStatusUpdateMutation.mutate('assigned')}
-                      disabled={quickStatusUpdateMutation.isPending}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                      Assigned
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => quickStatusUpdateMutation.mutate('in_progress')}
-                      disabled={quickStatusUpdateMutation.isPending}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-orange-500 mr-2"></div>
-                      In Progress
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => quickStatusUpdateMutation.mutate('completed')}
-                      disabled={quickStatusUpdateMutation.isPending}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-                      Completed
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => quickStatusUpdateMutation.mutate('cancelled')}
-                      disabled={quickStatusUpdateMutation.isPending}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-gray-500 mr-2"></div>
-                      Cancelled
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <DropdownMenuSeparator />
                 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
