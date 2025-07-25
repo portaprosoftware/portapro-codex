@@ -12,12 +12,12 @@ import {
   Settings2,
   FileText,
   BarChart4,
-  Droplets,
   Building2,
   Building,
   Megaphone,
   MessageSquare,
-  Scroll
+  Shirt,
+  Waves
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -78,7 +78,7 @@ const inventoryItems: NavigationItem[] = [
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: Scroll,
+    icon: Shirt,
     permission: 'staff'
   },
   { 
@@ -99,7 +99,7 @@ const managementItems: NavigationItem[] = [
   { 
     title: 'Maintenance', 
     url: '/maintenance-hub', 
-    icon: Droplets,
+    icon: Waves,
     permission: 'admin'
   },
   { 
