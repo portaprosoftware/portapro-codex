@@ -17,7 +17,7 @@ import {
   DollarSign, 
   Truck, 
   Fuel, 
-  AlertTriangle, 
+  Paintbrush2, 
   FileX 
 } from "lucide-react";
 
@@ -277,7 +277,7 @@ const Dashboard = () => {
         <StatCard
           title="Maintenance Alerts"
           value={2}
-          icon={AlertTriangle}
+          icon={Paintbrush2}
           gradientFrom="#ef4444"
           gradientTo="#dc2626"
           iconBg="#ef4444"

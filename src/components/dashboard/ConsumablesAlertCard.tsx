@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUserRole } from '@/hooks/useUserRole';
-import { Package, ExternalLink } from 'lucide-react';
+import { SprayCan, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ConsumablesAlertCard: React.FC = () => {
@@ -63,7 +63,7 @@ export const ConsumablesAlertCard: React.FC = () => {
           {/* Left Section - Icon and Title */}
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-orange-100">
-              <Package className="w-6 h-6 text-orange-600" />
+              <SprayCan className="w-6 h-6 text-orange-600" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Consumables Alert</h3>
