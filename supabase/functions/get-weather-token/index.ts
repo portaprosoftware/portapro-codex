@@ -27,43 +27,26 @@ serve(async (req) => {
       )
     }
 
-    // Generate radar frames: 90 minutes past to 30 minutes future
-    const now = new Date()
-    const frames = []
+    // This endpoint now serves weather forecast data for jobs/dashboard
+    // Radar functionality moved to RainViewer (free API)
     
-    // Historical frames (90 minutes past in 10-minute intervals = 9 frames)
-    for (let i = 9; i >= 1; i--) {
-      const timestamp = new Date(now.getTime() - (i * 10 * 60 * 1000))
-      frames.push({
-        timestamp: Math.floor(timestamp.getTime() / 1000),
-        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`,
-        type: 'precipitation'
-      })
-    }
+    // Get current weather and 5-day forecast
+    const weatherResponse = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=41.4993&lon=-81.6944&appid=${openWeatherApiKey}&units=imperial`
+    )
     
-    // Current frame
-    frames.push({
-      timestamp: Math.floor(now.getTime() / 1000),
-      url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`,
-      type: 'precipitation'
-    })
+    const forecastData = await weatherResponse.json()
     
-    // Future frames (30 minutes future in 10-minute intervals = 3 frames)
-    for (let i = 1; i <= 3; i++) {
-      const timestamp = new Date(now.getTime() + (i * 10 * 60 * 1000))
-      frames.push({
-        timestamp: Math.floor(timestamp.getTime() / 1000),
-        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${openWeatherApiKey}`,
-        type: 'precipitation'
-      })
+    if (!weatherResponse.ok) {
+      throw new Error(`Weather API error: ${forecastData.message}`)
     }
 
     return new Response(
       JSON.stringify({ 
         success: true,
         weatherKey: openWeatherApiKey,
-        radarFrames: frames,
-        currentTime: Math.floor(now.getTime() / 1000)
+        forecast: forecastData,
+        currentTime: Math.floor(Date.now() / 1000)
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

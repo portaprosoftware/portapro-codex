@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Play, Pause, Cloud, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { weatherService, WeatherRadarLayer } from '@/lib/weatherService';
+import { rainViewerService, RainViewerLayer } from '@/lib/rainViewerService';
 
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map | null;
@@ -10,7 +10,7 @@ interface SimpleWeatherRadarProps {
 }
 
 export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadarProps) {
-  const [frames, setFrames] = useState<WeatherRadarLayer[]>([]);
+  const [frames, setFrames] = useState<RainViewerLayer[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,12 +21,17 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
 
     setIsLoading(true);
     try {
-      const layers = await weatherService.getRadarLayers();
+      const layers = await rainViewerService.getRadarLayers();
       if (layers.length > 0) {
         setFrames(layers);
-        // Start from current time (frame 9 out of 13 total frames)
-        setCurrentFrame(9);
-        console.log('Loaded', layers.length, 'weather radar frames (90min past to 30min future)');
+        // Start from current time (find the frame closest to now)
+        const now = Date.now() / 1000;
+        const currentFrameIndex = layers.findIndex((layer, index) => {
+          if (index === layers.length - 1) return true; // Last frame if none found
+          return layers[index + 1].timestamp > now;
+        });
+        setCurrentFrame(Math.max(0, currentFrameIndex));
+        console.log('Loaded', layers.length, 'RainViewer radar frames');
       } else {
         console.log('No weather radar frames available');
         onError?.('Weather radar data unavailable');
@@ -71,7 +76,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         type: 'raster',
         tiles: [url],
         tileSize: 256,
-        attribution: '© OpenWeatherMap'
+        attribution: '© RainViewer'
       });
 
       map.addLayer({
@@ -151,7 +156,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     if (frames.length === 0) return '';
     const firstTime = formatTime(frames[0].timestamp);
     const lastTime = formatTime(frames[frames.length - 1].timestamp);
-    return `Radar: ${firstTime} - ${lastTime} (Past + Future)`;
+    return `Radar: ${firstTime} - ${lastTime}`;
   };
 
   const getCurrentFrameStatus = () => {
@@ -223,30 +228,6 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
           </div>
         )}
 
-        {/* Legend */}
-        {frames.length > 0 && (
-          <div className="mt-3 pt-3 border-t">
-            <div className="text-xs font-medium text-gray-700 mb-2">Weather Intensity</div>
-            <div className="grid grid-cols-2 gap-1 text-xs">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-blue-300 rounded"></div>
-                <span>Light</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded"></div>
-                <span>Moderate</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-yellow-400 rounded"></div>
-                <span>Heavy</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-red-500 rounded"></div>
-                <span>Severe</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
