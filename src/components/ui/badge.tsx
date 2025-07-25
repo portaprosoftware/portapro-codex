@@ -18,8 +18,11 @@ const badgeVariants = cva(
         success: "border-transparent bg-gradient-green text-white shadow-sm",
         warning: "border-transparent bg-gradient-orange text-white shadow-sm",
         info: "border-transparent bg-gradient-blue text-white shadow-sm",
-        purple: "border-transparent bg-gradient-purple text-white shadow-sm",
+        purple: "border-transparent bg-gradient-purple text-white shadow-sm font-bold",
         gradient: "border-transparent bg-gradient-primary text-white shadow-sm",
+        cancelled: "border-transparent bg-gradient-black text-white shadow-sm font-bold",
+        unassigned: "border-transparent bg-gradient-purple text-white shadow-sm font-bold",
+        inProgress: "border-transparent bg-gradient-yellow text-white shadow-sm font-bold",
       },
     },
     defaultVariants: {

@@ -64,44 +64,52 @@ export const getDisplayStatus = (job: Job): string => {
  */
 export const getJobStatusConfig = () => ({
   unassigned: { 
-    gradient: 'bg-gradient-to-r from-gray-400 to-gray-500 text-black font-bold', 
+    gradient: 'bg-gradient-purple text-white font-bold', 
     label: 'Unassigned',
-    color: '#9CA3AF'
+    color: '#9333EA',
+    variant: 'unassigned' as const
   },
   assigned: { 
     gradient: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', 
     label: 'Assigned',
-    color: '#3B82F6'
+    color: '#3B82F6',
+    variant: 'info' as const
   },
   in_progress: { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
+    gradient: 'bg-gradient-yellow text-white font-bold', 
     label: 'In Progress',
-    color: '#F97316'
+    color: '#EAB308',
+    variant: 'inProgress' as const
   },
   'in-progress': { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
+    gradient: 'bg-gradient-yellow text-white font-bold', 
     label: 'In Progress',
-    color: '#F97316'
+    color: '#EAB308',
+    variant: 'inProgress' as const
   },
   completed: { 
     gradient: 'bg-gradient-to-r from-green-500 to-green-600 text-white', 
     label: 'Completed',
-    color: '#10B981'
+    color: '#10B981',
+    variant: 'success' as const
   },
   completed_late: { 
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
     label: 'Job Completed Late',
-    color: '#6B7280'
+    color: '#6B7280',
+    variant: 'secondary' as const
   },
   overdue: { 
     gradient: 'bg-gradient-to-r from-red-500 to-red-600 text-white', 
     label: 'Overdue',
-    color: '#EF4444'
+    color: '#EF4444',
+    variant: 'destructive' as const
   },
   cancelled: { 
-    gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
+    gradient: 'bg-gradient-black text-white font-bold', 
     label: 'Cancelled',
-    color: '#6B7280'
+    color: '#374151',
+    variant: 'cancelled' as const
   }
 });
 

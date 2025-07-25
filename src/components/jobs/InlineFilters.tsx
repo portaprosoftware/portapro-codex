@@ -2,6 +2,8 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { MultiStatusFilter } from '@/components/driver/MultiStatusFilter';
+import { JobStatus } from '@/types';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -10,8 +12,8 @@ interface InlineFiltersProps {
   onDriverChange: (value: string) => void;
   selectedJobType: string;
   onJobTypeChange: (value: string) => void;
-  selectedStatus: string;
-  onStatusChange: (value: string) => void;
+  selectedStatuses: (JobStatus | 'all')[];
+  onStatusChange: (values: (JobStatus | 'all')[]) => void;
   drivers: Array<{ id: string; first_name: string; last_name: string }>;
 }
 
@@ -22,7 +24,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   onDriverChange,
   selectedJobType,
   onJobTypeChange,
-  selectedStatus,
+  selectedStatuses,
   onStatusChange,
   drivers
 }) => {
@@ -73,44 +75,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
       </Select>
 
       {/* Status Filter */}
-      <Select value={selectedStatus} onValueChange={onStatusChange}>
-        <SelectTrigger className="w-48">
-          <SelectValue placeholder="All Statuses" />
-        </SelectTrigger>
-        <SelectContent className="bg-white border shadow-lg z-50">
-          <SelectItem value="all">All Statuses</SelectItem>
-          <SelectItem value="unassigned">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-              Unassigned
-            </div>
-          </SelectItem>
-          <SelectItem value="assigned">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-              Assigned
-            </div>
-          </SelectItem>
-          <SelectItem value="in_progress">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-              In Progress
-            </div>
-          </SelectItem>
-          <SelectItem value="completed">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              Completed
-            </div>
-          </SelectItem>
-          <SelectItem value="cancelled">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-              Cancelled
-            </div>
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="w-48">
+        <MultiStatusFilter
+          selectedStatuses={selectedStatuses}
+          onChange={onStatusChange}
+        />
+      </div>
     </div>
   );
 };

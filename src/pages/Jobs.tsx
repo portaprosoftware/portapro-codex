@@ -22,6 +22,8 @@ import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { JobStatus } from '@/types';
+import { MultiStatusFilter } from '@/components/driver/MultiStatusFilter';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -41,7 +43,7 @@ const JobsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [selectedJobType, setSelectedJobType] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedStatuses, setSelectedStatuses] = useState<(JobStatus | 'all')[]>(['all']);
 
   const updateJobStatusMutation = useUpdateJobStatus();
   const queryClient = useQueryClient();
@@ -75,7 +77,7 @@ const JobsPage: React.FC = () => {
   const { data: outgoingJobs = [] } = useJobs({
     date: formatDateForQuery(selectedDateOut),
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
-    status: selectedStatus !== 'all' ? selectedStatus : undefined,
+    status: selectedStatuses.includes('all') ? undefined : selectedStatuses[0] as string,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
@@ -231,7 +233,7 @@ const JobsPage: React.FC = () => {
       
       const matchesDriver = selectedDriver === 'all' || job.driver_id === selectedDriver;
       const matchesJobType = selectedJobType === 'all' || job.job_type === selectedJobType;
-      const matchesStatus = selectedStatus === 'all' || job.status === selectedStatus;
+      const matchesStatus = selectedStatuses.includes('all') || selectedStatuses.includes(job.status);
       
       return matchesSearch && matchesDriver && matchesJobType && matchesStatus;
     });
@@ -311,8 +313,8 @@ const JobsPage: React.FC = () => {
                 onDriverChange={setSelectedDriver}
                 selectedJobType={selectedJobType}
                 onJobTypeChange={setSelectedJobType}
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
+                selectedStatuses={selectedStatuses}
+                onStatusChange={setSelectedStatuses}
                 drivers={drivers}
               />
               <Button 
@@ -475,13 +477,10 @@ const JobsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Badge 
-                          variant={selectedStatus === 'assigned' ? "default" : "secondary"}
-                          className="cursor-pointer px-3 py-1 text-xs"
-                          onClick={() => setSelectedStatus(selectedStatus === 'assigned' ? 'all' : 'assigned')}
-                        >
-                          Assigned
-                        </Badge>
+                        <MultiStatusFilter
+                          selectedStatuses={selectedStatuses}
+                          onChange={setSelectedStatuses}
+                        />
                         <Badge 
                           variant={selectedJobType === 'service' ? "default" : "secondary"}
                           className="cursor-pointer px-3 py-1 text-xs"
@@ -558,25 +557,25 @@ const JobsPage: React.FC = () => {
                           <span className="text-sm font-medium">1 job</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
-                          <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-black border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="unassigned">
                             Unassigned: {getJobStatusCounts().unassigned}
                           </Badge>
-                          <Badge className="bg-gradient-blue text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="info">
                             Assigned: {getJobStatusCounts().assigned}
                           </Badge>
-                          <Badge className="bg-gradient-orange text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="inProgress">
                             In Progress: {getJobStatusCounts().inProgress}
                           </Badge>
-                          <Badge className="bg-gradient-green text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="success">
                             Completed: {getJobStatusCounts().completed}
                           </Badge>
-                          <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="secondary">
                             Completed Late: {dispatchJobs.filter(job => job.status === 'completed_late').length}
                           </Badge>
-                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="cancelled">
                             Cancelled: {dispatchJobs.filter(job => job.status === 'cancelled').length}
                           </Badge>
-                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
+                          <Badge variant="destructive">
                             Overdue: {dispatchJobs.filter(job => job.status === 'overdue').length}
                           </Badge>
                         </div>
