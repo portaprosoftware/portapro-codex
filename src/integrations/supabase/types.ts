@@ -5983,6 +5983,15 @@ export type Database = {
       }
     }
     Functions: {
+      add_customer_note: {
+        Args: {
+          customer_uuid: string
+          note_content: string
+          is_important_flag?: boolean
+          clerk_user_id?: string
+        }
+        Returns: string
+      }
       add_job_note: {
         Args: {
           job_uuid: string
@@ -6081,13 +6090,20 @@ export type Database = {
         Returns: boolean
       }
       ensure_user_registered: {
-        Args: {
-          clerk_user_id_param: string
-          first_name_param?: string
-          last_name_param?: string
-          email_param?: string
-          role_param?: string
-        }
+        Args:
+          | {
+              clerk_user_id: string
+              user_email?: string
+              user_first_name?: string
+              user_last_name?: string
+            }
+          | {
+              clerk_user_id_param: string
+              first_name_param?: string
+              last_name_param?: string
+              email_param?: string
+              role_param?: string
+            }
         Returns: string
       }
       fix_orphaned_equipment_assignments: {
@@ -6189,6 +6205,7 @@ export type Database = {
           created_at: string
           updated_at: string
           created_by: string
+          updated_by: string
           user_first_name: string
           user_last_name: string
           user_email: string
@@ -6371,6 +6388,15 @@ export type Database = {
           new_status: string
           user_uuid?: string
           transition_notes?: string
+        }
+        Returns: boolean
+      }
+      update_customer_note: {
+        Args: {
+          note_uuid: string
+          note_content: string
+          is_important_flag?: boolean
+          clerk_user_id?: string
         }
         Returns: boolean
       }
