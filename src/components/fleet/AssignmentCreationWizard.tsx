@@ -118,7 +118,14 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       createAssignmentMutation.mutate();
     } else {
       const nextStepIndex = currentStepIndex + 1;
-      setCurrentStep(steps[nextStepIndex].key);
+      const nextStep = steps[nextStepIndex].key;
+      
+      // Auto-populate starting mileage when moving to details step
+      if (nextStep === "details" && selectedVehicle?.current_mileage && !startMileage) {
+        setStartMileage(selectedVehicle.current_mileage.toString());
+      }
+      
+      setCurrentStep(nextStep);
     }
   };
 
@@ -133,14 +140,28 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     switch (currentStep) {
       case "date":
         return (
-          <div className="space-y-4">
-            <div className="text-center">
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold mb-2">Choose the assignment date</h3>
+              <p className="text-sm text-muted-foreground">Select a date for this vehicle assignment</p>
+            </div>
+            <div className="w-full max-w-md">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={(date) => date && setSelectedDate(date)}
-                className="rounded-md border mx-auto"
+                className="rounded-lg border shadow-sm w-full [&_table]:w-full [&_td]:text-center [&_th]:text-center [&_button]:h-10 [&_button]:w-10 [&_button]:text-sm pointer-events-auto"
                 disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                classNames={{
+                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                  day_today: "bg-accent text-accent-foreground",
+                  day: "h-10 w-10 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
+                  table: "w-full border-collapse space-y-1",
+                  head_row: "flex w-full",
+                  head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.8rem] flex-1",
+                  row: "flex w-full mt-2",
+                  cell: "h-10 w-10 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 flex-1",
+                }}
               />
             </div>
           </div>
@@ -263,10 +284,15 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               <Input
                 id="start-mileage"
                 type="number"
-                placeholder="Enter starting mileage"
+                placeholder={selectedVehicle?.current_mileage ? `Current: ${selectedVehicle.current_mileage}` : "Enter starting mileage"}
                 value={startMileage}
                 onChange={(e) => setStartMileage(e.target.value)}
               />
+              {selectedVehicle?.current_mileage && (
+                <p className="text-xs text-muted-foreground">
+                  Vehicle's current mileage: {selectedVehicle.current_mileage.toLocaleString()} miles
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes">Notes (Optional)</Label>
