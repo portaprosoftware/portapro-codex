@@ -12,11 +12,11 @@ import {
   Settings2,
   FileText,
   BarChart4,
-  Soup,
+  Zap,
   Building2,
   Megaphone,
   MessageSquare,
-  ScrollText
+  Circle
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -73,7 +73,7 @@ const items: NavigationItem[] = [
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: ScrollText,
+    icon: Circle,
     permission: 'staff'
   },
   { 
@@ -85,7 +85,7 @@ const items: NavigationItem[] = [
   { 
     title: 'Maintenance', 
     url: '/maintenance-hub', 
-    icon: Soup,
+    icon: Zap,
     permission: 'admin'
   },
   { 
