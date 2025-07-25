@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { EnhancedJobWizard } from '@/components/jobs/EnhancedJobWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
-import { EditJobStatusModal } from '@/components/jobs/EditJobStatusModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
@@ -23,8 +22,6 @@ import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { JobStatus } from '@/types';
-import { MultiStatusFilter } from '@/components/driver/MultiStatusFilter';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -37,31 +34,24 @@ const JobsPage: React.FC = () => {
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isJobDetailOpen, setIsJobDetailOpen] = useState(false);
-  const [isEditStatusOpen, setIsEditStatusOpen] = useState(false);
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [selectedJobType, setSelectedJobType] = useState('all');
-  const [selectedStatuses, setSelectedStatuses] = useState<(JobStatus | 'all')[]>(['all']);
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
   const updateJobStatusMutation = useUpdateJobStatus();
   const queryClient = useQueryClient();
 
-  // Mutation to update job assignment and status
+  // Mutation to update job assignment
   const updateJobAssignmentMutation = useMutation({
-    mutationFn: async ({ jobId, driverId, status }: { jobId: string; driverId: string | null; status?: string }) => {
-      const updateData: any = { driver_id: driverId };
-      if (status) {
-        updateData.status = status;
-      }
-      
+    mutationFn: async ({ jobId, driverId }: { jobId: string; driverId: string | null }) => {
       const { error } = await supabase
         .from('jobs')
-        .update(updateData)
+        .update({ driver_id: driverId })
         .eq('id', jobId);
       
       if (error) throw error;
@@ -80,7 +70,7 @@ const JobsPage: React.FC = () => {
   const { data: outgoingJobs = [] } = useJobs({
     date: formatDateForQuery(selectedDateOut),
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
-    status: selectedStatuses.includes('all') ? undefined : selectedStatuses[0] as string,
+    status: selectedStatus !== 'all' ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
@@ -166,13 +156,13 @@ const JobsPage: React.FC = () => {
     setIsJobDetailOpen(true);
   };
 
-  const handleEditJobStatus = (jobId: string) => {
-    const job = [...outgoingJobs, ...incomingJobs, ...dispatchJobs].find(j => j.id === jobId);
-    if (job) {
-      setSelectedJob(job);
-      setSelectedJobId(jobId);
-      setIsEditStatusOpen(true);
-    }
+  const handleJobStart = (jobId: string) => {
+    setSelectedJobId(jobId);
+    setIsJobDetailOpen(true);
+  };
+
+  const handleJobStatusUpdate = (jobId: string, status: string) => {
+    updateJobStatusMutation.mutate({ jobId, status });
   };
 
   const handleEquipmentAssign = (jobId: string) => {
@@ -213,18 +203,16 @@ const JobsPage: React.FC = () => {
 
     const jobId = draggableId;
     const newDriverId = destination.droppableId === 'unassigned' ? null : destination.droppableId;
-    const newStatus = destination.droppableId === 'unassigned' ? 'unassigned' : 'assigned';
     
     console.log('Updating job assignment:', { 
       jobId, 
       from: source.droppableId, 
       to: destination.droppableId, 
       newDriverId,
-      newStatus,
       jobNumber: jobExists.job_number 
     });
     
-    updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId, status: newStatus });
+    updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
   }, [updateJobAssignmentMutation, dispatchJobs]);
 
   // Filter jobs based on search and filters
@@ -236,7 +224,7 @@ const JobsPage: React.FC = () => {
       
       const matchesDriver = selectedDriver === 'all' || job.driver_id === selectedDriver;
       const matchesJobType = selectedJobType === 'all' || job.job_type === selectedJobType;
-      const matchesStatus = selectedStatuses.includes('all') || selectedStatuses.includes(job.status);
+      const matchesStatus = selectedStatus === 'all' || job.status === selectedStatus;
       
       return matchesSearch && matchesDriver && matchesJobType && matchesStatus;
     });
@@ -252,12 +240,11 @@ const JobsPage: React.FC = () => {
 
   // Get job status counts
   const getJobStatusCounts = () => {
-    const unassigned = dispatchJobs.filter(job => !job.driver_id || job.status === 'unassigned').length;
     const assigned = dispatchJobs.filter(job => job.driver_id && job.status === 'assigned').length;
     const inProgress = dispatchJobs.filter(job => job.status === 'in_progress').length;
     const completed = dispatchJobs.filter(job => job.status === 'completed').length;
     
-    return { unassigned, assigned, inProgress, completed };
+    return { assigned, inProgress, completed };
   };
 
   return (
@@ -316,8 +303,8 @@ const JobsPage: React.FC = () => {
                 onDriverChange={setSelectedDriver}
                 selectedJobType={selectedJobType}
                 onJobTypeChange={setSelectedJobType}
-                selectedStatuses={selectedStatuses}
-                onStatusChange={setSelectedStatuses}
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
                 drivers={drivers}
               />
               <Button 
@@ -354,14 +341,15 @@ const JobsPage: React.FC = () => {
                   {filterJobs(outgoingJobs).length > 0 ? (
                     <div className="space-y-4">
                       {filterJobs(outgoingJobs).map(job => (
-                         <JobCard
-                           key={job.id}
-                           job={job}
-                           onView={handleJobView}
-                           onEditStatus={handleEditJobStatus}
-                           onEquipmentAssign={handleEquipmentAssign}
-                           compact
-                         />
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          onEquipmentAssign={handleEquipmentAssign}
+                          compact
+                        />
                       ))}
                     </div>
                   ) : (
@@ -393,13 +381,14 @@ const JobsPage: React.FC = () => {
                   {incomingJobs.length > 0 ? (
                     <div className="space-y-4">
                       {incomingJobs.map(job => (
-                         <JobCard
-                           key={job.id}
-                           job={job}
-                           onView={handleJobView}
-                           onEditStatus={handleEditJobStatus}
-                           compact
-                         />
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          onView={handleJobView}
+                          onStart={handleJobStart}
+                          onStatusUpdate={handleJobStatusUpdate}
+                          compact
+                        />
                       ))}
                     </div>
                   ) : (
@@ -478,10 +467,13 @@ const JobsPage: React.FC = () => {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <MultiStatusFilter
-                          selectedStatuses={selectedStatuses}
-                          onChange={setSelectedStatuses}
-                        />
+                        <Badge 
+                          variant={selectedStatus === 'assigned' ? "default" : "secondary"}
+                          className="cursor-pointer px-3 py-1 text-xs"
+                          onClick={() => setSelectedStatus(selectedStatus === 'assigned' ? 'all' : 'assigned')}
+                        >
+                          Assigned
+                        </Badge>
                         <Badge 
                           variant={selectedJobType === 'service' ? "default" : "secondary"}
                           className="cursor-pointer px-3 py-1 text-xs"
@@ -530,12 +522,11 @@ const JobsPage: React.FC = () => {
                                       {...provided.dragHandleProps}
                                       className={`mb-3 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                     >
-                                        <DispatchJobCard
-                                          job={job}
-                                          onClick={() => handleJobView(job.id)}
-                                          onEditStatus={handleEditJobStatus}
-                                          isDragging={snapshot.isDragging}
-                                        />
+                                       <DispatchJobCard
+                                         job={job}
+                                         onClick={() => handleJobView(job.id)}
+                                         isDragging={snapshot.isDragging}
+                                       />
                                     </div>
                                   )}
                                 </Draggable>
@@ -557,25 +548,22 @@ const JobsPage: React.FC = () => {
                           <span className="text-sm font-medium">1 job</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
-                          <Badge variant="unassigned">
-                            Unassigned: {getJobStatusCounts().unassigned}
-                          </Badge>
-                          <Badge variant="info">
+                          <Badge className="bg-gradient-blue text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Assigned: {getJobStatusCounts().assigned}
                           </Badge>
-                          <Badge variant="inProgress">
+                          <Badge className="bg-gradient-orange text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             In Progress: {getJobStatusCounts().inProgress}
                           </Badge>
-                          <Badge variant="success">
+                          <Badge className="bg-gradient-green text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Completed: {getJobStatusCounts().completed}
                           </Badge>
-                          <Badge variant="secondary">
+                          <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Completed Late: {dispatchJobs.filter(job => job.status === 'completed_late').length}
                           </Badge>
-                          <Badge variant="cancelled">
+                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Cancelled: {dispatchJobs.filter(job => job.status === 'cancelled').length}
                           </Badge>
-                          <Badge variant="destructive">
+                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
                             Overdue: {dispatchJobs.filter(job => job.status === 'overdue').length}
                           </Badge>
                         </div>
@@ -651,12 +639,11 @@ const JobsPage: React.FC = () => {
                                                 {...provided.dragHandleProps}
                                                 className={snapshot.isDragging ? 'opacity-50' : ''}
                                               >
-                                                  <DispatchJobCard
-                                                    job={job}
-                                                    onClick={() => handleJobView(job.id)}
-                                                    onEditStatus={handleEditJobStatus}
-                                                    isDragging={snapshot.isDragging}
-                                                  />
+                                                 <DispatchJobCard
+                                                   job={job}
+                                                   onClick={() => handleJobView(job.id)}
+                                                   isDragging={snapshot.isDragging}
+                                                 />
                                               </div>
                                             )}
                                           </Draggable>
@@ -703,20 +690,6 @@ const JobsPage: React.FC = () => {
         onOpenChange={(open) => {
           setIsJobDetailOpen(open);
           if (!open) setSelectedJobId(null);
-        }}
-      />
-      
-      {/* Edit Job Status Modal */}
-      <EditJobStatusModal
-        jobId={selectedJobId}
-        job={selectedJob}
-        open={isEditStatusOpen}
-        onOpenChange={(open) => {
-          setIsEditStatusOpen(open);
-          if (!open) {
-            setSelectedJobId(null);
-            setSelectedJob(null);
-          }
         }}
       />
       

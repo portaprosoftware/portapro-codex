@@ -1,15 +1,12 @@
+
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, Trash2 } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CSVImportModal } from "@/components/customers/CSVImportModal";
-import { EditCustomerModal } from "@/components/customers/EditCustomerModal";
-import { toast } from "sonner";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,10 +37,6 @@ const getCustomerTypeGradient = (type: string) => {
 const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
-  const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
-  const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false);
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch customers data
   const { data: customers = [], isLoading } = useQuery({
@@ -72,118 +65,6 @@ const CustomerHub: React.FC = () => {
     });
   }, [customers, searchTerm, selectedType]);
 
-  // Handle select all
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedCustomers(filteredCustomers.map(c => c.id));
-    } else {
-      setSelectedCustomers([]);
-    }
-  };
-
-  // Handle individual selection
-  const handleSelectCustomer = (customerId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedCustomers(prev => [...prev, customerId]);
-    } else {
-      setSelectedCustomers(prev => prev.filter(id => id !== customerId));
-    }
-  };
-
-  const deleteCustomersAndRelatedData = async (customerIds: string[]) => {
-    // First, delete all jobs associated with these customers
-    const { error: jobsError } = await supabase
-      .from('jobs')
-      .delete()
-      .in('customer_id', customerIds);
-    
-    if (jobsError) {
-      console.error('Error deleting jobs:', jobsError);
-      // Continue anyway - some customers might not have jobs
-    }
-
-    // Then delete all customer contacts
-    const { error: contactsError } = await supabase
-      .from('customer_contacts')
-      .delete()
-      .in('customer_id', customerIds);
-    
-    if (contactsError) {
-      console.error('Error deleting customer contacts:', contactsError);
-      // Continue anyway
-    }
-
-    // Then delete all customer service locations
-    const { error: locationsError } = await supabase
-      .from('customer_service_locations')
-      .delete()
-      .in('customer_id', customerIds);
-    
-    if (locationsError) {
-      console.error('Error deleting customer service locations:', locationsError);
-      // Continue anyway
-    }
-
-    // Finally, delete the customers
-    const { error } = await supabase
-      .from('customers')
-      .delete()
-      .in('id', customerIds);
-    
-    if (error) throw error;
-  };
-
-  // Handle delete selected
-  const handleDeleteSelected = async () => {
-    if (selectedCustomers.length === 0) return;
-    
-    setIsDeleting(true);
-    try {
-      await deleteCustomersAndRelatedData(selectedCustomers);
-      toast.success(`Successfully deleted ${selectedCustomers.length} customer(s) and their associated data`);
-      setSelectedCustomers([]);
-    } catch (error) {
-      console.error('Error deleting customers:', error);
-      toast.error('Failed to delete customers. Some may have dependencies that need to be removed first.');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleDeleteAll = async () => {
-    if (!window.confirm('Are you sure you want to delete ALL customers? This action cannot be undone.')) {
-      return;
-    }
-    
-    setIsDeleting(true);
-    try {
-      // Get all customer IDs
-      const { data: allCustomers, error: fetchError } = await supabase
-        .from('customers')
-        .select('id');
-      
-      if (fetchError) throw fetchError;
-      
-      const allCustomerIds = allCustomers?.map(c => c.id) || [];
-      
-      if (allCustomerIds.length === 0) {
-        toast.info('No customers to delete');
-        return;
-      }
-      
-      await deleteCustomersAndRelatedData(allCustomerIds);
-      toast.success(`Successfully deleted all ${allCustomerIds.length} customers and their associated data`);
-      setSelectedCustomers([]);
-    } catch (error) {
-      console.error('Error deleting all customers:', error);
-      toast.error('Failed to delete all customers');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const isAllSelected = filteredCustomers.length > 0 && selectedCustomers.length === filteredCustomers.length;
-  const isIndeterminate = selectedCustomers.length > 0 && selectedCustomers.length < filteredCustomers.length;
 
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
@@ -195,19 +76,11 @@ const CustomerHub: React.FC = () => {
             <p className="text-base text-gray-600 font-inter mt-1">Manage all your customer data in one place</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-2"
-              onClick={() => setIsCSVImportOpen(true)}
-            >
+            <Button variant="outline" size="sm" className="gap-2">
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
-            <Button 
-              className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
-              onClick={() => setIsAddCustomerOpen(true)}
-            >
+            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
               <Plus className="w-4 h-4" />
               Add Customer
             </Button>
@@ -217,32 +90,7 @@ const CustomerHub: React.FC = () => {
 
       {/* Filters & Search */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
-          {selectedCustomers.length > 0 && (
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="destructive"
-                onClick={handleDeleteSelected}
-                disabled={selectedCustomers.length === 0 || isDeleting}
-                className="flex items-center space-x-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Delete Selected ({selectedCustomers.length})</span>
-              </Button>
-              
-              <Button
-                variant="destructive"
-                onClick={handleDeleteAll}
-                disabled={isDeleting}
-                className="flex items-center space-x-2 bg-red-600 hover:bg-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Delete All Customers</span>
-              </Button>
-            </div>
-          )}
-        </div>
+        <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-500" />
@@ -277,13 +125,6 @@ const CustomerHub: React.FC = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">
-                <Checkbox
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all customers"
-                />
-              </TableHead>
               <TableHead className="font-medium text-gray-900">Customer</TableHead>
               <TableHead className="font-medium text-gray-900">Type</TableHead>
               <TableHead className="font-medium text-gray-900">Phone</TableHead>
@@ -297,13 +138,13 @@ const CustomerHub: React.FC = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                   Loading customers...
                 </TableCell>
               </TableRow>
             ) : filteredCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                   No customers found
                 </TableCell>
               </TableRow>
@@ -313,13 +154,6 @@ const CustomerHub: React.FC = () => {
                   key={customer.id} 
                   className={`transition-colors hover:bg-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                 >
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedCustomers.includes(customer.id)}
-                      onCheckedChange={(checked) => handleSelectCustomer(customer.id, checked as boolean)}
-                      aria-label={`Select ${customer.name}`}
-                    />
-                  </TableCell>
                   <TableCell className="font-medium">
                     <Link 
                       to={`/customers/${customer.id}`}
@@ -360,18 +194,6 @@ const CustomerHub: React.FC = () => {
         </Table>
       </div>
 
-      {/* CSV Import Modal */}
-      <CSVImportModal 
-        isOpen={isCSVImportOpen} 
-        onClose={() => setIsCSVImportOpen(false)} 
-      />
-
-      {/* Add Customer Modal */}
-      <EditCustomerModal 
-        isOpen={isAddCustomerOpen} 
-        onClose={() => setIsAddCustomerOpen(false)}
-        customer={null}
-      />
     </div>
   );
 };

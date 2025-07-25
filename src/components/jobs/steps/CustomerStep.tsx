@@ -183,20 +183,109 @@ export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) =>
         )}
       </div>
 
-      {/* Customer selection confirmation */}
-      {data && (
-        <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4 mt-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <div className="w-2 h-2 bg-green-600 rounded-full" />
-            <span className="text-sm font-medium text-green-900">
-              Customer Selected
-            </span>
+      {/* Add New Customer Button */}
+      <Dialog open={isAddingNew} onOpenChange={setIsAddingNew}>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="w-full border-dashed border-2 border-gray-300 hover:border-[#3366FF] hover:bg-blue-50">
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Customer
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Customer</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label htmlFor="name">Company/Customer Name *</Label>
+              <Input
+                id="name"
+                value={newCustomer.name}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter customer name"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newCustomer.email}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="customer@example.com"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={newCustomer.phone}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <h3 className="font-medium text-gray-900 mb-3">Service Address</h3>
+            </div>
+            
+            <div className="col-span-2">
+              <Label htmlFor="serviceStreet">Street Address</Label>
+              <Input
+                id="serviceStreet"
+                value={newCustomer.serviceStreet}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceStreet: e.target.value }))}
+                placeholder="123 Main Street"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="serviceCity">City</Label>
+              <Input
+                id="serviceCity"
+                value={newCustomer.serviceCity}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceCity: e.target.value }))}
+                placeholder="City"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="serviceState">State</Label>
+              <Input
+                id="serviceState"
+                value={newCustomer.serviceState}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceState: e.target.value }))}
+                placeholder="State"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="serviceZip">ZIP Code</Label>
+              <Input
+                id="serviceZip"
+                value={newCustomer.serviceZip}
+                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceZip: e.target.value }))}
+                placeholder="12345"
+              />
+            </div>
           </div>
-          <div className="text-sm text-green-800">
-            <span className="font-medium">{data.name}</span> - {data.address}
+          
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="outline" onClick={() => setIsAddingNew(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateCustomer}
+              disabled={!newCustomer.name || !newCustomer.serviceStreet}
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            >
+              Create Customer
+            </Button>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

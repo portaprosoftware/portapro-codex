@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
-import { Briefcase, Truck, Package, Wrench, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Briefcase, Truck, Package, Wrench, MapPin, Clock, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { getTimezoneFromZip, getCompanyTimezone, timezoneOptions, formatTimezoneLabel } from '@/lib/timezoneUtils';
 
 interface JobTypeTimezoneStepProps {
   data: {
     jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null;
     timezone: string;
-    selectedCustomer?: any;
+    customerZip?: string;
+    customerState?: string;
   };
   onUpdate: (data: { 
     jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null; 
     timezone: string;
+    customerZip?: string;
+    customerState?: string;
   }) => void;
   allowEarlyPickup?: boolean;
 }
@@ -40,6 +45,13 @@ const jobTypes = [
     color: 'orange',
   },
   {
+    id: 'partial-pickup' as const,
+    name: 'Partial Pickup',
+    description: 'Pick up some equipment from customer location',
+    icon: Package,
+    color: 'purple',
+  },
+  {
     id: 'on-site-survey' as const,
     name: 'On-Site Survey/Estimate',
     description: 'Site visit for assessment and estimation',
@@ -53,8 +65,20 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
   onUpdate,
   allowEarlyPickup = false 
 }) => {
-  // Default timezone - simplified, no database queries
-  const companyTimezone = 'America/New_York';
+  const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
+  const companyTimezone = getCompanyTimezone();
+
+  useEffect(() => {
+    if (data.customerZip) {
+      const detected = getTimezoneFromZip(data.customerZip, data.customerState);
+      setDetectedTimezone(detected);
+      
+      // Auto-set timezone if not already set
+      if (!data.timezone || data.timezone === companyTimezone) {
+        onUpdate({ ...data, timezone: detected });
+      }
+    }
+  }, [data.customerZip, data.customerState]);
 
   const handleJobTypeSelect = (jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey') => {
     onUpdate({ ...data, jobType });
@@ -64,12 +88,15 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
     onUpdate({ ...data, timezone });
   };
 
+  const isTimezoneDetected = detectedTimezone && detectedTimezone !== companyTimezone;
+  const isCustomerTimezoneSelected = data.timezone === detectedTimezone;
+
   return (
     <div className="space-y-6">
       <div className="text-center">
         <Briefcase className="w-12 h-12 text-primary mx-auto mb-4" />
-        <h2 className="text-2xl font-semibold text-foreground mb-2">Job Type</h2>
-        <p className="text-muted-foreground">What type of job are you scheduling?</p>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">Job Type & Timezone</h2>
+        <p className="text-muted-foreground">What type of job are you scheduling and in which timezone?</p>
       </div>
 
       {/* Job Type Selection */}
@@ -148,6 +175,67 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
         </div>
       </div>
 
+      {/* Timezone Selection */}
+      <div className="space-y-4">
+        <Label className="text-base font-medium">Schedule Timezone</Label>
+        
+        {/* Timezone Detection Info */}
+        {isTimezoneDetected && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center space-x-2 mb-2">
+              <Globe className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">
+                Customer Timezone Detected
+              </span>
+            </div>
+            <div className="text-xs text-blue-700">
+              Based on ZIP {data.customerZip}: {formatTimezoneLabel(detectedTimezone)}
+              {isCustomerTimezoneSelected && (
+                <Badge className="ml-2 bg-blue-100 text-blue-800">Same</Badge>
+              )}
+            </div>
+          </div>
+        )}
+
+        <Select value={data.timezone} onValueChange={handleTimezoneSelect}>
+          <SelectTrigger className="h-12">
+            <SelectValue placeholder="Select timezone">
+              <div className="flex items-center space-x-2">
+                <Clock className="w-4 h-4" />
+                <span>{formatTimezoneLabel(data.timezone)}</span>
+              </div>
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {/* Company timezone first */}
+            <SelectItem value={companyTimezone}>
+              <div className="flex items-center justify-between w-full">
+                <span>{formatTimezoneLabel(companyTimezone)}</span>
+                <Badge className="ml-2 bg-green-100 text-green-800">Company</Badge>
+              </div>
+            </SelectItem>
+            
+            {/* Customer timezone if different */}
+            {detectedTimezone && detectedTimezone !== companyTimezone && (
+              <SelectItem value={detectedTimezone}>
+                <div className="flex items-center justify-between w-full">
+                  <span>{formatTimezoneLabel(detectedTimezone)}</span>
+                  <Badge className="ml-2 bg-blue-100 text-blue-800">Customer</Badge>
+                </div>
+              </SelectItem>
+            )}
+            
+            {/* All other timezones */}
+            {timezoneOptions
+              .filter(tz => tz.value !== companyTimezone && tz.value !== detectedTimezone)
+              .map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Selection Summary */}
       {data.jobType && (
@@ -155,13 +243,22 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
           <div className="flex items-center space-x-2 mb-2">
             <div className="w-2 h-2 bg-primary rounded-full" />
             <span className="text-sm font-medium text-primary">
-              Selected Job Type
+              Job Configuration
             </span>
           </div>
-          <div className="text-sm">
-            <span className="font-medium">
-              {jobTypes.find(jt => jt.id === data.jobType)?.name}
-            </span>
+          <div className="space-y-1">
+            <div className="text-sm">
+              <span className="text-muted-foreground">Type:</span>{' '}
+              <span className="font-medium">
+                {jobTypes.find(jt => jt.id === data.jobType)?.name}
+              </span>
+            </div>
+            <div className="text-sm">
+              <span className="text-muted-foreground">Timezone:</span>{' '}
+              <span className="font-medium">
+                {formatTimezoneLabel(data.timezone)}
+              </span>
+            </div>
           </div>
         </div>
       )}

@@ -50,8 +50,8 @@ export const getDisplayStatus = (job: Job): string => {
     return isJobCompletedLate(job) ? 'completed_late' : 'completed';
   }
   
-  // For non-completed jobs (assigned, in-progress, unassigned), check if overdue
-  if (job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress' || job.status === 'unassigned') {
+  // For non-completed jobs (assigned, in-progress), check if overdue
+  if (job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') {
     return isJobOverdue(job) ? 'overdue' : job.status;
   }
   
@@ -63,53 +63,40 @@ export const getDisplayStatus = (job: Job): string => {
  * Status configuration for consistent styling across all components
  */
 export const getJobStatusConfig = () => ({
-  unassigned: { 
-    gradient: 'bg-gradient-purple text-white font-bold', 
-    label: 'Unassigned',
-    color: '#9333EA',
-    variant: 'unassigned' as const
-  },
   assigned: { 
     gradient: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', 
     label: 'Assigned',
-    color: '#3B82F6',
-    variant: 'info' as const
+    color: '#3B82F6'
   },
   in_progress: { 
-    gradient: 'bg-gradient-yellow text-white font-bold', 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
     label: 'In Progress',
-    color: '#EAB308',
-    variant: 'inProgress' as const
+    color: '#F97316'
   },
   'in-progress': { 
-    gradient: 'bg-gradient-yellow text-white font-bold', 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
     label: 'In Progress',
-    color: '#EAB308',
-    variant: 'inProgress' as const
+    color: '#F97316'
   },
   completed: { 
     gradient: 'bg-gradient-to-r from-green-500 to-green-600 text-white', 
     label: 'Completed',
-    color: '#10B981',
-    variant: 'success' as const
+    color: '#10B981'
   },
   completed_late: { 
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
     label: 'Job Completed Late',
-    color: '#6B7280',
-    variant: 'secondary' as const
+    color: '#6B7280'
   },
   overdue: { 
     gradient: 'bg-gradient-to-r from-red-500 to-red-600 text-white', 
     label: 'Overdue',
-    color: '#EF4444',
-    variant: 'destructive' as const
+    color: '#EF4444'
   },
   cancelled: { 
-    gradient: 'bg-gradient-black text-white font-bold', 
+    gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
     label: 'Cancelled',
-    color: '#374151',
-    variant: 'cancelled' as const
+    color: '#6B7280'
   }
 });
 
@@ -139,10 +126,10 @@ export const getDualJobStatusInfo = (job: Job) => {
   }
   
   // For non-completed jobs, check if overdue
-  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress' || job.status === 'unassigned') && isJobOverdue(job)) {
+  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
     return {
       primary: statusConfig.overdue,
-      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.unassigned
+      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned
     };
   }
   

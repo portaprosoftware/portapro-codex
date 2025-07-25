@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,10 +22,9 @@ import {
   Mail,
   MessageSquare,
   Trash2,
-  MoreVertical,
-  Settings
+  MoreVertical
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -47,36 +46,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 }) => {
   const [editingSections, setEditingSections] = useState<{[key: string]: boolean}>({});
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  // Real-time subscription for job updates
-  useEffect(() => {
-    if (!jobId || !open) return;
-
-    const channel = supabase
-      .channel(`job-${jobId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'jobs',
-          filter: `id=eq.${jobId}`
-        },
-        (payload) => {
-          console.log('Job updated in real-time:', payload);
-          // Invalidate and refetch job data
-          queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [jobId, open, queryClient]);
 
   // Fetch job details
   const { data: job, isLoading } = useQuery({
@@ -295,39 +266,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     });
   };
 
-  // Quick status update mutation
-  const quickStatusUpdateMutation = useMutation({
-    mutationFn: async (newStatus: string) => {
-      if (!jobId) throw new Error('No job ID');
-      
-      const { data, error } = await supabase
-        .from('jobs')
-        .update({ status: newStatus })
-        .eq('id', jobId)
-        .select()
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Status Updated",
-        description: "Job status updated successfully",
-      });
-      queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update job status",
-        variant: "destructive",
-      });
-      console.error('Status update error:', error);
-    }
-  });
-
 
   const jobTypeConfig = {
     delivery: {
@@ -392,7 +330,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                         </div>
                       );
                     })()}
-                    <Badge className="text-xs text-white rounded-full bg-gray-500">
+                    <Badge className={cn("text-xs text-white rounded-full", getJobTypeColor(job.job_type))}>
                       {job.job_type.toUpperCase()}
                     </Badge>
                   </>
@@ -401,16 +339,13 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
             
             {/* Actions Menu */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Delete job</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
-                
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <DropdownMenuItem 
@@ -457,7 +392,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </AlertDialog>
               </DropdownMenuContent>
             </DropdownMenu>
-            </div>
           </div>
         </DialogHeader>
 
@@ -540,7 +474,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             <SelectValue />
                           </SelectTrigger>
                            <SelectContent>
-                             <SelectItem value="unassigned">Unassigned</SelectItem>
                              <SelectItem value="assigned">Assigned</SelectItem>
                              <SelectItem value="in_progress">In Progress</SelectItem>
                              <SelectItem value="completed">Completed</SelectItem>

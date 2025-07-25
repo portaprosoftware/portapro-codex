@@ -1,8 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { MapPin, Clock, User, Truck, Eye, RotateCcw } from 'lucide-react';
+import { MapPin, Clock, User, Truck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
@@ -35,7 +34,6 @@ interface DispatchJobCardProps {
     };
   };
   onClick?: () => void;
-  onEditStatus?: (jobId: string) => void;
   isDragging?: boolean;
 }
 
@@ -76,15 +74,10 @@ const jobTypeConfig = {
 export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   job,
   onClick,
-  onEditStatus,
   isDragging = false
 }) => {
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
   const statusInfo = getDualJobStatusInfo(job);
-
-  const handleEditStatus = () => {
-    onEditStatus?.(job.id);
-  };
 
   return (
     <div 
@@ -103,11 +96,11 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
           </span>
         </div>
         <div className="flex flex-col gap-1">
-          <Badge variant={statusInfo.primary.variant || 'default'} className="text-xs px-2 py-0.5 flex-shrink-0 text-center flex items-center justify-center">
+          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
             {statusInfo.primary.label}
           </Badge>
           {statusInfo.secondary && (
-            <Badge variant={statusInfo.secondary.variant || 'default'} className="text-xs px-2 py-0.5 flex-shrink-0 text-center flex items-center justify-center">
+            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
               {statusInfo.secondary.label}
             </Badge>
           )}
@@ -171,34 +164,6 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
           </p>
         </div>
       )}
-
-      {/* Action Buttons */}
-      <div className="mt-3 pt-2 border-t border-gray-100">
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }} 
-            className="flex-1 text-xs"
-          >
-            <Eye className="w-3 h-3 mr-1" />
-            View
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditStatus();
-            }}
-            className="flex-1 text-xs bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-          >
-            Edit Job Status
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

@@ -172,15 +172,6 @@ export const FiltersFlyout: React.FC<FiltersFlyoutProps> = ({
                   All Statuses
                 </button>
                 <button
-                  onClick={() => onStatusChange('unassigned')}
-                  className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
-                    selectedStatus === 'unassigned' ? 'border-gray-400 bg-gray-50' : 'border-gray-300'
-                  }`}
-                >
-                  <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                  Unassigned
-                </button>
-                <button
                   onClick={() => onStatusChange('assigned')}
                   className={`w-full flex items-center gap-2 px-3 py-2 border rounded-md text-sm text-left hover:bg-gray-50 ${
                     selectedStatus === 'assigned' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'

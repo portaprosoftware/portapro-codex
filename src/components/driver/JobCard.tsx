@@ -26,11 +26,10 @@ interface Job {
 interface JobCardProps {
   job: Job;
   onStatusUpdate: () => void;
-  onEditStatus?: (jobId: string) => void;
 }
 
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, onEditStatus }) => {
+export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   const [showDetail, setShowDetail] = useState(false);
   const customerName = job.customers?.name || 'Unknown Customer';
   const statusInfo = getDualJobStatusInfo(job);
@@ -106,7 +105,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, onEditSta
           <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
             <Button 
               size="sm" 
-              variant="outline"
               className="flex-1"
               onClick={handleNavigate}
             >
@@ -116,10 +114,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate, onEditSta
             
             <Button 
               size="sm" 
-              className="flex-1 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-              onClick={() => onEditStatus?.(job.id)}
+              variant="outline"
+              onClick={handleCall}
             >
-              Edit Job Status
+              <Phone className="w-4 h-4" />
             </Button>
           </div>
         </CardContent>

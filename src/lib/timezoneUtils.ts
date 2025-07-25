@@ -174,7 +174,7 @@ export const timezoneOptions = [
 ];
 
 export const getCompanyTimezone = (): string => {
-  // Default to Eastern Time - this should be enhanced to fetch from company settings
+  // This could come from company settings in the future
   return 'America/New_York';
 };
 

@@ -6335,10 +6335,6 @@ export type Database = {
         }
         Returns: string
       }
-      migrate_customer_zip_codes: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>
         Returns: undefined
