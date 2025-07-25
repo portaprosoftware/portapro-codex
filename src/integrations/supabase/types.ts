@@ -213,11 +213,16 @@ export type Database = {
         Row: {
           cleaning_prefix: string | null
           company_address: string | null
+          company_city: string | null
           company_email: string | null
           company_logo: string | null
           company_name: string
           company_phone: string | null
+          company_state: string | null
+          company_street: string | null
+          company_street2: string | null
           company_timezone: string | null
+          company_zipcode: string | null
           created_at: string | null
           default_payment_terms_days: number | null
           default_quote_expiration_days: number | null
@@ -244,11 +249,16 @@ export type Database = {
         Insert: {
           cleaning_prefix?: string | null
           company_address?: string | null
+          company_city?: string | null
           company_email?: string | null
           company_logo?: string | null
           company_name?: string
           company_phone?: string | null
+          company_state?: string | null
+          company_street?: string | null
+          company_street2?: string | null
           company_timezone?: string | null
+          company_zipcode?: string | null
           created_at?: string | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
@@ -275,11 +285,16 @@ export type Database = {
         Update: {
           cleaning_prefix?: string | null
           company_address?: string | null
+          company_city?: string | null
           company_email?: string | null
           company_logo?: string | null
           company_name?: string
           company_phone?: string | null
+          company_state?: string | null
+          company_street?: string | null
+          company_street2?: string | null
           company_timezone?: string | null
+          company_zipcode?: string | null
           created_at?: string | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
