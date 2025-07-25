@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AddCustomerModal } from "@/components/customers/AddCustomerModal";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,6 +38,7 @@ const getCustomerTypeGradient = (type: string) => {
 const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Fetch customers data
   const { data: customers = [], isLoading } = useQuery({
@@ -80,7 +82,10 @@ const CustomerHub: React.FC = () => {
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
-            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
+            <Button 
+              onClick={() => setIsAddModalOpen(true)}
+              className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
+            >
               <Plus className="w-4 h-4" />
               Add Customer
             </Button>
@@ -194,6 +199,10 @@ const CustomerHub: React.FC = () => {
         </Table>
       </div>
 
+      <AddCustomerModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+      />
     </div>
   );
 };
