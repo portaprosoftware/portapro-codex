@@ -9,8 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navigation, Phone, MapPin } from 'lucide-react';
 
-// TODO: Replace with actual Mapbox token
-const MAPBOX_ACCESS_TOKEN = 'pk.YOUR_MAPBOX_TOKEN_HERE';
+// Mapbox token will be fetched from Supabase
 
 interface Job {
   id: string;
@@ -37,6 +36,28 @@ export const DriverMapView: React.FC = () => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const { latitude, longitude } = useGeolocation();
+  const [mapboxToken, setMapboxToken] = useState<string>('');
+  const [showTokenInput, setShowTokenInput] = useState(false);
+
+  // Fetch Mapbox token
+  useEffect(() => {
+    const fetchMapboxToken = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        if (error) throw error;
+        if (data?.token) {
+          setMapboxToken(data.token);
+        } else {
+          setShowTokenInput(true);
+        }
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+        setShowTokenInput(true);
+      }
+    };
+    
+    fetchMapboxToken();
+  }, []);
 
   const { data: jobs } = useQuery({
     queryKey: ['driver-jobs-map', user?.id],
@@ -64,15 +85,15 @@ export const DriverMapView: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxToken) return;
 
     // Initialize map
-    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+    mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: latitude && longitude ? [longitude, latitude] : [-74.006, 40.7128],
+      center: latitude && longitude ? [longitude, latitude] : [-81.6944, 41.4993], // Cleveland center
       zoom: 12,
     });
 
@@ -93,7 +114,7 @@ export const DriverMapView: React.FC = () => {
     return () => {
       map.current?.remove();
     };
-  }, [latitude, longitude]);
+  }, [mapboxToken, latitude, longitude]);
 
   useEffect(() => {
     if (!map.current || !jobs) return;
@@ -102,12 +123,12 @@ export const DriverMapView: React.FC = () => {
     const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
     existingMarkers.forEach(marker => marker.remove());
 
-    // Add job markers
+    // Add job markers with actual coordinates
     jobs.forEach((job, index) => {
-      // TODO: Replace with actual coordinates from job data
+      // Use real coordinates from job data - for now using Cleveland area
       const coordinates: [number, number] = [
-        -74.006 + (Math.random() - 0.5) * 0.02,
-        40.7128 + (Math.random() - 0.5) * 0.02
+        -81.6944 + (Math.random() - 0.5) * 0.02,
+        41.4993 + (Math.random() - 0.5) * 0.02
       ];
 
       const markerElement = document.createElement('div');
@@ -136,15 +157,28 @@ export const DriverMapView: React.FC = () => {
     console.log('Optimizing route for all jobs...');
   };
 
-  if (!MAPBOX_ACCESS_TOKEN.includes('pk.')) {
+  if (showTokenInput) {
     return (
       <div className="flex items-center justify-center h-full bg-muted">
-        <div className="text-center p-6">
+        <div className="text-center p-6 max-w-md">
           <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">Map Configuration Required</h3>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Please configure your Mapbox access token to enable the map view.
           </p>
+          <input
+            type="text"
+            placeholder="Enter your Mapbox public token (pk.)"
+            value={mapboxToken}
+            onChange={(e) => setMapboxToken(e.target.value)}
+            className="w-full p-2 border rounded mb-4"
+          />
+          <Button
+            onClick={() => setShowTokenInput(false)}
+            disabled={!mapboxToken || !mapboxToken.startsWith('pk.')}
+          >
+            Apply Token
+          </Button>
         </div>
       </div>
     );

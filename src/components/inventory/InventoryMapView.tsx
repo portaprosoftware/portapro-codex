@@ -199,13 +199,19 @@ export const InventoryMapView: React.FC = () => {
   }, [radarEnabled, weatherApiKey]);
 
   const addWeatherOverlay = () => {
-    if (!map.current) return;
+    if (!map.current || !weatherApiKey) return;
 
-    if (!map.current.getSource('weather-precipitation')) {
+    console.log('Adding weather radar overlay to inventory map with API key:', weatherApiKey.substring(0, 8) + '...');
+
+    // Remove any existing weather layers first
+    removeWeatherOverlay();
+
+    try {
+      // Use the correct precipitation layer for radar visualization
       map.current.addSource('weather-precipitation', {
         type: 'raster',
         tiles: [
-          `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+          `https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${weatherApiKey}`
         ],
         tileSize: 256
       });
@@ -218,17 +224,54 @@ export const InventoryMapView: React.FC = () => {
           'raster-opacity': 0.6
         }
       });
+
+      // Add clouds layer for additional context
+      map.current.addSource('weather-clouds', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-clouds',
+        type: 'raster',
+        source: 'weather-clouds',
+        paint: {
+          'raster-opacity': 0.3
+        }
+      }, 'weather-precipitation'); // Place clouds below precipitation
+
+      console.log('Weather radar overlay added successfully to inventory map');
+    } catch (error) {
+      console.error('Failed to add weather overlay to inventory map:', error);
     }
   };
 
   const removeWeatherOverlay = () => {
     if (!map.current) return;
 
-    if (map.current.getLayer('weather-precipitation')) {
-      map.current.removeLayer('weather-precipitation');
-    }
-    if (map.current.getSource('weather-precipitation')) {
-      map.current.removeSource('weather-precipitation');
+    try {
+      // Remove precipitation layer
+      if (map.current.getLayer('weather-precipitation')) {
+        map.current.removeLayer('weather-precipitation');
+      }
+      if (map.current.getSource('weather-precipitation')) {
+        map.current.removeSource('weather-precipitation');
+      }
+
+      // Remove clouds layer
+      if (map.current.getLayer('weather-clouds')) {
+        map.current.removeLayer('weather-clouds');
+      }
+      if (map.current.getSource('weather-clouds')) {
+        map.current.removeSource('weather-clouds');
+      }
+
+      console.log('Weather radar overlay removed from inventory map');
+    } catch (error) {
+      console.error('Error removing weather overlay from inventory map:', error);
     }
   };
 

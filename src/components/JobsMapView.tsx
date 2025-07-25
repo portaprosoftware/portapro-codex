@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { format, addDays, subDays } from 'date-fns';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Calendar as CalendarIcon, 
@@ -24,88 +25,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
-// Mock data for demonstration
-const mockJobs = [
-  {
-    id: 'DEL-824',
-    customerId: 123,
-    customerName: 'Hickory Hollow Farm',
-    jobType: 'Delivery',
-    status: 'assigned',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 20), // Make overdue
-    driverName: 'Grady Green',
-    location: { lat: 40.4406, lng: -79.9959 },
-    address: '123 Farm Road, Butler, PA'
-  },
-  {
-    id: 'SVC-941',
-    customerId: 124,
-    customerName: 'BlueWave Festival',
-    jobType: 'Service',
-    status: 'in_progress',
-    driverId: 2,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Jason Wells',
-    location: { lat: 40.4173, lng: -79.9428 },
-    address: '456 Festival Grounds, Pittsburgh, PA'
-  },
-  {
-    id: 'PKP-122',
-    customerId: 125,
-    customerName: 'Mountain View Resort',
-    jobType: 'Pickup',
-    status: 'completed',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Grady Green',
-    location: { lat: 40.3868, lng: -79.8963 },
-    address: '789 Resort Lane, Mt. Lebanon, PA'
-  },
-  {
-    id: 'CAN-555',
-    customerId: 126,
-    customerName: 'City Park Event',
-    jobType: 'Delivery',
-    status: 'cancelled',
-    driverId: 2,
-    scheduledDate: new Date(2025, 6, 22),
-    driverName: 'Jason Wells',
-    location: { lat: 40.4044, lng: -79.9514 },
-    address: '321 Park Avenue, Pittsburgh, PA'
-  },
-  {
-    id: 'LTE-333',
-    customerId: 127,
-    customerName: 'Corporate Campus',
-    jobType: 'Service',
-    status: 'completed',
-    driverId: 1,
-    scheduledDate: new Date(2025, 6, 21), // Will be marked as completed late
-    driverName: 'Grady Green',
-    location: { lat: 40.4361, lng: -79.9481 },
-    address: '555 Corporate Drive, Pittsburgh, PA'
-  }
-];
-
-const mockDrivers = [
-  {
-    id: 1,
-    name: 'Grady Green',
-    avatar: 'GG',
-    status: 'active',
-    location: { lat: 40.4406, lng: -79.9959 },
-    jobCount: 2
-  },
-  {
-    id: 2,
-    name: 'Jason Wells',
-    avatar: 'JW',
-    status: 'active',
-    location: { lat: 40.4173, lng: -79.9428 },
-    jobCount: 1
-  }
-];
+// Real data will be fetched from Supabase
 
 const statusColors = {
   assigned: '#3B82F6',    // Blue
@@ -145,7 +65,7 @@ const driverColors = {
 const JobsMapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22));
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [viewMode, setViewMode] = useState<'status' | 'driver'>('status');
   const [weatherRadar, setWeatherRadar] = useState(false);
@@ -155,6 +75,96 @@ const JobsMapView: React.FC = () => {
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [weatherApiKey, setWeatherApiKey] = useState<string>('');
+  const [radarOpacity, setRadarOpacity] = useState(0.6);
+  const [radarTimeIndex, setRadarTimeIndex] = useState(0);
+
+  // Fetch real jobs and drivers data
+  const { data: jobs = [] } = useQuery({
+    queryKey: ['jobs-map', format(currentDate, 'yyyy-MM-dd')],
+    queryFn: async () => {
+      const dateStr = format(currentDate, 'yyyy-MM-dd');
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          customers (
+            id,
+            name,
+            service_street,
+            service_city,
+            service_state,
+            customer_service_locations (
+              gps_coordinates,
+              service_location_coordinates (
+                latitude,
+                longitude,
+                is_primary
+              )
+            )
+          ),
+          profiles:driver_id (
+            id,
+            first_name,
+            last_name
+          )
+        `)
+        .eq('scheduled_date', dateStr)
+        .order('scheduled_time', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        return [];
+      }
+
+      return data.filter(job => {
+        const serviceLocation = job.customers?.customer_service_locations?.[0];
+        const coordinates = serviceLocation?.service_location_coordinates?.find(coord => coord.is_primary) || 
+                           serviceLocation?.service_location_coordinates?.[0];
+        return coordinates?.latitude && coordinates?.longitude;
+      }).map(job => {
+        const serviceLocation = job.customers?.customer_service_locations?.[0];
+        const coordinates = serviceLocation?.service_location_coordinates?.find(coord => coord.is_primary) || 
+                           serviceLocation?.service_location_coordinates?.[0];
+        
+        return {
+          ...job,
+          location: {
+            lat: coordinates.latitude,
+            lng: coordinates.longitude
+          },
+          driverName: job.profiles ? `${job.profiles.first_name} ${job.profiles.last_name}` : 'Unassigned',
+          customerName: job.customers?.name || 'Unknown Customer'
+        };
+      });
+    }
+  });
+
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['drivers-map'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching drivers:', error);
+        return [];
+      }
+
+      // For demo, we'll just return the drivers without coordinates
+      // In a real app, you'd get their current locations from GPS tracking
+      return data.map(driver => ({
+        id: driver.id,
+        name: `${driver.first_name} ${driver.last_name}`,
+        avatar: `${driver.first_name[0]}${driver.last_name[0]}`,
+        status: 'active',
+        location: { lat: 41.4993, lng: -81.6944 }, // Cleveland center as default
+        jobCount: jobs.filter(job => job.driver_id === driver.id).length
+      }));
+    },
+    enabled: !!jobs
+  });
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -187,12 +197,41 @@ const JobsMapView: React.FC = () => {
 
     mapboxgl.accessToken = mapboxToken;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-79.9959, 40.4406],
-      zoom: 10
-    });
+    // Calculate bounds from real job locations
+    let mapCenter: [number, number] = [-81.6944, 41.4993]; // Cleveland center
+    let mapZoom = 10;
+
+    if (jobs.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      jobs.forEach(job => {
+        if (job.location?.lng && job.location?.lat) {
+          bounds.extend([job.location.lng, job.location.lat]);
+        }
+      });
+
+      if (!bounds.isEmpty()) {
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          bounds: bounds,
+          fitBoundsOptions: { padding: 50 }
+        });
+      } else {
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: mapCenter,
+          zoom: mapZoom
+        });
+      }
+    } else {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: mapCenter,
+        zoom: mapZoom
+      });
+    }
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     
@@ -223,36 +262,87 @@ const JobsMapView: React.FC = () => {
   }, [weatherRadar, weatherApiKey, mapLoaded]);
 
   const addWeatherOverlay = () => {
-    if (!map.current) return;
+    if (!map.current || !weatherApiKey) return;
 
-    if (!map.current.getSource('weather')) {
-      map.current.addSource('weather', {
+    console.log('Adding weather radar overlay with API key:', weatherApiKey.substring(0, 8) + '...');
+
+    // Remove any existing weather layers first
+    removeWeatherOverlay();
+
+    try {
+      // Use the correct precipitation layer for radar visualization
+      map.current.addSource('weather-precipitation', {
         type: 'raster',
         tiles: [
-          `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+          `https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${weatherApiKey}`
         ],
         tileSize: 256
       });
 
       map.current.addLayer({
-        id: 'weather',
+        id: 'weather-precipitation',
         type: 'raster',
-        source: 'weather',
+        source: 'weather-precipitation',
         paint: {
-          'raster-opacity': 0.6
+          'raster-opacity': radarOpacity
         }
       });
+
+      // Add clouds layer for additional context
+      map.current.addSource('weather-clouds', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-clouds',
+        type: 'raster',
+        source: 'weather-clouds',
+        paint: {
+          'raster-opacity': 0.3
+        }
+      }, 'weather-precipitation'); // Place clouds below precipitation
+
+      console.log('Weather radar overlay added successfully');
+    } catch (error) {
+      console.error('Failed to add weather overlay:', error);
     }
   };
 
   const removeWeatherOverlay = () => {
     if (!map.current) return;
 
-    if (map.current.getLayer('weather')) {
-      map.current.removeLayer('weather');
-    }
-    if (map.current.getSource('weather')) {
-      map.current.removeSource('weather');
+    try {
+      // Remove precipitation layer
+      if (map.current.getLayer('weather-precipitation')) {
+        map.current.removeLayer('weather-precipitation');
+      }
+      if (map.current.getSource('weather-precipitation')) {
+        map.current.removeSource('weather-precipitation');
+      }
+
+      // Remove clouds layer
+      if (map.current.getLayer('weather-clouds')) {
+        map.current.removeLayer('weather-clouds');
+      }
+      if (map.current.getSource('weather-clouds')) {
+        map.current.removeSource('weather-clouds');
+      }
+
+      // Remove old weather layer if it exists
+      if (map.current.getLayer('weather')) {
+        map.current.removeLayer('weather');
+      }
+      if (map.current.getSource('weather')) {
+        map.current.removeSource('weather');
+      }
+
+      console.log('Weather radar overlay removed');
+    } catch (error) {
+      console.error('Error removing weather overlay:', error);
     }
   };
 
@@ -277,11 +367,11 @@ const JobsMapView: React.FC = () => {
   };
 
   const loadJobPins = () => {
-    if (!map.current) return;
+    if (!map.current || !jobs.length) return;
 
     const filteredJobs = selectedDriver === 'all' 
-      ? mockJobs 
-      : mockJobs.filter(job => job.driverId.toString() === selectedDriver);
+      ? jobs 
+      : jobs.filter(job => job.driver_id === selectedDriver);
 
     const features = filteredJobs.map(job => ({
       type: 'Feature',
@@ -290,12 +380,12 @@ const JobsMapView: React.FC = () => {
         coordinates: [job.location.lng, job.location.lat]
       },
       properties: {
-        id: job.id,
+        id: job.job_number || job.id,
         status: job.status,
-        jobType: job.jobType,
+        jobType: job.job_type,
         customerName: job.customerName,
         driverName: job.driverName,
-        address: job.address
+        address: job.customers?.name || 'Service Location'
       }
     }));
 
@@ -352,11 +442,11 @@ const JobsMapView: React.FC = () => {
   };
 
   const loadDriverPins = () => {
-    if (!map.current) return;
+    if (!map.current || !drivers.length) return;
 
     const filteredDrivers = selectedDriver === 'all' 
-      ? mockDrivers 
-      : mockDrivers.filter(driver => driver.id.toString() === selectedDriver);
+      ? drivers 
+      : drivers.filter(driver => driver.id === selectedDriver);
 
     const features = filteredDrivers.map(driver => ({
       type: 'Feature',
@@ -449,24 +539,25 @@ const JobsMapView: React.FC = () => {
     }
   };
 
-  // Calculate stats with overdue and completed_late logic
-  const totalJobs = mockJobs.length;
-  const completedJobs = mockJobs.filter(job => job.status === 'completed').length;
-  const inProgressJobs = mockJobs.filter(job => job.status === 'in_progress').length;
-  const assignedJobs = mockJobs.filter(job => job.status === 'assigned').length;
-  const cancelledJobs = mockJobs.filter(job => job.status === 'cancelled').length;
-  const overdueJobs = mockJobs.filter(job => {
-    const currentDate = new Date();
-    const scheduledDate = new Date(job.scheduledDate);
+  // Calculate stats with real data
+  const totalJobs = jobs.length;
+  const completedJobs = jobs.filter(job => job.status === 'completed').length;
+  const inProgressJobs = jobs.filter(job => job.status === 'in-progress').length;
+  const assignedJobs = jobs.filter(job => job.status === 'assigned').length;
+  const cancelledJobs = jobs.filter(job => job.status === 'cancelled').length;
+  const overdueJobs = jobs.filter(job => {
+    const now = new Date();
+    const scheduledDate = new Date(job.scheduled_date);
     scheduledDate.setHours(23, 59, 59, 999);
-    return (job.status === 'assigned' || job.status === 'in_progress') && scheduledDate < currentDate;
+    return (job.status === 'assigned' || job.status === 'in-progress') && scheduledDate < now;
   }).length;
-  const completedLateJobs = mockJobs.filter(job => {
+  const completedLateJobs = jobs.filter(job => {
     if (job.status !== 'completed') return false;
-    // For demo purposes, assume some completed jobs were late
-    return Math.random() > 0.7; // Randomly mark ~30% as late for demo
+    const scheduledDate = new Date(job.scheduled_date);
+    const completedDate = job.actual_completion_time ? new Date(job.actual_completion_time) : new Date();
+    return completedDate > scheduledDate;
   }).length;
-  const totalDrivers = mockDrivers.length;
+  const totalDrivers = drivers.length;
 
   return (
     <div className="space-y-6">
@@ -507,8 +598,11 @@ const JobsMapView: React.FC = () => {
               onChange={(e) => setSelectedDriver(e.target.value)}
             >
               <option value="all">All Drivers</option>
-              <option value="1">Grady Green</option>
-              <option value="2">Jason Wells</option>
+              {drivers.map(driver => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.name}
+                </option>
+              ))}
             </select>
 
             {/* View Toggle */}
@@ -541,14 +635,34 @@ const JobsMapView: React.FC = () => {
 
           {/* Right Controls */}
           <div className="flex items-center space-x-4">
-            {/* Weather Radar Toggle */}
-            <div className="flex items-center space-x-2">
+            {/* Weather Radar Toggle with Opacity Control */}
+            <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
               <CloudRain className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium">Weather Radar</span>
+              <span className="text-sm font-medium">Precipitation Radar</span>
               <Switch 
                 checked={weatherRadar} 
                 onCheckedChange={setWeatherRadar}
               />
+              {weatherRadar && (
+                <div className="flex items-center space-x-2 ml-2 pl-2 border-l border-gray-300">
+                  <span className="text-xs">Opacity:</span>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="1"
+                    step="0.1"
+                    value={radarOpacity}
+                    onChange={(e) => {
+                      setRadarOpacity(parseFloat(e.target.value));
+                      if (map.current && map.current.getLayer('weather-precipitation')) {
+                        map.current.setPaintProperty('weather-precipitation', 'raster-opacity', parseFloat(e.target.value));
+                      }
+                    }}
+                    className="w-16"
+                  />
+                  <span className="text-xs">{Math.round(radarOpacity * 100)}%</span>
+                </div>
+              )}
             </div>
 
             {/* Refresh Button */}
