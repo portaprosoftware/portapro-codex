@@ -97,7 +97,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             console.error("Error processing product:", product.id, productError);
             return false; // Exclude problematic products from results
           }
-        });
+        }).sort((a, b) => a.name.localeCompare(b.name));
       } catch (queryError) {
         console.error("Products query failed:", queryError);
         throw queryError;

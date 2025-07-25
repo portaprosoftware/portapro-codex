@@ -44,7 +44,7 @@ export const FleetOverview: React.FC = () => {
     const matchesStatus = statusFilter === "all" || vehicle.status === statusFilter;
     
     return matchesSearch && matchesStatus;
-  });
+  }).sort((a, b) => (a.make || '').localeCompare(b.make || ''));
 
   const statusCounts = {
     all: vehicles?.length || 0,
