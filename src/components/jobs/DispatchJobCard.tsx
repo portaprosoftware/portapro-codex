@@ -1,7 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { MapPin, Clock, User, Truck } from 'lucide-react';
+import { MapPin, Clock, User, Truck, Eye, RotateCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 
@@ -34,6 +35,8 @@ interface DispatchJobCardProps {
     };
   };
   onClick?: () => void;
+  onStatusUpdate?: (jobId: string, status: string) => void;
+  onReverse?: (jobId: string) => void;
   isDragging?: boolean;
 }
 
@@ -74,10 +77,47 @@ const jobTypeConfig = {
 export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   job,
   onClick,
+  onStatusUpdate,
+  onReverse,
   isDragging = false
 }) => {
   const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
   const statusInfo = getDualJobStatusInfo(job);
+
+  const handleStartJob = () => {
+    if (job.status === 'assigned' || job.status === 'unassigned') {
+      onStatusUpdate?.(job.id, 'in_progress');
+    } else if (job.status === 'in_progress') {
+      onStatusUpdate?.(job.id, 'completed');
+    }
+  };
+
+  const getJobButtonText = () => {
+    switch (job.status) {
+      case 'unassigned':
+      case 'assigned':
+        return 'Start';
+      case 'in_progress':
+        return 'Complete';
+      case 'completed':
+        return 'Complete';
+      default:
+        return 'View';
+    }
+  };
+
+  const isJobCompleted = job.status === 'completed';
+  const showReverseButton = job.status === 'in_progress' || job.status === 'completed';
+
+  const handleReverse = () => {
+    if (job.status === 'completed') {
+      onReverse?.(job.id);
+      onStatusUpdate?.(job.id, 'in_progress');
+    } else if (job.status === 'in_progress') {
+      onReverse?.(job.id);
+      onStatusUpdate?.(job.id, 'assigned');
+    }
+  };
 
   return (
     <div 
@@ -164,6 +204,53 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
           </p>
         </div>
       )}
+
+      {/* Action Buttons */}
+      <div className="mt-3 pt-2 border-t border-gray-100">
+        {/* Reverse Button - show if job can be reverted */}
+        {showReverseButton && (
+          <div className="mb-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={(e) => {
+                e.stopPropagation();
+                handleReverse();
+              }}
+              className="w-full text-xs"
+            >
+              <RotateCcw className="w-3 h-3 mr-1" />
+              Reverse
+            </Button>
+          </div>
+        )}
+        
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick?.();
+            }} 
+            className="flex-1 text-xs"
+          >
+            <Eye className="w-3 h-3 mr-1" />
+            View
+          </Button>
+          <Button 
+            size="sm" 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStartJob();
+            }}
+            disabled={isJobCompleted}
+            className={`flex-1 text-xs ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'}`}
+          >
+            {getJobButtonText()}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

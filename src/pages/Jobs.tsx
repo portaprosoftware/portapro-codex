@@ -533,6 +533,8 @@ const JobsPage: React.FC = () => {
                                        <DispatchJobCard
                                          job={job}
                                          onClick={() => handleJobView(job.id)}
+                                         onStatusUpdate={handleJobStatusUpdate}
+                                         onReverse={() => {}}
                                          isDragging={snapshot.isDragging}
                                        />
                                     </div>
