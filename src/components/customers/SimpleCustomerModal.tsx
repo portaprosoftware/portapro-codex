@@ -97,7 +97,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
         .from('customers')
         .insert({
           name: data.name,
-          customer_type: data.customer_type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief",
+          customer_type: data.customer_type as any,
           email: data.email || null,
           phone: data.phone || null,
           service_street: data.service_street,
