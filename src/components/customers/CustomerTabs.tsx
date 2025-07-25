@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabNav } from '@/components/ui/TabNav';
+import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare } from 'lucide-react';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
@@ -48,40 +49,85 @@ interface CustomerTabsProps {
 export function CustomerTabs({ customer }: CustomerTabsProps) {
   const [activeTab, setActiveTab] = useState('overview');
 
+  const renderActiveTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <CustomerInfoPanel customer={customer} />;
+      case 'contacts':
+        return <CustomerContactsTab customerId={customer.id} />;
+      case 'locations':
+        return <ServiceLocationTab customerId={customer.id} />;
+      case 'jobs':
+        return <CustomerJobsTab customerId={customer.id} />;
+      case 'financial':
+        return <CustomerFinancialTab customerId={customer.id} />;
+      case 'communication':
+        return <CustomerCommunicationTab customerId={customer.id} />;
+      default:
+        return <CustomerInfoPanel customer={customer} />;
+    }
+  };
+
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-6">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="contacts">Contacts</TabsTrigger>
-        <TabsTrigger value="locations">Service Locations</TabsTrigger>
-        <TabsTrigger value="jobs">Jobs</TabsTrigger>
-        <TabsTrigger value="financial">Financial</TabsTrigger>
-        <TabsTrigger value="communication">Communication</TabsTrigger>
-      </TabsList>
+    <div className="w-full">
+      {/* Customer Navigation Pills */}
+      <div className="mb-6">
+        <TabNav ariaLabel="Customer sections">
+          <TabNav.Item 
+            to="#overview" 
+            isActive={activeTab === 'overview'}
+            onClick={() => setActiveTab('overview')}
+          >
+            <User className="w-4 h-4" />
+            Overview
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#contacts" 
+            isActive={activeTab === 'contacts'}
+            onClick={() => setActiveTab('contacts')}
+          >
+            <Users className="w-4 h-4" />
+            Contacts
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#locations" 
+            isActive={activeTab === 'locations'}
+            onClick={() => setActiveTab('locations')}
+          >
+            <MapPin className="w-4 h-4" />
+            Service Locations
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#jobs" 
+            isActive={activeTab === 'jobs'}
+            onClick={() => setActiveTab('jobs')}
+          >
+            <Briefcase className="w-4 h-4" />
+            Jobs
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#financial" 
+            isActive={activeTab === 'financial'}
+            onClick={() => setActiveTab('financial')}
+          >
+            <DollarSign className="w-4 h-4" />
+            Financial
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#communication" 
+            isActive={activeTab === 'communication'}
+            onClick={() => setActiveTab('communication')}
+          >
+            <MessageSquare className="w-4 h-4" />
+            Communication
+          </TabNav.Item>
+        </TabNav>
+      </div>
 
-      <TabsContent value="overview" className="mt-6">
-        <CustomerInfoPanel customer={customer} />
-      </TabsContent>
-
-      <TabsContent value="contacts" className="mt-6">
-        <CustomerContactsTab customerId={customer.id} />
-      </TabsContent>
-
-      <TabsContent value="locations" className="mt-6">
-        <ServiceLocationTab customerId={customer.id} />
-      </TabsContent>
-
-      <TabsContent value="jobs" className="mt-6">
-        <CustomerJobsTab customerId={customer.id} />
-      </TabsContent>
-
-      <TabsContent value="financial" className="mt-6">
-        <CustomerFinancialTab customerId={customer.id} />
-      </TabsContent>
-
-      <TabsContent value="communication" className="mt-6">
-        <CustomerCommunicationTab customerId={customer.id} />
-      </TabsContent>
-    </Tabs>
+      {/* Active Tab Content */}
+      <div className="mt-6">
+        {renderActiveTabContent()}
+      </div>
+    </div>
   );
 }
