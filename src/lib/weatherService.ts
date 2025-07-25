@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export interface WeatherRadarFrame {
+  url: string;
+  timestamp: number;
+  type: 'precipitation';
+  opacity?: number;
+}
+
 export interface WeatherRadarLayer {
   id: string;
   sourceId: string;
@@ -10,7 +17,7 @@ export interface WeatherRadarLayer {
 
 class WeatherService {
   private apiKey: string | null = null;
-  private currentLayer: WeatherRadarLayer | null = null;
+  private frames: WeatherRadarFrame[] = [];
   private initializationPromise: Promise<void> | null = null;
 
   private async initializeApiKey(): Promise<void> {
@@ -25,37 +32,52 @@ class WeatherService {
         if (error) {
           console.log('Weather service unavailable:', error);
           this.apiKey = null;
-          this.currentLayer = null;
+          this.frames = [];
           return;
         }
 
-        if (data?.success && data?.weatherKey && data?.currentLayer) {
+        if (data?.success && data?.weatherKey && data?.radarFrames) {
           this.apiKey = data.weatherKey;
-          this.currentLayer = data.currentLayer;
-          console.log('Weather service initialized with current layer');
+          this.frames = data.radarFrames || [];
+          console.log('Weather service initialized with', this.frames.length, 'frames (90min past to 30min future)');
         } else {
           console.log('Weather key not found, weather features disabled');
           this.apiKey = null;
-          this.currentLayer = null;
+          this.frames = [];
         }
       } catch (error) {
         console.log('Weather key initialization failed:', error);
         this.apiKey = null;
-        this.currentLayer = null;
+        this.frames = [];
       }
     })();
 
     return this.initializationPromise;
   }
 
-  public async getCurrentLayer(): Promise<WeatherRadarLayer | null> {
+  public async getRadarFrames(): Promise<WeatherRadarFrame[]> {
     await this.initializeApiKey();
     
-    if (!this.apiKey || !this.currentLayer) {
-      return null;
+    if (!this.apiKey || !this.frames.length) {
+      return [];
     }
 
-    return this.currentLayer;
+    return this.frames.map(frame => ({
+      ...frame,
+      opacity: 0.8
+    }));
+  }
+
+  public async getRadarLayers(): Promise<WeatherRadarLayer[]> {
+    const frames = await this.getRadarFrames();
+    
+    return frames.map((frame, index) => ({
+      id: `weather-radar-${index}`,
+      sourceId: `weather-radar-source-${index}`,
+      url: frame.url,
+      timestamp: frame.timestamp,
+      type: frame.type
+    }));
   }
 
   public isAvailable(): boolean {
