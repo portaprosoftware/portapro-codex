@@ -1,14 +1,16 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CSVImportModal } from "@/components/customers/CSVImportModal";
 import { EditCustomerModal } from "@/components/customers/EditCustomerModal";
+import { toast } from "sonner";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +43,8 @@ const CustomerHub: React.FC = () => {
   const [selectedType, setSelectedType] = useState("all");
   const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
   const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch customers data
   const { data: customers = [], isLoading } = useQuery({
@@ -68,6 +72,50 @@ const CustomerHub: React.FC = () => {
       return matchesSearch && matchesType;
     });
   }, [customers, searchTerm, selectedType]);
+
+  // Handle select all
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedCustomers(filteredCustomers.map(c => c.id));
+    } else {
+      setSelectedCustomers([]);
+    }
+  };
+
+  // Handle individual selection
+  const handleSelectCustomer = (customerId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCustomers(prev => [...prev, customerId]);
+    } else {
+      setSelectedCustomers(prev => prev.filter(id => id !== customerId));
+    }
+  };
+
+  // Handle bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedCustomers.length === 0) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('customers')
+        .delete()
+        .in('id', selectedCustomers);
+      
+      if (error) throw error;
+      
+      toast.success(`Successfully deleted ${selectedCustomers.length} customer(s)`);
+      setSelectedCustomers([]);
+    } catch (error) {
+      console.error('Error deleting customers:', error);
+      toast.error('Failed to delete customers');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isAllSelected = filteredCustomers.length > 0 && selectedCustomers.length === filteredCustomers.length;
+  const isIndeterminate = selectedCustomers.length > 0 && selectedCustomers.length < filteredCustomers.length;
 
 
   return (
@@ -102,7 +150,21 @@ const CustomerHub: React.FC = () => {
 
       {/* Filters & Search */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
+          {selectedCustomers.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={isDeleting}
+              className="gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete {selectedCustomers.length} Selected
+            </Button>
+          )}
+        </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-500" />
@@ -137,6 +199,13 @@ const CustomerHub: React.FC = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={handleSelectAll}
+                  aria-label="Select all customers"
+                />
+              </TableHead>
               <TableHead className="font-medium text-gray-900">Customer</TableHead>
               <TableHead className="font-medium text-gray-900">Type</TableHead>
               <TableHead className="font-medium text-gray-900">Phone</TableHead>
@@ -150,13 +219,13 @@ const CustomerHub: React.FC = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                   Loading customers...
                 </TableCell>
               </TableRow>
             ) : filteredCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                   No customers found
                 </TableCell>
               </TableRow>
@@ -166,6 +235,13 @@ const CustomerHub: React.FC = () => {
                   key={customer.id} 
                   className={`transition-colors hover:bg-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                 >
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedCustomers.includes(customer.id)}
+                      onCheckedChange={(checked) => handleSelectCustomer(customer.id, checked as boolean)}
+                      aria-label={`Select ${customer.name}`}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">
                     <Link 
                       to={`/customers/${customer.id}`}
