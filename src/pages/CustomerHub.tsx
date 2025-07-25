@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CSVImportModal } from "@/components/customers/CSVImportModal";
+import { EditCustomerModal } from "@/components/customers/EditCustomerModal";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,7 @@ const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [isCSVImportOpen, setIsCSVImportOpen] = useState(false);
+  const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false);
 
   // Fetch customers data
   const { data: customers = [], isLoading } = useQuery({
@@ -87,7 +89,10 @@ const CustomerHub: React.FC = () => {
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
-            <Button className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
+            <Button 
+              className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
+              onClick={() => setIsAddCustomerOpen(true)}
+            >
               <Plus className="w-4 h-4" />
               Add Customer
             </Button>
@@ -205,6 +210,13 @@ const CustomerHub: React.FC = () => {
       <CSVImportModal 
         isOpen={isCSVImportOpen} 
         onClose={() => setIsCSVImportOpen(false)} 
+      />
+
+      {/* Add Customer Modal */}
+      <EditCustomerModal 
+        isOpen={isAddCustomerOpen} 
+        onClose={() => setIsAddCustomerOpen(false)}
+        customer={null}
       />
     </div>
   );
