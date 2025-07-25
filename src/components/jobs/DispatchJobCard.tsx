@@ -82,15 +82,16 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full",
-        isDragging && "shadow-lg border-blue-300 bg-blue-50"
+        "bg-white border border-gray-200 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md dispatch-job-card w-full max-w-full border-l-4",
+        isDragging && "shadow-lg border-blue-300 bg-blue-50",
+        jobTypeInfo.borderColor
       )}
       onClick={onClick}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-2 min-w-0 flex-1">
-          <div className="w-2 h-2 rounded-full flex-shrink-0 bg-gray-400" />
+          <div className={cn("w-2 h-2 rounded-full flex-shrink-0", jobTypeInfo.color)} />
           <span className="font-medium text-sm text-gray-900 truncate">
             {job.job_number}
           </span>

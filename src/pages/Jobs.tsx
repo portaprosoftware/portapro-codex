@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import { formatDateForQuery, addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
 import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TabNav } from '@/components/ui/TabNav';
@@ -548,24 +548,18 @@ const JobsPage: React.FC = () => {
                           <span className="text-sm font-medium">1 job</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
-                          <Badge className="bg-gradient-blue text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            Assigned: {getJobStatusCounts().assigned}
-                          </Badge>
-                          <Badge className="bg-gradient-orange text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            In Progress: {getJobStatusCounts().inProgress}
-                          </Badge>
-                          <Badge className="bg-gradient-green text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            Completed: {getJobStatusCounts().completed}
-                          </Badge>
-                          <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            Completed Late: {dispatchJobs.filter(job => job.status === 'completed_late').length}
-                          </Badge>
-                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            Cancelled: {dispatchJobs.filter(job => job.status === 'cancelled').length}
-                          </Badge>
-                          <Badge className="bg-gradient-red text-white border-0 font-bold px-3 py-1 rounded-full text-center flex items-center justify-center">
-                            Overdue: {dispatchJobs.filter(job => job.status === 'overdue').length}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                            <span>{getJobStatusCounts().assigned} Assigned</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                            <span>{getJobStatusCounts().inProgress} In Progress</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-green-500 rounded"></div>
+                            <span>{getJobStatusCounts().completed} Completed</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -607,6 +601,12 @@ const JobsPage: React.FC = () => {
                                 </div>
                               </div>
 
+                              {/* Jobs for Jason Wells */}
+                              {driver.first_name === 'Jason' && (
+                                <div className="text-xs text-gray-600 mb-2">
+                                  Jobs for Jason Wells
+                                </div>
+                              )}
 
                               {/* Drop Zone */}
                               <Droppable droppableId={driver.id}>
