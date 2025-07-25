@@ -215,7 +215,7 @@ const QuotesInvoices: React.FC = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowQuickBooksExport(true)}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-800 text-white font-bold border-0"
                 >
                   Export to QuickBooks
                 </Button>
@@ -303,6 +303,12 @@ const QuotesInvoices: React.FC = () => {
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export
+                </Button>
+                <Button 
+                  onClick={() => setShowQuickBooksExport(true)}
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-800 text-white font-bold border-0"
+                >
+                  Export to QuickBooks
                 </Button>
                 <Button 
                   onClick={() => setShowInvoiceWizard(true)}
