@@ -1,12 +1,12 @@
 
 import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { FleetCompliance } from "@/components/fleet/FleetCompliance";
 
 export default function FleetCompliancePage() {
   return (
-    <Layout>
+    <FleetLayout>
       <FleetCompliance />
-    </Layout>
+    </FleetLayout>
   );
 }
