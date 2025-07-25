@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { 
   Truck, 
   AlertTriangle, 
@@ -59,11 +59,21 @@ const navigationItems = [
 ];
 
 export const FleetSidebar: React.FC = () => {
+  const location = useLocation();
+  const isFleetManagementActive = location.pathname === "/fleet-management" || location.pathname === "/fleet";
+  
   return (
     <aside className="w-64 bg-card border-r flex flex-col">
       {/* Header */}
       <div className="p-6 border-b">
-        <h2 className="text-lg font-semibold">Fleet Management</h2>
+        <h2 className={cn(
+          "text-lg font-semibold transition-colors",
+          isFleetManagementActive 
+            ? "text-white font-bold bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-2 rounded-lg" 
+            : "text-foreground"
+        )}>
+          Fleet Management
+        </h2>
       </div>
 
       {/* Navigation */}
