@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Upload, Plus, Search, Filter, Eye, Trash2 } from "lucide-react";
@@ -91,53 +90,56 @@ const CustomerHub: React.FC = () => {
     }
   };
 
-  // Handle bulk delete
-  const handleBulkDelete = async () => {
+  const deleteCustomersAndRelatedData = async (customerIds: string[]) => {
+    // First, delete all jobs associated with these customers
+    const { error: jobsError } = await supabase
+      .from('jobs')
+      .delete()
+      .in('customer_id', customerIds);
+    
+    if (jobsError) {
+      console.error('Error deleting jobs:', jobsError);
+      // Continue anyway - some customers might not have jobs
+    }
+
+    // Then delete all customer contacts
+    const { error: contactsError } = await supabase
+      .from('customer_contacts')
+      .delete()
+      .in('customer_id', customerIds);
+    
+    if (contactsError) {
+      console.error('Error deleting customer contacts:', contactsError);
+      // Continue anyway
+    }
+
+    // Then delete all customer service locations
+    const { error: locationsError } = await supabase
+      .from('customer_service_locations')
+      .delete()
+      .in('customer_id', customerIds);
+    
+    if (locationsError) {
+      console.error('Error deleting customer service locations:', locationsError);
+      // Continue anyway
+    }
+
+    // Finally, delete the customers
+    const { error } = await supabase
+      .from('customers')
+      .delete()
+      .in('id', customerIds);
+    
+    if (error) throw error;
+  };
+
+  // Handle delete selected
+  const handleDeleteSelected = async () => {
     if (selectedCustomers.length === 0) return;
     
     setIsDeleting(true);
     try {
-      // First, delete all jobs associated with these customers
-      const { error: jobsError } = await supabase
-        .from('jobs')
-        .delete()
-        .in('customer_id', selectedCustomers);
-      
-      if (jobsError) {
-        console.error('Error deleting jobs:', jobsError);
-        // Continue anyway - some customers might not have jobs
-      }
-
-      // Then delete all customer contacts
-      const { error: contactsError } = await supabase
-        .from('customer_contacts')
-        .delete()
-        .in('customer_id', selectedCustomers);
-      
-      if (contactsError) {
-        console.error('Error deleting customer contacts:', contactsError);
-        // Continue anyway
-      }
-
-      // Then delete all customer service locations
-      const { error: locationsError } = await supabase
-        .from('customer_service_locations')
-        .delete()
-        .in('customer_id', selectedCustomers);
-      
-      if (locationsError) {
-        console.error('Error deleting customer service locations:', locationsError);
-        // Continue anyway
-      }
-
-      // Finally, delete the customers
-      const { error } = await supabase
-        .from('customers')
-        .delete()
-        .in('id', selectedCustomers);
-      
-      if (error) throw error;
-      
+      await deleteCustomersAndRelatedData(selectedCustomers);
       toast.success(`Successfully deleted ${selectedCustomers.length} customer(s) and their associated data`);
       setSelectedCustomers([]);
     } catch (error) {
@@ -148,9 +150,40 @@ const CustomerHub: React.FC = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL customers? This action cannot be undone.')) {
+      return;
+    }
+    
+    setIsDeleting(true);
+    try {
+      // Get all customer IDs
+      const { data: allCustomers, error: fetchError } = await supabase
+        .from('customers')
+        .select('id');
+      
+      if (fetchError) throw fetchError;
+      
+      const allCustomerIds = allCustomers?.map(c => c.id) || [];
+      
+      if (allCustomerIds.length === 0) {
+        toast.info('No customers to delete');
+        return;
+      }
+      
+      await deleteCustomersAndRelatedData(allCustomerIds);
+      toast.success(`Successfully deleted all ${allCustomerIds.length} customers and their associated data`);
+      setSelectedCustomers([]);
+    } catch (error) {
+      console.error('Error deleting all customers:', error);
+      toast.error('Failed to delete all customers');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const isAllSelected = filteredCustomers.length > 0 && selectedCustomers.length === filteredCustomers.length;
   const isIndeterminate = selectedCustomers.length > 0 && selectedCustomers.length < filteredCustomers.length;
-
 
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
@@ -187,16 +220,27 @@ const CustomerHub: React.FC = () => {
         <div className="flex items-center gap-4">
           <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
           {selectedCustomers.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleBulkDelete}
-              disabled={isDeleting}
-              className="gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              Delete {selectedCustomers.length} Selected
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="destructive"
+                onClick={handleDeleteSelected}
+                disabled={selectedCustomers.length === 0 || isDeleting}
+                className="flex items-center space-x-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete Selected ({selectedCustomers.length})</span>
+              </Button>
+              
+              <Button
+                variant="destructive"
+                onClick={handleDeleteAll}
+                disabled={isDeleting}
+                className="flex items-center space-x-2 bg-red-600 hover:bg-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete All Customers</span>
+              </Button>
+            </div>
           )}
         </div>
         <div className="flex items-center gap-4">
