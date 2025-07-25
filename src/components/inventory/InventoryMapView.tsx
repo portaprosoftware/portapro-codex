@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { SimpleWeatherRadar } from '@/components/maps/SimpleWeatherRadar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -370,6 +372,13 @@ export const InventoryMapView: React.FC = () => {
     <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
+      
+      {/* Weather Radar Overlay */}
+      <SimpleWeatherRadar
+        map={map.current}
+        enabled={radarEnabled}
+        onError={(error) => toast.error(error)}
+      />
 
       {/* Radar Toggle */}
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">

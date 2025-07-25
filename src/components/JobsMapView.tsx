@@ -16,8 +16,12 @@ import {
   Eye,
   Play,
   Filter,
-  X
+  X,
+  Cloud,
+  Navigation
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { SimpleWeatherRadar } from '@/components/maps/SimpleWeatherRadar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -77,6 +81,7 @@ const JobsMapView: React.FC = () => {
   const [weatherApiKey, setWeatherApiKey] = useState<string>('');
   const [radarOpacity, setRadarOpacity] = useState(0.6);
   const [radarTimeIndex, setRadarTimeIndex] = useState(0);
+  const [radarEnabled, setRadarEnabled] = useState(false);
 
   // Fetch real jobs and drivers data
   const { data: jobs = [] } = useQuery({
@@ -733,17 +738,37 @@ const JobsMapView: React.FC = () => {
           className="w-full h-96 lg:h-[600px]"
         />
         
-        {/* Locate Me Button */}
-        <div className="absolute bottom-6 left-6">
+        {/* Control Buttons */}
+        <div className="absolute bottom-6 left-6 flex flex-col gap-2">
           <Button 
             variant="outline"
             size="icon"
             className="bg-white hover:bg-gray-50 shadow-md rounded-full h-12 w-12"
             onClick={handleLocateMe}
           >
-            <Crosshair className="w-5 h-5" />
+            <Navigation className="w-5 h-5" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            className={`shadow-md rounded-full h-12 w-12 ${
+              radarEnabled 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+            onClick={() => setRadarEnabled(!radarEnabled)}
+          >
+            <Cloud className="w-5 h-5" />
           </Button>
         </div>
+        
+        {/* Weather Radar Overlay */}
+        <SimpleWeatherRadar
+          map={map.current}
+          enabled={radarEnabled}
+          onError={(error) => toast.error(error)}
+        />
 
         {/* Pin Popup */}
         {selectedPin && (
