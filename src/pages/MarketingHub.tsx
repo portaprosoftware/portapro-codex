@@ -170,123 +170,125 @@ const MarketingHub: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Marketing Hub</h1>
-              <p className="text-base text-gray-600 font-inter mt-1">Manage customer segments, campaigns, and communications</p>
-            </div>
+    <div className="p-6 space-y-8 font-sans">
+      {/* Header */}
+      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-8 transition-all duration-300 hover:shadow-md">
+        <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold text-gray-900 font-sans">Marketing Hub</h1>
+            <p className="text-lg text-gray-600 font-sans">
+              Manage customer segments, campaigns, and communications
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex space-x-4 mb-8 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-10 py-4 rounded-lg font-medium text-sm transition-colors whitespace-nowrap min-w-fit ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm border-0'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      {/* Navigation Tabs */}
+      <div className="flex space-x-4 mb-8 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-10 py-4 rounded-lg font-medium text-sm transition-colors whitespace-nowrap min-w-fit ${
+              activeTab === tab.id
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm border-0'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        {/* Customer Segments Tab */}
-        {activeTab === 'customer-segments' && (
-          <div className="space-y-8">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {summaryCards.map((card, index) => (
-                <Card key={index} className="p-6 relative">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
-                      <p className="text-2xl font-bold" style={{ color: card.color }}>
-                        {card.value}
-                      </p>
-                    </div>
-                    <div 
-                      className="w-8 h-8 rounded-md flex items-center justify-center"
-                      style={{ backgroundColor: card.color }}
-                    >
-                      <card.icon className="w-4 h-4 text-white" />
-                    </div>
+      {/* Customer Segments Tab */}
+      {activeTab === 'customer-segments' && (
+        <div className="space-y-8">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {summaryCards.map((card, index) => (
+              <Card key={index} className="p-6 relative">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
+                    <p className="text-2xl font-bold" style={{ color: card.color }}>
+                      {card.value}
+                    </p>
                   </div>
+                  <div 
+                    className="w-8 h-8 rounded-md flex items-center justify-center"
+                    style={{ backgroundColor: card.color }}
+                  >
+                    <card.icon className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Smart Segments Section */}
+          <div>
+            <div className="flex justify-between items-end mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Smart Segments</h2>
+                <p className="text-sm text-gray-600">Dynamic segments that update automatically based on customer data</p>
+              </div>
+              <SmartSegmentBuilder />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {segments?.map((segment) => (
+                <Card key={segment.id} className="p-4 border border-gray-200">
+                  <div className="flex justify-between items-start mb-3">
+                    <Badge 
+                      variant="secondary" 
+                      className="bg-blue-50 text-primary border-0"
+                    >
+                      Smart
+                    </Badge>
+                    <span className="text-lg font-bold text-gray-900">
+                      {segment.customer_count}
+                    </span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">{segment.name}</h3>
+                  <p className="text-sm text-gray-600">{segment.description}</p>
                 </Card>
               ))}
             </div>
+          </div>
 
-            {/* Smart Segments Section */}
-            <div>
-              <div className="flex justify-between items-end mb-6">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">Smart Segments</h2>
-                  <p className="text-sm text-gray-600">Dynamic segments that update automatically based on customer data</p>
-                </div>
-                <SmartSegmentBuilder />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {segments?.map((segment) => (
-                  <Card key={segment.id} className="p-4 border border-gray-200">
-                    <div className="flex justify-between items-start mb-3">
-                      <Badge 
-                        variant="secondary" 
-                        className="bg-blue-50 text-primary border-0"
-                      >
-                        Smart
-                      </Badge>
-                      <span className="text-lg font-bold text-gray-900">
-                        {segment.customer_count}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{segment.name}</h3>
-                    <p className="text-sm text-gray-600">{segment.description}</p>
-                  </Card>
-                ))}
-              </div>
+          {/* Customer Types Breakdown Section */}
+          <div>
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Customer Types Breakdown</h2>
+              <p className="text-sm text-gray-600">Target specific customer types with personalized campaigns</p>
             </div>
 
-            {/* Customer Types Breakdown Section */}
-            <div>
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Customer Types Breakdown</h2>
-                <p className="text-sm text-gray-600">Target specific customer types with personalized campaigns</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {customerTypeBreakdown.map((typeData) => (
-                  <CustomerTypeCard key={typeData.type} {...typeData} />
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {customerTypeBreakdown.map((typeData) => (
+                <CustomerTypeCard key={typeData.type} {...typeData} />
+              ))}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Campaign Analytics Tab */}
-        {activeTab === 'campaign-analytics' && <CampaignAnalytics />}
+      {/* Campaign Analytics Tab */}
+      {activeTab === 'campaign-analytics' && <CampaignAnalytics />}
 
-        {/* Template Management Tab */}
-        {activeTab === 'manage-templates' && <TemplateManagement />}
+      {/* Template Management Tab */}
+      {activeTab === 'manage-templates' && <TemplateManagement />}
 
-        {/* Campaign Creation Tab */}
-        {activeTab === 'create-campaign' && <CampaignCreation />}
+      {/* Campaign Creation Tab */}
+      {activeTab === 'create-campaign' && <CampaignCreation />}
 
-        {/* Placeholder for other tabs */}
-        {!['customer-segments', 'campaign-analytics', 'manage-templates', 'create-campaign'].includes(activeTab) && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">
-              {tabs.find(t => t.id === activeTab)?.label} - Coming Soon
-            </p>
-          </div>
-        )}
+      {/* Placeholder for other tabs */}
+      {!['customer-segments', 'campaign-analytics', 'manage-templates', 'create-campaign'].includes(activeTab) && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">
+            {tabs.find(t => t.id === activeTab)?.label} - Coming Soon
+          </p>
+        </div>
+      )}
     </div>
   );
 };
