@@ -48,7 +48,7 @@ interface AppSidebarProps {
   onSectionChange?: (section: string) => void;
 }
 
-const items: NavigationItem[] = [
+const coreItems: NavigationItem[] = [
   { 
     title: 'Dashboard', 
     url: '/', 
@@ -66,8 +66,11 @@ const items: NavigationItem[] = [
     icon: Users2,
     permission: 'staff'
   },
+];
+
+const inventoryItems: NavigationItem[] = [
   { 
-    title: 'Inventory', 
+    title: 'Products', 
     url: '/inventory', 
     icon: Package,
     permission: 'staff'
@@ -84,6 +87,9 @@ const items: NavigationItem[] = [
     icon: Building,
     permission: 'admin'
   },
+];
+
+const managementItems: NavigationItem[] = [
   { 
     title: 'Fleet Management', 
     url: '/fleet-management', 
@@ -142,7 +148,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
     }
   });
 
-  const getVisibleItems = () => {
+  const getVisibleItems = (items: NavigationItem[]) => {
     return items.filter(item => {
       if (!item.permission) return true;
       if (item.permission === 'owner') return isOwner;
@@ -158,7 +164,9 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
     });
   };
 
-  const visibleItems = getVisibleItems();
+  const visibleCoreItems = getVisibleItems(coreItems);
+  const visibleInventoryItems = getVisibleItems(inventoryItems);
+  const visibleManagementItems = getVisibleItems(managementItems);
 
   return (
     <Sidebar className="w-64 border-r">
@@ -170,13 +178,11 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       </div>
       
       <SidebarContent>
+        {/* Core Navigation */}
         <SidebarGroup>
-          <div className="px-4 py-2">
-            <h2 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Navigation</h2>
-          </div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {visibleItems.map((item) => (
+              {visibleCoreItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
@@ -186,10 +192,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     <NavLink
                       to={item.url}
                       onClick={() => onSectionChange?.(item.url)}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
                     >
-                      <item.icon className="h-4 w-4" />
-                       <span className="text-sm font-medium">{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-sm font-medium">{item.title}</span>
                       {item.badge && (
                         <Badge 
                           className={cn(
@@ -209,6 +215,68 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Inventory Section */}
+        {visibleInventoryItems.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              📦 Inventory
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleInventoryItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={activeSection === item.url || location.pathname === item.url}
+                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
+                    >
+                      <NavLink
+                        to={item.url}
+                        onClick={() => onSectionChange?.(item.url)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span className="text-sm font-medium">{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Management Section */}
+        {visibleManagementItems.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Management
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleManagementItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={activeSection === item.url || location.pathname === item.url}
+                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
+                    >
+                      <NavLink
+                        to={item.url}
+                        onClick={() => onSectionChange?.(item.url)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span className="text-sm font-medium">{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       {/* Footer */}

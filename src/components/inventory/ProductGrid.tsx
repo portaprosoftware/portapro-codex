@@ -30,7 +30,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         .select(`
           *,
           product_items(count),
-          product_location_stock!inner(storage_location_id, quantity),
+          product_location_stock(storage_location_id, quantity),
           storage_locations(id, name)
         `);
 
