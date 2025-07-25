@@ -2,7 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Edit, Package, TrendingDown, DollarSign } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertTriangle, Edit, Package, TrendingDown, DollarSign, MoreHorizontal, Trash2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { getCategoryLabel } from '@/lib/consumableCategories';
 
@@ -26,6 +27,7 @@ interface ConsumablesDashboardProps {
   isLoading: boolean;
   onEdit: (consumable: Consumable) => void;
   onReceiveStock: (consumable: Consumable) => void;
+  onDelete: (consumable: Consumable) => void;
   onRefetch: () => void;
 }
 
@@ -34,6 +36,7 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
   isLoading,
   onEdit,
   onReceiveStock,
+  onDelete,
 }) => {
   if (isLoading) {
     return <LoadingSpinner />;
@@ -177,22 +180,31 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                       </Badge>
                     </td>
                     <td className="p-2">
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => onEdit(consumable)}
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => onReceiveStock(consumable)}
-                        >
-                          <Package className="w-3 h-3" />
-                        </Button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem onClick={() => onEdit(consumable)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onReceiveStock(consumable)}>
+                            <Package className="w-4 h-4 mr-2" />
+                            Change Inventory
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(consumable)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Item
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}

@@ -19,9 +19,11 @@ import { ConsumablesReportsTab } from './ConsumablesReportsTab';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, QrCode, Bell, MapPin, Package, FileText, CheckSquare, ChevronDown } from 'lucide-react';
+import { Plus, QrCode, Bell, MapPin, Package, FileText, CheckSquare, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { PageHeader } from '@/components/ui/PageHeader';
+import { TabNav } from '@/components/ui/TabNav';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface Consumable {
   id: string;
@@ -45,7 +47,9 @@ export const ConsumablesInventory: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
+  const [activeTab, setActiveTab] = useState('inventory');
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const { data: consumables, isLoading, refetch } = useQuery({
     queryKey: ['consumables'],
@@ -70,6 +74,31 @@ export const ConsumablesInventory: React.FC = () => {
     setShowReceiveModal(true);
   };
 
+  // Delete consumable mutation
+  const deleteConsumableMutation = useMutation({
+    mutationFn: async (consumableId: string) => {
+      const { error } = await supabase
+        .from('consumables' as any)
+        .delete()
+        .eq('id', consumableId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Consumable deleted successfully');
+      refetch();
+    },
+    onError: () => {
+      toast.error('Failed to delete consumable');
+    }
+  });
+
+  const handleDelete = (consumable: Consumable) => {
+    if (window.confirm(`Are you sure you want to delete "${consumable.name}"? This action cannot be undone.`)) {
+      deleteConsumableMutation.mutate(consumable.id);
+    }
+  };
+
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
@@ -79,142 +108,126 @@ export const ConsumablesInventory: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Consumables Management System"
-        subtitle="Advanced consumables tracking, QR integration, and job usage monitoring"
-      />
-      
-      <Tabs defaultValue="inventory" className="space-y-6">
-        <div className="flex items-center gap-1">
-          <TabsList className="flex-1">
-            <TabsTrigger value="inventory">
-              <Package className="w-4 h-4 mr-2" />
-              Inventory
-            </TabsTrigger>
-            <TabsTrigger value="usage" className={isMobile ? "hidden" : ""}>
-              <CheckSquare className="w-4 h-4 mr-2" />
-              Usage
-            </TabsTrigger>
-            <TabsTrigger value="requests" className={isMobile ? "hidden" : ""}>
-              <MapPin className="w-4 h-4 mr-2" />
-              Requests
-            </TabsTrigger>
-            <TabsTrigger value="reports" className={isMobile ? "hidden" : ""}>
-              <FileText className="w-4 h-4 mr-2" />
-              Reports
-            </TabsTrigger>
-            <TabsTrigger value="alerts" className="hidden">
-              Alerts
-            </TabsTrigger>
-            <TabsTrigger value="qr-codes" className="hidden">
-              QR Codes
-            </TabsTrigger>
-            <TabsTrigger value="mobile-pwa" className="hidden">
-              Mobile PWA
-            </TabsTrigger>
-          </TabsList>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-10 px-3 py-1.5 text-sm font-medium">
-                More
-                <ChevronDown className="w-4 h-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {isMobile && (
-                <>
-                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="usage"]') as HTMLElement)?.click()}>
-                    <CheckSquare className="w-4 h-4 mr-2" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
+        {/* Page Header with Navigation Pills */}
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Consumables Management System</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Advanced consumables tracking, QR integration, and job usage monitoring</p>
+            </div>
+            
+            {/* Consumables Sub-Navigation Pills */}
+            <div className="flex items-center justify-between">
+              <div className="enterprise-tabs">
+                <TabNav ariaLabel="Consumables views">
+                  <TabNav.Item 
+                    to="#"
+                    isActive={activeTab === 'inventory'}
+                    onClick={() => setActiveTab('inventory')}
+                  >
+                    <Package className="w-4 h-4" />
+                    Inventory
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="#"
+                    isActive={activeTab === 'usage'}
+                    onClick={() => setActiveTab('usage')}
+                  >
+                    <CheckSquare className="w-4 h-4" />
                     Usage
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="requests"]') as HTMLElement)?.click()}>
-                    <MapPin className="w-4 h-4 mr-2" />
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="#"
+                    isActive={activeTab === 'requests'}
+                    onClick={() => setActiveTab('requests')}
+                  >
+                    <MapPin className="w-4 h-4" />
                     Requests
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => (document.querySelector('[value="reports"]') as HTMLElement)?.click()}>
-                    <FileText className="w-4 h-4 mr-2" />
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="#"
+                    isActive={activeTab === 'reports'}
+                    onClick={() => setActiveTab('reports')}
+                  >
+                    <FileText className="w-4 h-4" />
                     Reports
-                  </DropdownMenuItem>
-                </>
-              )}
-              <DropdownMenuItem onSelect={() => (document.querySelector('[value="alerts"]') as HTMLElement)?.click()}>
-                <Bell className="w-4 h-4 mr-2" />
-                Alerts
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => (document.querySelector('[value="qr-codes"]') as HTMLElement)?.click()}>
-                <QrCode className="w-4 h-4 mr-2" />
-                QR Codes
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => (document.querySelector('[value="mobile-pwa"]') as HTMLElement)?.click()}>
-                <Package className="w-4 h-4 mr-2" />
-                Mobile PWA
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <TabsContent value="inventory" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <Button onClick={() => setShowAddModal(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Consumable
-              </Button>
+                  </TabNav.Item>
+                </TabNav>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button onClick={() => setShowAddModal(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Consumable
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="h-10 px-3 py-1.5 text-sm font-medium">
+                      More
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onSelect={() => setActiveTab('alerts')}>
+                      <Bell className="w-4 h-4 mr-2" />
+                      Alerts
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setActiveTab('qr-codes')}>
+                      <QrCode className="w-4 h-4 mr-2" />
+                      QR Codes
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setActiveTab('mobile-pwa')}>
+                      <Package className="w-4 h-4 mr-2" />
+                      Mobile PWA
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
+        </div>
 
-          <ConsumablesDashboard 
-            consumables={consumables || []}
-            isLoading={isLoading}
-            onEdit={handleEdit}
-            onReceiveStock={handleReceiveStock}
-            onRefetch={refetch}
-          />
-        </TabsContent>
+        {/* Tab Content */}
+        <div className="space-y-6">
+          {activeTab === 'inventory' && (
+            <ConsumablesDashboard 
+              consumables={consumables || []}
+              isLoading={isLoading}
+              onEdit={handleEdit}
+              onReceiveStock={handleReceiveStock}
+              onDelete={handleDelete}
+              onRefetch={refetch}
+            />
+          )}
 
-        <TabsContent value="usage">
-          <JobConsumablesTracker />
-        </TabsContent>
+          {activeTab === 'usage' && <JobConsumablesTracker />}
+          {activeTab === 'requests' && <ConsumableRequestsManager />}
+          {activeTab === 'reports' && <ConsumablesReportsTab />}
+          {activeTab === 'alerts' && <ConsumableNotificationsPanel />}
+          {activeTab === 'qr-codes' && <ConsumableQRGenerator />}
+          {activeTab === 'mobile-pwa' && <ConsumablePWAManager />}
+        </div>
 
-        <TabsContent value="requests">
-          <ConsumableRequestsManager />
-        </TabsContent>
+        <AddConsumableModal 
+          isOpen={showAddModal}
+          onClose={handleModalClose}
+        />
 
-        <TabsContent value="reports">
-          <ConsumablesReportsTab />
-        </TabsContent>
+        <EditConsumableModal 
+          isOpen={showEditModal}
+          consumable={selectedConsumable}
+          onClose={handleModalClose}
+        />
 
-        <TabsContent value="alerts">
-          <ConsumableNotificationsPanel />
-        </TabsContent>
-
-        <TabsContent value="qr-codes">
-          <ConsumableQRGenerator />
-        </TabsContent>
-
-        <TabsContent value="mobile-pwa">
-          <ConsumablePWAManager />
-        </TabsContent>
-      </Tabs>
-
-      <AddConsumableModal 
-        isOpen={showAddModal}
-        onClose={handleModalClose}
-      />
-
-      <EditConsumableModal 
-        isOpen={showEditModal}
-        consumable={selectedConsumable}
-        onClose={handleModalClose}
-      />
-
-      <ReceiveStockModal 
-        isOpen={showReceiveModal}
-        consumable={selectedConsumable}
-        onClose={handleModalClose}
-      />
+        <ReceiveStockModal 
+          isOpen={showReceiveModal}
+          consumable={selectedConsumable}
+          onClose={handleModalClose}
+        />
+      </div>
     </div>
   );
 };
