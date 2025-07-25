@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Separator } from '@/components/ui/separator';
+import { Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -135,6 +137,8 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
   const queryClient = useQueryClient();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Parse existing address into components
   const parseAddress = (address?: string) => {
@@ -252,6 +256,48 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       toast({
         title: 'Confirmation Failed',
         description: 'Please type "no deposit" exactly to confirm',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const deleteCustomerMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('customers')
+        .delete()
+        .eq('id', customer.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      toast({
+        title: 'Customer Deleted',
+        description: 'Customer has been permanently deleted.',
+        variant: 'destructive',
+      });
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete customer. They may have associated data.',
+        variant: 'destructive',
+      });
+      console.error('Error deleting customer:', error);
+    },
+  });
+
+  const handleDeleteCustomer = () => {
+    if (deleteConfirmText.toLowerCase() === 'delete customer') {
+      deleteCustomerMutation.mutate();
+      setShowDeleteDialog(false);
+      setDeleteConfirmText('');
+    } else {
+      toast({
+        title: 'Confirmation Failed',
+        description: 'Please type "delete customer" exactly to confirm',
         variant: 'destructive',
       });
     }
@@ -580,6 +626,24 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                 )}
               />
 
+              {/* Danger Zone */}
+              <Separator className="my-6" />
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-destructive">Danger Zone</h3>
+                <p className="text-sm text-muted-foreground">
+                  Permanently delete this customer. This action cannot be undone.
+                </p>
+                <Button 
+                  type="button" 
+                  variant="destructive" 
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Customer
+                </Button>
+              </div>
+
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
@@ -626,6 +690,46 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="border-destructive">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground">
+              This action will permanently delete <strong>{customer.name}</strong> and cannot be undone.
+              All associated data including jobs, quotes, and invoices will be affected.
+              <br /><br />
+              Type <strong>"delete customer"</strong> to confirm:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-4">
+            <Input
+              placeholder="Type 'delete customer' to confirm"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              className="border-destructive focus:border-destructive"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setDeleteConfirmText('');
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCustomer}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              disabled={deleteCustomerMutation.isPending}
+            >
+              {deleteCustomerMutation.isPending ? 'Deleting...' : 'Delete Customer'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
