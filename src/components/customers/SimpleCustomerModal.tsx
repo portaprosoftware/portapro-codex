@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,9 +26,63 @@ const CUSTOMER_TYPES = [
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
 ];
 
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' },
+];
+
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [stateOpen, setStateOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -39,7 +97,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const createCustomerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from('customers')
         .insert({
           name: data.name,
@@ -52,12 +110,15 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
           service_zip: data.service_zip,
           billing_differs_from_service: false,
           deposit_required: true,
-        });
+        })
+        .select();
 
       if (error) {
         console.error('Insert error:', error);
         throw new Error(error.message);
       }
+      
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -186,13 +247,49 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
             </div>
             <div>
               <Label htmlFor="service_state">State *</Label>
-              <Input
-                id="service_state"
-                value={formData.service_state}
-                onChange={(e) => handleInputChange('service_state', e.target.value)}
-                placeholder="State"
-                maxLength={2}
-              />
+              <Popover open={stateOpen} onOpenChange={setStateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={stateOpen}
+                    className="w-full justify-between"
+                  >
+                    {formData.service_state
+                      ? US_STATES.find((state) => state.value === formData.service_state)?.label
+                      : "Select state..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search state..." />
+                    <CommandList>
+                      <CommandEmpty>No state found.</CommandEmpty>
+                      <CommandGroup>
+                        {US_STATES.map((state) => (
+                          <CommandItem
+                            key={state.value}
+                            value={state.value}
+                            onSelect={(currentValue) => {
+                              handleInputChange('service_state', currentValue === formData.service_state ? "" : currentValue);
+                              setStateOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.service_state === state.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {state.label} ({state.value})
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
