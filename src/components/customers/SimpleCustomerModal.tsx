@@ -5,10 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -82,7 +78,6 @@ const US_STATES = [
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [stateOpen, setStateOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -255,52 +250,21 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
             </div>
             <div>
               <Label htmlFor="service_state">State *</Label>
-              <Popover open={stateOpen} onOpenChange={setStateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={stateOpen}
-                    className="w-full justify-between"
-                  >
-                    {formData.service_state
-                      ? US_STATES.find((state) => state.value === formData.service_state)?.label
-                      : "Select state..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0 z-50 bg-background border shadow-md">
-                  <Command>
-                    <CommandInput placeholder="Search state..." className="h-9" />
-                    <CommandList className="max-h-[200px] overflow-y-auto">
-                      <CommandEmpty>No state found.</CommandEmpty>
-                      <CommandGroup>
-                        {US_STATES.map((state) => (
-                          <CommandItem
-                            key={state.value}
-                            value={state.label}
-                            onSelect={(currentValue) => {
-                              const selectedState = US_STATES.find((s) => s.label.toLowerCase() === currentValue.toLowerCase());
-                              if (selectedState) {
-                                handleInputChange('service_state', selectedState.value);
-                              }
-                              setStateOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formData.service_state === state.value ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {state.label} ({state.value})
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <Select 
+                value={formData.service_state} 
+                onValueChange={(value) => handleInputChange('service_state', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[200px] overflow-y-auto">
+                  {US_STATES.map((state) => (
+                    <SelectItem key={state.value} value={state.value}>
+                      {state.label} ({state.value})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
