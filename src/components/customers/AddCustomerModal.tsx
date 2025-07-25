@@ -163,7 +163,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: CustomerFormData) => {
-      // First, create the customer
+      // Create customer - database trigger will automatically create default service location
       const customerInsertData = {
         name: customerData.name,
         contact_first_name: customerData.contact_first_name,
@@ -200,31 +200,6 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       if (customerError) {
         console.error('Customer insert error:', customerError);
         throw customerError;
-      }
-
-      // Create the default service location
-      const serviceLocationData = {
-        customer_id: customerData_result.id,
-        location_name: customerData.name + ' - Main Location',
-        location_description: 'Auto-generated from customer service address',
-        street: customerData.default_service_differs_from_main ? customerData.default_service_street : customerData.service_street,
-        street2: customerData.default_service_differs_from_main ? (customerData.default_service_street2 || null) : (customerData.service_street2 || null),
-        city: customerData.default_service_differs_from_main ? customerData.default_service_city : customerData.service_city,
-        state: customerData.default_service_differs_from_main ? customerData.default_service_state : customerData.service_state,
-        zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : customerData.service_zip,
-        is_active: true,
-        is_default: true,
-        is_locked: true
-      };
-
-      const { error: serviceLocationError } = await supabase
-        .from('customer_service_locations')
-        .insert([serviceLocationData]);
-
-      if (serviceLocationError) {
-        console.error('Service location insert error:', serviceLocationError);
-        // Don't throw here - customer was created successfully
-        console.warn('Service location creation failed, but customer was created');
       }
 
       return customerData_result;
