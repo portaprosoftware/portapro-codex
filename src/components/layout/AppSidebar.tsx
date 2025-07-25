@@ -14,6 +14,7 @@ import {
   BarChart4,
   Droplets,
   Building2,
+  Building,
   Megaphone,
   MessageSquare,
   Scroll
@@ -76,6 +77,12 @@ const items: NavigationItem[] = [
     url: '/consumables', 
     icon: Scroll,
     permission: 'staff'
+  },
+  { 
+    title: 'Storage Sites', 
+    url: '/storage-sites', 
+    icon: Building,
+    permission: 'admin'
   },
   { 
     title: 'Fleet Management', 

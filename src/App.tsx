@@ -28,6 +28,7 @@ import { ScanFeedback } from "./pages/ScanFeedback";
 import TestingPage from './pages/TestingPage';
 import Consumables from './pages/Consumables';
 import PurchaseOrders from './pages/PurchaseOrders';
+import StorageSites from './pages/StorageSites';
 import { ConsumableRequestPage } from './pages/ConsumableRequestPage';
 import { DriverLayout } from './components/driver/DriverLayout';
 import { DriverDashboardPage } from './pages/DriverDashboardPage';
@@ -91,6 +92,7 @@ const App = () => {
                     <Route path="/maintenance-hub" element={<MaintenanceHub />} />
                     <Route path="/marketing" element={<Marketing />} />
                     <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/storage-sites" element={<StorageSites />} />
                     <Route path="/settings" element={<Settings />} />
                   </Routes>
                 </Layout>

@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StorageLocationSelector } from './StorageLocationSelector';
 import { Plus, Trash2, Package } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,6 +23,7 @@ interface BulkReceivingItem {
 export const BulkStockReceiving: React.FC = () => {
   const [receivingDate, setReceivingDate] = useState(new Date().toISOString().split('T')[0]);
   const [receivingSource, setReceivingSource] = useState('');
+  const [storageLocationId, setStorageLocationId] = useState('');
   const [notes, setNotes] = useState('');
   const [receivingItems, setReceivingItems] = useState<BulkReceivingItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);

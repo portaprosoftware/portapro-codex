@@ -419,6 +419,48 @@ export type Database = {
         }
         Relationships: []
       }
+      consumable_location_stock: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          id: string
+          quantity: number
+          storage_location_id: string
+          updated_at: string
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          id?: string
+          quantity?: number
+          storage_location_id: string
+          updated_at?: string
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          quantity?: number
+          storage_location_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_consumable_location_stock_consumable"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_consumable_location_stock_location"
+            columns: ["storage_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consumable_notification_settings: {
         Row: {
           business_hours_only: boolean
@@ -477,6 +519,7 @@ export type Database = {
           quantity_change: number
           reason: string
           reference_id: string | null
+          storage_location_id: string | null
         }
         Insert: {
           adjusted_by?: string | null
@@ -490,6 +533,7 @@ export type Database = {
           quantity_change: number
           reason: string
           reference_id?: string | null
+          storage_location_id?: string | null
         }
         Update: {
           adjusted_by?: string | null
@@ -503,6 +547,7 @@ export type Database = {
           quantity_change?: number
           reason?: string
           reference_id?: string | null
+          storage_location_id?: string | null
         }
         Relationships: [
           {
@@ -526,6 +571,7 @@ export type Database = {
           category: string
           created_at: string
           created_by: string | null
+          default_storage_location_id: string | null
           description: string | null
           id: string
           is_active: boolean
@@ -543,6 +589,7 @@ export type Database = {
           category: string
           created_at?: string
           created_by?: string | null
+          default_storage_location_id?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -560,6 +607,7 @@ export type Database = {
           category?: string
           created_at?: string
           created_by?: string | null
+          default_storage_location_id?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -1634,6 +1682,7 @@ export type Database = {
           product_item_id: string | null
           quantity: number | null
           return_date: string | null
+          source_storage_location_id: string | null
           status: string
           updated_at: string
         }
@@ -1648,6 +1697,7 @@ export type Database = {
           product_item_id?: string | null
           quantity?: number | null
           return_date?: string | null
+          source_storage_location_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -1662,6 +1712,7 @@ export type Database = {
           product_item_id?: string | null
           quantity?: number | null
           return_date?: string | null
+          source_storage_location_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -3521,6 +3572,7 @@ export type Database = {
           color: string | null
           condition: string | null
           created_at: string
+          current_storage_location_id: string | null
           gps_enabled: boolean | null
           id: string
           interior_features: string[] | null
@@ -3545,6 +3597,7 @@ export type Database = {
           color?: string | null
           condition?: string | null
           created_at?: string
+          current_storage_location_id?: string | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
@@ -3569,6 +3622,7 @@ export type Database = {
           color?: string | null
           condition?: string | null
           created_at?: string
+          current_storage_location_id?: string | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
@@ -3601,6 +3655,48 @@ export type Database = {
             columns: ["product_variation_id"]
             isOneToOne: false
             referencedRelation: "product_variations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_location_stock: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          storage_location_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          storage_location_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          storage_location_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_product_location_stock_location"
+            columns: ["storage_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_product_location_stock_product"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -3725,6 +3821,7 @@ export type Database = {
           created_at: string
           daily_rate: number | null
           default_price_per_day: number
+          default_storage_location_id: string | null
           description: string | null
           fixed_price: number | null
           hourly_rate: number | null
@@ -3748,6 +3845,7 @@ export type Database = {
           created_at?: string
           daily_rate?: number | null
           default_price_per_day: number
+          default_storage_location_id?: string | null
           description?: string | null
           fixed_price?: number | null
           hourly_rate?: number | null
@@ -3771,6 +3869,7 @@ export type Database = {
           created_at?: string
           daily_rate?: number | null
           default_price_per_day?: number
+          default_storage_location_id?: string | null
           description?: string | null
           fixed_price?: number | null
           hourly_rate?: number | null
@@ -5104,6 +5203,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      storage_locations: {
+        Row: {
+          address_type: string
+          company_address_id: string | null
+          created_at: string
+          custom_city: string | null
+          custom_state: string | null
+          custom_street: string | null
+          custom_street2: string | null
+          custom_zip: string | null
+          description: string | null
+          gps_coordinates: unknown | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          address_type?: string
+          company_address_id?: string | null
+          created_at?: string
+          custom_city?: string | null
+          custom_state?: string | null
+          custom_street?: string | null
+          custom_street2?: string | null
+          custom_zip?: string | null
+          description?: string | null
+          gps_coordinates?: unknown | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          address_type?: string
+          company_address_id?: string | null
+          created_at?: string
+          custom_city?: string | null
+          custom_state?: string | null
+          custom_street?: string | null
+          custom_street2?: string | null
+          custom_zip?: string | null
+          description?: string | null
+          gps_coordinates?: unknown | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       subscribers: {
         Row: {
