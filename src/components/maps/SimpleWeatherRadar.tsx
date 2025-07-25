@@ -14,6 +14,7 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [layersAdded, setLayersAdded] = useState(false);
 
   // Load radar data
   const loadRadarData = useCallback(async () => {
@@ -56,20 +57,12 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
     return () => clearInterval(interval);
   }, [enabled, loadRadarData]);
 
-  // Add radar layers to map
+  // Add radar layers to map (only once)
   const addRadarLayers = useCallback(() => {
-    if (!map || !frames.length) return;
+    if (!map || !frames.length || layersAdded) return;
 
     frames.forEach((frame, index) => {
       const { id, sourceId, url } = frame;
-
-      // Remove existing layer and source
-      if (map.getLayer(id)) {
-        map.removeLayer(id);
-      }
-      if (map.getSource(sourceId)) {
-        map.removeSource(sourceId);
-      }
 
       // Add new source and layer
       map.addSource(sourceId, {
@@ -84,12 +77,15 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         type: 'raster',
         source: sourceId,
         paint: {
-          'raster-opacity': index === currentFrame ? 0.8 : 0,
-          'raster-fade-duration': 100
+          'raster-opacity': 0,
+          'raster-fade-duration': 200
         }
       });
     });
-  }, [map, frames, currentFrame]);
+
+    setLayersAdded(true);
+    console.log('Added', frames.length, 'radar layers');
+  }, [map, frames, layersAdded]);
 
   // Remove all radar layers
   const removeRadarLayers = useCallback(() => {
@@ -104,25 +100,38 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         map.removeSource(sourceId);
       }
     });
+    
+    setLayersAdded(false);
+    console.log('Removed radar layers');
   }, [map, frames]);
 
   // Update layer visibility when frame changes
-  useEffect(() => {
-    if (!map || !frames.length) return;
+  const updateFrameVisibility = useCallback(() => {
+    if (!map || !frames.length || !layersAdded) return;
 
     frames.forEach((frame, index) => {
       const { id } = frame;
       if (map.getLayer(id)) {
-        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? 0.8 : 0);
+        map.setPaintProperty(id, 'raster-opacity', index === currentFrame ? 0.7 : 0);
       }
     });
-  }, [map, frames, currentFrame]);
+  }, [map, frames, currentFrame, layersAdded]);
+
+  // Add layers when frames are loaded
+  useEffect(() => {
+    if (enabled && frames.length > 0 && !layersAdded) {
+      addRadarLayers();
+    }
+  }, [enabled, frames.length, layersAdded, addRadarLayers]);
+
+  // Update visibility when frame changes
+  useEffect(() => {
+    updateFrameVisibility();
+  }, [updateFrameVisibility]);
 
   // Handle enabled/disabled state
   useEffect(() => {
-    if (enabled && frames.length > 0) {
-      addRadarLayers();
-    } else {
+    if (!enabled) {
       removeRadarLayers();
     }
 
@@ -131,18 +140,18 @@ export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadar
         removeRadarLayers();
       }
     };
-  }, [enabled, addRadarLayers, removeRadarLayers, frames.length]);
+  }, [enabled, removeRadarLayers]);
 
   // Animation loop - smooth 500ms intervals
   useEffect(() => {
-    if (!isAnimating || !enabled || frames.length <= 1) return;
+    if (!isAnimating || !enabled || frames.length <= 1 || !layersAdded) return;
 
     const interval = setInterval(() => {
       setCurrentFrame(prev => (prev + 1) % frames.length);
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isAnimating, enabled, frames.length]);
+  }, [isAnimating, enabled, frames.length, layersAdded]);
 
   // Format timestamp for display
   const formatTime = (timestamp: number) => {
