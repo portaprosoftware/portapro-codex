@@ -103,7 +103,7 @@ const items: NavigationItem[] = [
   },
   { 
     title: 'Marketing', 
-    url: '/marketing-hub', 
+    url: '/marketing', 
     icon: Megaphone,
     permission: 'admin'
   },

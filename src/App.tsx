@@ -15,7 +15,7 @@ import FleetAssignmentsPage from './pages/FleetAssignmentsPage';
 import FleetCompliancePage from './pages/FleetCompliancePage';
 import FleetMaintenancePage from './pages/FleetMaintenancePage';
 import FleetLoadsPage from './pages/FleetLoadsPage';
-import MarketingHub from './pages/MarketingHub';
+import Marketing from './pages/Marketing';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
 import Settings from "./pages/Settings";
@@ -89,7 +89,7 @@ const App = () => {
                     <Route path="/fleet/maintenance" element={<FleetMaintenancePage />} />
                     <Route path="/testing" element={<TestingPage />} />
                     <Route path="/maintenance-hub" element={<MaintenanceHub />} />
-                    <Route path="/marketing-hub" element={<MarketingHub />} />
+                    <Route path="/marketing" element={<Marketing />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/settings" element={<Settings />} />
                   </Routes>
