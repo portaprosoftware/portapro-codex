@@ -392,7 +392,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                         </div>
                       );
                     })()}
-                    <Badge className={cn("text-xs text-white rounded-full", getJobTypeColor(job.job_type))}>
+                    <Badge className="text-xs text-white rounded-full bg-gray-500">
                       {job.job_type.toUpperCase()}
                     </Badge>
                   </>
