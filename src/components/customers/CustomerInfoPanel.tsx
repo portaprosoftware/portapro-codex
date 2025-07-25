@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, MapPin, ExternalLink, Navigation } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText } from 'lucide-react';
 import { EditCustomerModal } from './EditCustomerModal';
+import { toast } from '@/hooks/use-toast';
 
 interface Customer {
   id: string;
@@ -30,6 +32,23 @@ interface CustomerInfoPanelProps {
 
 export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied to clipboard",
+        description: `${label} has been copied to your clipboard.`,
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy to clipboard. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getCustomerTypeColor = (type?: string) => {
     switch (type) {
@@ -125,16 +144,41 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <p className="text-foreground">{customer.phone || 'Not provided'}</p>
             </div>
           </div>
-          
-          {/* General Notes */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <label className="text-sm font-medium text-muted-foreground">General Notes</label>
-            <p className="text-foreground mt-1">
-              {customer.notes || 'gate code is 1234'}
-            </p>
-          </div>
         </CardContent>
       </Card>
+
+      {/* General Notes Card */}
+      {customer.notes && (
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold flex items-center">
+              <FileText className="w-5 h-5 mr-2" />
+              General Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              <p className="text-foreground whitespace-pre-wrap">
+                {customer.notes.length > 300 ? (
+                  <>
+                    {customer.notes.substring(0, 300)}...
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => setShowNotesModal(true)}
+                      className="h-auto p-0 ml-1 text-xs text-primary"
+                    >
+                      View full notes
+                    </Button>
+                  </>
+                ) : (
+                  customer.notes
+                )}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Service Address */}
       <Card className="rounded-2xl">
@@ -143,10 +187,21 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             <MapPin className="w-5 h-5 mr-2" />
             Service Address
           </CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">Synchronized with default service location</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-foreground mb-3">{serviceAddress}</p>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-foreground flex-1">{serviceAddress}</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(serviceAddress, 'Service address')}
+                className="h-8 w-8 p-0 ml-2"
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
             {customer.address && (
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -188,19 +243,30 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
           <CardTitle className="text-lg font-semibold">Billing Address</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-foreground">{billingAddress}</p>
+          <div className="flex items-start justify-between">
+            <p className="text-foreground flex-1">{billingAddress}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => copyToClipboard(billingAddress, 'Billing address')}
+              className="h-8 w-8 p-0 ml-2"
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Account Status */}
+      {/* Deposit Status */}
       <Card className="rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Account Status</CardTitle>
+          <CardTitle className="text-lg font-semibold">Deposit Status</CardTitle>
+          <p className="text-xs text-muted-foreground">Deposit required by default</p>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-3">
             <div>
-              <span className="text-muted-foreground block mb-2">Credit Status</span>
+              <span className="text-muted-foreground block mb-2">Deposit Status</span>
               {getDepositStatusBadge()}
             </div>
           </div>
@@ -218,6 +284,25 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Notes Modal */}
+      {customer.notes && (
+        <Dialog open={showNotesModal} onOpenChange={setShowNotesModal}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                General Notes
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-96 overflow-y-auto">
+              <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                {customer.notes}
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       <EditCustomerModal
         isOpen={showEditModal}
