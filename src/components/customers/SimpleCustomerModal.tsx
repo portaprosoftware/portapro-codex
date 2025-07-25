@@ -93,7 +93,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
   const createCustomerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       console.log('Mutation starting with data:', data);
-      const { data: result, error } = await supabase
+      const { error } = await supabase
         .from('customers')
         .insert({
           name: data.name,
@@ -106,16 +106,15 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
           service_zip: data.service_zip,
           billing_differs_from_service: false,
           deposit_required: true,
-        })
-        .select();
+        });
 
       if (error) {
         console.error('Insert error:', error);
         throw new Error(error.message);
       }
       
-      console.log('Insert successful:', result);
-      return result;
+      console.log('Insert successful');
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
