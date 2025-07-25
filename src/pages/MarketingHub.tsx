@@ -171,7 +171,6 @@ const MarketingHub: React.FC = () => {
 
   return (
     <div className="p-6 space-y-8">
-      <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
@@ -288,7 +287,6 @@ const MarketingHub: React.FC = () => {
             </p>
           </div>
         )}
-      </div>
     </div>
   );
 };
