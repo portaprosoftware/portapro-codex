@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Navigation, Phone, Package, Calendar, Clock } from 'lucide-react';
+import { MapPin, Navigation, Phone, Package, Calendar, Clock, Cloud } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface InventoryLocation {
@@ -49,6 +49,8 @@ export const InventoryMapView: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState<InventoryLocation | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
+  const [radarEnabled, setRadarEnabled] = useState(false);
+  const [weatherApiKey, setWeatherApiKey] = useState<string>('');
 
   // Fetch tokens
   useEffect(() => {
@@ -63,6 +65,11 @@ export const InventoryMapView: React.FC = () => {
           setShowTokenInput(true);
         }
 
+        // Fetch OpenWeather API key
+        const { data: weatherData, error: weatherError } = await supabase.functions.invoke('get-weather-token');
+        if (!weatherError && weatherData?.token) {
+          setWeatherApiKey(weatherData.token);
+        }
       } catch (error) {
         console.error('Error fetching tokens:', error);
         setShowTokenInput(true);
@@ -182,6 +189,93 @@ export const InventoryMapView: React.FC = () => {
     };
   }, [mapboxToken, inventoryLocations]);
 
+  // Handle weather radar toggle
+  useEffect(() => {
+    if (!map.current) return;
+
+    if (radarEnabled && weatherApiKey) {
+      addWeatherOverlay();
+    } else {
+      removeWeatherOverlay();
+    }
+  }, [radarEnabled, weatherApiKey]);
+
+  const addWeatherOverlay = () => {
+    if (!map.current || !weatherApiKey) return;
+
+    console.log('Adding weather radar overlay to inventory map with API key:', weatherApiKey.substring(0, 8) + '...');
+
+    // Remove any existing weather layers first
+    removeWeatherOverlay();
+
+    try {
+      // Use the correct precipitation layer for radar visualization
+      map.current.addSource('weather-precipitation', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-precipitation',
+        type: 'raster',
+        source: 'weather-precipitation',
+        paint: {
+          'raster-opacity': 0.6
+        }
+      });
+
+      // Add clouds layer for additional context
+      map.current.addSource('weather-clouds', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-clouds',
+        type: 'raster',
+        source: 'weather-clouds',
+        paint: {
+          'raster-opacity': 0.3
+        }
+      }, 'weather-precipitation'); // Place clouds below precipitation
+
+      console.log('Weather radar overlay added successfully to inventory map');
+    } catch (error) {
+      console.error('Failed to add weather overlay to inventory map:', error);
+    }
+  };
+
+  const removeWeatherOverlay = () => {
+    if (!map.current) return;
+
+    try {
+      // Remove precipitation layer
+      if (map.current.getLayer('weather-precipitation')) {
+        map.current.removeLayer('weather-precipitation');
+      }
+      if (map.current.getSource('weather-precipitation')) {
+        map.current.removeSource('weather-precipitation');
+      }
+
+      // Remove clouds layer
+      if (map.current.getLayer('weather-clouds')) {
+        map.current.removeLayer('weather-clouds');
+      }
+      if (map.current.getSource('weather-clouds')) {
+        map.current.removeSource('weather-clouds');
+      }
+
+      console.log('Weather radar overlay removed from inventory map');
+    } catch (error) {
+      console.error('Error removing weather overlay from inventory map:', error);
+    }
+  };
 
   // Add markers when locations change
   useEffect(() => {
@@ -278,6 +372,29 @@ export const InventoryMapView: React.FC = () => {
     <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
+      
+      {/* Weather Radar Overlay */}
+      <SimpleWeatherRadar
+        map={map.current}
+        enabled={radarEnabled}
+        onError={(error) => toast.error(error)}
+      />
+
+      {/* Radar Toggle */}
+      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`h-8 w-8 p-0 transition-colors ${
+            radarEnabled 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'text-blue-600 hover:bg-blue-50'
+          }`}
+          onClick={() => setRadarEnabled(!radarEnabled)}
+        >
+          <Cloud className="w-4 h-4" />
+        </Button>
+      </div>
 
       {/* Equipment Status Legend - Horizontal at bottom */}
       <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3">

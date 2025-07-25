@@ -17,6 +17,7 @@ import {
   Play,
   Filter,
   X,
+  Cloud,
   Navigation
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -77,6 +78,10 @@ const JobsMapView: React.FC = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
+  const [weatherApiKey, setWeatherApiKey] = useState<string>('');
+  const [radarOpacity, setRadarOpacity] = useState(0.6);
+  const [radarTimeIndex, setRadarTimeIndex] = useState(0);
+  const [radarEnabled, setRadarEnabled] = useState(false);
 
   // Fetch real jobs and drivers data
   const { data: jobs = [] } = useQuery({
@@ -178,6 +183,11 @@ const JobsMapView: React.FC = () => {
           setShowTokenInput(true);
         }
 
+        // Fetch OpenWeather API key
+        const { data: weatherData, error: weatherError } = await supabase.functions.invoke('get-weather-token');
+        if (!weatherError && weatherData?.token) {
+          setWeatherApiKey(weatherData.token);
+        }
       } catch (error) {
         console.error('Error fetching tokens:', error);
         setShowTokenInput(true);
@@ -246,7 +256,100 @@ const JobsMapView: React.FC = () => {
     }
   }, [viewMode, mapLoaded, selectedDriver]);
 
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
 
+    if (showWeatherRadar && weatherApiKey) {
+      addWeatherOverlay();
+    } else {
+      removeWeatherOverlay();
+    }
+  }, [showWeatherRadar, weatherApiKey, mapLoaded]);
+
+  const addWeatherOverlay = () => {
+    if (!map.current || !weatherApiKey) return;
+
+    console.log('Adding weather radar overlay with API key:', weatherApiKey.substring(0, 8) + '...');
+
+    // Remove any existing weather layers first
+    removeWeatherOverlay();
+
+    try {
+      // Use the correct precipitation layer for radar visualization
+      map.current.addSource('weather-precipitation', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-precipitation',
+        type: 'raster',
+        source: 'weather-precipitation',
+        paint: {
+          'raster-opacity': radarOpacity
+        }
+      });
+
+      // Add clouds layer for additional context
+      map.current.addSource('weather-clouds', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-clouds',
+        type: 'raster',
+        source: 'weather-clouds',
+        paint: {
+          'raster-opacity': 0.3
+        }
+      }, 'weather-precipitation'); // Place clouds below precipitation
+
+      console.log('Weather radar overlay added successfully');
+    } catch (error) {
+      console.error('Failed to add weather overlay:', error);
+    }
+  };
+
+  const removeWeatherOverlay = () => {
+    if (!map.current) return;
+
+    try {
+      // Remove precipitation layer
+      if (map.current.getLayer('weather-precipitation')) {
+        map.current.removeLayer('weather-precipitation');
+      }
+      if (map.current.getSource('weather-precipitation')) {
+        map.current.removeSource('weather-precipitation');
+      }
+
+      // Remove clouds layer
+      if (map.current.getLayer('weather-clouds')) {
+        map.current.removeLayer('weather-clouds');
+      }
+      if (map.current.getSource('weather-clouds')) {
+        map.current.removeSource('weather-clouds');
+      }
+
+      // Remove old weather layer if it exists
+      if (map.current.getLayer('weather')) {
+        map.current.removeLayer('weather');
+      }
+      if (map.current.getSource('weather')) {
+        map.current.removeSource('weather');
+      }
+
+      console.log('Weather radar overlay removed');
+    } catch (error) {
+      console.error('Error removing weather overlay:', error);
+    }
+  };
 
   const loadPins = () => {
     if (!map.current) return;
@@ -548,7 +651,7 @@ const JobsMapView: React.FC = () => {
               }`}
               onClick={() => setShowWeatherRadar(!showWeatherRadar)}
             >
-              <CloudRain className="w-4 h-4" />
+              <Cloud className="w-4 h-4" />
             </Button>
 
             {/* Refresh Button */}
@@ -630,6 +733,18 @@ const JobsMapView: React.FC = () => {
             <Navigation className="w-5 h-5" />
           </Button>
           
+          <Button
+            variant="outline"
+            size="icon"
+            className={`shadow-md rounded-full h-12 w-12 ${
+              radarEnabled 
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+            onClick={() => setRadarEnabled(!radarEnabled)}
+          >
+            <Cloud className="w-5 h-5" />
+          </Button>
         </div>
         
         {/* Weather Radar Overlay */}

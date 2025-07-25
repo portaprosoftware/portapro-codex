@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { nwsRadarService, NWSRadarLayer } from '@/lib/nwsRadarService';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Play, Pause, Cloud, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { rainViewerService, RainViewerLayer } from '@/lib/rainViewerService';
 
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map | null;
@@ -11,93 +9,109 @@ interface SimpleWeatherRadarProps {
   onError?: (error: string) => void;
 }
 
-export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ 
-  map, 
-  enabled,
-  onError 
-}) => {
-  const [radarLayer, setRadarLayer] = useState<NWSRadarLayer | null>(null);
+export function SimpleWeatherRadar({ map, enabled, onError }: SimpleWeatherRadarProps) {
+  const [frames, setFrames] = useState<RainViewerLayer[]>([]);
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
   
-  const isMountedRef = useRef(true);
-  const addedLayerIdsRef = useRef<string[]>([]);
-  const instanceIdRef = useRef(Math.random().toString(36).substr(2, 9));
+  // Use refs for proper cleanup and tracking
+  const mountedRef = useRef(true);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const layerIds = useRef<string[]>([]);
+  const instanceId = useRef(Date.now().toString());
 
-  const loadRadarData = async () => {
-    if (!isMountedRef.current) return;
-    
+  // Load radar data
+  const loadRadarData = useCallback(async () => {
+    if (!enabled || !map || !mountedRef.current) return;
+
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      setErrorMessage('');
-      
-      console.log('Loading NWS radar data...');
-      const layer = nwsRadarService.getRadarLayer();
-      
-      if (!isMountedRef.current) return;
-      
-      setRadarLayer(layer);
-      console.log('NWS radar data loaded');
-      
+      const layers = await rainViewerService.getRadarLayers();
+      if (layers.length > 0 && mountedRef.current) {
+        // Limit frames to last 8 past + first 4 future (like working radar)
+        const limitedLayers = layers.slice(-12); // Take last 12 frames
+        setFrames(limitedLayers);
+        
+        // Start from current time (find the frame closest to now)
+        const now = Date.now() / 1000;
+        const currentFrameIndex = limitedLayers.findIndex((layer, index) => {
+          if (index === limitedLayers.length - 1) return true; // Last frame if none found
+          return limitedLayers[index + 1].timestamp > now;
+        });
+        setCurrentFrame(Math.max(0, currentFrameIndex));
+        console.log('Loaded', limitedLayers.length, 'RainViewer radar frames');
+      } else {
+        console.log('No weather radar frames available');
+        onError?.('Weather radar data unavailable');
+      }
     } catch (error) {
-      console.error('Error loading radar data:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Failed to load radar data';
-      setErrorMessage(errorMsg);
-      onError?.(errorMsg);
+      console.error('Failed to load weather radar data:', error);
+      onError?.('Failed to load weather radar');
     } finally {
-      if (isMountedRef.current) {
+      if (mountedRef.current) {
         setIsLoading(false);
       }
     }
-  };
+  }, [enabled, map, onError]);
 
-  const addRadarLayers = async () => {
-    if (!map || !radarLayer) return;
-    
-    console.log('Adding NWS radar layer to map...');
-    
+  // Initialize radar data and auto-refresh every 10 minutes
+  useEffect(() => {
+    if (!enabled) return;
+
+    loadRadarData();
+    const interval = setInterval(() => {
+      loadRadarData();
+    }, 10 * 60 * 1000); // 10 minutes
+
+    return () => clearInterval(interval);
+  }, [enabled, loadRadarData]);
+
+  // Add radar layers to map (only once)
+  const addRadarLayers = useCallback(() => {
+    if (!map || !frames.length || layerIds.current.length > 0) return;
+
     try {
-      removeRadarLayers();
-      
-      const layerId = `${radarLayer.id}-${instanceIdRef.current}`;
-      const sourceId = `${radarLayer.sourceId}-${instanceIdRef.current}`;
-      
-      if (!map.getSource(sourceId)) {
+      frames.forEach((frame, index) => {
+        // Create unique layer ID with instance ID and timestamp
+        const layerId = `radar-${instanceId.current}-${frame.timestamp}`;
+        const sourceId = `radar-source-${instanceId.current}-${frame.timestamp}`;
+        
+        layerIds.current.push(layerId);
+
+        // Add new source and layer
         map.addSource(sourceId, {
           type: 'raster',
-          tiles: [radarLayer.url],
-          tileSize: 256
+          tiles: [frame.url],
+          tileSize: 256,
+          attribution: '© RainViewer'
         });
-      }
-      
-      if (!map.getLayer(layerId)) {
+
         map.addLayer({
           id: layerId,
           type: 'raster',
           source: sourceId,
           paint: {
-            'raster-opacity': 0.6
+            'raster-opacity': 0,
+            'raster-fade-duration': 200 // Shorter than animation interval
           }
         });
-        
-        addedLayerIdsRef.current.push(layerId);
-      }
-      
-      console.log('NWS radar layer added successfully');
-    } catch (error) {
-      console.error('Error adding radar layer:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Failed to add radar layer';
-      setErrorMessage(errorMsg);
-      onError?.(errorMsg);
-    }
-  };
+      });
 
-  const removeRadarLayers = () => {
-    if (!map) return;
+      console.log('Added', frames.length, 'radar layers with unique IDs');
+    } catch (error) {
+      console.error('Error adding radar layers:', error);
+      onError?.('Failed to add radar layers');
+    }
+  }, [map, frames, onError]);
+
+  // Remove all radar layers
+  const removeRadarLayers = useCallback(() => {
+    if (!map || layerIds.current.length === 0) return;
 
     try {
-      addedLayerIdsRef.current.forEach(layerId => {
-        const sourceId = layerId.replace(radarLayer?.id || 'nws-radar', radarLayer?.sourceId || 'nws-radar-source');
+      layerIds.current.forEach(layerId => {
+        const sourceId = layerId.replace('radar-', 'radar-source-');
         
         if (map.getLayer(layerId)) {
           map.removeLayer(layerId);
@@ -107,91 +121,191 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         }
       });
       
-      addedLayerIdsRef.current = [];
-      console.log('NWS radar layers removed');
+      layerIds.current = [];
+      console.log('Removed radar layers');
     } catch (error) {
       console.error('Error removing radar layers:', error);
     }
-  };
+  }, [map]);
 
-  // Load radar data when component mounts or when enabled changes
-  useEffect(() => {
-    if (enabled) {
-      loadRadarData();
-    } else {
-      setRadarLayer(null);
-      setErrorMessage('');
+  // Update frame visibility - key: hide all, then show current
+  const updateFrame = useCallback(() => {
+    if (!map || !frames.length || layerIds.current.length === 0) return;
+
+    try {
+      // Hide all layers first (prevents blinking)
+      layerIds.current.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setPaintProperty(layerId, 'raster-opacity', 0);
+        }
+      });
+
+      // Show current frame
+      const currentLayerId = layerIds.current[currentFrame];
+      if (currentLayerId && map.getLayer(currentLayerId)) {
+        map.setPaintProperty(currentLayerId, 'raster-opacity', 0.7);
+      }
+    } catch (error) {
+      console.error('Error updating frame:', error);
     }
-  }, [enabled]);
+  }, [map, frames.length, currentFrame]);
 
-  // Add/remove layers when map or radar data changes
+  // Add layers when frames are loaded
   useEffect(() => {
-    if (!map) return;
-
-    if (enabled && radarLayer) {
+    if (enabled && frames.length > 0 && layerIds.current.length === 0) {
       addRadarLayers();
-    } else {
-      removeRadarLayers();
     }
-  }, [map, enabled, radarLayer]);
+  }, [enabled, frames.length, addRadarLayers]);
+
+  // Update visibility when frame changes
+  useEffect(() => {
+    updateFrame();
+  }, [updateFrame]);
+
+  // Handle enabled/disabled state
+  useEffect(() => {
+    if (!enabled) {
+      removeRadarLayers();
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
+    }
+
+    return () => {
+      if (!enabled) {
+        removeRadarLayers();
+      }
+    };
+  }, [enabled, removeRadarLayers]);
+
+  // Animation loop - smooth 300ms intervals (like working radar)
+  useEffect(() => {
+    // Clear existing animation
+    if (animationRef.current) {
+      clearInterval(animationRef.current);
+      animationRef.current = null;
+    }
+
+    if (!isAnimating || !enabled || frames.length <= 1 || layerIds.current.length === 0) {
+      return;
+    }
+
+    // Start new animation with 300ms interval
+    animationRef.current = setInterval(() => {
+      if (mountedRef.current) {
+        setCurrentFrame(prev => {
+          const next = (prev + 1) % frames.length;
+          return next;
+        });
+      }
+    }, 300); // 300ms interval like working radar
+
+    return () => {
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [isAnimating, enabled, frames.length, layerIds.current.length]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      isMountedRef.current = false;
-      if (map) {
-        removeRadarLayers();
+      mountedRef.current = false;
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
       }
+      removeRadarLayers();
     };
-  }, []);
+  }, [removeRadarLayers]);
 
-  const handleRefresh = async () => {
-    await loadRadarData();
+  // Format timestamp for display
+  const formatTime = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  const getRadarTimeRange = () => {
+    if (frames.length === 0) return '';
+    const firstTime = formatTime(frames[0].timestamp);
+    const lastTime = formatTime(frames[frames.length - 1].timestamp);
+    return `Radar: ${firstTime} - ${lastTime}`;
+  };
+
+  const getCurrentFrameStatus = () => {
+    if (frames.length === 0) return '';
+    const currentTime = Date.now() / 1000;
+    const frameTime = frames[currentFrame]?.timestamp;
+    
+    if (!frameTime) return '';
+    
+    if (frameTime < currentTime - 60) {
+      return 'Past';
+    } else if (frameTime > currentTime + 60) {
+      return 'Future';
+    } else {
+      return 'Current';
+    }
   };
 
   if (!enabled) return null;
 
   return (
-    <div className="absolute top-4 left-4 z-10 space-y-2">
-      {/* Radar Status Badge */}
-      {radarLayer && (
-        <Badge variant="secondary" className="bg-black/80 text-white border-0">
-          NWS Radar (Live)
-        </Badge>
+    <>
+      {/* Radar Time Badge */}
+      {frames.length > 0 && (
+        <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg z-10 text-sm font-medium">
+          <div className="flex items-center space-x-2">
+            <Cloud className="w-4 h-4" />
+            <span>{getRadarTimeRange()}</span>
+          </div>
+        </div>
       )}
-      
-      {/* Control Buttons */}
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="bg-black/80 text-white border-0 hover:bg-black/90"
-        >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+
+      {/* Controls */}
+      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-10">
+        {isLoading && (
+          <div className="text-sm text-gray-600 mb-2 flex items-center space-x-2">
+            <RefreshCw className="w-4 h-4 animate-spin" />
+            <span>Loading weather radar...</span>
+          </div>
+        )}
+        
+        {frames.length === 0 && !isLoading && (
+          <div className="text-sm text-red-600 mb-2">
+            Weather radar not available
+          </div>
+        )}
+        
+        {frames.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAnimating(!isAnimating)}
+            >
+              {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={loadRadarData}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
+            <div className="text-xs text-gray-600">
+              <div>{formatTime(frames[currentFrame]?.timestamp)}</div>
+              <div className="text-xs text-blue-600 font-medium">{getCurrentFrameStatus()}</div>
+            </div>
+          </div>
+        )}
+
       </div>
-      
-      {/* Loading Indicator */}
-      {isLoading && (
-        <Badge variant="secondary" className="bg-blue-600/90 text-white border-0">
-          Loading radar...
-        </Badge>
-      )}
-      
-      {/* Error Display */}
-      {errorMessage && (
-        <Badge variant="destructive" className="bg-red-600/90 text-white border-0 max-w-48">
-          {errorMessage}
-        </Badge>
-      )}
-      
-      {/* Attribution */}
-      <Badge variant="outline" className="bg-black/80 text-white border-white/20 text-xs">
-        © NWS
-      </Badge>
-    </div>
+    </>
   );
-};
+}
