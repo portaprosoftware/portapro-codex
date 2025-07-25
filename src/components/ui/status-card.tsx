@@ -14,7 +14,7 @@ const statusCardVariants = cva(
         assigned: "border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100/50", 
         in_progress: "border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50",
         completed: "border-green-200 bg-gradient-to-br from-green-50 to-green-100/50",
-        cancelled: "border-red-200 bg-gradient-to-br from-red-50 to-red-100/50",
+        cancelled: "border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100/50",
       },
       size: {
         default: "p-6",
@@ -34,7 +34,7 @@ const statusBadgeVariants = {
   assigned: "bg-gradient-blue text-white shadow-sm",
   in_progress: "bg-gradient-purple text-white shadow-sm", 
   completed: "bg-gradient-green text-white shadow-sm",
-  cancelled: "bg-gradient-red text-white shadow-sm",
+  cancelled: "bg-gradient-to-r from-black to-gray-800 text-white font-bold shadow-sm",
 };
 
 export interface StatusCardProps 
@@ -80,7 +80,7 @@ const StatusCard = React.forwardRef<HTMLDivElement, StatusCardProps>(
           status === "assigned" && "bg-gradient-blue", 
           status === "in_progress" && "bg-gradient-purple",
           status === "completed" && "bg-gradient-green",
-          status === "cancelled" && "bg-gradient-red"
+          status === "cancelled" && "bg-gradient-to-r from-black to-gray-800"
         )} />
         
         {/* Header */}
@@ -93,7 +93,7 @@ const StatusCard = React.forwardRef<HTMLDivElement, StatusCardProps>(
                 status === "assigned" && "bg-gradient-blue",
                 status === "in_progress" && "bg-gradient-purple", 
                 status === "completed" && "bg-gradient-green",
-                status === "cancelled" && "bg-gradient-red"
+                status === "cancelled" && "bg-gradient-to-r from-black to-gray-800"
               )}>
                 <Icon className="w-5 h-5 text-white" />
               </div>

@@ -42,7 +42,7 @@ const statusColors = {
   assigned: { bg: "bg-gradient-blue", glow: "shadow-blue-500/30" },
   in_progress: { bg: "bg-gradient-purple", glow: "shadow-purple-500/30" },
   completed: { bg: "bg-gradient-green", glow: "shadow-green-500/30" },
-  cancelled: { bg: "bg-gradient-red", glow: "shadow-red-500/30" },
+  cancelled: { bg: "bg-gradient-to-r from-black to-gray-800 text-white font-bold", glow: "shadow-black/30" },
   draft: { bg: "bg-gray-100 text-gray-800", glow: "shadow-gray-500/20" },
   active: { bg: "bg-gradient-primary", glow: "shadow-blue-500/30" },
   inactive: { bg: "bg-gray-400 text-white", glow: "shadow-gray-500/20" },
