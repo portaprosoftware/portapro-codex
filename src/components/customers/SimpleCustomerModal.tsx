@@ -97,6 +97,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const createCustomerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      console.log('Mutation starting with data:', data);
       const { data: result, error } = await supabase
         .from('customers')
         .insert({
@@ -118,6 +119,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
         throw new Error(error.message);
       }
       
+      console.log('Insert successful:', result);
       return result;
     },
     onSuccess: () => {
@@ -150,8 +152,10 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
     
     if (!formData.name || !formData.customer_type || !formData.service_street || !formData.service_city || !formData.service_state || !formData.service_zip) {
+      console.log('Validation failed - missing required fields');
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
@@ -160,6 +164,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       return;
     }
 
+    console.log('Validation passed, calling mutation...');
     createCustomerMutation.mutate(formData);
   };
 
@@ -169,9 +174,12 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" aria-describedby="add-customer-description">
         <DialogHeader>
           <DialogTitle>Add New Customer</DialogTitle>
+          <div id="add-customer-description" className="sr-only">
+            Fill out this form to add a new customer to your system
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
