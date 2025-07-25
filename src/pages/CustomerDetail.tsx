@@ -40,10 +40,10 @@ export default function CustomerDetail() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-2xl font-bold text-foreground mb-4">Customer not found</h1>
-        <Link to="/customers">
+        <Link to="/customer-hub">
           <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Customers
+            Back to Customer Hub
           </Button>
         </Link>
       </div>
@@ -58,7 +58,7 @@ export default function CustomerDetail() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/customers">Customers</Link>
+                  <Link to="/customer-hub">Customer Hub</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -70,13 +70,13 @@ export default function CustomerDetail() {
           
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center gap-4">
-              <Link to="/customers">
+              <Link to="/customer-hub">
                 <Button 
                   size="sm"
                   className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Customer List
+                  Customer Hub
                 </Button>
               </Link>
               <div>
