@@ -48,25 +48,33 @@ export const InventoryMapView: React.FC = () => {
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [radarEnabled, setRadarEnabled] = useState(false);
+  const [weatherApiKey, setWeatherApiKey] = useState<string>('');
 
-  // Fetch Mapbox token
+  // Fetch tokens
   useEffect(() => {
-    const fetchMapboxToken = async () => {
+    const fetchTokens = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
-        if (data?.token) {
-          setMapboxToken(data.token);
+        // Fetch Mapbox token
+        const { data: mapboxData, error: mapboxError } = await supabase.functions.invoke('get-mapbox-token');
+        if (mapboxError) throw mapboxError;
+        if (mapboxData?.token) {
+          setMapboxToken(mapboxData.token);
         } else {
           setShowTokenInput(true);
         }
+
+        // Fetch OpenWeather API key
+        const { data: weatherData, error: weatherError } = await supabase.functions.invoke('get-weather-token');
+        if (!weatherError && weatherData?.token) {
+          setWeatherApiKey(weatherData.token);
+        }
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
+        console.error('Error fetching tokens:', error);
         setShowTokenInput(true);
       }
     };
     
-    fetchMapboxToken();
+    fetchTokens();
   }, []);
 
   // Fetch inventory locations
@@ -179,6 +187,51 @@ export const InventoryMapView: React.FC = () => {
     };
   }, [mapboxToken, inventoryLocations]);
 
+  // Handle weather radar toggle
+  useEffect(() => {
+    if (!map.current) return;
+
+    if (radarEnabled && weatherApiKey) {
+      addWeatherOverlay();
+    } else {
+      removeWeatherOverlay();
+    }
+  }, [radarEnabled, weatherApiKey]);
+
+  const addWeatherOverlay = () => {
+    if (!map.current) return;
+
+    if (!map.current.getSource('weather-precipitation')) {
+      map.current.addSource('weather-precipitation', {
+        type: 'raster',
+        tiles: [
+          `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
+        ],
+        tileSize: 256
+      });
+
+      map.current.addLayer({
+        id: 'weather-precipitation',
+        type: 'raster',
+        source: 'weather-precipitation',
+        paint: {
+          'raster-opacity': 0.6
+        }
+      });
+    }
+  };
+
+  const removeWeatherOverlay = () => {
+    if (!map.current) return;
+
+    if (map.current.getLayer('weather-precipitation')) {
+      map.current.removeLayer('weather-precipitation');
+    }
+    if (map.current.getSource('weather-precipitation')) {
+      map.current.removeSource('weather-precipitation');
+    }
+  };
+
   // Add markers when locations change
   useEffect(() => {
     if (!map.current || !inventoryLocations?.length) return;
@@ -279,7 +332,7 @@ export const InventoryMapView: React.FC = () => {
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
         <div className="flex items-center gap-2">
           <Radar className="h-4 w-4" />
-          <span className="text-sm font-medium">Radar</span>
+          <span className="text-sm font-medium">Precipitation</span>
           <Switch checked={radarEnabled} onCheckedChange={setRadarEnabled} />
         </div>
       </div>
