@@ -1,16 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Wrench, Plus, Minus, Search } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StorageLocationSelector } from '@/components/inventory/StorageLocationSelector';
+import { Package, Wrench, Plus, Minus, Search, MapPin, AlertTriangle } from 'lucide-react';
 
-interface Product {
+interface ProductWithLocationStock {
   id: string;
   name: string;
   description?: string;
   stock_total: number;
+  track_inventory: boolean;
+  location_stock: Array<{
+    storage_location_id: string;
+    quantity: number;
+    storage_location_name: string;
+  }>;
 }
 
 interface Service {
@@ -27,68 +37,143 @@ interface EquipmentItem {
   name: string;
   quantity: number;
   type: 'equipment' | 'service';
+  source_location_id?: string;
+  source_location_name?: string;
 }
 
 interface EquipmentServicesStepProps {
   data: {
     items: EquipmentItem[];
+    preferred_location_id?: string;
   };
-  onUpdate: (equipment: { items: EquipmentItem[]; }) => void;
+  onUpdate: (equipment: { 
+    items: EquipmentItem[];
+    preferred_location_id?: string;
+  }) => void;
 }
 
 export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ data, onUpdate }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchProductsAndServices();
-  }, []);
-
-  const fetchProductsAndServices = async () => {
-    try {
-      // Mock data for now - replace with actual Supabase calls later
-      const mockProducts: Product[] = [
-        { id: '1', name: 'Standard Portable Toilet', description: 'Basic portable toilet unit', stock_total: 25 },
-        { id: '2', name: 'Deluxe Portable Toilet', description: 'Enhanced portable toilet with hand sanitizer', stock_total: 15 },
-        { id: '3', name: 'Handicap Accessible Unit', description: 'ADA compliant portable toilet', stock_total: 8 },
-        { id: '4', name: 'Hand Wash Station', description: 'Portable hand washing station', stock_total: 12 }
-      ];
-
-      const mockServices: Service[] = [
-        { id: '1', name: 'Weekly Service', description: 'Weekly cleaning and restocking', pricing_method: 'per_visit', per_visit_cost: 25 },
-        { id: '2', name: 'Bi-weekly Service', description: 'Bi-weekly cleaning and restocking', pricing_method: 'per_visit', per_visit_cost: 35 },
-        { id: '3', name: 'Emergency Service', description: 'Emergency cleaning service', pricing_method: 'per_hour', per_hour_cost: 75 },
-        { id: '4', name: 'Deep Clean Service', description: 'Thorough deep cleaning service', pricing_method: 'per_visit', per_visit_cost: 50 }
-      ];
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setProducts(mockProducts);
-      setServices(mockServices);
-    } catch (error) {
-      console.error('Error fetching products and services:', error);
-    } finally {
-      setLoading(false);
+  const [selectedLocationId, setSelectedLocationId] = useState(data.preferred_location_id || 'all');
+  
+  // Real-time data fetching with React Query
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ['products-with-location-stock'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_location_stock(
+            storage_location_id,
+            quantity,
+            storage_locations(id, name)
+          )
+        `)
+        .eq('track_inventory', true)
+        .order('name');
+      
+      if (error) throw error;
+      
+      return (data || []).map((product: any) => ({
+        ...product,
+        location_stock: product.product_location_stock?.map((ls: any) => ({
+          storage_location_id: ls.storage_location_id,
+          quantity: ls.quantity,
+          storage_location_name: ls.storage_locations?.name || 'Unknown Location'
+        })) || []
+      })) as ProductWithLocationStock[];
     }
+  });
+
+  const { data: services, isLoading: servicesLoading } = useQuery({
+    queryKey: ['routine-maintenance-services'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('routine_maintenance_services')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) throw error;
+      return data as Service[];
+    }
+  });
+
+  // Location-aware stock calculation
+  const getAvailableStock = (product: ProductWithLocationStock, locationId: string) => {
+    if (locationId === 'all') {
+      return product.stock_total;
+    }
+    
+    const locationStock = product.location_stock.find(ls => ls.storage_location_id === locationId);
+    return locationStock?.quantity || 0;
   };
 
-  const addItem = (item: { id: string; name: string; type: 'equipment' | 'service' }) => {
+  // Get best location for a product (highest stock)
+  const getBestLocation = (product: ProductWithLocationStock) => {
+    if (!product.location_stock.length) return null;
+    
+    return product.location_stock.reduce((best, current) => 
+      current.quantity > best.quantity ? current : best
+    );
+  };
+
+  const addItem = (item: { 
+    id: string; 
+    name: string; 
+    type: 'equipment' | 'service';
+    product?: ProductWithLocationStock;
+  }) => {
     const existingItem = data.items.find(i => i.id === item.id);
+    
+    let sourceLocation = null;
+    if (item.type === 'equipment' && item.product) {
+      if (selectedLocationId !== 'all') {
+        const locationStock = item.product.location_stock.find(ls => ls.storage_location_id === selectedLocationId);
+        if (locationStock) {
+          sourceLocation = {
+            id: locationStock.storage_location_id,
+            name: locationStock.storage_location_name
+          };
+        }
+      } else {
+        const bestLocation = getBestLocation(item.product);
+        if (bestLocation) {
+          sourceLocation = {
+            id: bestLocation.storage_location_id,
+            name: bestLocation.storage_location_name
+          };
+        }
+      }
+    }
     
     if (existingItem) {
       updateQuantity(item.id, existingItem.quantity + 1);
     } else {
-      const newItems = [...data.items, { ...item, quantity: 1 }];
-      onUpdate({ items: newItems });
+      const newItem: EquipmentItem = {
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        quantity: 1,
+        ...(sourceLocation && {
+          source_location_id: sourceLocation.id,
+          source_location_name: sourceLocation.name
+        })
+      };
+      
+      const newItems = [...data.items, newItem];
+      onUpdate({ 
+        ...data,
+        items: newItems,
+        preferred_location_id: selectedLocationId !== 'all' ? selectedLocationId : data.preferred_location_id
+      });
     }
   };
 
   const removeItem = (itemId: string) => {
     const newItems = data.items.filter(item => item.id !== itemId);
-    onUpdate({ items: newItems });
+    onUpdate({ ...data, items: newItems });
   };
 
   const updateQuantity = (itemId: string, quantity: number) => {
@@ -100,22 +185,24 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
     const newItems = data.items.map(item =>
       item.id === itemId ? { ...item, quantity } : item
     );
-    onUpdate({ items: newItems });
+    onUpdate({ ...data, items: newItems });
   };
 
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = products?.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
-  const filteredServices = services.filter(service =>
+  const filteredServices = services?.filter(service =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   const getItemQuantity = (itemId: string) => {
     return data.items.find(item => item.id === itemId)?.quantity || 0;
   };
 
-  if (loading) {
+  const isLoading = productsLoading || servicesLoading;
+
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="text-center">
@@ -134,6 +221,30 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Equipment & Services</h2>
         <p className="text-gray-600">Select equipment and services for this job</p>
       </div>
+
+      {/* Storage Location Selector */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <MapPin className="w-4 h-4" />
+            Equipment Source Location
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <StorageLocationSelector
+            value={selectedLocationId}
+            onValueChange={setSelectedLocationId}
+            includeAllSites={true}
+            placeholder="Select preferred source location"
+          />
+          <p className="text-sm text-muted-foreground mt-2">
+            {selectedLocationId === 'all' 
+              ? "Showing total inventory across all locations. Equipment will be sourced from the location with highest stock."
+              : "Equipment will be sourced from the selected location."
+            }
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Search */}
       <div className="relative">
@@ -163,6 +274,8 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
           <div className="max-h-64 overflow-y-auto space-y-2">
             {filteredProducts.map((product) => {
               const quantity = getItemQuantity(product.id);
+              const availableStock = getAvailableStock(product, selectedLocationId);
+              const bestLocation = getBestLocation(product);
               
               return (
                 <div
@@ -174,9 +287,38 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
                     {product.description && (
                       <p className="text-sm text-gray-600">{product.description}</p>
                     )}
-                    <div className="text-xs text-gray-500 mt-1">
-                      Stock: {product.stock_total} available
+                    
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
+                      {selectedLocationId === 'all' ? (
+                        <>
+                          <span>Total Stock: {product.stock_total}</span>
+                          {bestLocation && (
+                            <span className="text-green-600">
+                              Best Location: {bestLocation.storage_location_name} ({bestLocation.quantity} units)
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span>Available: {availableStock} units</span>
+                          {availableStock === 0 && product.stock_total > 0 && (
+                            <span className="text-orange-600 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" />
+                              Available at other locations ({product.stock_total} total)
+                            </span>
+                          )}
+                        </>
+                      )}
                     </div>
+
+                    {/* Location breakdown */}
+                    {product.location_stock.length > 0 && selectedLocationId === 'all' && (
+                      <div className="text-xs text-gray-400 mt-1">
+                        Locations: {product.location_stock.map(ls => 
+                          `${ls.storage_location_name} (${ls.quantity})`
+                        ).join(', ')}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -198,7 +340,7 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
                           size="sm"
                           onClick={() => updateQuantity(product.id, quantity + 1)}
                           className="h-8 w-8 p-0"
-                          disabled={quantity >= product.stock_total}
+                          disabled={quantity >= availableStock}
                         >
                           <Plus className="w-3 h-3" />
                         </Button>
@@ -207,8 +349,13 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => addItem({ id: product.id, name: product.name, type: 'equipment' })}
-                        disabled={product.stock_total === 0}
+                        onClick={() => addItem({ 
+                          id: product.id, 
+                          name: product.name, 
+                          type: 'equipment',
+                          product: product
+                        })}
+                        disabled={availableStock === 0}
                       >
                         <Plus className="w-4 h-4 mr-1" />
                         Add
@@ -306,7 +453,15 @@ export const EquipmentServicesStep: React.FC<EquipmentServicesStepProps> = ({ da
                   ) : (
                     <Wrench className="w-3 h-3 text-blue-600" />
                   )}
-                  <span className="text-sm text-blue-800">{item.name}</span>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-blue-800">{item.name}</span>
+                    {item.source_location_name && (
+                      <span className="text-xs text-blue-600 flex items-center gap-1">
+                        <MapPin className="w-2 h-2" />
+                        From: {item.source_location_name}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="border-blue-300 text-blue-700">
