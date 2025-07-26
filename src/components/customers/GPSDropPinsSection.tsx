@@ -91,6 +91,8 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const { data: customer } = useQuery({
     queryKey: ['customer', customerId],
     queryFn: async () => {
+      if (!customerId) throw new Error('Customer ID is required');
+      
       const { data, error } = await supabase
         .from('customers')
         .select('name')
@@ -100,19 +102,24 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       if (error) throw error;
       return data;
     },
+    enabled: !!customerId,
   });
 
   const { data: serviceLocations, isLoading: locationsLoading } = useQuery({
     queryKey: ['customer-service-locations', customerId],
     queryFn: async () => {
+      if (!customerId) throw new Error('Customer ID is required');
+      
       const { data, error } = await supabase
         .from('customer_service_locations')
         .select('*')
-        .eq('customer_id', customerId);
+        .eq('customer_id', customerId)
+        .order('is_default', { ascending: false });
       
       if (error) throw error;
       return data;
     },
+    enabled: !!customerId,
   });
 
   const { data: coordinates, isLoading: coordinatesLoading, refetch } = useQuery({
@@ -136,6 +143,8 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const { data: categories = [] } = useQuery({
     queryKey: ['pin-categories', customerId],
     queryFn: async () => {
+      if (!customerId) throw new Error('Customer ID is required');
+      
       const { data, error } = await supabase
         .from('pin_categories')
         .select('*')
@@ -145,6 +154,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       if (error) throw error;
       return data;
     },
+    enabled: !!customerId,
   });
 
   // Fetch Mapbox token

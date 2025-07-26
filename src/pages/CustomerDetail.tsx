@@ -36,7 +36,7 @@ export default function CustomerDetail() {
     );
   }
 
-  if (!customer) {
+  if (!customer || !id) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-2xl font-bold text-foreground mb-4">Customer not found</h1>
