@@ -37,8 +37,8 @@ interface FuelLog {
 
 export const FuelAllLogsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedVehicle, setSelectedVehicle] = useState('');
-  const [selectedDriver, setSelectedDriver] = useState('');
+  const [selectedVehicle, setSelectedVehicle] = useState('all');
+  const [selectedDriver, setSelectedDriver] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -63,17 +63,17 @@ export const FuelAllLogsTab: React.FC = () => {
           total_cost,
           fuel_station,
           notes,
-          vehicle:vehicles(license_plate, vehicle_type),
-          driver:profiles(first_name, last_name)
+          vehicles!inner(license_plate, vehicle_type),
+          profiles!inner(first_name, last_name)
         `)
         .order('log_date', { ascending: false });
 
       // Apply filters
-      if (selectedVehicle) {
+      if (selectedVehicle && selectedVehicle !== 'all') {
         query = query.eq('vehicle_id', selectedVehicle);
       }
       
-      if (selectedDriver) {
+      if (selectedDriver && selectedDriver !== 'all') {
         query = query.eq('driver_id', selectedDriver);
       }
 
@@ -89,18 +89,37 @@ export const FuelAllLogsTab: React.FC = () => {
       
       if (error) throw error;
       
+      // Map the data to match expected interface
+      let mappedData = data?.map(log => ({
+        id: log.id,
+        log_date: log.log_date,
+        odometer_reading: log.odometer_reading,
+        gallons_purchased: log.gallons_purchased,
+        cost_per_gallon: log.cost_per_gallon,
+        total_cost: log.total_cost,
+        fuel_station: log.fuel_station,
+        notes: log.notes,
+        vehicle: {
+          license_plate: log.vehicles?.license_plate || 'Unknown',
+          vehicle_type: log.vehicles?.vehicle_type || 'Unknown'
+        },
+        driver: {
+          first_name: log.profiles?.first_name || 'Unknown',
+          last_name: log.profiles?.last_name || 'Driver'
+        }
+      })) || [];
+      
       // Filter by search term locally
-      let filteredData = data || [];
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
-        filteredData = filteredData.filter(log => 
+        mappedData = mappedData.filter(log => 
           log.vehicle?.license_plate?.toLowerCase().includes(term) ||
           log.fuel_station?.toLowerCase().includes(term) ||
           `${log.driver?.first_name} ${log.driver?.last_name}`.toLowerCase().includes(term)
         );
       }
       
-      return filteredData as FuelLog[];
+      return mappedData as FuelLog[];
     }
   });
 
@@ -200,7 +219,7 @@ export const FuelAllLogsTab: React.FC = () => {
                   <SelectValue placeholder="All vehicles" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All vehicles</SelectItem>
+                  <SelectItem value="all">All vehicles</SelectItem>
                   {vehicles?.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       {vehicle.license_plate}
@@ -216,7 +235,7 @@ export const FuelAllLogsTab: React.FC = () => {
                   <SelectValue placeholder="All drivers" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All drivers</SelectItem>
+                  <SelectItem value="all">All drivers</SelectItem>
                   {drivers?.map((driver) => (
                     <SelectItem key={driver.id} value={driver.id}>
                       {driver.first_name} {driver.last_name}
