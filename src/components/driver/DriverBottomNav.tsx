@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { List, Map, User, Calendar } from 'lucide-react';
+import { List, Map, User, Calendar, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -20,6 +20,11 @@ const navItems = [
     to: '/driver/schedule',
     icon: Calendar,
     label: 'Schedule'
+  },
+  {
+    to: '/driver/reports',
+    icon: FileText,
+    label: 'Reports'
   },
   {
     to: '/driver/profile',

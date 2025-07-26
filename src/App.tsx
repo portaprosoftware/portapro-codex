@@ -35,6 +35,7 @@ import { DriverDashboardPage } from './pages/DriverDashboardPage';
 import { DriverMapPage } from './pages/DriverMapPage';
 import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
+import { DriverReportsPage } from './pages/DriverReportsPage';
 import TeamManagement from './pages/TeamManagement';
 
 const App = () => {
@@ -57,6 +58,7 @@ const App = () => {
             <Route index element={<DriverDashboardPage />} />
             <Route path="map" element={<DriverMapPage />} />
             <Route path="schedule" element={<DriverSchedulePage />} />
+            <Route path="reports" element={<DriverReportsPage />} />
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
