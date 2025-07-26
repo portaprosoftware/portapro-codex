@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabNav } from '@/components/ui/TabNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -95,34 +95,43 @@ const QuotesInvoices: React.FC = () => {
 
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between">
+      {/* Page Header with Navigation Pills */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
+        <div className="space-y-4">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 font-inter">Quotes & Invoices Management</h1>
             <p className="text-base text-gray-600 font-inter mt-1">Create and manage quotes and invoices with inventory and maintenance services</p>
           </div>
+          
+          {/* Quotes & Invoices Sub-Navigation Pills */}
+          <div className="flex items-center space-x-4">
+            <div className="enterprise-tabs">
+              <TabNav ariaLabel="Quotes and Invoices">
+                <TabNav.Item 
+                  to="#" 
+                  isActive={activeTab === 'quotes'}
+                  onClick={() => setActiveTab('quotes')}
+                >
+                  <FileText className="w-4 h-4" />
+                  Quotes
+                </TabNav.Item>
+                <TabNav.Item 
+                  to="#" 
+                  isActive={activeTab === 'invoices'}
+                  onClick={() => setActiveTab('invoices')}
+                >
+                  <DollarSign className="w-4 h-4" />
+                  Invoices
+                </TabNav.Item>
+              </TabNav>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-fit grid-cols-2 bg-muted/50">
-          <TabsTrigger 
-            value="quotes" 
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold px-6 py-2 rounded-md"
-          >
-            Quotes
-          </TabsTrigger>
-          <TabsTrigger 
-            value="invoices" 
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold px-6 py-2 rounded-md"
-          >
-            Invoices
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="quotes" className="space-y-6">
+      {/* Conditional Content Based on Active Tab */}
+      {activeTab === 'quotes' && (
+        <div className="space-y-6">
           {/* Quick Link Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickLinkCards.map((card, index) => (
@@ -231,9 +240,11 @@ const QuotesInvoices: React.FC = () => {
 
             <QuotesTable searchTerm={searchTerm} />
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="invoices" className="space-y-6">
+      {activeTab === 'invoices' && (
+        <div className="space-y-6">
           {/* Invoice Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Invoice Value */}
@@ -322,8 +333,8 @@ const QuotesInvoices: React.FC = () => {
 
             <InvoicesTable searchTerm={searchTerm} />
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
       {/* Export Modals - Temporarily disabled until we have selected items */}
       {/*
