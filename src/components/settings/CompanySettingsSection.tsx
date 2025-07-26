@@ -1,107 +1,13 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { StateScroller } from "@/components/ui/state-scroller";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { Building2, Upload, Save, Mail, MapPin } from "lucide-react";
+import { Building2, Edit, Mail, MapPin, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
-import { LogoUploadModal } from "@/components/settings/LogoUploadModal";
-
-const companySettingsSchema = z.object({
-  company_name: z.string().min(1, "Company name is required"),
-  company_email: z.string().email("Invalid email address").optional().or(z.literal("")),
-  company_phone: z.string().optional(),
-  company_street: z.string().min(1, "Street address is required"),
-  company_street2: z.string().optional(),
-  company_city: z.string().min(1, "City is required"),
-  company_state: z.string().min(1, "State is required"),
-  company_zipcode: z.string().min(1, "Zipcode is required"),
-  company_timezone: z.string().min(1, "Timezone is required"),
-  support_email: z.string().email("Invalid email address").optional().or(z.literal("")),
-});
-
-type CompanySettingsFormData = z.infer<typeof companySettingsSchema>;
-
-const timezones = [
-  { value: "America/New_York", label: "Eastern Time (ET)" },
-  { value: "America/Chicago", label: "Central Time (CT)" },
-  { value: "America/Denver", label: "Mountain Time (MT)" },
-  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
-  { value: "America/Phoenix", label: "Arizona Time" },
-  { value: "America/Anchorage", label: "Alaska Time" },
-  { value: "Pacific/Honolulu", label: "Hawaii Time" },
-];
-
-const US_STATES = [
-  { value: "AL", label: "AL - Alabama" },
-  { value: "AK", label: "AK - Alaska" },
-  { value: "AZ", label: "AZ - Arizona" },
-  { value: "AR", label: "AR - Arkansas" },
-  { value: "CA", label: "CA - California" },
-  { value: "CO", label: "CO - Colorado" },
-  { value: "CT", label: "CT - Connecticut" },
-  { value: "DE", label: "DE - Delaware" },
-  { value: "FL", label: "FL - Florida" },
-  { value: "GA", label: "GA - Georgia" },
-  { value: "HI", label: "HI - Hawaii" },
-  { value: "ID", label: "ID - Idaho" },
-  { value: "IL", label: "IL - Illinois" },
-  { value: "IN", label: "IN - Indiana" },
-  { value: "IA", label: "IA - Iowa" },
-  { value: "KS", label: "KS - Kansas" },
-  { value: "KY", label: "KY - Kentucky" },
-  { value: "LA", label: "LA - Louisiana" },
-  { value: "ME", label: "ME - Maine" },
-  { value: "MD", label: "MD - Maryland" },
-  { value: "MA", label: "MA - Massachusetts" },
-  { value: "MI", label: "MI - Michigan" },
-  { value: "MN", label: "MN - Minnesota" },
-  { value: "MS", label: "MS - Mississippi" },
-  { value: "MO", label: "MO - Missouri" },
-  { value: "MT", label: "MT - Montana" },
-  { value: "NE", label: "NE - Nebraska" },
-  { value: "NV", label: "NV - Nevada" },
-  { value: "NH", label: "NH - New Hampshire" },
-  { value: "NJ", label: "NJ - New Jersey" },
-  { value: "NM", label: "NM - New Mexico" },
-  { value: "NY", label: "NY - New York" },
-  { value: "NC", label: "NC - North Carolina" },
-  { value: "ND", label: "ND - North Dakota" },
-  { value: "OH", label: "OH - Ohio" },
-  { value: "OK", label: "OK - Oklahoma" },
-  { value: "OR", label: "OR - Oregon" },
-  { value: "PA", label: "PA - Pennsylvania" },
-  { value: "RI", label: "RI - Rhode Island" },
-  { value: "SC", label: "SC - South Carolina" },
-  { value: "SD", label: "SD - South Dakota" },
-  { value: "TN", label: "TN - Tennessee" },
-  { value: "TX", label: "TX - Texas" },
-  { value: "UT", label: "UT - Utah" },
-  { value: "VT", label: "VT - Vermont" },
-  { value: "VA", label: "VA - Virginia" },
-  { value: "WA", label: "WA - Washington" },
-  { value: "WV", label: "WV - West Virginia" },
-  { value: "WI", label: "WI - Wisconsin" },
-  { value: "WY", label: "WY - Wyoming" }
-];
+import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal";
 
 export function CompanySettingsSection() {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [showLogoModal, setShowLogoModal] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const queryClient = useQueryClient();
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const { data: companySettings, isLoading } = useQuery({
     queryKey: ["company-settings"],
@@ -115,145 +21,6 @@ export function CompanySettingsSection() {
       return data;
     },
   });
-
-  const form = useForm<CompanySettingsFormData>({
-    resolver: zodResolver(companySettingsSchema),
-    defaultValues: {
-      company_name: "",
-      company_email: "",
-      company_phone: "",
-      company_street: "",
-      company_street2: "",
-      company_city: "",
-      company_state: "",
-      company_zipcode: "",
-      company_timezone: "America/New_York",
-      support_email: "",
-    },
-  });
-
-  React.useEffect(() => {
-    console.log("Form reset effect triggered", { companySettings, isLoading });
-    
-    if (companySettings && !isLoading) {
-      console.log("Resetting form with data:", companySettings);
-      
-      form.reset({
-        company_name: companySettings.company_name || "",
-        company_email: companySettings.company_email || "",
-        company_phone: companySettings.company_phone || "",
-        company_street: companySettings.company_street || "",
-        company_street2: companySettings.company_street2 || "",
-        company_city: companySettings.company_city || "",
-        company_state: companySettings.company_state || "",
-        company_zipcode: companySettings.company_zipcode || "",
-        company_timezone: companySettings.company_timezone || "America/New_York",
-        support_email: companySettings.support_email || "",
-      });
-      
-      console.log("Form values after reset:", form.getValues());
-    }
-  }, [companySettings, isLoading, form]);
-
-  const updateCompanySettings = useMutation({
-    mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
-      // Use upsert to handle both create and update cases
-      const { error } = await supabase
-        .from("company_settings")
-        .upsert({
-          id: companySettings?.id || '08751fa1-759f-4bfd-afd3-37a6d6b4f86f', // Use existing ID or default
-          ...data
-        });
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-settings"] });
-      setShowSuccessMessage(true);
-      toast.success("Company settings updated successfully!");
-    },
-    onError: (error) => {
-      toast.error("Failed to update company settings");
-      console.error("Error updating company settings:", error);
-    },
-  });
-
-  const uploadLogoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      console.log("Starting logo upload for file:", file.name);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `logo-${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('company-logos')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error("Storage upload error:", error);
-        throw error;
-      }
-      
-      console.log("Storage upload successful:", data);
-      
-      const { data: { publicUrl } } = supabase.storage
-        .from('company-logos')
-        .getPublicUrl(data.path);
-
-      console.log("Generated public URL:", publicUrl);
-      return publicUrl;
-    },
-    onSuccess: async (logoUrl) => {
-      console.log("Logo upload successful, updating company settings with URL:", logoUrl);
-      const formData = form.getValues();
-      await updateCompanySettings.mutateAsync({ ...formData, company_logo: logoUrl });
-      await queryClient.invalidateQueries({ queryKey: ["company-settings"] });
-      setLogoFile(null);
-      setLogoPreview(null);
-      setShowLogoModal(false);
-      toast.success("Logo updated successfully!");
-    },
-    onError: (error) => {
-      console.error('Error uploading logo:', error);
-      toast.error("Failed to upload logo. Please try again.");
-    },
-  });
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error("Please select a valid image file");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size must be less than 5MB");
-        return;
-      }
-      
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setLogoPreview(e.target?.result as string);
-        setShowLogoModal(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleLogoUpload = () => {
-    if (logoFile) {
-      uploadLogoMutation.mutate(logoFile);
-    } else {
-      toast.error("Please select a logo file first");
-    }
-  };
-
-  const onSubmit = (data: CompanySettingsFormData) => {
-    updateCompanySettings.mutate(data);
-  };
 
   if (isLoading) {
     return (
@@ -275,297 +42,109 @@ export function CompanySettingsSection() {
     );
   }
 
+  const formatAddress = () => {
+    if (!companySettings) return "No address set";
+    
+    const parts = [
+      companySettings.company_street,
+      companySettings.company_city,
+      companySettings.company_state,
+      companySettings.company_zipcode
+    ].filter(Boolean);
+    
+    return parts.length > 0 ? parts.join(", ") : "No address set";
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Company Information */}
+    <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Building2 className="w-5 h-5" />
-            <span>Company Information</span>
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center space-x-2">
+              <Building2 className="w-5 h-5" />
+              <span>Company Information</span>
+            </CardTitle>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowEditModal(true)}
+              className="flex items-center space-x-2"
+            >
+              <Edit className="w-4 h-4" />
+              <span>Edit</span>
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="company_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter company name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="company_timezone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Timezone</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select timezone" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {timezones.map((tz) => (
-                            <SelectItem key={tz.value} value={tz.value}>
-                              {tz.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="company_email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                          <Input 
-                            placeholder="company@example.com" 
-                            className="pl-10"
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="company_phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(555) 123-4567" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Company Address Fields */}
-              <div className="space-y-6">
-                <h3 className="text-lg font-medium text-foreground">Company Address</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="company_street"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street Address *</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                          <Input 
-                            placeholder="123 Main Street"
-                            className="pl-10"
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="company_street2"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Street 2 (Optional)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Suite 100, Apt 2B, etc."
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="company_city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="New York"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="company_state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State *</FormLabel>
-                        <FormControl>
-                          <StateScroller
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            placeholder="Select state"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="company_zipcode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Zipcode *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="12345"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <FormField
-                control={form.control}
-                name="support_email"
-                render={({ field }) => (
-                     <FormItem>
-                       <FormLabel>Support Email</FormLabel>
-                       <FormControl>
-                         <div className="relative">
-                           <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                           <Input 
-                             placeholder="support@example.com" 
-                             className="pl-10"
-                             {...field} 
-                           />
-                         </div>
-                       </FormControl>
-                        <p className="text-xs text-muted-foreground">
-                          This email address will be used for marketing communications and as the reply-to address for all correspondence including, quotes and invoices.
-                        </p>
-                       <FormMessage />
-                     </FormItem>
-                )}
-              />
-
-              <div className="flex justify-end">
-                <Button 
-                  type="submit" 
-                  disabled={updateCompanySettings.isPending}
-                  className="bg-gradient-primary hover:bg-gradient-primary/90"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {updateCompanySettings.isPending ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-
-      {/* Logo Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Company Logo</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted">
-              {logoPreview ? (
-                <img 
-                  src={logoPreview} 
-                  alt="Logo preview" 
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              ) : companySettings?.company_logo ? (
+        <CardContent className="space-y-6">
+          {/* Company Logo and Name Section */}
+          <div className="flex items-start space-x-4">
+            <div className="w-16 h-16 flex items-center justify-center bg-muted rounded-lg overflow-hidden">
+              {companySettings?.company_logo ? (
                 <img 
                   src={companySettings.company_logo} 
-                  alt="Current logo" 
-                  className="w-full h-full object-contain rounded-lg"
+                  alt="Company logo" 
+                  className="w-full h-full object-contain"
                 />
               ) : (
-                <Upload className="h-8 w-8 text-muted-foreground" />
+                <Building2 className="w-8 h-8 text-muted-foreground" />
               )}
             </div>
             <div className="flex-1">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="hidden"
-                id="logo-upload"
-              />
-              <Label htmlFor="logo-upload" className="cursor-pointer">
-                <Button variant="outline" asChild>
-                  <span>Choose Logo</span>
-                </Button>
-              </Label>
-              <p className="text-xs text-muted-foreground mt-2">
-                Recommended: 200x200px, JPG or PNG, max 5MB
+              <h3 className="text-xl font-semibold text-foreground">
+                {companySettings?.company_name || "Company Name Not Set"}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {companySettings?.company_timezone ? 
+                  `Timezone: ${companySettings.company_timezone.replace("America/", "").replace("_", " ")}` : 
+                  "Timezone not set"
+                }
               </p>
             </div>
           </div>
-          
+
+          {/* Contact Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center space-x-2">
+                <Mail className="w-4 h-4" />
+                <span>Contact Information</span>
+              </h4>
+              <div className="space-y-2 pl-6">
+                <div>
+                  <span className="text-sm text-muted-foreground">Email:</span>
+                  <p className="text-sm">{companySettings?.company_email || "Not set"}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-muted-foreground">Phone:</span>
+                  <p className="text-sm">{companySettings?.company_phone || "Not set"}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-muted-foreground">Support Email:</span>
+                  <p className="text-sm">{companySettings?.support_email || "Not set"}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center space-x-2">
+                <MapPin className="w-4 h-4" />
+                <span>Address</span>
+              </h4>
+              <div className="pl-6">
+                <p className="text-sm text-muted-foreground whitespace-pre-line">
+                  {formatAddress()}
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <LogoUploadModal
-        isOpen={showLogoModal}
-        onClose={() => {
-          setShowLogoModal(false);
-          setLogoPreview(null);
-          setLogoFile(null);
-        }}
-        logoPreview={logoPreview}
-        onSave={handleLogoUpload}
-        isUploading={uploadLogoMutation.isPending}
+      <CompanySettingsModal 
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        companySettings={companySettings}
       />
-
-      {showSuccessMessage && (
-        <SuccessMessage
-          message="Company settings updated successfully"
-          onComplete={() => setShowSuccessMessage(false)}
-        />
-      )}
-    </div>
+    </>
   );
 }
