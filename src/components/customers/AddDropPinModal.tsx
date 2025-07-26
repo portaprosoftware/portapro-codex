@@ -673,7 +673,7 @@ export function AddDropPinModal({
                         type="button"
                         onClick={captureLocationFromMap}
                         size="lg"
-                        className="bg-green-600 hover:bg-green-700 text-white border-2 border-green-400"
+                        className="bg-green-600 hover:bg-green-700 text-white animate-pulse"
                       >
                         <Target className="w-5 h-5 mr-2" />
                         Capture This Location
@@ -695,13 +695,7 @@ export function AddDropPinModal({
 
                 <Form {...form}>
                   <form 
-                    onSubmit={form.handleSubmit((data) => {
-                      if (capturedPins.length > 0) {
-                        addPinToBatch(data);
-                      } else {
-                        onSubmit(data);
-                      }
-                    })} 
+                    onSubmit={form.handleSubmit(onSubmit)} 
                     className="space-y-4"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -860,7 +854,8 @@ export function AddDropPinModal({
                       
                       <div className="flex gap-2">
                         <Button 
-                          type="submit" 
+                          type="button" 
+                          onClick={() => form.handleSubmit(addPinToBatch)()}
                           variant="outline"
                           className="border-blue-200 text-blue-700 hover:bg-blue-50"
                         >
