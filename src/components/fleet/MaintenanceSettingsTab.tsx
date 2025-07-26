@@ -26,11 +26,15 @@ export const MaintenanceSettingsTab: React.FC = () => {
         .single();
       if (error) throw error;
       return data;
-    },
-    onSuccess: (data) => {
-      setInHouseEnabled(data.enable_inhouse_features);
     }
   });
+
+  // Update state when data changes
+  React.useEffect(() => {
+    if (companySettings) {
+      setInHouseEnabled(companySettings.enable_inhouse_features);
+    }
+  }, [companySettings]);
 
   // Fetch task types
   const { data: taskTypes } = useQuery({

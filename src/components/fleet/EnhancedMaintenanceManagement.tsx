@@ -222,32 +222,36 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               title="Past Due"
               value={kpis?.past_due || 0}
               icon={AlertTriangle}
-              fromGradient="from-red-500"
-              toGradient="to-red-600"
+              gradientFrom="#ef4444"
+              gradientTo="#dc2626"
+              iconBg="#ef4444"
               animateValue={!kpisLoading}
             />
             <StatCard
               title="Due This Week"
               value={kpis?.due_this_week || 0}
               icon={Clock}
-              fromGradient="from-orange-500"
-              toGradient="to-orange-600"
+              gradientFrom="#f97316"
+              gradientTo="#ea580c"
+              iconBg="#f97316"
               animateValue={!kpisLoading}
             />
             <StatCard
               title="In Progress"
               value={kpis?.in_progress || 0}
               icon={Wrench}
-              fromGradient="from-blue-500"
-              toGradient="to-blue-600"
+              gradientFrom="#3b82f6"
+              gradientTo="#2563eb"
+              iconBg="#3b82f6"
               animateValue={!kpisLoading}
             />
             <StatCard
               title="YTD Maintenance Spend"
               value={`$${(kpis?.ytd_spend || 0).toLocaleString()}`}
               icon={DollarSign}
-              fromGradient="from-green-500"
-              toGradient="to-green-600"
+              gradientFrom="#10b981"
+              gradientTo="#059669"
+              iconBg="#10b981"
               animateValue={!kpisLoading}
             />
           </div>
