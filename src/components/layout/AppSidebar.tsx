@@ -55,6 +55,9 @@ const coreItems: NavigationItem[] = [
     url: '/', 
     icon: LayoutDashboard
   },
+];
+
+const dayToDayItems: NavigationItem[] = [
   { 
     title: 'Jobs', 
     url: '/jobs', 
@@ -66,6 +69,18 @@ const coreItems: NavigationItem[] = [
     url: '/customer-hub', 
     icon: Users2,
     permission: 'staff'
+  },
+  { 
+    title: 'Quotes & Invoices', 
+    url: '/quotes-invoices', 
+    icon: FileText,
+    permission: 'admin'
+  },
+  { 
+    title: 'Marketing', 
+    url: '/marketing', 
+    icon: Megaphone,
+    permission: 'admin'
   },
 ];
 
@@ -110,21 +125,9 @@ const managementItems: NavigationItem[] = [
     permission: 'admin'
   },
   { 
-    title: 'Quotes & Invoices', 
-    url: '/quotes-invoices', 
-    icon: FileText,
-    permission: 'admin'
-  },
-  { 
     title: 'Analytics', 
     url: '/analytics', 
     icon: BarChart4,
-    permission: 'admin'
-  },
-  { 
-    title: 'Marketing', 
-    url: '/marketing', 
-    icon: Megaphone,
     permission: 'admin'
   },
   { 
@@ -172,6 +175,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   };
 
   const visibleCoreItems = getVisibleItems(coreItems);
+  const visibleDayToDayItems = getVisibleItems(dayToDayItems);
   const visibleInventoryItems = getVisibleItems(inventoryItems);
   const visibleManagementItems = getVisibleItems(managementItems);
 
@@ -222,6 +226,49 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Day-to-Day Section */}
+        {visibleDayToDayItems.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              DAY-TO-DAY
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleDayToDayItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={activeSection === item.url || location.pathname === item.url}
+                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
+                    >
+                      <NavLink
+                        to={item.url}
+                        onClick={() => onSectionChange?.(item.url)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span className="text-sm font-medium">{item.title}</span>
+                        {item.badge && (
+                          <Badge 
+                            className={cn(
+                              "ml-auto text-white border-0 font-bold",
+                              (activeSection === item.url || location.pathname === item.url) 
+                                ? "bg-gradient-to-r from-blue-600 to-blue-700" 
+                                : "bg-gray-500"
+                            )}
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Inventory Section */}
         {visibleInventoryItems.length > 0 && (
