@@ -39,7 +39,7 @@ const dropPinSchema = z.object({
   point_name: z.string().min(1, 'Point name is required'),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
-  category: z.string().optional(),
+  category: z.string().min(1, 'Category is required'),
   description: z.string().optional(),
   is_primary: z.boolean().default(false),
 });
@@ -452,12 +452,12 @@ export function EditDropPinModal({
                   control={form.control}
                   name="category"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                     <FormItem>
+                       <FormLabel>Category *</FormLabel>
+                       <Select onValueChange={field.onChange} value={field.value}>
+                         <FormControl>
+                           <SelectTrigger>
+                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
