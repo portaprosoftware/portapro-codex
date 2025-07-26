@@ -12,8 +12,10 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { format, eachDayOfInterval, isSameDay, parseISO } from 'date-fns';
 import { DateRange } from 'react-day-picker';
-import { formatDateForQuery } from '@/lib/dateUtils';
+import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 import { useDriverWorkingHours } from '@/hooks/useDriverWorkingHours';
+import { FileUploadButton } from './FileUploadButton';
+import { WeeklyScheduleGrid } from './WeeklyScheduleGrid';
 
 interface MobileTimeOffRequestSliderProps {
   isOpen: boolean;
@@ -21,11 +23,15 @@ interface MobileTimeOffRequestSliderProps {
 }
 
 interface ScheduleDay {
-  date: Date;
+  date: string;
+  dayOfWeek: string;
   hasShift: boolean;
   hasJob: boolean;
   hasTimeOff: boolean;
-  conflicts: boolean;
+  hasConflict: boolean;
+  shiftTime?: string;
+  jobTitle?: string;
+  timeOffReason?: string;
 }
 
 export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProps> = ({
@@ -36,6 +42,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
   const queryClient = useQueryClient();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [reason, setReason] = useState('');
+  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
 
   // Fetch driver's working hours
   const { data: workingHours } = useDriverWorkingHours(user?.id);
@@ -80,7 +87,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
   });
 
   const createTimeOffMutation = useMutation({
-    mutationFn: async (newRequest: { start_time: string; end_time: string; reason: string }) => {
+    mutationFn: async (newRequest: { start_time: string; end_time: string; reason: string; attachment_url?: string | null }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
@@ -92,7 +99,8 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
           end_time: newRequest.end_time,
           reason: newRequest.reason,
           status: 'pending',
-          time_slot: 'full_day'
+          time_slot: 'full_day',
+          attachment_url: newRequest.attachment_url
         })
         .select()
         .single();
@@ -108,6 +116,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
       onClose();
       setDateRange(undefined);
       setReason('');
+      setAttachmentUrl(null);
     },
     onError: (error) => {
       console.error('Error creating time off request:', error);
@@ -136,14 +145,32 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
         return date >= start && date <= end;
       }) || false;
       
-      const conflicts = hasJob || hasTimeOff;
+      const hasConflict = hasJob || hasTimeOff;
 
-      return { date, hasShift, hasJob, hasTimeOff, conflicts };
+      // Get additional details
+      const job = scheduledJobs?.find(job => isSameDay(parseISO(job.scheduled_date), date));
+      const timeOff = existingTimeOff?.find(timeOff => {
+        const start = parseISO(timeOff.start_time);
+        const end = parseISO(timeOff.end_time);
+        return date >= start && date <= end;
+      });
+
+      return { 
+        date: formatDateForQuery(date),
+        dayOfWeek: format(date, 'EEE'),
+        hasShift, 
+        hasJob, 
+        hasTimeOff, 
+        hasConflict,
+        shiftTime: hasShift ? '8:00 AM - 5:00 PM' : undefined,
+        jobTitle: job ? `${job.job_type} Job` : undefined,
+        timeOffReason: timeOff ? timeOff.reason : undefined
+      };
     });
   };
 
   const schedulePreview = generateSchedulePreview();
-  const hasConflicts = schedulePreview.some(day => day.conflicts);
+  const hasConflicts = schedulePreview.some(day => day.hasConflict);
   const canSubmit = dateRange?.from && dateRange?.to && reason.trim().length > 0;
 
   const handleSubmit = () => {
@@ -152,23 +179,11 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
     createTimeOffMutation.mutate({
       start_time: formatDateForQuery(dateRange.from),
       end_time: formatDateForQuery(dateRange.to),
-      reason: reason.trim()
+      reason: reason.trim(),
+      attachment_url: attachmentUrl
     });
   };
 
-  const getDayStatusColor = (day: ScheduleDay) => {
-    if (day.hasTimeOff) return 'bg-gray-400';
-    if (day.hasJob) return 'bg-red-500';
-    if (day.hasShift) return 'bg-blue-500';
-    return 'bg-gray-200';
-  };
-
-  const getDayStatusText = (day: ScheduleDay) => {
-    if (day.hasTimeOff) return 'Time Off';
-    if (day.hasJob) return 'Job Scheduled';
-    if (day.hasShift) return 'Shift';
-    return 'Available';
-  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -202,33 +217,17 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
               />
             </div>
 
-            {/* Schedule Preview */}
+            {/* Enhanced Schedule Preview with Horizontal Scrolling */}
             {schedulePreview.length > 0 && (
               <div className="space-y-3">
                 <Label className="text-sm font-medium">Your Upcoming Schedule</Label>
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <div className="space-y-2">
-                    {schedulePreview.map(day => (
-                      <div key={day.date.toISOString()} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="text-sm font-medium min-w-[80px]">
-                            {format(day.date, 'EEE, MMM d')}
-                          </div>
-                          <div className={`w-3 h-3 rounded-full ${getDayStatusColor(day)}`} />
-                          <span className="text-sm text-muted-foreground">
-                            {getDayStatusText(day)}
-                          </span>
-                        </div>
-                        {day.conflicts && (
-                          <Badge variant="destructive" className="text-xs">
-                            Conflict
-                          </Badge>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
+                
+                <WeeklyScheduleGrid
+                  scheduleDays={schedulePreview}
+                  startDate={dateRange!.from!}
+                  endDate={dateRange!.to!}
+                />
+                
                 {/* Conflict Warning */}
                 {hasConflicts && (
                   <div className="flex items-start space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -236,7 +235,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
                     <div className="text-sm">
                       <p className="font-medium text-destructive">Schedule Conflicts Detected</p>
                       <p className="text-destructive/80 mt-1">
-                        You have scheduled jobs or approved time off during this period. Are you sure you want to proceed?
+                        You have scheduled jobs or approved time off during this period. You can still submit this request, but conflicts will need to be resolved.
                       </p>
                     </div>
                   </div>
@@ -259,18 +258,18 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
               />
             </div>
 
-            {/* Optional Document Upload */}
+            {/* Document Upload */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Attachment (Optional)</Label>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                disabled
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                Attach Document
-                <span className="ml-auto text-xs text-muted-foreground">Coming Soon</span>
-              </Button>
+              <Label className="text-sm font-medium">Supporting Document (Optional)</Label>
+              <FileUploadButton
+                onFileUploaded={setAttachmentUrl}
+                uploadedFile={attachmentUrl}
+                onFileRemoved={() => setAttachmentUrl(null)}
+                disabled={createTimeOffMutation.isPending}
+              />
+              <p className="text-xs text-muted-foreground">
+                Upload medical notes, travel documents, etc. (PDF, images, or documents up to 10MB)
+              </p>
             </div>
           </div>
         </div>

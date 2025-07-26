@@ -1354,6 +1354,7 @@ export type Database = {
       }
       driver_time_off_requests: {
         Row: {
+          attachment_url: string | null
           created_at: string
           driver_id: string
           end_time: string | null
@@ -1369,6 +1370,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attachment_url?: string | null
           created_at?: string
           driver_id: string
           end_time?: string | null
@@ -1384,6 +1386,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attachment_url?: string | null
           created_at?: string
           driver_id?: string
           end_time?: string | null
