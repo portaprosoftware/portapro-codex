@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TemplateEditModal } from "./TemplateEditModal";
+import { EnhancedTemplateEditModal } from "./EnhancedTemplateEditModal";
 import { TemplatePreviewModal } from "./TemplatePreviewModal";
 import { Plus, FileText, Edit, Trash2, Search, Grid, List } from "lucide-react";
 import { toast } from "sonner";
@@ -262,7 +262,7 @@ export const ReportTemplatesTab: React.FC = () => {
       )}
 
       {/* Template Edit Modal */}
-      <TemplateEditModal
+      <EnhancedTemplateEditModal
         templateId={selectedTemplate}
         isOpen={!!selectedTemplate || isCreating}
         isCreating={isCreating}

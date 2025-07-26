@@ -5283,6 +5283,42 @@ export type Database = {
           },
         ]
       }
+      section_types: {
+        Row: {
+          category: string
+          created_at: string
+          default_settings: Json
+          description: string | null
+          display_name: string
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_settings?: Json
+          description?: string | null
+          display_name: string
+          icon: string
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_settings?: Json
+          description?: string | null
+          display_name?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
       service_categories: {
         Row: {
           created_at: string | null
@@ -5817,6 +5853,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      template_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          position: number
+          section_type: string
+          settings: Json
+          template_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position?: number
+          section_type: string
+          settings?: Json
+          template_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position?: number
+          section_type?: string
+          settings?: Json
+          template_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       template_usage_history: {
         Row: {
