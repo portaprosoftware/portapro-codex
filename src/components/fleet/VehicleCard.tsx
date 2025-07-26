@@ -32,13 +32,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
   const getStatusClasses = (status: string) => {
     switch (status?.toLowerCase()) {
       case "available":
-        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
+        return "bg-gradient-green text-white font-bold border-0";
       case "maintenance":
-        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
+        return "bg-gradient-orange text-white font-bold border-0";
       case "in_service":
-        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
+        return "bg-gradient-red text-white font-bold border-0";
       default:
-        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
+        return "bg-gradient-red text-white font-bold border-0";
     }
   };
 
@@ -76,7 +76,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
                   <span className="text-sm text-muted-foreground">• {vehicle.vehicle_type}</span>
                 )}
                 <span className={cn("inline-block text-xs font-medium py-1 px-2 rounded-md", getStatusClasses(vehicle.status))}>
-                  {vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </span>
               </div>
             </div>
@@ -130,7 +130,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
           <span className={cn("inline-block text-xs font-medium py-1 px-2 rounded-md", getStatusClasses(vehicle.status))}>
-            {vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </span>
         </div>
       </div>

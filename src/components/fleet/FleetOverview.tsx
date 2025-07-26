@@ -157,25 +157,42 @@ export const FleetOverview: React.FC = () => {
 
             {/* Status Filters */}
             <div className="flex flex-wrap gap-2 mb-6">
-              {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={cn(
-                    "inline-flex items-center text-sm font-medium py-1.5 px-3 rounded-full transition-colors",
-                    statusFilter === status
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  )}
-                >
-                  {status === 'all' ? 'All' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  {status !== 'all' && (
-                    <span className="ml-1">
-                      ({statusCounts[status]})
-                    </span>
-                  )}
-                </button>
-              ))}
+              {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => {
+                const getFilterButtonClass = (status: string, isActive: boolean) => {
+                  if (!isActive) {
+                    return "bg-muted text-muted-foreground hover:bg-muted/80";
+                  }
+                  
+                  switch (status) {
+                    case 'available':
+                      return "bg-gradient-green text-white font-bold";
+                    case 'in_service':
+                      return "bg-gradient-red text-white font-bold";
+                    case 'maintenance':
+                      return "bg-gradient-orange text-white font-bold";
+                    default:
+                      return "bg-primary text-primary-foreground";
+                  }
+                };
+
+                return (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={cn(
+                      "inline-flex items-center text-sm font-medium py-1.5 px-3 rounded-full transition-colors",
+                      getFilterButtonClass(status, statusFilter === status)
+                    )}
+                  >
+                    {status === 'all' ? 'All' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    {status !== 'all' && (
+                      <span className="ml-1">
+                        ({statusCounts[status]})
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
       {/* Vehicle Grid/List */}
