@@ -209,6 +209,42 @@ export type Database = {
         }
         Relationships: []
       }
+      company_maintenance_settings: {
+        Row: {
+          created_at: string
+          data_retention_days: number | null
+          default_notification_advance_days: number | null
+          enable_inhouse_features: boolean | null
+          id: string
+          notification_email: string | null
+          notification_phone: string | null
+          notification_send_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_retention_days?: number | null
+          default_notification_advance_days?: number | null
+          enable_inhouse_features?: boolean | null
+          id?: string
+          notification_email?: string | null
+          notification_phone?: string | null
+          notification_send_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_retention_days?: number | null
+          default_notification_advance_days?: number | null
+          enable_inhouse_features?: boolean | null
+          id?: string
+          notification_email?: string | null
+          notification_phone?: string | null
+          notification_send_time?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       company_settings: {
         Row: {
           cleaning_prefix: string | null
@@ -2836,66 +2872,189 @@ export type Database = {
         }
         Relationships: []
       }
+      maintenance_parts: {
+        Row: {
+          category: string | null
+          created_at: string
+          current_stock: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          reorder_threshold: number | null
+          sku: string | null
+          storage_location_id: string | null
+          supplier_info: Json | null
+          unit_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          current_stock?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          reorder_threshold?: number | null
+          sku?: string | null
+          storage_location_id?: string | null
+          supplier_info?: Json | null
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          current_stock?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          reorder_threshold?: number | null
+          sku?: string | null
+          storage_location_id?: string | null
+          supplier_info?: Json | null
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maintenance_parts_usage: {
+        Row: {
+          created_at: string
+          id: string
+          maintenance_record_id: string
+          notes: string | null
+          part_id: string
+          quantity_used: number
+          total_cost: number | null
+          unit_cost: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          maintenance_record_id: string
+          notes?: string | null
+          part_id: string
+          quantity_used: number
+          total_cost?: number | null
+          unit_cost: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          maintenance_record_id?: string
+          notes?: string | null
+          part_id?: string
+          quantity_used?: number
+          total_cost?: number | null
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_parts_usage_maintenance_record_id_fkey"
+            columns: ["maintenance_record_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_parts_usage_part_id_fkey"
+            columns: ["part_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_parts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_records: {
         Row: {
+          actual_hours: number | null
           completed_date: string | null
           cost: number | null
           created_at: string | null
           created_by: string | null
           description: string
+          estimated_hours: number | null
           id: string
           invoice_number: string | null
+          labor_cost: number | null
           maintenance_type: string
           mileage_at_service: number | null
           next_service_date: string | null
           next_service_mileage: number | null
           notes: string | null
           notification_trigger_type: string | null
+          parts_cost: number | null
+          priority: string | null
           scheduled_date: string | null
           service_provider: string | null
           status: string
+          task_type_id: string | null
+          technician_id: string | null
+          total_cost: number | null
           updated_at: string | null
           vehicle_id: string
+          vendor_id: string | null
         }
         Insert: {
+          actual_hours?: number | null
           completed_date?: string | null
           cost?: number | null
           created_at?: string | null
           created_by?: string | null
           description: string
+          estimated_hours?: number | null
           id?: string
           invoice_number?: string | null
+          labor_cost?: number | null
           maintenance_type: string
           mileage_at_service?: number | null
           next_service_date?: string | null
           next_service_mileage?: number | null
           notes?: string | null
           notification_trigger_type?: string | null
+          parts_cost?: number | null
+          priority?: string | null
           scheduled_date?: string | null
           service_provider?: string | null
           status?: string
+          task_type_id?: string | null
+          technician_id?: string | null
+          total_cost?: number | null
           updated_at?: string | null
           vehicle_id: string
+          vendor_id?: string | null
         }
         Update: {
+          actual_hours?: number | null
           completed_date?: string | null
           cost?: number | null
           created_at?: string | null
           created_by?: string | null
           description?: string
+          estimated_hours?: number | null
           id?: string
           invoice_number?: string | null
+          labor_cost?: number | null
           maintenance_type?: string
           mileage_at_service?: number | null
           next_service_date?: string | null
           next_service_mileage?: number | null
           notes?: string | null
           notification_trigger_type?: string | null
+          parts_cost?: number | null
+          priority?: string | null
           scheduled_date?: string | null
           service_provider?: string | null
           status?: string
+          task_type_id?: string | null
+          technician_id?: string | null
+          total_cost?: number | null
           updated_at?: string | null
           vehicle_id?: string
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -2906,10 +3065,31 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "maintenance_records_task_type_id_fkey"
+            columns: ["task_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_task_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_technicians"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "maintenance_records_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -3186,6 +3366,138 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      maintenance_task_types: {
+        Row: {
+          created_at: string
+          default_cost: number | null
+          default_interval_days: number | null
+          default_interval_miles: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          required_technician_role: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_cost?: number | null
+          default_interval_days?: number | null
+          default_interval_miles?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          required_technician_role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_cost?: number | null
+          default_interval_days?: number | null
+          default_interval_miles?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          required_technician_role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      maintenance_technicians: {
+        Row: {
+          created_at: string
+          email: string | null
+          employee_id: string | null
+          first_name: string
+          hired_date: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean | null
+          last_name: string
+          phone: string | null
+          specializations: string[] | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          employee_id?: string | null
+          first_name: string
+          hired_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_name: string
+          phone?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          employee_id?: string | null
+          first_name?: string
+          hired_date?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_name?: string
+          phone?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      maintenance_vendors: {
+        Row: {
+          address: string | null
+          contact_name: string | null
+          created_at: string
+          email: string | null
+          hourly_rate: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          phone: string | null
+          service_specialties: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          service_specialties?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          hourly_rate?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          service_specialties?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       marketing_campaigns: {
         Row: {
