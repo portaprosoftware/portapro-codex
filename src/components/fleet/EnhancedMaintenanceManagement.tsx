@@ -224,155 +224,167 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard
-              title="Past Due"
-              value={kpis?.past_due || 0}
-              icon={AlertTriangle}
-              gradientFrom="#ef4444"
-              gradientTo="#dc2626"
-              iconBg="#ef4444"
-              animateValue={!kpisLoading}
-            />
-            <StatCard
-              title="Due This Week"
-              value={kpis?.due_this_week || 0}
-              icon={Clock}
-              gradientFrom="#f97316"
-              gradientTo="#ea580c"
-              iconBg="#f97316"
-              animateValue={!kpisLoading}
-            />
-            <StatCard
-              title="In Progress"
-              value={kpis?.in_progress || 0}
-              icon={Wrench}
-              gradientFrom="#3b82f6"
-              gradientTo="#2563eb"
-              iconBg="#3b82f6"
-              animateValue={!kpisLoading}
-            />
-            <StatCard
-              title="YTD Maintenance Spend"
-              value={`$${(kpis?.ytd_spend || 0).toLocaleString()}`}
-              icon={DollarSign}
-              gradientFrom="#10b981"
-              gradientTo="#059669"
-              iconBg="#10b981"
-              animateValue={!kpisLoading}
-            />
-          </div>
+          <div className="max-w-6xl">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <StatCard
+                title="Past Due"
+                value={kpis?.past_due || 0}
+                icon={AlertTriangle}
+                gradientFrom="#ef4444"
+                gradientTo="#dc2626"
+                iconBg="#ef4444"
+                animateValue={!kpisLoading}
+              />
+              <StatCard
+                title="Due This Week"
+                value={kpis?.due_this_week || 0}
+                icon={Clock}
+                gradientFrom="#f97316"
+                gradientTo="#ea580c"
+                iconBg="#f97316"
+                animateValue={!kpisLoading}
+              />
+              <StatCard
+                title="In Progress"
+                value={kpis?.in_progress || 0}
+                icon={Wrench}
+                gradientFrom="#3b82f6"
+                gradientTo="#2563eb"
+                iconBg="#3b82f6"
+                animateValue={!kpisLoading}
+              />
+              <StatCard
+                title="YTD Maintenance Spend"
+                value={`$${(kpis?.ytd_spend || 0).toLocaleString()}`}
+                icon={DollarSign}
+                gradientFrom="#10b981"
+                gradientTo="#059669"
+                iconBg="#10b981"
+                animateValue={!kpisLoading}
+              />
+            </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Overdue List */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
-                  Overdue Maintenance
-                </CardTitle>
-                <CardDescription>
-                  Tasks that require immediate attention
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {overdueRecords && overdueRecords.length > 0 ? (
-                  <div className="space-y-3">
-                    {overdueRecords.map((record) => (
-                      <div key={record.id} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <Badge className={getPriorityColor(record.priority || "medium")} />
-                            <span className="font-medium">{record.vehicles?.license_plate}</span>
-                            <span className="text-sm text-gray-600">
-                              {record.maintenance_task_types?.name || record.maintenance_type}
-                            </span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              {/* Overdue List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                    Overdue Maintenance
+                  </CardTitle>
+                  <CardDescription>
+                    Tasks that require immediate attention
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {overdueRecords && overdueRecords.length > 0 ? (
+                    <div className="space-y-3">
+                      {overdueRecords.map((record) => (
+                        <div key={record.id} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <Badge className={getPriorityColor(record.priority || "medium")} />
+                              <span className="font-medium">{record.vehicles?.license_plate}</span>
+                              <span className="text-sm text-gray-600">
+                                {record.maintenance_task_types?.name || record.maintenance_type}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Due: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Due: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
-                          </p>
+                          <Button size="sm" variant="outline">
+                            View & Update
+                          </Button>
                         </div>
-                        <Button size="sm" variant="outline">
-                          View & Update
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">No overdue maintenance tasks</p>
-                )}
-              </CardContent>
-            </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No overdue maintenance tasks</p>
+                  )}
+                </CardContent>
+              </Card>
 
-            {/* Upcoming Schedule Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-blue-500" />
-                  Upcoming This Week
-                </CardTitle>
-                <CardDescription>
-                  Scheduled maintenance tasks
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {upcomingRecords && upcomingRecords.length > 0 ? (
-                  <div className="space-y-3">
-                    {upcomingRecords.map((record) => (
-                      <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 border rounded-lg">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <Badge className={getStatusColor(record.status)} />
-                            <span className="font-medium">{record.vehicles?.license_plate}</span>
-                            <span className="text-sm text-gray-600">
-                              {record.maintenance_task_types?.name || record.maintenance_type}
-                            </span>
+              {/* Upcoming Schedule Preview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-blue-500" />
+                    Upcoming This Week
+                  </CardTitle>
+                  <CardDescription>
+                    Scheduled maintenance tasks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {upcomingRecords && upcomingRecords.length > 0 ? (
+                    <div className="space-y-3">
+                      {upcomingRecords.map((record) => (
+                        <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 border rounded-lg">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <Badge className={getStatusColor(record.status)} />
+                              <span className="font-medium">{record.vehicles?.license_plate}</span>
+                              <span className="text-sm text-gray-600">
+                                {record.maintenance_task_types?.name || record.maintenance_type}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Scheduled: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Scheduled: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
-                          </p>
+                          <Button size="sm" variant="outline">
+                            View Details
+                          </Button>
                         </div>
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">No upcoming maintenance scheduled</p>
-                )}
-              </CardContent>
-            </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No upcoming maintenance scheduled</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
 
         {/* All Records Tab */}
         <TabsContent value="records">
-          <MaintenanceAllRecordsTab />
+          <div className="max-w-6xl">
+            <MaintenanceAllRecordsTab />
+          </div>
         </TabsContent>
 
         {/* Notifications Tab */}
         <TabsContent value="notifications">
-          <MaintenanceNotificationsTab />
+          <div className="max-w-6xl">
+            <MaintenanceNotificationsTab />
+          </div>
         </TabsContent>
 
         {/* Settings Tab */}
         <TabsContent value="settings">
-          <MaintenanceSettingsTab />
+          <div className="max-w-6xl">
+            <MaintenanceSettingsTab />
+          </div>
         </TabsContent>
 
         {/* Parts & Inventory Tab (In-House Only) */}
         {inHouseEnabled && (
           <TabsContent value="parts">
-            <MaintenancePartsInventoryTab />
+            <div className="max-w-6xl">
+              <MaintenancePartsInventoryTab />
+            </div>
           </TabsContent>
         )}
 
         {/* Calendar Tab (In-House Only) */}
         {inHouseEnabled && (
           <TabsContent value="calendar">
-            <MaintenanceCalendarTab />
+            <div className="max-w-6xl">
+              <MaintenanceCalendarTab />
+            </div>
           </TabsContent>
         )}
       </Tabs>

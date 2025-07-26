@@ -63,11 +63,11 @@ export const MaintenanceCalendarTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Calendar Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+      <Card className="bg-white rounded-lg border shadow-sm">
+        <CardHeader className="px-6 py-4">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
                 Maintenance Calendar
               </CardTitle>
@@ -75,7 +75,7 @@ export const MaintenanceCalendarTab: React.FC = () => {
                 <Button variant="outline" size="sm">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="font-medium text-lg">
+                <span className="font-medium text-lg min-w-[140px] text-center">
                   {monthNames[currentMonth]} {currentYear}
                 </span>
                 <Button variant="outline" size="sm">
@@ -83,9 +83,9 @@ export const MaintenanceCalendarTab: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Select defaultValue="month">
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -95,7 +95,7 @@ export const MaintenanceCalendarTab: React.FC = () => {
                 </SelectContent>
               </Select>
               <Select defaultValue="all">
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -104,73 +104,75 @@ export const MaintenanceCalendarTab: React.FC = () => {
                   <SelectItem value="sarah">Sarah Davis</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
+              <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
               </Button>
-              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
+              <Button size="sm" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
                 <Plus className="w-4 h-4 mr-2" />
                 Quick Add
               </Button>
             </div>
           </div>
-          <CardDescription>
+          <CardDescription className="mt-2">
             Drag and drop to reschedule maintenance tasks or assign to different technicians
           </CardDescription>
         </CardHeader>
       </Card>
 
       {/* Calendar Grid */}
-      <Card>
+      <Card className="bg-white rounded-lg border shadow-sm">
         <CardContent className="p-6">
-          <div className="grid grid-cols-7 gap-1">
-            {/* Day headers */}
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="p-3 text-center font-medium text-gray-600 bg-gray-50 rounded-t-lg">
-                {day}
-              </div>
-            ))}
-            
-            {/* Empty cells for days before month starts */}
-            {Array.from({ length: firstDay }, (_, i) => (
-              <div key={`empty-${i}`} className="h-32 bg-gray-50 border border-gray-200" />
-            ))}
-            
-            {/* Calendar days */}
-            {Array.from({ length: daysInMonth }, (_, i) => {
-              const day = i + 1;
-              const isToday = day === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear();
-              const events = maintenanceEvents[day] || [];
-              
-              return (
-                <div 
-                  key={day} 
-                  className={`h-32 border border-gray-200 p-2 bg-white hover:bg-gray-50 cursor-pointer ${isToday ? 'bg-blue-50 border-blue-300' : ''}`}
-                >
-                  <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600' : 'text-gray-900'}`}>
-                    {day}
-                  </div>
-                  <div className="space-y-1 overflow-hidden">
-                    {events.slice(0, 2).map((event) => (
-                      <div 
-                        key={event.id}
-                        className="text-xs p-1 rounded cursor-pointer hover:opacity-80"
-                        style={{ backgroundColor: getPriorityColor(event.priority).split(' ')[0].replace('bg-', '#') + '20' }}
-                      >
-                        <div className="font-medium truncate">{event.vehicle}</div>
-                        <div className="text-gray-600 truncate">{event.task}</div>
-                        <div className="text-gray-500">{event.time}</div>
-                      </div>
-                    ))}
-                    {events.length > 2 && (
-                      <div className="text-xs text-gray-500 text-center">
-                        +{events.length - 2} more
-                      </div>
-                    )}
-                  </div>
+          <div className="overflow-x-auto">
+            <div className="grid grid-cols-7 gap-1 min-w-[700px]">
+              {/* Day headers */}
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                <div key={day} className="p-3 text-center font-medium text-gray-600 bg-gray-50 rounded-t-lg">
+                  {day}
                 </div>
-              );
-            })}
+              ))}
+              
+              {/* Empty cells for days before month starts */}
+              {Array.from({ length: firstDay }, (_, i) => (
+                <div key={`empty-${i}`} className="h-32 bg-gray-50 border border-gray-200" />
+              ))}
+              
+              {/* Calendar days */}
+              {Array.from({ length: daysInMonth }, (_, i) => {
+                const day = i + 1;
+                const isToday = day === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear();
+                const events = maintenanceEvents[day] || [];
+                
+                return (
+                  <div 
+                    key={day} 
+                    className={`h-32 border border-gray-200 p-2 bg-white hover:bg-gray-50 cursor-pointer ${isToday ? 'bg-blue-50 border-blue-300' : ''}`}
+                  >
+                    <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600' : 'text-gray-900'}`}>
+                      {day}
+                    </div>
+                    <div className="space-y-1 overflow-hidden">
+                      {events.slice(0, 2).map((event) => (
+                        <div 
+                          key={event.id}
+                          className="text-xs p-1 rounded cursor-pointer hover:opacity-80"
+                          style={{ backgroundColor: getPriorityColor(event.priority).split(' ')[0].replace('bg-', '#') + '20' }}
+                        >
+                          <div className="font-medium truncate">{event.vehicle}</div>
+                          <div className="text-gray-600 truncate">{event.task}</div>
+                          <div className="text-gray-500">{event.time}</div>
+                        </div>
+                      ))}
+                      {events.length > 2 && (
+                        <div className="text-xs text-gray-500 text-center">
+                          +{events.length - 2} more
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </CardContent>
       </Card>
