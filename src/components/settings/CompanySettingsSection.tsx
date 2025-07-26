@@ -9,9 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { StateScroller } from "@/components/ui/state-scroller";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Building2, Upload, Save, Mail, MapPin } from "lucide-react";
@@ -428,56 +426,13 @@ export function CompanySettingsSection() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>State *</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                className={cn(
-                                  "w-full justify-between",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value
-                                  ? US_STATES.find(
-                                      (state) => state.value === field.value
-                                    )?.label
-                                  : "Select state"}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white border shadow-md z-50">
-                            <Command>
-                              <CommandInput placeholder="Search states..." />
-                              <CommandList>
-                                <CommandEmpty>No state found.</CommandEmpty>
-                                <CommandGroup>
-                                  {US_STATES.map((state) => (
-                                    <CommandItem
-                                      value={state.label}
-                                      key={state.value}
-                                      onSelect={() => {
-                                        form.setValue("company_state", state.value)
-                                      }}
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4",
-                                          state.value === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                      />
-                                      {state.label}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <FormControl>
+                          <StateScroller
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder="Select state"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
