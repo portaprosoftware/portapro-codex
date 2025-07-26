@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/ui/StatCard";
 import { ReportDetailsPanel } from "./ReportDetailsPanel";
-import { Calendar, Search, FileText, Clock, CheckCircle, AlertTriangle } from "lucide-react";
+import { Calendar, Search, FileText, Clock, CheckCircle, AlertTriangle, Grid, List, Download } from "lucide-react";
 
 interface MaintenanceReport {
   id: string;
@@ -26,6 +26,7 @@ export const MaintenanceReportsTab: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
 
   const { data: reports, isLoading } = useQuery({
     queryKey: ["maintenance-reports"],
@@ -81,6 +82,34 @@ export const MaintenanceReportsTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
+          <p className="text-gray-600">View and manage all service activity reports</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <Button
+              variant={viewMode === "table" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className="px-3"
+            >
+              <List className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "cards" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("cards")}
+              className="px-3"
+            >
+              <Grid className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Bar */}
       <Card className="p-4">
         <div className="flex flex-wrap gap-4 items-center">
@@ -90,6 +119,7 @@ export const MaintenanceReportsTab: React.FC = () => {
             <div className="flex gap-2">
               <Button variant="outline" size="sm">Last 7 Days</Button>
               <Button variant="outline" size="sm">This Month</Button>
+              <Button variant="outline" size="sm">Custom</Button>
             </div>
           </div>
           
@@ -110,7 +140,7 @@ export const MaintenanceReportsTab: React.FC = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search reports..."
+                placeholder="Search by report #, customer, or address..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -121,9 +151,9 @@ export const MaintenanceReportsTab: React.FC = () => {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Reports"
+          title="Total Records"
           value={counts.total}
           icon={FileText}
           gradientFrom="#3366FF"
@@ -163,73 +193,144 @@ export const MaintenanceReportsTab: React.FC = () => {
         />
       </div>
 
-      {/* Reports Table */}
-      <Card className="rounded-2xl shadow-md">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Report #</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Vehicle/Unit</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Type</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Progress</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {reports?.map((report, index) => {
-                const reportData = report.report_data as Record<string, any> || {};
-                return (
-                  <tr 
-                    key={report.id} 
-                    className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {report.report_number || `RPT-${report.id.slice(0, 8)}`}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(report.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {reportData.vehicle_info || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {reportData.service_type || 'General Maintenance'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className={`capitalize ${getStatusColor(report.status)}`}>
-                        {report.status.replace('_', ' ')}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                          <div 
-                            className="h-full bg-blue-600 rounded-full" 
-                            style={{ width: `${report.completion_percentage || 0}%` }}
-                          ></div>
+      {/* Records Display */}
+      {viewMode === "table" ? (
+        <Card className="rounded-2xl shadow-md">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Record #</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer/Location</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Type</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Progress</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {reports?.map((report, index) => {
+                  const reportData = report.report_data as Record<string, any> || {};
+                  return (
+                    <tr 
+                      key={report.id} 
+                      className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {report.report_number || `SVC-${report.id.slice(0, 8)}`}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(report.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {reportData.customer_name || reportData.location || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {reportData.service_type || 'General Service'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge className={`capitalize ${getStatusColor(report.status)}`}>
+                          {report.status.replace('_', ' ')}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                            <div 
+                              className="h-full bg-blue-600 rounded-full" 
+                              style={{ width: `${report.completion_percentage || 0}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
                         </div>
-                        <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedReport(report.id)}
-                      >
-                        View/Edit
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedReport(report.id)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {reports?.map((report) => {
+            const reportData = report.report_data as Record<string, any> || {};
+            return (
+              <Card key={report.id} className="p-6 hover:shadow-lg transition-shadow rounded-2xl">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {report.report_number || `SVC-${report.id.slice(0, 8)}`}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {new Date(report.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Badge className={`capitalize ${getStatusColor(report.status)}`}>
+                    {report.status.replace('_', ' ')}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Customer:</span> {reportData.customer_name || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Service:</span> {reportData.service_type || 'General Service'}
+                  </p>
+                </div>
+
+                <div className="flex items-center mb-4">
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full mr-2">
+                    <div 
+                      className="h-full bg-blue-600 rounded-full" 
+                      style={{ width: `${report.completion_percentage || 0}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-xs text-gray-600">{report.completion_percentage || 0}%</span>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setSelectedReport(report.id)}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
         </div>
-      </Card>
+      )}
 
       {/* Report Details Panel */}
       <ReportDetailsPanel

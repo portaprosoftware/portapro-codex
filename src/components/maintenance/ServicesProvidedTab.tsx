@@ -77,34 +77,38 @@ export const ServicesProvidedTab: React.FC = () => {
       </div>
 
       {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {services?.map((service) => (
-          <Card key={service.id} className="p-6 hover:shadow-lg transition-shadow rounded-2xl">
+          <Card key={service.id} className="p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 rounded-2xl relative group">
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">{service.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{service.service_code}</p>
-                <p className="text-sm text-gray-500 line-clamp-2">{service.description}</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="font-semibold text-gray-900">{service.name}</h3>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                    {service.service_code}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500 line-clamp-2 mb-3">{service.description}</p>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedService(service.id)}
-                className="text-gray-400 hover:text-gray-600"
+                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-blue-600"
               >
                 <Edit className="w-4 h-4" />
               </Button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <DollarSign className="w-4 h-4 text-green-600" />
-                <span className="font-medium text-green-600">{formatPrice(service)}</span>
+                <span className="font-bold text-green-600 text-base">{formatPrice(service)}</span>
               </div>
               
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="w-4 h-4 text-blue-600" />
-                <span className="text-blue-600 font-medium">
+                <span className="text-blue-600 font-semibold">
                   {service.estimated_duration_hours}h estimated
                 </span>
               </div>

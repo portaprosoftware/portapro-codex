@@ -44,14 +44,14 @@ export const ReportTemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Report Templates</h2>
-          <p className="text-gray-600">Create and manage maintenance report templates</p>
+          <p className="text-gray-600">Create and manage service report templates</p>
         </div>
         <Button
           onClick={() => setIsCreating(true)}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Template
@@ -59,19 +59,19 @@ export const ReportTemplatesTab: React.FC = () => {
       </div>
 
       {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {templates?.map((template) => (
-          <Card key={template.id} className="p-6 hover:shadow-lg transition-shadow rounded-2xl">
+          <Card key={template.id} className="p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 rounded-2xl group">
             <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                 <FileText className="w-6 h-6 text-blue-600" />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSelectedTemplate(template.id)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-blue-600"
                 >
                   <Edit className="w-4 h-4" />
                 </Button>
@@ -91,10 +91,10 @@ export const ReportTemplatesTab: React.FC = () => {
             </p>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                 {Object.keys(template.template_data || {}).length} fields
               </span>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
                 Preview
               </Button>
             </div>
