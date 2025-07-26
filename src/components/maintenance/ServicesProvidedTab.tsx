@@ -64,8 +64,8 @@ export const ServicesProvidedTab: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Services Provided</h2>
-          <p className="text-gray-600">Manage your maintenance service offerings</p>
+          <h2 className="text-xl font-semibold text-gray-900">Services Offered</h2>
+          <p className="text-gray-600">Manage your service offerings and pricing</p>
         </div>
         <Button
           onClick={() => setIsCreating(true)}
@@ -104,7 +104,7 @@ export const ServicesProvidedTab: React.FC = () => {
               
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-600">
+                <span className="text-blue-600 font-medium">
                   {service.estimated_duration_hours}h estimated
                 </span>
               </div>
@@ -120,13 +120,13 @@ export const ServicesProvidedTab: React.FC = () => {
             <Plus className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
-          <p className="text-gray-600 mb-4">Create your first maintenance service to get started</p>
+          <p className="text-gray-600 mb-4">Create your first service offering to get started</p>
           <Button
             onClick={() => setIsCreating(true)}
             className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Service
+            New Service
           </Button>
         </Card>
       )}

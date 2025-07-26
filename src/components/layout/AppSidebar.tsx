@@ -17,7 +17,7 @@ import {
   Megaphone,
   MessageSquare,
   SprayCan,
-  Wrench
+  Settings
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -97,9 +97,9 @@ const managementItems: NavigationItem[] = [
     permission: 'admin'
   },
   { 
-    title: 'Maintenance', 
+    title: 'Services Hub', 
     url: '/maintenance-hub', 
-    icon: Wrench,
+    icon: Settings2,
     permission: 'admin'
   },
   { 
@@ -123,7 +123,7 @@ const managementItems: NavigationItem[] = [
   { 
     title: 'Settings', 
     url: '/settings', 
-    icon: Settings2,
+    icon: Settings,
     permission: 'owner'
   },
 ];
