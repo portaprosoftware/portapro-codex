@@ -12,364 +12,498 @@ import {
   Camera, Route, Wifi, Award, Star, Target, Phone, Mail, Building, Shield
 } from "lucide-react";
 
-const mainFeatures = [
+// Enhanced feature anchors for the hero section
+const featureAnchors = [
   {
-    icon: Calendar,
-    title: "Smart Scheduling",
-    description: "Intelligent scheduling with route optimization and automated driver assignments."
+    id: "job-wizard",
+    title: "Job Wizard",
+    icon: Workflow,
+    description: "9-step enhanced job creation",
+    color: "from-blue-500 to-blue-600"
   },
   {
-    icon: Truck,
-    title: "Fleet Management", 
-    description: "Complete fleet oversight with tracking, maintenance scheduling, and compliance management."
+    id: "inventory",
+    title: "Multi-Site Inventory",
+    icon: Database,
+    description: "Real-time stock tracking",
+    color: "from-green-500 to-green-600"
   },
   {
-    icon: QrCode,
-    title: "QR Code Inventory",
-    description: "Track units and service history with mobile QR code scanning on any smartphone."
+    id: "analytics",
+    title: "Analytics Hub", 
+    icon: BarChart3,
+    description: "Live KPI dashboards",
+    color: "from-purple-500 to-purple-600"
   },
   {
-    icon: CreditCard,
-    title: "Integrated Payments",
-    description: "Accept payments online and in-person with no additional hardware required."
-  },
-  {
-    icon: FileText,
-    title: "QuickBooks Integration",
-    description: "One-click export of invoices and quotes to QuickBooks Online and Desktop."
-  },
-  {
-    icon: MessageSquare,
-    title: "Customer Communication",
-    description: "Automated SMS and email updates with AI-powered marketing content generation."
-  },
-  {
-    icon: Users,
-    title: "Customer Management",
-    description: "Centralized customer data with multiple service locations and billing preferences."
-  },
-  {
+    id: "mobile",
+    title: "Mobile App",
     icon: Smartphone,
-    title: "Mobile-First",
-    description: "Driver app with offline capability, photo capture, and real-time job updates."
+    description: "Offline-capable driver app",
+    color: "from-orange-500 to-orange-600"
   }
 ];
 
-const driverFeatures = [
-  { title: "Offline Capable", description: "Works without internet" },
-  { title: "Photo Documentation", description: "Capture with GPS tagging" },
-  { title: "QR Scanning", description: "Instant identification" },
-  { title: "GPS Tracking", description: "Real-time location" }
+// Job Wizard features showcase
+const jobWizardFeatures = [
+  {
+    step: "Customer & Location",
+    description: "Smart customer selection with location autocomplete and service history",
+    icon: Users
+  },
+  {
+    step: "Multi-Date Scheduling",
+    description: "Delivery, partial pickups, full returns with calendar integration",
+    icon: Calendar
+  },
+  {
+    step: "Inventory & Consumables",
+    description: "Real-time availability checking and automated line-item pricing",
+    icon: Package
+  },
+  {
+    step: "Template Assignment",
+    description: "Auto-assign service report templates based on job history",
+    icon: FileText
+  },
+  {
+    step: "Crew & Vehicle",
+    description: "Drag-and-drop driver assignment with vehicle capacity planning",
+    icon: Truck
+  }
 ];
 
-const customerFeatures = [
-  { title: "Account Dashboard", description: "View history & appointments" },
-  { title: "Online Payments", description: "Secure payment processing" },
-  { title: "Service Scheduling", description: "Request & track services" },
-  { title: "Real-time Updates", description: "SMS & email notifications" }
+// Enterprise integrations
+const integrations = [
+  {
+    name: "Stripe",
+    description: "Payment processing & invoicing",
+    logo: "💳"
+  },
+  {
+    name: "Clerk",
+    description: "Enterprise authentication",
+    logo: "🔐"
+  },
+  {
+    name: "Supabase",
+    description: "Real-time database & backend",
+    logo: "🗄️"
+  },
+  {
+    name: "Mapbox",
+    description: "GPS tracking & navigation",
+    logo: "🗺️"
+  }
 ];
 
-const pricingFeatures = [
-  "Unlimited users and drivers",
-  "Fleet management tools", 
-  "Mobile driver app",
-  "Automated invoicing",
-  "QuickBooks integration",
-  "24/7 phone support",
-  "No setup fees",
-  "Complete scheduling system",
-  "QR code inventory tracking",
-  "Customer portal",
-  "Payment processing",
-  "SMS and email automation",
-  "Free data migration",
-  "Cancel anytime"
-];
-
-const benefits = [
-  "Save $28K+ annually vs enterprise platforms",
-  "Setup in 1 hour with free data migration", 
-  "Cancel anytime with no long-term contracts"
+// Pricing tiers
+const pricingTiers = [
+  {
+    name: "Professional",
+    price: 99,
+    description: "Perfect for growing businesses",
+    features: [
+      "Unlimited vehicles & users",
+      "Advanced job scheduling",
+      "Multi-site inventory",
+      "Mobile driver app",
+      "Customer portal",
+      "Analytics dashboard",
+      "Priority support"
+    ],
+    cta: "Start Free Trial",
+    popular: true
+  }
 ];
 
 export const Landing: React.FC = () => {
+  const [isMonthly, setIsMonthly] = useState(true);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background font-sans">
-      {/* Header */}
-      <header className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Logo />
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+          
+          <nav className="hidden md:flex items-center gap-8">
+            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
+            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
+            <a href="#why-portapro" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Why PortaPro</a>
+          </nav>
+          
+          <div className="flex items-center gap-4">
             <SignInButton mode="modal" fallbackRedirectUrl="/app">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="ghost" className="font-medium">Sign In</Button>
             </SignInButton>
             <SignUpButton mode="modal" fallbackRedirectUrl="/app">
-              <Button>Start Free Trial</Button>
+              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 font-medium">
+                Get Started
+              </Button>
             </SignUpButton>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
-        <div className="container mx-auto px-6 py-20">
+      {/* Enhanced Hero Section */}
+      <section className="relative py-20 px-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+        <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                All-in-one platform for portable toilet rental companies
-              </h1>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                Streamline scheduling, fleet management, dispatch, invoicing, 
-                and customer communication. Everything you need to run your 
-                business efficiently in one platform.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="space-y-8 animate-fade-in">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 rounded-full shadow-sm">
+                  <Award className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-700">#1 Platform for Portable Toilet Companies</span>
+                </div>
+                
+                <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 leading-tight">
+                  Enterprise-Grade
+                  <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Operations Platform
+                  </span>
+                </h1>
+                
+                <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed">
+                  From multi-step job wizards to real-time analytics, PortaPro delivers 
+                  the sophisticated workflows enterprise operations demand.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
                 <SignUpButton mode="modal" fallbackRedirectUrl="/app">
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100">
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg px-8 py-4 h-auto">
                     Start Free Trial
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                  Schedule Demo
-                </Button>
-                <Button size="lg" variant="ghost" className="text-white hover:bg-white/10">
-                  ▶ Watch Preview
+                <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto border-2">
+                  <Play className="w-5 h-5 mr-2" />
+                  Watch Demo
                 </Button>
               </div>
-              <div className="flex flex-col sm:flex-row gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-300" />
-                  <span>21-day free trial</span>
+              
+              <div className="flex flex-wrap gap-6 pt-4">
+                <div className="flex items-center gap-2 text-green-700">
+                  <Check className="w-5 h-5" />
+                  <span className="font-medium">Free 30-day trial</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-300" />
-                  <span>Full support included</span>
+                <div className="flex items-center gap-2 text-green-700">
+                  <Check className="w-5 h-5" />
+                  <span className="font-medium">No setup fees</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-300" />
-                  <span>Cancel Anytime</span>
+                <div className="flex items-center gap-2 text-green-700">
+                  <Check className="w-5 h-5" />
+                  <span className="font-medium">Save $28K+ annually</span>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/0a38a678-687b-4e6c-9715-d530993ed8a2.png" 
-                alt="PortaPro Platform Preview"
-                className="w-full h-auto rounded-lg shadow-2xl"
-              />
+            
+            <div className="relative animate-fade-in">
+              <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                <img 
+                  src="/lovable-uploads/0a38a678-687b-4e6c-9715-d530993ed8a2.png" 
+                  alt="PortaPro Enterprise Dashboard"
+                  className="w-full h-auto rounded-xl"
+                />
+                
+                <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full p-4 shadow-lg animate-pulse">
+                  <Zap className="w-6 h-6" />
+                </div>
+                
+                <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full p-3 shadow-lg">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Features Section */}
-      <section id="features" className="section-padding bg-background">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-foreground mb-4">
-              Everything you need in one platform
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Built specifically for portable toilet rental companies
-            </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {mainFeatures.map((feature, index) => (
-              <Card key={index} className="p-8 text-center hover:shadow-lg transition-all duration-300 border border-border/50">
-                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <feature.icon className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
+          {/* Feature Anchor Cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-20">
+            {featureAnchors.map((anchor, index) => (
+              <Card 
+                key={anchor.id}
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 hover:border-blue-200"
+                onClick={() => scrollToSection(anchor.id)}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br ${anchor.color} flex items-center justify-center shadow-lg`}>
+                    <anchor.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{anchor.title}</h3>
+                  <p className="text-sm text-muted-foreground">{anchor.description}</p>
+                  <ChevronRight className="w-4 h-4 mx-auto mt-2 text-blue-600" />
+                </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mobile App & Customer Portal Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white section-padding">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6">
-              Powerful Mobile App & Customer Portal
-            </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Your drivers stay connected with offline-capable mobile apps, while 
-              customers enjoy a seamless portal experience for tracking, payments, and 
-              communication.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-16 mb-16">
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Driver Mobile App</h3>
-              <p className="text-blue-100 mb-8">
-                Optimized route planning, real-time job updates, and seamless communication.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {driverFeatures.map((feature, index) => (
-                  <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                    <h4 className="font-semibold mb-1">{feature.title}</h4>
-                    <p className="text-sm text-blue-100">{feature.description}</p>
+      {/* Job Wizard Demo Section */}
+      <section id="job-wizard" className="py-20 px-4 bg-white">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                  Multi-Step Job Creation
+                </Badge>
+                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900">
+                  Enterprise Job Wizard
+                </h2>
+                <p className="text-xl text-gray-600">
+                  Our sophisticated 9-step wizard handles everything from delivery scheduling 
+                  to crew assignment, consumables pricing, and template selection in one seamless flow.
+                </p>
+              </div>
+              
+              <div className="space-y-6">
+                {jobWizardFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg text-gray-900 mb-1">{feature.step}</h4>
+                      <p className="text-gray-600">{feature.description}</p>
+                    </div>
                   </div>
                 ))}
               </div>
+              
+              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                <Play className="w-4 h-4 mr-2" />
+                Watch Job Wizard Demo
+              </Button>
             </div>
-
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Customer Portal</h3>
-              <p className="text-blue-100 mb-8">
-                Real-time tracking, service history, and easy payment management.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {customerFeatures.map((feature, index) => (
-                  <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                    <h4 className="font-semibold mb-1">{feature.title}</h4>
-                    <p className="text-sm text-blue-100">{feature.description}</p>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 shadow-xl">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Enhanced Job Creation</h3>
+                    <Badge className="bg-green-100 text-green-700">Live Preview</Badge>
                   </div>
-                ))}
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <div key={step} className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                          {step}
+                        </div>
+                        <div className="flex-1 h-2 bg-gray-200 rounded-full">
+                          <div 
+                            className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                            style={{ width: step <= 3 ? '100%' : '0%' }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white section-padding">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
-          <p className="text-xl text-blue-100 mb-12">
-            One plan with everything included. No hidden fees.
-          </p>
-
-          <div className="flex justify-center mb-8">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 border border-white/30">
-              <div className="flex items-center gap-4">
-                <span className="px-4 py-2 text-sm">Monthly</span>
-                <div className="w-12 h-6 bg-white rounded-full relative">
-                  <div className="w-5 h-5 bg-blue-600 rounded-full absolute right-0.5 top-0.5"></div>
-                </div>
-                <span className="px-4 py-2 text-sm">Annual</span>
-                <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  Save $600
-                </span>
-              </div>
-            </div>
+      {/* Enterprise Integrations */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100 mb-4">
+              Enterprise Integrations
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+              Built on Enterprise Infrastructure
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Deep integrations with industry-leading platforms for payments, authentication, and business operations.
+            </p>
           </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {integrations.map((integration, index) => (
+              <Card key={index} className="text-center hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-200">
+                <CardContent className="p-6">
+                  <div className="text-4xl mb-4">{integration.logo}</div>
+                  <h4 className="font-semibold text-lg mb-2">{integration.name}</h4>
+                  <p className="text-sm text-gray-600">{integration.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="max-w-lg mx-auto">
-            <Card className="p-8 bg-white text-gray-900">
-              <h3 className="text-2xl font-bold mb-2">PortaPro Complete</h3>
-              <div className="text-4xl font-bold text-green-600 mb-2">
-                $125<span className="text-lg text-gray-600">/month</span>
-              </div>
-              <p className="text-gray-600 mb-8">
-                Billed annually • Everything you need to run your business
-              </p>
+      {/* Enhanced Pricing Section */}
+      <section id="pricing" className="py-20 px-4 bg-white">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              Enterprise Pricing
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Transparent pricing that scales with your business. No hidden fees.
+            </p>
+          </div>
+          
+          {pricingTiers.map((tier, index) => (
+            <Card key={index} className="border-2 border-blue-500 shadow-lg">
+              <CardHeader className="text-center pb-8">
+                <Badge className="bg-blue-600 text-white px-4 py-1 mb-4">Most Popular</Badge>
+                <CardTitle className="text-2xl">{tier.name}</CardTitle>
+                <div className="mt-4">
+                  <span className="text-4xl font-bold">
+                    ${tier.price}
+                  </span>
+                  <span className="text-gray-600">/month</span>
+                </div>
+                <CardDescription className="text-lg mt-2">
+                  {tier.description}
+                </CardDescription>
+              </CardHeader>
               
-              <div className="grid grid-cols-2 gap-y-4 text-left text-sm mb-8">
-                {pricingFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <SignUpButton mode="modal" fallbackRedirectUrl="/app">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white mb-4">
-                  Start Free Trial
-                </Button>
-              </SignUpButton>
-              <p className="text-sm text-gray-500">
-                21-day free trial • Full Support Included • Cancel Anytime
-              </p>
+              <CardContent>
+                <ul className="space-y-3 mb-8">
+                  {tier.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <SignUpButton mode="modal" fallbackRedirectUrl="/app">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    {tier.cta}
+                  </Button>
+                </SignUpButton>
+              </CardContent>
             </Card>
+          ))}
+          
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">All plans include a 30-day free trial. No credit card required.</p>
+            <div className="flex justify-center gap-8 text-sm text-gray-500">
+              <span>✓ 24/7 Support</span>
+              <span>✓ 99.9% Uptime SLA</span>
+              <span>✓ Data Export</span>
+              <span>✓ Cancel Anytime</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Final CTA Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white section-padding">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Transform Your Business?
+      <section className="py-20 px-4 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+            Ready to Transform Your Operations?
           </h2>
-          <p className="text-xl text-blue-100 mb-12 max-w-3xl mx-auto">
-            Join portable toilet companies nationwide saving time, money, and growing 
-            faster with PortaPro Software.
+          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto">
+            Join hundreds of portable toilet companies who have modernized their operations with PortaPro.
           </p>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check className="w-6 h-6 text-blue-600" />
-                </div>
-                <p className="font-semibold">{benefit}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-8">
-            <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100 mb-6">
-              Schedule Demo Today
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
+            <SignUpButton mode="modal" fallbackRedirectUrl="/app">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4 h-auto">
+                Start Free Trial
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </SignUpButton>
+            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4 h-auto">
+              <Phone className="w-5 h-5 mr-2" />
+              Schedule Demo
             </Button>
           </div>
-
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="flex">
-              {[1,2,3,4,5].map((star) => (
-                <span key={star} className="text-yellow-400 text-2xl">★</span>
-              ))}
+          
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold text-white mb-2">500+</div>
+              <div className="text-blue-100">Companies Trust PortaPro</div>
             </div>
-            <span className="text-lg font-semibold ml-2">5.0/5.0 customer satisfaction</span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-300" />
-              <span>No pressure sales call</span>
+            <div>
+              <div className="text-3xl font-bold text-white mb-2">99.9%</div>
+              <div className="text-blue-100">Uptime Guarantee</div>
             </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-300" />
-              <span>Custom demo</span>
+            <div>
+              <div className="text-3xl font-bold text-white mb-2">$28K+</div>
+              <div className="text-blue-100">Average Annual Savings</div>
             </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-300" />
-              <span>99.9% Uptime</span>
+            <div>
+              <div className="text-3xl font-bold text-white mb-2">24/7</div>
+              <div className="text-blue-100">Expert Support</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-background border-t border-border section-padding">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-8">
-            <Logo />
-            <p className="text-muted-foreground mt-4 max-w-md mx-auto">
-              The complete business management platform for portable toilet rental companies.
-            </p>
+      {/* Enhanced Footer */}
+      <footer className="py-16 px-4 bg-gray-900 text-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <Logo showText={false} />
+                <span className="font-bold text-2xl">PortaPro</span>
+              </div>
+              <p className="text-gray-400 mb-6 text-lg leading-relaxed">
+                The enterprise-grade platform for portable toilet rental companies. 
+                Streamline operations, increase efficiency, and grow your business with confidence.
+              </p>
+              <div className="flex gap-4 mb-6">
+                <Badge variant="outline" className="text-gray-400 border-gray-600 hover:border-gray-500">
+                  SOC 2 Compliant
+                </Badge>
+                <Badge variant="outline" className="text-gray-400 border-gray-600 hover:border-gray-500">
+                  99.9% Uptime
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 text-gray-400">
+                  <Mail className="w-5 h-5" />
+                  <span>support@portapro.com</span>
+                </div>
+                <div className="flex items-center gap-3 text-gray-400">
+                  <Phone className="w-5 h-5" />
+                  <span>1-800-PORTAPRO</span>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-lg mb-6">Product</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Mobile App</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-lg mb-6">Company</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              </ul>
+            </div>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-border">
-            <div className="flex gap-6 text-sm text-muted-foreground mb-4 md:mb-0">
-              <a href="#" className="hover:text-foreground transition-colors">About</a>
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Security</a>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              © 2025 PortaPro. All rights reserved.
-            </div>
+          
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 mb-4 md:mb-0">
+              &copy; 2024 PortaPro. All rights reserved. Built with ❤️ for the portable toilet industry.
+            </p>
           </div>
         </div>
       </footer>
