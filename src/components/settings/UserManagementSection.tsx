@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical } from "lucide-react";
+import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -369,117 +370,35 @@ export function UserManagementSection() {
           </Select>
         </div>
 
-        {/* Users Table */}
+        {/* Enhanced Users Grid */}
         {isLoading ? (
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    {user.first_name} {user.last_name}
-                  </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                   <TableCell>
-                     <Badge 
-                       className="text-white font-bold inline-flex items-center"
-                       style={{ 
-                         background: user.current_role ? 
-                           (user.current_role === 'owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
-                            user.current_role === 'dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
-                            user.current_role === 'admin' ? 'linear-gradient(135deg, #10B981, #059669)' :
-                            user.current_role === 'driver' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
-                            user.current_role === 'customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'linear-gradient(135deg, #6B7280, #4B5563)') 
-                           : 'linear-gradient(135deg, #6B7280, #4B5563)'
-                       }}
-                     >
-                       {user.current_role && roleIcons[user.current_role as keyof typeof roleIcons] && 
-                         React.createElement(roleIcons[user.current_role as keyof typeof roleIcons], { 
-                           className: "w-3 h-3 mr-1" 
-                         })
-                       }
-                       {user.current_role ? roleLabels[user.current_role as keyof typeof roleLabels] : "No Role"}
-                     </Badge>
-                   </TableCell>
-                    <TableCell>
-                      <Badge 
-                        className="inline-flex items-center font-bold text-white"
-                        style={{ 
-                          background: user.is_active ? 
-                            'linear-gradient(135deg, #10B981, #059669)' : 
-                            'linear-gradient(135deg, #6B7280, #4B5563)'
-                        }}
-                      >
-                        {user.is_active ? (
-                          <>
-                            <UserCheck className="w-3 h-3 mr-1" />
-                            Active
-                          </>
-                        ) : (
-                          <>
-                            <UserX className="w-3 h-3 mr-1" />
-                            Inactive
-                          </>
-                        )}
-                      </Badge>
-                    </TableCell>
-                   <TableCell className="text-right">
-                     <DropdownMenu>
-                       <DropdownMenuTrigger asChild>
-                         <Button variant="ghost" className="h-8 w-8 p-0">
-                           <span className="sr-only">Open menu</span>
-                           <MoreVertical className="h-4 w-4" />
-                         </Button>
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="end" className="w-48 bg-background border border-border">
-                         <DropdownMenuItem
-                           onClick={() => toggleUserStatus.mutate({ userId: user.id, isActive: user.is_active })}
-                           disabled={toggleUserStatus.isPending}
-                         >
-                           {user.is_active ? (
-                             <>
-                               <UserX className="w-4 h-4 mr-2" />
-                               Mark as Inactive
-                             </>
-                           ) : (
-                             <>
-                               <UserCheck className="w-4 h-4 mr-2" />
-                               Mark as Active
-                             </>
-                           )}
-                         </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => setEditingUser(user)}>
-                           <Edit className="w-4 h-4 mr-2" />
-                           Edit User
-                         </DropdownMenuItem>
-                         <DropdownMenuItem 
-                           onClick={() => handleDeleteClick(user)}
-                           className="text-destructive focus:text-destructive"
-                         >
-                           <Trash2 className="w-4 h-4 mr-2" />
-                           Delete User
-                         </DropdownMenuItem>
-                       </DropdownMenuContent>
-                     </DropdownMenu>
-                   </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredUsers.map((user) => (
+              <EnhancedUserProfileCard
+                key={user.id}
+                user={user}
+                onEdit={setEditingUser}
+                onDelete={handleDeleteClick}
+                onToggleStatus={(userId, isActive) => 
+                  toggleUserStatus.mutate({ userId, isActive })
+                }
+                onTeamAssignmentChange={(userId, team) => {
+                  // TODO: Implement team assignment update
+                  console.log('Team assignment:', userId, team);
+                }}
+                onLocationChange={(userId, location) => {
+                  // TODO: Implement location assignment update
+                  console.log('Location assignment:', userId, location);
+                }}
+              />
+            ))}
+          </div>
         )}
 
         {/* Edit User Modal */}
