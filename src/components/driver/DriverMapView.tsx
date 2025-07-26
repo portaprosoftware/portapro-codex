@@ -7,7 +7,8 @@ import { useUser } from '@clerk/clerk-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Navigation, Phone, MapPin } from 'lucide-react';
+import { Navigation, Phone, MapPin, Clock, Calendar } from 'lucide-react';
+import { formatDateSafe } from '@/lib/dateUtils';
 
 // TODO: Replace with actual Mapbox token
 const MAPBOX_ACCESS_TOKEN = 'pk.YOUR_MAPBOX_TOKEN_HERE';
@@ -111,8 +112,16 @@ export const DriverMapView: React.FC = () => {
       ];
 
       const markerElement = document.createElement('div');
-      markerElement.className = 'w-8 h-8 rounded-full border-2 border-white shadow-lg cursor-pointer flex items-center justify-center text-white text-xs font-bold';
+      markerElement.className = 'w-10 h-10 rounded-full border-3 border-white shadow-lg cursor-pointer flex items-center justify-center text-white text-xs font-bold relative';
       markerElement.style.backgroundColor = statusColors[job.status as keyof typeof statusColors] || '#6B7280';
+      
+      // Add job type indicator
+      const typeIndicator = document.createElement('div');
+      typeIndicator.className = 'absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white border border-gray-300 flex items-center justify-center text-xs font-bold';
+      typeIndicator.style.color = statusColors[job.status as keyof typeof statusColors] || '#6B7280';
+      typeIndicator.textContent = job.job_type.charAt(0).toUpperCase();
+      markerElement.appendChild(typeIndicator);
+      
       markerElement.textContent = (index + 1).toString();
 
       markerElement.addEventListener('click', () => {
@@ -126,9 +135,25 @@ export const DriverMapView: React.FC = () => {
   }, [jobs]);
 
   const handleNavigateToJob = (job: Job) => {
-    // TODO: Implement route optimization and navigation
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(job.customers?.name || 'Service Location')}`;
-    window.open(url, '_blank');
+    // Launch external mapping app with coordinates
+    const destination = `${job.customers?.name || 'Service Location'}`;
+    
+    // Try to launch native apps first, then fallback to web
+    const iosUrl = `maps://?daddr=${encodeURIComponent(destination)}`;
+    const androidUrl = `geo:0,0?q=${encodeURIComponent(destination)}`;
+    const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+    
+    // Detect platform and use appropriate URL
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      window.location.href = iosUrl;
+      // Fallback to web if Maps app not installed
+      setTimeout(() => window.open(webUrl, '_blank'), 1000);
+    } else if (/Android/.test(navigator.userAgent)) {
+      window.location.href = androidUrl;
+      setTimeout(() => window.open(webUrl, '_blank'), 1000);
+    } else {
+      window.open(webUrl, '_blank');
+    }
   };
 
   const handleOptimizeRoute = () => {
@@ -167,10 +192,29 @@ export const DriverMapView: React.FC = () => {
       {selectedJob && (
         <div className="absolute bottom-4 left-4 right-4 z-10 bg-white rounded-lg shadow-lg p-4 max-w-sm mx-auto">
           <div className="flex items-start justify-between mb-3">
-            <div>
-              <h3 className="font-medium">{selectedJob.customers?.name || 'Unknown Customer'}</h3>
-              <p className="text-sm text-muted-foreground">{selectedJob.job_number}</p>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900">{selectedJob.customers?.name || 'Unknown Customer'}</h3>
+              <p className="text-sm text-gray-600">{selectedJob.job_number}</p>
+              
+              {/* Job Type and Time Window */}
+              <div className="flex items-center space-x-2 mt-2">
+                <Badge className="bg-gradient-blue text-white text-xs px-2 py-1">
+                  {selectedJob.job_type}
+                </Badge>
+                {selectedJob.scheduled_time && (
+                  <div className="flex items-center text-xs text-gray-500">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {selectedJob.scheduled_time}
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center text-xs text-gray-500 mt-1">
+                <Calendar className="w-3 h-3 mr-1" />
+                {formatDateSafe(selectedJob.scheduled_date, 'short')}
+              </div>
             </div>
+            
             <Badge 
               style={{ 
                 backgroundColor: statusColors[selectedJob.status as keyof typeof statusColors] || '#6B7280',
@@ -185,7 +229,7 @@ export const DriverMapView: React.FC = () => {
             <Button 
               size="sm"
               onClick={() => handleNavigateToJob(selectedJob)}
-              className="flex-1"
+              className="flex-1 bg-gradient-primary text-white"
             >
               <Navigation className="w-4 h-4 mr-2" />
               Navigate
