@@ -62,7 +62,7 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
     <Card className="p-4 hover:shadow-lg transition-all duration-200 border-l-4" 
           style={{ borderLeftColor: categoryInfo.color }}>
       <div className="space-y-4 h-full flex flex-col">
-        {/* Header with badge and file type */}
+        {/* Header with badge, file type, and delete button */}
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-2 min-w-0 flex-1">
             <span className="text-xl">{getFileTypeIcon(document.file_name)}</span>
@@ -78,12 +78,22 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
               {document.category}
             </Badge>
           </div>
-          {document.upload_date && (
-            <div className="flex items-center text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3 mr-1" />
-              {format(new Date(document.upload_date), 'MMM d, yyyy')}
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {document.upload_date && (
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Calendar className="w-3 h-3 mr-1" />
+                {format(new Date(document.upload_date), 'MMM d, yyyy')}
+              </div>
+            )}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={() => onDelete?.(document)}
+            >
+              <Trash2 className="w-3 h-3" />
+            </Button>
+          </div>
         </div>
 
         {/* Document Details */}
@@ -133,48 +143,35 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
 
         {/* Actions */}
         <div className="flex flex-col gap-2 pt-2 border-t">
-          <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full"
+            onClick={() => onView?.(document)}
+          >
+            <Eye className="w-3 h-3 mr-2" />
+            View
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full"
+            onClick={() => onDownload?.(document)}
+          >
+            <Download className="w-3 h-3 mr-2" />
+            Download
+          </Button>
+          {onLink && (
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex-1"
-              onClick={() => onView?.(document)}
+              className="w-full"
+              onClick={() => onLink(document)}
             >
-              <Eye className="w-3 h-3 mr-1" />
-              View
+              <Link className="w-3 h-3 mr-2" />
+              Link to Maintenance
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex-1"
-              onClick={() => onDownload?.(document)}
-            >
-              <Download className="w-3 h-3 mr-1" />
-              Download
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            {onLink && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex-1"
-                onClick={() => onLink(document)}
-              >
-                <Link className="w-3 h-3 mr-1" />
-                Link
-              </Button>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              className={`${onLink ? 'flex-1' : 'w-full'} text-red-600 hover:text-red-700 hover:bg-red-50`}
-              onClick={() => onDelete?.(document)}
-            >
-              <Trash2 className="w-3 h-3 mr-1" />
-              Delete
-            </Button>
-          </div>
+          )}
         </div>
       </div>
     </Card>
