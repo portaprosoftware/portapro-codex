@@ -77,7 +77,7 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
 
 interface JobFormData {
   customer_id: string;
-  job_type: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
+  job_type: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
   scheduled_date: string;
   scheduled_time?: string;
   notes?: string;
@@ -90,6 +90,17 @@ interface JobFormData {
   consumables_data?: any;
   assigned_template_ids?: string[];
   default_template_id?: string;
+  date_returned?: string;
+  return_time?: string;
+  partial_pickups?: Array<{
+    id: string;
+    date: string;
+    time: string;
+    addTime: boolean;
+    label: string;
+    quantity?: number;
+    notes?: string;
+  }>;
 }
 
 export function useJobs(filters?: {
@@ -154,13 +165,15 @@ export function useCreateJob() {
       const jobTypePrefix = {
         'delivery': 'DEL',
         'pickup': 'PKP',
-        'service': 'SVC'
+        'service': 'SVC',
+        'on-site-survey': 'OSS'
       }[jobData.job_type];
 
       const jobNumber = `${jobTypePrefix}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
 
-      const { consumables_data, ...jobDataForDB } = jobData;
+      const { consumables_data, partial_pickups, date_returned, return_time, ...jobDataForDB } = jobData;
 
+      // Create main job record
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
@@ -169,12 +182,54 @@ export function useCreateJob() {
           status: 'assigned',
           timezone: jobData.timezone || 'America/New_York',
           assigned_template_ids: jobData.assigned_template_ids || [],
-          default_template_id: jobData.default_template_id || null
+          default_template_id: jobData.default_template_id || null,
+          date_returned: date_returned,
+          partial_pickups: partial_pickups || []
         })
         .select()
         .single();
 
       if (error) throw error;
+
+      // Create pickup events for partial pickups
+      if (partial_pickups && partial_pickups.length > 0) {
+        const pickupEvents = partial_pickups.map((pickup, index) => ({
+          job_id: newJob.id,
+          pickup_type: 'partial',
+          scheduled_date: pickup.date,
+          scheduled_time: pickup.addTime ? pickup.time : null,
+          quantity: pickup.quantity || 1,
+          notes: pickup.notes || '',
+          sequence_order: index + 1
+        }));
+
+        const { error: eventsError } = await supabase
+          .from('job_pickup_events')
+          .insert(pickupEvents);
+
+        if (eventsError) {
+          console.error('Error creating pickup events:', eventsError);
+        }
+      }
+
+      // Create final pickup event if return date is specified
+      if (date_returned) {
+        const { error: finalPickupError } = await supabase
+          .from('job_pickup_events')
+          .insert({
+            job_id: newJob.id,
+            pickup_type: 'final',
+            scheduled_date: date_returned,
+            scheduled_time: return_time || null,
+            quantity: 1,
+            notes: 'Final pickup for all remaining equipment',
+            sequence_order: (partial_pickups?.length || 0) + 1
+          });
+
+        if (finalPickupError) {
+          console.error('Error creating final pickup event:', finalPickupError);
+        }
+      }
 
       // Handle consumables processing
       if (consumables_data && newJob) {

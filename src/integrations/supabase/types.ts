@@ -2289,6 +2289,53 @@ export type Database = {
         }
         Relationships: []
       }
+      job_pickup_events: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          notes: string | null
+          pickup_type: string
+          quantity: number | null
+          scheduled_date: string
+          scheduled_time: string | null
+          sequence_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          notes?: string | null
+          pickup_type: string
+          quantity?: number | null
+          scheduled_date: string
+          scheduled_time?: string | null
+          sequence_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          notes?: string | null
+          pickup_type?: string
+          quantity?: number | null
+          scheduled_date?: string
+          scheduled_time?: string | null
+          sequence_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_pickup_events_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           actual_completion_time: string | null
@@ -2305,6 +2352,7 @@ export type Database = {
           job_type: string
           notes: string | null
           parent_job_id: string | null
+          partial_pickups: Json | null
           quote_id: string | null
           scheduled_date: string
           scheduled_time: string | null
@@ -2334,6 +2382,7 @@ export type Database = {
           job_type: string
           notes?: string | null
           parent_job_id?: string | null
+          partial_pickups?: Json | null
           quote_id?: string | null
           scheduled_date: string
           scheduled_time?: string | null
@@ -2363,6 +2412,7 @@ export type Database = {
           job_type?: string
           notes?: string | null
           parent_job_id?: string | null
+          partial_pickups?: Json | null
           quote_id?: string | null
           scheduled_date?: string
           scheduled_time?: string | null
