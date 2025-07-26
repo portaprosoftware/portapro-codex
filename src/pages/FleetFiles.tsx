@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Search, Upload, FolderOpen, Filter, Grid3X3, List, Settings } from "lucide-react";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
@@ -17,6 +18,7 @@ export default function FleetFiles() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [documentToDelete, setDocumentToDelete] = useState<any>(null);
   const { toast } = useToast();
 
   // Fetch vehicles
@@ -113,12 +115,23 @@ export default function FleetFiles() {
     };
   };
 
-  const handleView = (document: any) => {
-    // TODO: Implement document viewer
-    toast({
-      title: "View Document",
-      description: `Opening ${document.document_name}`,
-    });
+  const handleView = async (document: any) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('vehicle-documents')
+        .createSignedUrl(document.file_path, 60); // 1 hour expiry
+      
+      if (error) throw error;
+      
+      // Open in new tab
+      window.open(data.signedUrl, '_blank');
+    } catch (error) {
+      toast({
+        title: "View Failed",
+        description: "Could not open the document. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDownload = async (document: any) => {
@@ -131,11 +144,18 @@ export default function FleetFiles() {
       
       // Create download link
       const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
+      const a = window.document.createElement('a');
       a.href = url;
       a.download = document.file_name;
+      window.document.body.appendChild(a);
       a.click();
+      window.document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download Complete",
+        description: `${document.file_name} has been downloaded.`,
+      });
     } catch (error) {
       toast({
         title: "Download Failed",
@@ -145,22 +165,26 @@ export default function FleetFiles() {
     }
   };
 
-  const handleDelete = async (document: any) => {
-    if (!confirm("Are you sure you want to delete this document?")) return;
+  const handleDelete = (document: any) => {
+    setDocumentToDelete(document);
+  };
+
+  const confirmDelete = async () => {
+    if (!documentToDelete) return;
     
     try {
       // Delete from storage
-      if (document.file_path) {
+      if (documentToDelete.file_path) {
         await supabase.storage
           .from('vehicle-documents')
-          .remove([document.file_path]);
+          .remove([documentToDelete.file_path]);
       }
       
       // Delete from database
       const { error } = await supabase
         .from('vehicle_documents')
         .delete()
-        .eq('id', document.id);
+        .eq('id', documentToDelete.id);
       
       if (error) throw error;
       
@@ -168,6 +192,8 @@ export default function FleetFiles() {
         title: "Document Deleted",
         description: "The document has been successfully deleted.",
       });
+      
+      setDocumentToDelete(null);
     } catch (error) {
       toast({
         title: "Delete Failed",
@@ -346,6 +372,28 @@ export default function FleetFiles() {
           </Tabs>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!documentToDelete} onOpenChange={() => setDocumentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this document?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the document 
+              "{documentToDelete?.document_name}" and remove it from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Delete Document
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

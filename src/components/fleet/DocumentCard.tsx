@@ -78,22 +78,14 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
               {document.category}
             </Badge>
           </div>
-          <div className="flex items-center gap-2">
-            {document.upload_date && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Calendar className="w-3 h-3 mr-1" />
-                {format(new Date(document.upload_date), 'MMM d, yyyy')}
-              </div>
-            )}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-              onClick={() => onDelete?.(document)}
-            >
-              <Trash2 className="w-3 h-3" />
-            </Button>
-          </div>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+            onClick={() => onDelete?.(document)}
+          >
+            <Trash2 className="w-3 h-3" />
+          </Button>
         </div>
 
         {/* Document Details */}
@@ -101,6 +93,14 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
           <h3 className="font-semibold text-sm text-gray-900 truncate">
             {document.document_name}
           </h3>
+          
+          {/* Upload Date */}
+          {document.upload_date && (
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Calendar className="w-3 h-3 mr-1" />
+              {format(new Date(document.upload_date), 'MMM d, yyyy')}
+            </div>
+          )}
           
           {/* Vehicle Info */}
           <div className="text-sm text-gray-600 space-y-1">
