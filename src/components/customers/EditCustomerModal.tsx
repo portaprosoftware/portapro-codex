@@ -282,12 +282,84 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
   const deleteCustomerMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      // Perform cascading deletion of all related records
+      
+      // Delete customer contacts first
+      const { error: contactsError } = await supabase
+        .from('customer_contacts')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (contactsError) {
+        console.error('Error deleting customer contacts:', contactsError);
+        throw new Error('Failed to delete customer contacts');
+      }
+
+      // Delete customer service locations
+      const { error: locationsError } = await supabase
+        .from('customer_service_locations')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (locationsError) {
+        console.error('Error deleting customer service locations:', locationsError);
+        throw new Error('Failed to delete customer service locations');
+      }
+
+      // Delete customer communications
+      const { error: communicationsError } = await supabase
+        .from('customer_communications')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (communicationsError) {
+        console.error('Error deleting customer communications:', communicationsError);
+        throw new Error('Failed to delete customer communications');
+      }
+
+      // Delete quotes associated with this customer
+      const { error: quotesError } = await supabase
+        .from('quotes')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (quotesError) {
+        console.error('Error deleting quotes:', quotesError);
+        throw new Error('Failed to delete customer quotes');
+      }
+
+      // Delete invoices associated with this customer
+      const { error: invoicesError } = await supabase
+        .from('invoices')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (invoicesError) {
+        console.error('Error deleting invoices:', invoicesError);
+        throw new Error('Failed to delete customer invoices');
+      }
+
+      // Delete jobs associated with this customer
+      const { error: jobsError } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('customer_id', customer.id);
+      
+      if (jobsError) {
+        console.error('Error deleting jobs:', jobsError);
+        throw new Error('Failed to delete customer jobs');
+      }
+
+      // Finally, delete the customer record
+      const { error: customerError } = await supabase
         .from('customers')
         .delete()
         .eq('id', customer.id);
 
-      if (error) throw error;
+      if (customerError) {
+        console.error('Error deleting customer:', customerError);
+        throw new Error('Failed to delete customer');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
