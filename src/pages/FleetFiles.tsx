@@ -70,8 +70,8 @@ export default function FleetFiles() {
       
       return (data || []).map(doc => ({
         ...doc,
-        vehicle_name: `${doc.vehicles?.make || ''} ${doc.vehicles?.model || ''}`.trim() || 'Unknown Vehicle',
-        vehicle_plate: doc.vehicles?.license_plate || 'Unknown'
+        vehicle_name: `${(doc as any)?.vehicles?.make || ''} ${(doc as any)?.vehicles?.model || ''}`.trim() || 'Unknown Vehicle',
+        vehicle_plate: (doc as any)?.vehicles?.license_plate || 'Unknown'
       }));
     },
   });

@@ -121,8 +121,10 @@ export const InventoryMapView: React.FC = () => {
           const job = assignment.jobs;
           const customer = job.customers;
           const serviceLocation = customer.customer_service_locations?.[0];
-          const coordinates = serviceLocation?.service_location_coordinates?.find(coord => coord.is_primary) || 
-                             serviceLocation?.service_location_coordinates?.[0];
+          const coordinates = (serviceLocation && typeof serviceLocation === 'object') 
+            ? ((serviceLocation as any)?.service_location_coordinates?.find?.((coord: any) => coord.is_primary) || 
+               (serviceLocation as any)?.service_location_coordinates?.[0])
+            : null;
           
           // Build address string
           const addressParts = [
