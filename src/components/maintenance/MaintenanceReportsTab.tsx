@@ -9,7 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/ui/StatCard";
 import { ReportDetailsPanel } from "./ReportDetailsPanel";
-import { Calendar, Search, FileText, Clock, CheckCircle, AlertTriangle, Grid, List, Download } from "lucide-react";
+import { BulkActionsModal } from "./BulkActionsModal";
+import { AdvancedAnalyticsWidget } from "./AdvancedAnalyticsWidget";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Calendar, Search, FileText, Clock, CheckCircle, AlertTriangle, Grid, List, Download, ChevronDown, MoreHorizontal } from "lucide-react";
 
 interface MaintenanceReport {
   id: string;
@@ -27,6 +31,9 @@ export const MaintenanceReportsTab: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const { data: reports, isLoading } = useQuery({
     queryKey: ["maintenance-reports"],
@@ -83,12 +90,27 @@ export const MaintenanceReportsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
           <p className="text-gray-600">View and manage all service activity reports</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {selectedRecords.length > 0 && (
+            <Button
+              onClick={() => setShowBulkActions(true)}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Bulk Actions ({selectedRecords.length})
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            onClick={() => setShowAnalytics(!showAnalytics)}
+            className="border-purple-500 text-purple-600 hover:bg-purple-50"
+          >
+            {showAnalytics ? 'Hide' : 'Show'} Analytics
+          </Button>
           <div className="flex bg-gray-100 rounded-lg p-1">
             <Button
               variant={viewMode === "table" ? "default" : "ghost"}
@@ -109,6 +131,13 @@ export const MaintenanceReportsTab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Advanced Analytics */}
+      {showAnalytics && (
+        <div className="bg-white border rounded-lg p-6">
+          <AdvancedAnalyticsWidget />
+        </div>
+      )}
 
       {/* Filter Bar */}
       <Card className="p-4">
@@ -200,6 +229,18 @@ export const MaintenanceReportsTab: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
+                    <Checkbox
+                      checked={selectedRecords.length === (reports?.length || 0) && reports?.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedRecords(reports?.map(r => r.id) || []);
+                        } else {
+                          setSelectedRecords([]);
+                        }
+                      }}
+                    />
+                  </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Record #</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer/Location</th>
@@ -215,8 +256,22 @@ export const MaintenanceReportsTab: React.FC = () => {
                   return (
                     <tr 
                       key={report.id} 
-                      className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                      className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'} ${
+                        selectedRecords.includes(report.id) ? 'bg-blue-50' : ''
+                      }`}
                     >
+                      <td className="px-6 py-4">
+                        <Checkbox
+                          checked={selectedRecords.includes(report.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedRecords(prev => [...prev, report.id]);
+                            } else {
+                              setSelectedRecords(prev => prev.filter(id => id !== report.id));
+                            }
+                          }}
+                        />
+                      </td>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {report.report_number || `SVC-${report.id.slice(0, 8)}`}
                       </td>
@@ -337,6 +392,17 @@ export const MaintenanceReportsTab: React.FC = () => {
         reportId={selectedReport}
         isOpen={!!selectedReport}
         onClose={() => setSelectedReport(null)}
+      />
+
+      {/* Bulk Actions Modal */}
+      <BulkActionsModal
+        isOpen={showBulkActions}
+        onClose={() => setShowBulkActions(false)}
+        selectedRecords={selectedRecords}
+        onSuccess={() => {
+          setSelectedRecords([]);
+          setShowBulkActions(false);
+        }}
       />
     </div>
   );

@@ -6682,6 +6682,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      bulk_update_service_status: {
+        Args: {
+          record_ids: string[]
+          new_status: string
+          updated_by_user?: string
+        }
+        Returns: Json
+      }
       calculate_daily_vehicle_loads: {
         Args: { target_date: string }
         Returns: undefined
@@ -6998,6 +7006,10 @@ export type Database = {
           odometer_reading: number
         }[]
       }
+      get_service_analytics: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: Json
+      }
       get_system_wide_availability: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -7094,6 +7106,29 @@ export type Database = {
           rollback_reason?: string
         }
         Returns: boolean
+      }
+      search_service_records: {
+        Args: {
+          search_term?: string
+          status_filter?: string
+          start_date?: string
+          end_date?: string
+          limit_count?: number
+          offset_count?: number
+        }
+        Returns: {
+          id: string
+          report_number: string
+          status: string
+          completion_percentage: number
+          created_at: string
+          customer_name: string
+          service_type: string
+          location: string
+          assigned_technician_name: string
+          priority_level: string
+          estimated_completion: string
+        }[]
       }
       soft_delete_quote: {
         Args: { quote_uuid: string }
