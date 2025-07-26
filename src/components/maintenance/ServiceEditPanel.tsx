@@ -264,14 +264,14 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
                 Default Report Template
               </Label>
               <Select
-                value={formData.default_template_id || ""}
-                onValueChange={(value) => updateFormData("default_template_id", value || null)}
+                value={formData.default_template_id || "none"}
+                onValueChange={(value) => updateFormData("default_template_id", value === "none" ? null : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="No template assigned" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No template</SelectItem>
+                  <SelectItem value="none">No template</SelectItem>
                   {templates?.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       <div className="flex flex-col items-start">

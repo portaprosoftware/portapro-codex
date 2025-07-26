@@ -161,12 +161,12 @@ export const QuickTemplateAssignmentModal: React.FC<QuickTemplateAssignmentModal
               <label className="text-sm font-medium mb-2 block">
                 Select New Template
               </label>
-              <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+              <Select value={selectedTemplateId || "none"} onValueChange={(value) => setSelectedTemplateId(value === "none" ? "" : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a template..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No template</SelectItem>
+                  <SelectItem value="none">No template</SelectItem>
                   {templates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       <div className="flex items-center gap-2">
