@@ -100,16 +100,16 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
     try {
       // Mock data for now until database schema is updated
       const mockProducts = [
-        { id: '1', name: 'Standard Portable Toilet', stock_total: 50 },
-        { id: '2', name: 'Deluxe Portable Toilet', stock_total: 25 },
-        { id: '3', name: 'Handicap Accessible Unit', stock_total: 10 },
-        { id: '4', name: 'Hand Wash Station', stock_total: 15 }
+        { id: 'a1b2c3d4-e5f6-4321-8765-123456789abc', name: 'Standard Portable Toilet', stock_total: 50 },
+        { id: 'b2c3d4e5-f6a1-5432-9876-234567890bcd', name: 'Deluxe Portable Toilet', stock_total: 25 },
+        { id: 'c3d4e5f6-a1b2-6543-0987-345678901cde', name: 'Handicap Accessible Unit', stock_total: 10 },
+        { id: 'd4e5f6a1-b2c3-7654-1098-456789012def', name: 'Hand Wash Station', stock_total: 15 }
       ];
 
       const mockIndividualUnits = [
-        { id: '1', item_code: 'PT-001', product_id: '1', product_name: 'Standard Portable Toilet', status: 'available', condition: 'Good', color: 'Blue', size: 'Standard', winterized: false },
-        { id: '2', item_code: 'PT-002', product_id: '1', product_name: 'Standard Portable Toilet', status: 'available', condition: 'Excellent', color: 'Blue', size: 'Standard', winterized: true },
-        { id: '3', item_code: 'DX-001', product_id: '2', product_name: 'Deluxe Portable Toilet', status: 'available', condition: 'Good', color: 'Tan', size: 'Large', winterized: false }
+        { id: '11111111-1111-1111-1111-111111111111', item_code: 'PT-001', product_id: 'a1b2c3d4-e5f6-4321-8765-123456789abc', product_name: 'Standard Portable Toilet', status: 'available', condition: 'Good', color: 'Blue', size: 'Standard', winterized: false },
+        { id: '22222222-2222-2222-2222-222222222222', item_code: 'PT-002', product_id: 'a1b2c3d4-e5f6-4321-8765-123456789abc', product_name: 'Standard Portable Toilet', status: 'available', condition: 'Excellent', color: 'Blue', size: 'Standard', winterized: true },
+        { id: '33333333-3333-3333-3333-333333333333', item_code: 'DX-001', product_id: 'b2c3d4e5-f6a1-5432-9876-234567890bcd', product_name: 'Deluxe Portable Toilet', status: 'available', condition: 'Good', color: 'Tan', size: 'Large', winterized: false }
       ];
 
       // Fetch consumables from database

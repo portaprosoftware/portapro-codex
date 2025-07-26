@@ -172,13 +172,18 @@ export const SpecialInstructionsReviewStep: React.FC<SpecialInstructionsReviewSt
       });
     }
     
-    // Handle final return date
+    // Handle final return date  
     if (scheduleData?.returnDate) {
       let returnStr = `Final Return: ${scheduleData.returnDate.toLocaleDateString()}`;
       if (scheduleData.returnTime) {
         returnStr += ` at ${scheduleData.returnTime}`;
       }
       parts.push(returnStr);
+    }
+    
+    // Handle pickup dates from old format (fallback)
+    if (scheduleData?.pickupDates?.length > 0 && !scheduleData?.partialPickups?.length) {
+      parts.push(`Pickup: ${scheduleData.pickupDates.map((d: Date) => d.toLocaleDateString()).join(', ')}`);
     }
     
     if (scheduleData?.serviceDate) {

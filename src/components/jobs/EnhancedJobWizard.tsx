@@ -320,16 +320,15 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
         return (
           <ServiceTemplateAssignmentStep
             data={{
-              selectedTemplateIds: data.selectedTemplateIds,
-              defaultTemplateId: data.defaultTemplateId,
-              availableTemplates: [],
-              preSelectedFromServices: []
+              defaultTemplateId: data.defaultTemplateId || null,
+              assignedTemplateIds: data.selectedTemplateIds,
+              templateAssignmentMode: 'automatic'
             }}
             onUpdate={(stepData) => updateStepData({
-              selectedTemplateIds: stepData.selectedTemplateIds,
-              defaultTemplateId: stepData.defaultTemplateId
+              defaultTemplateId: stepData.defaultTemplateId,
+              selectedTemplateIds: stepData.assignedTemplateIds
             })}
-            selectedServices={data.selectedServices}
+            jobType={data.jobType}
           />
         );
       

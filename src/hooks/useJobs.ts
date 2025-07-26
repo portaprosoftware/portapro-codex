@@ -90,6 +90,7 @@ interface JobFormData {
   consumables_data?: any;
   assigned_template_ids?: string[];
   default_template_id?: string;
+  // New pickup scheduling fields
   date_returned?: string;
   return_time?: string;
   partial_pickups?: Array<{

@@ -76,16 +76,16 @@ export const CrewAssignmentStep: React.FC<CrewAssignmentStepProps> = ({
 
       // Mock drivers data for now until database schema is updated
       const mockDriversData = [
-        { id: '1', first_name: 'John', last_name: 'Smith', email: 'john@company.com' },
-        { id: '2', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@company.com' },
-        { id: '3', first_name: 'Mike', last_name: 'Davis', email: 'mike@company.com' }
+        { id: '11111111-1111-1111-1111-111111111111', first_name: 'John', last_name: 'Smith', email: 'john@company.com' },
+        { id: '22222222-2222-2222-2222-222222222222', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@company.com' },
+        { id: '33333333-3333-3333-3333-333333333333', first_name: 'Mike', last_name: 'Davis', email: 'mike@company.com' }
       ];
 
       // Mock vehicles data for now until database schema is updated
       const mockVehiclesData = [
-        { id: '1', license_plate: 'ABC-123', vehicle_type: 'Service Truck', make: 'Ford', model: 'F-150', year: 2022 },
-        { id: '2', license_plate: 'DEF-456', vehicle_type: 'Delivery Van', make: 'Chevrolet', model: 'Express', year: 2021 },
-        { id: '3', license_plate: 'GHI-789', vehicle_type: 'Service Truck', make: 'Ram', model: '1500', year: 2023 }
+        { id: 'aaaa1111-bbbb-2222-cccc-333333333333', license_plate: 'ABC-123', vehicle_type: 'Service Truck', make: 'Ford', model: 'F-150', year: 2022 },
+        { id: 'bbbb2222-cccc-3333-dddd-444444444444', license_plate: 'DEF-456', vehicle_type: 'Delivery Van', make: 'Chevrolet', model: 'Express', year: 2021 },
+        { id: 'cccc3333-dddd-4444-eeee-555555555555', license_plate: 'GHI-789', vehicle_type: 'Service Truck', make: 'Ram', model: '1500', year: 2023 }
       ];
 
       // Check driver availability for each relevant date (using mock data)
