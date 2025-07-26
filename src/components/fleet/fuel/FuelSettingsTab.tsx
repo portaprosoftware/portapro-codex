@@ -42,6 +42,7 @@ interface FuelStation {
 
 export const FuelSettingsTab: React.FC = () => {
   const [showAddStationModal, setShowAddStationModal] = useState(false);
+  const [localSettings, setLocalSettings] = useState<Partial<FuelSettings>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -59,6 +60,13 @@ export const FuelSettingsTab: React.FC = () => {
       return data as FuelSettings;
     }
   });
+
+  // Initialize local settings when data loads
+  React.useEffect(() => {
+    if (settings && Object.keys(localSettings).length === 0) {
+      setLocalSettings(settings);
+    }
+  }, [settings, localSettings]);
 
   // Fetch fuel stations
   const { data: stations, isLoading: stationsLoading } = useQuery({
@@ -133,8 +141,8 @@ export const FuelSettingsTab: React.FC = () => {
   });
 
   const handleSaveSettings = () => {
-    if (settings) {
-      updateSettingsMutation.mutate(settings);
+    if (localSettings && Object.keys(localSettings).length > 0) {
+      updateSettingsMutation.mutate(localSettings);
     }
   };
 
@@ -160,8 +168,8 @@ export const FuelSettingsTab: React.FC = () => {
             <div>
               <Label htmlFor="fuel-unit">Fuel Unit</Label>
               <Select 
-                value={settings?.fuel_unit || 'gallons'} 
-                onValueChange={(value) => settings && Object.assign(settings, { fuel_unit: value })}
+                value={localSettings?.fuel_unit || 'gallons'} 
+                onValueChange={(value) => setLocalSettings(prev => ({ ...prev, fuel_unit: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -176,8 +184,8 @@ export const FuelSettingsTab: React.FC = () => {
             <div>
               <Label htmlFor="currency">Currency Format</Label>
               <Select 
-                value={settings?.currency_format || 'USD'} 
-                onValueChange={(value) => settings && Object.assign(settings, { currency_format: value })}
+                value={localSettings?.currency_format || 'USD'} 
+                onValueChange={(value) => setLocalSettings(prev => ({ ...prev, currency_format: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -194,8 +202,8 @@ export const FuelSettingsTab: React.FC = () => {
             <div>
               <Label htmlFor="odometer-precision">Odometer Precision</Label>
               <Select 
-                value={settings?.odometer_precision?.toString() || '0'} 
-                onValueChange={(value) => settings && Object.assign(settings, { odometer_precision: parseInt(value) })}
+                value={localSettings?.odometer_precision?.toString() || '0'} 
+                onValueChange={(value) => setLocalSettings(prev => ({ ...prev, odometer_precision: parseInt(value) }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -214,8 +222,8 @@ export const FuelSettingsTab: React.FC = () => {
                 id="approval-threshold"
                 type="number"
                 step="0.01"
-                value={settings?.manager_approval_threshold || ''}
-                onChange={(e) => settings && Object.assign(settings, { manager_approval_threshold: parseFloat(e.target.value) })}
+                value={localSettings?.manager_approval_threshold || ''}
+                onChange={(e) => setLocalSettings(prev => ({ ...prev, manager_approval_threshold: parseFloat(e.target.value) }))}
                 placeholder="0.00"
               />
             </div>
@@ -236,8 +244,8 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="require-receipt"
-              checked={settings?.require_receipt || false}
-              onCheckedChange={(checked) => settings && Object.assign(settings, { require_receipt: checked })}
+              checked={localSettings?.require_receipt || false}
+              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, require_receipt: checked }))}
             />
           </div>
 
@@ -248,8 +256,8 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="driver-edit"
-              checked={settings?.driver_edit_permission || false}
-              onCheckedChange={(checked) => settings && Object.assign(settings, { driver_edit_permission: checked })}
+              checked={localSettings?.driver_edit_permission || false}
+              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, driver_edit_permission: checked }))}
             />
           </div>
 
@@ -260,8 +268,8 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="auto-mpg"
-              checked={settings?.auto_calculate_mpg || false}
-              onCheckedChange={(checked) => settings && Object.assign(settings, { auto_calculate_mpg: checked })}
+              checked={localSettings?.auto_calculate_mpg || false}
+              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, auto_calculate_mpg: checked }))}
             />
           </div>
         </CardContent>
