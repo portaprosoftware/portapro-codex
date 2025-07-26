@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { formatDateSafe } from '@/lib/dateUtils';
-import { MapPin, Clock, Phone, Navigation } from 'lucide-react';
+import { MapPin, Clock, Phone, Navigation, Play, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { JobStatus } from '@/types';
 import { JobDetailModal } from './JobDetailModal';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Job {
   id: string;
@@ -48,6 +50,46 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   const handleCall = () => {
     // This will be implemented with customer contact integration
     console.log('Call customer for job:', job.id);
+  };
+
+  const handleStartJob = async () => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ status: 'in_progress' })
+        .eq('id', job.id);
+
+      if (error) throw error;
+
+      toast.success('Job started successfully');
+      onStatusUpdate();
+      
+      // TODO: Launch service report form
+      console.log('Launch service report form for job:', job.id);
+    } catch (error) {
+      console.error('Error starting job:', error);
+      toast.error('Failed to start job');
+    }
+  };
+
+  const handleCompleteJob = async () => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          status: 'completed',
+          actual_completion_time: new Date().toISOString()
+        })
+        .eq('id', job.id);
+
+      if (error) throw error;
+
+      toast.success('Job completed successfully');
+      onStatusUpdate();
+    } catch (error) {
+      console.error('Error completing job:', error);
+      toast.error('Failed to complete job');
+    }
   };
 
   return (
@@ -102,23 +144,50 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             </p>
           )}
 
-          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-            <Button 
-              size="sm" 
-              className="flex-1"
-              onClick={handleNavigate}
-            >
-              <Navigation className="w-4 h-4 mr-2" />
-              Navigate
-            </Button>
+          <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+            {/* Primary Action Button */}
+            {job.status === 'assigned' && (
+              <Button 
+                size="lg" 
+                className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3"
+                onClick={handleStartJob}
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Start Job
+              </Button>
+            )}
             
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={handleCall}
-            >
-              <Phone className="w-4 h-4" />
-            </Button>
+            {job.status === 'in_progress' && (
+              <Button 
+                size="lg" 
+                className="w-full bg-gradient-green hover:bg-gradient-green/90 text-white font-semibold py-3"
+                onClick={handleCompleteJob}
+              >
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                Complete Job
+              </Button>
+            )}
+            
+            {/* Secondary Actions */}
+            <div className="flex space-x-2">
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="flex-1"
+                onClick={handleNavigate}
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Navigate
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={handleCall}
+              >
+                <Phone className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

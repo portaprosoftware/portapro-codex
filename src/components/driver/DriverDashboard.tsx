@@ -22,6 +22,9 @@ export const DriverDashboard: React.FC = () => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const today = new Date().toISOString().split('T')[0];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
       
       const { data, error } = await supabase
         .from('jobs')
@@ -33,6 +36,7 @@ export const DriverDashboard: React.FC = () => {
         `)
         .eq('driver_id', user.id)
         .gte('scheduled_date', today)
+        .lte('scheduled_date', tomorrowStr)
         .order('scheduled_date', { ascending: true })
         .order('scheduled_time', { ascending: true });
 

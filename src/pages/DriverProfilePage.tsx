@@ -4,13 +4,16 @@ import { useUser, useClerk } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, User, Phone, Mail } from 'lucide-react';
+import { TimeOffSection } from '@/components/driver/TimeOffSection';
+import { SettingsSection } from '@/components/driver/SettingsSection';
 
 export const DriverProfilePage: React.FC = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-6">
+      {/* Profile Info */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -51,6 +54,13 @@ export const DriverProfilePage: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Time Off Section */}
+      <TimeOffSection />
+
+      {/* Settings & Help Section */}
+      <SettingsSection />
+
+      {/* Sign Out */}
       <Button 
         variant="outline" 
         className="w-full"
