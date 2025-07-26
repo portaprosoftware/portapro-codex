@@ -8,7 +8,7 @@ import {
   Calendar, 
   Wrench, 
   Fuel, 
-  FileText,
+  FolderOpen,
   Bell,
   Settings,
   Package,
@@ -74,10 +74,10 @@ export const FleetSidebar: React.FC = () => {
       description: "Logs & summaries"
     },
     {
-      title: "Files & Photos",
+      title: "Documents & Media",
       href: "/fleet/files",
-      icon: FileText,
-      description: "General uploads"
+      icon: FolderOpen,
+      description: "Receipts, warranties, photos & paperwork"
     }
   ];
   

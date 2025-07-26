@@ -1486,6 +1486,39 @@ export type Database = {
         }
         Relationships: []
       }
+      document_categories: {
+        Row: {
+          color: string
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          color: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
       driver_time_off_requests: {
         Row: {
           created_at: string
@@ -6246,6 +6279,7 @@ export type Database = {
       }
       vehicle_documents: {
         Row: {
+          category: string | null
           cost: number | null
           created_at: string | null
           document_name: string
@@ -6259,12 +6293,16 @@ export type Database = {
           id: string
           issue_date: string | null
           issuing_authority: string | null
+          linked_maintenance_record_id: string | null
           notes: string | null
+          tags: Json | null
           updated_at: string | null
+          upload_date: string | null
           uploaded_by: string | null
           vehicle_id: string
         }
         Insert: {
+          category?: string | null
           cost?: number | null
           created_at?: string | null
           document_name: string
@@ -6278,12 +6316,16 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuing_authority?: string | null
+          linked_maintenance_record_id?: string | null
           notes?: string | null
+          tags?: Json | null
           updated_at?: string | null
+          upload_date?: string | null
           uploaded_by?: string | null
           vehicle_id: string
         }
         Update: {
+          category?: string | null
           cost?: number | null
           created_at?: string | null
           document_name?: string
@@ -6297,12 +6339,22 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuing_authority?: string | null
+          linked_maintenance_record_id?: string | null
           notes?: string | null
+          tags?: Json | null
           updated_at?: string | null
+          upload_date?: string | null
           uploaded_by?: string | null
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_documents_linked_maintenance_record_id_fkey"
+            columns: ["linked_maintenance_record_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_records"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vehicle_documents_uploaded_by_fkey"
             columns: ["uploaded_by"]
