@@ -91,48 +91,26 @@ const whyPortaPro = [
   }
 ];
 
-// Pricing Tiers
-const pricingTiers = [
-  {
-    name: "Starter",
-    price: { monthly: 49, annual: 39 },
-    description: "Perfect for small operations",
-    features: [
-      "Up to 5 drivers",
-      "Basic job scheduling", 
-      "Mobile driver app",
-      "Customer portal",
-      "Email support"
-    ],
-    popular: false
-  },
-  {
-    name: "Pro", 
-    price: { monthly: 99, annual: 79 },
-    description: "Most popular for growing businesses",
-    features: [
-      "Up to 25 drivers",
-      "Advanced analytics",
-      "Multi-site inventory",
-      "Custom report templates",
-      "Priority support"
-    ],
-    popular: true
-  },
-  {
-    name: "Enterprise",
-    price: { monthly: 199, annual: 159 },
-    description: "For large-scale operations", 
-    features: [
-      "Unlimited drivers",
-      "Advanced integrations",
-      "Custom development",
-      "Dedicated account manager",
-      "24/7 phone support"
-    ],
-    popular: false
-  }
-];
+// Pricing Package
+const completePackage = {
+  name: "PortaPro Complete Package",
+  price: { monthly: 175, annual: 125 },
+  description: "All features included - onboarding and support included",
+  features: [
+    "Unlimited drivers and users",
+    "Smart job wizard with multi-step creation",
+    "Multi-site inventory tracking",
+    "Mobile driver app with offline capability", 
+    "Custom report templates and builder",
+    "Quote-to-job conversion flow",
+    "Advanced analytics and reporting",
+    "Team management and scheduling",
+    "Stripe payment integration",
+    "Customer portal access",
+    "Priority email and chat support",
+    "Full onboarding and training included"
+  ]
+};
 
 export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -205,38 +183,38 @@ export const Landing: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-background to-muted/20">
+      <section className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-6">
-                <Badge variant="secondary" className="w-fit">
+                <Badge variant="secondary" className="w-fit bg-white/20 text-white border-white/30">
                   Built for Portable Toilet Providers
                 </Badge>
                 
-                <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
+                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
                   Everything You Need to Run Your Rental Business
                 </h1>
                 
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-xl text-white/90 leading-relaxed">
                   From job scheduling to inventory tracking—PortaPro streamlines your day.
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 py-6">
+                  <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6">
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10">
                   <Play className="w-5 h-5 mr-2" />
                   Watch 60 sec Demo
                 </Button>
               </div>
               
-              <div className="flex flex-wrap gap-6 pt-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-6 pt-4 text-sm text-white/80">
                 <span>• No Credit Card Required</span>
                 <span>• Cancel Anytime</span>
                 <span>• 30-Day Free Trial</span>
@@ -246,8 +224,8 @@ export const Landing: React.FC = () => {
             <div className="relative">
               <div className="bg-white rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition-transform duration-300">
                 <img 
-                  src="/lovable-uploads/0a38a678-687b-4e6c-9715-d530993ed8a2.png" 
-                  alt="PortaPro Dashboard"
+                  src="/lovable-uploads/67159259-06cd-46e9-ac0e-b437a39530e9.png" 
+                  alt="PortaPro Platform Interface"
                   className="w-full h-auto rounded-xl"
                 />
               </div>
@@ -282,15 +260,15 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Job Wizard Deep Dive */}
-      <section id="job-wizard" className="py-20 px-6 bg-muted/30">
+      <section id="job-wizard" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                <h2 className="text-3xl lg:text-4xl font-bold text-white">
                   Powerful Job Creation—Simplified
                 </h2>
-                <p className="text-lg text-muted-foreground">
+                <p className="text-lg text-white/90">
                   Our 5-step wizard handles everything from customer selection to final confirmation in one smooth flow.
                 </p>
               </div>
@@ -298,18 +276,18 @@ export const Landing: React.FC = () => {
               <div className="space-y-4">
                 {jobWizardSteps.map((step, index) => (
                   <div key={index} className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <div className="w-8 h-8 bg-white text-primary rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                       {step.number}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-base mb-1">{step.title}</h4>
-                      <p className="text-muted-foreground text-sm">{step.description}</p>
+                      <h4 className="font-semibold text-base mb-1 text-white">{step.title}</h4>
+                      <p className="text-white/80 text-sm">{step.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/80">
                 Optional partial pickups, on-site estimates, and custom report templates.
               </p>
             </div>
@@ -382,11 +360,11 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Quote-to-Job Flow */}
-      <section id="quotes" className="py-20 px-6 bg-muted/30">
+      <section id="quotes" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 One Click from Quote to Job
               </h2>
             </div>
@@ -405,7 +383,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex items-center justify-center gap-4 pt-8">
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-white/80">
                 <span>Quote</span>
                 <ArrowRight className="w-4 h-4" />
                 <span>Customer Accepts</span>
@@ -462,12 +440,12 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Reporting & Templates */}
-      <section id="reports" className="py-20 px-6 bg-muted/30">
+      <section id="reports" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                <h2 className="text-3xl lg:text-4xl font-bold text-white">
                   Custom Service Reports
                 </h2>
               </div>
@@ -476,7 +454,7 @@ export const Landing: React.FC = () => {
                 {reportFeatures.map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">{feature}</span>
+                    <span className="text-white/90">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -546,21 +524,21 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Why PortaPro */}
-      <section id="about" className="py-20 px-6 bg-muted/30">
+      <section id="about" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white">
               Why PortaPro
             </h2>
             
             <div className="grid sm:grid-cols-3 gap-8">
               {whyPortaPro.map((item, index) => (
                 <div key={index} className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                    <item.icon className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 mx-auto rounded-full bg-white/10 flex items-center justify-center">
+                    <item.icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-semibold text-lg">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
+                  <h3 className="font-semibold text-lg text-white">{item.title}</h3>
+                  <p className="text-white/90">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -569,73 +547,70 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 px-6">
+      <section id="pricing" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 Simple, Transparent Pricing
               </h2>
-              <p className="text-lg text-muted-foreground">
-                Choose the plan that fits your business size
+              <p className="text-lg text-white/90">
+                One complete package with everything included
               </p>
             </div>
             
             <div className="flex items-center justify-center gap-4">
-              <span className={`font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Monthly</span>
+              <span className={`font-medium ${!isAnnual ? 'text-white' : 'text-white/70'}`}>Monthly</span>
               <button
                 onClick={() => setIsAnnual(!isAnnual)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-primary' : 'bg-muted'}`}
+                className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-white' : 'bg-white/30'}`}
               >
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isAnnual ? 'translate-x-7' : 'translate-x-1'}`} />
+                <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isAnnual ? 'bg-primary translate-x-7' : 'bg-white translate-x-1'}`} />
               </button>
-              <span className={`font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
-                Annual <Badge variant="secondary" className="ml-1">Save 20%</Badge>
+              <span className={`font-medium ${isAnnual ? 'text-white' : 'text-white/70'}`}>
+                Annual <Badge variant="secondary" className="ml-1 bg-white/20 text-white">Save $50/month</Badge>
               </span>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 mt-12">
-              {pricingTiers.map((tier, index) => (
-                <Card key={index} className={`relative ${tier.popular ? 'border-primary shadow-lg scale-105' : ''}`}>
-                  {tier.popular && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
-                      Most Popular
-                    </Badge>
-                  )}
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-xl">{tier.name}</CardTitle>
-                    <div className="space-y-2">
-                      <div className="text-3xl font-bold">
-                        ${isAnnual ? tier.price.annual : tier.price.monthly}
-                        <span className="text-sm font-normal text-muted-foreground">
-                          /{isAnnual ? 'month' : 'month'}
-                        </span>
-                      </div>
-                      {isAnnual && (
-                        <div className="text-sm text-muted-foreground">
-                          Billed annually (${tier.price.annual * 12}/year)
-                        </div>
-                      )}
+            <div className="flex justify-center mt-12">
+              <Card className="relative border-white/20 bg-white/10 backdrop-blur-sm max-w-md w-full">
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white text-primary">
+                  Complete Package
+                </Badge>
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl text-white">{completePackage.name}</CardTitle>
+                  <div className="space-y-2">
+                    <div className="text-4xl font-bold text-white">
+                      ${isAnnual ? completePackage.price.annual : completePackage.price.monthly}
+                      <span className="text-lg font-normal text-white/80">
+                        /month
+                      </span>
                     </div>
-                    <CardDescription>{tier.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <ul className="space-y-2">
-                      {tier.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                      <Button className={`w-full ${tier.popular ? 'bg-primary hover:bg-primary/90' : ''}`}>
-                        Get Started
-                      </Button>
-                    </SignUpButton>
-                  </CardContent>
-                </Card>
-              ))}
+                    {isAnnual && (
+                      <div className="text-sm text-white/80">
+                        Billed annually (${completePackage.price.annual * 12}/year) - Save $600/year
+                      </div>
+                    )}
+                  </div>
+                  <CardDescription className="text-white/90">{completePackage.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    {completePackage.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-white/90">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+                    <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6">
+                      Start Free Trial
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </SignUpButton>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
