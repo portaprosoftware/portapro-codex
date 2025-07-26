@@ -555,7 +555,15 @@ export type Database = {
           reference_id?: string | null
           storage_location_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_consumable_stock_adjustments_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       consumables: {
         Row: {
@@ -1401,7 +1409,15 @@ export type Database = {
           time_slot?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_driver_time_off_requests_driver_id"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       driver_working_hours: {
         Row: {
@@ -1575,7 +1591,29 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_equipment_assignments_job_id"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_equipment_assignments_product_id"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_equipment_assignments_product_item_id"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       error_reports: {
         Row: {
@@ -2078,7 +2116,22 @@ export type Database = {
           used_at?: string
           used_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_job_consumables_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_job_consumables_job_id"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_documentation: {
         Row: {
@@ -2319,6 +2372,13 @@ export type Database = {
           vehicle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_jobs_driver_id"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_customer_id_fkey"
             columns: ["customer_id"]
@@ -3537,7 +3597,15 @@ export type Database = {
           use_case?: string | null
           winterized?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_product_items_product_id"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_location_stock: {
         Row: {
@@ -3564,7 +3632,22 @@ export type Database = {
           storage_location_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_product_location_stock_product_id"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_product_location_stock_storage_location_id"
+            columns: ["storage_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_properties: {
         Row: {
@@ -3987,7 +4070,15 @@ export type Database = {
           unit_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_qr_feedback_unit_id"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quote_audit_log: {
         Row: {
@@ -4401,7 +4492,15 @@ export type Database = {
           service_requirements?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_routine_maintenance_services_default_template_id"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_buttons: {
         Row: {
@@ -5187,7 +5286,15 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_roles_user_id"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicle_assignments: {
         Row: {
