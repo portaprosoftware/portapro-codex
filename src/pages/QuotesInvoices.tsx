@@ -181,7 +181,12 @@ const QuotesInvoices: React.FC = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowQuickBooksExport(true)}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-800 text-white font-bold border-0"
+                  style={{ 
+                    background: 'linear-gradient(to right, #059669, #047857)',
+                    color: 'white',
+                    border: 'none'
+                  }}
+                  className="hover:opacity-90 font-bold transition-opacity"
                 >
                   Export to QuickBooks
                 </Button>
@@ -274,7 +279,12 @@ const QuotesInvoices: React.FC = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowQuickBooksExport(true)}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-800 text-white font-bold border-0"
+                  style={{ 
+                    background: 'linear-gradient(to right, #059669, #047857)',
+                    color: 'white',
+                    border: 'none'
+                  }}
+                  className="hover:opacity-90 font-bold transition-opacity"
                 >
                   Export to QuickBooks
                 </Button>
