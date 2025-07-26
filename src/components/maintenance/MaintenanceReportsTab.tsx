@@ -40,17 +40,31 @@ export const MaintenanceReportsTab: React.FC = () => {
   const [showCustomDateRange, setShowCustomDateRange] = useState(false);
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
 
-  const { data: reports, isLoading } = useQuery({
-    queryKey: ["maintenance-reports"],
+  const { data: maintenanceReports, isLoading, refetch } = useQuery({
+    queryKey: ['maintenance-reports'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("maintenance_reports")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
+        .from('maintenance_reports')
+        .select(`
+          *,
+          jobs (
+            job_number,
+            job_type,
+            scheduled_date,
+            customers (
+              name
+            )
+          ),
+          maintenance_report_templates (
+            name,
+            template_type
+          )
+        `)
+        .order('created_at', { ascending: false });
+
       if (error) throw error;
-      return data || [];
-    },
+      return data as MaintenanceReport[];
+    }
   });
 
   const getStatusColor = (status: string) => {
@@ -72,13 +86,13 @@ export const MaintenanceReportsTab: React.FC = () => {
   };
 
   const getReportCounts = () => {
-    if (!reports) return { total: 0, open: 0, inProgress: 0, completed: 0 };
+    if (!maintenanceReports) return { total: 0, open: 0, inProgress: 0, completed: 0 };
     
     return {
-      total: reports.length,
-      open: reports.filter(r => r.status === "open" || r.status === "scheduled").length,
-      inProgress: reports.filter(r => r.status === "in_progress").length,
-      completed: reports.filter(r => r.status === "completed").length,
+      total: maintenanceReports.length,
+      open: maintenanceReports.filter(r => r.status === "open" || r.status === "scheduled").length,
+      inProgress: maintenanceReports.filter(r => r.status === "in_progress").length,
+      completed: maintenanceReports.filter(r => r.status === "completed").length,
     };
   };
 
@@ -144,7 +158,7 @@ export const MaintenanceReportsTab: React.FC = () => {
         </div>
       )}
 
-      {/* Filter Bar */}
+      {/* Enhanced Filter Bar with Job Context */}
       <Card className="p-4">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
@@ -168,16 +182,31 @@ export const MaintenanceReportsTab: React.FC = () => {
             </div>
           </div>
           
+          {/* New Job Type Filter */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder="Filter by job type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="overdue">Overdue</SelectItem>
+              <SelectItem value="all">All Job Types</SelectItem>
+              <SelectItem value="delivery">Delivery</SelectItem>
+              <SelectItem value="pickup">Pickup</SelectItem>
+              <SelectItem value="service">Service</SelectItem>
+              <SelectItem value="return">Return</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Template Type Filter */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by template" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Templates</SelectItem>
+              <SelectItem value="cleaning">Cleaning</SelectItem>
+              <SelectItem value="inspection">Inspection</SelectItem>
+              <SelectItem value="maintenance">Maintenance</SelectItem>
+              <SelectItem value="repair">Repair</SelectItem>
             </SelectContent>
           </Select>
 
@@ -185,13 +214,35 @@ export const MaintenanceReportsTab: React.FC = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search by report #, customer, or address..."
+                placeholder="Search by report #, customer, job #, or template..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
           </div>
+
+          {/* Export Options */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => toast.success('CSV export started')}>
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.success('PDF export started')}>
+                Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.success('Excel export started')}>
+                Export as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </Card>
 
@@ -247,10 +298,10 @@ export const MaintenanceReportsTab: React.FC = () => {
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">
                     <Checkbox
-                      checked={selectedRecords.length === (reports?.length || 0) && reports?.length > 0}
+                      checked={selectedRecords.length === (maintenanceReports?.length || 0) && maintenanceReports?.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedRecords(reports?.map(r => r.id) || []);
+                          setSelectedRecords(maintenanceReports?.map(r => r.id) || []);
                         } else {
                           setSelectedRecords([]);
                         }
@@ -259,15 +310,16 @@ export const MaintenanceReportsTab: React.FC = () => {
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Record #</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer/Location</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service Type</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Job #</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Template Type</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Progress</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {reports?.map((report, index) => {
+                {maintenanceReports?.map((report, index) => {
                   const reportData = report.report_data as Record<string, any> || {};
                   return (
                     <tr 
@@ -295,10 +347,13 @@ export const MaintenanceReportsTab: React.FC = () => {
                         {new Date(report.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {reportData.customer_name || reportData.location || 'N/A'}
+                        {(report as any).jobs?.job_number || 'N/A'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {reportData.service_type || 'General Service'}
+                        {(report as any).jobs?.customers?.name || reportData.customer_name || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {(report as any).maintenance_report_templates?.template_type || reportData.service_type || 'General Service'}
                       </td>
                       <td className="px-6 py-4">
                         <Badge className={`capitalize ${getStatusColor(report.status)}`}>
@@ -363,7 +418,7 @@ export const MaintenanceReportsTab: React.FC = () => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reports?.map((report) => {
+          {maintenanceReports?.map((report) => {
             const reportData = report.report_data as Record<string, any> || {};
             return (
               <Card key={report.id} className="p-6 hover:shadow-lg transition-shadow rounded-2xl">

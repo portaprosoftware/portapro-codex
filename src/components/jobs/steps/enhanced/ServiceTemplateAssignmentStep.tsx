@@ -5,10 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronDown, FileText, Search, X, Eye, Star, Grid, List } from 'lucide-react';
+import { Check, ChevronDown, FileText, Search, X, Eye, Star, Grid, List, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { TemplatePreviewCard } from '@/components/jobs/TemplatePreviewCard';
+import { BulkTemplateAssignment } from '@/components/jobs/BulkTemplateAssignment';
 
 interface MaintenanceTemplate {
   id: string;
@@ -45,6 +46,7 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
   const [searchValue, setSearchValue] = useState('');
   const [previewTemplate, setPreviewTemplate] = useState<MaintenanceTemplate | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showBulkAssignment, setShowBulkAssignment] = useState(false);
 
   useEffect(() => {
     fetchTemplates();
@@ -261,6 +263,14 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
               <span>Browse Templates</span>
             </div>
             <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowBulkAssignment(true)}
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Bulk Assign
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
