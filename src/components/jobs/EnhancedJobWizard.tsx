@@ -23,7 +23,7 @@ interface WizardData {
   selectedCustomer?: any;
   
   // Step 2: Job Type & Timezone
-  jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
+  jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
   timezone: string;
   customerTimezone: string;
   timezoneSource: 'company' | 'customer' | 'custom';
@@ -42,6 +42,8 @@ interface WizardData {
     time: string;
     addTime: boolean;
     label: string;
+    quantity?: number;
+    notes?: string;
   }>;
   serviceDate?: Date;
   serviceTime?: string;

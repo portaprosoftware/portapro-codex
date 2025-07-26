@@ -6,13 +6,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Calendar as CalendarIcon, Clock, Plus, Trash2, Package } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, Plus, Trash2, Package, Minus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatTimezoneLabel } from '@/lib/timezoneUtils';
 
 interface ScheduleData {
-  jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
+  jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
   timezone: string;
   deliveryDate: Date | null;
   deliveryTime: string;
@@ -28,6 +30,8 @@ interface ScheduleData {
     time: string;
     addTime: boolean;
     label: string;
+    quantity?: number;
+    notes?: string;
   }>;
   serviceDate: Date | null;
   serviceTime: string;
@@ -56,7 +60,9 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
       date: null,
       time: '14:00',
       addTime: false,
-      label: `Partial Pickup #${data.partialPickups.length + 1}`
+      label: `Partial Pickup #${data.partialPickups.length + 1}`,
+      quantity: 1,
+      notes: ''
     };
 
     onUpdate({
@@ -221,7 +227,6 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
           {data.jobType === 'delivery' ? 'Delivery & Pickup Schedule' :
            data.jobType === 'pickup' ? 'Pickup Schedule' :
            data.jobType === 'service' ? 'Service Schedule' :
-           data.jobType === 'partial-pickup' ? 'Partial Pickup Schedule' :
            'Survey/Estimate Schedule'}
         </h2>
         <p className="text-muted-foreground">
@@ -300,15 +305,61 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                        <DateTimePicker
-                          date={pickup.date}
-                          onDateChange={(date) => updatePartialPickup(pickup.id, 'date', date || null)}
-                          time={pickup.time}
-                          onTimeChange={(time) => updatePartialPickup(pickup.id, 'time', time)}
-                          addTime={pickup.addTime}
-                          onAddTimeChange={(addTime) => updatePartialPickup(pickup.id, 'addTime', addTime)}
-                          label="Pickup Date"
-                        />
+                        
+                        <div className="space-y-4">
+                          <DateTimePicker
+                            date={pickup.date}
+                            onDateChange={(date) => updatePartialPickup(pickup.id, 'date', date || null)}
+                            time={pickup.time}
+                            onTimeChange={(time) => updatePartialPickup(pickup.id, 'time', time)}
+                            addTime={pickup.addTime}
+                            onAddTimeChange={(addTime) => updatePartialPickup(pickup.id, 'addTime', addTime)}
+                            label="Pickup Date"
+                          />
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium">Quantity to Remove</Label>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => updatePartialPickup(pickup.id, 'quantity', Math.max(1, (pickup.quantity || 1) - 1))}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  value={pickup.quantity || 1}
+                                  onChange={(e) => updatePartialPickup(pickup.id, 'quantity', Math.max(1, parseInt(e.target.value) || 1))}
+                                  className="w-16 text-center"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => updatePartialPickup(pickup.id, 'quantity', (pickup.quantity || 1) + 1)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label className="text-sm font-medium">Special Instructions</Label>
+                              <Textarea
+                                placeholder="e.g., after 2 PM, call first..."
+                                value={pickup.notes || ''}
+                                onChange={(e) => updatePartialPickup(pickup.id, 'notes', e.target.value)}
+                                className="min-h-[60px] resize-none"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ))}
 
@@ -367,19 +418,6 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
         />
       )}
 
-      {/* Partial Pickup Job Scheduling */}
-      {data.jobType === 'partial-pickup' && (
-        <DateTimePicker
-          date={data.fullPickupDate}
-          onDateChange={(date) => onUpdate({ ...data, fullPickupDate: date || null })}
-          time={data.fullPickupTime}
-          onTimeChange={(time) => onUpdate({ ...data, fullPickupTime: time })}
-          addTime={data.addFullPickupTime}
-          onAddTimeChange={(addTime) => onUpdate({ ...data, addFullPickupTime: addTime })}
-          label="Partial Pickup Date"
-          required
-        />
-      )}
 
       {/* Schedule Summary */}
       {generateSummary() && (

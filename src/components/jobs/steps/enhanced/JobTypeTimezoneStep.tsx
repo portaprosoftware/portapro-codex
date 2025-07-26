@@ -8,18 +8,17 @@ import { getTimezoneFromZip, getCompanyTimezone, timezoneOptions, formatTimezone
 
 interface JobTypeTimezoneStepProps {
   data: {
-    jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null;
+    jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey' | null;
     timezone: string;
     customerZip?: string;
     customerState?: string;
   };
   onUpdate: (data: { 
-    jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey' | null; 
+    jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey' | null; 
     timezone: string;
     customerZip?: string;
     customerState?: string;
   }) => void;
-  allowEarlyPickup?: boolean;
 }
 
 const jobTypes = [
@@ -39,31 +38,23 @@ const jobTypes = [
   },
   {
     id: 'service' as const,
-    name: 'Service-Only',
+    name: 'Service',
     description: 'Service existing equipment on-site',
     icon: Wrench,
     color: 'orange',
   },
   {
-    id: 'partial-pickup' as const,
-    name: 'Partial Pickup',
-    description: 'Pick up some equipment from customer location',
-    icon: Package,
-    color: 'purple',
-  },
-  {
     id: 'on-site-survey' as const,
-    name: 'On-Site Survey/Estimate',
+    name: 'Onsite Survey/Estimate',
     description: 'Site visit for assessment and estimation',
     icon: MapPin,
-    color: 'blue',
+    color: 'purple',
   },
 ];
 
 export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({ 
   data, 
-  onUpdate,
-  allowEarlyPickup = false 
+  onUpdate
 }) => {
   const [detectedTimezone, setDetectedTimezone] = useState<string | null>(null);
   const companyTimezone = getCompanyTimezone();
@@ -80,7 +71,7 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
     }
   }, [data.customerZip, data.customerState]);
 
-  const handleJobTypeSelect = (jobType: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey') => {
+  const handleJobTypeSelect = (jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey') => {
     onUpdate({ ...data, jobType });
   };
 
@@ -153,25 +144,6 @@ export const JobTypeTimezoneStep: React.FC<JobTypeTimezoneStepProps> = ({
             );
           })}
 
-          {/* Early Pickup Option - only show when scheduling delivery with multiple dates */}
-          {allowEarlyPickup && data.jobType === 'delivery' && (
-            <div className="border-2 border-dashed border-muted rounded-xl p-4 bg-muted/20">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted">
-                  <Package className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground">Early Pickup</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Available after setting delivery with multiple pickup dates
-                  </p>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  Auto-Added
-                </Badge>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
