@@ -442,7 +442,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         {/* Progress Indicator */}
         <div className="flex items-center space-x-2 pb-6">
           {steps.map((step, index) => (
-            <React.Fragment key={step.key}>
+            <div key={step.key} className="flex items-center">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
                 index <= currentStepIndex 
@@ -457,11 +457,11 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
               {index < steps.length - 1 && (
                 <div className={cn(
-                  "flex-1 h-0.5 transition-colors",
+                  "flex-1 h-0.5 transition-colors ml-2",
                   index < currentStepIndex ? "bg-primary" : "bg-muted"
                 )} />
               )}
-            </React.Fragment>
+            </div>
           ))}
         </div>
 
