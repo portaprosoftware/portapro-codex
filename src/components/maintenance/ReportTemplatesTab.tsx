@@ -1,11 +1,13 @@
 
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TemplateEditModal } from "./TemplateEditModal";
+import { TemplatePreviewModal } from "./TemplatePreviewModal";
 import { Plus, FileText, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Template {
   id: string;
@@ -16,7 +18,9 @@ interface Template {
 }
 
 export const ReportTemplatesTab: React.FC = () => {
+  const queryClient = useQueryClient();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   const { data: templates, isLoading } = useQuery({
@@ -30,6 +34,25 @@ export const ReportTemplatesTab: React.FC = () => {
       
       if (error) throw error;
       return data || [];
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (templateId: string) => {
+      const { error } = await supabase
+        .from("maintenance_report_templates")
+        .update({ is_active: false })
+        .eq("id", templateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-report-templates"] });
+      toast.success("Template deleted successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete template");
+      console.error(error);
     },
   });
 
@@ -79,6 +102,8 @@ export const ReportTemplatesTab: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   className="text-gray-400 hover:text-red-600"
+                  onClick={() => deleteMutation.mutate(template.id)}
+                  disabled={deleteMutation.isPending}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -94,7 +119,12 @@ export const ReportTemplatesTab: React.FC = () => {
               <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                 {Object.keys(template.template_data || {}).length} fields
               </span>
-              <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="hover:bg-blue-50 hover:text-blue-600"
+                onClick={() => setPreviewTemplate(template.id)}
+              >
                 Preview
               </Button>
             </div>
@@ -129,6 +159,13 @@ export const ReportTemplatesTab: React.FC = () => {
           setSelectedTemplate(null);
           setIsCreating(false);
         }}
+      />
+
+      {/* Template Preview Modal */}
+      <TemplatePreviewModal
+        templateId={previewTemplate}
+        isOpen={!!previewTemplate}
+        onClose={() => setPreviewTemplate(null)}
       />
     </div>
   );

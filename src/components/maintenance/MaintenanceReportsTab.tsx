@@ -11,9 +11,12 @@ import { StatCard } from "@/components/ui/StatCard";
 import { ReportDetailsPanel } from "./ReportDetailsPanel";
 import { BulkActionsModal } from "./BulkActionsModal";
 import { AdvancedAnalyticsWidget } from "./AdvancedAnalyticsWidget";
+import { CustomDateRangeModal } from "./CustomDateRangeModal";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Calendar, Search, FileText, Clock, CheckCircle, AlertTriangle, Grid, List, Download, ChevronDown, MoreHorizontal } from "lucide-react";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface MaintenanceReport {
   id: string;
@@ -34,6 +37,8 @@ export const MaintenanceReportsTab: React.FC = () => {
   const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCustomDateRange, setShowCustomDateRange] = useState(false);
+  const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
 
   const { data: reports, isLoading } = useQuery({
     queryKey: ["maintenance-reports"],
@@ -148,7 +153,18 @@ export const MaintenanceReportsTab: React.FC = () => {
             <div className="flex gap-2">
               <Button variant="outline" size="sm">Last 7 Days</Button>
               <Button variant="outline" size="sm">This Month</Button>
-              <Button variant="outline" size="sm">Custom</Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowCustomDateRange(true)}
+              >
+                Custom
+                {dateRange && (
+                  <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    {format(dateRange.start, "MMM d")} - {format(dateRange.end, "MMM d")}
+                  </span>
+                )}
+              </Button>
             </div>
           </div>
           
@@ -313,6 +329,26 @@ export const MaintenanceReportsTab: React.FC = () => {
                             variant="outline"
                             size="sm"
                             className="text-blue-600 hover:text-blue-700"
+                            onClick={async () => {
+                              try {
+                                const { data, error } = await supabase.functions.invoke('generate-service-pdf', {
+                                  body: { reportId: report.id }
+                                });
+                                if (error) throw error;
+                                
+                                const blob = new Blob([data], { type: 'application/pdf' });
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `service-report-${report.report_number || report.id}.pdf`;
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                toast.success("PDF downloaded successfully");
+                              } catch (error) {
+                                toast.error("Failed to generate PDF");
+                                console.error(error);
+                              }
+                            }}
                           >
                             <Download className="w-4 h-4" />
                           </Button>
@@ -377,6 +413,26 @@ export const MaintenanceReportsTab: React.FC = () => {
                     variant="outline"
                     size="sm"
                     className="text-blue-600 hover:text-blue-700"
+                    onClick={async () => {
+                      try {
+                        const { data, error } = await supabase.functions.invoke('generate-service-pdf', {
+                          body: { reportId: report.id }
+                        });
+                        if (error) throw error;
+                        
+                        const blob = new Blob([data], { type: 'application/pdf' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `service-report-${report.report_number || report.id}.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        toast.success("PDF downloaded successfully");
+                      } catch (error) {
+                        toast.error("Failed to generate PDF");
+                        console.error(error);
+                      }
+                    }}
                   >
                     <Download className="w-4 h-4" />
                   </Button>
@@ -402,6 +458,16 @@ export const MaintenanceReportsTab: React.FC = () => {
         onSuccess={() => {
           setSelectedRecords([]);
           setShowBulkActions(false);
+        }}
+      />
+
+      {/* Custom Date Range Modal */}
+      <CustomDateRangeModal
+        isOpen={showCustomDateRange}
+        onClose={() => setShowCustomDateRange(false)}
+        onApply={(start, end) => {
+          setDateRange({ start, end });
+          toast.success(`Date filter applied: ${format(start, "MMM d")} - ${format(end, "MMM d")}`);
         }}
       />
     </div>
