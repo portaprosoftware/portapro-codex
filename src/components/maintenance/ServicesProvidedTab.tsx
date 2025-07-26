@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ServiceEditPanel } from "./ServiceEditPanel";
-import { Plus, Edit, DollarSign, Clock, Search, Grid, List, Wrench, FileText } from "lucide-react";
+import { QuickTemplateAssignmentModal } from "./QuickTemplateAssignmentModal";
+import { Plus, Edit, DollarSign, Clock, Search, Grid, List, Wrench, FileText, Zap } from "lucide-react";
 
 interface Service {
   id: string;
@@ -32,6 +33,7 @@ export const ServicesProvidedTab: React.FC = () => {
   const [viewMode, setViewMode] = useState<"list" | "icons">("list");
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [quickAssignService, setQuickAssignService] = useState<{id: string, name: string} | null>(null);
 
   const { data: services, isLoading } = useQuery({
     queryKey: ["routine-maintenance-services"],
@@ -172,14 +174,35 @@ export const ServicesProvidedTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  {!service.template ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuickAssignService({id: service.id, name: service.name})}
+                      className="text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
+                    >
+                      <Zap className="w-4 h-4 mr-1" />
+                      Assign Template
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuickAssignService({id: service.id, name: service.name})}
+                      className="text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
+                    >
+                      <FileText className="w-4 h-4 mr-1" />
+                      Change Template
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setSelectedService(service.id)}
                   >
+                    <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">Delete</Button>
                 </div>
               </div>
             </Card>
@@ -219,16 +242,37 @@ export const ServicesProvidedTab: React.FC = () => {
                     <span>{service.estimated_duration_hours}h</span>
                   </div>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {!service.template ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuickAssignService({id: service.id, name: service.name})}
+                      className="text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
+                    >
+                      <Zap className="w-4 h-4 mr-1" />
+                      Assign Template
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuickAssignService({id: service.id, name: service.name})}
+                      className="text-purple-600 hover:text-purple-700 border-purple-200 hover:border-purple-300"
+                    >
+                      <FileText className="w-4 h-4 mr-1" />
+                      Change Template
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
                     size="sm" 
                     className="flex-1"
                     onClick={() => setSelectedService(service.id)}
                   >
+                    <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">Delete</Button>
                 </div>
               </div>
             </Card>
@@ -269,6 +313,14 @@ export const ServicesProvidedTab: React.FC = () => {
           setSelectedService(null);
           setIsCreating(false);
         }}
+      />
+
+      {/* Quick Template Assignment Modal */}
+      <QuickTemplateAssignmentModal
+        serviceId={quickAssignService?.id || null}
+        serviceName={quickAssignService?.name || null}
+        isOpen={!!quickAssignService}
+        onClose={() => setQuickAssignService(null)}
       />
     </div>
   );

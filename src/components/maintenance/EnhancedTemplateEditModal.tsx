@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -61,6 +63,7 @@ interface TemplateFormData {
   company_logo_url: string;
   color_accent: string;
   category: string;
+  is_public: boolean;
 }
 
 interface SectionType {
@@ -114,7 +117,8 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
     orientation: 'portrait',
     company_logo_url: '',
     color_accent: '#3B82F6',
-    category: 'general'
+    category: 'general',
+    is_public: true
   });
 
   const [templateSections, setTemplateSections] = useState<TemplateSection[]>([]);
@@ -182,7 +186,8 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
         orientation: (templateData as any).orientation || 'portrait',
         company_logo_url: (templateData as any).company_logo_url || '',
         color_accent: (templateData as any).color_accent || '#3B82F6',
-        category: (templateData as any).category || 'general'
+        category: (templateData as any).category || 'general',
+        is_public: (templateData as any).is_public !== undefined ? (templateData as any).is_public : true
       });
     }
   }, [templateData]);
@@ -450,6 +455,22 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
                           className="flex-1"
                         />
                       </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="is_public" className="text-sm font-medium">
+                          Public Template
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Allow drivers and dispatchers to see this template
+                        </p>
+                      </div>
+                      <Switch
+                        id="is_public"
+                        checked={formData.is_public}
+                        onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
+                      />
                     </div>
                   </div>
                 </div>
