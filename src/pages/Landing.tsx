@@ -1,10 +1,16 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Check, Calendar, Truck, QrCode, CreditCard, FileText, MessageSquare, Users, Smartphone } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Check, Calendar, Truck, QrCode, CreditCard, FileText, MessageSquare, Users, Smartphone,
+  ArrowRight, Play, Workflow, Database, BarChart3, ChevronRight, Zap, TrendingUp,
+  Package, Globe, UserCheck, Timer, ChartLine, Gauge, Settings, Palette, Layers,
+  Camera, Route, Wifi, Award, Star, Target, Phone, Mail, Building, Shield
+} from "lucide-react";
 
 const mainFeatures = [
   {
