@@ -49,8 +49,8 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
           job_id: jobId,
           consumable_id: bundleItem.consumable_id,
           quantity: bundleItem.quantity,
-          unit_price: bundleItem.consumables.unit_price,
-          line_total: bundleItem.quantity * bundleItem.consumables.unit_price,
+          unit_price: bundleItem.consumables?.unit_price || 0,
+          line_total: bundleItem.quantity * (bundleItem.consumables?.unit_price || 0),
           used_by: null
         });
 
