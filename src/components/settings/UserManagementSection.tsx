@@ -11,7 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -55,6 +57,9 @@ export function UserManagementSection() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const { isOwner } = useUserRole();
   const queryClient = useQueryClient();
 
@@ -156,6 +161,9 @@ export function UserManagementSection() {
       queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
       toast.success("User deleted successfully");
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
+      setDeleteConfirmText("");
     },
     onError: (error) => {
       toast.error("Failed to delete user");
@@ -186,6 +194,17 @@ export function UserManagementSection() {
 
   const onSubmit = (data: UserFormData) => {
     createUser.mutate(data);
+  };
+
+  const handleDeleteClick = (user: any) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmText === "delete" && userToDelete) {
+      deleteUser.mutate(userToDelete.id);
+    }
   };
 
   const filteredUsers = users.filter(user => {
@@ -417,34 +436,45 @@ export function UserManagementSection() {
                        )}
                      </Badge>
                    </TableCell>
-                  <TableCell className="text-right">
-                     <div className="flex items-center justify-end space-x-2">
-                       <Button 
-                         size="sm" 
-                         variant="outline"
-                         onClick={() => toggleUserStatus.mutate({ userId: user.id, isActive: user.is_active })}
-                         disabled={toggleUserStatus.isPending}
-                         title={user.is_active ? "Mark as Inactive" : "Mark as Active"}
-                       >
-                         {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                       </Button>
-                       <Button 
-                         size="sm" 
-                         variant="outline"
-                         onClick={() => setEditingUser(user)}
-                       >
-                         <Edit className="w-4 h-4" />
-                       </Button>
-                       <Button 
-                         size="sm" 
-                         variant="outline"
-                         onClick={() => deleteUser.mutate(user.id)}
-                         disabled={deleteUser.isPending}
-                       >
-                         <Trash2 className="w-4 h-4" />
-                       </Button>
-                    </div>
-                  </TableCell>
+                   <TableCell className="text-right">
+                     <DropdownMenu>
+                       <DropdownMenuTrigger asChild>
+                         <Button variant="ghost" className="h-8 w-8 p-0">
+                           <span className="sr-only">Open menu</span>
+                           <MoreVertical className="h-4 w-4" />
+                         </Button>
+                       </DropdownMenuTrigger>
+                       <DropdownMenuContent align="end" className="w-48 bg-background border border-border">
+                         <DropdownMenuItem
+                           onClick={() => toggleUserStatus.mutate({ userId: user.id, isActive: user.is_active })}
+                           disabled={toggleUserStatus.isPending}
+                         >
+                           {user.is_active ? (
+                             <>
+                               <UserX className="w-4 h-4 mr-2" />
+                               Mark as Inactive
+                             </>
+                           ) : (
+                             <>
+                               <UserCheck className="w-4 h-4 mr-2" />
+                               Mark as Active
+                             </>
+                           )}
+                         </DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => setEditingUser(user)}>
+                           <Edit className="w-4 h-4 mr-2" />
+                           Edit User
+                         </DropdownMenuItem>
+                         <DropdownMenuItem 
+                           onClick={() => handleDeleteClick(user)}
+                           className="text-destructive focus:text-destructive"
+                         >
+                           <Trash2 className="w-4 h-4 mr-2" />
+                           Delete User
+                         </DropdownMenuItem>
+                       </DropdownMenuContent>
+                     </DropdownMenu>
+                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -459,6 +489,54 @@ export function UserManagementSection() {
             onOpenChange={(open) => !open && setEditingUser(null)}
           />
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete User</AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Are you sure you want to delete{" "}
+                  <span className="font-semibold">
+                    {userToDelete?.first_name} {userToDelete?.last_name}
+                  </span>
+                  ?
+                </p>
+                <p className="text-destructive font-medium">
+                  This action cannot be undone. This will permanently delete the user account and all associated data.
+                </p>
+                <div className="pt-2">
+                  <p className="text-sm mb-2">
+                    Type <span className="font-mono bg-muted px-1 rounded">delete</span> to confirm:
+                  </p>
+                  <Input
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="Type 'delete' to confirm"
+                    className="font-mono"
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => {
+                setDeleteConfirmOpen(false);
+                setUserToDelete(null);
+                setDeleteConfirmText("");
+              }}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={deleteConfirmText !== "delete" || deleteUser.isPending}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteUser.isPending ? "Deleting..." : "Delete User"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );
