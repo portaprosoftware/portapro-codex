@@ -12,7 +12,7 @@ export function CompanySettingsSection() {
   const { data: companySettings, isLoading, error } = useQuery({
     queryKey: ["company-settings"],
     queryFn: async () => {
-      console.log("Fetching company settings...");
+      console.log("Fetching company settings with full select...");
       const { data, error } = await supabase
         .from("company_settings")
         .select("*")
