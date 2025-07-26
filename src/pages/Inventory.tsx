@@ -9,6 +9,7 @@ import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
 import { StorageLocationSelector } from "@/components/inventory/StorageLocationSelector";
 import { AvailableNowSlider } from "@/components/inventory/AvailableNowSlider";
+import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ const Inventory: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState<string>("all");
   const [isAvailableSliderOpen, setIsAvailableSliderOpen] = useState(false);
+  const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
 
   const handleFilterClick = (filterKey: FilterType) => {
     if (filterKey === "available_now") {
@@ -80,9 +82,12 @@ const Inventory: React.FC = () => {
             <h1 className="text-2xl font-semibold text-gray-900 font-inter">Products</h1>
             <p className="text-base text-gray-600 font-inter mt-1">Browse your rental product catalog with real-time status tracking</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => setAddInventoryModalOpen(true)}
+          >
             <Plus className="w-4 h-4 mr-2" />
-            New Item
+            Add Inventory
           </Button>
         </div>
       </div>
@@ -211,6 +216,12 @@ const Inventory: React.FC = () => {
       <AvailableNowSlider 
         isOpen={isAvailableSliderOpen}
         onClose={() => setIsAvailableSliderOpen(false)}
+      />
+
+      {/* Add Inventory Modal */}
+      <AddInventoryModal
+        isOpen={addInventoryModalOpen}
+        onClose={() => setAddInventoryModalOpen(false)}
       />
     </div>
   );

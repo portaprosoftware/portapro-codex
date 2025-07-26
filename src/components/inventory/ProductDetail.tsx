@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductOverview } from "./ProductOverview";
 import { IndividualUnitsTab } from "./IndividualUnitsTab";
 import { ProductAttributesTab } from "./ProductAttributesTab";
+import { ProductLocationStock } from "./ProductLocationStock";
 
 interface ProductDetailProps {
   productId: string;
@@ -66,24 +67,32 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack 
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Overview
           </TabsTrigger>
+          <TabsTrigger value="locations" className="flex items-center gap-2">
+            <Home className="w-4 h-4" />
+            Stock by Location
+          </TabsTrigger>
           <TabsTrigger value="units" className="flex items-center gap-2 flex-wrap">
             <QrCode className="w-4 h-4 flex-shrink-0" />
-            <span className="break-words">Individual Units Marked by QR Code or Attributes</span>
+            <span className="break-words">Individual Units</span>
             <Badge variant="outline" className="ml-1 flex-shrink-0">5</Badge>
           </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
-            Product Attributes
+            Attributes
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
           <ProductOverview product={product} onDeleted={onBack} />
+        </TabsContent>
+
+        <TabsContent value="locations" className="mt-6">
+          <ProductLocationStock productId={productId} productName={product.name} />
         </TabsContent>
 
         <TabsContent value="units" className="mt-6">
