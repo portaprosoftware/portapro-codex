@@ -33,16 +33,19 @@ export function ExpandedMapModal({
   useEffect(() => {
     if (!isOpen || !mapboxToken || !mapContainer.current) return;
 
-    const initMap = async () => {
+    const initializeMap = async () => {
       mapboxgl.accessToken = mapboxToken;
 
       const center = await getDefaultCenter();
+      console.log('Expanded map initializing with center:', center);
+      console.log('Coordinates data:', coordinates);
+      console.log('Service locations data:', serviceLocations);
 
       map.current = new mapboxgl.Map({
         container: mapContainer.current!,
         style: getMapStyle(),
         center: center,
-        zoom: 16
+        zoom: 18 // Higher zoom for better detail
       });
 
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -62,7 +65,7 @@ export function ExpandedMapModal({
       }, 500);
     };
 
-    initMap();
+    initializeMap();
 
     return () => {
       if (map.current) {
@@ -81,8 +84,12 @@ export function ExpandedMapModal({
 
   // Update markers when data changes
   useEffect(() => {
-    if (map.current && isOpen) {
-      updateMapMarkers();
+    if (map.current && isOpen && coordinates !== undefined && serviceLocations !== undefined) {
+      console.log('Updating markers in expanded map');
+      // Add a small delay to ensure map is ready
+      setTimeout(() => {
+        updateMapMarkers();
+      }, 200);
     }
   }, [coordinates, serviceLocations, isOpen]);
 

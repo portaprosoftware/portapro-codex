@@ -185,7 +185,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         container: mapContainer.current!,
         style: getMapStyle(mapStyle),
         center: center,
-        zoom: 17 // High zoom for single location view
+        zoom: 18 // Higher zoom for better detail view
       });
 
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -281,13 +281,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   // Update map markers when coordinates change
   useEffect(() => {
     console.log('Coordinates updated:', coordinates);
+    console.log('Service locations:', serviceLocations);
     console.log('Map current:', !!map.current);
     
-    if (map.current && coordinates !== undefined) {
-      updateMapMarkers();
-      
-      // Fix any Kansas placeholder pins when coordinates load
-      fixKansasPlaceholderPins();
+    if (map.current && coordinates !== undefined && serviceLocations !== undefined) {
+      // Wait a bit for map to fully initialize
+      setTimeout(() => {
+        updateMapMarkers();
+        // Fix any Kansas placeholder pins when coordinates load
+        fixKansasPlaceholderPins();
+      }, 100);
     }
   }, [coordinates, serviceLocations]);
 
