@@ -156,65 +156,70 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Vehicle</TableHead>
-                <TableHead>Task</TableHead>
-                <TableHead>Vendor</TableHead>
-                <TableHead>Scheduled</TableHead>
-                <TableHead>Completed</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Cost</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="min-w-[140px]">Vehicle</TableHead>
+                <TableHead className="min-w-[200px]">Task & Details</TableHead>
+                <TableHead className="min-w-[100px]">Vendor</TableHead>
+                <TableHead className="min-w-[120px]">Dates</TableHead>
+                <TableHead className="min-w-[100px]">Status</TableHead>
+                <TableHead className="min-w-[80px]">Cost</TableHead>
+                <TableHead className="min-w-[80px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredRecords?.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{record.vehicles?.license_plate}</div>
-                      <div className="text-sm text-gray-500">{record.vehicles?.vehicle_type}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{record.maintenance_task_types?.name || record.maintenance_type}</div>
-                      <div className="text-sm text-gray-500">{record.description}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{record.maintenance_vendors?.name || "In-house"}</TableCell>
-                  <TableCell>{format(new Date(record.scheduled_date), "MMM d, yyyy")}</TableCell>
-                  <TableCell>
-                    {record.completed_date 
-                      ? format(new Date(record.completed_date), "MMM d, yyyy")
-                      : "—"
-                    }
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(record.status)}>
-                      {record.status.replace("_", " ")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getPriorityColor(record.priority || "medium")}>
-                      {record.priority || "medium"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    </div>
+              {filteredRecords?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                    No maintenance records found
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredRecords?.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell className="font-medium">
+                      <div>
+                        <div className="font-semibold">{record.vehicles?.license_plate}</div>
+                        <div className="text-xs text-gray-500">{record.vehicles?.vehicle_type}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{record.maintenance_task_types?.name || record.maintenance_type}</div>
+                        <div className="text-sm text-gray-500 truncate max-w-[180px]">{record.description}</div>
+                        <Badge className={`${getPriorityColor(record.priority || "medium")} text-xs mt-1`}>
+                          {record.priority || "medium"}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{record.maintenance_vendors?.name || "In-house"}</TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
+                        {record.completed_date && (
+                          <div className="text-green-600">Completed: {format(new Date(record.completed_date), "MMM d")}</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(record.status)}>
+                        {record.status.replace("_", " ")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                          <Eye className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
             </Table>
           </div>
