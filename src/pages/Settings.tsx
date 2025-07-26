@@ -19,6 +19,7 @@ import {
   Building2
 } from "lucide-react";
 import { CompanySettingsSection } from "@/components/settings/CompanySettingsSection";
+import { LogoManagementSection } from "@/components/settings/LogoManagementSection";
 import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection";
 import { UserManagementSection } from "@/components/settings/UserManagementSection";
 import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
@@ -69,7 +70,12 @@ export default function Settings() {
   const renderSection = () => {
     switch (activeSection) {
       case 'company':
-        return <CompanySettingsSection />;
+        return (
+          <div className="space-y-6">
+            <LogoManagementSection />
+            <CompanySettingsSection />
+          </div>
+        );
       case 'business-hours':
         return <BusinessHoursSection />;
       case 'user-management':

@@ -86,18 +86,10 @@ export function CompanySettingsSection() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Company Logo and Name Section */}
+          {/* Company Name and Basic Info Section */}
           <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 flex items-center justify-center bg-muted rounded-lg overflow-hidden">
-              {companySettings?.company_logo ? (
-                <img 
-                  src={companySettings.company_logo} 
-                  alt="Company logo" 
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <Building2 className="w-8 h-8 text-muted-foreground" />
-              )}
+            <div className="w-16 h-16 flex items-center justify-center bg-muted rounded-lg">
+              <Building2 className="w-8 h-8 text-muted-foreground" />
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-semibold text-foreground">

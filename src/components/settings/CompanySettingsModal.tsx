@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Save, Mail, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogoUploadModal } from "@/components/settings/LogoUploadModal";
+// LogoUploadModal import removed - logo management separated
 
 const companySettingsSchema = z.object({
   company_name: z.string().min(1, "Company name is required"),
@@ -99,9 +99,7 @@ interface CompanySettingsModalProps {
 }
 
 export function CompanySettingsModal({ isOpen, onClose, companySettings }: CompanySettingsModalProps) {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [showLogoModal, setShowLogoModal] = useState(false);
+  // Logo management removed - now handled by LogoManagementModal
   const queryClient = useQueryClient();
 
   const form = useForm<CompanySettingsFormData>({
@@ -141,7 +139,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
   }, [companySettings, isOpen, form]);
 
   const updateCompanySettings = useMutation({
-    mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
+    mutationFn: async (data: CompanySettingsFormData) => {
       console.log("Updating company settings:", data);
       
       const updatedData = {
@@ -161,7 +159,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
     onSuccess: (updatedData) => {
       console.log("Company settings updated successfully:", updatedData);
       
-      // Optimistically update the cache instead of invalidating
+      // Update the company-settings cache
       queryClient.setQueryData(["company-settings"], updatedData);
       
       toast.success("Company settings updated successfully!");
@@ -173,77 +171,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
     },
   });
 
-  const uploadLogoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `logo-${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('company-logos')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-      
-      const { data: { publicUrl } } = supabase.storage
-        .from('company-logos')
-        .getPublicUrl(data.path);
-
-      return publicUrl;
-    },
-    onSuccess: async (logoUrl) => {
-      const formData = form.getValues();
-      const result = await updateCompanySettings.mutateAsync({ ...formData, company_logo: logoUrl });
-      
-      // Optimistically update cache with logo URL
-      queryClient.setQueryData(["company-settings"], (old: any) => ({
-        ...old,
-        ...result,
-        company_logo: logoUrl
-      }));
-      
-      setLogoFile(null);
-      setLogoPreview(null);
-      setShowLogoModal(false);
-      toast.success("Logo updated successfully!");
-    },
-    onError: (error) => {
-      console.error('Error uploading logo:', error);
-      toast.error("Failed to upload logo. Please try again.");
-    },
-  });
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error("Please select a valid image file");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size must be less than 5MB");
-        return;
-      }
-      
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setLogoPreview(e.target?.result as string);
-        setShowLogoModal(true);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleLogoUpload = () => {
-    if (logoFile) {
-      uploadLogoMutation.mutate(logoFile);
-    } else {
-      toast.error("Please select a logo file first");
-    }
-  };
+  // Logo upload logic removed - now handled by LogoManagementModal
 
   const onSubmit = (data: CompanySettingsFormData) => {
     updateCompanySettings.mutate(data);
@@ -258,43 +186,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
           </DialogHeader>
           
           <div className="space-y-6">
-            {/* Logo Section */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Company Logo</h3>
-              <div className="flex items-center space-x-4">
-                <div className="h-16 w-32 border border-dashed border-muted-foreground rounded-lg flex items-center justify-center">
-                  {companySettings?.company_logo ? (
-                    <img 
-                      src={companySettings.company_logo} 
-                      alt="Company logo" 
-                      className="h-full w-auto object-contain"
-                    />
-                  ) : (
-                    <span className="text-sm text-muted-foreground">No logo</span>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="logo-upload" className="cursor-pointer">
-                    <Button variant="outline" className="relative" asChild>
-                      <span>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload Logo
-                      </span>
-                    </Button>
-                  </Label>
-                  <input
-                    id="logo-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoChange}
-                    className="hidden"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG, GIF up to 5MB
-                  </p>
-                </div>
-              </div>
-            </div>
+            {/* Logo section removed - now managed separately */}
 
             {/* Form */}
             <Form {...form}>
@@ -530,17 +422,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         </DialogContent>
       </Dialog>
 
-      <LogoUploadModal
-        isOpen={showLogoModal}
-        onClose={() => {
-          setShowLogoModal(false);
-          setLogoPreview(null);
-          setLogoFile(null);
-        }}
-        logoPreview={logoPreview}
-        onSave={handleLogoUpload}
-        isUploading={uploadLogoMutation.isPending}
-      />
+      {/* Logo management moved to LogoManagementModal */}
     </>
   );
 }
