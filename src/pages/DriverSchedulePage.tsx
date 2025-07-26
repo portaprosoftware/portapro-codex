@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { WeeklySchedule } from '@/components/driver/WeeklySchedule';
+import { DailySchedule } from '@/components/driver/DailySchedule';
 
 export const DriverSchedulePage: React.FC = () => {
-  return <WeeklySchedule />;
+  return <DailySchedule />;
 };
