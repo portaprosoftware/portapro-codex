@@ -6764,6 +6764,10 @@ export type Database = {
         Args: { days_back?: number }
         Returns: Json
       }
+      get_maintenance_kpis: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_next_invoice_number: {
         Args: Record<PropertyKey, never>
         Returns: string
