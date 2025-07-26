@@ -13,23 +13,42 @@ export const ConsumablesAlertCard: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: totalStats, isLoading } = useQuery({
-    queryKey: ['dashboard-consumable-stats'],
+    queryKey: ['dashboard-consumable-location-stats'],
     queryFn: async () => {
-      const [lowStockResult, totalResult] = await Promise.all([
-        supabase
-          .from('consumables')
-          .select('id', { count: 'exact' })
-          .filter('on_hand_qty', 'lt', 'reorder_threshold')
-          .eq('is_active', true),
-        supabase
-          .from('consumables')
-          .select('id', { count: 'exact' })
-          .eq('is_active', true)
-      ]);
-
-      return {
-        lowStockCount: lowStockResult.count || 0,
-        totalItems: totalResult.count || 0
+      // Get consumables with their location stock
+      const { data: consumables, error } = await supabase
+        .from('consumables')
+        .select(`
+          id, 
+          name,
+          reorder_threshold,
+          consumable_location_stock(
+            quantity,
+            storage_location_id
+          )
+        `)
+        .eq('is_active', true);
+      
+      if (error) throw error;
+      
+      let lowStockLocations = 0;
+      let totalLocationStocks = 0;
+      
+      consumables.forEach((consumable: any) => {
+        if (consumable.consumable_location_stock && consumable.consumable_location_stock.length > 0) {
+          consumable.consumable_location_stock.forEach((locationStock: any) => {
+            totalLocationStocks++;
+            if (locationStock.quantity <= consumable.reorder_threshold) {
+              lowStockLocations++;
+            }
+          });
+        }
+      });
+      
+      return { 
+        lowStockCount: lowStockLocations, 
+        totalItems: consumables.length,
+        totalLocationStocks 
       };
     },
     enabled: hasAdminAccess
@@ -79,7 +98,7 @@ export const ConsumablesAlertCard: React.FC = () => {
               <div className="text-3xl font-bold text-orange-600">
                 {totalStats?.lowStockCount || 0}
               </div>
-              <div className="text-sm text-gray-600">Low Stock - Need Reorder</div>
+              <div className="text-sm text-gray-600">Low Stock Locations</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900">

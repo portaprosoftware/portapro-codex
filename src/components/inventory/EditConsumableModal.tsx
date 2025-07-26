@@ -10,8 +10,16 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { CategorySelect } from '@/components/ui/category-select';
 import { BarcodeScannerModal } from '@/components/ui/barcode-scanner';
+import { ConsumableLocationAllocator } from './ConsumableLocationAllocator';
 import { toast } from '@/hooks/use-toast';
 import { ScanLine } from 'lucide-react';
+
+interface LocationStock {
+  locationId: string;
+  locationName: string;
+  onHand: number;
+  reorderThreshold?: number;
+}
 
 interface Consumable {
   id: string;
@@ -25,6 +33,7 @@ interface Consumable {
   reorder_threshold: number;
   is_active: boolean;
   notes?: string;
+  locationStock?: LocationStock[];
 }
 
 interface EditConsumableModalProps {
@@ -40,7 +49,7 @@ interface ConsumableFormData {
   sku?: string;
   unit_cost: number;
   unit_price: number;
-  on_hand_qty: number;
+  locationStock: LocationStock[];
   reorder_threshold: number;
   is_active: boolean;
   notes?: string;
@@ -64,7 +73,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         sku: consumable.sku || '',
         unit_cost: consumable.unit_cost,
         unit_price: consumable.unit_price,
-        on_hand_qty: consumable.on_hand_qty,
+        locationStock: consumable.locationStock || [],
         reorder_threshold: consumable.reorder_threshold,
         is_active: consumable.is_active,
         notes: consumable.notes || ''
@@ -106,7 +115,16 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   };
 
   const onSubmit = (data: ConsumableFormData) => {
-    updateConsumable.mutate(data);
+    // Calculate total on hand from location stock
+    const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+    
+    const submitData = {
+      ...data,
+      on_hand_qty: totalOnHand, // Set the total for the main record
+      locationStock: data.locationStock
+    };
+    
+    updateConsumable.mutate(submitData);
   };
 
   if (!consumable) return null;
@@ -222,25 +240,24 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="on_hand_qty"
-                rules={{ required: 'On hand quantity is required', min: { value: 0, message: 'Must be positive' } }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>On Hand Quantity *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        placeholder="0" 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="md:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="locationStock"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Storage Location Allocation</FormLabel>
+                      <FormControl>
+                        <ConsumableLocationAllocator
+                          value={field.value || []}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}

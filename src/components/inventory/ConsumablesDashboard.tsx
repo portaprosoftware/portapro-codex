@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertTriangle, Edit, Package, TrendingDown, DollarSign, MoreHorizontal, Trash2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { getCategoryLabel } from '@/lib/consumableCategories';
+import { ConsumableLocationBreakdown } from './ConsumableLocationBreakdown';
 
 interface Consumable {
   id: string;
@@ -145,8 +146,8 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                   <th className="text-left p-2">Name</th>
                   <th className="text-left p-2">Category</th>
                   <th className="text-left p-2">SKU</th>
-                  <th className="text-left p-2">On Hand</th>
-                  <th className="text-left p-2">Reorder Level</th>
+                  <th className="text-left p-2">Total On Hand</th>
+                  <th className="text-left p-2">Locations</th>
                   <th className="text-left p-2">Unit Cost</th>
                   <th className="text-left p-2">Status</th>
                   <th className="text-left p-2">Actions</th>
@@ -172,7 +173,12 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                         {consumable.on_hand_qty}
                       </span>
                     </td>
-                    <td className="p-2">{consumable.reorder_threshold}</td>
+                    <td className="p-2">
+                      <ConsumableLocationBreakdown 
+                        consumableId={consumable.id}
+                        totalOnHand={consumable.on_hand_qty}
+                      />
+                    </td>
                     <td className="p-2">${consumable.unit_cost.toFixed(2)}</td>
                     <td className="p-2">
                       <Badge variant={consumable.is_active ? 'default' : 'secondary'}>
