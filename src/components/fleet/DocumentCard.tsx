@@ -132,44 +132,49 @@ export function DocumentCard({ document, categoryInfo, onView, onDownload, onDel
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 min-w-0"
-            onClick={() => onView?.(document)}
-          >
-            <Eye className="w-3 h-3 mr-1" />
-            View
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1 min-w-0"
-            onClick={() => onDownload?.(document)}
-          >
-            <Download className="w-3 h-3 mr-1" />
-            Download
-          </Button>
-          {onLink && (
+        <div className="flex flex-col gap-2 pt-2 border-t">
+          <div className="flex gap-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex-1 min-w-0"
-              onClick={() => onLink(document)}
+              className="flex-1"
+              onClick={() => onView?.(document)}
             >
-              <Link className="w-3 h-3 mr-1" />
-              Link
+              <Eye className="w-3 h-3 mr-1" />
+              View
             </Button>
-          )}
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onDelete?.(document)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 className="w-3 h-3" />
-          </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1"
+              onClick={() => onDownload?.(document)}
+            >
+              <Download className="w-3 h-3 mr-1" />
+              Download
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            {onLink && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex-1"
+                onClick={() => onLink(document)}
+              >
+                <Link className="w-3 h-3 mr-1" />
+                Link
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              size="sm"
+              className={`${onLink ? 'flex-1' : 'w-full'} text-red-600 hover:text-red-700 hover:bg-red-50`}
+              onClick={() => onDelete?.(document)}
+            >
+              <Trash2 className="w-3 h-3 mr-1" />
+              Delete
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

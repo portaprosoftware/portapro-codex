@@ -74,7 +74,7 @@ export const FleetSidebar: React.FC = () => {
       description: "Logs & summaries"
     },
     {
-      title: "Documents & Media",
+      title: "Documents & Photos",
       href: "/fleet/files",
       icon: FolderOpen,
       description: "Receipts, warranties, photos & paperwork"

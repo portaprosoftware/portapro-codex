@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Upload, FolderOpen, Filter, Grid3X3, List } from "lucide-react";
+import { Search, Upload, FolderOpen, Filter, Grid3X3, List, Settings } from "lucide-react";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
+import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { useToast } from "@/hooks/use-toast";
 
 export default function FleetFiles() {
@@ -186,7 +187,7 @@ export default function FleetFiles() {
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground font-inter">
-                Documents & Media
+                Documents & Photos
               </h1>
               <p className="text-muted-foreground mt-1">
                 Manage receipts, warranties, photos, and vehicle paperwork
@@ -259,7 +260,7 @@ export default function FleetFiles() {
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="all" className="h-full flex flex-col">
             <div className="border-b px-6">
-              <TabsList className="grid grid-cols-5 lg:grid-cols-8 w-full max-w-4xl">
+              <TabsList className="grid grid-cols-6 lg:grid-cols-9 w-full max-w-5xl">
                 <TabsTrigger value="all" className="text-xs">
                   All ({filteredDocuments.length})
                 </TabsTrigger>
@@ -274,6 +275,10 @@ export default function FleetFiles() {
                 </TabsTrigger>
                 <TabsTrigger value="other" className="text-xs">
                   Other ({documentsByCategory.other?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="categories" className="text-xs">
+                  <Settings className="w-3 h-3 mr-1" />
+                  Categories
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -332,6 +337,11 @@ export default function FleetFiles() {
                   </div>
                 </TabsContent>
               ))}
+
+              {/* Categories Management Tab */}
+              <TabsContent value="categories" className="mt-0">
+                <DocumentCategoryManagement />
+              </TabsContent>
             </div>
           </Tabs>
         </div>
