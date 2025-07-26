@@ -8,6 +8,7 @@ import { ProductGrid } from "@/components/inventory/ProductGrid";
 import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
 import { StorageLocationSelector } from "@/components/inventory/StorageLocationSelector";
+import { AvailableNowSlider } from "@/components/inventory/AvailableNowSlider";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +22,49 @@ const Inventory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState<string>("all");
+  const [isAvailableSliderOpen, setIsAvailableSliderOpen] = useState(false);
+
+  const handleFilterClick = (filterKey: FilterType) => {
+    if (filterKey === "available_now") {
+      setIsAvailableSliderOpen(true);
+    } else {
+      setActiveFilter(filterKey);
+    }
+  };
+
+  const getFilterStyle = (filterKey: FilterType) => {
+    const isActive = activeFilter === filterKey;
+    
+    switch (filterKey) {
+      case "all":
+        return isActive 
+          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600"
+          : "border-gray-300 text-gray-700 hover:border-gray-400";
+      case "in_stock":
+        return isActive
+          ? "bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600"
+          : "border-gray-300 text-gray-700 hover:border-gray-400";
+      case "low_stock":
+        return isActive
+          ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-yellow-500"
+          : "border-gray-300 text-gray-700 hover:border-gray-400";
+      case "out_of_stock":
+        return isActive
+          ? "bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600"
+          : "border-gray-300 text-gray-700 hover:border-gray-400";
+      case "available_now":
+        return "border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50";
+      default:
+        return "border-gray-300 text-gray-700 hover:border-gray-400";
+    }
+  };
 
   const filters = [
-    { key: "all" as FilterType, label: "All Products", color: "bg-blue-600 text-white", active: true },
-    { key: "in_stock" as FilterType, label: "In Stock", color: "border-gray-300 text-gray-700" },
-    { key: "low_stock" as FilterType, label: "Low Stock", color: "border-amber-300 text-amber-700" },
-    { key: "out_of_stock" as FilterType, label: "Out of Stock", color: "border-red-300 text-red-700" },
-    { key: "available_now" as FilterType, label: "Available Now", color: "border-green-300 text-green-700", icon: ExternalLink }
+    { key: "all" as FilterType, label: "All Products" },
+    { key: "in_stock" as FilterType, label: "In Stock" },
+    { key: "low_stock" as FilterType, label: "Low Stock" },
+    { key: "out_of_stock" as FilterType, label: "Out of Stock" },
+    { key: "available_now" as FilterType, label: "Available Now", icon: ExternalLink }
   ];
 
   if (selectedProduct) {
@@ -56,14 +93,12 @@ const Inventory: React.FC = () => {
           {filters.map((filter) => (
             <Badge
               key={filter.key}
-              variant={activeFilter === filter.key ? "default" : "outline"}
+              variant="outline"
               className={cn(
                 "px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 hover:shadow-md",
-                activeFilter === filter.key 
-                  ? "bg-blue-600 text-white border-blue-600" 
-                  : "border-gray-300 text-gray-700 hover:border-gray-400"
+                getFilterStyle(filter.key)
               )}
-              onClick={() => setActiveFilter(filter.key)}
+              onClick={() => handleFilterClick(filter.key)}
             >
               {filter.label}
               {filter.icon && <filter.icon className="w-3 h-3 ml-1" />}
@@ -171,6 +206,12 @@ const Inventory: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Available Now Slider */}
+      <AvailableNowSlider 
+        isOpen={isAvailableSliderOpen}
+        onClose={() => setIsAvailableSliderOpen(false)}
+      />
     </div>
   );
 };
