@@ -183,36 +183,54 @@ export const ReportTemplatesTab: React.FC = () => {
           ))}
         </div>
       ) : (
-        /* Icon View - Compact grid */
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+        /* Icon View - Large icons like Services Offered */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredTemplates.map((template) => (
-            <Card key={template.id} className="p-4 hover:shadow-lg transition-all duration-200 hover:scale-105 rounded-2xl group cursor-pointer text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="font-medium text-gray-900 text-sm mb-1 truncate" title={template.name}>
-                {template.name}
-              </h3>
-              <p className="text-xs text-gray-500 mb-2">
-                {Object.keys(template.template_data || {}).length} fields
-              </p>
-              <div className="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setPreviewTemplate(template.id)}
-                  className="px-2 h-6 text-xs"
-                >
-                  View
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedTemplate(template.id)}
-                  className="px-2 h-6 text-xs text-blue-600"
-                >
-                  Edit
-                </Button>
+            <Card key={template.id} className="p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 rounded-2xl group">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">{template.name}</h3>
+                <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full mb-3 inline-block">
+                  {Object.keys(template.template_data || {}).length} fields
+                </span>
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{template.description || "No description provided"}</p>
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
+                    <FileText className="w-4 h-4" />
+                    <span>Template</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
+                    <span>Last edited {new Date(template.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => setPreviewTemplate(template.id)}
+                  >
+                    Preview
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedTemplate(template.id)}
+                  >
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => deleteMutation.mutate(template.id)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}
