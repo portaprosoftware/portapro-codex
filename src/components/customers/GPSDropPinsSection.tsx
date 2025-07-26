@@ -234,10 +234,18 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       };
 
       // Handle bounds fitting after map is loaded
-      map.current.on('load', handleBoundsFitting);
+      map.current.on('load', () => {
+        // Add service location marker first
+        addServiceLocationMarker();
+        // Then handle bounds for drop pins
+        handleBoundsFitting();
+      });
       
       // Also handle immediate fitting if data is already available
-      setTimeout(handleBoundsFitting, 500);
+      setTimeout(() => {
+        addServiceLocationMarker();
+        handleBoundsFitting();
+      }, 500);
     };
 
     initializeMap();
@@ -248,7 +256,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         map.current = null;
       }
     };
-  }, [mapboxToken, serviceLocations]);
+  }, [mapboxToken, serviceLocations, coordinates]);
 
   // Update map style
   useEffect(() => {
@@ -262,13 +270,13 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     console.log('Coordinates updated:', coordinates);
     console.log('Map current:', !!map.current);
     
-    if (map.current && coordinates) {
+    if (map.current && coordinates !== undefined) {
       updateMapMarkers();
       
       // Fix any Kansas placeholder pins when coordinates load
       fixKansasPlaceholderPins();
     }
-  }, [coordinates]);
+  }, [coordinates, serviceLocations]);
 
   // Function to fix existing placeholder pins with Kansas coordinates
   const fixKansasPlaceholderPins = async () => {
@@ -596,6 +604,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       } catch (error) {
         console.error('Error centering on single coordinate:', error);
       }
+    } else {
+      // No drop pins, center on service location if available
+      const serviceCoords = getServiceLocationCoordinates();
+      if (serviceCoords && map.current) {
+        map.current.flyTo({
+          center: [serviceCoords.lng, serviceCoords.lat],
+          zoom: 17
+        });
+        console.log('Map centered on service location');
+      }
     }
 
     // Add popup event listeners for admin actions
@@ -704,6 +722,22 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     } catch (error) {
       console.error('Error adding service location marker:', error);
     }
+  };
+
+  // Get service location coordinates for centering
+  const getServiceLocationCoordinates = () => {
+    if (!serviceLocations || serviceLocations.length === 0) return null;
+    
+    const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+    if (!primaryLocation?.gps_coordinates || typeof primaryLocation.gps_coordinates !== 'string') return null;
+    
+    // Handle both formats: "(-81.83824,41.36749)" and "-81.83824,41.36749"
+    const coordStr = primaryLocation.gps_coordinates.replace(/[()]/g, '');
+    const coords = coordStr.split(',').map(Number);
+    if (coords.length === 2 && !isNaN(coords[1]) && !isNaN(coords[0])) {
+      return { lng: coords[0], lat: coords[1] };
+    }
+    return null;
   };
 
   const recenterMap = async () => {
