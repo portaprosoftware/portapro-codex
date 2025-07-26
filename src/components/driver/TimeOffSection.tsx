@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { Calendar, Plus, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { MobileTimeOffRequestSlider } from './MobileTimeOffRequestSlider';
 
 interface TimeOffRequest {
   id: string;
@@ -26,11 +22,7 @@ interface TimeOffRequest {
 
 export const TimeOffSection: React.FC = () => {
   const { user } = useUser();
-  const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [reason, setReason] = useState('');
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
 
   const { data: timeOffRequests, isLoading } = useQuery({
     queryKey: ['driver-time-off', user?.id],
@@ -49,58 +41,6 @@ export const TimeOffSection: React.FC = () => {
     enabled: !!user?.id
   });
 
-  const createTimeOffMutation = useMutation({
-    mutationFn: async (newRequest: { start_time: string; end_time: string; reason: string }) => {
-      if (!user?.id) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('driver_time_off_requests')
-        .insert({
-          driver_id: user.id,
-          request_date: new Date().toISOString().split('T')[0],
-          start_time: newRequest.start_time,
-          end_time: newRequest.end_time,
-          reason: newRequest.reason,
-          status: 'pending',
-          time_slot: 'full_day'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['driver-time-off'] });
-      toast.success('Time off request submitted successfully');
-      setIsModalOpen(false);
-      setStartDate('');
-      setEndDate('');
-      setReason('');
-    },
-    onError: (error) => {
-      console.error('Error creating time off request:', error);
-      toast.error('Failed to submit time off request');
-    }
-  });
-
-  const handleSubmitRequest = () => {
-    if (!startDate || !endDate || !reason.trim()) {
-      toast.error('Please fill in all fields');
-      return;
-    }
-
-    if (new Date(startDate) > new Date(endDate)) {
-      toast.error('End date must be after start date');
-      return;
-    }
-
-    createTimeOffMutation.mutate({
-      start_time: startDate,
-      end_time: endDate,
-      reason: reason.trim()
-    });
-  };
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -129,68 +69,14 @@ export const TimeOffSection: React.FC = () => {
             <span>Time Off</span>
           </CardTitle>
           
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-gradient-primary text-white">
-                <Plus className="w-4 h-4 mr-2" />
-                Request Time Off
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Request Time Off</DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="start-date">Start Date</Label>
-                    <Input
-                      id="start-date"
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="end-date">End Date</Label>
-                    <Input
-                      id="end-date"
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      min={startDate || new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="reason">Reason</Label>
-                  <Textarea
-                    id="reason"
-                    placeholder="Please provide a reason for your time off request..."
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleSubmitRequest}
-                    disabled={createTimeOffMutation.isPending}
-                    className="bg-gradient-primary text-white"
-                  >
-                    {createTimeOffMutation.isPending ? 'Submitting...' : 'Submit Request'}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            size="sm" 
+            className="bg-gradient-primary text-white"
+            onClick={() => setIsSliderOpen(true)}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Request Time Off
+          </Button>
         </div>
       </CardHeader>
       
@@ -222,6 +108,11 @@ export const TimeOffSection: React.FC = () => {
           </div>
         )}
       </CardContent>
+      
+      <MobileTimeOffRequestSlider 
+        isOpen={isSliderOpen}
+        onClose={() => setIsSliderOpen(false)}
+      />
     </Card>
   );
 };
