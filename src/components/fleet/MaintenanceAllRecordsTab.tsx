@@ -101,9 +101,9 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>All Maintenance Records</CardTitle>
+    <Card className="bg-white rounded-lg border shadow-sm">
+      <CardHeader className="px-6 py-4">
+        <CardTitle className="text-xl font-semibold text-gray-900">All Maintenance Records</CardTitle>
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -148,11 +148,12 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         {isLoading ? (
           <div className="text-center py-8">Loading maintenance records...</div>
         ) : (
-          <Table>
+          <div className="overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Vehicle</TableHead>
@@ -215,7 +216,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         )}
       </CardContent>
     </Card>
