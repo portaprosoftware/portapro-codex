@@ -156,9 +156,31 @@ export const SpecialInstructionsReviewStep: React.FC<SpecialInstructionsReviewSt
         parts[parts.length - 1] += ` at ${scheduleData.deliveryTime}`;
       }
     }
-    if (scheduleData?.pickupDates?.length > 0) {
-      parts.push(`Pickup: ${scheduleData.pickupDates.map((d: Date) => d.toLocaleDateString()).join(', ')}`);
+    
+    // Handle partial pickups
+    if (scheduleData?.partialPickups?.length > 0) {
+      scheduleData.partialPickups.forEach((pickup: any, index: number) => {
+        const dateStr = pickup.date instanceof Date ? pickup.date.toLocaleDateString() : pickup.date;
+        let pickupStr = `Partial #${index + 1}: ${dateStr}`;
+        if (pickup.addTime && pickup.time) {
+          pickupStr += ` at ${pickup.time}`;
+        }
+        if (pickup.quantity) {
+          pickupStr += ` (${pickup.quantity} units)`;
+        }
+        parts.push(pickupStr);
+      });
     }
+    
+    // Handle final return date
+    if (scheduleData?.returnDate) {
+      let returnStr = `Final Return: ${scheduleData.returnDate.toLocaleDateString()}`;
+      if (scheduleData.returnTime) {
+        returnStr += ` at ${scheduleData.returnTime}`;
+      }
+      parts.push(returnStr);
+    }
+    
     if (scheduleData?.serviceDate) {
       parts.push(`Service: ${scheduleData.serviceDate.toLocaleDateString()}`);
     }
