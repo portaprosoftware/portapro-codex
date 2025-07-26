@@ -7,124 +7,109 @@ import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/logo';
 
 // Core Features Data
-const coreFeatures = [
-  {
-    title: "Smart Job Wizard",
-    description: "Step-by-step job creation: delivery, pickups, crew, and invoicing.",
-    icon: ClipboardList,
-    href: "#job-wizard"
-  },
-  {
-    title: "Inventory & Supplies",
-    description: "Track units and consumables across multiple storage sites.",
-    icon: Building2,
-    href: "#inventory"
-  },
-  {
-    title: "Quotes & Payments",
-    description: "Build quotes with services and supplies, collect deposits online.",
-    icon: DollarSign,
-    href: "#quotes"
-  },
-  {
-    title: "Driver Mobile App",
-    description: "Offline-capable route navigation, job updates, and digital checklists.",
-    icon: Smartphone,
-    href: "#mobile-app"
-  }
-];
+const coreFeatures = [{
+  title: "Smart Job Wizard",
+  description: "Step-by-step job creation: delivery, pickups, crew, and invoicing.",
+  icon: ClipboardList,
+  href: "#job-wizard"
+}, {
+  title: "Inventory & Supplies",
+  description: "Track units and consumables across multiple storage sites.",
+  icon: Building2,
+  href: "#inventory"
+}, {
+  title: "Quotes & Payments",
+  description: "Build quotes with services and supplies, collect deposits online.",
+  icon: DollarSign,
+  href: "#quotes"
+}, {
+  title: "Driver Mobile App",
+  description: "Offline-capable route navigation, job updates, and digital checklists.",
+  icon: Smartphone,
+  href: "#mobile-app"
+}];
 
 // Job Wizard Steps
-const jobWizardSteps = [
-  { number: "1", title: "Customer & Address", description: "Select or create customer profiles" },
-  { number: "2", title: "Delivery & Pickup Dates", description: "Schedule with calendar integration" },
-  { number: "3", title: "Supplies & Extras", description: "Add units and consumables" },
-  { number: "4", title: "Crew & Vehicle Assignment", description: "Auto-assign available teams" },
-  { number: "5", title: "Review & Confirm", description: "Final pricing and confirmation" }
-];
+const jobWizardSteps = [{
+  number: "1",
+  title: "Customer & Address",
+  description: "Select or create customer profiles"
+}, {
+  number: "2",
+  title: "Delivery & Pickup Dates",
+  description: "Schedule with calendar integration"
+}, {
+  number: "3",
+  title: "Supplies & Extras",
+  description: "Add units and consumables"
+}, {
+  number: "4",
+  title: "Crew & Vehicle Assignment",
+  description: "Auto-assign available teams"
+}, {
+  number: "5",
+  title: "Review & Confirm",
+  description: "Final pricing and confirmation"
+}];
 
 // Inventory Features
-const inventoryFeatures = [
-  { title: "Bulk vs. Unit Tracking", icon: BarChart3 },
-  { title: "Date-Range Availability Checker", icon: Calendar },
-  { title: "Automatic Low-Stock Alerts", icon: Zap }
-];
+const inventoryFeatures = [{
+  title: "Bulk vs. Unit Tracking",
+  icon: BarChart3
+}, {
+  title: "Date-Range Availability Checker",
+  icon: Calendar
+}, {
+  title: "Automatic Low-Stock Alerts",
+  icon: Zap
+}];
 
 // Quote Flow Steps
-const quoteFlow = [
-  "Quote Builder",
-  "Customer Portal", 
-  "Deposit Collection (Stripe)",
-  "Auto Job Creation"
-];
+const quoteFlow = ["Quote Builder", "Customer Portal", "Deposit Collection (Stripe)", "Auto Job Creation"];
 
 // Team Management Features
-const teamFeatures = [
-  "User Profiles & Roles",
-  "Drag-and-Drop Shift Scheduling",
-  "Time-Off Requests with Calendar Preview"
-];
+const teamFeatures = ["User Profiles & Roles", "Drag-and-Drop Shift Scheduling", "Time-Off Requests with Calendar Preview"];
 
 // Report Builder Features
-const reportFeatures = [
-  "Drag-and-drop sections: customer info, job details, photos, signatures",
-  "Assign a report template when creating a job",
-  "Version history & one-click PDF export"
-];
+const reportFeatures = ["Drag-and-drop sections: customer info, job details, photos, signatures", "Assign a report template when creating a job", "Version history & one-click PDF export"];
 
 // Why PortaPro Features
-const whyPortaPro = [
-  {
-    title: "Industry-Focused",
-    description: "Built for portable toilet rental with features you'll use.",
-    icon: CheckCircle
-  },
-  {
-    title: "Affordable Plans", 
-    description: "Start small, scale up—no hidden fees.",
-    icon: DollarSign
-  },
-  {
-    title: "Friendly Support",
-    description: "Email, chat, or call our team anytime.",
-    icon: Heart
-  }
-];
+const whyPortaPro = [{
+  title: "Industry-Focused",
+  description: "Built for portable toilet rental with features you'll use.",
+  icon: CheckCircle
+}, {
+  title: "Affordable Plans",
+  description: "Start small, scale up—no hidden fees.",
+  icon: DollarSign
+}, {
+  title: "Friendly Support",
+  description: "Email, chat, or call our team anytime.",
+  icon: Heart
+}];
 
 // Pricing Package
 const completePackage = {
   name: "PortaPro Complete Package",
-  price: { monthly: 175, annual: 125 },
+  price: {
+    monthly: 175,
+    annual: 125
+  },
   description: "All features included - onboarding and support included",
-  features: [
-    "Unlimited drivers and users",
-    "Smart job wizard with multi-step creation",
-    "Multi-site inventory tracking",
-    "Mobile driver app with offline capability", 
-    "Custom report templates and builder",
-    "Quote-to-job conversion flow",
-    "Advanced analytics and reporting",
-    "Team management and scheduling",
-    "Stripe payment integration",
-    "Customer portal access",
-    "Priority email and chat support",
-    "Full onboarding and training included"
-  ]
+  features: ["Unlimited drivers and users", "Smart job wizard with multi-step creation", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
-
 export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-20 hover:h-14">
         <div className="container mx-auto px-6 h-full flex items-center justify-between max-w-6xl">
@@ -151,17 +136,13 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-background">
+        {mobileMenuOpen && <div className="md:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-muted-foreground hover:text-foreground">Features</a>
@@ -178,8 +159,7 @@ export const Landing: React.FC = () => {
                 </SignUpButton>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </header>
 
       {/* Hero Section */}
@@ -188,9 +168,7 @@ export const Landing: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-6">
-                <Badge variant="secondary" className="w-fit bg-white/20 text-white border-white/30">
-                  Built for Portable Toilet Providers
-                </Badge>
+                
                 
                 <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
                   Everything You Need to Run Your Rental Business
@@ -223,11 +201,7 @@ export const Landing: React.FC = () => {
             
             <div className="relative">
               <div className="bg-white rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition-transform duration-300">
-                <img 
-                  src="/lovable-uploads/67159259-06cd-46e9-ac0e-b437a39530e9.png" 
-                  alt="PortaPro Platform Interface"
-                  className="w-full h-auto rounded-xl"
-                />
+                <img src="/lovable-uploads/67159259-06cd-46e9-ac0e-b437a39530e9.png" alt="PortaPro Platform Interface" className="w-full h-auto rounded-xl" />
               </div>
             </div>
           </div>
@@ -238,23 +212,18 @@ export const Landing: React.FC = () => {
       <section id="features" className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreFeatures.map((feature, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
                     <feature.icon className="w-8 h-8 text-primary" />
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
-                  <button 
-                    onClick={() => scrollToSection(feature.href.substring(1))}
-                    className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto"
-                  >
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
                     Learn More <ArrowRight className="w-3 h-3" />
                   </button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -274,8 +243,7 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="space-y-4">
-                {jobWizardSteps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-4">
+                {jobWizardSteps.map((step, index) => <div key={index} className="flex items-start gap-4">
                     <div className="w-8 h-8 bg-white text-primary rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                       {step.number}
                     </div>
@@ -283,8 +251,7 @@ export const Landing: React.FC = () => {
                       <h4 className="font-semibold text-base mb-1 text-white">{step.title}</h4>
                       <p className="text-white/80 text-sm">{step.description}</p>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
               
               <p className="text-sm text-white/80">
@@ -296,15 +263,13 @@ export const Landing: React.FC = () => {
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Job Creation Preview</h3>
                 <div className="space-y-3">
-                  {jobWizardSteps.map((step, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                  {jobWizardSteps.map((step, index) => <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                       <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
                         <span className="text-xs font-bold text-primary">{step.number}</span>
                       </div>
                       <span className="text-sm font-medium">{step.title}</span>
                       <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -327,12 +292,10 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="space-y-4">
-                {inventoryFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
+                {inventoryFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
                     <feature.icon className="w-6 h-6 text-primary flex-shrink-0" />
                     <span className="font-medium">{feature.title}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
             
@@ -370,16 +333,14 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {quoteFlow.map((step, index) => (
-                <Card key={index} className="text-center">
+              {quoteFlow.map((step, index) => <Card key={index} className="text-center">
                   <CardContent className="p-6">
                     <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                       <span className="font-bold text-primary">{index + 1}</span>
                     </div>
                     <h3 className="font-semibold">{step}</h3>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
             
             <div className="flex items-center justify-center gap-4 pt-8">
@@ -409,12 +370,10 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="grid gap-4">
-                {teamFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
+                {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                     <span className="font-medium">{feature}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
             
@@ -422,16 +381,14 @@ export const Landing: React.FC = () => {
               <h3 className="font-semibold text-lg mb-4">Schedule Preview</h3>
               <div className="space-y-3">
                 <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium text-muted-foreground">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                    <div key={day}>{day}</div>
-                  ))}
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => <div key={day}>{day}</div>)}
                 </div>
                 <div className="grid grid-cols-7 gap-2">
-                  {Array.from({ length: 7 }, (_, i) => (
-                    <div key={i} className="aspect-square bg-muted/50 rounded flex items-center justify-center text-sm">
+                  {Array.from({
+                  length: 7
+                }, (_, i) => <div key={i} className="aspect-square bg-muted/50 rounded flex items-center justify-center text-sm">
                       {i + 1}
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -451,12 +408,10 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="space-y-4">
-                {reportFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {reportFeatures.map((feature, index) => <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <span className="text-white/90">{feature}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
             
@@ -532,15 +487,13 @@ export const Landing: React.FC = () => {
             </h2>
             
             <div className="grid sm:grid-cols-3 gap-8">
-              {whyPortaPro.map((item, index) => (
-                <div key={index} className="text-center space-y-4">
+              {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-white/10 flex items-center justify-center">
                     <item.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="font-semibold text-lg text-white">{item.title}</h3>
                   <p className="text-white/90">{item.description}</p>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </div>
@@ -561,10 +514,7 @@ export const Landing: React.FC = () => {
             
             <div className="flex items-center justify-center gap-4">
               <span className={`font-medium ${!isAnnual ? 'text-white' : 'text-white/70'}`}>Monthly</span>
-              <button
-                onClick={() => setIsAnnual(!isAnnual)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-white' : 'bg-white/30'}`}
-              >
+              <button onClick={() => setIsAnnual(!isAnnual)} className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-white' : 'bg-white/30'}`}>
                 <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isAnnual ? 'bg-primary translate-x-7' : 'bg-white translate-x-1'}`} />
               </button>
               <span className={`font-medium ${isAnnual ? 'text-white' : 'text-white/70'}`}>
@@ -586,22 +536,18 @@ export const Landing: React.FC = () => {
                         /month
                       </span>
                     </div>
-                    {isAnnual && (
-                      <div className="text-sm text-white/80">
+                    {isAnnual && <div className="text-sm text-white/80">
                         Billed annually (${completePackage.price.annual * 12}/year) - Save $600/year
-                      </div>
-                    )}
+                      </div>}
                   </div>
                   <CardDescription className="text-white/90">{completePackage.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <ul className="space-y-3">
-                    {completePackage.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
+                    {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-white/90">{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                   <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
                     <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6">
@@ -656,9 +602,7 @@ export const Landing: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t">
             <div className="flex items-center gap-4">
               <Logo />
-              <span className="text-sm text-muted-foreground">
-                © 2024 PortaPro. All rights reserved.
-              </span>
+              <span className="text-sm text-muted-foreground">© 2024 PortaPro. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-4 mt-4 md:mt-0">
               <a href="#" className="text-muted-foreground hover:text-foreground">
@@ -671,8 +615,6 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
