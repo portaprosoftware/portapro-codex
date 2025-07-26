@@ -26,11 +26,17 @@ export const FleetSidebar: React.FC = () => {
   const { data: complianceCounts } = useQuery({
     queryKey: ["compliance-notification-counts"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_compliance_notification_counts");
-      if (error) throw error;
-      return data as { total: number; overdue: number; critical: number; warning: number };
+      try {
+        const { data, error } = await supabase.rpc("get_compliance_notification_counts");
+        if (error) throw error;
+        return data as { total: number; overdue: number; critical: number; warning: number };
+      } catch (error) {
+        console.error("Error fetching compliance counts:", error);
+        return { total: 0, overdue: 0, critical: 0, warning: 0 };
+      }
     },
     refetchInterval: 30000, // Refresh every 30 seconds
+    initialData: { total: 0, overdue: 0, critical: 0, warning: 0 }
   });
 
   const navigationItems = [
@@ -46,7 +52,7 @@ export const FleetSidebar: React.FC = () => {
       href: "/fleet/compliance",
       icon: AlertTriangle,
       description: "Insurance & Registration...",
-      badge: complianceCounts?.total > 0 ? complianceCounts.total.toString() : undefined
+      badge: (complianceCounts?.total && complianceCounts.total > 0) ? complianceCounts.total.toString() : undefined
     },
     {
       title: "Assignments",
