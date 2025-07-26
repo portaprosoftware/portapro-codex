@@ -75,12 +75,57 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      console.log("Starting product deletion for ID:", productId);
+      
+      // First, delete all related records to avoid foreign key constraints
+      console.log("Deleting related stock adjustments...");
+      const { error: stockAdjustmentError } = await supabase
+        .from("stock_adjustments")
+        .delete()
+        .eq("product_id", productId);
+      
+      if (stockAdjustmentError) {
+        console.error("Error deleting stock adjustments:", stockAdjustmentError);
+        throw new Error(`Failed to delete related stock adjustments: ${stockAdjustmentError.message}`);
+      }
+
+      // Delete product location stock
+      console.log("Deleting product location stock...");
+      const { error: locationStockError } = await supabase
+        .from("product_location_stock")
+        .delete()
+        .eq("product_id", productId);
+      
+      if (locationStockError) {
+        console.error("Error deleting product location stock:", locationStockError);
+        throw new Error(`Failed to delete product location stock: ${locationStockError.message}`);
+      }
+
+      // Delete product items
+      console.log("Deleting product items...");
+      const { error: itemsError } = await supabase
+        .from("product_items")
+        .delete()
+        .eq("product_id", productId);
+      
+      if (itemsError) {
+        console.error("Error deleting product items:", itemsError);
+        throw new Error(`Failed to delete product items: ${itemsError.message}`);
+      }
+
+      // Finally, delete the product itself
+      console.log("Deleting product...");
+      const { error: productError } = await supabase
         .from("products")
         .delete()
         .eq("id", productId);
       
-      if (error) throw error;
+      if (productError) {
+        console.error("Error deleting product:", productError);
+        throw new Error(`Failed to delete product: ${productError.message}`);
+      }
+      
+      console.log("Product deletion completed successfully");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -88,9 +133,17 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
       onDeleted?.();
       onClose();
     },
-    onError: (error) => {
-      toast.error("Failed to delete product");
-      console.error(error);
+    onError: (error: any) => {
+      console.error('Delete mutation error:', error);
+      
+      // Provide user-friendly error messages
+      if (error.message?.includes("foreign key constraint")) {
+        toast.error("Cannot delete product: It has related data that must be removed first");
+      } else if (error.message?.includes("stock_adjustments")) {
+        toast.error("Cannot delete product: It has stock adjustment records");
+      } else {
+        toast.error(`Failed to delete product: ${error.message || 'Unknown error'}`);
+      }
     }
   });
 
