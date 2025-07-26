@@ -344,21 +344,21 @@ export function UserManagementSection() {
                       {roleLabels[user.user_roles?.[0]?.role as keyof typeof roleLabels] || "No Role"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={user.is_active ? "default" : "secondary"}>
-                      {user.is_active ? (
-                        <>
-                          <UserCheck className="w-3 h-3 mr-1" />
-                          Active
-                        </>
-                      ) : (
-                        <>
-                          <UserX className="w-3 h-3 mr-1" />
-                          Inactive
-                        </>
-                      )}
-                    </Badge>
-                  </TableCell>
+                   <TableCell>
+                     <Badge variant={user.is_active ? "default" : "secondary"} className="inline-flex items-center">
+                       {user.is_active ? (
+                         <>
+                           <UserCheck className="w-3 h-3 mr-1 opacity-100" />
+                           Active
+                         </>
+                       ) : (
+                         <>
+                           <UserX className="w-3 h-3 mr-1 opacity-100" />
+                           Inactive
+                         </>
+                       )}
+                     </Badge>
+                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end space-x-2">
                       <Button 
