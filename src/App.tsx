@@ -35,6 +35,7 @@ import { DriverDashboardPage } from './pages/DriverDashboardPage';
 import { DriverMapPage } from './pages/DriverMapPage';
 import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
+import TeamManagement from './pages/TeamManagement';
 
 const App = () => {
   console.log('App component rendering...');
@@ -93,6 +94,8 @@ const App = () => {
                     <Route path="/marketing" element={<Marketing />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/storage-sites" element={<StorageSites />} />
+                    <Route path="/team-management" element={<TeamManagement />} />
+                    <Route path="/team-management/:tab" element={<TeamManagement />} />
                     <Route path="/settings" element={<Settings />} />
                   </Routes>
                 </Layout>

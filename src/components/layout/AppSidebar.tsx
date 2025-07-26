@@ -17,7 +17,8 @@ import {
   Megaphone,
   MessageSquare,
   SprayCan,
-  Settings
+  Settings,
+  UserCog
 } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -90,6 +91,12 @@ const inventoryItems: NavigationItem[] = [
 ];
 
 const managementItems: NavigationItem[] = [
+  { 
+    title: 'Team Management', 
+    url: '/team-management', 
+    icon: UserCog,
+    permission: 'admin'
+  },
   { 
     title: 'Fleet Management', 
     url: '/fleet-management', 

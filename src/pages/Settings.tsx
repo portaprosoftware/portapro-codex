@@ -24,19 +24,14 @@ import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection
 import { UserManagementSection } from "@/components/settings/UserManagementSection";
 import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
 import { PricingRulesSection } from "@/components/settings/PricingRulesSection";
-import { DriverWorkingHoursSection } from "@/components/settings/DriverWorkingHoursSection";
-import { DriverTimeOffSection } from "@/components/settings/DriverTimeOffSection";
 import { QRFeedbackSection } from "@/components/settings/QRFeedbackSection";
 import { useUserRole } from "@/hooks/useUserRole";
 
 type SettingsSection = 
   | 'company'
   | 'business-hours' 
-  | 'user-management' 
   | 'notifications' 
   | 'pricing-rules'
-  | 'driver-hours'
-  | 'time-off'
   | 'qr-feedback';
 
 export default function Settings() {
@@ -56,9 +51,6 @@ export default function Settings() {
 
   const settingsSections = [
     { key: 'company' as const, label: 'Company Settings', icon: Building2 },
-    { key: 'user-management' as const, label: 'User Management', icon: Users },
-    { key: 'driver-hours' as const, label: 'Driver Working Hours', icon: Clock },
-    { key: 'time-off' as const, label: 'Time Off Management', icon: Calendar },
     { key: 'notifications' as const, label: 'Notifications', icon: Bell },
     { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
     { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
@@ -78,16 +70,10 @@ export default function Settings() {
         );
       case 'business-hours':
         return <BusinessHoursSection />;
-      case 'user-management':
-        return <UserManagementSection />;
       case 'notifications':
         return <NotificationPreferencesSection />;
       case 'pricing-rules':
         return <PricingRulesSection />;
-      case 'driver-hours':
-        return <DriverWorkingHoursSection onBack={() => setActiveSection('company')} />;
-      case 'time-off':
-        return <DriverTimeOffSection onBack={() => setActiveSection('company')} />;
       case 'qr-feedback':
         return <QRFeedbackSection />;
       default:
