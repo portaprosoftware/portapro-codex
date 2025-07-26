@@ -101,7 +101,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   };
 
   return (
-    <Card className="bg-white rounded-lg border shadow-sm">
+    <div className="w-full max-w-6xl mx-auto">
+      <Card className="bg-white rounded-lg border shadow-sm w-full overflow-hidden">
       <CardHeader className="px-6 py-4">
         <CardTitle className="text-xl font-semibold text-gray-900">All Maintenance Records</CardTitle>
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
@@ -156,13 +157,13 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[140px]">Vehicle</TableHead>
-                <TableHead className="min-w-[200px]">Task & Details</TableHead>
-                <TableHead className="min-w-[100px]">Vendor</TableHead>
-                <TableHead className="min-w-[120px]">Dates</TableHead>
-                <TableHead className="min-w-[100px]">Status</TableHead>
-                <TableHead className="min-w-[80px]">Cost</TableHead>
-                <TableHead className="min-w-[80px] text-right">Actions</TableHead>
+                <TableHead className="w-28">Vehicle</TableHead>
+                <TableHead className="w-48">Task & Details</TableHead>
+                <TableHead className="w-24">Vendor</TableHead>
+                <TableHead className="w-28">Dates</TableHead>
+                <TableHead className="w-24">Status</TableHead>
+                <TableHead className="w-20">Cost</TableHead>
+                <TableHead className="w-20 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -226,5 +227,6 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         )}
       </CardContent>
     </Card>
+    </div>
   );
 };
