@@ -293,7 +293,7 @@ const JobsPage: React.FC = () => {
         </div>
         
         {/* Filters Bar - Locked to Second Card */}
-        {activeTab === 'calendar' && (
+        {(activeTab === 'calendar' || activeTab === 'dispatch') && (
           <div className="bg-white rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between">
               <InlineFilters
@@ -455,42 +455,13 @@ const JobsPage: React.FC = () => {
                 <div className="flex">
                   {/* Left Sidebar - Unassigned Jobs */}
                   <div className="w-80 border-r border-gray-200">
-                    {/* Search and Filters */}
-                    <div className="p-4 border-b border-gray-200">
-                      <div className="relative mb-3">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input 
-                          placeholder="Search by customer, job type, or driver..."
-                          className="pl-9 text-sm"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge 
-                          variant={selectedStatus === 'assigned' ? "default" : "secondary"}
-                          className="cursor-pointer px-3 py-1 text-xs"
-                          onClick={() => setSelectedStatus(selectedStatus === 'assigned' ? 'all' : 'assigned')}
-                        >
-                          Assigned
-                        </Badge>
-                        <Badge 
-                          variant={selectedJobType === 'service' ? "default" : "secondary"}
-                          className="cursor-pointer px-3 py-1 text-xs"
-                          onClick={() => setSelectedJobType(selectedJobType === 'service' ? 'all' : 'service')}
-                        >
-                          Service
-                        </Badge>
-                      </div>
-                    </div>
-
                     {/* Unassigned Jobs */}
                     <div className="p-4">
                       <div className="flex items-center gap-2 mb-4">
                         <AlertTriangle className="h-4 w-4 text-orange-500" />
                         <span className="font-medium text-sm">Unassigned Jobs</span>
                         <Badge variant="secondary" className="text-xs">
-                          {unassignedJobs.length}
+                          {filterJobs(unassignedJobs).length}
                         </Badge>
                       </div>
 
@@ -506,14 +477,14 @@ const JobsPage: React.FC = () => {
                                 : "border-gray-300 bg-gray-50"
                             )}
                           >
-                            {unassignedJobs.length === 0 ? (
+                            {filterJobs(unassignedJobs).length === 0 ? (
                               <div className="text-center py-8 text-gray-500">
                                 <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                                 <p className="text-sm">No unassigned jobs</p>
                                 <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
                               </div>
                             ) : (
-                              unassignedJobs.map((job, index) => (
+                              filterJobs(unassignedJobs).map((job, index) => (
                                 <Draggable key={job.id} draggableId={job.id} index={index}>
                                   {(provided, snapshot) => (
                                     <div
@@ -579,7 +550,7 @@ const JobsPage: React.FC = () => {
                     <div className="p-6">
                       <div className="grid grid-cols-3 gap-6">
                         {drivers.slice(0, 3).map(driver => {
-                          const driverJobs = getJobsByDriver(driver.id);
+                          const driverJobs = filterJobs(getJobsByDriver(driver.id));
                           
                           return (
                             <div key={driver.id} className="space-y-4">
@@ -600,13 +571,6 @@ const JobsPage: React.FC = () => {
                                   </Badge>
                                 </div>
                               </div>
-
-                              {/* Jobs for Jason Wells */}
-                              {driver.first_name === 'Jason' && (
-                                <div className="text-xs text-gray-600 mb-2">
-                                  Jobs for Jason Wells
-                                </div>
-                              )}
 
                               {/* Drop Zone */}
                               <Droppable droppableId={driver.id}>
