@@ -96,10 +96,10 @@ export const Landing: React.FC = () => {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" fallbackRedirectUrl="/app">
               <Button variant="ghost">Sign In</Button>
             </SignInButton>
-            <SignUpButton mode="modal">
+            <SignUpButton mode="modal" fallbackRedirectUrl="/app">
               <Button>Start Free Trial</Button>
             </SignUpButton>
           </div>
@@ -120,7 +120,7 @@ export const Landing: React.FC = () => {
                 business efficiently in one platform.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <SignUpButton mode="modal">
+                <SignUpButton mode="modal" fallbackRedirectUrl="/app">
                   <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100">
                     Start Free Trial
                   </Button>
@@ -278,7 +278,7 @@ export const Landing: React.FC = () => {
                 ))}
               </div>
 
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" fallbackRedirectUrl="/app">
                 <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white mb-4">
                   Start Free Trial
                 </Button>

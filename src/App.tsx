@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
+import { Landing } from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
@@ -62,9 +63,19 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
+          {/* Landing page for unauthenticated users */}
+          <Route
+            path="/"
+            element={
+              <SignedOut>
+                <Landing />
+              </SignedOut>
+            }
+          />
+
           {/* Main authenticated routes */}
           <Route
-            path="/*"
+            path="/app/*"
             element={
               <SignedIn>
                 <Layout>
@@ -75,8 +86,8 @@ const App = () => {
                     <Route path="/jobs/dispatch" element={<Jobs />} />
                     <Route path="/jobs/map" element={<Jobs />} />
                     <Route path="/inventory" element={<Inventory />} />
-        <Route path="/consumables" element={<Consumables />} />
-        <Route path="/purchase-orders" element={<PurchaseOrders />} />
+                    <Route path="/consumables" element={<Consumables />} />
+                    <Route path="/purchase-orders" element={<PurchaseOrders />} />
                     <Route path="/customer-hub" element={<CustomerHub />} />
                     <Route path="/customers/:id" element={<CustomerDetail />} />
                     <Route path="/quotes-invoices" element={<QuotesInvoices />} />
@@ -104,16 +115,27 @@ const App = () => {
               </SignedIn>
             }
           />
+
+          {/* Redirect authenticated users from landing to app */}
+          <Route
+            path="/"
+            element={
+              <SignedIn>
+                <Dashboard />
+              </SignedIn>
+            }
+          />
             
             {/* Public QR Scan Route - Outside authentication */}
             <Route path="/scan/:unitId" element={<ScanFeedback />} />
             <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
             
+            {/* Fallback for unmatched routes */}
             <Route
               path="*"
               element={
                 <SignedOut>
-                  <RedirectToSignIn />
+                  <Landing />
                 </SignedOut>
               }
             />
