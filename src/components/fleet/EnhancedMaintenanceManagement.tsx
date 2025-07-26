@@ -5,10 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Settings, Bell, Package, Wrench, AlertTriangle, Clock, DollarSign } from "lucide-react";
+import { Plus, Calendar, Settings, Bell, Package, Wrench, AlertTriangle, Clock, DollarSign, UserPlus } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { format } from "date-fns";
 import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
+import { TechnicianAssignmentModal } from "./TechnicianAssignmentModal";
 import { ScheduleRecurringServiceModal } from "./ScheduleRecurringServiceModal";
 import { MaintenanceAllRecordsTab } from "./MaintenanceAllRecordsTab";
 import { MaintenanceNotificationsTab } from "./MaintenanceNotificationsTab";
@@ -52,6 +53,8 @@ interface CompanyMaintenanceSettings {
 export const EnhancedMaintenanceManagement: React.FC = () => {
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
+  const [technicianAssignmentOpen, setTechnicianAssignmentOpen] = useState(false);
+  const [selectedMaintenanceRecord, setSelectedMaintenanceRecord] = useState<string | null>(null);
 
   // Fetch maintenance KPIs
   const { data: kpis, isLoading: kpisLoading } = useQuery({
@@ -153,6 +156,11 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   };
 
   const inHouseEnabled = companySettings?.enable_inhouse_features || false;
+
+  const handleAssignTechnician = (recordId: string) => {
+    setSelectedMaintenanceRecord(recordId);
+    setTechnicianAssignmentOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -377,6 +385,11 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
       <ScheduleRecurringServiceModal 
         open={scheduleRecurringOpen} 
         onOpenChange={setScheduleRecurringOpen} 
+      />
+      <TechnicianAssignmentModal
+        open={technicianAssignmentOpen}
+        onOpenChange={setTechnicianAssignmentOpen}
+        maintenanceRecordId={selectedMaintenanceRecord}
       />
     </div>
   );

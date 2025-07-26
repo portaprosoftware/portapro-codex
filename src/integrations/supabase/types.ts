@@ -6609,6 +6609,15 @@ export type Database = {
             }
         Returns: string
       }
+      export_maintenance_data: {
+        Args: {
+          start_date?: string
+          end_date?: string
+          vehicle_ids?: string[]
+          export_format?: string
+        }
+        Returns: Json
+      }
       fix_orphaned_equipment_assignments: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -6768,6 +6777,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_maintenance_metrics: {
+        Args: { start_date: string; end_date: string }
+        Returns: Json
+      }
       get_next_invoice_number: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -6817,6 +6830,10 @@ export type Database = {
         Returns: Json
       }
       get_system_wide_availability: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_technician_availability: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
