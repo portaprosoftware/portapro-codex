@@ -28,7 +28,8 @@ import {
   MoveVertical,
   Settings,
   ExternalLink,
-  Navigation2
+  Navigation2,
+  Maximize2
 } from 'lucide-react';
 import {
   Select,
@@ -47,6 +48,7 @@ import {
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { ManageCategoriesModal } from './ManageCategoriesModal';
+import { ExpandedMapModal } from './ExpandedMapModal';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
 import {
@@ -69,6 +71,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false);
+  const [isExpandedMapOpen, setIsExpandedMapOpen] = useState(false);
   const [editingCoordinate, setEditingCoordinate] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -1073,6 +1076,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                   <Button variant="outline" size="sm" onClick={recenterMap} className="p-1 lg:p-2">
                     <RotateCcw className="w-3 h-3" />
                   </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsExpandedMapOpen(true)}
+                    className="p-1 lg:p-2"
+                    title="Expand Map View"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                  </Button>
                 </div>
               </div>
             </CardHeader>
@@ -1446,6 +1459,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         customerName={customer?.name || 'Unknown'}
         existingCategories={[]}
         onCategoriesUpdated={refetch}
+      />
+
+      <ExpandedMapModal
+        isOpen={isExpandedMapOpen}
+        onClose={() => setIsExpandedMapOpen(false)}
+        mapboxToken={mapboxToken}
+        serviceLocations={serviceLocations || []}
+        coordinates={coordinates || []}
+        categories={categories || []}
+        customerName={customer?.name}
       />
     </div>
   );
