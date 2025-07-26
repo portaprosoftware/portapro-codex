@@ -12,6 +12,7 @@ import { ProductOverview } from "./ProductOverview";
 import { IndividualUnitsTab } from "./IndividualUnitsTab";
 import { ProductAttributesTab } from "./ProductAttributesTab";
 import { ProductLocationStock } from "./ProductLocationStock";
+import { IndividualItemCreation } from "./IndividualItemCreation";
 
 interface ProductDetailProps {
   productId: string;

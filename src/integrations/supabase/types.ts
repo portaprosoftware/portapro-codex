@@ -6484,12 +6484,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_system_wide_availability: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_template_analytics: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
       get_template_statistics: {
         Args: { template_uuid: string }
+        Returns: Json
+      }
+      get_unified_product_stock: {
+        Args: { product_uuid: string }
         Returns: Json
       }
       get_user_role_by_clerk_id: {

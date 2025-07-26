@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Package, MapPin, ChevronDown, ChevronUp, Building } from "lucide-react";
 
-interface AvailableNowSliderProps {
+interface LocationAwareAvailableSliderProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -35,7 +35,7 @@ interface ProductLocationStock {
   };
 }
 
-export function AvailableNowSlider({ isOpen, onClose }: AvailableNowSliderProps) {
+export function LocationAwareAvailableSlider({ isOpen, onClose }: LocationAwareAvailableSliderProps) {
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
 
   // Fetch all available stock by location
@@ -87,7 +87,7 @@ export function AvailableNowSlider({ isOpen, onClose }: AvailableNowSliderProps)
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Available Now
+            Available Now by Location
           </SheetTitle>
           <SheetDescription>
             Real-time inventory available across all storage locations

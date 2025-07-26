@@ -9,6 +9,7 @@ import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
 import { StorageLocationSelector } from "@/components/inventory/StorageLocationSelector";
 import { AvailableNowSlider } from "@/components/inventory/AvailableNowSlider";
+import { LocationAwareAvailableSlider } from "@/components/inventory/LocationAwareAvailableSlider";
 import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -212,8 +213,8 @@ const Inventory: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Available Now Slider */}
-      <AvailableNowSlider 
+      {/* Location-Aware Available Now Slider */}
+      <LocationAwareAvailableSlider 
         isOpen={isAvailableSliderOpen}
         onClose={() => setIsAvailableSliderOpen(false)}
       />
