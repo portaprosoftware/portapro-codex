@@ -153,7 +153,9 @@ export function AddDropPinModal({
         const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
         
         if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
-          const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+          // Handle both formats: "(-81.83824,41.36749)" and "-81.83824,41.36749"
+          const coordStr = primaryLocation.gps_coordinates.replace(/[()]/g, '');
+          const [lng, lat] = coordStr.split(',').map(Number);
           if (!isNaN(lat) && !isNaN(lng)) {
             return [lng, lat];
           }

@@ -172,7 +172,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         container: mapContainer.current!,
         style: getMapStyle(mapStyle),
         center: center,
-        zoom: 12
+        zoom: 17 // High zoom for single location view
       });
 
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -205,7 +205,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
             const coord = validCoords[0];
             map.current.flyTo({
               center: [coord.longitude, coord.latitude],
-              zoom: 16,
+              zoom: 18,
               duration: 1000
             });
           } else {
@@ -287,7 +287,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
     // Check if we already have GPS coordinates stored
     if (primaryLocation?.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
-      const [lng, lat] = primaryLocation.gps_coordinates.split(',').map(Number);
+      // Handle both formats: "(-81.83824,41.36749)" and "-81.83824,41.36749"
+      const coordStr = primaryLocation.gps_coordinates.replace(/[()]/g, '');
+      const [lng, lat] = coordStr.split(',').map(Number);
       if (!isNaN(lat) && !isNaN(lng)) {
         targetCoordinates = [lng, lat];
       }
@@ -392,9 +394,11 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         
         // Check if we already have GPS coordinates stored
         if (primaryLocation && primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
-          const coords = primaryLocation.gps_coordinates.split(',').map(Number);
+          // Handle both formats: "(-81.83824,41.36749)" and "-81.83824,41.36749"
+          const coordStr = primaryLocation.gps_coordinates.replace(/[()]/g, '');
+          const coords = coordStr.split(',').map(Number);
           if (coords.length === 2 && !isNaN(coords[1]) && !isNaN(coords[0])) {
-            return [coords[0], coords[1]];
+            return [coords[0], coords[1]]; // [longitude, latitude] for Mapbox
           }
         }
         
@@ -462,8 +466,11 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
+    // Add service location marker first
+    addServiceLocationMarker();
+
     if (!coordinates || coordinates.length === 0) {
-      console.log('No coordinates to display');
+      console.log('No drop-pin coordinates to display');
       return;
     }
 
@@ -583,7 +590,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         const coord = validCoords[0];
         map.current!.flyTo({
           center: [coord.longitude, coord.latitude],
-          zoom: 16
+          zoom: 18
         });
         console.log('Map centered on single coordinate:', coord.point_name);
       } catch (error) {
@@ -620,10 +627,89 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     return categoryData?.color || '#EF4444'; // Default red if category not found
   };
 
+  // Add service location marker
+  const addServiceLocationMarker = () => {
+    if (!map.current || !serviceLocations || serviceLocations.length === 0) return;
+
+    const primaryLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+    if (!primaryLocation) return;
+
+    let coords: [number, number] | null = null;
+
+    // Parse GPS coordinates if available
+    if (primaryLocation.gps_coordinates && typeof primaryLocation.gps_coordinates === 'string') {
+      const coordStr = primaryLocation.gps_coordinates.replace(/[()]/g, '');
+      const parsedCoords = coordStr.split(',').map(Number);
+      if (parsedCoords.length === 2 && !isNaN(parsedCoords[1]) && !isNaN(parsedCoords[0])) {
+        coords = [parsedCoords[0], parsedCoords[1]]; // [longitude, latitude]
+      }
+    }
+
+    if (!coords) return;
+
+    // Create distinctive service location marker
+    const serviceMarkerEl = document.createElement('div');
+    serviceMarkerEl.className = 'service-location-marker';
+    serviceMarkerEl.style.cssText = `
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3B82F6, #1E40AF);
+      border: 3px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    `;
+
+    // Add icon to marker
+    serviceMarkerEl.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+    `;
+
+    const fullAddress = [
+      primaryLocation.street,
+      primaryLocation.street2,
+      primaryLocation.city,
+      primaryLocation.state,
+      primaryLocation.zip
+    ].filter(Boolean).join(', ');
+
+    try {
+      const serviceMarker = new mapboxgl.Marker({ element: serviceMarkerEl })
+        .setLngLat(coords)
+        .setPopup(new mapboxgl.Popup({ 
+          offset: 25,
+          closeButton: true,
+          closeOnClick: false 
+        }).setHTML(`
+          <div class="p-3 min-w-[250px]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+              <h4 class="font-bold text-blue-700">Service Location</h4>
+            </div>
+            <h5 class="font-semibold text-sm mb-1">${primaryLocation.location_name}</h5>
+            <p class="text-xs text-gray-600 mb-2">${fullAddress}</p>
+            <p class="text-xs text-gray-500 font-mono">${coords[1].toFixed(6)}, ${coords[0].toFixed(6)}</p>
+          </div>
+        `))
+        .addTo(map.current!);
+
+      markers.current.push(serviceMarker);
+      console.log('Added service location marker');
+    } catch (error) {
+      console.error('Error adding service location marker:', error);
+    }
+  };
+
   const recenterMap = async () => {
     if (map.current) {
       const center = await getDefaultCenter();
-      map.current.flyTo({ center, zoom: 12 });
+      map.current.flyTo({ center, zoom: 17 });
     }
   };
 
