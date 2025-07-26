@@ -79,7 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       {/* Product Image */}
       <div className="flex justify-center mb-4">
-        <div className="w-40 h-40 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <div className="w-52 h-52 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
           {product.base_image ? (
             <img
               src={product.base_image}

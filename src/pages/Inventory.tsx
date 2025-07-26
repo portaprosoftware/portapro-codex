@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, LayoutGrid, List, QrCode, Search, ExternalLink, BarChart3, MapPin } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -64,7 +64,7 @@ const Inventory: React.FC = () => {
     { key: "in_stock" as FilterType, label: "In Stock" },
     { key: "low_stock" as FilterType, label: "Low Stock" },
     { key: "out_of_stock" as FilterType, label: "Out of Stock" },
-    { key: "available_now" as FilterType, label: "Available Now", icon: ExternalLink }
+    { key: "available_now" as FilterType, label: "Available Now", icon: SlidersHorizontal }
   ];
 
   if (selectedProduct) {
