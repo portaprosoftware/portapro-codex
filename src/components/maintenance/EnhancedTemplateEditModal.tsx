@@ -365,9 +365,9 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 grid grid-cols-12 gap-6 overflow-hidden">
+        <div className="flex-1 grid grid-cols-12 gap-6 min-h-0">
           {/* Left Panel - Template Settings */}
-          <div className="col-span-5 flex flex-col space-y-6 overflow-hidden">
+          <div className="col-span-5 flex flex-col space-y-6 min-h-0">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Template Settings</CardTitle>
@@ -448,15 +448,15 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
             </Card>
 
             {/* Available Sections */}
-            <Card className="flex-1 overflow-hidden">
-              <CardHeader>
+            <Card className="flex-1 flex flex-col min-h-0">
+              <CardHeader className="flex-shrink-0">
                 <CardTitle className="text-lg">Available Sections</CardTitle>
                 <p className="text-sm text-muted-foreground">
                   Drag sections from here to add them to your template
                 </p>
               </CardHeader>
-              <CardContent className="p-0 overflow-hidden">
-                <ScrollArea className="h-[400px] p-4">
+              <CardContent className="flex-1 p-0 min-h-0">
+                <ScrollArea className="h-full p-4">
                   <DragDropContext onDragEnd={handleDragEnd}>
                     <Droppable droppableId="available-sections" isDropDisabled>
                       {(provided) => (
