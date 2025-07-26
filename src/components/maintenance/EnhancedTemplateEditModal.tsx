@@ -455,8 +455,8 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
                   Drag sections from here to add them to your template
                 </p>
               </CardHeader>
-              <CardContent className="overflow-hidden">
-                <ScrollArea className="h-full">
+              <CardContent className="p-0 overflow-hidden">
+                <ScrollArea className="h-[400px] p-4">
                   <DragDropContext onDragEnd={handleDragEnd}>
                     <Droppable droppableId="available-sections" isDropDisabled>
                       {(provided) => (
