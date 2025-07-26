@@ -220,7 +220,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
         {visibleInventoryItems.length > 0 && (
           <SidebarGroup>
             <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              📦 Inventory
+              INVENTORY
             </div>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -251,7 +251,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
         {visibleManagementItems.length > 0 && (
           <SidebarGroup>
             <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Management
+              MANAGEMENT
             </div>
             <SidebarGroupContent>
               <SidebarMenu>

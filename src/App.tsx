@@ -22,7 +22,7 @@ import Settings from "./pages/Settings";
 import FleetAnalyticsPage from './pages/FleetAnalyticsPage';
 import FleetCapacityPage from './pages/FleetCapacityPage';
 import FleetComplianceReportsPage from './pages/FleetComplianceReportsPage';
-import FleetFuel from './pages/FleetFuel';
+import { FleetFuelManagement } from './pages/FleetFuelManagement';
 import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
 import TestingPage from './pages/TestingPage';
@@ -85,7 +85,7 @@ const App = () => {
                     <Route path="/fleet/analytics" element={<FleetAnalyticsPage />} />
                     <Route path="/fleet/capacity" element={<FleetCapacityPage />} />
                     <Route path="/fleet/compliance-reports" element={<FleetComplianceReportsPage />} />
-                    <Route path="/fleet/fuel" element={<FleetFuel />} />
+                    <Route path="/fleet/fuel" element={<FleetFuelManagement />} />
                     <Route path="/fleet/files" element={<FleetFiles />} />
                     <Route path="/fleet/maintenance" element={<FleetMaintenancePage />} />
                     <Route path="/testing" element={<TestingPage />} />
