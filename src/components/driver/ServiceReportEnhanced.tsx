@@ -142,9 +142,6 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
       try {
         // Simplified auto-save for demo
         toast.success('Draft auto-saved');
-        
-        if (error) throw error;
-        toast.success('Draft auto-saved');
       } catch (error) {
         console.error('Auto-save failed:', error);
       }
@@ -217,8 +214,6 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
       
       // Simplified completion for demo
       console.log('Report completed:', reportNumber, formData);
-
-      if (error) throw error;
 
       // Update job status
       const { error: jobError } = await supabase
