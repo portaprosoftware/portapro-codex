@@ -31,8 +31,13 @@ import {
   GripVertical,
   Settings,
   Trash2,
-  Eye
+  Eye,
+  History,
+  Download
 } from 'lucide-react';
+import { SectionSettingsPanel } from './SectionSettingsPanel';
+import { TemplateVersioningModal } from './TemplateVersioningModal';
+import { EnhancedPDFGenerator } from './EnhancedPDFGenerator';
 
 interface TemplateEditModalProps {
   templateId: string | null;
