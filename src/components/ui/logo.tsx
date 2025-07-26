@@ -9,7 +9,7 @@ interface LogoProps {
 
 export const Logo: React.FC<LogoProps> = ({ className = "", showText = true }) => {
   const { data: companySettings } = useQuery({
-    queryKey: ['company-settings'],
+    queryKey: ['company-logo'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')
