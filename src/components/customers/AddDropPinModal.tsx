@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Form,
   FormControl,
@@ -577,25 +578,24 @@ export function AddDropPinModal({
   }, [categories]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[900px] max-h-[95vh] overflow-hidden p-0">
-        <div className="flex flex-col h-full">
-          <DialogHeader className="px-6 py-4 border-b">
-            <DialogTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              Add GPS Drop-Pin
-              {capturedPins.length > 0 && (
-                <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                  {capturedPins.length} pin{capturedPins.length !== 1 ? 's' : ''} ready
-                </span>
-              )}
-            </DialogTitle>
-          </DialogHeader>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="right" className="w-full sm:w-[70%] p-0 flex flex-col">
+        <SheetHeader className="px-6 py-4 border-b">
+          <SheetTitle className="flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Add GPS Drop-Pin
+            {capturedPins.length > 0 && (
+              <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                {capturedPins.length} pin{capturedPins.length !== 1 ? 's' : ''} ready
+              </span>
+            )}
+          </SheetTitle>
+        </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1">
+          <div className="px-6 py-4 space-y-6">
             {/* Map Section - Large and prominent */}
-            <div className="p-6 pb-4">
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Target className="w-4 h-4" />
@@ -673,7 +673,7 @@ export function AddDropPinModal({
                         type="button"
                         onClick={captureLocationFromMap}
                         size="lg"
-                        className="bg-green-600 hover:bg-green-700 text-white animate-pulse"
+                        className="bg-green-600 hover:bg-green-700 text-white border-2 border-green-400"
                       >
                         <Target className="w-5 h-5 mr-2" />
                         Capture This Location
@@ -682,11 +682,10 @@ export function AddDropPinModal({
                   </div>
                 )}
               </div>
-            </div>
-
+            
             {/* Form Section - Appears after location capture */}
             {currentStep === 'details' && (
-              <div className="px-6 pb-6">
+              <div className="space-y-4">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
                     <Target className="w-4 h-4" />
@@ -870,8 +869,7 @@ export function AddDropPinModal({
                         </Button>
                         {capturedPins.length === 0 && (
                           <Button 
-                            type="button"
-                            onClick={() => form.handleSubmit(onSubmit)()}
+                            type="submit"
                             className="bg-blue-600 hover:bg-blue-700 text-white"
                             disabled={form.formState.isSubmitting}
                           >
@@ -888,22 +886,20 @@ export function AddDropPinModal({
 
             {/* Instructions Panel */}
             {currentStep === 'locate' && (
-              <div className="px-6 pb-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">How to Add GPS Drop-Pins:</h4>
-                  <ol className="text-sm text-blue-700 space-y-1">
-                    <li>1. Click "Add GPS Point" to enable targeting mode</li>
-                    <li>2. Zoom in and position the map precisely</li>
-                    <li>3. Click "Capture This Location" when ready</li>
-                    <li>4. Fill in the pin details and save</li>
-                    <li>5. Use "Add Another Pin" for multiple locations</li>
-                  </ol>
-                </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-900 mb-2">How to Add GPS Drop-Pins:</h4>
+                <ol className="text-sm text-blue-700 space-y-1">
+                  <li>1. Click "Add GPS Point" to enable targeting mode</li>
+                  <li>2. Zoom in and position the map precisely</li>
+                  <li>3. Click "Capture This Location" when ready</li>
+                  <li>4. Fill in the pin details and save</li>
+                  <li>5. Use "Add Another Pin" for multiple locations</li>
+                </ol>
               </div>
             )}
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }
