@@ -20,7 +20,7 @@ export function TrainingCertificationsTab() {
       </div>
 
       {/* Certification Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -95,9 +95,9 @@ export function TrainingCertificationsTab() {
                 <h4 className="font-medium">CDL Licenses</h4>
                 <p className="text-sm text-muted-foreground">Commercial driver's licenses</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <Badge variant="outline">15 active</Badge>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload
                 </Button>
@@ -109,9 +109,9 @@ export function TrainingCertificationsTab() {
                 <h4 className="font-medium">Safety Training</h4>
                 <p className="text-sm text-muted-foreground">OSHA and safety certifications</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <Badge variant="outline">23 active</Badge>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload
                 </Button>
@@ -123,9 +123,9 @@ export function TrainingCertificationsTab() {
                 <h4 className="font-medium">Equipment Operation</h4>
                 <p className="text-sm text-muted-foreground">Specialized equipment certifications</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <Badge variant="outline">9 active</Badge>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload
                 </Button>
@@ -142,7 +142,7 @@ export function TrainingCertificationsTab() {
           <CardDescription>Enhanced training management capabilities coming soon</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <h4 className="font-medium">Automatic Expiration Alerts</h4>
