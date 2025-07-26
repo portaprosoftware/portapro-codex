@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,12 +13,15 @@ import {
   FileSignature,
   CheckCircle,
   PlayCircle,
-  MessageSquare
+  MessageSquare,
+  FileText
 } from 'lucide-react';
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
+import { ServiceReportForm } from './ServiceReportForm';
 import { useToast } from '@/hooks/use-toast';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Job {
   id: string;
@@ -28,6 +31,10 @@ interface Job {
   scheduled_date: string;
   scheduled_time?: string;
   notes?: string;
+  customer_id: string;
+  driver_id?: string;
+  assigned_template_ids?: any;
+  default_template_id?: string;
   customers: {
     name?: string;
   } | null;
@@ -51,17 +58,89 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const [notes, setNotes] = useState('');
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showSignature, setShowSignature] = useState(false);
+  const [showServiceReport, setShowServiceReport] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [assignedTemplates, setAssignedTemplates] = useState<any[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  useEffect(() => {
+    if (open && job) {
+      loadAssignedTemplates();
+    }
+  }, [open, job]);
+
+  const loadAssignedTemplates = async () => {
+    if (!job) return;
+    
+    setLoadingTemplates(true);
+    try {
+      // Get templates assigned to this job
+      const templateIds = [
+        ...(job.assigned_template_ids || []),
+        ...(job.default_template_id ? [job.default_template_id] : [])
+      ].filter(Boolean);
+
+      if (templateIds.length === 0) {
+        // Check for default templates from job services
+        const { data: jobItems } = await supabase
+          .from('job_items')
+          .select(`
+            *,
+            routine_maintenance_services!inner(
+              *,
+              template:maintenance_report_templates!default_template_id(*)
+            )
+          `)
+          .eq('job_id', job.id)
+          .eq('line_item_type', 'service');
+
+        const serviceTemplates = jobItems
+          ?.map(item => (item as any)?.routine_maintenance_services?.template)
+          .filter(Boolean) || [];
+
+        setAssignedTemplates(serviceTemplates);
+      } else {
+        // Load specific assigned templates
+        const { data: templates } = await supabase
+          .from('maintenance_report_templates')
+          .select('*')
+          .in('id', templateIds);
+
+        setAssignedTemplates(templates || []);
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      setAssignedTemplates([]);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
 
   if (!job) return null;
 
   const customerName = job.customers?.name || 'Unknown Customer';
   const statusInfo = getDualJobStatusInfo(job);
+  const hasServiceTemplates = assignedTemplates.length > 0;
 
   const handleStatusUpdate = async (newStatus: string) => {
+    if (newStatus === 'in-progress' && hasServiceTemplates) {
+      // If job has service templates, show service report form instead of just updating status
+      setShowServiceReport(true);
+      return;
+    }
+
     setIsUpdating(true);
     try {
-      // TODO: Implement status update API call
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          status: newStatus,
+          ...(newStatus === 'completed' ? { actual_completion_time: new Date().toISOString() } : {})
+        })
+        .eq('id', job.id);
+
+      if (error) throw error;
+
       toast({
         title: "Status Updated",
         description: `Job status changed to ${newStatus}`,
@@ -76,6 +155,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const handleServiceReportComplete = () => {
+    setShowServiceReport(false);
+    onStatusUpdate(); // Refresh job data
   };
 
   const handleAddNotes = async () => {
@@ -188,28 +272,60 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             <h4 className="font-medium">Update Status</h4>
             <div className="flex flex-col space-y-2">
               {job.status === 'assigned' && (
-                <Button 
-                  onClick={() => handleStatusUpdate('in-progress')}
-                  disabled={isUpdating}
-                  className="w-full"
-                >
-                  <PlayCircle className="w-4 h-4 mr-2" />
-                  Start Job
-                </Button>
+                <>
+                  {hasServiceTemplates ? (
+                    <Button 
+                      onClick={() => setShowServiceReport(true)}
+                      disabled={isUpdating || loadingTemplates}
+                      className="w-full"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      {loadingTemplates ? 'Loading...' : 'Start Service Report'}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => handleStatusUpdate('in-progress')}
+                      disabled={isUpdating}
+                      className="w-full"
+                    >
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Start Job
+                    </Button>
+                  )}
+                </>
               )}
               
               {job.status === 'in-progress' && (
-                <Button 
-                  onClick={() => handleStatusUpdate('completed')}
-                  disabled={isUpdating}
-                  className="w-full"
-                  variant="default"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Mark Complete
-                </Button>
+                <>
+                  {hasServiceTemplates ? (
+                    <Button 
+                      onClick={() => setShowServiceReport(true)}
+                      disabled={loadingTemplates}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      {loadingTemplates ? 'Loading...' : 'Complete Service Report'}
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => handleStatusUpdate('completed')}
+                      disabled={isUpdating}
+                      className="w-full"
+                      variant="default"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Mark Complete
+                    </Button>
+                  )}
+                </>
               )}
             </div>
+            
+            {hasServiceTemplates && (
+              <p className="text-xs text-muted-foreground">
+                {assignedTemplates.length} service template(s) assigned
+              </p>
+            )}
           </div>
 
           {/* Documentation Actions */}
@@ -277,6 +393,15 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           open={showSignature}
           onClose={() => setShowSignature(false)}
           jobId={job.id}
+        />
+
+        {/* Service Report Form Modal */}
+        <ServiceReportForm
+          open={showServiceReport}
+          onClose={() => setShowServiceReport(false)}
+          onComplete={handleServiceReportComplete}
+          job={job}
+          templates={assignedTemplates}
         />
       </DialogContent>
     </Dialog>

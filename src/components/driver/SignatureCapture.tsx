@@ -8,12 +8,14 @@ interface SignatureCaptureProps {
   open: boolean;
   onClose: () => void;
   jobId: string;
+  onComplete?: (signatureUrl: string) => void;
 }
 
 export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
   open,
   onClose,
-  jobId
+  jobId,
+  onComplete
 }) => {
   const { toast } = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -85,13 +87,19 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
       const dataURL = canvas.toDataURL('image/png');
       
       // TODO: Implement actual signature upload to Supabase Storage
-      // For now, just simulate save
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // For now, just simulate save and return a URL
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const mockSignatureUrl = `signature_${Date.now()}.png`;
       
       toast({
         title: "Signature Saved",
         description: "Customer signature has been captured",
       });
+      
+      // Call the completion callback if provided
+      if (onComplete) {
+        onComplete(mockSignatureUrl);
+      }
       
       handleClose();
     } catch (error) {

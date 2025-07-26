@@ -20,6 +20,10 @@ interface Job {
   scheduled_date: string;
   scheduled_time?: string;
   notes?: string;
+  customer_id: string;
+  driver_id?: string;
+  assigned_template_ids?: any;
+  default_template_id?: string;
   customers: {
     name?: string;
   } | null;

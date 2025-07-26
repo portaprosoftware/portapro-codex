@@ -9,12 +9,14 @@ interface PhotoCaptureProps {
   open: boolean;
   onClose: () => void;
   jobId: string;
+  onComplete?: (photoUrl: string) => void;
 }
 
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   open,
   onClose,
-  jobId
+  jobId,
+  onComplete
 }) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,13 +40,19 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     setIsUploading(true);
     try {
       // TODO: Implement actual file upload to Supabase Storage
-      // For now, just simulate upload
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // For now, just simulate upload and return a URL
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const mockPhotoUrl = `photo_${Date.now()}.jpg`;
       
       toast({
         title: "Photo Uploaded",
         description: "Job photo has been saved successfully",
       });
+      
+      // Call the completion callback if provided
+      if (onComplete) {
+        onComplete(mockPhotoUrl);
+      }
       
       handleClose();
     } catch (error) {
