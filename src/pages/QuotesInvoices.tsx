@@ -9,8 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
   FileText, 
-  Wrench, 
-  DollarSign, 
+  DollarSign,
   TrendingUp, 
   Search, 
   MoreHorizontal,
@@ -54,29 +53,6 @@ const QuotesInvoices: React.FC = () => {
     }
   });
 
-  const quickLinkCards = [
-    {
-      title: 'Inventory Items',
-      subtitle: 'Equipment rentals',
-      icon: FileText,
-      iconColor: 'text-blue-600',
-      filter: 'inventory'
-    },
-    {
-      title: 'Maintenance Services',
-      subtitle: 'Service offerings',
-      icon: Wrench,
-      iconColor: 'text-green-600',
-      filter: 'maintenance'
-    },
-    {
-      title: 'Mixed Items',
-      subtitle: 'Combined offerings',
-      icon: DollarSign,
-      iconColor: 'text-purple-600',
-      filter: 'mixed'
-    }
-  ];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -132,25 +108,6 @@ const QuotesInvoices: React.FC = () => {
       {/* Conditional Content Based on Active Tab */}
       {activeTab === 'quotes' && (
         <div className="space-y-6">
-          {/* Quick Link Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {quickLinkCards.map((card, index) => (
-              <Card 
-                key={index} 
-                className="cursor-pointer hover:shadow-md transition-shadow border-border"
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <card.icon className={`h-5 w-5 ${card.iconColor}`} />
-                    <div>
-                      <h3 className="font-semibold text-base text-foreground">{card.title}</h3>
-                      <p className="text-xs text-muted-foreground">{card.subtitle}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
 
           {/* Quote Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
