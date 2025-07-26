@@ -17,6 +17,7 @@ export const ConsumablesReportsTab: React.FC = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
 
   const { data: consumables } = useQuery({
     queryKey: ['consumables-reports'],

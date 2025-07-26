@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { AlertTriangle, Package, Plus, DollarSign, List, Grid, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { JobConsumableLocationPicker } from '@/components/inventory/JobConsumableLocationPicker';
 
 interface InventoryItem {
   id: string;
@@ -44,6 +45,14 @@ interface ConsumableItem {
   unit_price: number;
   selected_quantity: number;
   line_total: number;
+  locationAllocations?: LocationConsumableAllocation[];
+}
+
+interface LocationConsumableAllocation {
+  locationId: string;
+  locationName: string;
+  quantity: number;
+  availableStock: number;
 }
 
 interface InventoryConsumablesData {
@@ -236,11 +245,21 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
         on_hand_qty: consumable.on_hand_qty,
         unit_price: consumable.unit_price,
         selected_quantity: quantity,
-        line_total: quantity * consumable.unit_price
+        line_total: quantity * consumable.unit_price,
+        locationAllocations: []
       };
       updatedConsumables = [...data.selectedConsumables, newItem];
     }
 
+    onUpdate({ ...data, selectedConsumables: updatedConsumables });
+  };
+
+  const updateConsumableLocationAllocations = (consumableId: string, allocations: LocationConsumableAllocation[]) => {
+    const updatedConsumables = data.selectedConsumables.map(item =>
+      item.id === consumableId
+        ? { ...item, locationAllocations: allocations }
+        : item
+    );
     onUpdate({ ...data, selectedConsumables: updatedConsumables });
   };
 
@@ -459,29 +478,43 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                     const quantity = selectedItem?.selected_quantity || 0;
                     
                     return (
-                      <div key={consumable.id} className="flex items-center space-x-4 p-4 border border-border rounded-lg">
-                        <div className="flex-1">
-                          <div className="font-medium">{consumable.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            Stock: {consumable.on_hand_qty} • ${consumable.unit_price.toFixed(2)}/unit
+                      <div key={consumable.id} className="space-y-4">
+                        <div className="flex items-center space-x-4 p-4 border border-border rounded-lg">
+                          <div className="flex-1">
+                            <div className="font-medium">{consumable.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              Stock: {consumable.on_hand_qty} • ${consumable.unit_price.toFixed(2)}/unit
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type="number"
+                              min="0"
+                              max={consumable.on_hand_qty}
+                              value={quantity}
+                              onChange={(e) => updateConsumableQuantity(
+                                consumable.id, 
+                                parseInt(e.target.value) || 0
+                              )}
+                              className="w-20"
+                            />
+                            {quantity > 0 && (
+                              <Badge>${(quantity * consumable.unit_price).toFixed(2)}</Badge>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            max={consumable.on_hand_qty}
-                            value={quantity}
-                            onChange={(e) => updateConsumableQuantity(
-                              consumable.id, 
-                              parseInt(e.target.value) || 0
-                            )}
-                            className="w-20"
+                        
+                        {quantity > 0 && (
+                          <JobConsumableLocationPicker
+                            consumableId={consumable.id}
+                            consumableName={consumable.name}
+                            totalQuantityNeeded={quantity}
+                            onAllocationChange={(allocations) => 
+                              updateConsumableLocationAllocations(consumable.id, allocations)
+                            }
+                            value={selectedItem?.locationAllocations || []}
                           />
-                          {quantity > 0 && (
-                            <Badge>${(quantity * consumable.unit_price).toFixed(2)}</Badge>
-                          )}
-                        </div>
+                        )}
                       </div>
                     );
                   })}

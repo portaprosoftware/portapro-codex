@@ -15,6 +15,7 @@ import { EnterpriseIntegrationsHub } from './EnterpriseIntegrationsHub';
 import { RealTimeCollaborationSystem } from './RealTimeCollaborationSystem';
 import { EnterpriseReportingSystem } from './EnterpriseReportingSystem';
 import { ConsumablesReportsTab } from './ConsumablesReportsTab';
+import { StockTransferReporting } from './StockTransferReporting';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -206,6 +207,7 @@ export const ConsumablesInventory: React.FC = () => {
           {activeTab === 'usage' && <JobConsumablesTracker />}
           {activeTab === 'requests' && <ConsumableRequestsManager />}
           {activeTab === 'reports' && <ConsumablesReportsTab />}
+          {activeTab === 'transfers' && <StockTransferReporting />}
           {activeTab === 'alerts' && <ConsumableNotificationsPanel />}
           {activeTab === 'qr-codes' && <ConsumableQRGenerator />}
           {activeTab === 'mobile-pwa' && <ConsumablePWAManager />}
