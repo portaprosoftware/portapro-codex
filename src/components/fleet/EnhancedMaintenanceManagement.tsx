@@ -197,25 +197,25 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-white rounded-full p-1 shadow-sm border">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+        <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="records" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+          <TabsTrigger value="records" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
             All Records
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+          <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+          <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
             Settings
           </TabsTrigger>
           {inHouseEnabled && (
             <>
-              <TabsTrigger value="parts" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+              <TabsTrigger value="parts" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
                 Parts & Inventory
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-6 py-2">
+              <TabsTrigger value="calendar" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-4 py-2 text-sm">
                 Calendar
               </TabsTrigger>
             </>
