@@ -65,7 +65,7 @@ export function UserManagementSection() {
         .from("profiles")
         .select(`
           *,
-          user_roles (
+          user_roles!inner (
             role
           )
         `);
@@ -75,7 +75,9 @@ export function UserManagementSection() {
       // Transform the data to ensure user_roles is properly structured
       return data?.map(user => ({
         ...user,
-        current_role: user.user_roles?.[0]?.role || null
+        current_role: Array.isArray(user.user_roles) 
+          ? user.user_roles[0]?.role 
+          : user.user_roles?.role || null
       })) || [];
     },
   });
