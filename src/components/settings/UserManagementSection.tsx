@@ -396,15 +396,15 @@ export function UserManagementSection() {
                   <TableCell>{user.email}</TableCell>
                    <TableCell>
                      <Badge 
-                       className="text-white inline-flex items-center"
+                       className="text-white font-bold inline-flex items-center"
                        style={{ 
-                         backgroundColor: user.current_role ? 
-                           (user.current_role === 'owner' ? '#8B5CF6' :
-                            user.current_role === 'dispatcher' ? '#3B82F6' :
-                            user.current_role === 'admin' ? '#10B981' :
-                            user.current_role === 'driver' ? '#F59E0B' :
-                            user.current_role === 'customer' ? '#EF4444' : '#6B7280') 
-                           : '#6B7280'
+                         background: user.current_role ? 
+                           (user.current_role === 'owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
+                            user.current_role === 'dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
+                            user.current_role === 'admin' ? 'linear-gradient(135deg, #10B981, #059669)' :
+                            user.current_role === 'driver' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
+                            user.current_role === 'customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'linear-gradient(135deg, #6B7280, #4B5563)') 
+                           : 'linear-gradient(135deg, #6B7280, #4B5563)'
                        }}
                      >
                        {user.current_role && roleIcons[user.current_role as keyof typeof roleIcons] && 
@@ -417,10 +417,11 @@ export function UserManagementSection() {
                    </TableCell>
                     <TableCell>
                       <Badge 
-                        className="inline-flex items-center"
+                        className="inline-flex items-center font-bold text-white"
                         style={{ 
-                          backgroundColor: user.is_active ? '#10B981' : '#6B7280',
-                          color: 'white'
+                          background: user.is_active ? 
+                            'linear-gradient(135deg, #10B981, #059669)' : 
+                            'linear-gradient(135deg, #6B7280, #4B5563)'
                         }}
                       >
                         {user.is_active ? (
@@ -432,10 +433,10 @@ export function UserManagementSection() {
                           <>
                             <UserX className="w-3 h-3 mr-1" />
                             Inactive
-                         </>
-                       )}
-                     </Badge>
-                   </TableCell>
+                          </>
+                        )}
+                      </Badge>
+                    </TableCell>
                    <TableCell className="text-right">
                      <DropdownMenu>
                        <DropdownMenuTrigger asChild>
