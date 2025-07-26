@@ -13,6 +13,7 @@ import { DeliveryPickupScheduleStep } from './steps/enhanced/DeliveryPickupSched
 import { LocationContactsStep } from './steps/enhanced/LocationContactsStep';
 import { InventoryConsumablesStep } from './steps/enhanced/InventoryConsumablesStep';
 import { ServicesFrequencyStep } from './steps/enhanced/ServicesFrequencyStep';
+import { ServiceTemplateAssignmentStep } from './steps/enhanced/ServiceTemplateAssignmentStep';
 import { CrewAssignmentStep } from './steps/enhanced/CrewAssignmentStep';
 import { SpecialInstructionsReviewStep } from './steps/enhanced/SpecialInstructionsReviewStep';
 
@@ -70,12 +71,16 @@ interface WizardData {
   selectedServices: any[];
   servicesSubtotal: number;
   
-  // Step 7: Crew Assignment
+  // Step 7: Service Template Assignment
+  selectedTemplateIds: string[];
+  defaultTemplateId?: string;
+  
+  // Step 8: Crew Assignment
   selectedDriver?: any;
   selectedVehicle?: any;
   hasConflicts: boolean;
   
-  // Step 8: Special Instructions & Review
+  // Step 9: Special Instructions & Review
   specialInstructions: string;
   additionalContacts: any[];
   quickAddContact?: any;
@@ -94,8 +99,9 @@ const STEPS = [
   { id: 4, title: 'Location & Contacts', description: 'Choose location and contacts' },
   { id: 5, title: 'Inventory & Consumables', description: 'Select equipment and supplies' },
   { id: 6, title: 'Services & Frequency', description: 'Add services and set frequency' },
-  { id: 7, title: 'Crew Assignment', description: 'Assign driver and vehicle' },
-  { id: 8, title: 'Review & Create', description: 'Final review and creation' }
+  { id: 7, title: 'Service Templates', description: 'Assign report templates' },
+  { id: 8, title: 'Crew Assignment', description: 'Assign driver and vehicle' },
+  { id: 9, title: 'Review & Create', description: 'Final review and creation' }
 ];
 
 export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
@@ -127,6 +133,8 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     consumablesSubtotal: 0,
     selectedServices: [],
     servicesSubtotal: 0,
+    selectedTemplateIds: [],
+    defaultTemplateId: undefined,
     hasConflicts: false,
     specialInstructions: '',
     additionalContacts: []
@@ -161,8 +169,10 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
       case 6:
         return true; // Optional step
       case 7:
-        return !data.hasConflicts; // Cannot proceed with conflicts
+        return true; // Optional step - service templates
       case 8:
+        return !data.hasConflicts; // Cannot proceed with conflicts
+      case 9:
         return true; // Final step
       default:
         return true;
@@ -306,6 +316,23 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
       
       case 7:
         return (
+          <ServiceTemplateAssignmentStep
+            data={{
+              selectedTemplateIds: data.selectedTemplateIds,
+              defaultTemplateId: data.defaultTemplateId,
+              availableTemplates: [],
+              preSelectedFromServices: []
+            }}
+            onUpdate={(stepData) => updateStepData({
+              selectedTemplateIds: stepData.selectedTemplateIds,
+              defaultTemplateId: stepData.defaultTemplateId
+            })}
+            selectedServices={data.selectedServices}
+          />
+        );
+      
+      case 8:
+        return (
           <CrewAssignmentStep
             data={{
               selectedDriver: data.selectedDriver,
@@ -317,7 +344,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
           />
         );
       
-      case 8:
+      case 9:
         return (
           <SpecialInstructionsReviewStep
             data={{

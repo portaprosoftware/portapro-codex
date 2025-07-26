@@ -2292,10 +2292,12 @@ export type Database = {
       jobs: {
         Row: {
           actual_completion_time: string | null
+          assigned_template_ids: Json | null
           billing_method: string | null
           created_at: string
           customer_id: string
           date_returned: string | null
+          default_template_id: string | null
           driver_id: string | null
           id: string
           is_service_job: boolean
@@ -2319,10 +2321,12 @@ export type Database = {
         }
         Insert: {
           actual_completion_time?: string | null
+          assigned_template_ids?: Json | null
           billing_method?: string | null
           created_at?: string
           customer_id: string
           date_returned?: string | null
+          default_template_id?: string | null
           driver_id?: string | null
           id?: string
           is_service_job?: boolean
@@ -2346,10 +2350,12 @@ export type Database = {
         }
         Update: {
           actual_completion_time?: string | null
+          assigned_template_ids?: Json | null
           billing_method?: string | null
           created_at?: string
           customer_id?: string
           date_returned?: string | null
+          default_template_id?: string | null
           driver_id?: string | null
           id?: string
           is_service_job?: boolean
@@ -2372,6 +2378,13 @@ export type Database = {
           vehicle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_jobs_default_template"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_report_templates"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fk_jobs_driver_id"
             columns: ["driver_id"]
@@ -3006,7 +3019,15 @@ export type Database = {
           weather_conditions?: string | null
           workflow_status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_maintenance_reports_job"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       maintenance_signatures: {
         Row: {
@@ -4495,6 +4516,13 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "fk_routine_maintenance_services_default_template_id"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_report_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_routine_services_default_template"
             columns: ["default_template_id"]
             isOneToOne: false
             referencedRelation: "maintenance_report_templates"

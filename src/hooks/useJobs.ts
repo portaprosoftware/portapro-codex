@@ -77,7 +77,7 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
 
 interface JobFormData {
   customer_id: string;
-  job_type: 'delivery' | 'pickup' | 'service';
+  job_type: 'delivery' | 'pickup' | 'service' | 'partial-pickup' | 'on-site-survey';
   scheduled_date: string;
   scheduled_time?: string;
   notes?: string;
@@ -88,6 +88,8 @@ interface JobFormData {
   billing_method?: string;
   subscription_plan?: string;
   consumables_data?: any;
+  assigned_template_ids?: string[];
+  default_template_id?: string;
 }
 
 export function useJobs(filters?: {
@@ -165,7 +167,9 @@ export function useCreateJob() {
           ...jobDataForDB,
           job_number: jobNumber,
           status: 'assigned',
-          timezone: jobData.timezone || 'America/New_York'
+          timezone: jobData.timezone || 'America/New_York',
+          assigned_template_ids: jobData.assigned_template_ids || [],
+          default_template_id: jobData.default_template_id || null
         })
         .select()
         .single();

@@ -18,7 +18,7 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
-import { useJobs, useUpdateJobStatus } from '@/hooks/useJobs';
+import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -44,6 +44,7 @@ const JobsPage: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState('all');
 
   const updateJobStatusMutation = useUpdateJobStatus();
+  const createJobMutation = useCreateJob();
   const queryClient = useQueryClient();
 
   // Mutation to update job assignment
@@ -639,9 +640,33 @@ const JobsPage: React.FC = () => {
       {isJobWizardOpen && (
         <EnhancedJobWizard 
           onComplete={(data) => {
-            console.log('Job creation data:', data);
+            // Convert wizard data to job creation format
+            const jobData = {
+              customer_id: data.selectedCustomer?.id,
+              job_type: data.jobType,
+              scheduled_date: data.deliveryDate?.toISOString().split('T')[0] || 
+                            data.serviceDate?.toISOString().split('T')[0] || 
+                            new Date().toISOString().split('T')[0],
+              scheduled_time: data.deliveryTime || data.serviceTime || '09:00',
+              notes: data.specialInstructions || '',
+              special_instructions: data.specialInstructions || '',
+              driver_id: data.selectedDriver?.id,
+              vehicle_id: data.selectedVehicle?.id,
+              timezone: data.timezone || 'America/New_York',
+              billing_method: data.consumablesBillingMethod || 'per-use',
+              subscription_plan: data.subscriptionEnabled ? 'basic' : undefined,
+              assigned_template_ids: data.selectedTemplateIds || [],
+              default_template_id: data.defaultTemplateId || undefined,
+              consumables_data: {
+                billing_method: data.consumablesBillingMethod,
+                selected_consumables: data.selectedConsumables,
+                selected_bundle: data.selectedBundle,
+                subscription_enabled: data.subscriptionEnabled
+              }
+            };
+
+            createJobMutation.mutate(jobData);
             setIsJobWizardOpen(false);
-            // TODO: Create job with the enhanced data
           }}
           onCancel={() => setIsJobWizardOpen(false)}
         />
