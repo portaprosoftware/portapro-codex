@@ -163,6 +163,27 @@ export function UserManagementSection() {
     },
   });
 
+  const toggleUserStatus = useMutation({
+    mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_active: !isActive })
+        .eq("id", userId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      toast.success("User status updated successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to update user status");
+      console.error("Error updating user status:", error);
+    },
+  });
+
   const onSubmit = (data: UserFormData) => {
     createUser.mutate(data);
   };
@@ -397,22 +418,31 @@ export function UserManagementSection() {
                      </Badge>
                    </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => setEditingUser(user)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => deleteUser.mutate(user.id)}
-                        disabled={deleteUser.isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                     <div className="flex items-center justify-end space-x-2">
+                       <Button 
+                         size="sm" 
+                         variant="outline"
+                         onClick={() => toggleUserStatus.mutate({ userId: user.id, isActive: user.is_active })}
+                         disabled={toggleUserStatus.isPending}
+                         title={user.is_active ? "Mark as Inactive" : "Mark as Active"}
+                       >
+                         {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                       </Button>
+                       <Button 
+                         size="sm" 
+                         variant="outline"
+                         onClick={() => setEditingUser(user)}
+                       >
+                         <Edit className="w-4 h-4" />
+                       </Button>
+                       <Button 
+                         size="sm" 
+                         variant="outline"
+                         onClick={() => deleteUser.mutate(user.id)}
+                         disabled={deleteUser.isPending}
+                       >
+                         <Trash2 className="w-4 h-4" />
+                       </Button>
                     </div>
                   </TableCell>
                 </TableRow>
