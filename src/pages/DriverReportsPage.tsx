@@ -25,15 +25,15 @@ const reportJobSchema = z.object({
 
 type ReportJobFormData = z.infer<typeof reportJobSchema>;
 
-interface MaintenanceReport {
+interface MaintenanceRecord {
   id: string;
-  report_number: string;
-  template_name: string;
+  maintenance_type: string;
+  description: string;
   created_at: string;
   status: string;
   vehicle_id?: string;
-  assigned_to?: string;
-  completion_date?: string;
+  technician_id?: string;
+  completed_date?: string;
   notes?: string;
   vehicles?: {
     license_plate: string;
@@ -41,7 +41,7 @@ interface MaintenanceReport {
   profiles?: {
     first_name: string;
     last_name: string;
-  };
+  }[];
 }
 
 interface Job {
@@ -58,7 +58,7 @@ interface Job {
 export function DriverReportsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedReport, setSelectedReport] = useState<MaintenanceReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<MaintenanceRecord | null>(null);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const { user } = useUserRole();
   const queryClient = useQueryClient();
@@ -71,16 +71,16 @@ export function DriverReportsPage() {
     },
   });
 
-  // Fetch maintenance reports
+  // Fetch maintenance records
   const { data: reports = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['driver-maintenance-reports', searchTerm, statusFilter],
+    queryKey: ['driver-maintenance-records', searchTerm, statusFilter],
     queryFn: async () => {
       let query = supabase
-        .from('maintenance_reports')
+        .from('maintenance_records')
         .select(`
           *,
           vehicles(license_plate),
-          profiles!assigned_to(first_name, last_name)
+          profiles!technician_id(first_name, last_name)
         `)
         .order('created_at', { ascending: false });
 
@@ -89,7 +89,7 @@ export function DriverReportsPage() {
       }
 
       if (searchTerm) {
-        query = query.or(`report_number.ilike.%${searchTerm}%,template_name.ilike.%${searchTerm}%`);
+        query = query.or(`maintenance_type.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
       const { data, error } = await query;
@@ -121,23 +121,22 @@ export function DriverReportsPage() {
     },
   });
 
-  // Assign report to job mutation (simulate with job notes for now)
+  // Assign report to job mutation (update the maintenance record's notes)
   const assignReportToJob = useMutation({
     mutationFn: async (data: ReportJobFormData & { reportId: string }) => {
-      // For now, we'll add a note to the job mentioning the report
+      // Update the maintenance record to add job assignment info
+      const noteText = `Assigned to Job ID: ${data.job_id}. ${data.notes || ''}`;
       const { error } = await supabase
-        .from('job_notes')
-        .insert({
-          job_id: data.job_id,
-          driver_id: user?.id,
-          note_text: `Maintenance Report #${selectedReport?.report_number} assigned. ${data.notes || ''}`,
-          note_type: 'maintenance_report'
-        });
+        .from('maintenance_records')
+        .update({
+          notes: noteText
+        })
+        .eq('id', data.reportId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['driver-maintenance-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['driver-maintenance-records'] });
       toast.success('Report assigned to job successfully');
       setIsAssignModalOpen(false);
       setSelectedReport(null);
@@ -149,7 +148,7 @@ export function DriverReportsPage() {
     },
   });
 
-  const handleAssignReport = (report: MaintenanceReport) => {
+  const handleAssignReport = (report: MaintenanceRecord) => {
     setSelectedReport(report);
     setIsAssignModalOpen(true);
   };
@@ -165,8 +164,8 @@ export function DriverReportsPage() {
 
   const filteredReports = reports.filter((report: any) => {
     const matchesSearch = !searchTerm || 
-      report.report_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.template_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      report.maintenance_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || report.status === statusFilter;
     
@@ -288,14 +287,14 @@ export function DriverReportsPage() {
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center space-x-3">
                       <h3 className="font-semibold text-lg">
-                        Report #{report.report_number}
+                        {report.maintenance_type} - {report.id.slice(0, 8)}
                       </h3>
                       <Badge className={getStatusColor(report.status)}>
                         {report.status.replace('_', ' ').toUpperCase()}
                       </Badge>
                     </div>
                     
-                    <p className="text-muted-foreground">{report.template_name}</p>
+                    <p className="text-muted-foreground">{report.description}</p>
                     {report.notes && (
                       <p className="text-sm text-muted-foreground italic">{report.notes}</p>
                     )}
@@ -313,20 +312,20 @@ export function DriverReportsPage() {
                         </div>
                       )}
                       
-                      {report.profiles && (
+                      {report.profiles && Array.isArray(report.profiles) && report.profiles.length > 0 && (
                         <div className="flex items-center space-x-2">
                           <User className="w-4 h-4 text-muted-foreground" />
                           <span>
-                            Assigned: {report.profiles.first_name} {report.profiles.last_name}
+                            Technician: {report.profiles[0].first_name} {report.profiles[0].last_name}
                           </span>
                         </div>
                       )}
                       
-                      {report.completion_date && (
+                      {report.completed_date && (
                         <div className="flex items-center space-x-2">
                           <Clock className="w-4 h-4 text-muted-foreground" />
                           <span>
-                            Completed: {new Date(report.completion_date).toLocaleDateString()}
+                            Completed: {new Date(report.completed_date).toLocaleDateString()}
                           </span>
                         </div>
                       )}
@@ -365,7 +364,7 @@ export function DriverReportsPage() {
           {selectedReport && (
             <div className="space-y-4">
               <div className="p-3 bg-muted rounded-lg">
-                <h4 className="font-medium">Report #{selectedReport.report_number}</h4>
+                <h4 className="font-medium">{selectedReport.maintenance_type} - {selectedReport.id.slice(0, 8)}</h4>
                 <p className="text-sm text-muted-foreground">{selectedReport.description}</p>
               </div>
               
