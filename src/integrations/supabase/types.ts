@@ -6087,6 +6087,21 @@ export type Database = {
           maintenance_count: number
         }[]
       }
+      get_consumables_with_location_stock: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          category: string
+          sku: string
+          unit_cost: number
+          unit_price: number
+          on_hand_qty: number
+          reorder_threshold: number
+          is_active: boolean
+          location_stock: Json
+        }[]
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -6300,6 +6315,13 @@ export type Database = {
         }
         Returns: string
       }
+      migrate_consumable_stock_to_locations: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          migrated_consumables: number
+          total_stock_migrated: number
+        }[]
+      }
       migrate_consumables_to_default_location: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -6365,6 +6387,10 @@ export type Database = {
       soft_delete_quote: {
         Args: { quote_uuid: string }
         Returns: boolean
+      }
+      sync_consumable_total_from_locations: {
+        Args: { consumable_uuid: string }
+        Returns: undefined
       }
       track_template_usage: {
         Args:
