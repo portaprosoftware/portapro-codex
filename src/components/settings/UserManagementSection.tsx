@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -40,6 +40,14 @@ const roleLabels = {
   driver: "Driver", 
   customer: "Customer",
   admin: "Admin",
+};
+
+const roleIcons = {
+  owner: Crown,
+  dispatcher: Headphones,
+  driver: Truck,
+  customer: User,
+  admin: Shield,
 };
 
 export function UserManagementSection() {
@@ -340,20 +348,25 @@ export function UserManagementSection() {
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Badge className={`text-white ${roleColors[user.user_roles?.[0]?.role as keyof typeof roleColors] || "bg-muted"}`}>
+                    <Badge className={`text-white !inline-flex !items-center !opacity-100 ${roleColors[user.user_roles?.[0]?.role as keyof typeof roleColors] || "bg-muted"}`}>
+                      {roleIcons[user.user_roles?.[0]?.role as keyof typeof roleIcons] && 
+                        React.createElement(roleIcons[user.user_roles?.[0]?.role as keyof typeof roleIcons], { 
+                          className: "w-3 h-3 mr-1 !opacity-100 !block" 
+                        })
+                      }
                       {roleLabels[user.user_roles?.[0]?.role as keyof typeof roleLabels] || "No Role"}
                     </Badge>
                   </TableCell>
                    <TableCell>
-                     <Badge variant={user.is_active ? "default" : "secondary"} className="inline-flex items-center">
+                     <Badge variant={user.is_active ? "default" : "secondary"} className="!inline-flex !items-center !opacity-100">
                        {user.is_active ? (
                          <>
-                           <UserCheck className="w-3 h-3 mr-1 opacity-100" />
+                           <UserCheck className="w-3 h-3 mr-1 !opacity-100 !block" />
                            Active
                          </>
                        ) : (
                          <>
-                           <UserX className="w-3 h-3 mr-1 opacity-100" />
+                           <UserX className="w-3 h-3 mr-1 !opacity-100 !block" />
                            Inactive
                          </>
                        )}

@@ -47,6 +47,8 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
 
   const updateUser = useMutation({
     mutationFn: async (data: EditUserFormData) => {
+      console.log('Updating user:', user.id, 'with data:', data);
+      
       // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
@@ -57,17 +59,36 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
         })
         .eq("id", user.id);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile update error:', profileError);
+        throw profileError;
+      }
 
-      // Update role
+      // Delete existing role and insert new one (since we have unique constraint)
+      const { error: deleteError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (deleteError) {
+        console.error('Role delete error:', deleteError);
+        throw deleteError;
+      }
+
+      // Insert new role
       const { error: roleError } = await supabase
         .from("user_roles")
-        .upsert({
+        .insert({
           user_id: user.id,
           role: data.role,
         });
 
-      if (roleError) throw roleError;
+      if (roleError) {
+        console.error('Role insert error:', roleError);
+        throw roleError;
+      }
+      
+      console.log('User update completed successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
