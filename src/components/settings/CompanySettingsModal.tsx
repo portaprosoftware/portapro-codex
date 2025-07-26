@@ -121,8 +121,9 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
   });
 
   React.useEffect(() => {
+    console.log("Form reset triggered:", { companySettings, isOpen });
     if (companySettings && isOpen) {
-      form.reset({
+      const formData = {
         company_name: companySettings.company_name || "",
         company_email: companySettings.company_email || "",
         company_phone: companySettings.company_phone || "",
@@ -133,23 +134,36 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         company_zipcode: companySettings.company_zipcode || "",
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
-      });
+      };
+      console.log("Resetting form with data:", formData);
+      form.reset(formData);
     }
   }, [companySettings, isOpen, form]);
 
   const updateCompanySettings = useMutation({
     mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
-      const { error } = await supabase
+      console.log("Updating company settings:", data);
+      
+      const updatedData = {
+        id: companySettings?.id || '08751fa1-759f-4bfd-afd3-37a6d6b4f86f',
+        ...data
+      };
+      
+      const { data: result, error } = await supabase
         .from("company_settings")
-        .upsert({
-          id: companySettings?.id || '08751fa1-759f-4bfd-afd3-37a6d6b4f86f',
-          ...data
-        });
+        .upsert(updatedData)
+        .select()
+        .single();
       
       if (error) throw error;
+      return result;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-settings"] });
+    onSuccess: (updatedData) => {
+      console.log("Company settings updated successfully:", updatedData);
+      
+      // Optimistically update the cache instead of invalidating
+      queryClient.setQueryData(["company-settings"], updatedData);
+      
       toast.success("Company settings updated successfully!");
       onClose();
     },
@@ -181,7 +195,15 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
     },
     onSuccess: async (logoUrl) => {
       const formData = form.getValues();
-      await updateCompanySettings.mutateAsync({ ...formData, company_logo: logoUrl });
+      const result = await updateCompanySettings.mutateAsync({ ...formData, company_logo: logoUrl });
+      
+      // Optimistically update cache with logo URL
+      queryClient.setQueryData(["company-settings"], (old: any) => ({
+        ...old,
+        ...result,
+        company_logo: logoUrl
+      }));
+      
       setLogoFile(null);
       setLogoPreview(null);
       setShowLogoModal(false);

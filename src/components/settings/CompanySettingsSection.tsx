@@ -9,18 +9,28 @@ import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal
 export function CompanySettingsSection() {
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const { data: companySettings, isLoading } = useQuery({
+  const { data: companySettings, isLoading, error } = useQuery({
     queryKey: ["company-settings"],
     queryFn: async () => {
+      console.log("Fetching company settings...");
       const { data, error } = await supabase
         .from("company_settings")
         .select("*")
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching company settings:", error);
+        throw error;
+      }
+      console.log("Company settings fetched:", data);
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes (renamed from cacheTime in v5)
+    retry: 3,
   });
+
+  console.log("CompanySettingsSection render:", { companySettings, isLoading, error });
 
   if (isLoading) {
     return (
