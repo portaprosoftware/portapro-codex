@@ -450,7 +450,22 @@ export type Database = {
           storage_location_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "consumable_location_stock_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_location_stock_storage_location_id_fkey"
+            columns: ["storage_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       consumable_notification_settings: {
         Row: {
@@ -1218,7 +1233,22 @@ export type Database = {
           updated_at?: string | null
           vehicle_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "daily_vehicle_assignments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "daily_vehicle_assignments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_vehicle_loads: {
         Row: {
@@ -1665,7 +1695,22 @@ export type Database = {
           total_cost?: number
           vehicle_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fuel_logs_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fuel_settings: {
         Row: {
@@ -1944,7 +1989,15 @@ export type Database = {
           terms?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_completion_verifications: {
         Row: {
@@ -2262,7 +2315,22 @@ export type Database = {
           updated_at?: string
           vehicle_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "jobs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       load_compliance_reports: {
         Row: {
@@ -2670,7 +2738,29 @@ export type Database = {
           vehicle_id?: string
           vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_records_task_type_id_fkey"
+            columns: ["task_type_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_task_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       maintenance_report_attachments: {
         Row: {
@@ -5211,7 +5301,22 @@ export type Database = {
           uploaded_by?: string | null
           vehicle_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_compliance_documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_compliance_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicle_damage_logs: {
         Row: {
