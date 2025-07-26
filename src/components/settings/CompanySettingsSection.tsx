@@ -133,12 +133,16 @@ export function CompanySettingsSection() {
   });
 
   React.useEffect(() => {
-    if (companySettings) {
+    console.log("Form reset effect triggered", { companySettings, isLoading });
+    
+    if (companySettings && !isLoading) {
+      console.log("Resetting form with data:", companySettings);
+      
       form.reset({
         company_name: companySettings.company_name || "",
         company_email: companySettings.company_email || "",
         company_phone: companySettings.company_phone || "",
-        company_street: companySettings.company_street || companySettings.company_address || "",
+        company_street: companySettings.company_street || "",
         company_street2: companySettings.company_street2 || "",
         company_city: companySettings.company_city || "",
         company_state: companySettings.company_state || "",
@@ -146,8 +150,10 @@ export function CompanySettingsSection() {
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
       });
+      
+      console.log("Form values after reset:", form.getValues());
     }
-  }, [companySettings, form]);
+  }, [companySettings, isLoading, form]);
 
   const updateCompanySettings = useMutation({
     mutationFn: async (data: CompanySettingsFormData & { company_logo?: string }) => {
