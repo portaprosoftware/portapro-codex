@@ -5733,27 +5733,39 @@ export type Database = {
           created_at: string
           document_type_id: string
           expiration_date: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
           id: string
           notes: string | null
           updated_at: string
+          uploaded_by: string | null
           vehicle_id: string
         }
         Insert: {
           created_at?: string
           document_type_id: string
           expiration_date?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
           notes?: string | null
           updated_at?: string
+          uploaded_by?: string | null
           vehicle_id: string
         }
         Update: {
           created_at?: string
           document_type_id?: string
           expiration_date?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
           notes?: string | null
           updated_at?: string
+          uploaded_by?: string | null
           vehicle_id?: string
         }
         Relationships: [
@@ -6343,6 +6355,10 @@ export type Database = {
           vehicle_type: string
           location: unknown
         }[]
+      }
+      get_compliance_notification_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_comprehensive_stock_breakdown: {
         Args: { product_uuid?: string }

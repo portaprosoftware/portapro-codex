@@ -1,5 +1,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Truck, 
   AlertTriangle, 
@@ -16,62 +18,68 @@ import {
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-const navigationItems = [
-  {
-    title: "Fleet Overview",
-    href: "/fleet-management",
-    icon: Truck,
-    description: "All vehicles",
-    end: true
-  },
-  {
-    title: "Compliance",
-    href: "/fleet/compliance",
-    icon: AlertTriangle,
-    description: "Insurance & Registration...",
-    badge: "6"
-  },
-  {
-    title: "Assignments",
-    href: "/fleet/assignments",
-    icon: Calendar,
-    description: "Daily driver schedules"
-  },
-  {
-    title: "Maintenance",
-    href: "/fleet/maintenance",
-    icon: Wrench,
-    description: "Service & repairs",
-    badge: "1"
-  },
-  {
-    title: "Fuel",
-    href: "/fleet/fuel",
-    icon: Fuel,
-    description: "Logs & summaries"
-  },
-  {
-    title: "Files & Photos",
-    href: "/fleet/files",
-    icon: FileText,
-    description: "General uploads"
-  }
-];
-
 export const FleetSidebar: React.FC = () => {
   const location = useLocation();
   const isFleetManagementActive = location.pathname === "/fleet-management" || location.pathname === "/fleet";
+  
+  // Fetch real-time compliance notification counts
+  const { data: complianceCounts } = useQuery({
+    queryKey: ["compliance-notification-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_compliance_notification_counts");
+      if (error) throw error;
+      return data as { total: number; overdue: number; critical: number; warning: number };
+    },
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const navigationItems = [
+    {
+      title: "Fleet Overview",
+      href: "/fleet-management",
+      icon: Truck,
+      description: "All vehicles",
+      end: true
+    },
+    {
+      title: "Compliance",
+      href: "/fleet/compliance",
+      icon: AlertTriangle,
+      description: "Insurance & Registration...",
+      badge: complianceCounts?.total > 0 ? complianceCounts.total.toString() : undefined
+    },
+    {
+      title: "Assignments",
+      href: "/fleet/assignments",
+      icon: Calendar,
+      description: "Daily driver schedules"
+    },
+    {
+      title: "Maintenance",
+      href: "/fleet/maintenance",
+      icon: Wrench,
+      description: "Service & repairs",
+      badge: "1"
+    },
+    {
+      title: "Fuel",
+      href: "/fleet/fuel",
+      icon: Fuel,
+      description: "Logs & summaries"
+    },
+    {
+      title: "Files & Photos",
+      href: "/fleet/files",
+      icon: FileText,
+      description: "General uploads"
+    }
+  ];
   
   return (
     <aside className="w-64 bg-card border-r flex flex-col">
       {/* Header */}
       <div className="p-6 border-b">
-        <h2 className={cn(
-          "text-lg font-semibold transition-colors",
-          isFleetManagementActive 
-            ? "text-white font-bold bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-2 rounded-lg" 
-            : "text-foreground"
-        )}>
+        <h2 className="text-2xl font-semibold text-gray-900 font-inter">
           Fleet Management
         </h2>
       </div>
