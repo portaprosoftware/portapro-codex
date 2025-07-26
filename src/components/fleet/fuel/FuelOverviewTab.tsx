@@ -40,16 +40,36 @@ export const FuelOverviewTab: React.FC = () => {
   const endDate = new Date();
 
   const { data: metrics, isLoading: metricsLoading } = useQuery({
-    queryKey: ['fuel-metrics', startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]],
+    queryKey: ['fuel-metrics'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('get_fuel_metrics', {
-          start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0]
-        });
+        .from('fuel_logs')
+        .select('gallons_purchased, total_cost, cost_per_gallon')
+        .gte('log_date', startDate.toISOString().split('T')[0])
+        .lte('log_date', endDate.toISOString().split('T')[0]);
       
       if (error) throw error;
-      return data as unknown as FuelMetrics;
+      
+      if (!data || data.length === 0) {
+        return {
+          total_gallons: 0,
+          total_cost: 0,
+          average_cost_per_gallon: 0,
+          fleet_mpg: 0,
+          log_count: 0
+        };
+      }
+      
+      const totalGallons = data.reduce((sum, log) => sum + (log.gallons_purchased || 0), 0);
+      const totalCost = data.reduce((sum, log) => sum + (log.total_cost || 0), 0);
+      
+      return {
+        total_gallons: totalGallons,
+        total_cost: totalCost,
+        average_cost_per_gallon: totalGallons > 0 ? totalCost / totalGallons : 0,
+        fleet_mpg: 0, // Calculate later
+        log_count: data.length
+      };
     }
   });
 
@@ -57,10 +77,34 @@ export const FuelOverviewTab: React.FC = () => {
     queryKey: ['recent-fuel-logs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('get_recent_fuel_logs', { limit_count: 5 });
+        .from('fuel_logs')
+        .select(`
+          id,
+          log_date,
+          gallons_purchased,
+          cost_per_gallon,
+          total_cost,
+          fuel_station,
+          odometer_reading,
+          vehicles!inner(license_plate),
+          profiles!inner(first_name, last_name)
+        `)
+        .order('log_date', { ascending: false })
+        .limit(5);
       
       if (error) throw error;
-      return data as RecentFuelLog[];
+      
+      return data?.map(log => ({
+        id: log.id,
+        log_date: log.log_date,
+        vehicle_license: log.vehicles?.license_plate || 'Unknown',
+        driver_name: `${log.profiles?.first_name || ''} ${log.profiles?.last_name || ''}`.trim() || 'Unknown',
+        gallons_purchased: log.gallons_purchased || 0,
+        cost_per_gallon: log.cost_per_gallon || 0,
+        total_cost: log.total_cost || 0,
+        fuel_station: log.fuel_station || 'Unknown',
+        odometer_reading: log.odometer_reading || 0
+      })) || [];
     }
   });
 
