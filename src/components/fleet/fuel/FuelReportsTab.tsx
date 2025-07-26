@@ -1,0 +1,406 @@
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
+import { DateRange } from 'react-day-picker';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, DollarSign, Fuel, Gauge } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+
+interface FuelTrendData {
+  month: string;
+  gallons: number;
+  cost: number;
+  avg_cost_per_gallon: number;
+}
+
+interface VehicleEfficiencyData {
+  vehicle_id: string;
+  license_plate: string;
+  total_gallons: number;
+  total_miles: number;
+  mpg: number;
+  total_cost: number;
+  cost_per_mile: number;
+}
+
+export const FuelReportsTab: React.FC = () => {
+  const [reportPeriod, setReportPeriod] = useState('last_30_days');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  // Calculate date range based on period
+  const getDateRange = () => {
+    const endDate = new Date();
+    let startDate = new Date();
+
+    switch (reportPeriod) {
+      case 'last_30_days':
+        startDate.setDate(endDate.getDate() - 30);
+        break;
+      case 'last_90_days':
+        startDate.setDate(endDate.getDate() - 90);
+        break;
+      case 'last_6_months':
+        startDate.setMonth(endDate.getMonth() - 6);
+        break;
+      case 'last_year':
+        startDate.setFullYear(endDate.getFullYear() - 1);
+        break;
+      case 'custom':
+        if (dateRange?.from && dateRange?.to) {
+          return {
+            start: dateRange.from.toISOString().split('T')[0],
+            end: dateRange.to.toISOString().split('T')[0]
+          };
+        }
+        startDate.setDate(endDate.getDate() - 30);
+        break;
+    }
+
+    return {
+      start: startDate.toISOString().split('T')[0],
+      end: endDate.toISOString().split('T')[0]
+    };
+  };
+
+  const { start: startDate, end: endDate } = getDateRange();
+
+  // Fetch fuel trends data
+  const { data: trendData, isLoading: trendLoading } = useQuery({
+    queryKey: ['fuel-trends', startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fuel_logs')
+        .select(`
+          log_date,
+          gallons_purchased,
+          total_cost,
+          cost_per_gallon
+        `)
+        .gte('log_date', startDate)
+        .lte('log_date', endDate)
+        .order('log_date');
+
+      if (error) throw error;
+
+      // Group by month
+      const monthlyData: { [key: string]: { gallons: number; cost: number; count: number } } = {};
+      
+      data.forEach(log => {
+        const month = new Date(log.log_date).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short' 
+        });
+        
+        if (!monthlyData[month]) {
+          monthlyData[month] = { gallons: 0, cost: 0, count: 0 };
+        }
+        
+        monthlyData[month].gallons += log.gallons_purchased;
+        monthlyData[month].cost += log.total_cost;
+        monthlyData[month].count += 1;
+      });
+
+      return Object.entries(monthlyData).map(([month, data]) => ({
+        month,
+        gallons: data.gallons,
+        cost: data.cost,
+        avg_cost_per_gallon: data.cost / data.gallons || 0
+      }));
+    }
+  });
+
+  // Fetch vehicle efficiency data
+  const { data: efficiencyData, isLoading: efficiencyLoading } = useQuery({
+    queryKey: ['vehicle-efficiency', startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .rpc('get_vehicle_efficiency', {
+          start_date: startDate,
+          end_date: endDate
+        });
+
+      if (error) throw error;
+      return data as VehicleEfficiencyData[];
+    }
+  });
+
+  // Fuel station analysis
+  const { data: stationData, isLoading: stationLoading } = useQuery({
+    queryKey: ['station-analysis', startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fuel_logs')
+        .select('fuel_station, gallons_purchased, total_cost, cost_per_gallon')
+        .gte('log_date', startDate)
+        .lte('log_date', endDate);
+
+      if (error) throw error;
+
+      // Group by station
+      const stationAnalysis: { [key: string]: { gallons: number; cost: number; count: number } } = {};
+      
+      data.forEach(log => {
+        const station = log.fuel_station || 'Unknown';
+        
+        if (!stationAnalysis[station]) {
+          stationAnalysis[station] = { gallons: 0, cost: 0, count: 0 };
+        }
+        
+        stationAnalysis[station].gallons += log.gallons_purchased;
+        stationAnalysis[station].cost += log.total_cost;
+        stationAnalysis[station].count += 1;
+      });
+
+      return Object.entries(stationAnalysis)
+        .map(([station, data]) => ({
+          station,
+          gallons: data.gallons,
+          cost: data.cost,
+          avg_cost_per_gallon: data.cost / data.gallons || 0,
+          fill_ups: data.count
+        }))
+        .sort((a, b) => b.cost - a.cost);
+    }
+  });
+
+  const COLORS = ['#3366FF', '#6699FF', '#99CCFF', '#CCE5FF', '#E5F3FF'];
+
+  if (trendLoading || efficiencyLoading || stationLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Report Controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Report Settings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Report Period</label>
+              <Select value={reportPeriod} onValueChange={setReportPeriod}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="last_30_days">Last 30 Days</SelectItem>
+                  <SelectItem value="last_90_days">Last 90 Days</SelectItem>
+                  <SelectItem value="last_6_months">Last 6 Months</SelectItem>
+                  <SelectItem value="last_year">Last Year</SelectItem>
+                  <SelectItem value="custom">Custom Range</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {reportPeriod === 'custom' && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Custom Date Range</label>
+                <DatePickerWithRange
+                  date={dateRange}
+                  onDateChange={setDateRange}
+                  placeholder="Select date range"
+                />
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Fuel Usage Over Time */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Fuel className="h-5 w-5" />
+            Fuel Usage Over Time
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip 
+                  formatter={(value, name) => [
+                    name === 'gallons' ? `${value} gal` : `$${Number(value).toFixed(2)}`,
+                    name === 'gallons' ? 'Gallons' : 'Cost'
+                  ]}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="gallons" 
+                  stroke="#3366FF" 
+                  fill="#3366FF" 
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Cost Trends */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Cost Trends
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip 
+                  formatter={(value, name) => [
+                    `$${Number(value).toFixed(name === 'avg_cost_per_gallon' ? 3 : 2)}`,
+                    name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
+                  ]}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="cost" 
+                  stroke="#22C55E" 
+                  strokeWidth={2}
+                  dot={{ fill: '#22C55E' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="avg_cost_per_gallon" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2}
+                  dot={{ fill: '#F59E0B' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Vehicle Efficiency */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Gauge className="h-5 w-5" />
+            Vehicle Efficiency Report
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Vehicle</TableHead>
+                  <TableHead>Total Gallons</TableHead>
+                  <TableHead>Total Miles</TableHead>
+                  <TableHead>MPG</TableHead>
+                  <TableHead>Total Cost</TableHead>
+                  <TableHead>Cost/Mile</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {efficiencyData?.map((vehicle) => (
+                  <TableRow key={vehicle.vehicle_id}>
+                    <TableCell>
+                      <Badge variant="outline">{vehicle.license_plate}</Badge>
+                    </TableCell>
+                    <TableCell>{vehicle.total_gallons?.toFixed(1)}</TableCell>
+                    <TableCell>{vehicle.total_miles?.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {vehicle.mpg?.toFixed(1)}
+                        {vehicle.mpg > 20 ? (
+                          <TrendingUp className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <TrendingDown className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>${vehicle.total_cost?.toFixed(2)}</TableCell>
+                    <TableCell>${vehicle.cost_per_mile?.toFixed(3)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Station Performance */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Fuel Station Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pie chart */}
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={stationData?.slice(0, 5)}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="cost"
+                    label={({ station, cost }) => `${station}: $${cost.toFixed(0)}`}
+                  >
+                    {stationData?.slice(0, 5).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Total Cost']} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Station table */}
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Station</TableHead>
+                    <TableHead>Fill-ups</TableHead>
+                    <TableHead>Avg $/Gal</TableHead>
+                    <TableHead>Total Cost</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stationData?.slice(0, 5).map((station, index) => (
+                    <TableRow key={station.station}>
+                      <TableCell className="font-medium">{station.station}</TableCell>
+                      <TableCell>{station.fill_ups}</TableCell>
+                      <TableCell>${station.avg_cost_per_gallon?.toFixed(3)}</TableCell>
+                      <TableCell>${station.cost?.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <Button variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Reports
+        </Button>
+      </div>
+    </div>
+  );
+};

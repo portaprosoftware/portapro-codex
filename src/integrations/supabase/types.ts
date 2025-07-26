@@ -1914,6 +1914,105 @@ export type Database = {
           },
         ]
       }
+      fuel_settings: {
+        Row: {
+          auto_calculate_mpg: boolean
+          company_id: string | null
+          created_at: string
+          csv_mapping_templates: Json | null
+          currency_format: string
+          default_fuel_station_id: string | null
+          driver_edit_permission: boolean
+          fuel_unit: string
+          id: string
+          manager_approval_threshold: number | null
+          odometer_precision: number
+          require_receipt: boolean
+          updated_at: string
+        }
+        Insert: {
+          auto_calculate_mpg?: boolean
+          company_id?: string | null
+          created_at?: string
+          csv_mapping_templates?: Json | null
+          currency_format?: string
+          default_fuel_station_id?: string | null
+          driver_edit_permission?: boolean
+          fuel_unit?: string
+          id?: string
+          manager_approval_threshold?: number | null
+          odometer_precision?: number
+          require_receipt?: boolean
+          updated_at?: string
+        }
+        Update: {
+          auto_calculate_mpg?: boolean
+          company_id?: string | null
+          created_at?: string
+          csv_mapping_templates?: Json | null
+          currency_format?: string
+          default_fuel_station_id?: string | null
+          driver_edit_permission?: boolean
+          fuel_unit?: string
+          id?: string
+          manager_approval_threshold?: number | null
+          odometer_precision?: number
+          require_receipt?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fuel_stations: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          default_cost_per_gallon: number | null
+          gps_coordinates: unknown | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          state: string | null
+          street: string | null
+          updated_at: string
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          default_cost_per_gallon?: number | null
+          gps_coordinates?: unknown | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          default_cost_per_gallon?: number | null
+          gps_coordinates?: unknown | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
       instance_deployments: {
         Row: {
           automation_request_id: string | null
@@ -6750,6 +6849,10 @@ export type Database = {
           working_hours: Json
         }[]
       }
+      get_fuel_metrics: {
+        Args: { start_date: string; end_date: string }
+        Returns: Json
+      }
       get_inventory_breakdown: {
         Args: { product_type_id: string }
         Returns: Json
@@ -6829,6 +6932,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_recent_fuel_logs: {
+        Args: { limit_count?: number }
+        Returns: {
+          id: string
+          log_date: string
+          vehicle_license: string
+          driver_name: string
+          gallons_purchased: number
+          cost_per_gallon: number
+          total_cost: number
+          fuel_station: string
+          odometer_reading: number
+        }[]
+      }
       get_system_wide_availability: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -6856,6 +6973,18 @@ export type Database = {
       get_user_role_by_clerk_id_simple: {
         Args: { clerk_user_id: string }
         Returns: string
+      }
+      get_vehicle_efficiency: {
+        Args: { start_date: string; end_date: string }
+        Returns: {
+          vehicle_id: string
+          license_plate: string
+          total_gallons: number
+          total_miles: number
+          mpg: number
+          total_cost: number
+          cost_per_mile: number
+        }[]
       }
       has_role: {
         Args: {
