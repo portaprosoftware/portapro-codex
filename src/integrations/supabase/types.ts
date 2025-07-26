@@ -3276,6 +3276,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_public: boolean | null
           last_used_at: string | null
           name: string
           parent_template_id: string | null
@@ -3298,6 +3299,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_public?: boolean | null
           last_used_at?: string | null
           name: string
           parent_template_id?: string | null
@@ -3320,6 +3322,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_public?: boolean | null
           last_used_at?: string | null
           name?: string
           parent_template_id?: string | null
@@ -5133,6 +5136,7 @@ export type Database = {
         Row: {
           category_id: string | null
           created_at: string | null
+          default_template_id: string | null
           description: string | null
           estimated_duration_hours: number | null
           flat_rate_cost: number | null
@@ -5150,6 +5154,7 @@ export type Database = {
         Insert: {
           category_id?: string | null
           created_at?: string | null
+          default_template_id?: string | null
           description?: string | null
           estimated_duration_hours?: number | null
           flat_rate_cost?: number | null
@@ -5167,6 +5172,7 @@ export type Database = {
         Update: {
           category_id?: string | null
           created_at?: string | null
+          default_template_id?: string | null
           description?: string | null
           estimated_duration_hours?: number | null
           flat_rate_cost?: number | null
@@ -5187,6 +5193,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routine_maintenance_services_default_template_id_fkey"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_report_templates"
             referencedColumns: ["id"]
           },
         ]

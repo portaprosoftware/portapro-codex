@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ServiceEditPanel } from "./ServiceEditPanel";
-import { Plus, Edit, DollarSign, Clock, Search, Grid, List, Wrench } from "lucide-react";
+import { Plus, Edit, DollarSign, Clock, Search, Grid, List, Wrench, FileText } from "lucide-react";
 
 interface Service {
   id: string;
@@ -19,6 +19,12 @@ interface Service {
   flat_rate_cost: number;
   estimated_duration_hours: number;
   category_id: string;
+  default_template_id: string | null;
+  template?: {
+    id: string;
+    name: string;
+    description: string;
+  } | null;
 }
 
 export const ServicesProvidedTab: React.FC = () => {
@@ -32,9 +38,16 @@ export const ServicesProvidedTab: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("routine_maintenance_services")
-        .select("*")
+        .select(`
+          *,
+          template:maintenance_report_templates!default_template_id(
+            id,
+            name,
+            description
+          )
+        `)
         .eq("is_active", true)
-        .order("name", { ascending: true }); // Alphabetical order
+        .order("name", { ascending: true });
       
       if (error) throw error;
       return data || [];
@@ -138,6 +151,12 @@ export const ServicesProvidedTab: React.FC = () => {
                           {service.service_code}
                         </Badge>
                       )}
+                      {service.template && (
+                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1">
+                          <FileText className="w-3 h-3" />
+                          {service.template.name}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-gray-600 mb-3">{service.description}</p>
                     <div className="flex items-center gap-6 text-sm text-gray-500">
@@ -176,11 +195,19 @@ export const ServicesProvidedTab: React.FC = () => {
                   <Wrench className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{service.name}</h3>
-                {service.service_code && (
-                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 mb-3">
-                    {service.service_code}
-                  </Badge>
-                )}
+                <div className="flex flex-col items-center gap-2 mb-3">
+                  {service.service_code && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      {service.service_code}
+                    </Badge>
+                  )}
+                  {service.template && (
+                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      {service.template.name}
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">{service.description}</p>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-center gap-1 text-sm">

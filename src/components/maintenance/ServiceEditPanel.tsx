@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, X } from "lucide-react";
+import { Save, X, FileText } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface ServiceEditPanelProps {
   serviceId: string | null;
@@ -26,6 +27,7 @@ interface ServiceFormData {
   per_hour_cost: number;
   flat_rate_cost: number;
   estimated_duration_hours: number;
+  default_template_id: string | null;
 }
 
 export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
@@ -35,6 +37,7 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
+  const { hasAdminAccess } = useUserRole();
   
   const [formData, setFormData] = useState<ServiceFormData>({
     name: "",
@@ -45,6 +48,24 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
     per_hour_cost: 0,
     flat_rate_cost: 0,
     estimated_duration_hours: 1,
+    default_template_id: null,
+  });
+
+  // Query for available templates
+  const { data: templates } = useQuery({
+    queryKey: ["maintenance-report-templates", "active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("maintenance_report_templates")
+        .select("id, name, description")
+        .eq("is_active", true)
+        .eq("is_public", true)
+        .order("name");
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen,
   });
 
   const { data: service } = useQuery({
@@ -75,6 +96,7 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
         per_hour_cost: service.per_hour_cost || 0,
         flat_rate_cost: service.flat_rate_cost || 0,
         estimated_duration_hours: service.estimated_duration_hours || 1,
+        default_template_id: service.default_template_id || null,
       });
     } else if (isCreating) {
       setFormData({
@@ -86,6 +108,7 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
         per_hour_cost: 0,
         flat_rate_cost: 0,
         estimated_duration_hours: 1,
+        default_template_id: null,
       });
     }
   }, [service, isCreating]);
@@ -233,6 +256,39 @@ export const ServiceEditPanel: React.FC<ServiceEditPanelProps> = ({
                 step="0.5"
                 min="0.5"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="default_template_id" className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Default Report Template
+              </Label>
+              <Select
+                value={formData.default_template_id || ""}
+                onValueChange={(value) => updateFormData("default_template_id", value || null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="No template assigned" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No template</SelectItem>
+                  {templates?.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      <div className="flex flex-col items-start">
+                        <span>{template.name}</span>
+                        {template.description && (
+                          <span className="text-xs text-muted-foreground">
+                            {template.description}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                This template will be automatically assigned to jobs using this service
+              </p>
             </div>
           </div>
         </div>
