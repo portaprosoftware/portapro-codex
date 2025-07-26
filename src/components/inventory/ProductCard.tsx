@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Eye } from "lucide-react";
+import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface Product {
   id: string;
@@ -21,7 +24,29 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
-  const availableCount = product.stock_total - product.stock_in_service;
+  const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
+
+  // Fetch location stock for this product
+  const { data: locationStocks } = useQuery({
+    queryKey: ['product-location-stock', product.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_location_stock')
+        .select(`
+          *,
+          storage_location:storage_locations(id, name)
+        `)
+        .eq('product_id', product.id)
+        .order('quantity', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const totalLocationStock = locationStocks?.reduce((sum, ls) => sum + ls.quantity, 0) || 0;
+  const locationCount = locationStocks?.length || 0;
+  const availableCount = Math.max(totalLocationStock, product.stock_total) - product.stock_in_service;
   const isLowStock = availableCount <= product.low_stock_threshold;
   const isOutOfStock = availableCount <= 0;
 
@@ -93,7 +118,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       </div>
 
       {/* Product Info */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-3">
         <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
         <p className="text-blue-600 font-semibold">${product.default_price_per_day}/day</p>
         
@@ -101,6 +126,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
         <div className="flex justify-center">
           {getStatusBadge()}
         </div>
+
+        {/* Location Information */}
+        {product.track_inventory && (
+          <div className="space-y-2">
+            <div className="text-xs text-gray-600">
+              {locationCount === 0 && "No location assigned"}
+              {locationCount === 1 && `At 1 location`}
+              {locationCount > 1 && `Across ${locationCount} locations`}
+            </div>
+            
+            {locationCount > 1 && (
+              <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 text-xs w-full justify-between"
+                  >
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      View breakdown
+                    </span>
+                    {showLocationBreakdown ? 
+                      <ChevronUp className="h-3 w-3" /> : 
+                      <ChevronDown className="h-3 w-3" />
+                    }
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-1 mt-2">
+                  {locationStocks?.map((ls) => (
+                    <div key={ls.id} className="flex items-center justify-between text-xs bg-gray-50 rounded px-2 py-1">
+                      <span className="flex items-center gap-1">
+                        <Package className="h-3 w-3" />
+                        {ls.storage_location?.name}
+                      </span>
+                      <span className="font-medium">{ls.quantity}</span>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        )}
       </div>
 
       {/* View Button */}
