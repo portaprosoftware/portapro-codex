@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
-import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare } from 'lucide-react';
+import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText } from 'lucide-react';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
 import { CustomerJobsTab } from './CustomerJobsTab';
 import { CustomerFinancialTab } from './CustomerFinancialTab';
 import { CustomerCommunicationTab } from './CustomerCommunicationTab';
+import { CustomerServiceReportsTab } from './CustomerServiceReportsTab';
 
 interface Customer {
   id: string;
@@ -59,6 +60,8 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
         return <ServiceLocationTab customerId={customer.id} />;
       case 'jobs':
         return <CustomerJobsTab customerId={customer.id} />;
+      case 'reports':
+        return <CustomerServiceReportsTab customerId={customer.id} />;
       case 'financial':
         return <CustomerFinancialTab customerId={customer.id} />;
       case 'communication':
@@ -104,6 +107,14 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
           >
             <Briefcase className="w-4 h-4" />
             Jobs
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#reports" 
+            isActive={activeTab === 'reports'}
+            onClick={() => setActiveTab('reports')}
+          >
+            <FileText className="w-4 h-4" />
+            Service Reports
           </TabNav.Item>
           <TabNav.Item 
             to="#financial" 

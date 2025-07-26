@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Filter } from 'lucide-react';
+import { Eye, Edit, Filter, FileText, CheckCircle, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface CustomerJobsTabProps {
@@ -38,7 +38,8 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
         .select(`
           *,
           profiles:driver_id(first_name, last_name),
-          vehicles(license_plate)
+          vehicles(license_plate),
+          maintenance_reports(id, report_number, completion_percentage, created_at)
         `)
         .eq('customer_id', customerId)
         .order('scheduled_date', { ascending: false });
@@ -96,6 +97,7 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
               <TableHead className="font-medium text-foreground">Date</TableHead>
               <TableHead className="font-medium text-foreground">Assigned Driver</TableHead>
               <TableHead className="font-medium text-foreground">Status</TableHead>
+              <TableHead className="font-medium text-foreground">Reports</TableHead>
               <TableHead className="font-medium text-foreground">Total Price</TableHead>
               <TableHead className="font-medium text-foreground">Actions</TableHead>
             </TableRow>
@@ -103,13 +105,13 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Loading jobs...
                 </TableCell>
               </TableRow>
             ) : jobs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   No jobs found for this customer
                 </TableCell>
               </TableRow>
@@ -149,6 +151,23 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
                       {JOB_STATUSES[job.status as keyof typeof JOB_STATUSES]?.label || job.status}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {job.maintenance_reports && job.maintenance_reports.length > 0 ? (
+                        <div className="flex items-center gap-1">
+                          <Badge variant="outline" className="text-green-700 border-green-200 bg-green-50">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            {job.maintenance_reports.length} Report{job.maintenance_reports.length > 1 ? 's' : ''}
+                          </Badge>
+                        </div>
+                      ) : (
+                        <Badge variant="outline" className="text-gray-500 border-gray-200">
+                          <Clock className="w-3 h-3 mr-1" />
+                          No Reports
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="font-medium">
                     {formatCurrency(job.total_price)}
                   </TableCell>
@@ -160,6 +179,11 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
                       <Button variant="ghost" size="sm">
                         <Edit className="w-4 h-4" />
                       </Button>
+                      {job.maintenance_reports && job.maintenance_reports.length > 0 && (
+                        <Button variant="ghost" size="sm" title="View Reports">
+                          <FileText className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

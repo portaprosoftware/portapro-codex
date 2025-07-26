@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
-import { FileText, Search, Calendar, Clock, CheckCircle, AlertCircle, Download, Eye, ExternalLink } from 'lucide-react';
+import { FileText, Search, Calendar, Clock, CheckCircle, AlertCircle, Download, Eye, ExternalLink, BarChart3, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,7 @@ export const DriverReportsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedReport, setSelectedReport] = useState<ServiceReport | null>(null);
   const [showPDFModal, setShowPDFModal] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const { data: serviceReports, isLoading, refetch } = useQuery({
     queryKey: ['driver-service-reports', user?.id],
@@ -88,6 +89,14 @@ export const DriverReportsPage: React.FC = () => {
     
     return matchesSearch && matchesStatus;
   }) || [];
+
+  // Performance Analytics
+  const completedReports = filteredReports.filter(r => r.status === 'completed').length;
+  const totalReports = filteredReports.length;
+  const completionRate = totalReports > 0 ? Math.round((completedReports / totalReports) * 100) : 0;
+  const thisMonthReports = filteredReports.filter(r => 
+    new Date(r.created_at).getMonth() === new Date().getMonth()
+  ).length;
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -143,10 +152,62 @@ export const DriverReportsPage: React.FC = () => {
     <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center space-x-3 mb-3">
-          <FileText className="w-6 h-6 text-blue-600" />
-          <h1 className="text-xl font-semibold text-gray-900">Service Reports</h1>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            <FileText className="w-6 h-6 text-blue-600" />
+            <h1 className="text-xl font-semibold text-gray-900">Service Reports</h1>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowAnalytics(!showAnalytics)}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analytics
+          </Button>
         </div>
+
+        {/* Analytics Cards */}
+        {showAnalytics && (
+          <div className="grid grid-cols-4 gap-3 mb-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Target className="w-5 h-5 text-blue-600" />
+                <div>
+                  <p className="text-xs text-gray-600">Total Reports</p>
+                  <p className="text-lg font-semibold text-blue-600">{totalReports}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-green-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <div>
+                  <p className="text-xs text-gray-600">Completed</p>
+                  <p className="text-lg font-semibold text-green-600">{completedReports}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Award className="w-5 h-5 text-purple-600" />
+                <div>
+                  <p className="text-xs text-gray-600">Completion Rate</p>
+                  <p className="text-lg font-semibold text-purple-600">{completionRate}%</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-orange-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-orange-600" />
+                <div>
+                  <p className="text-xs text-gray-600">This Month</p>
+                  <p className="text-lg font-semibold text-orange-600">{thisMonthReports}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Search and Filter */}
         <div className="flex space-x-3">

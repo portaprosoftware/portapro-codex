@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronDown, FileText, Search, X, Eye, Star } from 'lucide-react';
+import { Check, ChevronDown, FileText, Search, X, Eye, Star, Grid, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { TemplatePreviewCard } from '@/components/jobs/TemplatePreviewCard';
 
 interface MaintenanceTemplate {
   id: string;
@@ -43,6 +44,7 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [previewTemplate, setPreviewTemplate] = useState<MaintenanceTemplate | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     fetchTemplates();
@@ -253,9 +255,20 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
       {/* Template Search & Selection */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Search className="w-5 h-5" />
-            <span>Add Templates</span>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Search className="w-5 h-5" />
+              <span>Browse Templates</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              >
+                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+              </Button>
+            </div>
           </CardTitle>
           <CardDescription>
             Search and select templates for this job. Drivers will fill these out when they start the job.
@@ -332,6 +345,73 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
           </Popover>
         </CardContent>
       </Card>
+
+      {/* Template Grid/List View */}
+      {data.availableTemplates.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Available Templates ({getFilteredTemplates().length})</CardTitle>
+            <CardDescription>
+              Click on a template to add it to your selection
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {getFilteredTemplates().map((template) => (
+                  <TemplatePreviewCard
+                    key={template.id}
+                    template={template}
+                    onSelect={toggleTemplate}
+                    isSelected={data.selectedTemplateIds.includes(template.id)}
+                    showUsageStats={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {getFilteredTemplates().map((template) => (
+                  <div
+                    key={template.id}
+                    className={cn(
+                      "p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors",
+                      data.selectedTemplateIds.includes(template.id) && "border-primary bg-primary/5"
+                    )}
+                    onClick={() => toggleTemplate(template.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-lg">{getTemplateTypeIcon(template.template_type)}</span>
+                        <div>
+                          <div className="font-medium">{template.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {template.description}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {data.selectedTemplateIds.includes(template.id) && (
+                          <Check className="h-4 w-4 text-primary" />
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewTemplate(template);
+                          }}
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Selected Templates */}
       {selectedTemplates.length > 0 && (
