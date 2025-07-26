@@ -49,46 +49,68 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
     mutationFn: async (data: EditUserFormData) => {
       console.log('Updating user:', user.id, 'with data:', data);
       
-      // Update profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          email: data.email,
-        })
-        .eq("id", user.id);
+      try {
+        // Update profile
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            first_name: data.first_name,
+            last_name: data.last_name,
+            email: data.email,
+          })
+          .eq("id", user.id);
 
-      if (profileError) {
-        console.error('Profile update error:', profileError);
-        throw profileError;
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+          throw new Error(`Failed to update profile: ${profileError.message}`);
+        }
+
+        // Check current role
+        const { data: currentRoles, error: checkError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id);
+
+        if (checkError) {
+          console.error('Role check error:', checkError);
+          throw new Error(`Failed to check current role: ${checkError.message}`);
+        }
+
+        console.log('Current roles:', currentRoles);
+
+        // Delete existing role if any
+        if (currentRoles && currentRoles.length > 0) {
+          const { error: deleteError } = await supabase
+            .from("user_roles")
+            .delete()
+            .eq("user_id", user.id);
+
+          if (deleteError) {
+            console.error('Role delete error:', deleteError);
+            throw new Error(`Failed to delete existing role: ${deleteError.message}`);
+          }
+        }
+
+        // Insert new role
+        const { data: insertedRole, error: roleError } = await supabase
+          .from("user_roles")
+          .insert({
+            user_id: user.id,
+            role: data.role,
+          })
+          .select();
+
+        if (roleError) {
+          console.error('Role insert error:', roleError);
+          throw new Error(`Failed to insert new role: ${roleError.message}`);
+        }
+
+        console.log('User update completed successfully. New role:', insertedRole);
+        return { success: true };
+      } catch (error) {
+        console.error('User update failed:', error);
+        throw error;
       }
-
-      // Delete existing role and insert new one (since we have unique constraint)
-      const { error: deleteError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", user.id);
-
-      if (deleteError) {
-        console.error('Role delete error:', deleteError);
-        throw deleteError;
-      }
-
-      // Insert new role
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({
-          user_id: user.id,
-          role: data.role,
-        });
-
-      if (roleError) {
-        console.error('Role insert error:', roleError);
-        throw roleError;
-      }
-      
-      console.log('User update completed successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });

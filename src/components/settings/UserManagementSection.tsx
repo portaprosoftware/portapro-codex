@@ -71,7 +71,12 @@ export function UserManagementSection() {
         `);
       
       if (error) throw error;
-      return data;
+      
+      // Transform the data to ensure user_roles is properly structured
+      return data?.map(user => ({
+        ...user,
+        current_role: user.user_roles?.[0]?.role || null
+      })) || [];
     },
   });
 
@@ -165,7 +170,7 @@ export function UserManagementSection() {
       `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesRole = roleFilter === "all" || user.user_roles?.[0]?.role === roleFilter;
+    const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
     
     return matchesSearch && matchesRole;
   });
@@ -347,27 +352,44 @@ export function UserManagementSection() {
                     {user.first_name} {user.last_name}
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge className={`text-white !inline-flex !items-center !opacity-100 ${roleColors[user.user_roles?.[0]?.role as keyof typeof roleColors] || "bg-muted"}`}>
-                      {roleIcons[user.user_roles?.[0]?.role as keyof typeof roleIcons] && 
-                        React.createElement(roleIcons[user.user_roles?.[0]?.role as keyof typeof roleIcons], { 
-                          className: "w-3 h-3 mr-1 !opacity-100 !block" 
-                        })
-                      }
-                      {roleLabels[user.user_roles?.[0]?.role as keyof typeof roleLabels] || "No Role"}
-                    </Badge>
-                  </TableCell>
                    <TableCell>
-                     <Badge variant={user.is_active ? "default" : "secondary"} className="!inline-flex !items-center !opacity-100">
-                       {user.is_active ? (
-                         <>
-                           <UserCheck className="w-3 h-3 mr-1 !opacity-100 !block" />
-                           Active
-                         </>
-                       ) : (
-                         <>
-                           <UserX className="w-3 h-3 mr-1 !opacity-100 !block" />
-                           Inactive
+                     <Badge 
+                       className="text-white inline-flex items-center"
+                       style={{ 
+                         backgroundColor: user.current_role ? 
+                           (user.current_role === 'owner' ? '#8B5CF6' :
+                            user.current_role === 'dispatcher' ? '#3B82F6' :
+                            user.current_role === 'admin' ? '#10B981' :
+                            user.current_role === 'driver' ? '#F59E0B' :
+                            user.current_role === 'customer' ? '#EF4444' : '#6B7280') 
+                           : '#6B7280'
+                       }}
+                     >
+                       {user.current_role && roleIcons[user.current_role as keyof typeof roleIcons] && 
+                         React.createElement(roleIcons[user.current_role as keyof typeof roleIcons], { 
+                           className: "w-3 h-3 mr-1" 
+                         })
+                       }
+                       {user.current_role ? roleLabels[user.current_role as keyof typeof roleLabels] : "No Role"}
+                     </Badge>
+                   </TableCell>
+                    <TableCell>
+                      <Badge 
+                        className="inline-flex items-center"
+                        style={{ 
+                          backgroundColor: user.is_active ? '#10B981' : '#6B7280',
+                          color: 'white'
+                        }}
+                      >
+                        {user.is_active ? (
+                          <>
+                            <UserCheck className="w-3 h-3 mr-1" />
+                            Active
+                          </>
+                        ) : (
+                          <>
+                            <UserX className="w-3 h-3 mr-1" />
+                            Inactive
                          </>
                        )}
                      </Badge>
