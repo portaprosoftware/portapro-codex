@@ -85,32 +85,6 @@ const dayToDayItems: NavigationItem[] = [
   },
 ];
 
-const marketingHubItems: NavigationItem[] = [
-  { 
-    title: 'Templates', 
-    url: '/marketing-hub/templates', 
-    icon: Mail,
-    permission: 'admin'
-  },
-  { 
-    title: 'Campaigns', 
-    url: '/marketing-hub/campaigns', 
-    icon: Megaphone,
-    permission: 'admin'
-  },
-  { 
-    title: 'Analytics', 
-    url: '/marketing-hub/analytics', 
-    icon: BarChart4,
-    permission: 'admin'
-  },
-  { 
-    title: 'Segments', 
-    url: '/marketing-hub/segments', 
-    icon: Users2,
-    permission: 'admin'
-  },
-];
 
 const inventoryItems: NavigationItem[] = [
   { 
@@ -204,7 +178,6 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
 
   const visibleCoreItems = getVisibleItems(coreItems);
   const visibleDayToDayItems = getVisibleItems(dayToDayItems);
-  const visibleMarketingHubItems = getVisibleItems(marketingHubItems);
   const visibleInventoryItems = getVisibleItems(inventoryItems);
   const visibleManagementItems = getVisibleItems(managementItems);
 
@@ -299,36 +272,6 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           </SidebarGroup>
         )}
 
-        {/* Marketing Hub Section */}
-        {visibleMarketingHubItems.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              MARKETING HUB
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {visibleMarketingHubItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={activeSection === item.url || location.pathname === item.url}
-                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                    >
-                      <NavLink
-                        to={item.url}
-                        onClick={() => onSectionChange?.(item.url)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
 
         {/* Inventory Section */}
         {visibleInventoryItems.length > 0 && (
