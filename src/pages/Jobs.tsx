@@ -631,7 +631,28 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'map' && (
-            <JobsMapPage />
+            <div className="bg-white">
+              {/* Map Filters */}
+              <div className="border-b border-gray-200 p-4">
+                <InlineFilters
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  selectedDriver={selectedDriver}
+                  onDriverChange={setSelectedDriver}
+                  selectedJobType={selectedJobType}
+                  onJobTypeChange={setSelectedJobType}
+                  selectedStatus={selectedStatus}
+                  onStatusChange={setSelectedStatus}
+                  drivers={drivers}
+                />
+              </div>
+              <JobsMapPage 
+                searchTerm={searchTerm}
+                selectedDriver={selectedDriver}
+                selectedJobType={selectedJobType}
+                selectedStatus={selectedStatus}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -46,6 +46,13 @@ const mockDrivers = [
   }
 ];
 
+interface JobsMapViewProps {
+  searchTerm?: string;
+  selectedDriver?: string;
+  selectedJobType?: string;
+  selectedStatus?: string;
+}
+
 const statusColors = {
   assigned: '#3B82F6',    // Blue
   in_progress: '#F97316', // Orange  
@@ -81,11 +88,15 @@ const driverColors = {
   'Unassigned': '#6B7280'      // Gray
 };
 
-const JobsMapView: React.FC = () => {
+const JobsMapView: React.FC<JobsMapViewProps> = ({ 
+  searchTerm = '', 
+  selectedDriver = 'all', 
+  selectedJobType = 'all', 
+  selectedStatus = 'all' 
+}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22));
-  const [selectedDriver, setSelectedDriver] = useState('all');
   const [viewMode, setViewMode] = useState<'status' | 'driver'>('status');
   const [weatherRadar, setWeatherRadar] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -440,16 +451,6 @@ const JobsMapView: React.FC = () => {
               </Button>
             </div>
 
-            {/* Driver Filter */}
-            <select 
-              className="rounded-full border border-gray-300 px-4 py-2 bg-white min-w-32"
-              value={selectedDriver}
-              onChange={(e) => setSelectedDriver(e.target.value)}
-            >
-              <option value="all">All Drivers</option>
-              <option value="1">Grady Green</option>
-              <option value="2">Jason Wells</option>
-            </select>
 
             {/* View Toggle */}
             <div className="flex space-x-1 bg-gray-100 rounded-full p-1">
