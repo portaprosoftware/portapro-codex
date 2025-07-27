@@ -12,7 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
+import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
 
@@ -22,6 +24,8 @@ interface CampaignData {
   template_id?: string;
   target_segments: string[];
   target_customer_types: string[];
+  target_customers: string[];
+  recipient_type: 'all' | 'segments' | 'types' | 'individuals';
   scheduled_at?: Date;
 }
 
@@ -32,8 +36,11 @@ export const CampaignCreation: React.FC = () => {
     campaign_type: 'email',
     target_segments: [],
     target_customer_types: [],
+    target_customers: [],
+    recipient_type: 'all',
   });
   const [scheduledDate, setScheduledDate] = useState<Date>();
+  const [customerSearch, setCustomerSearch] = useState('');
   const queryClient = useQueryClient();
 
   // Fetch templates
@@ -71,6 +78,19 @@ export const CampaignCreation: React.FC = () => {
     }
   });
 
+  // Fetch all customers for individual selection
+  const { data: customers = [] } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customers')
+        .select('id, name, customer_type')
+        .order('name');
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Create campaign mutation
   const createCampaignMutation = useMutation({
     mutationFn: async (data: CampaignData) => {
@@ -93,6 +113,8 @@ export const CampaignCreation: React.FC = () => {
         campaign_type: 'email',
         target_segments: [],
         target_customer_types: [],
+        target_customers: [],
+        recipient_type: 'all',
       });
       setCurrentStep(1);
       setScheduledDate(undefined);
@@ -114,13 +136,24 @@ export const CampaignCreation: React.FC = () => {
     createCampaignMutation.mutate(campaignData);
   };
 
-  const totalRecipients = campaignData.target_segments.reduce((total, segmentId) => {
-    const segment = segments.find(s => s.id === segmentId);
-    return total + (segment?.customer_count || 0);
-  }, 0) + campaignData.target_customer_types.reduce((total, type) => {
-    const typeData = customerTypes.find(t => t.customer_type === type);
-    return total + (typeData?.total_count || 0);
-  }, 0);
+  const totalRecipients = (() => {
+    if (campaignData.recipient_type === 'all') {
+      return customers.length; // All customers
+    } else if (campaignData.recipient_type === 'individuals') {
+      return campaignData.target_customers.length;
+    } else if (campaignData.recipient_type === 'segments') {
+      return campaignData.target_segments.reduce((total, segmentId) => {
+        const segment = segments.find(s => s.id === segmentId);
+        return total + (segment?.customer_count || 0);
+      }, 0);
+    } else if (campaignData.recipient_type === 'types') {
+      return campaignData.target_customer_types.reduce((total, type) => {
+        const typeData = customerTypes.find(t => t.customer_type === type);
+        return total + (typeData?.total_count || 0);
+      }, 0);
+    }
+    return 0;
+  })();
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -187,77 +220,196 @@ export const CampaignCreation: React.FC = () => {
         {/* Step 2: Select Recipients */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4">Select Recipients</h2>
+            <h2 className="text-xl font-semibold mb-4 font-inter">Recipients</h2>
             
-            <Tabs defaultValue="segments">
-              <TabsList>
-                <TabsTrigger value="segments">Smart Segments</TabsTrigger>
-                <TabsTrigger value="types">Customer Types</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="segments" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {segments.map((segment) => (
-                    <Card 
-                      key={segment.id} 
-                      className={`p-4 cursor-pointer border-2 ${
-                        campaignData.target_segments.includes(segment.id)
-                          ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => {
-                        const isSelected = campaignData.target_segments.includes(segment.id);
-                        setCampaignData({
-                          ...campaignData,
-                          target_segments: isSelected
-                            ? campaignData.target_segments.filter(id => id !== segment.id)
-                            : [...campaignData.target_segments, segment.id]
-                        });
-                      }}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary">Smart</Badge>
-                        <span className="font-bold text-lg">{segment.customer_count}</span>
-                      </div>
-                      <h3 className="font-semibold mb-1">{segment.name}</h3>
-                      <p className="text-sm text-gray-600">{segment.description}</p>
-                    </Card>
-                  ))}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-base font-medium font-inter">Recipient Group</Label>
+                <Select 
+                  value={campaignData.recipient_type} 
+                  onValueChange={(value) => setCampaignData({
+                    ...campaignData, 
+                    recipient_type: value as any,
+                    target_segments: [],
+                    target_customer_types: [],
+                    target_customers: []
+                  })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select recipient type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Customers</SelectItem>
+                    <SelectItem value="segments">Smart Segments</SelectItem>
+                    <SelectItem value="types">Select Customer Types</SelectItem>
+                    <SelectItem value="individuals">Select Individual Customers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* All Customers Option */}
+              {campaignData.recipient_type === 'all' && (
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-gray-600 font-inter">
+                    This campaign will be sent to all customers in your database.
+                  </p>
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="types" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {customerTypes.map((type) => (
-                    <Card 
-                      key={type.customer_type} 
-                      className={`p-4 cursor-pointer border-2 ${
-                        campaignData.target_customer_types.includes(type.customer_type)
-                          ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => {
-                        const isSelected = campaignData.target_customer_types.includes(type.customer_type);
-                        setCampaignData({
-                          ...campaignData,
-                          target_customer_types: isSelected
-                            ? campaignData.target_customer_types.filter(t => t !== type.customer_type)
-                            : [...campaignData.target_customer_types, type.customer_type]
-                        });
-                      }}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <Badge className="capitalize">{type.customer_type}</Badge>
-                        <span className="font-bold text-lg">{type.total_count}</span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Email: {type.email_count} • SMS: {type.sms_count} • Both: {type.both_count}
-                      </div>
-                    </Card>
-                  ))}
+              )}
+
+              {/* Smart Segments Option */}
+              {campaignData.recipient_type === 'segments' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {segments.map((segment) => (
+                      <Card 
+                        key={segment.id} 
+                        className={`p-4 cursor-pointer border-2 ${
+                          campaignData.target_segments.includes(segment.id)
+                            ? 'border-primary bg-primary/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => {
+                          const isSelected = campaignData.target_segments.includes(segment.id);
+                          setCampaignData({
+                            ...campaignData,
+                            target_segments: isSelected
+                              ? campaignData.target_segments.filter(id => id !== segment.id)
+                              : [...campaignData.target_segments, segment.id]
+                          });
+                        }}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant="secondary">Smart</Badge>
+                          <span className="font-bold text-lg">{segment.customer_count}</span>
+                        </div>
+                        <h3 className="font-semibold mb-1 font-inter">{segment.name}</h3>
+                        <p className="text-sm text-gray-600 font-inter">{segment.description}</p>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </TabsContent>
-            </Tabs>
+              )}
+
+              {/* Customer Types Option */}
+              {campaignData.recipient_type === 'types' && (
+                <div className="space-y-4">
+                  <Label className="text-base font-medium font-inter">Select Customer Types:</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {customerTypes.map((type) => (
+                      <div key={type.customer_type} className="flex items-center space-x-3">
+                        <Checkbox
+                          id={type.customer_type}
+                          checked={campaignData.target_customer_types.includes(type.customer_type)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setCampaignData({
+                                ...campaignData,
+                                target_customer_types: [...campaignData.target_customer_types, type.customer_type]
+                              });
+                            } else {
+                              setCampaignData({
+                                ...campaignData,
+                                target_customer_types: campaignData.target_customer_types.filter(t => t !== type.customer_type)
+                              });
+                            }
+                          }}
+                          className="h-5 w-5"
+                        />
+                        <label 
+                          htmlFor={type.customer_type} 
+                          className="text-sm font-medium font-inter capitalize cursor-pointer"
+                        >
+                          {type.customer_type.replace(/[_-]/g, ' ')}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Individual Customers Option */}
+              {campaignData.recipient_type === 'individuals' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        placeholder="Search customers..."
+                        value={customerSearch}
+                        onChange={(e) => setCustomerSearch(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCampaignData({
+                        ...campaignData,
+                        target_customers: customers.map(c => c.id)
+                      })}
+                      size="sm"
+                    >
+                      Select All
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCampaignData({
+                        ...campaignData,
+                        target_customers: []
+                      })}
+                      size="sm"
+                    >
+                      Deselect All
+                    </Button>
+                  </div>
+
+                  <div className="border border-gray-200 rounded-lg">
+                    <ScrollArea className="h-64">
+                      <div className="p-4 space-y-3">
+                        {customers
+                          .filter(customer => 
+                            customer.name.toLowerCase().includes(customerSearch.toLowerCase())
+                          )
+                          .map((customer) => (
+                            <div key={customer.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                              <div className="flex items-center space-x-3">
+                                <Checkbox
+                                  id={customer.id}
+                                  checked={campaignData.target_customers.includes(customer.id)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setCampaignData({
+                                        ...campaignData,
+                                        target_customers: [...campaignData.target_customers, customer.id]
+                                      });
+                                    } else {
+                                      setCampaignData({
+                                        ...campaignData,
+                                        target_customers: campaignData.target_customers.filter(id => id !== customer.id)
+                                      });
+                                    }
+                                  }}
+                                />
+                                 <div>
+                                   <p className="font-medium font-inter">{customer.name}</p>
+                                   <p className="text-sm text-gray-500 font-inter capitalize">
+                                     {customer.customer_type?.replace(/[_-]/g, ' ')}
+                                   </p>
+                                 </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+
+                  {campaignData.target_customers.length > 0 && (
+                    <div className="text-sm text-gray-600 font-inter">
+                      {campaignData.target_customers.length} customer(s) selected
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -379,7 +531,11 @@ export const CampaignCreation: React.FC = () => {
               onClick={handleNext}
               disabled={
                 (currentStep === 1 && !campaignData.name) ||
-                (currentStep === 2 && campaignData.target_segments.length === 0 && campaignData.target_customer_types.length === 0) ||
+                (currentStep === 2 && (
+                  (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
+                  (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
+                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
+                )) ||
                 (currentStep === 3 && !campaignData.template_id)
               }
             >
