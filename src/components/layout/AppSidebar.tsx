@@ -88,8 +88,26 @@ const dayToDayItems: NavigationItem[] = [
 const marketingHubItems: NavigationItem[] = [
   { 
     title: 'Templates', 
-    url: '/marketing/templates', 
+    url: '/marketing-hub/templates', 
     icon: Mail,
+    permission: 'admin'
+  },
+  { 
+    title: 'Campaigns', 
+    url: '/marketing-hub/campaigns', 
+    icon: Megaphone,
+    permission: 'admin'
+  },
+  { 
+    title: 'Analytics', 
+    url: '/marketing-hub/analytics', 
+    icon: BarChart4,
+    permission: 'admin'
+  },
+  { 
+    title: 'Segments', 
+    url: '/marketing-hub/segments', 
+    icon: Users2,
     permission: 'admin'
   },
 ];

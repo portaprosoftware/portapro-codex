@@ -38,6 +38,7 @@ import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
 import { DriverReportsPage } from './pages/DriverReportsPage';
 import TeamManagement from './pages/TeamManagement';
+import { ComingSoon } from './pages/ComingSoon';
 
 const App = () => {
   console.log('App component rendering...');
@@ -99,7 +100,10 @@ const App = () => {
                     <Route path="/testing" element={<TestingPage />} />
                     <Route path="/maintenance-hub" element={<MaintenanceHub />} />
                     <Route path="/marketing" element={<Marketing />} />
-                    <Route path="/marketing/templates" element={<Marketing />} />
+                    <Route path="/marketing-hub/templates" element={<Marketing />} />
+                    <Route path="/marketing-hub/campaigns" element={<ComingSoon title="Marketing Campaigns" />} />
+                    <Route path="/marketing-hub/analytics" element={<ComingSoon title="Marketing Analytics" />} />
+                    <Route path="/marketing-hub/segments" element={<ComingSoon title="Customer Segments" />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/storage-sites" element={<StorageSites />} />
                     <Route path="/team-management" element={<TeamManagement />} />
