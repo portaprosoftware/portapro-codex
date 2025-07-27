@@ -98,6 +98,21 @@ const JobsPage: React.FC = () => {
     }
   });
 
+  // Calculate drivers with jobs today
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const driversWithJobsToday = React.useMemo(() => {
+    const driverSet = new Set<string>();
+    
+    // Check jobs from all sources for today's date
+    [...outgoingJobs, ...incomingJobs, ...dispatchJobs].forEach(job => {
+      if (job.driver_id && format(new Date(job.scheduled_date), 'yyyy-MM-dd') === today) {
+        driverSet.add(job.driver_id);
+      }
+    });
+    
+    return driverSet;
+  }, [outgoingJobs, incomingJobs, dispatchJobs, today]);
+
   // Set the active tab based on route and force reinitialization
   useEffect(() => {
     if (location.pathname.includes('/calendar')) {
@@ -307,6 +322,7 @@ const JobsPage: React.FC = () => {
                 selectedStatus={selectedStatus}
                 onStatusChange={setSelectedStatus}
                 drivers={drivers}
+                driversWithJobsToday={driversWithJobsToday}
               />
               <Button 
                 onClick={() => setIsJobWizardOpen(true)}
@@ -644,6 +660,7 @@ const JobsPage: React.FC = () => {
                   selectedStatus={selectedStatus}
                   onStatusChange={setSelectedStatus}
                   drivers={drivers}
+                  driversWithJobsToday={driversWithJobsToday}
                 />
               </div>
               <JobsMapPage 

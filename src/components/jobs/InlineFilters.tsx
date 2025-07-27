@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Search, Check } from 'lucide-react';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -13,6 +13,7 @@ interface InlineFiltersProps {
   selectedStatus: string;
   onStatusChange: (value: string) => void;
   drivers: Array<{ id: string; first_name: string; last_name: string }>;
+  driversWithJobsToday?: Set<string>;
 }
 
 export const InlineFilters: React.FC<InlineFiltersProps> = ({
@@ -24,10 +25,18 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   onJobTypeChange,
   selectedStatus,
   onStatusChange,
-  drivers
+  drivers,
+  driversWithJobsToday = new Set()
 }) => {
   return (
-    <div className="flex items-center gap-4 flex-wrap">
+    <div className="space-y-3">
+      {/* Info Line */}
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <Check className="w-4 h-4 text-green-500" />
+        <span>= Drivers With Jobs Today</span>
+      </div>
+      
+      <div className="flex items-center gap-4 flex-wrap">
       {/* Search Input */}
       <div className="flex-1 min-w-64">
         <div className="relative">
@@ -51,7 +60,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <SelectItem value="all">All Drivers</SelectItem>
           {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
             <SelectItem key={driver.id} value={driver.id}>
-              {driver.first_name} {driver.last_name}
+              <div className="flex items-center gap-2">
+                {driversWithJobsToday.has(driver.id) && (
+                  <Check className="w-4 h-4 text-green-500" />
+                )}
+                <span>{driver.first_name} {driver.last_name}</span>
+              </div>
             </SelectItem>
           ))}
         </SelectContent>
@@ -130,6 +144,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           </SelectItem>
         </SelectContent>
       </Select>
+      </div>
     </div>
   );
 };
