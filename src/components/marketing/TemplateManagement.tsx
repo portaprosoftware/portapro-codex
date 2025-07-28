@@ -25,8 +25,8 @@ interface Template {
 
 export const TemplateManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [systemFilter, setSystemFilter] = useState('all');
-  const [userFilter, setUserFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState<'system' | 'user'>('system');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
   const queryClient = useQueryClient();
@@ -69,15 +69,16 @@ export const TemplateManagement: React.FC = () => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          template.content.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // System templates filter
-    const matchesSystemFilter = systemFilter === 'all' || 
-      (template.source === 'system' && template.category.toLowerCase() === systemFilter.toLowerCase());
+    // Source filter (system vs user)
+    const matchesSource = sourceFilter === 'system' ? 
+      template.source === 'system' : 
+      template.source !== 'system';
     
-    // User templates filter  
-    const matchesUserFilter = userFilter === 'all' ||
-      (template.source !== 'system' && template.category.toLowerCase() === userFilter.toLowerCase());
+    // Type filter
+    const matchesType = typeFilter === 'all' || 
+      template.category.toLowerCase() === typeFilter.toLowerCase();
     
-    return matchesSearch && (matchesSystemFilter || matchesUserFilter);
+    return matchesSearch && matchesSource && matchesType;
   });
 
   // Render list view
@@ -224,29 +225,34 @@ export const TemplateManagement: React.FC = () => {
           />
         </div>
         
-        {/* System Generated Templates Dropdown */}
-        <div className="w-48">
-          <Select value={systemFilter} onValueChange={setSystemFilter}>
-            <SelectTrigger className="bg-white border shadow-sm">
-              <SelectValue placeholder="System Generated Templates" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border shadow-lg z-50">
-              <SelectItem value="all">All System Templates</SelectItem>
-              <SelectItem value="reminder">Reminder</SelectItem>
-              <SelectItem value="marketing">Marketing</SelectItem>
-              <SelectItem value="invoice">Invoice</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Source Toggle */}
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <Button
+            variant={sourceFilter === 'system' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSourceFilter('system')}
+            className="px-3"
+          >
+            System Generated
+          </Button>
+          <Button
+            variant={sourceFilter === 'user' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSourceFilter('user')}
+            className="px-3"
+          >
+            User Created
+          </Button>
         </div>
 
-        {/* User Created Templates Dropdown */}
+        {/* Template Type Dropdown */}
         <div className="w-48">
-          <Select value={userFilter} onValueChange={setUserFilter}>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="bg-white border shadow-sm">
-              <SelectValue placeholder="User Created Templates" />
+              <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent className="bg-white border shadow-lg z-50">
-              <SelectItem value="all">All User Templates</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="reminder">Reminder</SelectItem>
               <SelectItem value="marketing">Marketing</SelectItem>
               <SelectItem value="invoice">Invoice</SelectItem>
