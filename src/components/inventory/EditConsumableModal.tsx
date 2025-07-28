@@ -74,24 +74,24 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       const { data, error } = await supabase
         .from('consumable_location_stock')
         .select(`
-          *,
-          storage_locations!inner (
-            id,
-            name
-          )
+          id,
+          quantity,
+          storage_location:storage_locations(id, name),
+          consumable:consumables(reorder_threshold)
         `)
-        .eq('consumable_id', consumable.id);
+        .eq('consumable_id', consumable.id)
+        .order('quantity', { ascending: false });
       
       if (error) {
         console.error('Error fetching location stock:', error);
         throw error;
       }
       
-      const locationStock = data.map((item: any) => ({
-        locationId: item.storage_location_id,
-        locationName: item.storage_locations.name,
+      const locationStock = (data || []).map((item: any) => ({
+        locationId: item.storage_location?.id,
+        locationName: item.storage_location?.name,
         onHand: Number(item.quantity) || 0
-      }));
+      })).filter(item => item.locationId && item.locationName);
       
       console.log('Fetched location stock:', locationStock);
       return locationStock;
@@ -102,16 +102,17 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   const locationStockData = locationStockQuery.data || [];
 
   useEffect(() => {
-    if (consumable && !locationStockQuery.isLoading) {
+    if (consumable && !locationStockQuery.isLoading && !locationStockQuery.isError) {
       console.log('Initializing form with consumable:', consumable);
       console.log('Location stock data:', locationStockData);
       console.log('Query loading state:', locationStockQuery.isLoading);
+      console.log('Query error state:', locationStockQuery.isError);
       
       const defaultLocationStock = locationStockData && locationStockData.length > 0 
         ? locationStockData 
         : [];
       
-      form.reset({
+      const formData = {
         name: consumable.name,
         description: consumable.description || '',
         category: consumable.category,
@@ -121,11 +122,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         locationStock: defaultLocationStock,
         is_active: consumable.is_active,
         notes: consumable.notes || ''
-      });
+      };
       
-      console.log('Form reset with location stock:', defaultLocationStock);
+      console.log('Resetting form with data:', formData);
+      form.reset(formData);
     }
-  }, [consumable, locationStockData, locationStockQuery.isLoading, form]);
+  }, [consumable, locationStockData, locationStockQuery.isLoading, locationStockQuery.isError, form]);
 
   const updateConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {

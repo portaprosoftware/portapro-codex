@@ -53,7 +53,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
       if (value && value.length > 0) {
         // If parent provides initial data, use it
         console.log('ConsumableLocationAllocator: Using provided value:', value);
-        setLocations(value);
+        setLocations([...value]); // Create a new array to avoid reference issues
       } else {
         // If parent has empty array, start with empty state (user can add locations manually)
         console.log('ConsumableLocationAllocator: Starting with empty state');
@@ -63,7 +63,15 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   }, [value, storageLocations, isInitialized]);
 
-  // Sync changes back to parent (only after initialization)
+  // Reset initialization when value changes from outside (important for edit modal)
+  useEffect(() => {
+    if (isInitialized && value && JSON.stringify(value) !== JSON.stringify(locations)) {
+      console.log('ConsumableLocationAllocator: Value changed from outside, reinitializing:', value);
+      setLocations([...value]);
+    }
+  }, [value, isInitialized, locations]);
+
+  // Sync changes back to parent (only after initialization and when user makes changes)
   useEffect(() => {
     if (isInitialized) {
       const currentValueString = JSON.stringify(value || []);
@@ -74,7 +82,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
         onChange(locations);
       }
     }
-  }, [locations, onChange, value, isInitialized]);
+  }, [locations, onChange, isInitialized]); // Removed 'value' to prevent circular updates
 
   const handleQuantityChange = (locationId: string, value: number) => {
     const newLocations = locations.map(loc => 
