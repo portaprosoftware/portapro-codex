@@ -38,7 +38,7 @@ serve(async (req) => {
 
 ${customInstructions ? `Additional instructions: ${customInstructions}` : ''}
 
-${includeSubject ? 'Format your response as JSON with "subject" and "content" fields.' : 'Return only the email body content as plain text.'}
+${includeSubject ? 'Return ONLY valid JSON with "subject" and "content" fields. Do not wrap in markdown code blocks. Example: {"subject": "Your subject here", "content": "Your email content here"}' : 'Return only the email body content as plain text.'}
 
 Keep the content concise but engaging, and include a clear call-to-action.`;
     } else {
@@ -75,14 +75,33 @@ Keep it brief, engaging, and include a clear call-to-action.`;
     const data = await response.json();
     const generatedContent = data.choices[0].message.content;
 
+    // Function to extract JSON from markdown code blocks
+    const extractJSON = (content: string) => {
+      // Remove markdown code blocks if present
+      const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+      if (jsonMatch) {
+        return jsonMatch[1];
+      }
+      // If no code blocks, return original content
+      return content.trim();
+    };
+
     let result;
     if (type === 'email' && includeSubject) {
       try {
-        result = JSON.parse(generatedContent);
-      } catch {
-        // Fallback if JSON parsing fails
+        const cleanedContent = extractJSON(generatedContent);
+        result = JSON.parse(cleanedContent);
+        
+        // Validate the result has required fields
+        if (!result.subject || !result.content) {
+          throw new Error('Missing required fields');
+        }
+      } catch (error) {
+        console.error('JSON parsing error:', error);
+        // Improved fallback parsing
+        const lines = generatedContent.split('\n').filter(line => line.trim());
         result = {
-          subject: 'Important Update from Our Team',
+          subject: lines.find(line => line.toLowerCase().includes('subject')) || 'Important Update from Our Team',
           content: generatedContent
         };
       }
