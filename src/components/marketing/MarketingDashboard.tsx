@@ -12,7 +12,7 @@ type MarketingTab = 'templates' | 'campaigns' | 'analytics' | 'segments';
 export const MarketingDashboard: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<MarketingTab>('templates');
+  const [activeTab, setActiveTab] = useState<MarketingTab>('campaigns');
 
   // Determine active tab from URL
   React.useEffect(() => {
@@ -24,7 +24,7 @@ export const MarketingDashboard: React.FC = () => {
     } else if (path.includes('/segments')) {
       setActiveTab('segments');
     } else {
-      setActiveTab('templates');
+      setActiveTab('campaigns');
     }
   }, [location]);
 
@@ -77,20 +77,20 @@ export const MarketingDashboard: React.FC = () => {
             <div className="enterprise-tabs">
               <TabNav ariaLabel="Marketing sections">
                 <TabNav.Item 
-                  to="/marketing/templates" 
-                  isActive={activeTab === 'templates'}
-                  onClick={() => navigateToTab('templates')}
-                >
-                  <Mail className="w-4 h-4" />
-                  Templates
-                </TabNav.Item>
-                <TabNav.Item 
                   to="/marketing/campaigns" 
                   isActive={activeTab === 'campaigns'}
                   onClick={() => navigateToTab('campaigns')}
                 >
                   <Megaphone className="w-4 h-4" />
                   Campaigns
+                </TabNav.Item>
+                <TabNav.Item 
+                  to="/marketing/templates" 
+                  isActive={activeTab === 'templates'}
+                  onClick={() => navigateToTab('templates')}
+                >
+                  <Mail className="w-4 h-4" />
+                  Templates
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/marketing/analytics" 
