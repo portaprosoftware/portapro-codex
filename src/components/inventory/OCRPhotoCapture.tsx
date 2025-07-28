@@ -47,6 +47,8 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
 
   const updateItemMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log('Saving OCR data:', data);
+      
       const { error } = await supabase
         .from('product_items')
         .update({
@@ -62,26 +64,46 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
         })
         .eq('id', itemId);
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-items'] });
-      toast({
-        title: "OCR Data Saved",
-        description: "Tool tracking information has been updated",
-      });
-      if (onComplete) {
-        onComplete(ocrResults);
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
       }
-      handleClose();
+      
+      console.log('OCR data saved successfully');
+      return data;
+    },
+    onSuccess: (data) => {
+      console.log('Save mutation successful, invalidating queries');
+      
+      // Invalidate multiple query keys to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ['product-items'] });
+      queryClient.invalidateQueries({ queryKey: ['product-items', itemId] });
+      
+      toast({
+        title: "✅ OCR Data Saved Successfully",
+        description: `Tool tracking information updated for ${itemCode}`,
+        duration: 4000,
+      });
+      
+      // Call onComplete with the final data
+      if (onComplete) {
+        onComplete(data);
+      }
+      
+      // Small delay to ensure user sees the success message
+      setTimeout(() => {
+        handleClose();
+      }, 1000);
     },
     onError: (error) => {
+      console.error('Save mutation failed:', error);
+      
       toast({
-        title: "Save Failed",
-        description: "Failed to save OCR data. Please try again.",
+        title: "❌ Save Failed",
+        description: `Failed to save OCR data: ${error.message}`,
         variant: "destructive",
+        duration: 5000,
       });
-      console.error('OCR save error:', error);
     }
   });
 
