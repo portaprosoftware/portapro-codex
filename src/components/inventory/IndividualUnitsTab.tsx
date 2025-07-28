@@ -121,6 +121,26 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  // Fetch storage locations for name lookup
+  const { data: storageLocations } = useQuery({
+    queryKey: ["storage-locations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("storage_locations")
+        .select("id, name");
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Helper function to get storage location name
+  const getStorageLocationName = (locationId: string | null) => {
+    if (!locationId || !storageLocations) return "Not set";
+    const location = storageLocations.find(loc => loc.id === locationId);
+    return location?.name || locationId.substring(0, 8) + "...";
+  };
+
   const toggleRowExpansion = (itemId: string) => {
     setExpandedRows(prev => 
       prev.includes(itemId) 
@@ -437,7 +457,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                           </div>
                           <div>
                             <span className="font-medium text-gray-700">Storage Location:</span>
-                            <p className="text-gray-600 mt-1">{item.current_storage_location_id || "Not set"}</p>
+                            <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
                           </div>
                         </div>
                         
@@ -478,22 +498,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         />
       )}
 
-      {/* QR Scanner Dialog */}
-      <Dialog open={showScanner} onOpenChange={setShowScanner}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Scan QR Code</DialogTitle>
-          </DialogHeader>
-          <QRCodeScanner
-            onScan={handleScanResult}
-            onClose={() => setShowScanner(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* QR Scanner - Direct Component (no outer dialog) */}
+      {showScanner && (
+        <QRCodeScanner
+          onScan={handleScanResult}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
 
-      {/* Stock Adjustment Dialog */}
+      {/* Stock Adjustment Dialog - Compact Version */}
       <Dialog open={showStockAdjustment} onOpenChange={setShowStockAdjustment}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Adjust Stock</DialogTitle>
           </DialogHeader>
