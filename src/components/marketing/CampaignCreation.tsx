@@ -335,7 +335,7 @@ export const CampaignCreation: React.FC = () => {
                       };
 
                       return (
-                        <div key={type.customer_type} className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                        <div key={type.customer_type} className="flex items-center space-x-3">
                           <Checkbox
                             id={type.customer_type}
                             checked={campaignData.target_customer_types.includes(type.customer_type)}
