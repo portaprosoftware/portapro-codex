@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { CategorySelect } from '@/components/ui/category-select';
 import { BarcodeScannerModal } from '@/components/ui/barcode-scanner';
+import { DesktopBarcodeInput } from '@/components/ui/desktop-barcode-input';
 import { ConsumableLocationAllocator } from './ConsumableLocationAllocator';
 import { toast } from '@/hooks/use-toast';
-import { ScanLine } from 'lucide-react';
 
 interface LocationStock {
   locationId: string;
@@ -180,18 +180,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                   <FormItem>
                     <FormLabel>SKU</FormLabel>
                     <FormControl>
-                      <div className="flex gap-2">
-                        <Input {...field} placeholder="Enter SKU" />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowScannerModal(true)}
-                          className="px-3"
-                        >
-                          <ScanLine className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <DesktopBarcodeInput
+                        {...field}
+                        placeholder="Enter SKU"
+                        onScanResult={handleScanResult}
+                        onCameraScan={() => setShowScannerModal(true)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
