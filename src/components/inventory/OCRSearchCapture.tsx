@@ -54,7 +54,14 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
   };
 
   const startCamera = async () => {
+    console.log('OCR Camera: Starting camera access...');
     try {
+      // Check if getUserMedia is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported');
+      }
+
+      console.log('OCR Camera: Requesting camera permission...');
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           facingMode: 'environment', // Use rear camera on mobile
@@ -63,16 +70,36 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
         } 
       });
       
+      console.log('OCR Camera: Media stream obtained:', mediaStream);
+      
       if (videoRef.current) {
+        console.log('OCR Camera: Setting video source...');
         videoRef.current.srcObject = mediaStream;
         setStream(mediaStream);
         setShowCamera(true);
+        console.log('OCR Camera: Camera started successfully');
+      } else {
+        console.error('OCR Camera: Video ref not available');
+        throw new Error('Video element not ready');
       }
     } catch (error) {
-      console.error('Error accessing camera:', error);
+      console.error('OCR Camera: Error accessing camera:', error);
+      console.error('OCR Camera: Error type:', error.name);
+      console.error('OCR Camera: Error message:', error.message);
+      
+      let errorMessage = "Could not access camera. Please use the Upload option instead.";
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage = "Camera permission denied. Please allow camera access and try again.";
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = "No camera found on this device.";
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage = "Camera not supported in this browser.";
+      }
+      
       toast({
         title: "Camera Access Failed",
-        description: "Could not access camera. Please use the Upload option instead.",
+        description: errorMessage,
         variant: "destructive",
       });
       // Fallback to file upload
