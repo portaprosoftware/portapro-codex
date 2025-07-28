@@ -13,6 +13,7 @@ import { Sparkles, Loader2 } from 'lucide-react';
 interface CreateTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isSlider?: boolean;
 }
 
 interface TemplateData {
@@ -31,7 +32,7 @@ interface AIGenerationData {
   customInstructions: string;
 }
 
-export const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ isOpen, onClose }) => {
+export const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ isOpen, onClose, isSlider = false }) => {
   const [templateData, setTemplateData] = useState<TemplateData>({
     name: '',
     type: 'email',
@@ -208,6 +209,225 @@ export const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ isOpen
     onClose();
   };
 
+  const renderContent = () => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="template-name">Template Name *</Label>
+          <Input
+            id="template-name"
+            value={templateData.name}
+            onChange={(e) => setTemplateData({...templateData, name: e.target.value})}
+            placeholder="Enter template name"
+          />
+        </div>
+        
+        <div>
+          <Label htmlFor="template-type">Type *</Label>
+          <Select 
+            value={templateData.type} 
+            onValueChange={(value: 'email' | 'sms' | 'both') => setTemplateData({...templateData, type: value})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="sms">SMS</SelectItem>
+              <SelectItem value="both">Both (Email + SMS)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="template-category">Category</Label>
+        <Select 
+          value={templateData.category} 
+          onValueChange={(value) => setTemplateData({...templateData, category: value})}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="reminder">Reminder</SelectItem>
+            <SelectItem value="marketing">Marketing</SelectItem>
+            <SelectItem value="invoice">Invoice</SelectItem>
+            <SelectItem value="notification">Notification</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {(templateData.type === 'email' || templateData.type === 'both') && (
+        <div>
+          <Label htmlFor="template-subject">Subject *</Label>
+          <Input
+            id="template-subject"
+            value={templateData.subject}
+            onChange={(e) => setTemplateData({...templateData, subject: e.target.value})}
+            placeholder="Enter email subject"
+          />
+        </div>
+      )}
+
+      {/* AI Generation Section */}
+      <div className="border-t pt-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium">AI Content Generation</h4>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAISection(!showAISection)}
+          >
+            <Sparkles className="w-4 h-4 mr-1" />
+            {showAISection ? 'Hide AI' : 'Use AI'}
+          </Button>
+        </div>
+
+        {showAISection && (
+          <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="ai-tone">Tone</Label>
+                <Select 
+                  value={aiGenerationData.tone} 
+                  onValueChange={(value) => setAiGenerationData({...aiGenerationData, tone: value as any})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="friendly">Friendly</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="casual">Casual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="ai-email-type">Content Type</Label>
+                <Select 
+                  value={aiGenerationData.emailType} 
+                  onValueChange={(value) => setAiGenerationData({...aiGenerationData, emailType: value as any})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="marketing">Marketing</SelectItem>
+                    <SelectItem value="reminder">Reminder</SelectItem>
+                    <SelectItem value="follow_up">Follow Up</SelectItem>
+                    <SelectItem value="announcement">Announcement</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="ai-instructions">Custom Instructions</Label>
+              <Textarea
+                id="ai-instructions"
+                value={aiGenerationData.customInstructions}
+                onChange={(e) => setAiGenerationData({...aiGenerationData, customInstructions: e.target.value})}
+                placeholder="Describe what you want the content to be about..."
+                rows={2}
+              />
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAIGenerate}
+              disabled={isGenerating || generateWithAIMutation.isPending}
+              className="w-full"
+            >
+              {(isGenerating || generateWithAIMutation.isPending) ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 mr-2" />
+              )}
+              Generate Content with AI
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Content Sections */}
+      {templateData.type === 'both' ? (
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="template-email-content">Email Content *</Label>
+            <Textarea
+              id="template-email-content"
+              value={templateData.emailContent}
+              onChange={(e) => setTemplateData({...templateData, emailContent: e.target.value})}
+              placeholder="Enter email content..."
+              rows={6}
+              className="resize-none"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="template-sms-content">SMS Content *</Label>
+            <Textarea
+              id="template-sms-content"
+              value={templateData.smsContent}
+              onChange={(e) => setTemplateData({...templateData, smsContent: e.target.value})}
+              placeholder="Enter SMS content..."
+              rows={3}
+              className="resize-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              SMS: {templateData.smsContent.length}/160 characters
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <Label htmlFor="template-content">Content *</Label>
+          <Textarea
+            id="template-content"
+            value={templateData.content}
+            onChange={(e) => setTemplateData({...templateData, content: e.target.value})}
+            placeholder="Enter template content..."
+            rows={8}
+            className="resize-none"
+          />
+          {templateData.type === 'sms' && (
+            <p className="text-xs text-gray-500 mt-1">
+              SMS: {templateData.content.length}/160 characters
+            </p>
+          )}
+        </div>
+      )}
+      
+      <p className="text-xs text-gray-500">
+        You can use variables like {`{{customer_name}}, {{company_name}}, etc.`}
+      </p>
+
+      <div className="flex justify-between pt-4">
+        <Button variant="outline" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleSubmit}
+          disabled={createTemplateMutation.isPending}
+          className="bg-primary text-white"
+        >
+          {createTemplateMutation.isPending ? 'Creating...' : 'Create Template'}
+        </Button>
+      </div>
+    </div>
+  );
+
+  // If used as a slider, just return the content without the Dialog wrapper
+  if (isSlider) {
+    return renderContent();
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl" aria-describedby="create-template-description">
@@ -219,217 +439,7 @@ export const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({ isOpen
           Create a new communication template for emails or SMS messages
         </div>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="template-name">Template Name *</Label>
-              <Input
-                id="template-name"
-                value={templateData.name}
-                onChange={(e) => setTemplateData({...templateData, name: e.target.value})}
-                placeholder="Enter template name"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="template-type">Type *</Label>
-              <Select 
-                value={templateData.type} 
-                onValueChange={(value: 'email' | 'sms' | 'both') => setTemplateData({...templateData, type: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="sms">SMS</SelectItem>
-                  <SelectItem value="both">Both (Email + SMS)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="template-category">Category</Label>
-            <Select 
-              value={templateData.category} 
-              onValueChange={(value) => setTemplateData({...templateData, category: value})}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="reminder">Reminder</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
-                <SelectItem value="invoice">Invoice</SelectItem>
-                <SelectItem value="notification">Notification</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {(templateData.type === 'email' || templateData.type === 'both') && (
-            <div>
-              <Label htmlFor="template-subject">Subject *</Label>
-              <Input
-                id="template-subject"
-                value={templateData.subject}
-                onChange={(e) => setTemplateData({...templateData, subject: e.target.value})}
-                placeholder="Enter email subject"
-              />
-            </div>
-          )}
-
-          {/* AI Generation Section */}
-          <div className="border-t pt-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium">AI Content Generation</h4>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAISection(!showAISection)}
-              >
-                <Sparkles className="w-4 h-4 mr-1" />
-                {showAISection ? 'Hide AI' : 'Use AI'}
-              </Button>
-            </div>
-
-            {showAISection && (
-              <div className="space-y-3 bg-muted/50 p-4 rounded-lg">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="ai-tone">Tone</Label>
-                    <Select 
-                      value={aiGenerationData.tone} 
-                      onValueChange={(value) => setAiGenerationData({...aiGenerationData, tone: value as any})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="professional">Professional</SelectItem>
-                        <SelectItem value="friendly">Friendly</SelectItem>
-                        <SelectItem value="urgent">Urgent</SelectItem>
-                        <SelectItem value="casual">Casual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="ai-email-type">Content Type</Label>
-                    <Select 
-                      value={aiGenerationData.emailType} 
-                      onValueChange={(value) => setAiGenerationData({...aiGenerationData, emailType: value as any})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="marketing">Marketing</SelectItem>
-                        <SelectItem value="reminder">Reminder</SelectItem>
-                        <SelectItem value="follow_up">Follow Up</SelectItem>
-                        <SelectItem value="announcement">Announcement</SelectItem>
-                        <SelectItem value="custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="ai-instructions">Custom Instructions</Label>
-                  <Textarea
-                    id="ai-instructions"
-                    value={aiGenerationData.customInstructions}
-                    onChange={(e) => setAiGenerationData({...aiGenerationData, customInstructions: e.target.value})}
-                    placeholder="Describe what you want the content to be about..."
-                    rows={2}
-                  />
-                </div>
-
-                <Button
-                  type="button"
-                  onClick={handleAIGenerate}
-                  disabled={isGenerating || generateWithAIMutation.isPending}
-                  className="w-full"
-                >
-                  {(isGenerating || generateWithAIMutation.isPending) ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4 mr-2" />
-                  )}
-                  Generate Content with AI
-                </Button>
-              </div>
-            )}
-          </div>
-
-          {/* Content Sections */}
-          {templateData.type === 'both' ? (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="template-email-content">Email Content *</Label>
-                <Textarea
-                  id="template-email-content"
-                  value={templateData.emailContent}
-                  onChange={(e) => setTemplateData({...templateData, emailContent: e.target.value})}
-                  placeholder="Enter email content..."
-                  rows={6}
-                  className="resize-none"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="template-sms-content">SMS Content *</Label>
-                <Textarea
-                  id="template-sms-content"
-                  value={templateData.smsContent}
-                  onChange={(e) => setTemplateData({...templateData, smsContent: e.target.value})}
-                  placeholder="Enter SMS content..."
-                  rows={3}
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  SMS: {templateData.smsContent.length}/160 characters
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <Label htmlFor="template-content">Content *</Label>
-              <Textarea
-                id="template-content"
-                value={templateData.content}
-                onChange={(e) => setTemplateData({...templateData, content: e.target.value})}
-                placeholder="Enter template content..."
-                rows={8}
-                className="resize-none"
-              />
-              {templateData.type === 'sms' && (
-                <p className="text-xs text-gray-500 mt-1">
-                  SMS: {templateData.content.length}/160 characters
-                </p>
-              )}
-            </div>
-          )}
-          
-          <p className="text-xs text-gray-500">
-            You can use variables like {`{{customer_name}}, {{company_name}}, etc.`}
-          </p>
-
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={createTemplateMutation.isPending}
-              className="bg-primary text-white"
-            >
-              {createTemplateMutation.isPending ? 'Creating...' : 'Create Template'}
-            </Button>
-          </div>
-        </div>
+        {renderContent()}
       </DialogContent>
     </Dialog>
   );

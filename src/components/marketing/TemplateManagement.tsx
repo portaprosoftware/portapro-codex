@@ -13,6 +13,15 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { toast } from '@/components/ui/use-toast';
 import { CreateTemplateModal } from './CreateTemplateModal';
 import { EditTemplateModal } from './EditTemplateModal';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 interface Template {
   id: string;
@@ -38,6 +47,7 @@ export const TemplateManagement: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
   // Fetch templates
@@ -260,23 +270,45 @@ export const TemplateManagement: React.FC = () => {
           </Select>
         </div>
 
-        <Button 
-          onClick={() => setShowCreateModal(true)}
-          className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Template
-        </Button>
+        <Sheet open={showCreateModal} onOpenChange={setShowCreateModal}>
+          <SheetTrigger asChild>
+            <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
+              <Plus className="w-4 h-4 mr-2" />
+              New Template
+            </Button>
+          </SheetTrigger>
+          <SheetContent 
+            side="right" 
+            className={`${isMobile ? 'w-full' : 'w-[75%]'} max-w-none overflow-y-auto`}
+          >
+            <SheetHeader>
+              <SheetTitle>Create New Template</SheetTitle>
+              <SheetDescription>
+                Create a new email or SMS template for your marketing campaigns.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6">
+              <CreateTemplateModal 
+                isOpen={true} 
+                onClose={() => setShowCreateModal(false)} 
+                isSlider={true}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
       {/* Templates Display - Organized by Type and Source */}
       <div className="space-y-6">
         {/* Email Templates */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-blue-500" />
-            Email Templates
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-500" />
+              Email Templates
+            </h2>
+            <span className="text-sm text-gray-500 italic">select dropdown to expand</span>
+          </div>
           
           {/* Email System Templates */}
           {sourceFilter === 'system' && renderCollapsibleSection(
@@ -299,10 +331,13 @@ export const TemplateManagement: React.FC = () => {
 
         {/* SMS Templates */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-green-500" />
-            SMS Templates
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-green-500" />
+              SMS Templates
+            </h2>
+            <span className="text-sm text-gray-500 italic">select dropdown to expand</span>
+          </div>
           
           {/* SMS System Templates */}
           {sourceFilter === 'system' && renderCollapsibleSection(
@@ -356,11 +391,13 @@ export const TemplateManagement: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Create Template Modal */}
-      <CreateTemplateModal 
-        isOpen={showCreateModal} 
-        onClose={() => setShowCreateModal(false)} 
-      />
+      {/* Create Template Modal - Only used when not in slider mode */}
+      {!showCreateModal && (
+        <CreateTemplateModal 
+          isOpen={false} 
+          onClose={() => setShowCreateModal(false)} 
+        />
+      )}
 
       {/* Edit Template Modal */}
       <EditTemplateModal 
