@@ -1,1 +1,21 @@
+# Handle client-side routing
 /*    /index.html   200
+
+# Specific routes that should work
+/driver/*    /index.html   200
+/jobs/*      /index.html   200
+/inventory/* /index.html   200
+/customers/* /index.html   200
+/fleet/*     /index.html   200
+/analytics/* /index.html   200
+/settings/*  /index.html   200
+
+# API routes and assets should not be redirected
+/api/*    /api/:splat    200
+/assets/* /assets/:splat 200
+/static/* /static/:splat 200
+/lovable-uploads/* /lovable-uploads/:splat 200
+
+# Manifest and service worker
+/manifest.json /manifest.json 200
+/sw.js         /sw.js         200

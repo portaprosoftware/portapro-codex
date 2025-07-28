@@ -1,9 +1,9 @@
 
 {
-  "name": "PortaPro Driver",
+  "name": "PortaPro",
   "short_name": "PortaPro",
-  "description": "Mobile driver app for PortaPro portable toilet rental service",
-  "start_url": "/driver",
+  "description": "PortaPro portable toilet rental management platform",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3B82F6",
