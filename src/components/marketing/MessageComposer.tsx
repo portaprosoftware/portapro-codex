@@ -6,10 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Plus, Trash2, Eye, ArrowLeft } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Bot, Trash2, Eye, ArrowLeft } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ButtonBuilder } from './ButtonBuilder';
+import { SavedButtons } from './SavedButtons';
 
 interface CustomButton {
   id: string;
@@ -17,6 +20,7 @@ interface CustomButton {
   type: 'url' | 'phone' | 'email';
   value: string;
   style: 'primary' | 'secondary';
+  includeEmoji?: boolean;
 }
 
 interface MessageData {
@@ -107,17 +111,10 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
   };
 
-  const addButton = () => {
-    const newButton: CustomButton = {
-      id: Date.now().toString(),
-      text: '',
-      type: 'url',
-      value: '',
-      style: 'primary'
-    };
+  const addButton = (button: CustomButton) => {
     setMessageData(prev => ({
       ...prev,
-      buttons: [...prev.buttons, newButton]
+      buttons: [...prev.buttons, button]
     }));
   };
 
@@ -151,7 +148,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     onSave(messageData);
   };
 
-  const getButtonIcon = (type: string) => {
+  const getButtonIcon = (type: string, includeEmoji = true) => {
+    if (!includeEmoji) return '';
     switch (type) {
       case 'phone': return '📞';
       case 'email': return '✉️';
@@ -276,73 +274,81 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
           </Card>
 
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold font-inter">Action Buttons</h3>
-              <Button onClick={addButton} size="sm" variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Button
-              </Button>
-            </div>
+            <h3 className="text-lg font-semibold mb-4 font-inter">Action Buttons</h3>
 
             <div className="space-y-4">
-              {messageData.buttons.map((button) => (
-                <div key={button.id} className="p-4 border rounded-lg space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Button {messageData.buttons.indexOf(button) + 1}</span>
-                    <Button
-                      onClick={() => removeButton(button.id)}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+              {/* Button Builder */}
+              <ButtonBuilder onAddButton={addButton} />
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label>Button Text</Label>
-                      <Input
-                        value={button.text}
-                        onChange={(e) => updateButton(button.id, { text: e.target.value })}
-                        placeholder="e.g., Call Now"
-                      />
-                    </div>
-                    <div>
-                      <Label>Type</Label>
-                      <Select value={button.type} onValueChange={(value: any) => updateButton(button.id, { type: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="url">Website URL</SelectItem>
-                          <SelectItem value="phone">Phone Number</SelectItem>
-                          <SelectItem value="email">Email Address</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+              {/* Existing Buttons */}
+              {messageData.buttons.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-medium font-inter">Added Buttons</h4>
+                  {messageData.buttons.map((button) => (
+                    <div key={button.id} className="p-4 border rounded-lg space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Button {messageData.buttons.indexOf(button) + 1}</span>
+                        <Button
+                          onClick={() => removeButton(button.id)}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
 
-                  <div>
-                    <Label>
-                      {button.type === 'url' ? 'URL' : 
-                       button.type === 'phone' ? 'Phone Number' : 'Email Address'}
-                    </Label>
-                    <Input
-                      value={button.value}
-                      onChange={(e) => updateButton(button.id, { value: e.target.value })}
-                      placeholder={
-                        button.type === 'url' ? 'https://example.com' :
-                        button.type === 'phone' ? '(555) 123-4567' : 'contact@example.com'
-                      }
-                    />
-                  </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Button Text</Label>
+                          <Input
+                            value={button.text}
+                            onChange={(e) => updateButton(button.id, { text: e.target.value })}
+                            placeholder="e.g., Call Now"
+                          />
+                        </div>
+                        <div>
+                          <Label>Type</Label>
+                          <Select value={button.type} onValueChange={(value: any) => updateButton(button.id, { type: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="url">Website URL</SelectItem>
+                              <SelectItem value="phone">Phone Number</SelectItem>
+                              <SelectItem value="email">Email Address</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>
+                          {button.type === 'url' ? 'URL' : 
+                           button.type === 'phone' ? 'Phone Number' : 'Email Address'}
+                        </Label>
+                        <Input
+                          value={button.value}
+                          onChange={(e) => updateButton(button.id, { value: e.target.value })}
+                          placeholder={
+                            button.type === 'url' ? 'https://example.com' :
+                            button.type === 'phone' ? '(555) 123-4567' : 'contact@example.com'
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`emoji-${button.id}`}
+                          checked={button.includeEmoji !== false}
+                          onCheckedChange={(checked) => updateButton(button.id, { includeEmoji: !!checked })}
+                        />
+                        <Label htmlFor={`emoji-${button.id}`} className="text-sm">
+                          Include emoji ({getButtonIcon(button.type)})
+                        </Label>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-
-              {messageData.buttons.length === 0 && (
-                <p className="text-gray-500 text-center py-4">
-                  No buttons added yet. Click "Add Button" to create action buttons.
-                </p>
               )}
             </div>
           </Card>
@@ -382,7 +388,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                   <div className="flex flex-wrap gap-2 mt-2">
                     {messageData.buttons.map((button) => (
                       <Badge key={button.id} variant="secondary" className="flex items-center gap-1">
-                        <span>{getButtonIcon(button.type)}</span>
+                        {button.includeEmoji !== false && <span>{getButtonIcon(button.type)}</span>}
                         {button.text || 'Untitled Button'}
                       </Badge>
                     ))}
@@ -391,6 +397,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               )}
             </div>
           </Card>
+
+          {/* Saved Buttons */}
+          <SavedButtons onSelectButton={addButton} />
 
           <div className="flex gap-3">
             <Button onClick={handleSave} className="flex-1">
@@ -427,7 +436,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                   <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
                     {messageData.buttons.map((button) => (
                       <Button key={button.id} size="sm" variant={button.style === 'primary' ? 'default' : 'outline'}>
-                        {getButtonIcon(button.type)} {button.text}
+                        {button.includeEmoji !== false && getButtonIcon(button.type)} {button.text}
                       </Button>
                     ))}
                   </div>
