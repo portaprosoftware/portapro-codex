@@ -17,9 +17,10 @@ import { IndividualItemCreation } from "./IndividualItemCreation";
 interface ProductDetailProps {
   productId: string;
   onBack: () => void;
+  toolNumberToFind?: string | null;
 }
 
-export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack }) => {
+export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind }) => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
     queryFn: async () => {
@@ -67,7 +68,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack 
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue={toolNumberToFind ? "units" : "overview"} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -97,7 +98,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack 
         </TabsContent>
 
         <TabsContent value="units" className="mt-6">
-          <IndividualUnitsTab productId={productId} />
+          <IndividualUnitsTab productId={productId} toolNumberToFind={toolNumberToFind} />
         </TabsContent>
 
         <TabsContent value="attributes" className="mt-6">

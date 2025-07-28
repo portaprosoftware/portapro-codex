@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,10 @@ import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 
 interface IndividualUnitsTabProps {
   productId: string;
+  toolNumberToFind?: string | null;
 }
 
-export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId }) => {
+export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId, toolNumberToFind }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -56,6 +57,16 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     confidenceRange?: [number, number];
     attributes?: Record<string, string>;
   }>({});
+
+  // Auto-set tool number filter when navigating from OCR search
+  useEffect(() => {
+    if (toolNumberToFind) {
+      setEnhancedFilters(prev => ({
+        ...prev,
+        toolNumber: toolNumberToFind
+      }));
+    }
+  }, [toolNumberToFind]);
 
   const { data: items, isLoading, refetch } = useQuery({
     queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters, enhancedFilters],

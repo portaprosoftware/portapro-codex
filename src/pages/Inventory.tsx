@@ -16,11 +16,14 @@ import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
 type ViewType = "grid" | "list";
 
 const Inventory: React.FC = () => {
+  const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [hideInactive, setHideInactive] = useState(false);
@@ -31,6 +34,7 @@ const Inventory: React.FC = () => {
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
   const [showOCRDashboard, setShowOCRDashboard] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
+  const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
 
   const handleFilterClick = (filterKey: FilterType) => {
     if (filterKey === "available_now") {
@@ -52,9 +56,38 @@ const Inventory: React.FC = () => {
       : "border-gray-300 text-gray-700 hover:border-gray-400";
   };
 
-  const handleOCRSearchResult = (searchTerm: string, confidence?: number) => {
-    setSearchQuery(searchTerm);
+  const handleOCRSearchResult = async (searchTerm: string, confidence?: number) => {
     setShowOCRSearch(false);
+    
+    // First, search for individual product items with this tool number
+    try {
+      const { data: items, error } = await supabase
+        .from("product_items")
+        .select("product_id, tool_number")
+        .ilike("tool_number", `%${searchTerm}%`)
+        .limit(1);
+        
+      if (error) throw error;
+      
+      if (items && items.length > 0) {
+        // Found an individual unit with this tool number
+        const productId = items[0].product_id;
+        setToolNumberToFind(searchTerm);
+        setSelectedProduct(productId);
+        
+        toast({
+          title: "Individual Unit Found",
+          description: `Navigating to unit with tool number: ${searchTerm}`,
+        });
+      } else {
+        // No individual units found, fall back to regular product search
+        setSearchQuery(searchTerm);
+      }
+    } catch (error) {
+      console.error("Error searching for tool number:", error);
+      // Fall back to regular search if there's an error
+      setSearchQuery(searchTerm);
+    }
   };
 
   const filters = [
@@ -66,7 +99,16 @@ const Inventory: React.FC = () => {
   ];
 
   if (selectedProduct) {
-    return <ProductDetail productId={selectedProduct} onBack={() => setSelectedProduct(null)} />;
+    return (
+      <ProductDetail 
+        productId={selectedProduct} 
+        onBack={() => {
+          setSelectedProduct(null);
+          setToolNumberToFind(null);
+        }}
+        toolNumberToFind={toolNumberToFind}
+      />
+    );
   }
 
   return (
