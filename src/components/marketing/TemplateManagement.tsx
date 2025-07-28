@@ -261,7 +261,6 @@ export const TemplateManagement: React.FC = () => {
         </div>
 
         <Button 
-          className="bg-primary text-white"
           onClick={() => setShowCreateModal(true)}
         >
           <Plus className="w-4 h-4 mr-2" />

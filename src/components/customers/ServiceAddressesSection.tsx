@@ -73,7 +73,6 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
         </p>
         <Button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Location
@@ -100,7 +99,6 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
           </p>
           <Button 
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Location

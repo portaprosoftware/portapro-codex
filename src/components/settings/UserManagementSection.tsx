@@ -244,7 +244,7 @@ export function UserManagementSection() {
           
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
+              <Button>
                 <Plus className="w-4 h-4 mr-2" />
                 Add User
               </Button>
