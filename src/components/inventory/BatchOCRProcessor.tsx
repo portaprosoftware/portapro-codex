@@ -168,6 +168,10 @@ export const BatchOCRProcessor: React.FC<BatchOCRProcessorProps> = ({
               <X className="h-4 w-4" />
             </Button>
           </DialogTitle>
+          <div className="text-sm text-gray-600 mt-2">
+            <p><strong>What is Batch OCR?</strong></p>
+            <p>This feature automatically processes multiple inventory items to extract tool tracking information (tool numbers, vendor IDs, etc.) from product labels using AI-powered image recognition.</p>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">

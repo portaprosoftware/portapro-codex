@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EditItemModal } from "./EditItemModal";
+import { CreateItemModal } from "./CreateItemModal";
 import { QRCodeDropdown } from "./QRCodeDropdown";
 import { QRCodeScanner } from "./QRCodeScanner";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
@@ -30,6 +31,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showOCRCapture, setShowOCRCapture] = useState(false);
@@ -268,11 +270,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             variant="outline"
             onClick={() => setShowBatchOCR(true)}
             className="border-green-600 text-green-600 hover:bg-green-50"
+            title="Process multiple items automatically using OCR"
           >
             <Camera className="w-4 h-4 mr-2" />
             Batch OCR
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button 
+            onClick={() => setShowCreateModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Create Item
           </Button>
@@ -464,6 +470,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         />
       )}
 
+      {/* Create Item Modal */}
+      {showCreateModal && (
+        <CreateItemModal
+          productId={productId}
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
       {/* QR Scanner Dialog */}
       <Dialog open={showScanner} onOpenChange={setShowScanner}>
         <DialogContent className="sm:max-w-md">
@@ -508,6 +522,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           onComplete={handleOCRComplete}
         />
       )}
+
+      {/* Batch OCR Processor */}
+      <BatchOCRProcessor
+        open={showBatchOCR}
+        onClose={() => setShowBatchOCR(false)}
+        productId={productId}
+      />
     </div>
   );
 };
