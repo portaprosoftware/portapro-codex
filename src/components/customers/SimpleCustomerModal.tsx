@@ -91,28 +91,30 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
   });
 
   const createCustomerMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+    mutationFn: async (customerData: typeof formData) => {
       const insertData = {
-        name: data.name,
-        customer_type: data.customer_type as any,
-        email: data.email || null,
-        phone: data.phone || null,
-        service_street: data.service_street,
-        service_city: data.service_city,
-        service_state: data.service_state,
-        service_zip: data.service_zip,
+        name: customerData.name,
+        customer_type: customerData.customer_type as any,
+        email: customerData.email || null,
+        phone: customerData.phone || null,
+        service_street: customerData.service_street,
+        service_city: customerData.service_city,
+        service_state: customerData.service_state,
+        service_zip: customerData.service_zip,
         billing_differs_from_service: false,
         deposit_required: true,
       };
       
-      const { error } = await supabase
+      const { data: insertedCustomer, error } = await supabase
         .from('customers')
-        .insert(insertData);
+        .insert(insertData)
+        .select();
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(`Database error: ${error.message}${error.details ? ` - ${error.details}` : ''}${error.hint ? ` (${error.hint})` : ''}`);
       }
-      return true;
+      
+      return insertedCustomer;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
