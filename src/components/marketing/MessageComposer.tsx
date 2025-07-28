@@ -31,6 +31,7 @@ interface MessageData {
   customImageUrl?: string;
   imagePosition?: 'top' | 'middle' | 'bottom' | 'left';
   showCompanyLogo?: boolean;
+  logoSize?: 'small' | 'medium' | 'large';
 }
 
 interface MessageComposerProps {
@@ -68,7 +69,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       buttons: [],
       customImageUrl: '',
       imagePosition: 'bottom',
-      showCompanyLogo: true
+      showCompanyLogo: true,
+      logoSize: 'medium'
     }
   );
   const [isGenerating, setIsGenerating] = useState(false);
@@ -386,6 +388,28 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 </Label>
               </div>
             </div>
+
+            {/* Logo Size Control */}
+            {messageData.showCompanyLogo && (
+              <div className="mb-4">
+                <Label>Logo Size</Label>
+                <Select 
+                  value={messageData.logoSize || 'medium'} 
+                  onValueChange={(value: 'small' | 'medium' | 'large') => 
+                    setMessageData(prev => ({ ...prev, logoSize: value }))
+                  }
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="small">Small</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="large">Large</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div className="space-y-4">
               {campaignType !== 'sms' && (
@@ -583,20 +607,28 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
             <div className="space-y-4">
               {/* Company Logo Preview */}
-              {messageData.showCompanyLogo && companySettings?.company_logo && (
-                <div>
-                  <Label className="text-sm text-gray-500">Company Logo</Label>
-                  <div className="mt-1">
-                    <div className="w-12 h-12 flex items-center justify-center bg-muted rounded border">
+              {messageData.showCompanyLogo && companySettings?.company_logo && (() => {
+                const getLogoHeight = (size?: string) => {
+                  switch (size) {
+                    case 'small': return 'h-8';
+                    case 'large': return 'h-16';
+                    default: return 'h-12';
+                  }
+                };
+
+                return (
+                  <div>
+                    <Label className="text-sm text-gray-500">Company Logo</Label>
+                    <div className="mt-1">
                       <img 
                         src={companySettings.company_logo} 
                         alt={companySettings.company_name || 'Company logo'} 
-                        className="max-w-full max-h-full object-contain"
+                        className={`${getLogoHeight(messageData.logoSize)} w-auto object-contain`}
                       />
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {campaignType !== 'sms' && messageData.subject && (
                 <div>
@@ -663,17 +695,25 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               <Label>Message Content</Label>
               <div className="p-4 border rounded-lg bg-white">
                 {/* Company Logo in Full Preview */}
-                {messageData.showCompanyLogo && companySettings?.company_logo && (
-                  <div className="mb-4">
-                    <div className="w-16 h-16 flex items-center justify-center bg-muted rounded border">
+                {messageData.showCompanyLogo && companySettings?.company_logo && (() => {
+                  const getLogoHeightFull = (size?: string) => {
+                    switch (size) {
+                      case 'small': return 'h-12';
+                      case 'large': return 'h-20';
+                      default: return 'h-16';
+                    }
+                  };
+
+                  return (
+                    <div className="mb-4">
                       <img 
                         src={companySettings.company_logo} 
                         alt={companySettings.company_name || 'Company logo'} 
-                        className="max-w-full max-h-full object-contain"
+                        className={`${getLogoHeightFull(messageData.logoSize)} w-auto object-contain`}
                       />
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
                 
                 {/* Render content with positioned image */}
                 <div>
