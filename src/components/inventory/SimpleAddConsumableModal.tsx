@@ -78,7 +78,7 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
           sku: data.sku,
           unit_cost: unitCost,
           unit_price: unitPrice,
-          location_stock: JSON.stringify(data.location_stock || []),
+          location_stock: JSON.stringify(data.location_stock || []) as any,
           reorder_threshold: 0,
           is_active: data.is_active,
           notes: data.notes

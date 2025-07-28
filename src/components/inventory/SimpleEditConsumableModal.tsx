@@ -102,7 +102,7 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
           sku: data.sku,
           unit_cost: unitCost,
           unit_price: unitPrice,
-          location_stock: JSON.stringify(data.location_stock || []),
+          location_stock: JSON.stringify(data.location_stock || []) as any,
           is_active: data.is_active,
           notes: data.notes,
           updated_at: new Date().toISOString()
