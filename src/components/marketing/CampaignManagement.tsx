@@ -1,15 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CampaignCreation } from './CampaignCreation';
 import { CampaignAnalytics } from './CampaignAnalytics';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 export const CampaignManagement: React.FC = () => {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const isMobile = useIsMobile();
+
   return (
     <div className="space-y-6">
       {/* Campaign Creation */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Create Campaign</h2>
-        <CampaignCreation />
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 font-inter">Create Campaign</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Emails and texts will go to the company phone number and email address listed in each customer's profile under 'Overview'.
+            </p>
+          </div>
+          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <SheetTrigger asChild>
+              <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Campaign
+              </Button>
+            </SheetTrigger>
+            <SheetContent 
+              side="right" 
+              className={`${isMobile ? 'w-full' : 'w-[75%]'} max-w-none overflow-y-auto`}
+            >
+              <SheetHeader>
+                <SheetTitle>Create New Campaign</SheetTitle>
+                <SheetDescription>
+                  Create and configure your marketing campaign with targeted messaging.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-6">
+                <CampaignCreation onClose={() => setIsCreateOpen(false)} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
 
       {/* Campaign Analytics */}

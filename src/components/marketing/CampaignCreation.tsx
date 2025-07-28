@@ -43,7 +43,11 @@ interface CampaignData {
   scheduled_at?: Date;
 }
 
-export const CampaignCreation: React.FC = () => {
+interface CampaignCreationProps {
+  onClose?: () => void;
+}
+
+export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [campaignData, setCampaignData] = useState<CampaignData>({
     name: '',
@@ -143,6 +147,7 @@ export const CampaignCreation: React.FC = () => {
       setCurrentStep(1);
       setScheduledDate(undefined);
       setStep3Mode('selector');
+      onClose?.();
     },
     onError: () => {
       toast({ title: 'Error creating campaign', variant: 'destructive' });
