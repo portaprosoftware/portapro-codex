@@ -55,6 +55,23 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
     }
   });
 
+  // Check if there's already a default location
+  const { data: existingDefault } = useQuery({
+    queryKey: ['existing-default-location'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('storage_locations')
+        .select('*')
+        .eq('is_default', true)
+        .limit(1)
+        .single();
+      
+      // It's okay if no default exists yet
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    }
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const payload: any = {
@@ -320,11 +337,17 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
                 <p className="text-sm text-muted-foreground">
                   New inventory will be assigned to this location by default
                 </p>
+                {existingDefault && !formData.is_default && (
+                  <p className="text-sm text-orange-600 mt-1">
+                    Only one default location may be selected at a time. To enable this location as default, disable the current default location first.
+                  </p>
+                )}
               </div>
               <Switch
                 id="is_default"
                 checked={formData.is_default}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_default: checked })}
+                disabled={!!existingDefault && !formData.is_default}
               />
             </div>
 

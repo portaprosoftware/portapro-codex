@@ -31,7 +31,7 @@ export function StorageLocationReporting() {
   const { data: reportData, isLoading } = useQuery({
     queryKey: ['storage-location-reporting'],
     queryFn: async (): Promise<LocationReportData> => {
-      // Get storage locations
+      // Get all storage locations (both default and non-default)
       const { data: locations, error: locationsError } = await supabase
         .from('storage_locations')
         .select('*')
@@ -39,21 +39,40 @@ export function StorageLocationReporting() {
       
       if (locationsError) throw locationsError;
 
-      // Get consumable location stock data
+      // Get all consumable location stock data with consumable details
       const { data: stockData, error: stockError } = await supabase
         .from('consumable_location_stock')
         .select(`
           *,
-          consumables!inner(name, unit_cost),
-          storage_locations!inner(name, is_default)
-        `);
+          consumables!inner(
+            name,
+            unit_cost,
+            category
+          ),
+          storage_locations!inner(
+            name,
+            is_default
+          )
+        `)
+        .gt('quantity', 0);
       
       if (stockError) throw stockError;
 
+      // Also get direct consumable data that might not be in location stock yet
+      const { data: consumables, error: consumablesError } = await supabase
+        .from('consumables')
+        .select('*')
+        .eq('is_active', true);
+      
+      if (consumablesError) throw consumablesError;
+
       // Calculate summary data
       const totalLocations = locations?.length || 0;
-      const uniqueConsumables = new Set(stockData?.map(item => item.consumable_id));
-      const totalConsumableTypes = uniqueConsumables.size;
+      
+      // Get unique consumables from both stock data and direct consumables
+      const uniqueConsumablesFromStock = new Set(stockData?.map(item => item.consumable_id) || []);
+      const totalConsumableTypes = Math.max(uniqueConsumablesFromStock.size, consumables?.length || 0);
+      
       const totalStockValue = stockData?.reduce((sum, item) => 
         sum + (item.quantity * (item.consumables?.unit_cost || 0)), 0) || 0;
 
