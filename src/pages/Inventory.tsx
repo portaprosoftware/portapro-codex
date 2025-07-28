@@ -172,30 +172,9 @@ const Inventory: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Action Buttons - Under the search bar */}
-        <div className="flex items-center gap-2 justify-end">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowOCRSearch(true)}
-            className="border-purple-600 text-purple-600 hover:bg-purple-50"
-            title="Search by photographing product code or tool number"
-            size="sm"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Search Photo
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-            size="sm"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            Scan QR
-          </Button>
-        </div>
-
-        {/* Tabs Row - Above inventory content */}
-        <div className="flex items-center justify-start">
+        {/* Tabs & Search Action Buttons - Same Row */}
+        <div className="flex items-center justify-between">
+          {/* Tabs - Left Side */}
           <div className="flex bg-gray-100 rounded-lg p-1">
             <Button
               variant="ghost"
@@ -228,6 +207,28 @@ const Inventory: React.FC = () => {
             >
               <Plus className="w-4 h-4 mr-2" />
               Offline Sync
+            </Button>
+          </div>
+
+          {/* Search Action Buttons - Right Side */}
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowOCRSearch(true)}
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              title="Search by photographing product code or tool number"
+              size="sm"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Search Photo
+            </Button>
+            <Button 
+              variant="outline" 
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              size="sm"
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              Scan QR
             </Button>
           </div>
         </div>
