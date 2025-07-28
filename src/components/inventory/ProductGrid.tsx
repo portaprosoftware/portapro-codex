@@ -26,7 +26,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId],
     queryFn: async () => {
       try {
-        let query = supabase
+        let data = [];
+        
+        // First, get products that match by name
+        let nameQuery = supabase
           .from("products")
           .select(`
             *,
@@ -35,23 +38,67 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           `);
 
         if (hideInactive) {
-          query = query.eq("track_inventory", true);
+          nameQuery = nameQuery.eq("track_inventory", true);
         }
 
         if (searchQuery) {
-          // Search by product name OR if any product_items have matching tool_number
-          query = query.or(`name.ilike.%${searchQuery}%,product_items.tool_number.ilike.%${searchQuery}%`);
+          nameQuery = nameQuery.ilike("name", `%${searchQuery}%`);
         }
 
         // Filter by storage location if specified
         if (selectedLocationId && selectedLocationId !== "all") {
-          query = query.eq("product_location_stock.storage_location_id", selectedLocationId);
+          nameQuery = nameQuery.eq("product_location_stock.storage_location_id", selectedLocationId);
         }
 
-        const { data, error } = await query;
-        if (error) {
-          console.error("Database query error:", error);
-          throw error;
+        const { data: nameResults, error: nameError } = await nameQuery;
+        if (nameError) throw nameError;
+        
+        if (nameResults) {
+          data = [...nameResults];
+        }
+
+        // If we have a search query, also search individual product items by tool number
+        if (searchQuery) {
+          // Get product IDs that have matching tool numbers in their items
+          const { data: itemResults, error: itemError } = await supabase
+            .from("product_items")
+            .select("product_id")
+            .ilike("tool_number", `%${searchQuery}%`);
+            
+          if (itemError) throw itemError;
+          
+          if (itemResults && itemResults.length > 0) {
+            const productIds = itemResults.map(item => item.product_id);
+            
+            // Get full product data for products that have matching tool numbers
+            let toolQuery = supabase
+              .from("products")
+              .select(`
+                *,
+                product_items(count),
+                product_location_stock(storage_location_id, quantity, storage_locations(id, name))
+              `)
+              .in("id", productIds);
+
+            if (hideInactive) {
+              toolQuery = toolQuery.eq("track_inventory", true);
+            }
+
+            // Filter by storage location if specified
+            if (selectedLocationId && selectedLocationId !== "all") {
+              toolQuery = toolQuery.eq("product_location_stock.storage_location_id", selectedLocationId);
+            }
+
+            const { data: toolResults, error: toolError } = await toolQuery;
+            if (toolError) throw toolError;
+            
+            if (toolResults) {
+              // Merge results, avoiding duplicates
+              const existingIds = new Set(data.map(p => p.id));
+              const newResults = toolResults.filter(p => !existingIds.has(p.id));
+              data = [...data, ...newResults];
+            }
+          }
         }
 
         if (!data) {
