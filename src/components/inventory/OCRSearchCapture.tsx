@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,8 +53,15 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
     }
   };
 
-  const startCamera = async () => {
-    console.log('OCR Camera: Starting camera access...');
+  // Effect to start camera when showCamera becomes true
+  useEffect(() => {
+    if (showCamera && videoRef.current && !stream) {
+      initializeCamera();
+    }
+  }, [showCamera]);
+
+  const initializeCamera = async () => {
+    console.log('OCR Camera: Initializing camera...');
     try {
       // Check if getUserMedia is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -76,10 +83,9 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
         console.log('OCR Camera: Setting video source...');
         videoRef.current.srcObject = mediaStream;
         setStream(mediaStream);
-        setShowCamera(true);
         console.log('OCR Camera: Camera started successfully');
       } else {
-        console.error('OCR Camera: Video ref not available');
+        console.error('OCR Camera: Video ref still not available');
         throw new Error('Video element not ready');
       }
     } catch (error) {
@@ -102,7 +108,8 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
         description: errorMessage,
         variant: "destructive",
       });
-      // Fallback to file upload
+      // Reset state and fallback to file upload
+      setShowCamera(false);
       handleFileUpload();
     }
   };
@@ -135,7 +142,8 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
   };
 
   const handleCameraCapture = () => {
-    startCamera();
+    console.log('OCR Camera: Handle camera capture clicked');
+    setShowCamera(true); // This will trigger the useEffect to start the camera
   };
 
   const handleFileUpload = () => {
