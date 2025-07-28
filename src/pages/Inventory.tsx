@@ -57,21 +57,25 @@ const Inventory: React.FC = () => {
   };
 
   const handleOCRSearchResult = async (searchTerm: string, confidence?: number) => {
+    console.log("OCR Search: Starting search for:", searchTerm);
     setShowOCRSearch(false);
     
     // First, search for individual product items with this tool number
     try {
       const { data: items, error } = await supabase
         .from("product_items")
-        .select("product_id, tool_number")
+        .select("product_id, tool_number, id")
         .ilike("tool_number", `%${searchTerm}%`)
         .limit(1);
         
       if (error) throw error;
       
+      console.log("OCR Search: Found items:", items);
+      
       if (items && items.length > 0) {
         // Found an individual unit with this tool number
         const productId = items[0].product_id;
+        console.log("OCR Search: Navigating to product:", productId, "with tool number:", searchTerm);
         setToolNumberToFind(searchTerm);
         setSelectedProduct(productId);
         
@@ -80,6 +84,7 @@ const Inventory: React.FC = () => {
           description: `Navigating to unit with tool number: ${searchTerm}`,
         });
       } else {
+        console.log("OCR Search: No individual units found, falling back to regular search");
         // No individual units found, fall back to regular product search
         setSearchQuery(searchTerm);
       }
