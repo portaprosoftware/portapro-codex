@@ -4625,13 +4625,6 @@ export type Database = {
             referencedRelation: "maintenance_report_templates"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "fk_routine_services_default_template"
-            columns: ["default_template_id"]
-            isOneToOne: false
-            referencedRelation: "maintenance_report_templates"
-            referencedColumns: ["id"]
-          },
         ]
       }
       saved_buttons: {

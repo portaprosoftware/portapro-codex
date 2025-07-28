@@ -42,7 +42,7 @@ export const ServicesProvidedTab: React.FC = () => {
         .from("routine_maintenance_services")
         .select(`
           *,
-          template:maintenance_report_templates!default_template_id(
+          template:maintenance_report_templates!fk_routine_maintenance_services_default_template_id(
             id,
             name,
             description
