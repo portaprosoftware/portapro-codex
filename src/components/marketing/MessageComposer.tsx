@@ -29,7 +29,7 @@ interface MessageData {
   content: string;
   buttons: CustomButton[];
   customImageUrl?: string;
-  imagePosition?: 'top' | 'middle' | 'bottom';
+  imagePosition?: 'top' | 'middle' | 'bottom' | 'left';
   showCompanyLogo?: boolean;
 }
 
@@ -246,7 +246,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       <img 
         src={imageUrl} 
         alt="Custom message image" 
-        className="max-w-full h-auto rounded border my-2"
+        className={position === 'left' ? "w-32 h-auto rounded border mr-4 float-left" : "max-w-full h-auto rounded border my-2"}
         style={{ maxHeight: '200px' }}
       />
     );
@@ -269,6 +269,14 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             <p className="whitespace-pre-wrap text-sm">{firstHalf}</p>
             {imageElement}
             <p className="whitespace-pre-wrap text-sm">{secondHalf}</p>
+          </div>
+        );
+      case 'left':
+        return (
+          <div className="overflow-hidden">
+            {imageElement}
+            <p className="whitespace-pre-wrap text-sm">{content}</p>
+            <div className="clear-both"></div>
           </div>
         );
       case 'bottom':
@@ -434,12 +442,12 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                       />
                     </div>
                     
-                    {/* Image Position Control */}
+              {/* Image Position Control */}
                     <div>
                       <Label>Image Position</Label>
                       <Select 
                         value={messageData.imagePosition || 'bottom'} 
-                        onValueChange={(value: 'top' | 'middle' | 'bottom') => 
+                        onValueChange={(value: 'top' | 'middle' | 'bottom' | 'left') => 
                           setMessageData(prev => ({ ...prev, imagePosition: value }))
                         }
                       >
@@ -450,6 +458,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                           <SelectItem value="top">Top of message</SelectItem>
                           <SelectItem value="middle">Middle of message</SelectItem>
                           <SelectItem value="bottom">Bottom of message</SelectItem>
+                          <SelectItem value="left">Left (with text wrap)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -578,11 +587,13 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 <div>
                   <Label className="text-sm text-gray-500">Company Logo</Label>
                   <div className="mt-1">
-                    <img 
-                      src={companySettings.company_logo} 
-                      alt={companySettings.company_name || 'Company logo'} 
-                      className="h-12 w-auto object-contain"
-                    />
+                    <div className="w-12 h-12 flex items-center justify-center bg-muted rounded border">
+                      <img 
+                        src={companySettings.company_logo} 
+                        alt={companySettings.company_name || 'Company logo'} 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -654,11 +665,13 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 {/* Company Logo in Full Preview */}
                 {messageData.showCompanyLogo && companySettings?.company_logo && (
                   <div className="mb-4">
-                    <img 
-                      src={companySettings.company_logo} 
-                      alt={companySettings.company_name || 'Company logo'} 
-                      className="h-16 w-auto object-contain"
-                    />
+                    <div className="w-16 h-16 flex items-center justify-center bg-muted rounded border">
+                      <img 
+                        src={companySettings.company_logo} 
+                        alt={companySettings.company_name || 'Company logo'} 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
                   </div>
                 )}
                 
@@ -693,6 +706,19 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                               <p className="whitespace-pre-wrap">{firstHalf}</p>
                               {imageElement}
                               <p className="whitespace-pre-wrap">{secondHalf}</p>
+                            </div>
+                          );
+                        case 'left':
+                          return (
+                            <div className="overflow-hidden">
+                              <img 
+                                src={messageData.customImageUrl} 
+                                alt="Custom message image" 
+                                className="w-32 h-auto rounded border mr-4 float-left"
+                                style={{ maxHeight: '200px' }}
+                              />
+                              <p className="whitespace-pre-wrap">{messageData.content}</p>
+                              <div className="clear-both"></div>
                             </div>
                           );
                         case 'bottom':
