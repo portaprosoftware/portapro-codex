@@ -83,7 +83,7 @@ const App = () => {
 
           {/* Main authenticated routes */}
           <Route
-            path="/app"
+            path="/app/*"
             element={
               <SignedIn>
                 <Layout>
