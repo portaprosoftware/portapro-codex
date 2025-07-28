@@ -494,7 +494,7 @@ export function AddDropPinModal({
 
   // Ultra-robust filtering with extensive validation and logging
   const validServiceLocations = React.useMemo(() => {
-    console.log('Raw serviceLocations:', serviceLocations);
+    
     
     if (!Array.isArray(serviceLocations)) {
       console.warn('serviceLocations is not an array:', serviceLocations);
@@ -502,21 +502,15 @@ export function AddDropPinModal({
     }
     
     const filtered = serviceLocations.filter((location, index) => {
-      console.log(`Checking location ${index}:`, location);
-      
       if (!location) {
-        console.log(`Location ${index} is null/undefined`);
         return false;
       }
       
       const id = location.id;
       const name = location.location_name;
       
-      console.log(`Location ${index} - id:`, id, 'name:', name);
-      
       // Check for null/undefined
       if (id === null || id === undefined || name === null || name === undefined) {
-        console.log(`Location ${index} has null/undefined values`);
         return false;
       }
       
@@ -524,23 +518,17 @@ export function AddDropPinModal({
       const idStr = String(id).trim();
       const nameStr = String(name).trim();
       
-      console.log(`Location ${index} - idStr:`, idStr, 'nameStr:', nameStr);
-      
       const isValid = idStr !== '' && nameStr !== '' && idStr !== 'null' && idStr !== 'undefined' && nameStr !== 'null' && nameStr !== 'undefined';
-      
-      if (!isValid) {
-        console.log(`Location ${index} failed validation - idStr: "${idStr}", nameStr: "${nameStr}"`);
-      }
       
       return isValid;
     });
     
-    console.log('Filtered serviceLocations:', filtered);
+    
     return filtered;
   }, [serviceLocations]);
 
   const validCategories = React.useMemo(() => {
-    console.log('Raw categories:', categories);
+    
     
     if (!Array.isArray(categories)) {
       console.warn('categories is not an array:', categories);
@@ -548,34 +536,24 @@ export function AddDropPinModal({
     }
     
     const filtered = categories.filter((category, index) => {
-      console.log(`Checking category ${index}:`, category);
-      
       if (!category) {
-        console.log(`Category ${index} is null/undefined`);
         return false;
       }
       
       const name = category.name;
-      console.log(`Category ${index} - name:`, name);
       
       if (name === null || name === undefined) {
-        console.log(`Category ${index} has null/undefined name`);
         return false;
       }
       
       const nameStr = String(name).trim();
-      console.log(`Category ${index} - nameStr:`, nameStr);
       
       const isValid = nameStr !== '' && nameStr !== 'null' && nameStr !== 'undefined';
-      
-      if (!isValid) {
-        console.log(`Category ${index} failed validation - nameStr: "${nameStr}"`);
-      }
       
       return isValid;
     });
     
-    console.log('Filtered categories:', filtered);
+    
     return filtered;
   }, [categories]);
 

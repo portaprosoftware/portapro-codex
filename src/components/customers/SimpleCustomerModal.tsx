@@ -76,7 +76,6 @@ const US_STATES = [
 ];
 
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
-  console.log("SimpleCustomerModal rendered with isOpen:", isOpen);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -93,9 +92,6 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const createCustomerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      console.log('Mutation starting with data:', data);
-      
-      // Try the insert without any conflict resolution
       const insertData = {
         name: data.name,
         customer_type: data.customer_type as any,
@@ -109,23 +105,13 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
         deposit_required: true,
       };
       
-      console.log('Insert data being sent:', insertData);
-      
       const { error } = await supabase
         .from('customers')
         .insert(insertData);
 
       if (error) {
-        console.error('Insert error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
         throw new Error(error.message);
       }
-      
-      console.log('Insert successful');
       return true;
     },
     onSuccess: () => {
@@ -147,7 +133,6 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       onClose();
     },
     onError: (error: Error) => {
-      console.error("Error creating customer:", error);
       toast({
         title: "Error", 
         description: error.message || "Failed to create customer. Please try again.",
@@ -158,10 +143,8 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted with data:', formData);
     
     if (!formData.name || !formData.customer_type || !formData.service_street || !formData.service_city || !formData.service_state || !formData.service_zip) {
-      console.log('Validation failed - missing required fields');
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
@@ -170,7 +153,6 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       return;
     }
 
-    console.log('Validation passed, calling mutation...');
     createCustomerMutation.mutate(formData);
   };
 

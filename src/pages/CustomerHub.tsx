@@ -83,12 +83,7 @@ const CustomerHub: React.FC = () => {
               Import CSV
             </Button>
             <Button 
-              onClick={() => {
-                console.log("Add Customer button clicked!");
-                console.log("Current isAddModalOpen state:", isAddModalOpen);
-                setIsAddModalOpen(true);
-                console.log("Modal should now be open, new state:", true);
-              }}
+              onClick={() => setIsAddModalOpen(true)}
               className="gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 rounded-md border-0"
             >
               <Plus className="w-4 h-4" />
@@ -206,10 +201,7 @@ const CustomerHub: React.FC = () => {
 
       <SimpleCustomerModal 
         isOpen={isAddModalOpen} 
-        onClose={() => {
-          console.log("Closing modal...");
-          setIsAddModalOpen(false);
-        }} 
+        onClose={() => setIsAddModalOpen(false)} 
       />
     </div>
   );

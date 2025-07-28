@@ -118,7 +118,7 @@ export function StorageLocationSelector({
         })}
         
         {storageLocations?.length === 0 && !isLoading && (
-          <SelectItem value="" disabled>
+          <SelectItem value="no-locations" disabled>
             <span className="text-muted-foreground">No storage locations found</span>
           </SelectItem>
         )}
