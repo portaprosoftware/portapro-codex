@@ -16,7 +16,7 @@ import {
   Building,
   Megaphone,
   MessageSquare,
-  Droplets,
+  Beaker,
   Settings,
   UserCog,
   Mail
@@ -96,7 +96,7 @@ const inventoryItems: NavigationItem[] = [
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: Droplets,
+    icon: Beaker,
     permission: 'staff'
   },
   { 
