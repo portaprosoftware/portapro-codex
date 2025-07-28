@@ -319,7 +319,20 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
           </Card>
 
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 font-inter">Message Content</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold font-inter">Message Content</h3>
+              {/* Company Logo Toggle */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="showCompanyLogo"
+                  checked={messageData.showCompanyLogo}
+                  onCheckedChange={(checked) => setMessageData(prev => ({ ...prev, showCompanyLogo: !!checked }))}
+                />
+                <Label htmlFor="showCompanyLogo" className="text-sm">
+                  Include company logo
+                </Label>
+              </div>
+            </div>
             
             <div className="space-y-4">
               {campaignType !== 'sms' && (
@@ -347,6 +360,54 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                   <p className="text-sm text-gray-500 mt-1">
                     {messageData.content.length}/160 characters
                   </p>
+                )}
+              </div>
+
+              {/* Custom Image Upload */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Custom Image (Optional)</Label>
+                  {messageData.customImageUrl && (
+                    <Button
+                      onClick={removeImage}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                
+                {messageData.customImageUrl ? (
+                  <div className="relative">
+                    <img 
+                      src={messageData.customImageUrl} 
+                      alt="Custom message image" 
+                      className="w-full max-w-sm rounded-lg border"
+                    />
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <Label htmlFor="image-upload" className="cursor-pointer">
+                      <div className="flex flex-col items-center">
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <span className="text-sm text-gray-600">
+                          Click to upload an image
+                        </span>
+                        <span className="text-xs text-gray-400 mt-1">
+                          Max 5MB, will be resized to fit inline
+                        </span>
+                      </div>
+                    </Label>
+                  </div>
                 )}
               </div>
             </div>
@@ -422,7 +483,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                           onCheckedChange={(checked) => updateButton(button.id, { includeEmoji: !!checked })}
                         />
                         <Label htmlFor={`emoji-${button.id}`} className="text-sm">
-                          Include emoji ({getButtonIcon(button.type)})
+                          Include emoji {getButtonIcon(button.type)}
                         </Label>
                       </div>
                     </div>
@@ -445,6 +506,20 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             </div>
 
             <div className="space-y-4">
+              {/* Company Logo Preview */}
+              {messageData.showCompanyLogo && companySettings?.company_logo && (
+                <div>
+                  <Label className="text-sm text-gray-500">Company Logo</Label>
+                  <div className="mt-1">
+                    <img 
+                      src={companySettings.company_logo} 
+                      alt={companySettings.company_name || 'Company logo'} 
+                      className="h-12 w-auto object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+
               {campaignType !== 'sms' && messageData.subject && (
                 <div>
                   <Label className="text-sm text-gray-500">Subject</Label>
@@ -457,6 +532,18 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                   <Label className="text-sm text-gray-500">Content</Label>
                   <div className="p-3 bg-gray-50 rounded-md">
                     <p className="whitespace-pre-wrap text-sm">{messageData.content}</p>
+                    
+                    {/* Custom Image in Preview */}
+                    {messageData.customImageUrl && (
+                      <div className="mt-3">
+                        <img 
+                          src={messageData.customImageUrl} 
+                          alt="Custom message image" 
+                          className="max-w-full h-auto rounded border"
+                          style={{ maxHeight: '200px' }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -509,7 +596,30 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             <div>
               <Label>Message Content</Label>
               <div className="p-4 border rounded-lg bg-white">
+                {/* Company Logo in Full Preview */}
+                {messageData.showCompanyLogo && companySettings?.company_logo && (
+                  <div className="mb-4">
+                    <img 
+                      src={companySettings.company_logo} 
+                      alt={companySettings.company_name || 'Company logo'} 
+                      className="h-16 w-auto object-contain"
+                    />
+                  </div>
+                )}
+                
                 <p className="whitespace-pre-wrap">{messageData.content}</p>
+                
+                {/* Custom Image in Full Preview */}
+                {messageData.customImageUrl && (
+                  <div className="mt-4">
+                    <img 
+                      src={messageData.customImageUrl} 
+                      alt="Custom message image" 
+                      className="max-w-full h-auto rounded border"
+                      style={{ maxHeight: '300px' }}
+                    />
+                  </div>
+                )}
                 
                 {messageData.buttons.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">

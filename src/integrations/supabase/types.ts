@@ -245,6 +245,7 @@ export type Database = {
           company_timezone: string | null
           company_zipcode: string | null
           created_at: string | null
+          default_logo_in_marketing: boolean | null
           default_payment_terms_days: number | null
           default_quote_expiration_days: number | null
           default_rental_period_days: number | null
@@ -281,6 +282,7 @@ export type Database = {
           company_timezone?: string | null
           company_zipcode?: string | null
           created_at?: string | null
+          default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
@@ -317,6 +319,7 @@ export type Database = {
           company_timezone?: string | null
           company_zipcode?: string | null
           created_at?: string | null
+          default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
