@@ -108,7 +108,7 @@ export const MarketingDashboard: React.FC = () => {
                   onClick={() => navigateToTab('segments')}
                 >
                   <Users2 className="w-4 h-4" />
-                  Segments
+                  Smart Segments
                 </TabNav.Item>
               </TabNav>
             </div>

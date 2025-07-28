@@ -5925,6 +5925,14 @@ export type Database = {
         }
         Returns: Json
       }
+      calculate_customer_job_count: {
+        Args: { customer_uuid: string }
+        Returns: number
+      }
+      calculate_customer_total_spent: {
+        Args: { customer_uuid: string }
+        Returns: number
+      }
       calculate_daily_vehicle_loads: {
         Args: { target_date: string }
         Returns: undefined
@@ -5942,6 +5950,10 @@ export type Database = {
       calculate_revenue_analytics: {
         Args: { start_date: string; end_date: string }
         Returns: Json
+      }
+      calculate_smart_segment_size: {
+        Args: { segment_type: string }
+        Returns: number
       }
       can_delete_user: {
         Args: { user_uuid: string }
@@ -6123,6 +6135,10 @@ export type Database = {
           category_name: string
           point_count: number
         }[]
+      }
+      get_customer_last_job_date: {
+        Args: { customer_uuid: string }
+        Returns: string
       }
       get_customer_notes_with_users: {
         Args: { customer_uuid: string }
