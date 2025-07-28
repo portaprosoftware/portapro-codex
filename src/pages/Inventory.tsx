@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,45 @@ const Inventory: React.FC = () => {
   const [showOCRDashboard, setShowOCRDashboard] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
+  const [matchingItemId, setMatchingItemId] = useState<string | null>(null);
+
+  // Auto-search with debouncing
+  useEffect(() => {
+    const searchTimeout = setTimeout(() => {
+      if (searchQuery.trim()) {
+        handleAutoSearch(searchQuery);
+      } else {
+        setMatchingItemId(null);
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(searchTimeout);
+  }, [searchQuery]);
+
+  const handleAutoSearch = async (searchTerm: string) => {
+    console.log("Auto Search: Starting search for:", searchTerm);
+    
+    try {
+      const { data: items, error } = await supabase
+        .from("product_items")
+        .select("product_id, tool_number, id")
+        .ilike("tool_number", `%${searchTerm}%`)
+        .limit(1);
+        
+      if (error) throw error;
+      
+      if (items && items.length > 0) {
+        console.log("Auto Search: Found matching individual item:", items[0].id);
+        setMatchingItemId(items[0].id);
+      } else {
+        console.log("Auto Search: No individual items found");
+        setMatchingItemId(null);
+      }
+    } catch (error) {
+      console.error("Auto search error:", error);
+      setMatchingItemId(null);
+    }
+  };
 
   const handleFilterClick = (filterKey: FilterType) => {
     if (filterKey === "available_now") {
@@ -359,7 +398,14 @@ const Inventory: React.FC = () => {
           hideInactive={hideInactive}
           searchQuery={searchQuery}
           selectedLocationId={selectedLocationId}
-          onProductSelect={setSelectedProduct}
+          onProductSelect={(productId) => {
+            // If we have a matching individual item, go directly to that page
+            if (matchingItemId) {
+              window.location.href = `/inventory/items/${matchingItemId}`;
+            } else {
+              setSelectedProduct(productId);
+            }
+          }}
         />
       </div>
 
