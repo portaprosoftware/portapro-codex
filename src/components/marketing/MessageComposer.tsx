@@ -29,6 +29,7 @@ interface MessageData {
   content: string;
   buttons: CustomButton[];
   customImageUrl?: string;
+  imagePosition?: 'top' | 'middle' | 'bottom';
   showCompanyLogo?: boolean;
 }
 
@@ -66,6 +67,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       content: '',
       buttons: [],
       customImageUrl: '',
+      imagePosition: 'bottom',
       showCompanyLogo: true
     }
   );
@@ -237,6 +239,49 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
   };
 
+  const renderContentWithImage = (content: string, imageUrl?: string, position?: string) => {
+    if (!imageUrl) return content;
+    
+    const imageElement = (
+      <img 
+        src={imageUrl} 
+        alt="Custom message image" 
+        className="max-w-full h-auto rounded border my-2"
+        style={{ maxHeight: '200px' }}
+      />
+    );
+
+    switch (position) {
+      case 'top':
+        return (
+          <div>
+            {imageElement}
+            <p className="whitespace-pre-wrap text-sm">{content}</p>
+          </div>
+        );
+      case 'middle':
+        const words = content.split(' ');
+        const midPoint = Math.floor(words.length / 2);
+        const firstHalf = words.slice(0, midPoint).join(' ');
+        const secondHalf = words.slice(midPoint).join(' ');
+        return (
+          <div>
+            <p className="whitespace-pre-wrap text-sm">{firstHalf}</p>
+            {imageElement}
+            <p className="whitespace-pre-wrap text-sm">{secondHalf}</p>
+          </div>
+        );
+      case 'bottom':
+      default:
+        return (
+          <div>
+            <p className="whitespace-pre-wrap text-sm">{content}</p>
+            {imageElement}
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -380,12 +425,34 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 </div>
                 
                 {messageData.customImageUrl ? (
-                  <div className="relative">
-                    <img 
-                      src={messageData.customImageUrl} 
-                      alt="Custom message image" 
-                      className="w-full max-w-sm rounded-lg border"
-                    />
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <img 
+                        src={messageData.customImageUrl} 
+                        alt="Custom message image" 
+                        className="w-full max-w-sm rounded-lg border"
+                      />
+                    </div>
+                    
+                    {/* Image Position Control */}
+                    <div>
+                      <Label>Image Position</Label>
+                      <Select 
+                        value={messageData.imagePosition || 'bottom'} 
+                        onValueChange={(value: 'top' | 'middle' | 'bottom') => 
+                          setMessageData(prev => ({ ...prev, imagePosition: value }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="top">Top of message</SelectItem>
+                          <SelectItem value="middle">Middle of message</SelectItem>
+                          <SelectItem value="bottom">Bottom of message</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 ) : (
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -531,19 +598,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 <div>
                   <Label className="text-sm text-gray-500">Content</Label>
                   <div className="p-3 bg-gray-50 rounded-md">
-                    <p className="whitespace-pre-wrap text-sm">{messageData.content}</p>
-                    
-                    {/* Custom Image in Preview */}
-                    {messageData.customImageUrl && (
-                      <div className="mt-3">
-                        <img 
-                          src={messageData.customImageUrl} 
-                          alt="Custom message image" 
-                          className="max-w-full h-auto rounded border"
-                          style={{ maxHeight: '200px' }}
-                        />
-                      </div>
-                    )}
+                    {renderContentWithImage(messageData.content, messageData.customImageUrl, messageData.imagePosition)}
                   </div>
                 </div>
               )}
@@ -580,12 +635,12 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
       {/* Full Preview Modal */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Message Preview</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="space-y-4 pb-4">
             {campaignType !== 'sms' && messageData.subject && (
               <div>
                 <Label>Subject Line</Label>
@@ -607,19 +662,53 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                   </div>
                 )}
                 
-                <p className="whitespace-pre-wrap">{messageData.content}</p>
-                
-                {/* Custom Image in Full Preview */}
-                {messageData.customImageUrl && (
-                  <div className="mt-4">
-                    <img 
-                      src={messageData.customImageUrl} 
-                      alt="Custom message image" 
-                      className="max-w-full h-auto rounded border"
-                      style={{ maxHeight: '300px' }}
-                    />
-                  </div>
-                )}
+                {/* Render content with positioned image */}
+                <div>
+                  {messageData.customImageUrl ? (
+                    (() => {
+                      const imageElement = (
+                        <img 
+                          src={messageData.customImageUrl} 
+                          alt="Custom message image" 
+                          className="max-w-full h-auto rounded border my-4"
+                          style={{ maxHeight: '400px' }}
+                        />
+                      );
+
+                      switch (messageData.imagePosition) {
+                        case 'top':
+                          return (
+                            <div>
+                              {imageElement}
+                              <p className="whitespace-pre-wrap">{messageData.content}</p>
+                            </div>
+                          );
+                        case 'middle':
+                          const words = messageData.content.split(' ');
+                          const midPoint = Math.floor(words.length / 2);
+                          const firstHalf = words.slice(0, midPoint).join(' ');
+                          const secondHalf = words.slice(midPoint).join(' ');
+                          return (
+                            <div>
+                              <p className="whitespace-pre-wrap">{firstHalf}</p>
+                              {imageElement}
+                              <p className="whitespace-pre-wrap">{secondHalf}</p>
+                            </div>
+                          );
+                        case 'bottom':
+                        default:
+                          return (
+                            <div>
+                              <p className="whitespace-pre-wrap">{messageData.content}</p>
+                              {imageElement}
+                            </div>
+                          );
+                      }
+                    })()
+                  ) : (
+                    <p className="whitespace-pre-wrap">{messageData.content}</p>
+                  )}
+                </div>
                 
                 {messageData.buttons.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
