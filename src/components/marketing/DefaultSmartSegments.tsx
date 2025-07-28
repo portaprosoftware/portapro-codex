@@ -282,7 +282,10 @@ export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCr
               {/* Actions */}
               <div className="flex gap-2">
                 <Button
-                  onClick={() => onCreateFromTemplate(segment)}
+                  onClick={() => {
+                    console.log('Create from template clicked:', segment.name);
+                    onCreateFromTemplate(segment);
+                  }}
                   className="flex-1 bg-primary text-white"
                 >
                   Create from Template
@@ -291,7 +294,10 @@ export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCr
                   variant="outline" 
                   size="sm" 
                   className="px-3"
-                  onClick={() => onPreviewTemplate(segment)}
+                  onClick={() => {
+                    console.log('Preview clicked:', segment.name);
+                    onPreviewTemplate(segment);
+                  }}
                 >
                   Preview
                 </Button>

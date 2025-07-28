@@ -46,13 +46,16 @@ export const CustomerSegments: React.FC = () => {
   });
 
   const handleCreateFromTemplate = (template: SmartSegmentTemplate) => {
+    console.log('Creating segment from template:', template.name);
     createFromTemplateMutation.mutate(template);
   };
 
   const handlePreviewTemplate = (template: SmartSegmentTemplate) => {
+    console.log('Previewing template:', template.name);
     toast({ 
       title: `Preview: ${template.name}`,
-      description: `This segment would include customers matching: ${template.description}`
+      description: `This segment would include customers matching: ${template.description}`,
+      duration: 5000
     });
   };
 
