@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Search, Eye, Edit, Trash2, Mail, MessageSquare, Grid3X3, List, ChevronDown, ChevronUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from '@/components/ui/use-toast';
+import { CreateTemplateModal } from './CreateTemplateModal';
+import { EditTemplateModal } from './EditTemplateModal';
 
 interface Template {
   id: string;
@@ -33,6 +35,9 @@ export const TemplateManagement: React.FC = () => {
   const [emailUserExpanded, setEmailUserExpanded] = useState(false);
   const [smsSystemExpanded, setSmsSystemExpanded] = useState(false);
   const [smsUserExpanded, setSmsUserExpanded] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch templates
@@ -152,7 +157,11 @@ export const TemplateManagement: React.FC = () => {
           <Button 
             variant="ghost" 
             size="sm"
-            onClick={() => console.log('Edit template:', template.id)}
+            onClick={() => {
+              setEditingTemplate(template);
+              setShowEditModal(true);
+            }}
+            disabled={template.source === 'system'}
           >
             <Edit className="w-4 h-4" />
           </Button>
@@ -253,7 +262,7 @@ export const TemplateManagement: React.FC = () => {
 
         <Button 
           className="bg-primary text-white"
-          onClick={() => console.log('Create new template')}
+          onClick={() => setShowCreateModal(true)}
         >
           <Plus className="w-4 h-4 mr-2" />
           New Template
@@ -346,6 +355,22 @@ export const TemplateManagement: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Create Template Modal */}
+      <CreateTemplateModal 
+        isOpen={showCreateModal} 
+        onClose={() => setShowCreateModal(false)} 
+      />
+
+      {/* Edit Template Modal */}
+      <EditTemplateModal 
+        isOpen={showEditModal} 
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingTemplate(null);
+        }}
+        template={editingTemplate}
+      />
     </div>
   );
 };

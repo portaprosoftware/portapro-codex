@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartSegmentBuilder } from './SmartSegmentBuilder';
 import { DefaultSmartSegments } from './DefaultSmartSegments';
+import { SegmentPreviewModal } from './SegmentPreviewModal';
 import { toast } from '@/components/ui/use-toast';
 
 interface SmartSegmentTemplate {
@@ -16,6 +17,7 @@ interface SmartSegmentTemplate {
 }
 
 export const CustomerSegments: React.FC = () => {
+  const [previewSegment, setPreviewSegment] = useState<SmartSegmentTemplate | null>(null);
   const queryClient = useQueryClient();
 
   // Create segment from template mutation
@@ -51,12 +53,7 @@ export const CustomerSegments: React.FC = () => {
   };
 
   const handlePreviewTemplate = (template: SmartSegmentTemplate) => {
-    console.log('Previewing template:', template.name);
-    toast({ 
-      title: `Preview: ${template.name}`,
-      description: `This segment would include customers matching: ${template.description}`,
-      duration: 5000
-    });
+    setPreviewSegment(template);
   };
 
   return (
@@ -75,6 +72,13 @@ export const CustomerSegments: React.FC = () => {
           onPreviewTemplate={handlePreviewTemplate}
         />
       </div>
+
+      {/* Segment Preview Modal */}
+      <SegmentPreviewModal 
+        isOpen={!!previewSegment}
+        onClose={() => setPreviewSegment(null)}
+        segment={previewSegment}
+      />
     </div>
   );
 };
