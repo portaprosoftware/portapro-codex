@@ -20,12 +20,26 @@ const ProductItemDetail: React.FC = () => {
     queryFn: async () => {
       if (!itemId) throw new Error("Item ID is required");
       
+      // Single optimized query with all needed data
       const { data, error } = await supabase
         .from("product_items")
         .select(`
-          *,
+          id,
+          tool_number,
+          item_code,
+          status,
+          condition,
+          notes,
+          vendor_id,
+          plastic_code,
+          manufacturing_date,
+          mold_cavity,
+          ocr_confidence_score,
+          ocr_raw_data,
+          verification_status,
+          current_storage_location_id,
+          product_id,
           products!inner(
-            id,
             name,
             image_url,
             default_price_per_day,
@@ -36,22 +50,23 @@ const ProductItemDetail: React.FC = () => {
         .maybeSingle();
         
       if (error) throw error;
-      if (!data) return null; // No item found
+      if (!data) return null;
       
-      // Fetch storage location separately
-      let storageLocation = null;
+      // Get storage location name if needed (simplified)
+      let storageLocationName = "Unknown location";
       if (data.current_storage_location_id) {
         const { data: location } = await supabase
           .from("storage_locations")
-          .select("id, name")
+          .select("name")
           .eq("id", data.current_storage_location_id)
           .maybeSingle();
-        storageLocation = location;
+        if (location) storageLocationName = location.name;
       }
       
-      return { ...data, storage_location: storageLocation };
+      return { ...data, storage_location_name: storageLocationName };
     },
-    enabled: !!itemId
+    enabled: !!itemId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const getStatusColor = (status: string) => {
@@ -87,7 +102,28 @@ const ProductItemDetail: React.FC = () => {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-6">
-        <LoadingSpinner />
+        <div className="animate-pulse space-y-6">
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-lg border shadow-sm p-6">
+                <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg border shadow-sm p-6">
+                <div className="aspect-square bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -305,7 +341,7 @@ const ProductItemDetail: React.FC = () => {
               <div>
                 <label className="text-sm font-medium text-gray-500">Current Storage</label>
                 <p className="text-base text-gray-900">
-                  {item.storage_location?.name || "Unknown location"}
+                  {item.storage_location_name}
                 </p>
               </div>
               
