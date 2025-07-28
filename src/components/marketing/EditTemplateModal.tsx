@@ -12,9 +12,11 @@ import { toast } from '@/components/ui/use-toast';
 interface Template {
   id: string;
   name: string;
-  type: 'email' | 'sms';
+  type: 'email' | 'sms' | 'both';
   subject?: string;
   content: string;
+  email_content?: string;
+  sms_content?: string;
   category: string;
   source: string;
   is_active: boolean;
@@ -29,10 +31,12 @@ interface EditTemplateModalProps {
 
 interface TemplateData {
   name: string;
-  type: 'email' | 'sms';
+  type: 'email' | 'sms' | 'both';
   category: string;
   subject: string;
   content: string;
+  emailContent: string;
+  smsContent: string;
 }
 
 export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, onClose, template }) => {
@@ -41,7 +45,9 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
     type: 'email',
     category: 'other',
     subject: '',
-    content: ''
+    content: '',
+    emailContent: '',
+    smsContent: ''
   });
 
   const queryClient = useQueryClient();
@@ -51,10 +57,12 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
     if (template) {
       setTemplateData({
         name: template.name,
-        type: template.type,
-        category: template.category,
+        type: template.type as 'email' | 'sms' | 'both',
+        category: template.category || 'other',
         subject: template.subject || '',
-        content: template.content
+        content: template.content,
+        emailContent: template.email_content || template.content || '',
+        smsContent: template.sms_content || (template.type === 'sms' ? template.content : '') || ''
       });
     }
   }, [template]);
@@ -63,15 +71,33 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
     mutationFn: async (data: TemplateData) => {
       if (!template) throw new Error('No template to update');
       
+      const updateData: any = {
+        name: data.name,
+        type: data.type,
+        category: data.category
+      };
+
+      // Handle dual content for 'both' type
+      if (data.type === 'both') {
+        updateData.subject = data.subject;
+        updateData.content = data.emailContent; // Keep existing content field for backwards compatibility
+        updateData.email_content = data.emailContent;
+        updateData.sms_content = data.smsContent;
+      } else if (data.type === 'email') {
+        updateData.subject = data.subject;
+        updateData.content = data.content;
+        updateData.email_content = data.content;
+        updateData.sms_content = null;
+      } else {
+        updateData.subject = null;
+        updateData.content = data.content;
+        updateData.email_content = null;
+        updateData.sms_content = data.content;
+      }
+      
       const { error } = await supabase
         .from('communication_templates')
-        .update({
-          name: data.name,
-          type: data.type,
-          category: data.category,
-          subject: data.type === 'email' ? data.subject : null,
-          content: data.content
-        })
+        .update(updateData)
         .eq('id', template.id);
       
       if (error) throw error;
@@ -88,14 +114,26 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
   });
 
   const handleSubmit = () => {
-    if (!templateData.name || !templateData.content) {
-      toast({ title: 'Please fill in all required fields', variant: 'destructive' });
+    if (!templateData.name) {
+      toast({ title: 'Please fill in template name', variant: 'destructive' });
       return;
     }
 
-    if (templateData.type === 'email' && !templateData.subject) {
-      toast({ title: 'Email templates require a subject', variant: 'destructive' });
-      return;
+    if (templateData.type === 'both') {
+      if (!templateData.subject || !templateData.emailContent || !templateData.smsContent) {
+        toast({ title: 'Both email and SMS content are required for "both" type templates', variant: 'destructive' });
+        return;
+      }
+    } else if (templateData.type === 'email') {
+      if (!templateData.subject || !templateData.content) {
+        toast({ title: 'Email templates require a subject and content', variant: 'destructive' });
+        return;
+      }
+    } else if (templateData.type === 'sms') {
+      if (!templateData.content) {
+        toast({ title: 'SMS templates require content', variant: 'destructive' });
+        return;
+      }
     }
 
     updateTemplateMutation.mutate(templateData);
@@ -129,7 +167,7 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
               <Label htmlFor="edit-template-type">Type *</Label>
               <Select 
                 value={templateData.type} 
-                onValueChange={(value: 'email' | 'sms') => setTemplateData({...templateData, type: value})}
+                onValueChange={(value: 'email' | 'sms' | 'both') => setTemplateData({...templateData, type: value})}
                 disabled={template?.source === 'system'}
               >
                 <SelectTrigger>
@@ -138,6 +176,7 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
                 <SelectContent>
                   <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="sms">SMS</SelectItem>
+                  <SelectItem value="both">Both (Email + SMS)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -162,7 +201,7 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
             </Select>
           </div>
 
-          {templateData.type === 'email' && (
+          {(templateData.type === 'email' || templateData.type === 'both') && (
             <div>
               <Label htmlFor="edit-template-subject">Subject *</Label>
               <Input
@@ -174,20 +213,58 @@ export const EditTemplateModal: React.FC<EditTemplateModalProps> = ({ isOpen, on
             </div>
           )}
 
-          <div>
-            <Label htmlFor="edit-template-content">Content *</Label>
-            <Textarea
-              id="edit-template-content"
-              value={templateData.content}
-              onChange={(e) => setTemplateData({...templateData, content: e.target.value})}
-              placeholder="Enter template content..."
-              rows={8}
-              className="resize-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              You can use variables like {`{{customer_name}}, {{company_name}}, etc.`}
-            </p>
-          </div>
+          {/* Content Sections */}
+          {templateData.type === 'both' ? (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-template-email-content">Email Content *</Label>
+                <Textarea
+                  id="edit-template-email-content"
+                  value={templateData.emailContent}
+                  onChange={(e) => setTemplateData({...templateData, emailContent: e.target.value})}
+                  placeholder="Enter email content..."
+                  rows={6}
+                  className="resize-none"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="edit-template-sms-content">SMS Content *</Label>
+                <Textarea
+                  id="edit-template-sms-content"
+                  value={templateData.smsContent}
+                  onChange={(e) => setTemplateData({...templateData, smsContent: e.target.value})}
+                  placeholder="Enter SMS content..."
+                  rows={3}
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  SMS: {templateData.smsContent.length}/160 characters
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="edit-template-content">Content *</Label>
+              <Textarea
+                id="edit-template-content"
+                value={templateData.content}
+                onChange={(e) => setTemplateData({...templateData, content: e.target.value})}
+                placeholder="Enter template content..."
+                rows={8}
+                className="resize-none"
+              />
+              {templateData.type === 'sms' && (
+                <p className="text-xs text-gray-500 mt-1">
+                  SMS: {templateData.content.length}/160 characters
+                </p>
+              )}
+            </div>
+          )}
+          
+          <p className="text-xs text-gray-500">
+            You can use variables like {`{{customer_name}}, {{company_name}}, etc.`}
+          </p>
 
           <div className="flex justify-between pt-4">
             <Button variant="outline" onClick={onClose}>

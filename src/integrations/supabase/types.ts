@@ -154,11 +154,13 @@ export type Database = {
           category: string | null
           content: string
           created_at: string
+          email_content: string | null
           id: string
           image_url: string | null
           is_active: boolean
           is_system: boolean | null
           name: string
+          sms_content: string | null
           source: string | null
           subject: string | null
           type: string
@@ -168,11 +170,13 @@ export type Database = {
           category?: string | null
           content: string
           created_at?: string
+          email_content?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_system?: boolean | null
           name: string
+          sms_content?: string | null
           source?: string | null
           subject?: string | null
           type: string
@@ -182,11 +186,13 @@ export type Database = {
           category?: string | null
           content?: string
           created_at?: string
+          email_content?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_system?: boolean | null
           name?: string
+          sms_content?: string | null
           source?: string | null
           subject?: string | null
           type?: string
