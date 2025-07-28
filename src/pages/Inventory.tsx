@@ -107,7 +107,7 @@ const Inventory: React.FC = () => {
           ))}
         </div>
 
-        {/* Location Filter & View Controls & Tabs */}
+        {/* Location Filter & View Controls & Search & Tabs */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Storage Location Filter */}
@@ -160,8 +160,19 @@ const Inventory: React.FC = () => {
             </div>
           </div>
 
-          {/* Tabs moved up to same row */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-4">
+            {/* Search Bar - Back to original position */}
+            <div className="relative flex-1 max-w-lg">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                placeholder="Search products by name, code, or tool number"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
+              />
+            </div>
+
+            {/* Tabs */}
             <div className="flex bg-gray-100 rounded-lg p-1">
               <Button
                 variant="ghost"
@@ -199,42 +210,26 @@ const Inventory: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Section - Grouped Together */}
-        <div className="space-y-3">
-          {/* Search Bar */}
-          <div className="flex items-center gap-2 flex-1">
-            <div className="relative flex-1 max-w-lg">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search products by name, code, or tool number"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
-              />
-            </div>
-          </div>
-
-          {/* Search Action Buttons */}
-          <div className="flex items-center gap-2 justify-start">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowOCRSearch(true)}
-              className="border-purple-600 text-purple-600 hover:bg-purple-50"
-              title="Search by photographing product code or tool number"
-              size="sm"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              Search Photo
-            </Button>
-            <Button 
-              variant="outline" 
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              size="sm"
-            >
-              <QrCode className="w-4 h-4 mr-2" />
-              Scan QR
-            </Button>
-          </div>
+        {/* Search Action Buttons - Under the search bar */}
+        <div className="flex items-center gap-2 justify-end">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowOCRSearch(true)}
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            title="Search by photographing product code or tool number"
+            size="sm"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Search Photo
+          </Button>
+          <Button 
+            variant="outline" 
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            size="sm"
+          >
+            <QrCode className="w-4 h-4 mr-2" />
+            Scan QR
+          </Button>
         </div>
       </div>
 
