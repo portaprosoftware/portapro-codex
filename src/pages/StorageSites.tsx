@@ -54,6 +54,20 @@ export default function StorageSites() {
     }
   });
 
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('*')
+        .limit(1)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -74,11 +88,23 @@ export default function StorageSites() {
 
   const formatAddress = (site: StorageLocation) => {
     if (site.address_type === 'company_address') {
-      return "Company Address";
+      return {
+        label: "Main Company Address",
+        address: companySettings ? [
+          companySettings.company_street,
+          companySettings.company_street2,
+          companySettings.company_city,
+          companySettings.company_state,
+          companySettings.company_zipcode
+        ].filter(Boolean).join(', ') : 'Company address not set'
+      };
     } else if (site.address_type === 'gps') {
-      return site.gps_coordinates 
-        ? `GPS: ${site.gps_coordinates.y.toFixed(6)}, ${site.gps_coordinates.x.toFixed(6)}`
-        : "GPS Coordinates";
+      return {
+        label: "GPS Coordinates",
+        address: site.gps_coordinates 
+          ? `${site.gps_coordinates.y.toFixed(6)}, ${site.gps_coordinates.x.toFixed(6)}`
+          : "GPS coordinates not set"
+      };
     } else {
       const parts = [
         site.custom_street,
@@ -87,7 +113,10 @@ export default function StorageSites() {
         site.custom_state,
         site.custom_zip
       ].filter(Boolean);
-      return parts.join(', ') || 'Custom Address';
+      return {
+        label: "Custom Address",
+        address: parts.length > 0 ? parts.join(', ') : 'Custom address not set'
+      };
     }
   };
 
@@ -170,11 +199,16 @@ export default function StorageSites() {
                       {site.description}
                     </div>
                     
-                    <div className="flex items-start gap-2 text-sm">
+                    <div className="flex items-start gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">
-                        {formatAddress(site)}
-                      </span>
+                      <div className="text-sm">
+                        <div className="font-medium text-muted-foreground mb-1">
+                          {formatAddress(site).label}
+                        </div>
+                        <div className="text-muted-foreground">
+                          {formatAddress(site).address}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex gap-2 pt-2">
