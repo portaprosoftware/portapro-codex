@@ -47,7 +47,7 @@ export const MaintenanceReportsTab: React.FC = () => {
         .from('maintenance_reports')
         .select(`
           *,
-          jobs (
+          jobs!fk_maintenance_reports_job (
             job_number,
             job_type,
             scheduled_date,
