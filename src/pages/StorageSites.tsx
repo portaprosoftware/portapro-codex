@@ -8,8 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddStorageSiteModal } from "@/components/inventory/AddStorageSiteModal";
 import { EditStorageSiteModal } from "@/components/inventory/EditStorageSiteModal";
-import { DataMigrationManager } from "@/components/inventory/DataMigrationManager";
-import { Plus, MapPin, Edit, Trash2, Building, Database } from "lucide-react";
+import { StorageLocationReporting } from "@/components/inventory/StorageLocationReporting";
+import { Plus, MapPin, Edit, Trash2, Building, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate } from "react-router-dom";
@@ -135,7 +135,7 @@ export default function StorageSites() {
     <div className="p-6 space-y-8">
       <PageHeader
         title="Storage Sites"
-        subtitle="Manage storage locations and migrate inventory data"
+        subtitle="Manage storage locations and view location analytics"
       />
 
       <Tabs defaultValue="locations" className="space-y-6">
@@ -144,9 +144,9 @@ export default function StorageSites() {
             <Building className="h-4 w-4" />
             Storage Locations
           </TabsTrigger>
-          <TabsTrigger value="migration" className="flex items-center gap-2">
-            <Database className="h-4 w-4" />
-            Data Migration
+          <TabsTrigger value="reporting" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Location Reporting
           </TabsTrigger>
         </TabsList>
 
@@ -254,8 +254,8 @@ export default function StorageSites() {
           )}
         </TabsContent>
 
-        <TabsContent value="migration">
-          <DataMigrationManager />
+        <TabsContent value="reporting">
+          <StorageLocationReporting />
         </TabsContent>
       </Tabs>
 
