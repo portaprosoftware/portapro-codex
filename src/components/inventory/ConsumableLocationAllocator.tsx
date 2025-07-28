@@ -68,7 +68,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
   const handleQuantityChange = (locationId: string, field: 'onHand' | 'reorderThreshold', value: number) => {
     setLocations(prev => prev.map(loc => 
       loc.locationId === locationId 
-        ? { ...loc, [field]: Math.max(0, value) }
+        ? { ...loc, [field]: Math.max(0, Number(value) || 0) }
         : loc
     ));
   };
@@ -99,7 +99,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     setLocations(prev => prev.filter(loc => loc.locationId !== locationId));
   };
 
-  const totalOnHand = locations.reduce((sum, loc) => sum + loc.onHand, 0);
+  const totalOnHand = locations.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
   const availableLocations = storageLocations.filter(
     storage => !locations.some(loc => loc.locationId === storage.id)
   );
@@ -122,14 +122,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
               <TableRow>
                 <TableHead>Storage Location</TableHead>
                 <TableHead className="w-32">On Hand</TableHead>
-                <TableHead className="w-32">
-                  <div className="flex items-center justify-between">
-                    <span>Reorder Level</span>
-                    <span className="text-xs font-normal text-muted-foreground ml-2">
-                      Alert when below this amount
-                    </span>
-                  </div>
-                </TableHead>
+                <TableHead className="w-32">Reorder Level</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -147,7 +140,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
                       onChange={(e) => handleQuantityChange(
                         location.locationId, 
                         'onHand', 
-                        parseInt(e.target.value) || 0
+                        Number(e.target.value) || 0
                       )}
                       disabled={disabled}
                       className="w-full"
@@ -161,7 +154,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
                       onChange={(e) => handleQuantityChange(
                         location.locationId, 
                         'reorderThreshold', 
-                        parseInt(e.target.value) || 0
+                        Number(e.target.value) || 0
                       )}
                       disabled={disabled}
                       className="w-full"

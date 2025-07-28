@@ -86,8 +86,8 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       return data.map((item: any) => ({
         locationId: item.storage_location_id,
         locationName: item.storage_locations.name,
-        onHand: item.quantity,
-        reorderThreshold: item.reorder_threshold || 0
+        onHand: Number(item.quantity) || 0,
+        reorderThreshold: Number(item.reorder_threshold) || 0
       }));
     },
     enabled: !!consumable?.id && isOpen
@@ -115,7 +115,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       if (!consumable) return;
       
       // Calculate total on hand from location stock
-      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
       
       // Update the main consumable record
       const { error: consumableError } = await supabase
@@ -185,7 +185,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
 
   const onSubmit = (data: ConsumableFormData) => {
     // Calculate total on hand from location stock
-    const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+    const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
     
     const submitData = {
       ...data,
@@ -200,9 +200,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto" aria-describedby="edit-consumable-description">
         <SheetHeader>
           <SheetTitle>Edit Consumable</SheetTitle>
+          <p id="edit-consumable-description" className="sr-only">
+            Edit consumable form with fields for name, category, pricing, and location allocation
+          </p>
         </SheetHeader>
 
         <Form {...form}>
@@ -323,46 +326,46 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="reorder_threshold"
-                rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reorder Threshold *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        placeholder="0" 
-                      />
-                    </FormControl>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      You'll receive a notification when total stock falls below this threshold
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex items-center gap-4">
+                <FormField
+                  control={form.control}
+                  name="reorder_threshold"
+                  rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Reorder Threshold *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          {...field} 
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          placeholder="0" 
+                        />
+                      </FormControl>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        You'll receive a notification when total stock falls below this threshold
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="is_active"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
+                <FormField
+                  control={form.control}
+                  name="is_active"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center justify-center space-y-2">
                       <FormLabel>Active</FormLabel>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <FormField
