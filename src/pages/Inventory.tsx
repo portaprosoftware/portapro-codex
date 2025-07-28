@@ -161,14 +161,14 @@ const Inventory: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          <div className="flex items-center gap-2 flex-1">
+            <div className="relative flex-1 max-w-lg">
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Search products by name, code, or tool number"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64 rounded-lg border-gray-300 focus:border-blue-400"
+                className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
               />
             </div>
           </div>
