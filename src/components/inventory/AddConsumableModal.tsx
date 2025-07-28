@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -45,6 +45,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
   onClose
 }) => {
   const [showScannerModal, setShowScannerModal] = useState(false);
+  const queryClient = useQueryClient();
   const form = useForm<ConsumableFormData>({
     defaultValues: {
       name: '',
@@ -88,11 +89,15 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
           notes: data.notes
         }])
         .select()
-        .single();
+        .maybeSingle();
       
       if (consumableError) {
         console.error('Error creating consumable:', consumableError);
         throw consumableError;
+      }
+
+      if (!consumableData) {
+        throw new Error('Failed to create consumable - no data returned');
       }
 
       console.log('Created consumable:', consumableData);
@@ -121,10 +126,18 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
     },
     onSuccess: (data) => {
       console.log('Consumable creation successful:', data);
+      
+      // Invalidate and refetch consumables data
+      queryClient.invalidateQueries({ queryKey: ['consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['consumable-location-stock'] });
+      
       toast({
         title: 'Success',
         description: 'Consumable created successfully'
       });
+      
+      // Reset form to initial state
       form.reset({
         name: '',
         description: '',
@@ -137,6 +150,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         is_active: true,
         notes: ''
       });
+      
       setShowScannerModal(false);
       onClose();
     },
@@ -156,6 +170,18 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
   };
 
   const onSubmit = (data: ConsumableFormData) => {
+    console.log('Form submitted with data:', data);
+    
+    // Validate location stock
+    if (!data.locationStock || data.locationStock.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please allocate stock to at least one storage location',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     // Calculate total on hand from location stock
     const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
     
@@ -165,6 +191,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
       locationStock: data.locationStock
     };
     
+    console.log('Submitting data:', submitData);
     createConsumable.mutate(submitData);
   };
 

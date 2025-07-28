@@ -28,8 +28,9 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
   onChange,
   disabled = false
 }) => {
-  const [locations, setLocations] = useState<LocationStock[]>(value || []);
+  const [locations, setLocations] = useState<LocationStock[]>([]);
   const [selectedLocationToAdd, setSelectedLocationToAdd] = useState<string>('');
+  const [isInitialized, setIsInitialized] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch all storage locations
@@ -47,38 +48,60 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   });
 
-  // Initialize with storage locations if empty and value prop is empty
+  // Initialize component state properly
   useEffect(() => {
-    if (value && value.length > 0) {
-      // If parent provides initial data, use it
-      setLocations(value);
-    } else if (value?.length === 0 && storageLocations.length > 0) {
-      // If parent has empty array and we have storage locations, initialize with first location
-      const defaultLocation = storageLocations.find(loc => loc.name.toLowerCase().includes('main') || loc.name.toLowerCase().includes('default')) || storageLocations[0];
-      const initialLocations = [{
-        locationId: defaultLocation.id,
-        locationName: defaultLocation.name,
-        onHand: 0,
-        reorderThreshold: 0
-      }];
-      setLocations(initialLocations);
-      onChange(initialLocations); // Immediately notify parent
+    if (!isInitialized) {
+      if (value && value.length > 0) {
+        // If parent provides initial data, use it
+        console.log('ConsumableLocationAllocator: Using provided value:', value);
+        setLocations(value);
+        setIsInitialized(true);
+      } else if (storageLocations.length > 0) {
+        // If parent has empty array and we have storage locations, initialize with first location
+        const defaultLocation = storageLocations.find(loc => 
+          loc.name.toLowerCase().includes('main') || 
+          loc.name.toLowerCase().includes('default')
+        ) || storageLocations[0];
+        
+        const initialLocations = [{
+          locationId: defaultLocation.id,
+          locationName: defaultLocation.name,
+          onHand: 0,
+          reorderThreshold: 0
+        }];
+        
+        console.log('ConsumableLocationAllocator: Initializing with default location:', initialLocations);
+        setLocations(initialLocations);
+        setIsInitialized(true);
+        
+        // Immediately notify parent
+        setTimeout(() => onChange(initialLocations), 0);
+      }
     }
-  }, [value, storageLocations, onChange]);
+  }, [value, storageLocations, isInitialized, onChange]);
 
-  // Update parent when locations change (but not during initialization)
+  // Sync changes back to parent (only after initialization)
   useEffect(() => {
-    if (locations.length > 0 && JSON.stringify(locations) !== JSON.stringify(value)) {
-      onChange(locations);
+    if (isInitialized && locations.length > 0) {
+      const currentValueString = JSON.stringify(value || []);
+      const locationsString = JSON.stringify(locations);
+      
+      if (currentValueString !== locationsString) {
+        console.log('ConsumableLocationAllocator: Syncing changes to parent:', locations);
+        onChange(locations);
+      }
     }
-  }, [locations, onChange, value]);
+  }, [locations, onChange, value, isInitialized]);
 
   const handleQuantityChange = (locationId: string, field: 'onHand' | 'reorderThreshold', value: number) => {
-    setLocations(prev => prev.map(loc => 
+    const newLocations = locations.map(loc => 
       loc.locationId === locationId 
         ? { ...loc, [field]: Math.max(0, Number(value) || 0) }
         : loc
-    ));
+    );
+    
+    console.log('ConsumableLocationAllocator: Quantity changed:', { locationId, field, value, newLocations });
+    setLocations(newLocations);
   };
 
   const addSelectedLocation = () => {
@@ -93,18 +116,23 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
       return;
     }
 
-    setLocations(prev => [...prev, {
+    const newLocation = {
       locationId: selectedLocation.id,
       locationName: selectedLocation.name,
       onHand: 0,
       reorderThreshold: 0
-    }]);
+    };
     
+    const newLocations = [...locations, newLocation];
+    console.log('ConsumableLocationAllocator: Adding location:', newLocation);
+    setLocations(newLocations);
     setSelectedLocationToAdd('');
   };
 
   const removeLocation = (locationId: string) => {
-    setLocations(prev => prev.filter(loc => loc.locationId !== locationId));
+    const newLocations = locations.filter(loc => loc.locationId !== locationId);
+    console.log('ConsumableLocationAllocator: Removing location:', locationId);
+    setLocations(newLocations);
   };
 
   const totalOnHand = locations.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);

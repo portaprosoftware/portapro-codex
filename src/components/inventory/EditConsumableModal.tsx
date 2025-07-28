@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -62,6 +62,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   onClose
 }) => {
   const [showScannerModal, setShowScannerModal] = useState(false);
+  const queryClient = useQueryClient();
   const form = useForm<ConsumableFormData>();
 
   // Fetch existing location stock data for this consumable
@@ -196,6 +197,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
     },
     onSuccess: (consumableId) => {
       console.log('Consumable update successful:', consumableId);
+      
+      // Invalidate and refetch all relevant data
+      queryClient.invalidateQueries({ queryKey: ['consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['consumable-location-stock'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
+      
       toast({
         title: 'Success',
         description: 'Consumable updated successfully'
@@ -218,6 +225,18 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   };
 
   const onSubmit = (data: ConsumableFormData) => {
+    console.log('Edit form submitted with data:', data);
+    
+    // Validate location stock
+    if (!data.locationStock || data.locationStock.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please allocate stock to at least one storage location',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     // Calculate total on hand from location stock
     const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
     
@@ -227,6 +246,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       locationStock: data.locationStock
     };
     
+    console.log('Submitting updated data:', submitData);
     updateConsumable.mutate(submitData);
   };
 
