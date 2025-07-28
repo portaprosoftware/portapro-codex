@@ -17,6 +17,7 @@ import { QRCodeScanner } from "./QRCodeScanner";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
+import { OCRSearchCapture } from "./OCRSearchCapture";
 import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
 import { BatchOCRProcessor } from "./BatchOCRProcessor";
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
@@ -35,6 +36,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [showScanner, setShowScanner] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showBatchOCR, setShowBatchOCR] = useState(false);
   const [showMobileOCR, setShowMobileOCR] = useState(false);
   const [ocrItemId, setOcrItemId] = useState<string | null>(null);
@@ -202,6 +204,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     refetch();
   };
 
+  const handleOCRSearchResult = (searchTerm: string, confidence?: number) => {
+    setSearchQuery(searchTerm);
+    setShowOCRSearch(false);
+  };
+
   const getStatusBadge = (status: string) => {
     const colors = {
       available: "bg-blue-100 text-blue-700 border-blue-200",
@@ -270,6 +277,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           </Select>
         </div>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowOCRSearch(true)}
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            title="Search by photographing tool number"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Search Photo
+          </Button>
           <Button 
             variant="outline" 
             onClick={() => setShowScanner(true)}
@@ -537,6 +553,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           onComplete={handleOCRComplete}
         />
       )}
+
+      {/* OCR Search Dialog */}
+      <OCRSearchCapture
+        open={showOCRSearch}
+        onClose={() => setShowOCRSearch(false)}
+        onSearchResult={handleOCRSearchResult}
+      />
 
       {/* Batch OCR Processor */}
       <BatchOCRProcessor
