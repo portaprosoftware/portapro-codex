@@ -185,6 +185,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                         placeholder="Enter SKU"
                         onScanResult={handleScanResult}
                         onCameraScan={() => setShowScannerModal(true)}
+                        showTestButton={true}
                       />
                     </FormControl>
                     <FormMessage />

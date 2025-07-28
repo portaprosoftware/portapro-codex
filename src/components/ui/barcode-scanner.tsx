@@ -118,30 +118,68 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
   if (!Capacitor.isNativePlatform()) {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Camera className="w-5 h-5" />
-              Scanner Not Available
+              <ScanLine className="w-5 h-5" />
+              Scanning Options
             </DialogTitle>
           </DialogHeader>
           
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-              <Camera className="w-8 h-8 text-muted-foreground" />
+          <div className="space-y-6 py-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ScanLine className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Multiple Ways to Scan</h3>
+              <p className="text-sm text-muted-foreground">
+                Choose the best scanning method for your device
+              </p>
             </div>
             
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-2">
-                Barcode scanning is only available on mobile devices.
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Please use the mobile app to scan barcodes and QR codes.
-              </p>
+            <div className="space-y-3">
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">📱</div>
+                  <div>
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">Mobile Camera</h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      Open this page on your mobile device to use camera scanning
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">🔌</div>
+                  <div>
+                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-1">USB/Bluetooth Scanner</h4>
+                    <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                      Connect a barcode scanner to your computer. When connected, the SKU field will detect scans automatically.
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      ✓ Most USB/Bluetooth scanners work out of the box
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">⌨️</div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Manual Entry</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Type the barcode numbers manually into the SKU field
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <Button onClick={onClose} variant="outline" className="w-full">
-              Close
+              Got it
             </Button>
           </div>
         </DialogContent>

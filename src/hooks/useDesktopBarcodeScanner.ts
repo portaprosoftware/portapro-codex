@@ -16,9 +16,11 @@ export const useDesktopBarcodeScanner = ({
   enabled = true
 }: DesktopBarcodeScannerOptions) => {
   const [isScanning, setIsScanning] = useState(false);
+  const [scannerDetected, setScannerDetected] = useState(false);
   const scanBuffer = useRef('');
   const timeoutRef = useRef<NodeJS.Timeout>();
   const lastKeyTime = useRef(0);
+  const scannerTestRef = useRef(false);
 
   const processScan = () => {
     const barcode = scanBuffer.current.trim();
@@ -46,6 +48,10 @@ export const useDesktopBarcodeScanner = ({
     if (timeDiff < 50 || scanBuffer.current === '') {
       if (scanBuffer.current === '') {
         setIsScanning(true);
+        // Detect scanner by rapid input pattern
+        if (!scannerDetected) {
+          setScannerDetected(true);
+        }
       }
       
       // Handle Enter key (common end character for barcode scanners)
@@ -72,6 +78,17 @@ export const useDesktopBarcodeScanner = ({
     }
   };
 
+  const testScanner = () => {
+    scannerTestRef.current = true;
+    setScannerDetected(false);
+    // Reset after 5 seconds if no scanner input detected
+    setTimeout(() => {
+      if (scannerTestRef.current && !scannerDetected) {
+        scannerTestRef.current = false;
+      }
+    }, 5000);
+  };
+
   useEffect(() => {
     if (enabled) {
       document.addEventListener('keypress', handleKeyPress);
@@ -95,6 +112,8 @@ export const useDesktopBarcodeScanner = ({
 
   return {
     isScanning,
+    scannerDetected,
+    testScanner,
     resetScanner
   };
 };
