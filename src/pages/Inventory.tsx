@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,7 @@ import { LocationAwareAvailableSlider } from "@/components/inventory/LocationAwa
 import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
 import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard";
 import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
+import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ const Inventory: React.FC = () => {
   const [isAvailableSliderOpen, setIsAvailableSliderOpen] = useState(false);
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
   const [showOCRDashboard, setShowOCRDashboard] = useState(false);
+  const [showOCRSearch, setShowOCRSearch] = useState(false);
 
   const handleFilterClick = (filterKey: FilterType) => {
     if (filterKey === "available_now") {
@@ -48,6 +50,11 @@ const Inventory: React.FC = () => {
     return isActive 
       ? "bg-blue-600 text-white border-blue-600"
       : "border-gray-300 text-gray-700 hover:border-gray-400";
+  };
+
+  const handleOCRSearchResult = (searchTerm: string, confidence?: number) => {
+    setSearchQuery(searchTerm);
+    setShowOCRSearch(false);
   };
 
   const filters = [
@@ -153,17 +160,26 @@ const Inventory: React.FC = () => {
             </div>
           </div>
 
-          {/* Search & QR */}
+          {/* Search & Buttons */}
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <Input
-                placeholder="Search products or scan QR code"
+                placeholder="Search products by name, code, or tool number"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 w-64 rounded-lg border-gray-300 focus:border-blue-400"
               />
             </div>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowOCRSearch(true)}
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              title="Search by photographing product code or tool number"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Search Photo
+            </Button>
             <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
               <QrCode className="w-4 h-4 mr-2" />
               Scan QR
@@ -241,6 +257,13 @@ const Inventory: React.FC = () => {
       <AddInventoryModal
         isOpen={addInventoryModalOpen}
         onClose={() => setAddInventoryModalOpen(false)}
+      />
+
+      {/* OCR Search Dialog */}
+      <OCRSearchCapture
+        open={showOCRSearch}
+        onClose={() => setShowOCRSearch(false)}
+        onSearchResult={handleOCRSearchResult}
       />
     </div>
   );
