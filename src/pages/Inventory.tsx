@@ -106,22 +106,32 @@ const Inventory: React.FC = () => {
   };
 
   const handleSearchSubmit = async (searchTerm: string) => {
-    if (!searchTerm.trim()) return;
+    console.log("Manual Search: handleSearchSubmit called with:", searchTerm);
+    if (!searchTerm.trim()) {
+      console.log("Manual Search: Empty search term, returning");
+      return;
+    }
     
     // Use the same logic as OCR search for consistency
     try {
+      console.log("Manual Search: Searching product_items for tool number:", searchTerm);
       const { data: items, error } = await supabase
         .from("product_items")
         .select("product_id, tool_number, id")
         .ilike("tool_number", `%${searchTerm}%`)
         .limit(1);
         
-      if (error) throw error;
+      if (error) {
+        console.error("Manual Search: Database error:", error);
+        throw error;
+      }
+      
+      console.log("Manual Search: Database response:", items);
       
       if (items && items.length > 0) {
         // Found an individual unit with this tool number - navigate directly to its page
         const itemId = items[0].id;
-        console.log("Manual Search: Navigating to individual item:", itemId);
+        console.log("Manual Search: Found individual item, navigating to:", itemId);
         
         // Navigate to the individual item detail page
         window.location.href = `/inventory/items/${itemId}`;
@@ -268,7 +278,9 @@ const Inventory: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
+                console.log("Search input key pressed:", e.key);
                 if (e.key === 'Enter') {
+                  console.log("Enter key detected, calling handleSearchSubmit with:", searchQuery);
                   handleSearchSubmit(searchQuery);
                 }
               }}
