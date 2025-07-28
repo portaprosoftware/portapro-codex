@@ -3618,16 +3618,25 @@ export type Database = {
           last_known_location: unknown | null
           last_location_update: string | null
           location: string | null
+          manufacturing_date: string | null
           material: string | null
+          mold_cavity: string | null
           notes: string | null
+          ocr_confidence_score: number | null
+          ocr_raw_data: Json | null
+          plastic_code: string | null
           power_source: string | null
           product_id: string
           product_variation_id: string | null
           qr_code_data: string | null
           size: string | null
           status: string
+          tool_number: string | null
+          tracking_photo_url: string | null
           updated_at: string
           use_case: string | null
+          vendor_id: string | null
+          verification_status: string | null
           winterized: boolean | null
         }
         Insert: {
@@ -3643,16 +3652,25 @@ export type Database = {
           last_known_location?: unknown | null
           last_location_update?: string | null
           location?: string | null
+          manufacturing_date?: string | null
           material?: string | null
+          mold_cavity?: string | null
           notes?: string | null
+          ocr_confidence_score?: number | null
+          ocr_raw_data?: Json | null
+          plastic_code?: string | null
           power_source?: string | null
           product_id: string
           product_variation_id?: string | null
           qr_code_data?: string | null
           size?: string | null
           status?: string
+          tool_number?: string | null
+          tracking_photo_url?: string | null
           updated_at?: string
           use_case?: string | null
+          vendor_id?: string | null
+          verification_status?: string | null
           winterized?: boolean | null
         }
         Update: {
@@ -3668,16 +3686,25 @@ export type Database = {
           last_known_location?: unknown | null
           last_location_update?: string | null
           location?: string | null
+          manufacturing_date?: string | null
           material?: string | null
+          mold_cavity?: string | null
           notes?: string | null
+          ocr_confidence_score?: number | null
+          ocr_raw_data?: Json | null
+          plastic_code?: string | null
           power_source?: string | null
           product_id?: string
           product_variation_id?: string | null
           qr_code_data?: string | null
           size?: string | null
           status?: string
+          tool_number?: string | null
+          tracking_photo_url?: string | null
           updated_at?: string
           use_case?: string | null
+          vendor_id?: string | null
+          verification_status?: string | null
           winterized?: boolean | null
         }
         Relationships: [
