@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -106,14 +106,11 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="add-consumable-description">
-        <DialogHeader>
-          <DialogTitle>Add New Consumable</DialogTitle>
-          <p id="add-consumable-description" className="sr-only">
-            Add a new consumable item to your inventory with details like name, category, pricing, and stock allocation.
-          </p>
-        </DialogHeader>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="right" className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Add New Consumable</SheetTitle>
+        </SheetHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -324,7 +321,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
           onClose={() => setShowScannerModal(false)}
           onScanResult={handleScanResult}
         />
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
