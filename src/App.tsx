@@ -78,6 +78,9 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
+          {/* Landing page preview route for authenticated users */}
+          <Route path="/landing-preview" element={<Landing />} />
+
           {/* Main authenticated routes */}
           <Route
             path="/app"
