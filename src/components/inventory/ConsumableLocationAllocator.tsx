@@ -47,43 +47,45 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   });
 
-  // Initialize component state properly
+  // Initialize component state when we have storage locations and value changes from parent
   useEffect(() => {
-    if (!isInitialized && storageLocations.length > 0) {
+    if (storageLocations.length > 0) {
+      // Always update when value changes from parent (for edit mode)
       if (value && value.length > 0) {
-        // If parent provides initial data, use it
-        console.log('ConsumableLocationAllocator: Using provided value:', value);
-        setLocations([...value]); // Create a new array to avoid reference issues
-      } else {
-        // If parent has empty array, start with empty state (user can add locations manually)
-        console.log('ConsumableLocationAllocator: Starting with empty state');
+        console.log('🔄 Allocator: Initializing with parent data:', value);
+        setLocations([...value]);
+        setIsInitialized(true);
+      } else if (!isInitialized) {
+        // Only set empty state once during initial load
+        console.log('🆕 Allocator: Starting with empty state');
         setLocations([]);
+        setIsInitialized(true);
       }
-      setIsInitialized(true);
     }
-  }, [value, storageLocations, isInitialized]);
+  }, [value, storageLocations]);
 
-  // Only sync changes back to parent when user makes changes (not when receiving new props)
+  // Only sync changes back to parent when our internal state changes
+  // Don't include 'value' in dependencies to avoid circular updates
   useEffect(() => {
-    if (isInitialized && locations.length >= 0) {
-      const currentValueString = JSON.stringify(value || []);
-      const locationsString = JSON.stringify(locations);
-      
-      if (currentValueString !== locationsString) {
-        console.log('ConsumableLocationAllocator: User made changes, syncing to parent:', locations);
-        onChange(locations);
-      }
+    if (isInitialized) {
+      console.log('📤 Allocator: Syncing changes to parent:', locations);
+      onChange(locations);
     }
-  }, [locations, onChange, isInitialized]); // Removed 'value' to prevent circular updates
+  }, [locations, onChange, isInitialized]);
 
   const handleQuantityChange = (locationId: string, value: number) => {
+    const quantity = Math.max(0, Number(value) || 0);
     const newLocations = locations.map(loc => 
       loc.locationId === locationId 
-        ? { ...loc, onHand: Math.max(0, Number(value) || 0) }
+        ? { ...loc, onHand: quantity }
         : loc
     );
     
-    console.log('ConsumableLocationAllocator: Quantity changed:', { locationId, value, newLocations });
+    console.log('📝 Allocator: Quantity changed:', { 
+      locationId, 
+      newValue: quantity, 
+      locationName: locations.find(l => l.locationId === locationId)?.locationName 
+    });
     setLocations(newLocations);
   };
 
@@ -99,6 +101,12 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
       return;
     }
 
+    // Check if location is already added
+    if (locations.some(loc => loc.locationId === selectedLocationToAdd)) {
+      toast.error('Location already added');
+      return;
+    }
+
     const newLocation = {
       locationId: selectedLocation.id,
       locationName: selectedLocation.name,
@@ -106,14 +114,19 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     };
     
     const newLocations = [...locations, newLocation];
-    console.log('ConsumableLocationAllocator: Adding location:', newLocation);
+    console.log('➕ Allocator: Adding new location:', newLocation);
     setLocations(newLocations);
     setSelectedLocationToAdd('');
   };
 
   const removeLocation = (locationId: string) => {
+    const locationToRemove = locations.find(loc => loc.locationId === locationId);
     const newLocations = locations.filter(loc => loc.locationId !== locationId);
-    console.log('ConsumableLocationAllocator: Removing location:', locationId);
+    console.log('➖ Allocator: Removing location:', {
+      locationId,
+      locationName: locationToRemove?.locationName,
+      remainingCount: newLocations.length
+    });
     setLocations(newLocations);
   };
 

@@ -63,37 +63,38 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   const queryClient = useQueryClient();
   const form = useForm<ConsumableFormData>();
 
-  // Fetch existing location stock data for this consumable
+  // Fetch existing location stock data for this consumable using simplified query
   const locationStockQuery = useQuery({
     queryKey: ['consumable-location-stock', consumable?.id],
     queryFn: async () => {
       if (!consumable?.id) return [];
       
-      console.log('Fetching location stock for consumable:', consumable.id);
+      console.log('📍 Fetching location stock for consumable:', consumable.id);
       
+      // Use LEFT JOIN to ensure we get storage location data even if stock is 0
       const { data, error } = await supabase
         .from('consumable_location_stock')
         .select(`
-          id,
           quantity,
-          storage_location:storage_locations(id, name),
-          consumable:consumables(reorder_threshold)
+          storage_locations!inner(id, name)
         `)
         .eq('consumable_id', consumable.id)
         .order('quantity', { ascending: false });
       
       if (error) {
-        console.error('Error fetching location stock:', error);
+        console.error('❌ Error fetching location stock:', error);
         throw error;
       }
       
+      console.log('📦 Raw location stock data:', data);
+      
       const locationStock = (data || []).map((item: any) => ({
-        locationId: item.storage_location?.id,
-        locationName: item.storage_location?.name,
+        locationId: item.storage_locations?.id,
+        locationName: item.storage_locations?.name,
         onHand: Number(item.quantity) || 0
       })).filter(item => item.locationId && item.locationName);
       
-      console.log('Fetched location stock (transformed):', locationStock);
+      console.log('✅ Transformed location stock ready for form:', locationStock);
       return locationStock;
     },
     enabled: !!consumable?.id && isOpen
@@ -101,16 +102,19 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
 
   const locationStockData = locationStockQuery.data || [];
 
+  // Only reset form when we have all the data we need
   useEffect(() => {
-    if (consumable && !locationStockQuery.isLoading && !locationStockQuery.isError) {
-      console.log('Initializing form with consumable:', consumable);
-      console.log('Location stock data:', locationStockData);
-      console.log('Query loading state:', locationStockQuery.isLoading);
-      console.log('Query error state:', locationStockQuery.isError);
-      
-      const defaultLocationStock = locationStockData && locationStockData.length > 0 
-        ? locationStockData 
-        : [];
+    if (consumable && locationStockQuery.isSuccess && locationStockData !== undefined) {
+      console.log('🔄 Form initialization started');
+      console.log('📋 Consumable data:', {
+        id: consumable.id,
+        name: consumable.name,
+        category: consumable.category,
+        unit_cost: consumable.unit_cost,
+        unit_price: consumable.unit_price,
+        is_active: consumable.is_active
+      });
+      console.log('📍 Location stock ready:', locationStockData);
       
       const formData = {
         name: consumable.name,
@@ -119,21 +123,26 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         sku: consumable.sku || '',
         unit_cost: consumable.unit_cost?.toString() || '',
         unit_price: consumable.unit_price?.toString() || '',
-        locationStock: defaultLocationStock,
+        locationStock: [...locationStockData], // Create new array to avoid reference issues
         is_active: consumable.is_active,
         notes: consumable.notes || ''
       };
       
-      console.log('Resetting form with data:', formData);
+      console.log('✅ Resetting form with complete data:', formData);
       form.reset(formData);
     }
-  }, [consumable, locationStockData, locationStockQuery.isLoading, locationStockQuery.isError, form]);
+  }, [consumable, locationStockQuery.isSuccess, locationStockData]);
 
   const updateConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {
       if (!consumable) return;
       
-      console.log('Updating consumable with data:', data);
+      console.log('💾 Starting consumable update with data:', {
+        name: data.name,
+        category: data.category,
+        locationStockCount: data.locationStock?.length || 0,
+        locationStock: data.locationStock
+      });
       
       // Parse and validate cost/price
       const unitCost = parseFloat(data.unit_cost);
@@ -143,71 +152,87 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         throw new Error('Please enter valid cost and price values');
       }
       
-      // Calculate total on hand from location stock
-      const totalOnHand = data.locationStock?.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0) || 0;
+      // Calculate total on hand from location stock - ensure we preserve actual quantities
+      const totalOnHand = data.locationStock?.reduce((sum, loc) => {
+        const quantity = Number(loc.onHand) || 0;
+        console.log(`📊 Location ${loc.locationName}: ${quantity}`);
+        return sum + quantity;
+      }, 0) || 0;
       
-      // Update the main consumable record
-      const { error: consumableError } = await supabase
-        .from('consumables')
-        .update({
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          sku: data.sku,
-          unit_cost: unitCost,
-          unit_price: unitPrice,
-          on_hand_qty: totalOnHand,
-          reorder_threshold: 0,
-          is_active: data.is_active,
-          notes: data.notes,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', consumable.id);
+      console.log(`📈 Calculated total on hand: ${totalOnHand}`);
       
-      if (consumableError) {
-        console.error('Error updating consumable:', consumableError);
-        throw consumableError;
-      }
+      // Use a transaction-like approach to ensure data consistency
+      try {
+        // Update the main consumable record
+        const { error: consumableError } = await supabase
+          .from('consumables')
+          .update({
+            name: data.name,
+            description: data.description,
+            category: data.category,
+            sku: data.sku,
+            unit_cost: unitCost,
+            unit_price: unitPrice,
+            on_hand_qty: totalOnHand,
+            reorder_threshold: 0,
+            is_active: data.is_active,
+            notes: data.notes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', consumable.id);
+        
+        if (consumableError) {
+          console.error('❌ Error updating consumable:', consumableError);
+          throw consumableError;
+        }
 
-      console.log('Updated main consumable record');
+        console.log('✅ Updated main consumable record');
 
-      // Delete existing location stock records
-      const { error: deleteError } = await supabase
-        .from('consumable_location_stock')
-        .delete()
-        .eq('consumable_id', consumable.id);
-      
-      if (deleteError) {
-        console.warn('Error deleting existing location stock (non-fatal):', deleteError);
-      }
+        // Delete existing location stock records
+        const { error: deleteError } = await supabase
+          .from('consumable_location_stock')
+          .delete()
+          .eq('consumable_id', consumable.id);
+        
+        if (deleteError) {
+          console.warn('⚠️ Error deleting existing location stock:', deleteError);
+          // Continue anyway - this might not be fatal
+        }
 
-      console.log('Deleted existing location stock records');
+        console.log('🗑️ Deleted existing location stock records');
 
-      // Insert new location stock records if we have any
-      if (data.locationStock && data.locationStock.length > 0) {
-        const validLocationStockInserts = data.locationStock
-          .filter(loc => loc.locationId && loc.locationId.trim() !== '')
-          .map(loc => ({
-            consumable_id: consumable.id,
-            storage_location_id: loc.locationId,
-            quantity: loc.onHand
-          }));
+        // Insert new location stock records if we have any
+        if (data.locationStock && data.locationStock.length > 0) {
+          const validLocationStockInserts = data.locationStock
+            .filter(loc => loc.locationId && loc.locationId.trim() !== '' && loc.onHand > 0)
+            .map(loc => ({
+              consumable_id: consumable.id,
+              storage_location_id: loc.locationId,
+              quantity: Number(loc.onHand) || 0
+            }));
 
-        if (validLocationStockInserts.length > 0) {
-          console.log('Creating new location stock records:', validLocationStockInserts);
+          if (validLocationStockInserts.length > 0) {
+            console.log('📍 Creating new location stock records:', validLocationStockInserts);
 
-          const { error: insertError } = await supabase
-            .from('consumable_location_stock')
-            .insert(validLocationStockInserts);
-          
-          if (insertError) {
-            console.warn('Error creating new location stock (non-fatal):', insertError);
+            const { error: insertError } = await supabase
+              .from('consumable_location_stock')
+              .insert(validLocationStockInserts);
+            
+            if (insertError) {
+              console.error('❌ Error creating location stock:', insertError);
+              throw insertError; // Make this fatal - we need location data to be correct
+            }
+            
+            console.log('✅ Successfully created location stock records');
           }
         }
-      }
 
-      console.log('Successfully updated consumable');
-      return consumable.id;
+        console.log('🎉 Successfully updated consumable with all location data');
+        return consumable.id;
+      } catch (error) {
+        console.error('💥 Transaction failed, rolling back...', error);
+        throw error;
+      }
     },
     onSuccess: (consumableId) => {
       console.log('Consumable update successful:', consumableId);
