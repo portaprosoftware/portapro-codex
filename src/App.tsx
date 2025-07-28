@@ -52,13 +52,20 @@ const App = () => {
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
 
-          {/* Landing page for unauthenticated users */}
+          {/* Landing page for unauthenticated users, redirect to app for authenticated */}
           <Route
             path="/"
             element={
-              <SignedOut>
-                <Landing />
-              </SignedOut>
+              <>
+                <SignedOut>
+                  <Landing />
+                </SignedOut>
+                <SignedIn>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </SignedIn>
+              </>
             }
           />
 
