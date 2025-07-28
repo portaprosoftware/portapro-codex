@@ -73,11 +73,12 @@ const Inventory: React.FC = () => {
       console.log("OCR Search: Found items:", items);
       
       if (items && items.length > 0) {
-        // Found an individual unit with this tool number
-        const productId = items[0].product_id;
-        console.log("OCR Search: Navigating to product:", productId, "with tool number:", searchTerm);
-        setToolNumberToFind(searchTerm);
-        setSelectedProduct(productId);
+        // Found an individual unit with this tool number - navigate directly to its page
+        const itemId = items[0].id;
+        console.log("OCR Search: Navigating to individual item:", itemId);
+        
+        // Navigate to the individual item detail page
+        window.location.href = `/inventory/items/${itemId}`;
         
         toast({
           title: "Individual Unit Found",
@@ -87,11 +88,20 @@ const Inventory: React.FC = () => {
         console.log("OCR Search: No individual units found, falling back to regular search");
         // No individual units found, fall back to regular product search
         setSearchQuery(searchTerm);
+        toast({
+          title: "No Individual Unit Found",
+          description: `Searching products for: ${searchTerm}`,
+        });
       }
     } catch (error) {
       console.error("Error searching for tool number:", error);
       // Fall back to regular search if there's an error
       setSearchQuery(searchTerm);
+      toast({
+        title: "Search Error",
+        description: "There was an error searching. Falling back to product search.",
+        variant: "destructive",
+      });
     }
   };
 

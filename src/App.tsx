@@ -38,6 +38,7 @@ import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
 import { DriverReportsPage } from './pages/DriverReportsPage';
 import TeamManagement from './pages/TeamManagement';
+import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
 
 const App = () => {
@@ -80,7 +81,8 @@ const App = () => {
                     <Route path="/jobs/calendar" element={<Jobs />} />
                     <Route path="/jobs/dispatch" element={<Jobs />} />
                     <Route path="/jobs/map" element={<Jobs />} />
-                    <Route path="/inventory" element={<Inventory />} />
+                     <Route path="/inventory" element={<Inventory />} />
+                     <Route path="/inventory/items/:itemId" element={<ProductItemDetail />} />
                     <Route path="/consumables" element={<Consumables />} />
                     <Route path="/purchase-orders" element={<PurchaseOrders />} />
                     <Route path="/customer-hub" element={<CustomerHub />} />
