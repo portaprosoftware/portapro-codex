@@ -10,8 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Plus, X, Users, Info } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Plus, X, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 interface SegmentRule {
@@ -30,6 +30,7 @@ interface SegmentData {
 
 export const SmartSegmentBuilder: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
   const [segmentData, setSegmentData] = useState<SegmentData>({
     name: '',
     description: '',
@@ -216,75 +217,75 @@ export const SmartSegmentBuilder: React.FC = () => {
       
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>Create Smart Segment</DialogTitle>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Info className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-96 max-h-96 overflow-y-auto" align="end">
-                <div className="space-y-4 text-sm">
-                  <div>
-                    <h4 className="font-semibold text-base mb-2">How to Create a Smart Segment</h4>
-                    <p className="text-muted-foreground mb-3">
-                      Use smart segments to automatically group customers based on their behavior or profile. Just follow these simple steps:
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <h5 className="font-medium">1. Give it a Name & Description</h5>
-                      <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
-                        <li>• <strong>Segment Name</strong>: Pick something clear (e.g. "New Customers," "Big Spenders").</li>
-                        <li>• <strong>Description</strong>: Write a sentence or two about what this segment is for.</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h5 className="font-medium">2. Build Your Rules</h5>
-                      <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
-                        <li>• Click <strong>Add Rule</strong>.</li>
-                        <li>• <strong>Field</strong>: Choose what you're filtering on (e.g. Registration Date, Last Job Date, Total Spent).</li>
-                        <li>• <strong>Operator</strong>: Pick how you want to compare (After, Before, Greater Than, Equals, etc.).</li>
-                        <li>• <strong>Value</strong>: Enter the date, number, or select the category.</li>
-                        <li>• Repeat <strong>Add Rule</strong> for as many filters as you need. All rules must be true for a customer to join the segment.</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h5 className="font-medium">3. See the Estimated Size</h5>
-                      <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
-                        <li>• Hit <strong>Calculate</strong> to preview how many customers match your rules.</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h5 className="font-medium">4. Save Your Segment</h5>
-                      <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
-                        <li>• When you're happy, click <strong>Create Segment</strong>.</li>
-                        <li>• Your new group will appear in the marketing module—ready for email campaigns, text blasts, or reports.</li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-3">
-                    <h5 className="font-medium mb-2">Examples</h5>
-                    <ul className="space-y-1 text-muted-foreground text-xs">
-                      <li>• <strong>New Customers</strong>: Registration Date After [30 days ago]</li>
-                      <li>• <strong>Frequent Users</strong>: Total Jobs Greater Than 10</li>
-                      <li>• <strong>Lapsed Accounts</strong>: Last Job Date Before [90 days ago]</li>
-                    </ul>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Feel free to mix and match rules—this tool will automatically keep your segments up to date as customer data changes.
-                    </p>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+          <DialogTitle>Create Smart Segment</DialogTitle>
         </DialogHeader>
+
+        {/* Info Section */}
+        <Collapsible open={isInfoExpanded} onOpenChange={setIsInfoExpanded}>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span>How to Create a Smart Segment</span>
+              {isInfoExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <div className="bg-muted/50 rounded-lg p-4 space-y-4 text-sm">
+              <div>
+                <p className="text-muted-foreground mb-3">
+                  Use smart segments to automatically group customers based on their behavior or profile. Just follow these simple steps:
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <h5 className="font-medium">1. Give it a Name & Description</h5>
+                  <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
+                    <li>• <strong>Segment Name</strong>: Pick something clear (e.g. "New Customers," "Big Spenders").</li>
+                    <li>• <strong>Description</strong>: Write a sentence or two about what this segment is for.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-medium">2. Build Your Rules</h5>
+                  <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
+                    <li>• Click <strong>Add Rule</strong>.</li>
+                    <li>• <strong>Field</strong>: Choose what you're filtering on (e.g. Registration Date, Last Job Date, Total Spent).</li>
+                    <li>• <strong>Operator</strong>: Pick how you want to compare (After, Before, Greater Than, Equals, etc.).</li>
+                    <li>• <strong>Value</strong>: Enter the date, number, or select the category.</li>
+                    <li>• Repeat <strong>Add Rule</strong> for as many filters as you need. All rules must be true for a customer to join the segment.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-medium">3. See the Estimated Size</h5>
+                  <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
+                    <li>• Hit <strong>Calculate</strong> to preview how many customers match your rules.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-medium">4. Save Your Segment</h5>
+                  <ul className="mt-1 space-y-1 text-muted-foreground ml-4">
+                    <li>• When you're happy, click <strong>Create Segment</strong>.</li>
+                    <li>• Your new group will appear in the marketing module—ready for email campaigns, text blasts, or reports.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="border-t pt-3">
+                <h5 className="font-medium mb-2">Examples</h5>
+                <ul className="space-y-1 text-muted-foreground text-xs">
+                  <li>• <strong>New Customers</strong>: Registration Date After [30 days ago]</li>
+                  <li>• <strong>Frequent Users</strong>: Total Jobs Greater Than 10</li>
+                  <li>• <strong>Lapsed Accounts</strong>: Last Job Date Before [90 days ago]</li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Feel free to mix and match rules—this tool will automatically keep your segments up to date as customer data changes.
+                </p>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         <div className="space-y-6">
           {/* Basic Info */}
