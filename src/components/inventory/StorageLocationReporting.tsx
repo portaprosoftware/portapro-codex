@@ -39,50 +39,52 @@ export function StorageLocationReporting() {
       
       if (locationsError) throw locationsError;
 
-      // Get all consumable location stock data with consumable details
-      const { data: stockData, error: stockError } = await supabase
-        .from('consumable_location_stock')
-        .select(`
-          *,
-          consumables!inner(
-            name,
-            unit_cost,
-            category
-          ),
-          storage_locations!inner(
-            name,
-            is_default
-          )
-        `)
-        .gt('quantity', 0);
-      
-      if (stockError) throw stockError;
-
-      // Also get direct consumable data that might not be in location stock yet
+      // Get all consumables with their location_stock JSON data
       const { data: consumables, error: consumablesError } = await supabase
         .from('consumables')
-        .select('*')
+        .select('id, name, unit_cost, unit_price, location_stock')
         .eq('is_active', true);
       
       if (consumablesError) throw consumablesError;
 
       // Calculate summary data
       const totalLocations = locations?.length || 0;
+      const totalConsumableTypes = consumables?.length || 0;
       
-      // Get unique consumables from both stock data and direct consumables
-      const uniqueConsumablesFromStock = new Set(stockData?.map(item => item.consumable_id) || []);
-      const totalConsumableTypes = Math.max(uniqueConsumablesFromStock.size, consumables?.length || 0);
-      
-      const totalStockValue = stockData?.reduce((sum, item) => 
-        sum + (item.quantity * (item.consumables?.unit_cost || 0)), 0) || 0;
+      // Calculate total stock value from location_stock JSON
+      let totalStockValue = 0;
+      consumables?.forEach(consumable => {
+        if (consumable.location_stock) {
+          const locationStock = Array.isArray(consumable.location_stock) 
+            ? consumable.location_stock 
+            : JSON.parse(consumable.location_stock as string);
+          
+          locationStock.forEach((stock: any) => {
+            totalStockValue += (stock.quantity || 0) * (consumable.unit_cost || 0);
+          });
+        }
+      });
 
       // Calculate location details
       const locationDetails = locations?.map(location => {
-        const locationStock = stockData?.filter(item => item.storage_location_id === location.id) || [];
-        const consumableTypes = new Set(locationStock.map(item => item.consumable_id)).size;
-        const totalUnits = locationStock.reduce((sum, item) => sum + item.quantity, 0);
-        const totalValue = locationStock.reduce((sum, item) => 
-          sum + (item.quantity * (item.consumables?.unit_cost || 0)), 0);
+        let consumableTypes = 0;
+        let totalUnits = 0;
+        let totalValue = 0;
+
+        consumables?.forEach(consumable => {
+          if (consumable.location_stock) {
+            const locationStock = Array.isArray(consumable.location_stock) 
+              ? consumable.location_stock 
+              : JSON.parse(consumable.location_stock as string);
+            
+            const stockAtLocation = locationStock.find((stock: any) => stock.locationId === location.id);
+            if (stockAtLocation && stockAtLocation.quantity > 0) {
+              consumableTypes++;
+              totalUnits += stockAtLocation.quantity;
+              totalValue += stockAtLocation.quantity * (consumable.unit_cost || 0);
+            }
+          }
+        });
 
         return {
           location_id: location.id,
