@@ -275,7 +275,7 @@ const JobsPage: React.FC = () => {
             </div>
             
             {/* Jobs Sub-Navigation Pills */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between">
               <div className="enterprise-tabs">
                 <TabNav ariaLabel="Jobs views">
                   <TabNav.Item 
@@ -304,6 +304,13 @@ const JobsPage: React.FC = () => {
                   </TabNav.Item>
                 </TabNav>
               </div>
+              <Button 
+                onClick={() => setIsJobWizardOpen(true)}
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Schedule Job
+              </Button>
             </div>
           </div>
         </div>
@@ -324,13 +331,6 @@ const JobsPage: React.FC = () => {
                 drivers={drivers}
                 driversWithJobsToday={driversWithJobsToday}
               />
-              <Button 
-                onClick={() => setIsJobWizardOpen(true)}
-                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ml-4"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Schedule Job
-              </Button>
             </div>
           </div>
         )}
@@ -435,33 +435,25 @@ const JobsPage: React.FC = () => {
                       </Button>
                       <h2 className="text-lg font-semibold text-gray-900">Dispatch Board</h2>
                     </div>
-                     <div className="flex items-center gap-4">
-                       <div className="flex items-center gap-2">
-                         <Button 
-                           variant="ghost" 
-                           size="sm" 
-                           className="p-1"
-                           onClick={() => setDispatchDate(prev => subtractDaysFromDate(prev, 1))}
-                         >
-                           <ChevronLeft className="h-4 w-4" />
-                         </Button>
-                         <span className="font-medium text-sm text-gray-900">
-                           {format(dispatchDate, 'MMMM do, yyyy')}
-                         </span>
-                         <Button 
-                           variant="ghost" 
-                           size="sm" 
-                           className="p-1"
-                           onClick={() => setDispatchDate(prev => addDaysToDate(prev, 1))}
-                         >
-                           <ChevronRight className="h-4 w-4" />
-                         </Button>
-                       </div>
+                    <div className="flex items-center gap-2">
                       <Button 
-                        className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 text-sm"
-                        onClick={() => setIsJobWizardOpen(true)}
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1"
+                        onClick={() => setDispatchDate(prev => subtractDaysFromDate(prev, 1))}
                       >
-                        + Schedule
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="font-medium text-sm text-gray-900">
+                        {format(dispatchDate, 'MMMM do, yyyy')}
+                      </span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1"
+                        onClick={() => setDispatchDate(prev => addDaysToDate(prev, 1))}
+                      >
+                        <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
