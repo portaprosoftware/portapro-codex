@@ -76,6 +76,7 @@ const US_STATES = [
 ];
 
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
+  console.log("SimpleCustomerModal rendered with isOpen:", isOpen);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
