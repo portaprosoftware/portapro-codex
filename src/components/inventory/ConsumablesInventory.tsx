@@ -55,14 +55,19 @@ export const ConsumablesInventory: React.FC = () => {
   const { data: consumables, isLoading, refetch } = useQuery({
     queryKey: ['consumables'],
     queryFn: async () => {
+      console.log('Fetching consumables from database...');
       const { data, error } = await supabase
         .from('consumables' as any)
         .select('*')
         .order('name');
       
       if (error) throw error;
+      console.log('Fetched consumables:', data);
       return (data || []) as unknown as Consumable[];
-    }
+    },
+    // Force refetch to get updated data
+    staleTime: 0,
+    gcTime: 0
   });
 
   const handleEdit = (consumable: Consumable) => {
