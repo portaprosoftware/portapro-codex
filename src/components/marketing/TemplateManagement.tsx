@@ -26,12 +26,13 @@ interface Template {
 
 export const TemplateManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<'system' | 'user'>('system');
   const [typeFilter, setTypeFilter] = useState('all');
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
-  const [emailSystemExpanded, setEmailSystemExpanded] = useState(true);
-  const [emailUserExpanded, setEmailUserExpanded] = useState(true);
-  const [smsSystemExpanded, setSmsSystemExpanded] = useState(true);
-  const [smsUserExpanded, setSmsUserExpanded] = useState(true);
+  const [emailSystemExpanded, setEmailSystemExpanded] = useState(false);
+  const [emailUserExpanded, setEmailUserExpanded] = useState(false);
+  const [smsSystemExpanded, setSmsSystemExpanded] = useState(false);
+  const [smsUserExpanded, setSmsUserExpanded] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch templates
@@ -210,7 +211,25 @@ export const TemplateManagement: React.FC = () => {
           />
         </div>
         
-        {/* Remove Source Toggle since we're showing both */}
+        {/* Source Toggle */}
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <Button
+            variant={sourceFilter === 'system' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSourceFilter('system')}
+            className="px-3"
+          >
+            System Generated
+          </Button>
+          <Button
+            variant={sourceFilter === 'user' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSourceFilter('user')}
+            className="px-3"
+          >
+            User Created
+          </Button>
+        </div>
         
         {/* Template Type Dropdown */}
         <div className="w-48">
@@ -244,7 +263,7 @@ export const TemplateManagement: React.FC = () => {
           </h2>
           
           {/* Email System Templates */}
-          {renderCollapsibleSection(
+          {sourceFilter === 'system' && renderCollapsibleSection(
             "System Generated",
             <Badge variant="default" className="text-xs">system</Badge>,
             emailSystem,
@@ -253,7 +272,7 @@ export const TemplateManagement: React.FC = () => {
           )}
           
           {/* Email User Templates */}
-          {renderCollapsibleSection(
+          {sourceFilter === 'user' && renderCollapsibleSection(
             "User Created",
             <Badge variant="info" className="text-xs">user</Badge>,
             emailUser,
@@ -270,7 +289,7 @@ export const TemplateManagement: React.FC = () => {
           </h2>
           
           {/* SMS System Templates */}
-          {renderCollapsibleSection(
+          {sourceFilter === 'system' && renderCollapsibleSection(
             "System Generated", 
             <Badge variant="default" className="text-xs">system</Badge>,
             smsSystem,
@@ -279,7 +298,7 @@ export const TemplateManagement: React.FC = () => {
           )}
           
           {/* SMS User Templates */}
-          {renderCollapsibleSection(
+          {sourceFilter === 'user' && renderCollapsibleSection(
             "User Created",
             <Badge variant="info" className="text-xs">user</Badge>,
             smsUser,
