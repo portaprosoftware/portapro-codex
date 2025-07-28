@@ -73,7 +73,11 @@ export const CampaignCreation: React.FC = () => {
   const { data: customerTypes = [] } = useQuery({
     queryKey: ['customer-type-counts'],
     queryFn: async () => {
-      const { data } = await supabase.rpc('get_customer_type_counts');
+      const { data, error } = await supabase.rpc('get_customer_type_counts');
+      if (error) {
+        console.error('Error fetching customer type counts:', error);
+        return [];
+      }
       return data || [];
     }
   });

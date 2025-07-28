@@ -108,10 +108,10 @@ export const TemplateManagement: React.FC = () => {
                   {template.category}
                 </Badge>
                 <Badge 
-                  variant={template.source === 'system' ? 'default' : 'outline'}
+                  variant={template.source === 'system' ? 'default' : 'info'}
                   className="text-xs"
                 >
-                  {template.source}
+                  {template.source === 'system' ? 'system' : 'user'}
                 </Badge>
               </div>
               
@@ -164,10 +164,10 @@ export const TemplateManagement: React.FC = () => {
               </Badge>
             </div>
             <Badge 
-              variant={template.source === 'system' ? 'default' : 'outline'}
+              variant={template.source === 'system' ? 'default' : 'info'}
               className="text-xs"
             >
-              {template.source}
+              {template.source === 'system' ? 'system' : 'user'}
             </Badge>
           </div>
 
