@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
@@ -63,17 +64,29 @@ export const SimpleConsumablesInventory: React.FC = () => {
   // Delete mutation
   const deleteConsumableMutation = useMutation({
     mutationFn: async (consumableId: string) => {
-      // First delete related job_consumables records
+      // First delete related consumable_location_stock records
+      const { error: locationStockError } = await supabase
+        .from('consumable_location_stock')
+        .delete()
+        .eq('consumable_id', consumableId);
+      
+      if (locationStockError) {
+        console.warn('Warning: Could not delete location stock records:', locationStockError.message);
+        // Don't throw error, continue with deletion
+      }
+
+      // Delete related job_consumables records
       const { error: jobConsumablesError } = await supabase
         .from('job_consumables')
         .delete()
         .eq('consumable_id', consumableId);
       
       if (jobConsumablesError) {
-        throw new Error(`Failed to delete job consumables: ${jobConsumablesError.message}`);
+        console.warn('Warning: Could not delete job consumables records:', jobConsumablesError.message);
+        // Don't throw error, continue with deletion
       }
       
-      // Then delete the consumable itself
+      // Finally delete the consumable itself
       const { error: consumableError } = await supabase
         .from('consumables')
         .delete()
@@ -180,13 +193,9 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          consumable.is_active 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                        <Badge variant={consumable.is_active ? 'success' : 'secondary'}>
                           {consumable.is_active ? 'Active' : 'Inactive'}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
