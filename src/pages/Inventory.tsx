@@ -105,6 +105,49 @@ const Inventory: React.FC = () => {
     }
   };
 
+  const handleSearchSubmit = async (searchTerm: string) => {
+    if (!searchTerm.trim()) return;
+    
+    // Use the same logic as OCR search for consistency
+    try {
+      const { data: items, error } = await supabase
+        .from("product_items")
+        .select("product_id, tool_number, id")
+        .ilike("tool_number", `%${searchTerm}%`)
+        .limit(1);
+        
+      if (error) throw error;
+      
+      if (items && items.length > 0) {
+        // Found an individual unit with this tool number - navigate directly to its page
+        const itemId = items[0].id;
+        console.log("Manual Search: Navigating to individual item:", itemId);
+        
+        // Navigate to the individual item detail page
+        window.location.href = `/inventory/items/${itemId}`;
+        
+        toast({
+          title: "Individual Unit Found",
+          description: `Navigating to unit with tool number: ${searchTerm}`,
+        });
+      } else {
+        // No individual units found, keep the search query for regular product search
+        console.log("Manual Search: No individual units found, showing product results");
+        toast({
+          title: "No Individual Unit Found",
+          description: `Showing product search results for: ${searchTerm}`,
+        });
+      }
+    } catch (error) {
+      console.error("Error searching for tool number:", error);
+      toast({
+        title: "Search Error",
+        description: "There was an error searching. Showing product results.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filters = [
     { key: "all" as FilterType, label: "All Products" },
     { key: "in_stock" as FilterType, label: "In Stock" },
@@ -224,6 +267,11 @@ const Inventory: React.FC = () => {
               placeholder="Search products by name, code, or tool number"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit(searchQuery);
+                }
+              }}
               className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
             />
           </div>

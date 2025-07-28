@@ -33,9 +33,10 @@ const ProductItemDetail: React.FC = () => {
           )
         `)
         .eq("id", itemId)
-        .single();
+        .maybeSingle();
         
       if (error) throw error;
+      if (!data) return null; // No item found
       
       // Fetch storage location separately
       let storageLocation = null;
@@ -44,7 +45,7 @@ const ProductItemDetail: React.FC = () => {
           .from("storage_locations")
           .select("id, name")
           .eq("id", data.current_storage_location_id)
-          .single();
+          .maybeSingle();
         storageLocation = location;
       }
       
