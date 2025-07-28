@@ -73,6 +73,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       logoSize: 'medium'
     }
   );
+
+  const [logoDimensions, setLogoDimensions] = useState<{width: number, height: number} | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [aiParams, setAiParams] = useState({
