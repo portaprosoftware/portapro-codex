@@ -107,7 +107,7 @@ const Inventory: React.FC = () => {
           ))}
         </div>
 
-        {/* Location Filter & View Controls & Search & Tabs */}
+        {/* Location Filter & View Controls & Search */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Storage Location Filter */}
@@ -160,53 +160,15 @@ const Inventory: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Search Bar - Back to original position */}
-            <div className="relative flex-1 max-w-lg">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search products by name, code, or tool number"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
-              />
-            </div>
-
-            {/* Tabs */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-700 rounded-md"
-              >
-                <LayoutGrid className="w-4 h-4 mr-2" />
-                Products
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:bg-white rounded-md"
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                Location Map
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:bg-white rounded-md"
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                OCR Quality
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:bg-white rounded-md"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Offline Sync
-              </Button>
-            </div>
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-lg">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              placeholder="Search products by name, code, or tool number"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 w-full rounded-lg border-gray-300 focus:border-blue-400"
+            />
           </div>
         </div>
 
@@ -230,6 +192,44 @@ const Inventory: React.FC = () => {
             <QrCode className="w-4 h-4 mr-2" />
             Scan QR
           </Button>
+        </div>
+
+        {/* Tabs Row - Above inventory content */}
+        <div className="flex items-center justify-start">
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="bg-blue-600 text-white hover:bg-blue-700 rounded-md"
+            >
+              <LayoutGrid className="w-4 h-4 mr-2" />
+              Products
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:bg-white rounded-md"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Location Map
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:bg-white rounded-md"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              OCR Quality
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-600 hover:bg-white rounded-md"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Offline Sync
+            </Button>
+          </div>
         </div>
       </div>
 
