@@ -2,13 +2,10 @@
 /*    /index.html   200
 
 # Specific routes that should work
+/app/*       /index.html   200
 /driver/*    /index.html   200
-/jobs/*      /index.html   200
-/inventory/* /index.html   200
-/customers/* /index.html   200
-/fleet/*     /index.html   200
-/analytics/* /index.html   200
-/settings/*  /index.html   200
+/scan/*      /index.html   200
+/consumable-request/* /index.html   200
 
 # API routes and assets should not be redirected
 /api/*    /api/:splat    200

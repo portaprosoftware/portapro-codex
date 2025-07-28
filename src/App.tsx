@@ -48,6 +48,20 @@ const App = () => {
       <Router>
         <div className="min-h-screen bg-background font-sans antialiased">
         <Routes>
+          {/* Public QR Scan Routes - Always accessible */}
+          <Route path="/scan/:unitId" element={<ScanFeedback />} />
+          <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
+
+          {/* Landing page for unauthenticated users */}
+          <Route
+            path="/"
+            element={
+              <SignedOut>
+                <Landing />
+              </SignedOut>
+            }
+          />
+
           {/* Driver routes */}
           <Route
             path="/driver"
@@ -64,13 +78,9 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Public QR Scan Routes */}
-          <Route path="/scan/:unitId" element={<ScanFeedback />} />
-          <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
-
           {/* Main authenticated routes */}
           <Route
-            path="/*"
+            path="/app"
             element={
               <SignedIn>
                 <Layout>
@@ -115,9 +125,9 @@ const App = () => {
             }
           />
 
-          {/* Landing page for unauthenticated users */}
+          {/* Fallback redirect to landing for unauthenticated users */}
           <Route
-            path="/*"
+            path="*"
             element={
               <SignedOut>
                 <Landing />
