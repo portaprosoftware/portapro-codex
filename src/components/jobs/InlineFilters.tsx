@@ -29,14 +29,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   driversWithJobsToday = new Set()
 }) => {
   return (
-    <div className="space-y-3">
-      {/* Info Line */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
-        <Check className="w-4 h-4 text-green-500" />
-        <span>= Drivers With Jobs Today</span>
-      </div>
-      
-      <div className="flex items-center gap-4 flex-wrap">
+    <div className="flex items-center gap-4 flex-wrap">
       {/* Search Input */}
       <div className="flex-1 min-w-64">
         <div className="relative">
@@ -57,6 +50,11 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <SelectValue placeholder="All Drivers" />
         </SelectTrigger>
         <SelectContent className="bg-white border shadow-lg z-50">
+          {/* Key directly above driver names */}
+          <div className="flex items-center gap-2 text-sm text-gray-600 px-2 py-1 border-b border-gray-100">
+            <Check className="w-4 h-4 text-green-500" />
+            <span>= Drivers With Jobs Today</span>
+          </div>
           <SelectItem value="all">All Drivers</SelectItem>
           {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
             <SelectItem key={driver.id} value={driver.id}>
@@ -144,7 +142,6 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           </SelectItem>
         </SelectContent>
       </Select>
-      </div>
     </div>
   );
 };
