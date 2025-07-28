@@ -242,9 +242,22 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
                 <FormField
                   control={form.control}
                   name="location_stock"
+                  rules={{ 
+                    required: 'At least one storage location is required',
+                    validate: (value) => {
+                      if (!value || value.length === 0) {
+                        return 'At least one storage location is required';
+                      }
+                      const totalQuantity = value.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                      if (totalQuantity <= 0) {
+                        return 'Total quantity must be greater than 0';
+                      }
+                      return true;
+                    }
+                  }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Storage Location Allocation</FormLabel>
+                      <FormLabel>Storage Location Allocation *</FormLabel>
                       <FormControl>
                         <SimpleLocationStockManager
                           value={field.value || []}

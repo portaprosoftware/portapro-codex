@@ -7,7 +7,9 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
 import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
+import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatCategoryDisplay } from '@/lib/categoryUtils';
 
 interface Consumable {
   id: string;
@@ -35,6 +37,7 @@ interface LocationStockItem {
 export const SimpleConsumablesInventory: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const queryClient = useQueryClient();
 
@@ -110,15 +113,22 @@ export const SimpleConsumablesInventory: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = (consumable: Consumable) => {
-    if (window.confirm(`Are you sure you want to delete "${consumable.name}"? This action cannot be undone.`)) {
-      deleteConsumableMutation.mutate(consumable.id);
+  const handleDeleteClick = (consumable: Consumable) => {
+    setSelectedConsumable(consumable);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedConsumable) {
+      deleteConsumableMutation.mutate(selectedConsumable.id);
+      setShowDeleteDialog(false);
     }
   };
 
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
+    setShowDeleteDialog(false);
     setSelectedConsumable(null);
   };
 
@@ -174,7 +184,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                   {consumables.map((consumable) => (
                     <TableRow key={consumable.id}>
                       <TableCell className="font-medium">{consumable.name}</TableCell>
-                      <TableCell>{consumable.category}</TableCell>
+                      <TableCell>{formatCategoryDisplay(consumable.category)}</TableCell>
                       <TableCell>{consumable.sku || '-'}</TableCell>
                       <TableCell>${consumable.unit_cost.toFixed(2)}</TableCell>
                       <TableCell>${consumable.unit_price.toFixed(2)}</TableCell>
@@ -209,7 +219,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDelete(consumable)}
+                            onClick={() => handleDeleteClick(consumable)}
                             disabled={deleteConsumableMutation.isPending}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -234,6 +244,15 @@ export const SimpleConsumablesInventory: React.FC = () => {
           isOpen={showEditModal}
           consumable={selectedConsumable}
           onClose={handleModalClose}
+        />
+
+        <DeleteConfirmationDialog
+          isOpen={showDeleteDialog}
+          onClose={() => setShowDeleteDialog(false)}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Consumable"
+          itemName={selectedConsumable?.name}
+          isLoading={deleteConsumableMutation.isPending}
         />
       </div>
     </div>

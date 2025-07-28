@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertTriangle, Edit, Package, TrendingDown, DollarSign, MoreHorizontal, Trash2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { getCategoryLabel } from '@/lib/consumableCategories';
+import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { ConsumableLocationBreakdown } from './ConsumableLocationBreakdown';
 
 interface Consumable {
@@ -165,7 +166,7 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                       </div>
                     </td>
                     <td className="p-2">
-                      <Badge variant="outline">{getCategoryLabel(consumable.category)}</Badge>
+                      <Badge variant="outline">{formatCategoryDisplay(consumable.category)}</Badge>
                     </td>
                     <td className="p-2 text-sm">{consumable.sku || '-'}</td>
                     <td className="p-2">
