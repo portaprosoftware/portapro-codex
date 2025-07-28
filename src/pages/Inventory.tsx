@@ -160,7 +160,7 @@ const Inventory: React.FC = () => {
             </div>
           </div>
 
-          {/* Search & Buttons */}
+          {/* Search Bar */}
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -171,20 +171,29 @@ const Inventory: React.FC = () => {
                 className="pl-10 w-64 rounded-lg border-gray-300 focus:border-blue-400"
               />
             </div>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowOCRSearch(true)}
-              className="border-purple-600 text-purple-600 hover:bg-purple-50"
-              title="Search by photographing product code or tool number"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              Search Photo
-            </Button>
-            <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-              <QrCode className="w-4 h-4 mr-2" />
-              Scan QR
-            </Button>
           </div>
+        </div>
+
+        {/* Secondary Search Controls */}
+        <div className="flex items-center gap-2 justify-start">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowOCRSearch(true)}
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            title="Search by photographing product code or tool number"
+            size="sm"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Search Photo
+          </Button>
+          <Button 
+            variant="outline" 
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            size="sm"
+          >
+            <QrCode className="w-4 h-4 mr-2" />
+            Scan QR
+          </Button>
         </div>
       </div>
 
