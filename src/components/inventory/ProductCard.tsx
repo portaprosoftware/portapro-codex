@@ -175,8 +175,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       <div className="mt-4">
         <Button
           onClick={onSelect}
-          variant="ocean"
-          className="w-full"
+          variant="outline"
+          className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
         >
           <Eye className="w-4 h-4 mr-2" />
           View

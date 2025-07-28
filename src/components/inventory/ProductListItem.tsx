@@ -88,8 +88,9 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
       {/* Action */}
       <Button
         onClick={onSelect}
-        variant="ocean"
+        variant="outline"
         size="sm"
+        className="border-blue-600 text-blue-600 hover:bg-blue-50"
       >
         <Eye className="w-4 h-4 mr-1" />
         View

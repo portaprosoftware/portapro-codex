@@ -38,28 +38,13 @@ const Inventory: React.FC = () => {
   const getFilterStyle = (filterKey: FilterType) => {
     const isActive = activeFilter === filterKey;
     
-    switch (filterKey) {
-      case "all":
-        return isActive 
-          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600"
-          : "border-gray-300 text-gray-700 hover:border-gray-400";
-      case "in_stock":
-        return isActive
-          ? "bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600"
-          : "border-gray-300 text-gray-700 hover:border-gray-400";
-      case "low_stock":
-        return isActive
-          ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-yellow-500"
-          : "border-gray-300 text-gray-700 hover:border-gray-400";
-      case "out_of_stock":
-        return isActive
-          ? "bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600"
-          : "border-gray-300 text-gray-700 hover:border-gray-400";
-      case "available_now":
-        return "border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50";
-      default:
-        return "border-gray-300 text-gray-700 hover:border-gray-400";
+    if (filterKey === "available_now") {
+      return "border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50";
     }
+    
+    return isActive 
+      ? "bg-blue-600 text-white border-blue-600"
+      : "border-gray-300 text-gray-700 hover:border-gray-400";
   };
 
   const filters = [
@@ -84,7 +69,7 @@ const Inventory: React.FC = () => {
             <p className="text-base text-gray-600 font-inter mt-1">Browse your rental product catalog with real-time status tracking</p>
           </div>
           <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            variant="gradient"
             onClick={() => setAddInventoryModalOpen(true)}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -128,19 +113,25 @@ const Inventory: React.FC = () => {
             {/* View Toggle */}
             <div className="flex items-center gap-2">
               <Button
-                variant={viewType === "grid" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewType("grid")}
-                className="h-8"
+                className={cn(
+                  "h-8",
+                  viewType === "grid" ? "bg-blue-600 text-white hover:bg-blue-700" : ""
+                )}
               >
                 <LayoutGrid className="w-4 h-4" />
                 Icons
               </Button>
               <Button
-                variant={viewType === "list" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewType("list")}
-                className="h-8"
+                className={cn(
+                  "h-8",
+                  viewType === "list" ? "bg-blue-600 text-white hover:bg-blue-700" : ""
+                )}
               >
                 <List className="w-4 h-4" />
                 List
