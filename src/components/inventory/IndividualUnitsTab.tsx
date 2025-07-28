@@ -307,9 +307,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items?.map((item, index) => (
-              <React.Fragment key={item.id}>
-                <TableRow className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+            {items?.map((item, index) => [
+              <TableRow key={item.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   <TableCell>
                     <Checkbox
                       checked={selectedItems.includes(item.id)}
@@ -371,11 +370,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                       </Button>
                     </div>
                   </TableCell>
-                </TableRow>
+                </TableRow>,
                 
-                {/* Expanded Row Details */}
-                {expandedRows.includes(item.id) && (
-                  <TableRow className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                // Expanded Row Details
+                expandedRows.includes(item.id) ? (
+                  <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <TableCell colSpan={9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         {/* OCR Tracking Information */}
@@ -419,26 +418,23 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                         {/* Standard Item Details */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div>
-                            <span className="font-medium text-gray-700">Location:</span>
-                            <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
+                            <span className="font-medium text-gray-700">Created:</span>
+                            <p className="text-gray-600 mt-1">{new Date(item.created_at).toLocaleDateString()}</p>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">Condition:</span>
-                            <p className="text-gray-600 mt-1">{item.condition || "—"}</p>
+                            <span className="font-medium text-gray-700">Updated:</span>
+                            <p className="text-gray-600 mt-1">{new Date(item.updated_at).toLocaleDateString()}</p>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">QR Code:</span>
-                            <p className="text-gray-600 mt-1">{item.qr_code_data ? "Generated" : "Not generated"}</p>
+                            <span className="font-medium text-gray-700">Last Location:</span>
+                            <p className="text-gray-600 mt-1">{item.last_known_location ? String(item.last_known_location) : "Not set"}</p>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">GPS Enabled:</span>
-                            <p className="text-gray-600 mt-1">{item.gps_enabled ? "Yes" : "No"}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-700">Winterized:</span>
-                            <p className="text-gray-600 mt-1">{item.winterized ? "Yes" : "No"}</p>
+                            <span className="font-medium text-gray-700">Storage Location:</span>
+                            <p className="text-gray-600 mt-1">{item.current_storage_location_id || "Not set"}</p>
                           </div>
                         </div>
+                        
                         {item.notes && (
                           <div>
                             <span className="font-medium text-gray-700">Notes:</span>
@@ -448,9 +444,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                       </div>
                     </TableCell>
                   </TableRow>
-                )}
-              </React.Fragment>
-            ))}
+                ) : null
+            ].filter(Boolean))}
           </TableBody>
         </Table>
 

@@ -35,16 +35,26 @@ serve(async (req) => {
     if (!googleCloudVisionKey) {
       console.log('Google Cloud Vision API key not configured, using mock data');
       
-      // Generate realistic mock OCR data
-      ocrResults = {
+      // Generate realistic mock OCR data for testing
+      const mockData = {
         toolNumber: `T-${Math.floor(Math.random() * 90000) + 10000}-${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 10)}`,
         vendorId: String(Math.floor(Math.random() * 90000) + 10000),
         plasticCode: Math.random() > 0.5 ? '2 HDPE' : '5 PP',
         manufacturingDate: `${Math.floor(Math.random() * 12) + 1}/24`,
-        moldCavity: `CAV ${Math.floor(Math.random() * 8) + 1}`,
+        moldCavity: `CAV ${Math.floor(Math.random() * 8) + 1}`
+      };
+      
+      ocrResults = {
+        ...mockData,
         rawData: {
-          fullText: 'Mock OCR data generated for testing',
-          annotations: []
+          fullText: `Mock detected: ${mockData.toolNumber} ${mockData.vendorId} ${mockData.plasticCode} ${mockData.manufacturingDate} ${mockData.moldCavity}`,
+          annotations: [{
+            description: mockData.toolNumber,
+            confidence: 0.95
+          }, {
+            description: mockData.vendorId,
+            confidence: 0.88
+          }]
         }
       };
       avgConfidence = 0.85 + Math.random() * 0.1;
