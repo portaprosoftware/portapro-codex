@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { CONSUMABLE_CATEGORIES, getCategoryByValue } from '@/lib/consumableCategories';
 
 interface CategorySelectProps {
@@ -81,42 +81,40 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
           <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
             No category found.
           </CommandEmpty>
-          <ScrollArea className="h-[300px] overflow-y-auto">
-            <CommandList className="max-h-none">
-              <CommandGroup>
-                {sortedCategories.map((category) => (
-                  <CommandItem
-                    key={category.value}
-                    value={category.label}
-                    onSelect={(currentValue) => {
-                      console.log('CategorySelect: Item selected:', currentValue, category.value);
-                      handleSelect(category.value);
-                    }}
-                    className="p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <div className="flex flex-col w-full">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{category.label}</span>
-                        <Check
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            value === category.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {category.description}
-                      </span>
-                      <div className="text-xs text-muted-foreground mt-1 opacity-75">
-                        Examples: {category.examples.slice(0, 3).join(', ')}
-                        {category.examples.length > 3 && '...'}
-                      </div>
+          <CommandList className="max-h-[300px] overflow-y-auto">
+            <CommandGroup>
+              {sortedCategories.map((category) => (
+                <CommandItem
+                  key={category.value}
+                  value={category.label}
+                  onSelect={(currentValue) => {
+                    console.log('CategorySelect: Item selected:', currentValue, category.value);
+                    handleSelect(category.value);
+                  }}
+                  className="p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                >
+                  <div className="flex flex-col w-full">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{category.label}</span>
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value === category.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
                     </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </ScrollArea>
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {category.description}
+                    </span>
+                    <div className="text-xs text-muted-foreground mt-1 opacity-75">
+                      Examples: {category.examples.slice(0, 3).join(', ')}
+                      {category.examples.length > 3 && '...'}
+                    </div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

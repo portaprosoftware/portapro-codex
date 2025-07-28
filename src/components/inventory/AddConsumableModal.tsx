@@ -107,9 +107,12 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="add-consumable-description">
         <DialogHeader>
           <DialogTitle>Add New Consumable</DialogTitle>
+          <p id="add-consumable-description" className="sr-only">
+            Add a new consumable item to your inventory with details like name, category, pricing, and stock allocation.
+          </p>
         </DialogHeader>
 
         <Form {...form}>
