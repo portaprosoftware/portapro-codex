@@ -138,27 +138,27 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             </div>
             
             <div className="space-y-3">
-              <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
                 <div className="flex items-start gap-3">
                   <div className="text-2xl">📱</div>
                   <div>
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">Mobile Camera</h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Mobile Camera</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       Open this page on your mobile device to use camera scanning
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
                 <div className="flex items-start gap-3">
                   <div className="text-2xl">🔌</div>
                   <div>
-                    <h4 className="font-medium text-green-900 dark:text-green-100 mb-1">USB/Bluetooth Scanner</h4>
-                    <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">USB/Bluetooth Scanner</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
                       Connect a barcode scanner to your computer. When connected, the SKU field will detect scans automatically.
                     </p>
-                    <p className="text-xs text-green-600 dark:text-green-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       ✓ Most USB/Bluetooth scanners work out of the box
                     </p>
                   </div>

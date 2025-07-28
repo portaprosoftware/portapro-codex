@@ -70,6 +70,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
           // Prevent auto focus from interfering with search input
           e.preventDefault();
         }}
+        style={{ zIndex: 10000 }}
       >
         <Command className="bg-popover">
           <CommandInput 
@@ -80,8 +81,8 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
           <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
             No category found.
           </CommandEmpty>
-          <ScrollArea className="h-[300px]">
-            <CommandList>
+          <ScrollArea className="h-[300px] overflow-y-auto">
+            <CommandList className="max-h-none">
               <CommandGroup>
                 {sortedCategories.map((category) => (
                   <CommandItem

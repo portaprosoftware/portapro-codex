@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Input } from './input';
 import { Button } from './button';
-import { ScanLine, Keyboard, TestTube2, CheckCircle2, XCircle } from 'lucide-react';
+import { ScanLine, TestTube2, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDesktopBarcodeScanner } from '@/hooks/useDesktopBarcodeScanner';
 import { useIsMobile } from '@/hooks/use-mobile';
