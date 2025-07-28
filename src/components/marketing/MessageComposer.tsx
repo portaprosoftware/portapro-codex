@@ -7,12 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Bot, Trash2, Eye, ArrowLeft } from 'lucide-react';
+import { Bot, Trash2, Eye, ArrowLeft, Upload, X, Image } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ButtonBuilder } from './ButtonBuilder';
 import { SavedButtons } from './SavedButtons';
+import { useQuery } from '@tanstack/react-query';
 
 interface CustomButton {
   id: string;
@@ -27,6 +28,8 @@ interface MessageData {
   subject?: string;
   content: string;
   buttons: CustomButton[];
+  customImageUrl?: string;
+  showCompanyLogo?: boolean;
 }
 
 interface MessageComposerProps {
@@ -61,7 +64,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     initialData || {
       subject: '',
       content: '',
-      buttons: []
+      buttons: [],
+      customImageUrl: '',
+      showCompanyLogo: true
     }
   );
   const [isGenerating, setIsGenerating] = useState(false);
@@ -70,6 +75,19 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     emailType: '',
     tone: '',
     customInstructions: ''
+  });
+
+  // Fetch company logo from settings
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-logo'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('company_logo, company_name, default_logo_in_marketing')
+        .single();
+      if (error) throw error;
+      return data;
+    }
   });
 
   const handleAIGenerate = async () => {
@@ -146,6 +164,67 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
 
     onSave(messageData);
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Please select an image file', variant: 'destructive' });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Image too large', description: 'Please select an image under 5MB', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      // Create a canvas to resize the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = async () => {
+        // Calculate new dimensions (max width 600px)
+        const maxWidth = 600;
+        const scale = Math.min(1, maxWidth / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          
+          const fileName = `message-image-${Date.now()}.jpg`;
+          const { data, error } = await supabase.storage
+            .from('message-images')
+            .upload(fileName, blob);
+
+          if (error) throw error;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('message-images')
+            .getPublicUrl(fileName);
+
+          setMessageData(prev => ({ ...prev, customImageUrl: publicUrl }));
+          toast({ title: 'Image uploaded successfully!' });
+        }, 'image/jpeg', 0.8);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast({ title: 'Failed to upload image', variant: 'destructive' });
+    }
+  };
+
+  const removeImage = () => {
+    setMessageData(prev => ({ ...prev, customImageUrl: '' }));
   };
 
   const getButtonIcon = (type: string, includeEmoji = true) => {

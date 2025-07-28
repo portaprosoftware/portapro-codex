@@ -173,7 +173,7 @@ export const ButtonBuilder: React.FC<ButtonBuilderProps> = ({ onAddButton }) => 
             onCheckedChange={(checked) => setButtonData(prev => ({ ...prev, includeEmoji: !!checked }))}
           />
           <Label htmlFor="includeEmoji" className="text-sm">
-            Include emoji ({getButtonIcon(buttonData.type)})
+            Include emoji {getButtonIcon(buttonData.type)}
           </Label>
         </div>
 
@@ -207,8 +207,13 @@ export const ButtonBuilder: React.FC<ButtonBuilderProps> = ({ onAddButton }) => 
             variant="outline"
           >
             <Save className="w-4 h-4 mr-2" />
-            Save for Later
+            Save Button
           </Button>
+        </div>
+        
+        <div className="text-xs text-muted-foreground space-y-1">
+          <p>Select "Add to Message" to insert this button into your current template.</p>
+          <p>Select "Save Button" to add it to your quick‑access list.</p>
         </div>
       </div>
     </Card>
