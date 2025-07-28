@@ -62,8 +62,15 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
   const createConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {
+      console.log('Creating consumable with data:', data);
+      
       // Calculate total on hand from location stock
       const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+      
+      // Validate that we have location stock
+      if (!data.locationStock || data.locationStock.length === 0) {
+        throw new Error('At least one storage location must be allocated');
+      }
       
       // Insert the main consumable record
       const { data: consumableData, error: consumableError } = await supabase
@@ -83,40 +90,63 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         .select()
         .single();
       
-      if (consumableError) throw consumableError;
-
-      // Insert location stock records if any
-      if (data.locationStock.length > 0) {
-        const locationStockInserts = data.locationStock.map(loc => ({
-          consumable_id: consumableData.id,
-          storage_location_id: loc.locationId,
-          quantity: loc.onHand,
-          reorder_threshold: loc.reorderThreshold || 0
-        }));
-
-        const { error: insertError } = await supabase
-          .from('consumable_location_stock')
-          .insert(locationStockInserts);
-        
-        if (insertError) throw insertError;
+      if (consumableError) {
+        console.error('Error creating consumable:', consumableError);
+        throw consumableError;
       }
+
+      console.log('Created consumable:', consumableData);
+
+      // Insert location stock records
+      const locationStockInserts = data.locationStock.map(loc => ({
+        consumable_id: consumableData.id,
+        storage_location_id: loc.locationId,
+        quantity: loc.onHand,
+        reorder_threshold: loc.reorderThreshold || 0
+      }));
+
+      console.log('Creating location stock records:', locationStockInserts);
+
+      const { error: insertError } = await supabase
+        .from('consumable_location_stock')
+        .insert(locationStockInserts);
+      
+      if (insertError) {
+        console.error('Error creating location stock:', insertError);
+        throw insertError;
+      }
+
+      console.log('Successfully created consumable and location stock');
+      return consumableData;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Consumable creation successful:', data);
       toast({
         title: 'Success',
         description: 'Consumable created successfully'
       });
-      form.reset();
+      form.reset({
+        name: '',
+        description: '',
+        category: '',
+        sku: '',
+        unit_cost: 0,
+        unit_price: 0,
+        locationStock: [],
+        reorder_threshold: 0,
+        is_active: true,
+        notes: ''
+      });
       setShowScannerModal(false);
       onClose();
     },
     onError: (error) => {
+      console.error('Consumable creation failed:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create consumable',
+        description: error.message || 'Failed to create consumable',
         variant: 'destructive'
       });
-      console.error('Error creating consumable:', error);
     }
   });
 

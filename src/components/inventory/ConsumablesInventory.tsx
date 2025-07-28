@@ -99,9 +99,11 @@ export const ConsumablesInventory: React.FC = () => {
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
-    
     setSelectedConsumable(null);
-    refetch();
+    // Refetch data when modal closes to show updated information
+    setTimeout(() => {
+      refetch();
+    }, 100);
   };
 
   return (

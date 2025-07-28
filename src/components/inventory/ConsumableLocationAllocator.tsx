@@ -47,23 +47,31 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   });
 
-  // Update parent when locations change
+  // Initialize with storage locations if empty and value prop is empty
   useEffect(() => {
-    onChange(locations);
-  }, [locations, onChange]);
-
-  // Initialize with storage locations if empty
-  useEffect(() => {
-    if (locations.length === 0 && storageLocations.length > 0) {
-      const initialLocations = storageLocations.map(location => ({
-        locationId: location.id,
-        locationName: location.name,
+    if (value && value.length > 0) {
+      // If parent provides initial data, use it
+      setLocations(value);
+    } else if (value?.length === 0 && storageLocations.length > 0) {
+      // If parent has empty array and we have storage locations, initialize with first location
+      const defaultLocation = storageLocations.find(loc => loc.name.toLowerCase().includes('main') || loc.name.toLowerCase().includes('default')) || storageLocations[0];
+      const initialLocations = [{
+        locationId: defaultLocation.id,
+        locationName: defaultLocation.name,
         onHand: 0,
         reorderThreshold: 0
-      }));
+      }];
       setLocations(initialLocations);
+      onChange(initialLocations); // Immediately notify parent
     }
-  }, [storageLocations, locations.length]);
+  }, [value, storageLocations, onChange]);
+
+  // Update parent when locations change (but not during initialization)
+  useEffect(() => {
+    if (locations.length > 0 && JSON.stringify(locations) !== JSON.stringify(value)) {
+      onChange(locations);
+    }
+  }, [locations, onChange, value]);
 
   const handleQuantityChange = (locationId: string, field: 'onHand' | 'reorderThreshold', value: number) => {
     setLocations(prev => prev.map(loc => 

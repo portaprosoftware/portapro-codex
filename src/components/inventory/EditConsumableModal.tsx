@@ -124,8 +124,15 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
     mutationFn: async (data: ConsumableFormData) => {
       if (!consumable) return;
       
+      console.log('Updating consumable with data:', data);
+      
       // Calculate total on hand from location stock
       const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
+      
+      // Validate that we have location stock
+      if (!data.locationStock || data.locationStock.length === 0) {
+        throw new Error('At least one storage location must be allocated');
+      }
       
       // Update the main consumable record
       const { error: consumableError } = await supabase
@@ -145,7 +152,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         })
         .eq('id', consumable.id);
       
-      if (consumableError) throw consumableError;
+      if (consumableError) {
+        console.error('Error updating consumable:', consumableError);
+        throw consumableError;
+      }
+
+      console.log('Updated main consumable record');
 
       // Delete existing location stock records
       const { error: deleteError } = await supabase
@@ -153,25 +165,37 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         .delete()
         .eq('consumable_id', consumable.id);
       
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Error deleting existing location stock:', deleteError);
+        throw deleteError;
+      }
+
+      console.log('Deleted existing location stock records');
 
       // Insert new location stock records
-      if (data.locationStock.length > 0) {
-        const locationStockInserts = data.locationStock.map(loc => ({
-          consumable_id: consumable.id,
-          storage_location_id: loc.locationId,
-          quantity: loc.onHand,
-          reorder_threshold: loc.reorderThreshold || 0
-        }));
+      const locationStockInserts = data.locationStock.map(loc => ({
+        consumable_id: consumable.id,
+        storage_location_id: loc.locationId,
+        quantity: loc.onHand,
+        reorder_threshold: loc.reorderThreshold || 0
+      }));
 
-        const { error: insertError } = await supabase
-          .from('consumable_location_stock')
-          .insert(locationStockInserts);
-        
-        if (insertError) throw insertError;
+      console.log('Creating new location stock records:', locationStockInserts);
+
+      const { error: insertError } = await supabase
+        .from('consumable_location_stock')
+        .insert(locationStockInserts);
+      
+      if (insertError) {
+        console.error('Error creating new location stock:', insertError);
+        throw insertError;
       }
+
+      console.log('Successfully updated consumable and location stock');
+      return consumable.id;
     },
-    onSuccess: () => {
+    onSuccess: (consumableId) => {
+      console.log('Consumable update successful:', consumableId);
       toast({
         title: 'Success',
         description: 'Consumable updated successfully'
@@ -179,12 +203,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       onClose();
     },
     onError: (error) => {
+      console.error('Consumable update failed:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update consumable',
+        description: error.message || 'Failed to update consumable',
         variant: 'destructive'
       });
-      console.error('Error updating consumable:', error);
     }
   });
 
