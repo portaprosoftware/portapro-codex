@@ -5957,6 +5957,10 @@ export type Database = {
         Args: { start_date: string; end_date: string }
         Returns: Json
       }
+      calculate_segment_customer_count: {
+        Args: { segment_id: string }
+        Returns: number
+      }
       calculate_smart_segment_size: {
         Args: { segment_type: string }
         Returns: number
