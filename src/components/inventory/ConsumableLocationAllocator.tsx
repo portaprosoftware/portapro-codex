@@ -49,34 +49,19 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
 
   // Initialize component state properly
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && storageLocations.length > 0) {
       if (value && value.length > 0) {
         // If parent provides initial data, use it
         console.log('ConsumableLocationAllocator: Using provided value:', value);
         setLocations(value);
-        setIsInitialized(true);
-      } else if (storageLocations.length > 0) {
-        // If parent has empty array and we have storage locations, initialize with first location
-        const defaultLocation = storageLocations.find(loc => 
-          loc.name.toLowerCase().includes('main') || 
-          loc.name.toLowerCase().includes('default')
-        ) || storageLocations[0];
-        
-        const initialLocations = [{
-          locationId: defaultLocation.id,
-          locationName: defaultLocation.name,
-          onHand: 0
-        }];
-        
-        console.log('ConsumableLocationAllocator: Initializing with default location:', initialLocations);
-        setLocations(initialLocations);
-        setIsInitialized(true);
-        
-        // Immediately notify parent
-        setTimeout(() => onChange(initialLocations), 0);
+      } else {
+        // If parent has empty array, start with empty state (user can add locations manually)
+        console.log('ConsumableLocationAllocator: Starting with empty state');
+        setLocations([]);
       }
+      setIsInitialized(true);
     }
-  }, [value, storageLocations, isInitialized, onChange]);
+  }, [value, storageLocations, isInitialized]);
 
   // Sync changes back to parent (only after initialization)
   useEffect(() => {

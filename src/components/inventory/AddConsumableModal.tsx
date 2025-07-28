@@ -30,10 +30,9 @@ interface ConsumableFormData {
   description?: string;
   category: string;
   sku?: string;
-  unit_cost: number;
-  unit_price: number;
+  unit_cost: string;
+  unit_price: string;
   locationStock: LocationStock[];
-  reorder_threshold: number;
   is_active: boolean;
   notes?: string;
 }
@@ -51,10 +50,9 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
       description: '',
       category: '',
       sku: '',
-      unit_cost: 0,
-      unit_price: 0,
+      unit_cost: '',
+      unit_price: '',
       locationStock: [],
-      reorder_threshold: 0,
       is_active: true,
       notes: ''
     }
@@ -64,13 +62,16 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
     mutationFn: async (data: ConsumableFormData) => {
       console.log('Creating consumable with data:', data);
       
-      // Calculate total on hand from location stock
-      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+      // Parse and validate cost/price
+      const unitCost = parseFloat(data.unit_cost);
+      const unitPrice = parseFloat(data.unit_price);
       
-      // Validate that we have location stock
-      if (!data.locationStock || data.locationStock.length === 0) {
-        throw new Error('At least one storage location must be allocated');
+      if (isNaN(unitCost) || isNaN(unitPrice) || unitCost < 0 || unitPrice < 0) {
+        throw new Error('Please enter valid cost and price values');
       }
+      
+      // Calculate total on hand from location stock
+      const totalOnHand = data.locationStock?.reduce((sum, loc) => sum + loc.onHand, 0) || 0;
       
       // Insert the main consumable record
       const { data: consumableData, error: consumableError } = await supabase
@@ -80,10 +81,10 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
           description: data.description,
           category: data.category,
           sku: data.sku,
-          unit_cost: data.unit_cost,
-          unit_price: data.unit_price,
+          unit_cost: unitCost,
+          unit_price: unitPrice,
           on_hand_qty: totalOnHand,
-          reorder_threshold: data.reorder_threshold,
+          reorder_threshold: 0,
           is_active: data.is_active,
           notes: data.notes
         }])
@@ -101,25 +102,31 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
       console.log('Created consumable:', consumableData);
 
-      // Insert location stock records
-        const locationStockInserts = data.locationStock.map(loc => ({
-          consumable_id: consumableData.id,
-          storage_location_id: loc.locationId,
-          quantity: loc.onHand
-        }));
+      // Insert location stock records if we have any
+      if (data.locationStock && data.locationStock.length > 0) {
+        const validLocationStockInserts = data.locationStock
+          .filter(loc => loc.locationId && loc.locationId.trim() !== '')
+          .map(loc => ({
+            consumable_id: consumableData.id,
+            storage_location_id: loc.locationId,
+            quantity: loc.onHand
+          }));
 
-      console.log('Creating location stock records:', locationStockInserts);
+        if (validLocationStockInserts.length > 0) {
+          console.log('Creating location stock records:', validLocationStockInserts);
 
-      const { error: insertError } = await supabase
-        .from('consumable_location_stock')
-        .insert(locationStockInserts);
-      
-      if (insertError) {
-        console.error('Error creating location stock:', insertError);
-        throw insertError;
+          const { error: insertError } = await supabase
+            .from('consumable_location_stock')
+            .insert(validLocationStockInserts);
+          
+          if (insertError) {
+            console.warn('Error creating location stock (non-fatal):', insertError);
+            // Don't throw - consumable was created successfully
+          }
+        }
       }
 
-      console.log('Successfully created consumable and location stock');
+      console.log('Successfully created consumable');
       return consumableData;
     },
     onSuccess: (data) => {
@@ -141,10 +148,9 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         description: '',
         category: '',
         sku: '',
-        unit_cost: 0,
-        unit_price: 0,
+        unit_cost: '',
+        unit_price: '',
         locationStock: [],
-        reorder_threshold: 0,
         is_active: true,
         notes: ''
       });
@@ -169,28 +175,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
   const onSubmit = (data: ConsumableFormData) => {
     console.log('Form submitted with data:', data);
-    
-    // Validate location stock
-    if (!data.locationStock || data.locationStock.length === 0) {
-      toast({
-        title: 'Validation Error',
-        description: 'Please allocate stock to at least one storage location',
-        variant: 'destructive'
-      });
-      return;
-    }
-    
-    // Calculate total on hand from location stock
-    const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
-    
-    const submitData = {
-      ...data,
-      on_hand_qty: totalOnHand, // Set the total for the main record
-      locationStock: data.locationStock
-    };
-    
-    console.log('Submitting data:', submitData);
-    createConsumable.mutate(submitData);
+    createConsumable.mutate(data);
   };
 
   return (
@@ -260,7 +245,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
               <FormField
                 control={form.control}
                 name="unit_cost"
-                rules={{ required: 'Unit cost is required', min: { value: 0, message: 'Must be positive' } }}
+                rules={{ required: 'Unit cost is required' }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit Cost *</FormLabel>
@@ -268,8 +253,8 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                       <Input 
                         type="number" 
                         step="0.01"
+                        min="0"
                         {...field} 
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         placeholder="0.00" 
                       />
                     </FormControl>
@@ -281,7 +266,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
               <FormField
                 control={form.control}
                 name="unit_price"
-                rules={{ required: 'Unit price is required', min: { value: 0, message: 'Must be positive' } }}
+                rules={{ required: 'Unit price is required' }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit Price *</FormLabel>
@@ -289,8 +274,8 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                       <Input 
                         type="number" 
                         step="0.01"
+                        min="0"
                         {...field} 
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         placeholder="0.00" 
                       />
                     </FormControl>
@@ -305,11 +290,12 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                   name="locationStock"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Storage Location Allocation</FormLabel>
+                      <FormLabel>Storage Location Allocation (Optional)</FormLabel>
                       <FormControl>
                         <ConsumableLocationAllocator
                           value={field.value || []}
                           onChange={field.onChange}
+                          disabled={createConsumable.isPending}
                         />
                       </FormControl>
                       <FormMessage />
@@ -317,29 +303,6 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                   )}
                 />
               </div>
-
-                <FormField
-                  control={form.control}
-                  name="reorder_threshold"
-                  rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Reorder Threshold *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          value={field.value || ''}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                          placeholder="Enter reorder threshold" 
-                        />
-                      </FormControl>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        You'll receive a notification when total stock falls below this threshold
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
               <FormField
                 control={form.control}
@@ -396,13 +359,6 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
               )}
             />
 
-            {/* Information Box */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <h4 className="text-sm font-medium">Global Reorder Threshold</h4>
-              <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>Reorder Threshold:</strong> You'll receive a notification when total stock across all locations falls below this amount</p>
-              </div>
-            </div>
 
             <div className="flex justify-end gap-3 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>
