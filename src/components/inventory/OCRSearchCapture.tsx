@@ -30,12 +30,15 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
 }) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [ocrResults, setOcrResults] = useState<OCRResults | null>(null);
   const [confidence, setConfidence] = useState<number>(0);
   const [manualOverride, setManualOverride] = useState<string>('');
+  const [showCamera, setShowCamera] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -50,10 +53,62 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
     }
   };
 
-  const handleCameraCapture = () => {
-    if (cameraInputRef.current) {
-      cameraInputRef.current.click();
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment', // Use rear camera on mobile
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        setStream(mediaStream);
+        setShowCamera(true);
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      toast({
+        title: "Camera Access Failed",
+        description: "Could not access camera. Please use the Upload option instead.",
+        variant: "destructive",
+      });
+      // Fallback to file upload
+      handleFileUpload();
     }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setShowCamera(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      if (ctx) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setSelectedImage(imageDataUrl);
+        handleImageCapture(imageDataUrl);
+        stopCamera();
+      }
+    }
+  };
+
+  const handleCameraCapture = () => {
+    startCamera();
   };
 
   const handleFileUpload = () => {
@@ -131,6 +186,7 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
     setConfidence(0);
     setManualOverride('');
     setIsProcessing(false);
+    stopCamera(); // Stop camera when closing
     onClose();
   };
 
@@ -160,21 +216,45 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          {!selectedImage ? (
+          {showCamera ? (
+            // Camera View
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-64 object-cover rounded-lg border bg-black"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+              </div>
+              
+              <div className="flex gap-2 justify-center">
+                <Button
+                  onClick={capturePhoto}
+                  className="flex items-center gap-2"
+                  size="sm"
+                >
+                  <Camera className="w-4 h-4" />
+                  Capture
+                </Button>
+                <Button
+                  onClick={stopCamera}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : !selectedImage ? (
+            // Initial Options
             <div className="text-center">
               <p className="text-sm text-gray-600 mb-4">
                 Take a photo of the tool number to search your inventory
               </p>
-              
-              {/* Camera Input - for taking photos */}
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
               
               {/* File Input - for uploading files */}
               <input
