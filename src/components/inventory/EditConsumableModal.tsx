@@ -94,8 +94,17 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   });
 
   useEffect(() => {
-    if (consumable && locationStockData && locationStockData.length > 0) {
-      console.log('Resetting form with locationStockData:', locationStockData);
+    if (consumable) {
+      const defaultLocationStock = locationStockData && locationStockData.length > 0 
+        ? locationStockData 
+        : [];
+      
+      console.log('Resetting form with data:', { 
+        consumable, 
+        locationStockData, 
+        defaultLocationStock 
+      });
+      
       form.reset({
         name: consumable.name,
         description: consumable.description || '',
@@ -103,8 +112,8 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         sku: consumable.sku || '',
         unit_cost: consumable.unit_cost,
         unit_price: consumable.unit_price,
-        locationStock: locationStockData,
-        reorder_threshold: consumable.reorder_threshold,
+        locationStock: defaultLocationStock,
+        reorder_threshold: consumable.reorder_threshold || 0,
         is_active: consumable.is_active,
         notes: consumable.notes || ''
       });
@@ -338,9 +347,13 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                       <FormControl>
                         <Input 
                           type="number" 
-                          {...field} 
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                          placeholder="0" 
+                          min="0"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === '' ? '' : parseInt(value) || 0);
+                          }}
+                          placeholder="Enter threshold amount" 
                         />
                       </FormControl>
                       <div className="text-xs text-muted-foreground mt-1">

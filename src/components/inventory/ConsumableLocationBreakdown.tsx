@@ -93,7 +93,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {locationStock.map((stock) => {
+                  {locationStock.map((stock, index) => {
                     const status = getStockStatus(
                       stock.quantity, 
                       stock.consumable?.reorder_threshold || 0
@@ -101,7 +101,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                     
                     return (
                       <TableRow 
-                        key={stock.id}
+                        key={`${stock.id}-${index}`}
                         className={cn(
                           status.status === 'out' && 'bg-red-50',
                           status.status === 'low' && 'bg-amber-50'

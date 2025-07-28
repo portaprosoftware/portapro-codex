@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
-import { Check, ChevronDown, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
+import React from 'react';
 import { CONSUMABLE_CATEGORIES, getCategoryByValue } from '@/lib/consumableCategories';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CategorySelectProps {
   value: string;
@@ -18,8 +13,6 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   onValueChange,
   placeholder = "Select category"
 }) => {
-  const [open, setOpen] = useState(false);
-  
   // Sort categories alphabetically by label
   const sortedCategories = [...CONSUMABLE_CATEGORIES].sort((a, b) => 
     a.label.localeCompare(b.label)
@@ -27,96 +20,38 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
 
   const selectedCategory = getCategoryByValue(value);
 
-  const handleSelect = (categoryValue: string) => {
-    console.log('CategorySelect: Selected category:', categoryValue);
-    onValueChange(categoryValue);
-    setOpen(false);
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    console.log('CategorySelect: Open state changing to:', newOpen);
-    setOpen(newOpen);
-  };
-
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-          onClick={() => console.log('CategorySelect: Trigger clicked')}
-        >
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={placeholder}>
           {selectedCategory ? (
-            <div className="flex flex-col items-start">
-              <span>{selectedCategory.label}</span>
-              <span className="text-xs text-muted-foreground truncate">
+            <div className="flex flex-col items-start text-left">
+              <span className="font-medium">{selectedCategory.label}</span>
+              <span className="text-xs text-muted-foreground truncate max-w-[250px]">
                 {selectedCategory.description}
               </span>
             </div>
           ) : (
             placeholder
           )}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent 
-        className="w-[400px] p-0 z-[9999] bg-popover border shadow-lg" 
-        align="start"
-        side="bottom"
-        sideOffset={4}
-        onOpenAutoFocus={(e) => {
-          // Prevent auto focus from interfering with search input
-          e.preventDefault();
-        }}
-        style={{ zIndex: 10000 }}
-      >
-        <Command className="bg-popover">
-          <CommandInput 
-            placeholder="Search categories..." 
-            className="h-9 bg-transparent border-0" 
-            onFocus={() => console.log('CategorySelect: Search input focused')}
-          />
-          <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-            No category found.
-          </CommandEmpty>
-          <CommandList className="max-h-[300px] overflow-y-auto">
-            <CommandGroup>
-              {sortedCategories.map((category) => (
-                <CommandItem
-                  key={category.value}
-                  value={category.label}
-                  onSelect={(currentValue) => {
-                    console.log('CategorySelect: Item selected:', currentValue, category.value);
-                    handleSelect(category.value);
-                  }}
-                  className="p-3 cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                >
-                  <div className="flex flex-col w-full">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.label}</span>
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          value === category.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {category.description}
-                    </span>
-                    <div className="text-xs text-muted-foreground mt-1 opacity-75">
-                      Examples: {category.examples.slice(0, 3).join(', ')}
-                      {category.examples.length > 3 && '...'}
-                    </div>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="max-h-[300px]">
+        {sortedCategories.map((category) => (
+          <SelectItem key={category.value} value={category.value} className="py-3">
+            <div className="flex flex-col items-start w-full">
+              <span className="font-medium">{category.label}</span>
+              <span className="text-xs text-muted-foreground mt-1">
+                {category.description}
+              </span>
+              <div className="text-xs text-muted-foreground mt-1 opacity-75">
+                Examples: {category.examples.slice(0, 3).join(', ')}
+                {category.examples.length > 3 && '...'}
+              </div>
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };

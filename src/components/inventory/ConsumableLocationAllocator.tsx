@@ -127,8 +127,8 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
               </TableRow>
             </TableHeader>
             <TableBody>
-              {locations.map((location) => (
-                <TableRow key={location.locationId}>
+              {locations.map((location, index) => (
+                <TableRow key={`${location.locationId}-${index}`}>
                   <TableCell className="font-medium">
                     {location.locationName}
                   </TableCell>
@@ -136,28 +136,36 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
                     <Input
                       type="number"
                       min="0"
-                      value={location.onHand}
-                      onChange={(e) => handleQuantityChange(
-                        location.locationId, 
-                        'onHand', 
-                        Number(e.target.value) || 0
-                      )}
+                      value={location.onHand || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        handleQuantityChange(
+                          location.locationId, 
+                          'onHand', 
+                          value === '' ? 0 : Number(value) || 0
+                        );
+                      }}
                       disabled={disabled}
                       className="w-full"
+                      placeholder="0"
                     />
                   </TableCell>
                   <TableCell>
                     <Input
                       type="number"
                       min="0"
-                      value={location.reorderThreshold || 0}
-                      onChange={(e) => handleQuantityChange(
-                        location.locationId, 
-                        'reorderThreshold', 
-                        Number(e.target.value) || 0
-                      )}
+                      value={location.reorderThreshold || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        handleQuantityChange(
+                          location.locationId, 
+                          'reorderThreshold', 
+                          value === '' ? 0 : Number(value) || 0
+                        );
+                      }}
                       disabled={disabled}
                       className="w-full"
+                      placeholder="0"
                     />
                   </TableCell>
                   <TableCell>
