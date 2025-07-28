@@ -61,13 +61,40 @@ export const ConsumablesInventory: React.FC = () => {
         .select('*')
         .order('name');
       
-      if (error) throw error;
-      console.log('Fetched consumables:', data);
-      return (data || []) as unknown as Consumable[];
+      if (error) {
+        console.error('Error fetching consumables:', error);
+        throw error;
+      }
+      
+      console.log('Raw consumables data:', data);
+      
+      // Process the data to ensure proper type handling
+      const processedData = (data || []).map((consumable: any) => {
+        // Parse location_stock if it's a string
+        let locationStock = consumable.location_stock;
+        if (typeof locationStock === 'string') {
+          try {
+            locationStock = JSON.parse(locationStock);
+          } catch (e) {
+            console.warn('Failed to parse location_stock for consumable:', consumable.id);
+            locationStock = [];
+          }
+        }
+        
+        return {
+          ...consumable,
+          location_stock: Array.isArray(locationStock) ? locationStock : []
+        };
+      });
+      
+      console.log('Processed consumables:', processedData);
+      return processedData as unknown as Consumable[];
     },
     // Force refetch to get updated data
     staleTime: 0,
-    gcTime: 0
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   const handleEdit = (consumable: Consumable) => {
