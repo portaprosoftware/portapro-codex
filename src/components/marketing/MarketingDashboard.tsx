@@ -19,6 +19,8 @@ export const MarketingDashboard: React.FC = () => {
     const path = location.pathname;
     if (path.includes('/campaigns')) {
       setActiveTab('campaigns');
+    } else if (path.includes('/templates')) {
+      setActiveTab('templates');
     } else if (path.includes('/analytics')) {
       setActiveTab('analytics');
     } else if (path.includes('/segments')) {
@@ -32,11 +34,11 @@ export const MarketingDashboard: React.FC = () => {
     setActiveTab(tab);
     const basePath = '/marketing';
     switch (tab) {
-      case 'templates':
-        navigate(`${basePath}/templates`);
-        break;
       case 'campaigns':
         navigate(`${basePath}/campaigns`);
+        break;
+      case 'templates':
+        navigate(`${basePath}/templates`);
         break;
       case 'analytics':
         navigate(`${basePath}/analytics`);
