@@ -263,28 +263,28 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="reorder_threshold"
-                rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reorder Threshold *</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        placeholder="0" 
-                      />
-                    </FormControl>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      You'll receive a notification when total stock falls below this threshold
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="reorder_threshold"
+                  rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reorder Threshold *</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          placeholder="Enter reorder threshold" 
+                        />
+                      </FormControl>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        You'll receive a notification when total stock falls below this threshold
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
               <FormField
                 control={form.control}
