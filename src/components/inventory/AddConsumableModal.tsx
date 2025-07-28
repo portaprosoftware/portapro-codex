@@ -90,7 +90,8 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         const locationStockInserts = data.locationStock.map(loc => ({
           consumable_id: consumableData.id,
           storage_location_id: loc.locationId,
-          quantity: loc.onHand
+          quantity: loc.onHand,
+          reorder_threshold: loc.reorderThreshold || 0
         }));
 
         const { error: insertError } = await supabase
@@ -339,6 +340,15 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                 </FormItem>
               )}
             />
+
+            {/* Information Box */}
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+              <h4 className="text-sm font-medium">Understanding Thresholds vs. Levels</h4>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p><strong>Reorder Threshold:</strong> Global notification when total stock across all locations falls below this amount</p>
+                <p><strong>Reorder Level:</strong> Location-specific alert when stock at that particular location falls below the threshold</p>
+              </div>
+            </div>
 
             <div className="flex justify-end gap-3 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>

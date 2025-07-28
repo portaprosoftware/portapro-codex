@@ -123,9 +123,11 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
                 <TableHead>Storage Location</TableHead>
                 <TableHead className="w-32">On Hand</TableHead>
                 <TableHead className="w-32">
-                  Reorder Level
-                  <div className="text-xs font-normal text-muted-foreground mt-1">
-                    Alert when below this amount
+                  <div className="flex items-center justify-between">
+                    <span>Reorder Level</span>
+                    <span className="text-xs font-normal text-muted-foreground ml-2">
+                      Alert when below this amount
+                    </span>
                   </div>
                 </TableHead>
                 <TableHead className="w-12"></TableHead>
