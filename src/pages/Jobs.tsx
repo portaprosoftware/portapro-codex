@@ -268,14 +268,14 @@ const JobsPage: React.FC = () => {
       <div className="max-w-none px-6 py-6 space-y-6">
         {/* Page Header with Navigation Pills */}
         <div className="bg-white rounded-lg border shadow-sm p-6">
-          <div className="space-y-4">
-            <div>
+          <div className="flex flex-col h-full">
+            <div className="mb-4">
               <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
               <p className="text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
             </div>
             
             {/* Jobs Sub-Navigation Pills */}
-            <div className="flex items-center justify-between h-full">
+            <div className="flex items-center justify-between">
               <div className="enterprise-tabs">
                 <TabNav ariaLabel="Jobs views">
                   <TabNav.Item 
@@ -304,15 +304,13 @@ const JobsPage: React.FC = () => {
                   </TabNav.Item>
                 </TabNav>
               </div>
-              <div className="flex items-center">
-                <Button 
-                  onClick={() => setIsJobWizardOpen(true)}
-                  className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Schedule Job
-                </Button>
-              </div>
+              <Button 
+                onClick={() => setIsJobWizardOpen(true)}
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Schedule Job
+              </Button>
             </div>
           </div>
         </div>
