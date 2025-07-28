@@ -1,8 +1,8 @@
 import React from 'react';
-import { ConsumablesInventory } from '@/components/inventory/ConsumablesInventory';
+import { SimpleConsumablesInventory } from '@/components/inventory/SimpleConsumablesInventory';
 
 const Consumables: React.FC = () => {
-  return <ConsumablesInventory />;
+  return <SimpleConsumablesInventory />;
 };
 
 export default Consumables;

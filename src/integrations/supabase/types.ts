@@ -583,6 +583,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          location_stock: Json | null
           name: string
           notes: string | null
           on_hand_qty: number
@@ -601,6 +602,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          location_stock?: Json | null
           name: string
           notes?: string | null
           on_hand_qty?: number
@@ -619,6 +621,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          location_stock?: Json | null
           name?: string
           notes?: string | null
           on_hand_qty?: number
