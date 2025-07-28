@@ -168,9 +168,10 @@ const defaultSegments: SmartSegmentTemplate[] = [
 
 interface DefaultSmartSegmentsProps {
   onCreateFromTemplate: (template: SmartSegmentTemplate) => void;
+  onPreviewTemplate: (template: SmartSegmentTemplate) => void;
 }
 
-export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCreateFromTemplate }) => {
+export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCreateFromTemplate, onPreviewTemplate }) => {
   const [refreshingCounts, setRefreshingCounts] = useState<string[]>([]);
 
   // Fetch segment counts
@@ -214,13 +215,13 @@ export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCr
 
   const getUsageTips = (segmentId: string) => {
     const tips: Record<string, string> = {
-      'new_customers': 'Trigger a "Welcome to PortaPro" drip campaign, coupon for first service, plus setup tips.',
+      'new_customers': 'Trigger a "Welcome" drip campaign, coupon for first service, plus setup tips.',
       'active_customers': 'Offer a loyalty bonus ("Thank you for your business—get 10% off your next refill").',
       'lapsed_customers': 'Send a "We Miss You" note with a limited-time discount to bring them back.',
       'big_spenders': 'Roll out VIP service add-ons, quarterly business reviews, or a referral bonus.',
       'frequent_users': 'Promote special "volume" pricing on long-term or high-volume rentals.',
       'email_only_contacts': 'Exclusive email newsletters, product announcements, no SMS links.',
-      'sms_ready': 'Flash deals ("24-hour portable hand-wash refill special!") sent via text.',
+      'sms_ready': 'Flash deals ("24-hour portable restroom service special!") sent via text.',
       'high_priority_accounts': 'Assign dedicated account manager, send premium service alerts.'
     };
     return tips[segmentId] || '';
@@ -228,19 +229,9 @@ export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCr
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 font-inter">Ready-to-Use Smart Segments</h3>
-          <p className="text-gray-600 font-inter">Quick-start templates for common marketing scenarios</p>
-        </div>
-        <Button 
-          variant="outline" 
-          onClick={() => refetchCounts()}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Refresh All Counts
-        </Button>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 font-inter">Ready-to-Use Smart Segments</h3>
+        <p className="text-gray-600 font-inter">Quick-start templates for common marketing scenarios</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -296,7 +287,12 @@ export const DefaultSmartSegments: React.FC<DefaultSmartSegmentsProps> = ({ onCr
                 >
                   Create from Template
                 </Button>
-                <Button variant="outline" size="sm" className="px-3">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="px-3"
+                  onClick={() => onPreviewTemplate(segment)}
+                >
                   Preview
                 </Button>
               </div>

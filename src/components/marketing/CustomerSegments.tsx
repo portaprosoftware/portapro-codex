@@ -49,18 +49,28 @@ export const CustomerSegments: React.FC = () => {
     createFromTemplateMutation.mutate(template);
   };
 
+  const handlePreviewTemplate = (template: SmartSegmentTemplate) => {
+    toast({ 
+      title: `Preview: ${template.name}`,
+      description: `This segment would include customers matching: ${template.description}`
+    });
+  };
+
   return (
     <div className="space-y-8">
-      {/* Default Smart Segments */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
-        <DefaultSmartSegments onCreateFromTemplate={handleCreateFromTemplate} />
-      </div>
-
       {/* Custom Segment Builder */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Custom Smart Segments</h2>
         <p className="text-gray-600 font-inter mb-6">Build your own customer segments with custom rules and criteria</p>
         <SmartSegmentBuilder />
+      </div>
+
+      {/* Default Smart Segments */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
+        <DefaultSmartSegments 
+          onCreateFromTemplate={handleCreateFromTemplate}
+          onPreviewTemplate={handlePreviewTemplate}
+        />
       </div>
     </div>
   );
