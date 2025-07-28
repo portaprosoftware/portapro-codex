@@ -39,7 +39,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         }
 
         if (searchQuery) {
-          query = query.ilike("name", `%${searchQuery}%`);
+          // Search by product name OR if any product_items have matching tool_number
+          query = query.or(`name.ilike.%${searchQuery}%,product_items.tool_number.ilike.%${searchQuery}%`);
         }
 
         // Filter by storage location if specified
