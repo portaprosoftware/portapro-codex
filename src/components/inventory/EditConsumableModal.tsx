@@ -93,7 +93,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         onHand: Number(item.quantity) || 0
       })).filter(item => item.locationId && item.locationName);
       
-      console.log('Fetched location stock:', locationStock);
+      console.log('Fetched location stock (transformed):', locationStock);
       return locationStock;
     },
     enabled: !!consumable?.id && isOpen

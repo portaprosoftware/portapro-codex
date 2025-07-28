@@ -63,22 +63,14 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   }, [value, storageLocations, isInitialized]);
 
-  // Reset initialization when value changes from outside (important for edit modal)
+  // Only sync changes back to parent when user makes changes (not when receiving new props)
   useEffect(() => {
-    if (isInitialized && value && JSON.stringify(value) !== JSON.stringify(locations)) {
-      console.log('ConsumableLocationAllocator: Value changed from outside, reinitializing:', value);
-      setLocations([...value]);
-    }
-  }, [value, isInitialized, locations]);
-
-  // Sync changes back to parent (only after initialization and when user makes changes)
-  useEffect(() => {
-    if (isInitialized) {
+    if (isInitialized && locations.length >= 0) {
       const currentValueString = JSON.stringify(value || []);
       const locationsString = JSON.stringify(locations);
       
       if (currentValueString !== locationsString) {
-        console.log('ConsumableLocationAllocator: Syncing changes to parent:', locations);
+        console.log('ConsumableLocationAllocator: User made changes, syncing to parent:', locations);
         onChange(locations);
       }
     }
