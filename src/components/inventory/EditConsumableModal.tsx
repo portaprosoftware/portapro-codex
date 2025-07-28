@@ -94,7 +94,8 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   });
 
   useEffect(() => {
-    if (consumable && locationStockData) {
+    if (consumable && locationStockData && locationStockData.length > 0) {
+      console.log('Resetting form with locationStockData:', locationStockData);
       form.reset({
         name: consumable.name,
         description: consumable.description || '',

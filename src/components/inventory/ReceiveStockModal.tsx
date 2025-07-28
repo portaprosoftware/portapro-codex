@@ -100,10 +100,10 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
   });
 
   const onSubmit = (data: StockReceiveFormData) => {
-    if (data.quantity_received <= 0) {
+    if (data.quantity_received === 0) {
       toast({
         title: 'Invalid Quantity',
-        description: 'Please enter a positive quantity',
+        description: 'Please enter a non-zero quantity',
         variant: 'destructive'
       });
       return;
@@ -117,7 +117,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Receive Stock</DialogTitle>
+          <DialogTitle>Change Inventory</DialogTitle>
           <p className="text-sm text-muted-foreground">
             Current stock: {consumable.on_hand_qty} units of {consumable.name}
           </p>
@@ -129,18 +129,17 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
               control={form.control}
               name="quantity_received"
               rules={{ 
-                required: 'Quantity is required',
-                min: { value: 1, message: 'Must be at least 1' }
+                required: 'Quantity is required'
               }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quantity Received *</FormLabel>
+                  <FormLabel>Quantity Change *</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
                       {...field} 
                       onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      placeholder="Enter quantity received" 
+                      placeholder="Enter quantity change (+ to add, - to reduce)" 
                     />
                   </FormControl>
                   <FormMessage />
@@ -216,7 +215,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                 Cancel
               </Button>
               <Button type="submit" disabled={receiveStock.isPending}>
-                {receiveStock.isPending ? 'Receiving...' : 'Receive Stock'}
+                {receiveStock.isPending ? 'Updating...' : 'Update Inventory'}
               </Button>
             </div>
           </form>
