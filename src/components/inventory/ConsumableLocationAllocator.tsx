@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +29,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
   disabled = false
 }) => {
   const [locations, setLocations] = useState<LocationStock[]>(value || []);
+  const [selectedLocationToAdd, setSelectedLocationToAdd] = useState<string>('');
   const queryClient = useQueryClient();
 
   // Fetch all storage locations
@@ -71,23 +73,26 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     ));
   };
 
-  const addLocation = () => {
-    const availableLocations = storageLocations.filter(
-      storage => !locations.some(loc => loc.locationId === storage.id)
-    );
-
-    if (availableLocations.length === 0) {
-      toast.error('All storage locations have been added');
+  const addSelectedLocation = () => {
+    if (!selectedLocationToAdd) {
+      toast.error('Please select a storage location');
       return;
     }
 
-    const newLocation = availableLocations[0];
+    const selectedLocation = storageLocations.find(loc => loc.id === selectedLocationToAdd);
+    if (!selectedLocation) {
+      toast.error('Selected location not found');
+      return;
+    }
+
     setLocations(prev => [...prev, {
-      locationId: newLocation.id,
-      locationName: newLocation.name,
+      locationId: selectedLocation.id,
+      locationName: selectedLocation.name,
       onHand: 0,
       reorderThreshold: 0
     }]);
+    
+    setSelectedLocationToAdd('');
   };
 
   const removeLocation = (locationId: string) => {
@@ -95,7 +100,10 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
   };
 
   const totalOnHand = locations.reduce((sum, loc) => sum + loc.onHand, 0);
-  const canAddLocation = storageLocations.length > locations.length;
+  const availableLocations = storageLocations.filter(
+    storage => !locations.some(loc => loc.locationId === storage.id)
+  );
+  const canAddLocation = availableLocations.length > 0;
 
   return (
     <Card>
@@ -114,7 +122,12 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
               <TableRow>
                 <TableHead>Storage Location</TableHead>
                 <TableHead className="w-32">On Hand</TableHead>
-                <TableHead className="w-32">Reorder Level</TableHead>
+                <TableHead className="w-32">
+                  Reorder Level
+                  <div className="text-xs font-normal text-muted-foreground mt-1">
+                    Alert when below this amount
+                  </div>
+                </TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -172,15 +185,27 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
         </div>
 
         {canAddLocation && (
-          <Button
-            variant="outline"
-            onClick={addLocation}
-            disabled={disabled}
-            className="w-full"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Storage Location
-          </Button>
+          <div className="flex gap-2">
+            <Select value={selectedLocationToAdd} onValueChange={setSelectedLocationToAdd}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Select storage location to add" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableLocations.map((location) => (
+                  <SelectItem key={location.id} value={location.id}>
+                    {location.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              onClick={addSelectedLocation}
+              disabled={disabled || !selectedLocationToAdd}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         )}
 
         <div className="flex justify-between items-center pt-2 border-t">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -64,8 +64,37 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
   const [showScannerModal, setShowScannerModal] = useState(false);
   const form = useForm<ConsumableFormData>();
 
+  // Fetch existing location stock data for this consumable
+  const { data: locationStockData = [] } = useQuery({
+    queryKey: ['consumable-location-stock', consumable?.id],
+    queryFn: async () => {
+      if (!consumable?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('consumable_location_stock')
+        .select(`
+          *,
+          storage_locations!inner (
+            id,
+            name
+          )
+        `)
+        .eq('consumable_id', consumable.id);
+      
+      if (error) throw error;
+      
+      return data.map((item: any) => ({
+        locationId: item.storage_location_id,
+        locationName: item.storage_locations.name,
+        onHand: item.quantity,
+        reorderThreshold: 0 // Will be stored separately if needed
+      }));
+    },
+    enabled: !!consumable?.id && isOpen
+  });
+
   useEffect(() => {
-    if (consumable) {
+    if (consumable && locationStockData) {
       form.reset({
         name: consumable.name,
         description: consumable.description || '',
@@ -73,24 +102,63 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         sku: consumable.sku || '',
         unit_cost: consumable.unit_cost,
         unit_price: consumable.unit_price,
-        locationStock: consumable.locationStock || [],
+        locationStock: locationStockData,
         reorder_threshold: consumable.reorder_threshold,
         is_active: consumable.is_active,
         notes: consumable.notes || ''
       });
     }
-  }, [consumable, form]);
+  }, [consumable, locationStockData, form]);
 
   const updateConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {
       if (!consumable) return;
       
-      const { error } = await supabase
-        .from('consumables' as any)
-        .update(data)
+      // Calculate total on hand from location stock
+      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
+      
+      // Update the main consumable record
+      const { error: consumableError } = await supabase
+        .from('consumables')
+        .update({
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          sku: data.sku,
+          unit_cost: data.unit_cost,
+          unit_price: data.unit_price,
+          on_hand_qty: totalOnHand,
+          reorder_threshold: data.reorder_threshold,
+          is_active: data.is_active,
+          notes: data.notes,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', consumable.id);
       
-      if (error) throw error;
+      if (consumableError) throw consumableError;
+
+      // Delete existing location stock records
+      const { error: deleteError } = await supabase
+        .from('consumable_location_stock')
+        .delete()
+        .eq('consumable_id', consumable.id);
+      
+      if (deleteError) throw deleteError;
+
+      // Insert new location stock records
+      if (data.locationStock.length > 0) {
+        const locationStockInserts = data.locationStock.map(loc => ({
+          consumable_id: consumable.id,
+          storage_location_id: loc.locationId,
+          quantity: loc.onHand
+        }));
+
+        const { error: insertError } = await supabase
+          .from('consumable_location_stock')
+          .insert(locationStockInserts);
+        
+        if (insertError) throw insertError;
+      }
     },
     onSuccess: () => {
       toast({
@@ -269,6 +337,9 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                         placeholder="0" 
                       />
                     </FormControl>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      You'll receive a notification when total stock falls below this threshold
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -62,11 +62,43 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
   const createConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {
-      const { error } = await supabase
-        .from('consumables' as any)
-        .insert([data]);
+      // Calculate total on hand from location stock
+      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + loc.onHand, 0);
       
-      if (error) throw error;
+      // Insert the main consumable record
+      const { data: consumableData, error: consumableError } = await supabase
+        .from('consumables')
+        .insert([{
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          sku: data.sku,
+          unit_cost: data.unit_cost,
+          unit_price: data.unit_price,
+          on_hand_qty: totalOnHand,
+          reorder_threshold: data.reorder_threshold,
+          is_active: data.is_active,
+          notes: data.notes
+        }])
+        .select()
+        .single();
+      
+      if (consumableError) throw consumableError;
+
+      // Insert location stock records if any
+      if (data.locationStock.length > 0) {
+        const locationStockInserts = data.locationStock.map(loc => ({
+          consumable_id: consumableData.id,
+          storage_location_id: loc.locationId,
+          quantity: loc.onHand
+        }));
+
+        const { error: insertError } = await supabase
+          .from('consumable_location_stock')
+          .insert(locationStockInserts);
+        
+        if (insertError) throw insertError;
+      }
     },
     onSuccess: () => {
       toast({
@@ -245,6 +277,9 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
                         placeholder="0" 
                       />
                     </FormControl>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      You'll receive a notification when total stock falls below this threshold
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
