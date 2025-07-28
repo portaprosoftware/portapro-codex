@@ -14,7 +14,6 @@ interface LocationStock {
   locationId: string;
   locationName: string;
   onHand: number;
-  reorderThreshold?: number;
 }
 
 interface ConsumableLocationAllocatorProps {
@@ -66,8 +65,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
         const initialLocations = [{
           locationId: defaultLocation.id,
           locationName: defaultLocation.name,
-          onHand: 0,
-          reorderThreshold: 0
+          onHand: 0
         }];
         
         console.log('ConsumableLocationAllocator: Initializing with default location:', initialLocations);
@@ -93,14 +91,14 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     }
   }, [locations, onChange, value, isInitialized]);
 
-  const handleQuantityChange = (locationId: string, field: 'onHand' | 'reorderThreshold', value: number) => {
+  const handleQuantityChange = (locationId: string, value: number) => {
     const newLocations = locations.map(loc => 
       loc.locationId === locationId 
-        ? { ...loc, [field]: Math.max(0, Number(value) || 0) }
+        ? { ...loc, onHand: Math.max(0, Number(value) || 0) }
         : loc
     );
     
-    console.log('ConsumableLocationAllocator: Quantity changed:', { locationId, field, value, newLocations });
+    console.log('ConsumableLocationAllocator: Quantity changed:', { locationId, value, newLocations });
     setLocations(newLocations);
   };
 
@@ -119,8 +117,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
     const newLocation = {
       locationId: selectedLocation.id,
       locationName: selectedLocation.name,
-      onHand: 0,
-      reorderThreshold: 0
+      onHand: 0
     };
     
     const newLocations = [...locations, newLocation];
@@ -158,7 +155,6 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
               <TableRow>
                 <TableHead>Storage Location</TableHead>
                 <TableHead className="w-32">On Hand</TableHead>
-                <TableHead className="w-32">Reorder Level</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -177,25 +173,6 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
                         const value = e.target.value;
                         handleQuantityChange(
                           location.locationId, 
-                          'onHand', 
-                          value === '' ? 0 : Number(value) || 0
-                        );
-                      }}
-                      disabled={disabled}
-                      className="w-full"
-                      placeholder="0"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min="0"
-                      value={location.reorderThreshold || ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        handleQuantityChange(
-                          location.locationId, 
-                          'reorderThreshold', 
                           value === '' ? 0 : Number(value) || 0
                         );
                       }}

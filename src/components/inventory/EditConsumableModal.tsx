@@ -18,7 +18,6 @@ interface LocationStock {
   locationId: string;
   locationName: string;
   onHand: number;
-  reorderThreshold?: number;
 }
 
 interface Consumable {
@@ -87,8 +86,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       return data.map((item: any) => ({
         locationId: item.storage_location_id,
         locationName: item.storage_locations.name,
-        onHand: Number(item.quantity) || 0,
-        reorderThreshold: Number(item.reorder_threshold) || 0
+        onHand: Number(item.quantity) || 0
       }));
     },
     enabled: !!consumable?.id && isOpen
@@ -177,8 +175,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       const locationStockInserts = data.locationStock.map(loc => ({
         consumable_id: consumable.id,
         storage_location_id: loc.locationId,
-        quantity: loc.onHand,
-        reorder_threshold: loc.reorderThreshold || 0
+        quantity: loc.onHand
       }));
 
       console.log('Creating new location stock records:', locationStockInserts);
@@ -464,10 +461,9 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
 
             {/* Information Box */}
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <h4 className="text-sm font-medium">Understanding Thresholds vs. Levels</h4>
+              <h4 className="text-sm font-medium">Global Reorder Threshold</h4>
               <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>Reorder Threshold:</strong> Global notification when total stock across all locations falls below this amount</p>
-                <p><strong>Reorder Level:</strong> Location-specific alert when stock at that particular location falls below the threshold</p>
+                <p><strong>Reorder Threshold:</strong> You'll receive a notification when total stock across all locations falls below this amount</p>
               </div>
             </div>
 
