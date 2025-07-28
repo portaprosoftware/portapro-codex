@@ -11,7 +11,7 @@ import {
   Megaphone,
   Settings,
   LogOut,
-  Beaker,
+  Droplets,
   Settings2,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -45,7 +45,7 @@ const Sidebar = () => {
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Calendar, label: "Jobs", path: "/jobs" },
     { icon: Package, label: "Inventory", path: "/inventory" },
-    { icon: Beaker, label: "Consumables", path: "/consumables" },
+    { icon: Droplets, label: "Consumables", path: "/consumables" },
     { icon: FileText, label: "Purchase Orders", path: "/purchase-orders" },
     { icon: Users, label: "Customer Hub", path: "/customer-hub" },
     { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
