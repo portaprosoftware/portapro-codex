@@ -275,7 +275,7 @@ const JobsPage: React.FC = () => {
             </div>
             
             {/* Jobs Sub-Navigation Pills */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between h-full">
               <div className="enterprise-tabs">
                 <TabNav ariaLabel="Jobs views">
                   <TabNav.Item 
@@ -304,13 +304,15 @@ const JobsPage: React.FC = () => {
                   </TabNav.Item>
                 </TabNav>
               </div>
-              <Button 
-                onClick={() => setIsJobWizardOpen(true)}
-                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Schedule Job
-              </Button>
+              <div className="flex items-center">
+                <Button 
+                  onClick={() => setIsJobWizardOpen(true)}
+                  className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Schedule Job
+                </Button>
+              </div>
             </div>
           </div>
         </div>
