@@ -65,7 +65,7 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
 
   // Sync changes back to parent (only after initialization)
   useEffect(() => {
-    if (isInitialized && locations.length > 0) {
+    if (isInitialized) {
       const currentValueString = JSON.stringify(value || []);
       const locationsString = JSON.stringify(locations);
       

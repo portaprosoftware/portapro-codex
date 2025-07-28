@@ -71,27 +71,60 @@ export const ConsumablesInventory: React.FC = () => {
   };
 
 
-  // Delete consumable mutation
+  // Delete consumable mutation with cascading deletes
   const deleteConsumableMutation = useMutation({
     mutationFn: async (consumableId: string) => {
-      const { error } = await supabase
+      console.log('Attempting to delete consumable:', consumableId);
+      
+      // First delete related consumable_location_stock records
+      const { error: locationStockError } = await supabase
+        .from('consumable_location_stock' as any)
+        .delete()
+        .eq('consumable_id', consumableId);
+      
+      if (locationStockError) {
+        console.error('Error deleting location stock:', locationStockError);
+        throw new Error(`Failed to delete location stock: ${locationStockError.message}`);
+      }
+      
+      // Then delete related job_consumables records
+      const { error: jobConsumablesError } = await supabase
+        .from('job_consumables' as any)
+        .delete()
+        .eq('consumable_id', consumableId);
+      
+      if (jobConsumablesError) {
+        console.error('Error deleting job consumables:', jobConsumablesError);
+        throw new Error(`Failed to delete job consumables: ${jobConsumablesError.message}`);
+      }
+      
+      // Finally delete the consumable itself
+      const { error: consumableError } = await supabase
         .from('consumables' as any)
         .delete()
         .eq('id', consumableId);
       
-      if (error) throw error;
+      if (consumableError) {
+        console.error('Error deleting consumable:', consumableError);
+        throw new Error(`Failed to delete consumable: ${consumableError.message}`);
+      }
+      
+      console.log('Consumable deleted successfully');
     },
     onSuccess: () => {
       toast.success('Consumable deleted successfully');
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ['consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['consumable-location-stock'] });
     },
-    onError: () => {
-      toast.error('Failed to delete consumable');
+    onError: (error: any) => {
+      console.error('Error deleting consumable:', error);
+      toast.error(`Failed to delete consumable: ${error.message || 'Unknown error'}`);
     }
   });
 
   const handleDelete = (consumable: Consumable) => {
-    if (window.confirm(`Are you sure you want to delete "${consumable.name}"? This action cannot be undone.`)) {
+    console.log('Delete requested for consumable:', consumable);
+    if (window.confirm(`Are you sure you want to delete "${consumable.name}"? This will also delete all related stock locations and job usage records. This action cannot be undone.`)) {
       deleteConsumableMutation.mutate(consumable.id);
     }
   };
