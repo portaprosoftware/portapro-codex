@@ -27,7 +27,7 @@ interface ConsumablesDashboardProps {
   consumables: Consumable[];
   isLoading: boolean;
   onEdit: (consumable: Consumable) => void;
-  onReceiveStock: (consumable: Consumable) => void;
+  
   onDelete: (consumable: Consumable) => void;
   onRefetch: () => void;
 }
@@ -36,7 +36,7 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
   consumables,
   isLoading,
   onEdit,
-  onReceiveStock,
+  
   onDelete,
 }) => {
   if (isLoading) {
@@ -122,9 +122,9 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                   <Button 
                     size="sm" 
                     variant="outline"
-                    onClick={() => onReceiveStock(item)}
+                    onClick={() => onEdit(item)}
                   >
-                    Receive Stock
+                    Edit Stock
                   </Button>
                 </div>
               ))}
@@ -197,10 +197,6 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                           <DropdownMenuItem onClick={() => onEdit(consumable)}>
                             <Edit className="w-4 h-4 mr-2" />
                             Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onReceiveStock(consumable)}>
-                            <Package className="w-4 h-4 mr-2" />
-                            Change Inventory
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => onDelete(consumable)}

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ConsumablesDashboard } from './ConsumablesDashboard';
 import { AddConsumableModal } from './AddConsumableModal';
 import { EditConsumableModal } from './EditConsumableModal';
-import { ReceiveStockModal } from './ReceiveStockModal';
+
 import { ConsumableQRGenerator } from './ConsumableQRGenerator';
 import { ConsumableRequestsManager } from './ConsumableRequestsManager';
 import { JobConsumablesTracker } from './JobConsumablesTracker';
@@ -46,7 +46,7 @@ interface Consumable {
 export const ConsumablesInventory: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showReceiveModal, setShowReceiveModal] = useState(false);
+  
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const [activeTab, setActiveTab] = useState('inventory');
   const isMobile = useIsMobile();
@@ -70,10 +70,6 @@ export const ConsumablesInventory: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleReceiveStock = (consumable: Consumable) => {
-    setSelectedConsumable(consumable);
-    setShowReceiveModal(true);
-  };
 
   // Delete consumable mutation
   const deleteConsumableMutation = useMutation({
@@ -103,7 +99,7 @@ export const ConsumablesInventory: React.FC = () => {
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
-    setShowReceiveModal(false);
+    
     setSelectedConsumable(null);
     refetch();
   };
@@ -201,7 +197,7 @@ export const ConsumablesInventory: React.FC = () => {
               consumables={consumables || []}
               isLoading={isLoading}
               onEdit={handleEdit}
-              onReceiveStock={handleReceiveStock}
+              
               onDelete={handleDelete}
               onRefetch={refetch}
             />
@@ -227,11 +223,6 @@ export const ConsumablesInventory: React.FC = () => {
           onClose={handleModalClose}
         />
 
-        <ReceiveStockModal 
-          isOpen={showReceiveModal}
-          consumable={selectedConsumable}
-          onClose={handleModalClose}
-        />
       </div>
     </div>
   );
