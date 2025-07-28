@@ -3,6 +3,8 @@ const CACHE_NAME = 'portapro-driver-v1';
 const urlsToCache = [
   '/',
   '/driver',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
   '/manifest.json'
 ];
 
@@ -11,10 +13,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        return cache.addAll(urlsToCache).catch(err => {
-          console.log('Failed to cache some resources:', err);
-          // Don't fail the entire installation if some resources can't be cached
-        });
+        return cache.addAll(urlsToCache);
       })
   );
   self.skipWaiting();
@@ -22,11 +21,6 @@ self.addEventListener('install', event => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
-  // Only cache GET requests for same origin
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
-
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -34,14 +28,7 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        return fetch(event.request).catch(err => {
-          console.log('Network fetch failed:', err);
-          // For navigation requests, try to return a fallback page
-          if (event.request.mode === 'navigate') {
-            return caches.match('/');
-          }
-          throw err;
-        });
+        return fetch(event.request);
       })
   );
 });
