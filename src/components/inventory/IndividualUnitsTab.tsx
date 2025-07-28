@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +15,7 @@ import { QRCodeDropdown } from "./QRCodeDropdown";
 import { QRCodeScanner } from "./QRCodeScanner";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { AttributeFilters } from "./AttributeFilters";
+import { OCRPhotoCapture } from "./OCRPhotoCapture";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -28,6 +29,9 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
+  const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [ocrItemId, setOcrItemId] = useState<string | null>(null);
+  const [ocrItemCode, setOcrItemCode] = useState<string>("");
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
     size?: string;
@@ -40,11 +44,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     queryFn: async () => {
       let query = supabase
         .from("product_items")
-        .select("*")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url")
         .eq("product_id", productId);
 
       if (searchQuery) {
-        query = query.or(`item_code.ilike.%${searchQuery}%,qr_code_data.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`);
+        query = query.or(`item_code.ilike.%${searchQuery}%,qr_code_data.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,vendor_id.ilike.%${searchQuery}%`);
       }
 
       if (availabilityFilter !== "all") {
@@ -132,6 +136,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     refetch();
   };
 
+  const handleOCRCapture = (itemId: string, itemCode: string) => {
+    setOcrItemId(itemId);
+    setOcrItemCode(itemCode);
+    setShowOCRCapture(true);
+  };
+
+  const handleOCRComplete = (ocrData: any) => {
+    console.log('OCR completed for item:', ocrItemId, ocrData);
+    setShowOCRCapture(false);
+    setOcrItemId(null);
+    setOcrItemCode("");
+    refetch();
+  };
+
   const getStatusBadge = (status: string) => {
     const colors = {
       available: "bg-blue-100 text-blue-700 border-blue-200",
@@ -155,6 +173,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     return variations.length > 0 ? variations.join(", ") : "Not set";
   };
 
+  const getVerificationBadge = (status: string | null, confidence: number | null) => {
+    if (!status) return null;
+    
+    const badges = {
+      manual_verified: <Badge className="bg-green-100 text-green-700"><Shield className="w-3 h-3 mr-1" />Verified</Badge>,
+      auto_detected: confidence && confidence > 0.8 
+        ? <Badge className="bg-blue-100 text-blue-700">Auto-detected</Badge>
+        : <Badge className="bg-yellow-100 text-yellow-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>,
+      needs_review: <Badge className="bg-red-100 text-red-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>
+    };
+
+    return badges[status as keyof typeof badges] || null;
+  };
+
   if (isLoading) {
     return <div className="p-6">Loading units...</div>;
   }
@@ -167,7 +199,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
-              placeholder="Search by item code, QR code, location"
+              placeholder="Search by item code, QR code, tool number, vendor ID"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -228,9 +260,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
               <TableHead className="font-medium">Item Code</TableHead>
               <TableHead className="font-medium">Status</TableHead>
               <TableHead className="font-medium">Variations</TableHead>
-              <TableHead className="font-medium">Condition</TableHead>
+              <TableHead className="font-medium">Tool Number</TableHead>
+              <TableHead className="font-medium">Verification</TableHead>
               <TableHead className="w-12">QR</TableHead>
-              <TableHead className="w-20">Actions</TableHead>
+              <TableHead className="w-32">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -260,7 +293,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   <TableCell className="font-medium">{item.item_code}</TableCell>
                   <TableCell>{getStatusBadge(item.status)}</TableCell>
                   <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
-                  <TableCell className="text-gray-600">{item.condition || "—"}</TableCell>
+                  <TableCell className="text-gray-600 font-mono text-xs">
+                    {item.tool_number || "—"}
+                  </TableCell>
+                  <TableCell>
+                    {getVerificationBadge(item.verification_status, item.ocr_confidence_score)}
+                  </TableCell>
                   <TableCell>
                     <QRCodeDropdown 
                       itemCode={item.item_code} 
@@ -271,6 +309,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-6 h-6 p-0"
+                        onClick={() => handleOCRCapture(item.id, item.item_code)}
+                        title="OCR Tool Tracking"
+                      >
+                        <Camera className="w-4 h-4 text-gray-400 hover:text-green-600" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -289,12 +336,55 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 {/* Expanded Row Details */}
                 {expandedRows.includes(item.id) && (
                   <TableRow className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={8} className="border-t">
-                      <div className="py-4 space-y-3 text-sm">
+                    <TableCell colSpan={9} className="border-t">
+                      <div className="py-4 space-y-4 text-sm">
+                        {/* OCR Tracking Information */}
+                        {(item.tool_number || item.vendor_id || item.plastic_code) && (
+                          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                              <Camera className="w-4 h-4 mr-2" />
+                              Tool Tracking Information
+                            </h4>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                              <div>
+                                <span className="font-medium text-blue-700">Tool Number:</span>
+                                <p className="text-blue-600 mt-1 font-mono">{item.tool_number || "—"}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-blue-700">Vendor ID:</span>
+                                <p className="text-blue-600 mt-1 font-mono">{item.vendor_id || "—"}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-blue-700">Plastic Code:</span>
+                                <p className="text-blue-600 mt-1">{item.plastic_code || "—"}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-blue-700">Mfg Date:</span>
+                                <p className="text-blue-600 mt-1">{item.manufacturing_date || "—"}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-blue-700">Mold Cavity:</span>
+                                <p className="text-blue-600 mt-1">{item.mold_cavity || "—"}</p>
+                              </div>
+                              {item.ocr_confidence_score && (
+                                <div>
+                                  <span className="font-medium text-blue-700">OCR Confidence:</span>
+                                  <p className="text-blue-600 mt-1">{Math.round(item.ocr_confidence_score * 100)}%</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Standard Item Details */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div>
                             <span className="font-medium text-gray-700">Location:</span>
                             <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">Condition:</span>
+                            <p className="text-gray-600 mt-1">{item.condition || "—"}</p>
                           </div>
                           <div>
                             <span className="font-medium text-gray-700">QR Code:</span>
@@ -372,6 +462,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           )}
         </DialogContent>
       </Dialog>
+
+      {/* OCR Photo Capture Dialog */}
+      {showOCRCapture && ocrItemId && (
+        <OCRPhotoCapture
+          open={showOCRCapture}
+          onClose={() => setShowOCRCapture(false)}
+          itemId={ocrItemId}
+          itemCode={ocrItemCode}
+          onComplete={handleOCRComplete}
+        />
+      )}
     </div>
   );
 };
