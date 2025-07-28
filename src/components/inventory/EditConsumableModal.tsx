@@ -46,10 +46,9 @@ interface ConsumableFormData {
   description?: string;
   category: string;
   sku?: string;
-  unit_cost: number;
-  unit_price: number;
+  unit_cost: string;
+  unit_price: string;
   locationStock: LocationStock[];
-  reorder_threshold: number;
   is_active: boolean;
   notes?: string;
 }
@@ -109,10 +108,9 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         description: consumable.description || '',
         category: consumable.category,
         sku: consumable.sku || '',
-        unit_cost: consumable.unit_cost,
-        unit_price: consumable.unit_price,
+        unit_cost: consumable.unit_cost.toString(),
+        unit_price: consumable.unit_price.toString(),
         locationStock: defaultLocationStock,
-        reorder_threshold: consumable.reorder_threshold || 0,
         is_active: consumable.is_active,
         notes: consumable.notes || ''
       });
@@ -125,13 +123,16 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
       
       console.log('Updating consumable with data:', data);
       
-      // Calculate total on hand from location stock
-      const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
+      // Parse and validate cost/price
+      const unitCost = parseFloat(data.unit_cost);
+      const unitPrice = parseFloat(data.unit_price);
       
-      // Validate that we have location stock
-      if (!data.locationStock || data.locationStock.length === 0) {
-        throw new Error('At least one storage location must be allocated');
+      if (isNaN(unitCost) || isNaN(unitPrice) || unitCost < 0 || unitPrice < 0) {
+        throw new Error('Please enter valid cost and price values');
       }
+      
+      // Calculate total on hand from location stock
+      const totalOnHand = data.locationStock?.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0) || 0;
       
       // Update the main consumable record
       const { error: consumableError } = await supabase
@@ -141,10 +142,10 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
           description: data.description,
           category: data.category,
           sku: data.sku,
-          unit_cost: data.unit_cost,
-          unit_price: data.unit_price,
+          unit_cost: unitCost,
+          unit_price: unitPrice,
           on_hand_qty: totalOnHand,
-          reorder_threshold: data.reorder_threshold,
+          reorder_threshold: 0,
           is_active: data.is_active,
           notes: data.notes,
           updated_at: new Date().toISOString()
@@ -165,31 +166,35 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
         .eq('consumable_id', consumable.id);
       
       if (deleteError) {
-        console.error('Error deleting existing location stock:', deleteError);
-        throw deleteError;
+        console.warn('Error deleting existing location stock (non-fatal):', deleteError);
       }
 
       console.log('Deleted existing location stock records');
 
-      // Insert new location stock records
-      const locationStockInserts = data.locationStock.map(loc => ({
-        consumable_id: consumable.id,
-        storage_location_id: loc.locationId,
-        quantity: loc.onHand
-      }));
+      // Insert new location stock records if we have any
+      if (data.locationStock && data.locationStock.length > 0) {
+        const validLocationStockInserts = data.locationStock
+          .filter(loc => loc.locationId && loc.locationId.trim() !== '')
+          .map(loc => ({
+            consumable_id: consumable.id,
+            storage_location_id: loc.locationId,
+            quantity: loc.onHand
+          }));
 
-      console.log('Creating new location stock records:', locationStockInserts);
+        if (validLocationStockInserts.length > 0) {
+          console.log('Creating new location stock records:', validLocationStockInserts);
 
-      const { error: insertError } = await supabase
-        .from('consumable_location_stock')
-        .insert(locationStockInserts);
-      
-      if (insertError) {
-        console.error('Error creating new location stock:', insertError);
-        throw insertError;
+          const { error: insertError } = await supabase
+            .from('consumable_location_stock')
+            .insert(validLocationStockInserts);
+          
+          if (insertError) {
+            console.warn('Error creating new location stock (non-fatal):', insertError);
+          }
+        }
       }
 
-      console.log('Successfully updated consumable and location stock');
+      console.log('Successfully updated consumable');
       return consumable.id;
     },
     onSuccess: (consumableId) => {
@@ -223,28 +228,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
 
   const onSubmit = (data: ConsumableFormData) => {
     console.log('Edit form submitted with data:', data);
-    
-    // Validate location stock
-    if (!data.locationStock || data.locationStock.length === 0) {
-      toast({
-        title: 'Validation Error',
-        description: 'Please allocate stock to at least one storage location',
-        variant: 'destructive'
-      });
-      return;
-    }
-    
-    // Calculate total on hand from location stock
-    const totalOnHand = data.locationStock.reduce((sum, loc) => sum + (Number(loc.onHand) || 0), 0);
-    
-    const submitData = {
-      ...data,
-      on_hand_qty: totalOnHand, // Set the total for the main record
-      locationStock: data.locationStock
-    };
-    
-    console.log('Submitting updated data:', submitData);
-    updateConsumable.mutate(submitData);
+    updateConsumable.mutate(data);
   };
 
   if (!consumable) return null;
@@ -319,7 +303,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
               <FormField
                 control={form.control}
                 name="unit_cost"
-                rules={{ required: 'Unit cost is required', min: { value: 0, message: 'Must be positive' } }}
+                rules={{ required: 'Unit cost is required' }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit Cost *</FormLabel>
@@ -327,8 +311,8 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                       <Input 
                         type="number" 
                         step="0.01"
+                        min="0"
                         {...field} 
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         placeholder="0.00" 
                       />
                     </FormControl>
@@ -340,7 +324,7 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
               <FormField
                 control={form.control}
                 name="unit_price"
-                rules={{ required: 'Unit price is required', min: { value: 0, message: 'Must be positive' } }}
+                rules={{ required: 'Unit price is required' }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Unit Price *</FormLabel>
@@ -348,8 +332,8 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                       <Input 
                         type="number" 
                         step="0.01"
+                        min="0"
                         {...field} 
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         placeholder="0.00" 
                       />
                     </FormControl>
@@ -364,11 +348,12 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                   name="locationStock"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Storage Location Allocation</FormLabel>
+                      <FormLabel>Storage Location Allocation (Optional)</FormLabel>
                       <FormControl>
                         <ConsumableLocationAllocator
                           value={field.value || []}
                           onChange={field.onChange}
+                          disabled={updateConsumable.isPending}
                         />
                       </FormControl>
                       <FormMessage />
@@ -377,50 +362,23 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
                 />
               </div>
 
-              <div className="flex items-center gap-4">
-                <FormField
-                  control={form.control}
-                  name="reorder_threshold"
-                  rules={{ required: 'Reorder threshold is required', min: { value: 0, message: 'Must be positive' } }}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Reorder Threshold *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0"
-                          value={field.value || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            field.onChange(value === '' ? '' : parseInt(value) || 0);
-                          }}
-                          placeholder="Enter threshold amount" 
-                        />
-                      </FormControl>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        You'll receive a notification when total stock falls below this threshold
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="is_active"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-center justify-center space-y-2">
+              <FormField
+                control={form.control}
+                name="is_active"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
                       <FormLabel>Active</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField
@@ -459,13 +417,6 @@ export const EditConsumableModal: React.FC<EditConsumableModalProps> = ({
               )}
             />
 
-            {/* Information Box */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <h4 className="text-sm font-medium">Global Reorder Threshold</h4>
-              <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>Reorder Threshold:</strong> You'll receive a notification when total stock across all locations falls below this amount</p>
-              </div>
-            </div>
 
             <div className="flex justify-end gap-3 pt-4">
               <Button type="button" variant="outline" onClick={onClose}>
