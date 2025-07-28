@@ -11,6 +11,8 @@ import { StorageLocationSelector } from "@/components/inventory/StorageLocationS
 import { AvailableNowSlider } from "@/components/inventory/AvailableNowSlider";
 import { LocationAwareAvailableSlider } from "@/components/inventory/LocationAwareAvailableSlider";
 import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
+import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard";
+import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +28,7 @@ const Inventory: React.FC = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("all");
   const [isAvailableSliderOpen, setIsAvailableSliderOpen] = useState(false);
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
+  const [showOCRDashboard, setShowOCRDashboard] = useState(false);
 
   const handleFilterClick = (filterKey: FilterType) => {
     if (filterKey === "available_now") {
@@ -171,7 +174,7 @@ const Inventory: React.FC = () => {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="products" className="space-y-4">
-        <TabsList className="grid w-fit grid-cols-2">
+        <TabsList className="grid w-fit grid-cols-4">
           <TabsTrigger value="products" className="flex items-center gap-2">
             <LayoutGrid className="w-4 h-4" />
             Products
@@ -179,6 +182,14 @@ const Inventory: React.FC = () => {
           <TabsTrigger value="map" className="flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             Location Map
+          </TabsTrigger>
+          <TabsTrigger value="ocr-quality" className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            OCR Quality
+          </TabsTrigger>
+          <TabsTrigger value="offline-sync" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Offline Sync
           </TabsTrigger>
         </TabsList>
 
@@ -200,6 +211,22 @@ const Inventory: React.FC = () => {
               <p className="text-gray-600 text-sm">Real-time view of where your equipment is currently deployed</p>
             </div>
             <InventoryMapView />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="ocr-quality" className="space-y-4">
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <OCRQualityDashboard />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="offline-sync" className="space-y-4">
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Offline Synchronization</h3>
+              <p className="text-gray-600 text-sm">Manage offline OCR captures and sync when connection is restored</p>
+            </div>
+            <OfflineOCRCapture />
           </div>
         </TabsContent>
       </Tabs>

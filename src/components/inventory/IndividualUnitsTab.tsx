@@ -16,6 +16,9 @@ import { QRCodeScanner } from "./QRCodeScanner";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
+import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
+import { BatchOCRProcessor } from "./BatchOCRProcessor";
+import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -30,6 +33,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [showScanner, setShowScanner] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [showBatchOCR, setShowBatchOCR] = useState(false);
+  const [showMobileOCR, setShowMobileOCR] = useState(false);
   const [ocrItemId, setOcrItemId] = useState<string | null>(null);
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
   const [attributeFilters, setAttributeFilters] = useState<{
@@ -38,9 +43,18 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     material?: string;
     condition?: string;
   }>({});
+  const [enhancedFilters, setEnhancedFilters] = useState<{
+    availability?: string;
+    toolNumber?: string;
+    vendorId?: string;
+    verificationStatus?: string;
+    manufacturingDateRange?: any;
+    confidenceRange?: [number, number];
+    attributes?: Record<string, string>;
+  }>({});
 
   const { data: items, isLoading, refetch } = useQuery({
-    queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters],
+    queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters, enhancedFilters],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
@@ -49,6 +63,22 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
       if (searchQuery) {
         query = query.or(`item_code.ilike.%${searchQuery}%,qr_code_data.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,vendor_id.ilike.%${searchQuery}%`);
+      }
+
+      // Apply enhanced filters
+      if (enhancedFilters.toolNumber) {
+        query = query.ilike("tool_number", `%${enhancedFilters.toolNumber}%`);
+      }
+      if (enhancedFilters.vendorId) {
+        query = query.ilike("vendor_id", `%${enhancedFilters.vendorId}%`);
+      }
+      if (enhancedFilters.verificationStatus && enhancedFilters.verificationStatus !== "all") {
+        query = query.eq("verification_status", enhancedFilters.verificationStatus);
+      }
+      if (enhancedFilters.confidenceRange) {
+        query = query
+          .gte("ocr_confidence_score", enhancedFilters.confidenceRange[0] / 100)
+          .lte("ocr_confidence_score", enhancedFilters.confidenceRange[1] / 100);
       }
 
       if (availabilityFilter !== "all") {
@@ -234,6 +264,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <Settings className="w-4 h-4 mr-2" />
             Adjust Stock
           </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowBatchOCR(true)}
+            className="border-green-600 text-green-600 hover:bg-green-50"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Batch OCR
+          </Button>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             <Plus className="w-4 h-4 mr-2" />
             Create Item
@@ -241,11 +279,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         </div>
       </div>
 
-      {/* Attribute Filters */}
-      <AttributeFilters
-        filters={attributeFilters}
-        onFilterChange={handleAttributeFilterChange}
-        onClearFilters={handleClearFilters}
+      {/* Enhanced Search Filters */}
+      <EnhancedSearchFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filters={enhancedFilters}
+        onFiltersChange={setEnhancedFilters}
+        onClearFilters={() => setEnhancedFilters({})}
       />
 
       {/* Units Table */}
