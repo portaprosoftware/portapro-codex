@@ -199,9 +199,10 @@ export const ConsumableLocationAllocator: React.FC<ConsumableLocationAllocatorPr
               </SelectContent>
             </Select>
             <Button
-              variant="outline"
+              variant={selectedLocationToAdd ? "default" : "outline"}
               onClick={addSelectedLocation}
               disabled={disabled || !selectedLocationToAdd}
+              className={selectedLocationToAdd ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
             >
               <Plus className="h-4 w-4" />
             </Button>
