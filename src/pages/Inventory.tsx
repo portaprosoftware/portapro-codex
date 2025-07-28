@@ -69,6 +69,7 @@ const Inventory: React.FC = () => {
             <p className="text-base text-gray-600 font-inter mt-1">Browse your rental product catalog with real-time status tracking</p>
           </div>
           <Button 
+            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
             onClick={() => setAddInventoryModalOpen(true)}
           >
             <Plus className="w-4 h-4 mr-2" />

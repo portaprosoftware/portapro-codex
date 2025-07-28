@@ -101,7 +101,7 @@ export function CustomerContactsTab({ customerId }: CustomerContactsTabProps) {
         </div>
         <Button 
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
         >
           <Plus className="w-4 h-4" />
           Add Contact

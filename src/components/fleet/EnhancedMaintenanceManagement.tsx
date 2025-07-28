@@ -186,6 +186,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
             </Button>
             <Button
               onClick={() => setAddRecordOpen(true)}
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Maintenance Record

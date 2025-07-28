@@ -301,7 +301,7 @@ export const FuelManagement = () => {
         </div>
         <Dialog open={showAddLogModal} onOpenChange={setShowAddLogModal}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
               <Plus className="w-4 h-4 mr-2" />
               Add Fuel Log
             </Button>
@@ -442,7 +442,10 @@ export const FuelManagement = () => {
               <p className="text-muted-foreground mb-4">
                 Start tracking fuel consumption by adding your first fuel log.
               </p>
-              <Button onClick={() => setShowAddLogModal(true)}>
+              <Button 
+                onClick={() => setShowAddLogModal(true)}
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Fuel Log
               </Button>

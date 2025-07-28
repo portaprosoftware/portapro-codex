@@ -159,7 +159,10 @@ export const ConsumablesInventory: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-2">
-                <Button onClick={() => setShowAddModal(true)}>
+                <Button 
+                  onClick={() => setShowAddModal(true)}
+                  className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Consumable
                 </Button>

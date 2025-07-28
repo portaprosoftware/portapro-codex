@@ -84,7 +84,7 @@ const CustomerHub: React.FC = () => {
             </Button>
             <Button 
               onClick={() => setIsAddModalOpen(true)}
-              className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
+              className="gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 rounded-md border-0"
             >
               <Plus className="w-4 h-4" />
               Add Customer

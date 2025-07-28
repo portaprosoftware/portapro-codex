@@ -305,7 +305,7 @@ export const VehicleManagement = ({ selectedVehicle, onBack }: { selectedVehicle
         </div>
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
               <Plus className="w-4 h-4 mr-2" />
               Add Vehicle
             </Button>
@@ -388,7 +388,10 @@ export const VehicleManagement = ({ selectedVehicle, onBack }: { selectedVehicle
                 <p className="text-muted-foreground mb-4">
                   Get started by adding your first vehicle to the fleet.
                 </p>
-                <Button onClick={() => setShowCreateModal(true)}>
+                <Button 
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Vehicle
                 </Button>
