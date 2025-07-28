@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/hooks/use-toast";
 
 const ProductItemDetail: React.FC = () => {
@@ -66,7 +65,7 @@ const ProductItemDetail: React.FC = () => {
       return { ...data, storage_location_name: storageLocationName };
     },
     enabled: !!itemId,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 30 * 1000, // Cache for 30 seconds only
   });
 
   const getStatusColor = (status: string) => {
@@ -345,14 +344,6 @@ const ProductItemDetail: React.FC = () => {
                 </p>
               </div>
               
-              {item.last_location_update && (
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Last Updated</label>
-                  <p className="text-base text-gray-900">
-                    {new Date(item.last_location_update).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
             </CardContent>
           </Card>
 

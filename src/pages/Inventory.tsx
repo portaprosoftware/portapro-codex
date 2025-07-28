@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available
 type ViewType = "grid" | "list";
 
 const Inventory: React.FC = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [viewType, setViewType] = useState<ViewType>("grid");
@@ -117,7 +119,7 @@ const Inventory: React.FC = () => {
         console.log("OCR Search: Navigating to individual item:", itemId);
         
         // Navigate to the individual item detail page
-        window.location.href = `/inventory/items/${itemId}`;
+        navigate(`/inventory/items/${itemId}`);
         
         toast({
           title: "Individual Unit Found",
@@ -173,7 +175,7 @@ const Inventory: React.FC = () => {
         console.log("Manual Search: Found individual item, navigating to:", itemId);
         
         // Navigate to the individual item detail page
-        window.location.href = `/inventory/items/${itemId}`;
+        navigate(`/inventory/items/${itemId}`);
         
         toast({
           title: "Individual Unit Found",
@@ -401,7 +403,7 @@ const Inventory: React.FC = () => {
           onProductSelect={(productId) => {
             // If we have a matching individual item, go directly to that page
             if (matchingItemId) {
-              window.location.href = `/inventory/items/${matchingItemId}`;
+              navigate(`/inventory/items/${matchingItemId}`);
             } else {
               setSelectedProduct(productId);
             }
