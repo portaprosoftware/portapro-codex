@@ -149,7 +149,11 @@ export const TemplateManagement: React.FC = () => {
           >
             <Eye className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => console.log('Edit template:', template.id)}
+          >
             <Edit className="w-4 h-4" />
           </Button>
           {template.source !== 'system' && (
@@ -247,7 +251,10 @@ export const TemplateManagement: React.FC = () => {
           </Select>
         </div>
 
-        <Button className="bg-primary text-white">
+        <Button 
+          className="bg-primary text-white"
+          onClick={() => console.log('Create new template')}
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Template
         </Button>
@@ -310,10 +317,13 @@ export const TemplateManagement: React.FC = () => {
 
       {/* Preview Modal */}
       <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl" aria-describedby="template-preview-description">
           <DialogHeader>
             <DialogTitle>{previewTemplate?.name}</DialogTitle>
           </DialogHeader>
+          <div id="template-preview-description" className="sr-only">
+            Preview template content and details
+          </div>
           {previewTemplate && (
             <div className="space-y-4">
               <div className="flex items-center gap-4">

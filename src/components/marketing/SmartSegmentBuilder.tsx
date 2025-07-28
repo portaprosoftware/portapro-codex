@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Plus, X, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
@@ -215,10 +216,14 @@ export const SmartSegmentBuilder: React.FC = () => {
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" aria-describedby="smart-segment-description">
         <DialogHeader>
           <DialogTitle>Create Smart Segment</DialogTitle>
         </DialogHeader>
+        
+        <div id="smart-segment-description" className="sr-only">
+          Create customer segments based on defined rules and criteria
+        </div>
 
         {/* Info Section */}
         <Collapsible open={isInfoExpanded} onOpenChange={setIsInfoExpanded}>
