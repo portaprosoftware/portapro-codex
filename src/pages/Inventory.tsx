@@ -107,7 +107,7 @@ const Inventory: React.FC = () => {
           ))}
         </div>
 
-        {/* Location Filter & View Controls & Search */}
+        {/* Location Filter & View Controls & Tabs */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Storage Location Filter */}
@@ -160,6 +160,47 @@ const Inventory: React.FC = () => {
             </div>
           </div>
 
+          {/* Tabs moved up to same row */}
+          <div className="flex items-center">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="bg-blue-600 text-white hover:bg-blue-700 rounded-md"
+              >
+                <LayoutGrid className="w-4 h-4 mr-2" />
+                Products
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:bg-white rounded-md"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Location Map
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:bg-white rounded-md"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                OCR Quality
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:bg-white rounded-md"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Offline Sync
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Search Section - Grouped Together */}
+        <div className="space-y-3">
           {/* Search Bar */}
           <div className="flex items-center gap-2 flex-1">
             <div className="relative flex-1 max-w-lg">
@@ -172,89 +213,42 @@ const Inventory: React.FC = () => {
               />
             </div>
           </div>
-        </div>
 
-        {/* Secondary Search Controls */}
-        <div className="flex items-center gap-2 justify-start">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowOCRSearch(true)}
-            className="border-purple-600 text-purple-600 hover:bg-purple-50"
-            title="Search by photographing product code or tool number"
-            size="sm"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Search Photo
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-            size="sm"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            Scan QR
-          </Button>
+          {/* Search Action Buttons */}
+          <div className="flex items-center gap-2 justify-start">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowOCRSearch(true)}
+              className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              title="Search by photographing product code or tool number"
+              size="sm"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Search Photo
+            </Button>
+            <Button 
+              variant="outline" 
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              size="sm"
+            >
+              <QrCode className="w-4 h-4 mr-2" />
+              Scan QR
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="products" className="space-y-4">
-        <TabsList className="grid w-fit grid-cols-4">
-          <TabsTrigger value="products" className="flex items-center gap-2">
-            <LayoutGrid className="w-4 h-4" />
-            Products
-          </TabsTrigger>
-          <TabsTrigger value="map" className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
-            Location Map
-          </TabsTrigger>
-          <TabsTrigger value="ocr-quality" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            OCR Quality
-          </TabsTrigger>
-          <TabsTrigger value="offline-sync" className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Offline Sync
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="products" className="space-y-4">
-          <ProductGrid 
-            filter={activeFilter}
-            viewType={viewType}
-            hideInactive={hideInactive}
-            searchQuery={searchQuery}
-            selectedLocationId={selectedLocationId}
-            onProductSelect={setSelectedProduct}
-          />
-        </TabsContent>
-
-        <TabsContent value="map" className="space-y-4">
-          <div className="bg-white rounded-lg shadow-sm border p-4">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Equipment Locations</h3>
-              <p className="text-gray-600 text-sm">Real-time view of where your equipment is currently deployed</p>
-            </div>
-            <InventoryMapView />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="ocr-quality" className="space-y-4">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <OCRQualityDashboard />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="offline-sync" className="space-y-4">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Offline Synchronization</h3>
-              <p className="text-gray-600 text-sm">Manage offline OCR captures and sync when connection is restored</p>
-            </div>
-            <OfflineOCRCapture />
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Main Content - Products Only (Tabs moved up) */}
+      <div className="space-y-4">
+        <ProductGrid 
+          filter={activeFilter}
+          viewType={viewType}
+          hideInactive={hideInactive}
+          searchQuery={searchQuery}
+          selectedLocationId={selectedLocationId}
+          onProductSelect={setSelectedProduct}
+        />
+      </div>
 
       {/* Location-Aware Available Now Slider */}
       <LocationAwareAvailableSlider 
