@@ -49,7 +49,7 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
   const colors = getChannelColors(type);
 
   return (
-    <div className="bg-white rounded-md border shadow-sm p-4 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+    <div className="p-4">
       {/* Card Header */}
       <div className="flex items-center justify-between mb-4">
         <Badge className={`${getTypeGradient(type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>

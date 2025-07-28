@@ -393,21 +393,46 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             {messageData.showCompanyLogo && (
               <div className="mb-4">
                 <Label>Logo Size</Label>
-                <Select 
-                  value={messageData.logoSize || 'medium'} 
-                  onValueChange={(value: 'small' | 'medium' | 'large') => 
-                    setMessageData(prev => ({ ...prev, logoSize: value }))
-                  }
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-3">
+                  <Select 
+                    value={messageData.logoSize || 'medium'} 
+                    onValueChange={(value: 'small' | 'medium' | 'large') => 
+                      setMessageData(prev => ({ ...prev, logoSize: value }))
+                    }
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="small">Small</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="large">Large</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* Logo Size Warning */}
+                  {logoDimensions && (() => {
+                    const getTargetSize = (size?: string) => {
+                      switch (size) {
+                        case 'small': return 48; // h-12 = 48px
+                        case 'large': return 80; // h-20 = 80px  
+                        default: return 64; // h-16 = 64px
+                      }
+                    };
+                    
+                    const targetHeight = getTargetSize(messageData.logoSize);
+                    const naturalHeight = logoDimensions.height;
+                    
+                    if (targetHeight > naturalHeight * 1.5) {
+                      return (
+                        <div className="text-sm text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                          ⚠️ Logo may appear blurry at this size. Try smaller size.
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
               </div>
             )}
             
@@ -624,6 +649,10 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                         src={companySettings.company_logo} 
                         alt={companySettings.company_name || 'Company logo'} 
                         className={`${getLogoHeight(messageData.logoSize)} w-auto object-contain`}
+                        onLoad={(e) => {
+                          const img = e.target as HTMLImageElement;
+                          setLogoDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+                        }}
                       />
                     </div>
                   </div>
