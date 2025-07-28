@@ -168,16 +168,30 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
   const handleSave = () => {
     if (!selectedImage) return;
 
+    console.log('Save triggered - manualOverrides:', manualOverrides);
+    console.log('Save triggered - ocrResults:', ocrResults);
+
+    // Helper function to prioritize manual input over OCR
+    const getValueWithPriority = (manualValue: string | undefined, ocrValue: string | null | undefined) => {
+      // If manual value exists and is not just whitespace, use it
+      if (manualValue !== undefined && manualValue.trim() !== '') {
+        return manualValue.trim();
+      }
+      // Otherwise fall back to OCR value
+      return ocrValue || null;
+    };
+
     const finalData = {
-      toolNumber: manualOverrides.toolNumber ?? ocrResults?.toolNumber,
-      vendorId: manualOverrides.vendorId ?? ocrResults?.vendorId,
-      plasticCode: manualOverrides.plasticCode ?? ocrResults?.plasticCode,
-      manufacturingDate: manualOverrides.manufacturingDate ?? ocrResults?.manufacturingDate,
-      moldCavity: manualOverrides.moldCavity ?? ocrResults?.moldCavity,
+      toolNumber: getValueWithPriority(manualOverrides.toolNumber, ocrResults?.toolNumber),
+      vendorId: getValueWithPriority(manualOverrides.vendorId, ocrResults?.vendorId),
+      plasticCode: getValueWithPriority(manualOverrides.plasticCode, ocrResults?.plasticCode),
+      manufacturingDate: getValueWithPriority(manualOverrides.manufacturingDate, ocrResults?.manufacturingDate),
+      moldCavity: getValueWithPriority(manualOverrides.moldCavity, ocrResults?.moldCavity),
       rawData: ocrResults?.rawData,
       photoUrl: `tracking_photo_${itemId}_${Date.now()}.jpg`
     };
 
+    console.log('Final data being saved:', finalData);
     updateItemMutation.mutate(finalData);
   };
 
@@ -302,10 +316,13 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
                       id="tool-number"
                       placeholder="e.g., T-20788-1A"
                       value={manualOverrides.toolNumber ?? ocrResults?.toolNumber ?? ''}
-                      onChange={(e) => setManualOverrides(prev => ({
-                        ...prev,
-                        toolNumber: e.target.value
-                      }))}
+                      onChange={(e) => {
+                        console.log('Tool number manual edit:', e.target.value);
+                        setManualOverrides(prev => ({
+                          ...prev,
+                          toolNumber: e.target.value
+                        }));
+                      }}
                     />
                   </div>
 
