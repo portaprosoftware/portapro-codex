@@ -30,6 +30,7 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
 }) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [ocrResults, setOcrResults] = useState<OCRResults | null>(null);
@@ -46,6 +47,18 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
         handleImageCapture(imageDataUrl);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCameraCapture = () => {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
+
+  const handleFileUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -126,9 +139,8 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
     setOcrResults(null);
     setConfidence(0);
     setManualOverride('');
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    // Trigger camera capture for retake
+    handleCameraCapture();
   };
 
   const getConfidenceBadge = (conf: number) => {
@@ -154,8 +166,9 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
                 Take a photo of the tool number to search your inventory
               </p>
               
+              {/* Camera Input - for taking photos */}
               <input
-                ref={fileInputRef}
+                ref={cameraInputRef}
                 type="file"
                 accept="image/*"
                 capture="environment"
@@ -163,9 +176,18 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
                 className="hidden"
               />
               
+              {/* File Input - for uploading files */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              
               <div className="flex gap-2 justify-center">
                 <Button
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={handleCameraCapture}
                   className="flex items-center gap-2"
                   size="sm"
                 >
@@ -174,12 +196,7 @@ export const OCRSearchCapture: React.FC<OCRSearchCaptureProps> = ({
                 </Button>
                 
                 <Button
-                  onClick={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.removeAttribute('capture');
-                      fileInputRef.current.click();
-                    }
-                  }}
+                  onClick={handleFileUpload}
                   variant="outline"
                   size="sm"
                   className="flex items-center gap-2"
