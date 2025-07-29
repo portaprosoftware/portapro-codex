@@ -6,6 +6,12 @@ interface SimpleWeatherRadarProps {
   isActive: boolean;
 }
 
+interface TimeStampDisplayProps {
+  frames: { path: string; time: number }[];
+  currentFrame: number;
+  isActive: boolean;
+}
+
 export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isActive }) => {
   const [frames, setFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -164,7 +170,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
           return next;
         });
       }
-    }, 600); // 600ms per frame for smooth playback
+    }, 300); // Faster animation - 300ms per frame
   }, [isAnimating]); // Remove frames.length dependency to fix the issue
 
   // Stop animation
@@ -205,5 +211,72 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     };
   }, [cleanup]);
 
-  return null; // This component doesn't render anything visible
+  return (
+    <>
+      {isActive && <TimestampDisplay frames={frames} currentFrame={currentFrame} isActive={isActive} />}
+    </>
+  );
+};
+
+// Timestamp display component
+const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFrame, isActive }) => {
+  if (!isActive || frames.length === 0) return null;
+
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const getCurrentTime = () => {
+    if (frames[currentFrame]) {
+      return frames[currentFrame].time;
+    }
+    return Date.now() / 1000;
+  };
+
+  const getTimeRange = () => {
+    if (frames.length === 0) return { start: '', end: '' };
+    
+    const startTime = frames[0].time;
+    const endTime = frames[frames.length - 1].time;
+    
+    return {
+      start: `${formatDate(startTime)} ${formatTime(startTime)}`,
+      end: `${formatDate(endTime)} ${formatTime(endTime)}`
+    };
+  };
+
+  const timeRange = getTimeRange();
+  const currentTime = getCurrentTime();
+
+  return (
+    <div className="absolute top-4 left-4 z-10 bg-black/80 text-white rounded-lg p-3 text-sm font-mono">
+      <div className="space-y-1">
+        <div className="text-green-400 font-bold">
+          Current: {formatDate(currentTime)} {formatTime(currentTime)}
+        </div>
+        <div className="text-gray-300">
+          Range: {timeRange.start} → {timeRange.end}
+        </div>
+        <div className="text-blue-400">
+          Frame: {currentFrame + 1} of {frames.length}
+        </div>
+        <div className="text-yellow-400 text-xs">
+          90min Past + 30min Future
+        </div>
+      </div>
+    </div>
+  );
 };

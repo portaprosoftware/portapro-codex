@@ -22,16 +22,35 @@ class RainViewerService {
   async getRadarData(): Promise<RainViewerData> {
     try {
       console.log('RainViewer: Requesting data from API...');
-      const response = await fetch(RainViewerService.BASE_URL);
+      const response = await fetch(RainViewerService.BASE_URL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        // Ensure we don't store the request object
+        cache: 'no-store'
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
       console.log('RainViewer: API response received');
-      return data;
+      // Return only serializable data
+      return {
+        version: data.version,
+        generated: data.generated,
+        host: data.host,
+        radar: {
+          past: data.radar.past,
+          nowcast: data.radar.nowcast
+        },
+        satellite: {
+          infrared: data.satellite.infrared
+        }
+      };
     } catch (error) {
       console.error('RainViewer: Error fetching radar data:', error);
-      throw error;
+      throw new Error(`Failed to fetch radar data: ${error.message}`);
     }
   }
 
