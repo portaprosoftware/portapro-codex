@@ -23,6 +23,7 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
+import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
 
 // Mock data for demonstration
 const mockJobs = [];
@@ -104,8 +105,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
-  const [weatherApiKey, setWeatherApiKey] = useState<string>('');
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -156,56 +155,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     }
   }, [viewMode, mapLoaded, selectedDriver]);
 
-  useEffect(() => {
-    if (!map.current || !mapLoaded) return;
-
-    if (weatherRadar) {
-      if (!weatherApiKey && !showApiKeyInput) {
-        setShowApiKeyInput(true);
-        return;
-      }
-      
-      if (weatherApiKey) {
-        addWeatherOverlay();
-      }
-    } else {
-      removeWeatherOverlay();
-    }
-  }, [weatherRadar, weatherApiKey, mapLoaded]);
-
-  const addWeatherOverlay = () => {
-    if (!map.current) return;
-
-    if (!map.current.getSource('weather')) {
-      map.current.addSource('weather', {
-        type: 'raster',
-        tiles: [
-          `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${weatherApiKey}`
-        ],
-        tileSize: 256
-      });
-
-      map.current.addLayer({
-        id: 'weather',
-        type: 'raster',
-        source: 'weather',
-        paint: {
-          'raster-opacity': 0.6
-        }
-      });
-    }
-  };
-
-  const removeWeatherOverlay = () => {
-    if (!map.current) return;
-
-    if (map.current.getLayer('weather')) {
-      map.current.removeLayer('weather');
-    }
-    if (map.current.getSource('weather')) {
-      map.current.removeSource('weather');
-    }
-  };
 
   const loadPins = () => {
     if (!map.current) return;
@@ -560,6 +509,14 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           className="w-full h-96 lg:h-[600px]"
         />
         
+        {/* Weather Radar Component */}
+        {map.current && mapLoaded && (
+          <SimpleWeatherRadar 
+            map={map.current} 
+            isActive={weatherRadar} 
+          />
+        )}
+        
         {/* Locate Me Button */}
         <div className="absolute bottom-6 left-6">
           <Button 
@@ -720,49 +677,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
         </div>
       </div>
 
-      {/* OpenWeather API Key Input Modal */}
-      {showApiKeyInput && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">OpenWeather API Key Required</h3>
-            <p className="text-gray-600 mb-4">
-              To enable weather radar, please enter your OpenWeather API key. 
-              You can get one free at <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer" className="text-[#3366FF] underline">openweathermap.org</a>.
-            </p>
-            <Input
-              type="text"
-              placeholder="Enter your OpenWeather API key"
-              value={weatherApiKey}
-              onChange={(e) => setWeatherApiKey(e.target.value)}
-              className="mb-4"
-            />
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowApiKeyInput(false);
-                  setWeatherRadar(false);
-                }}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowApiKeyInput(false);
-                  if (weatherApiKey) {
-                    addWeatherOverlay();
-                  }
-                }}
-                disabled={!weatherApiKey}
-                className="flex-1 bg-gradient-to-r from-[#3366FF] to-[#6699FF] text-white"
-              >
-                Apply
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Mapbox Token Input Modal */}
       {showTokenInput && (
