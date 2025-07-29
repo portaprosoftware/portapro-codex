@@ -16,6 +16,8 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   const [frames, setFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const layerIds = useRef<string[]>([]);
@@ -23,105 +25,119 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   const mountedRef = useRef(true);
   const instanceId = useRef(Math.random().toString(36).substr(2, 9));
 
-  // Cleanup function
+  // Complete cleanup function
   const cleanup = useCallback(() => {
-    if (!map) return;
+    console.log('SimpleWeatherRadar: Starting cleanup...');
     
     // Stop animation
     if (animationRef.current) {
       clearInterval(animationRef.current);
       animationRef.current = null;
     }
-    
-    // Remove all layers and sources
-    layerIds.current.forEach(layerId => {
-      try {
-        if (map.getLayer(layerId)) {
-          map.removeLayer(layerId);
-        }
-        if (map.getSource(layerId)) {
-          map.removeSource(layerId);
-        }
-      } catch (error) {
-        console.warn('Error removing layer/source:', layerId, error);
-      }
-    });
-    
-    layerIds.current = [];
     setIsAnimating(false);
+
+    // Remove all radar layers and sources
+    if (map) {
+      layerIds.current.forEach(layerId => {
+        try {
+          if (map.getLayer(layerId)) {
+            map.removeLayer(layerId);
+          }
+          if (map.getSource(layerId)) {
+            map.removeSource(layerId);
+          }
+        } catch (error) {
+          console.warn('Error removing layer/source:', layerId, error);
+        }
+      });
+    }
+
+    // Reset all state
+    layerIds.current = [];
+    setFrames([]);
+    setCurrentFrame(0);
+    setHasLoaded(false);
+    setError(null);
+    
+    // Generate new instance ID for next load
+    instanceId.current = Math.random().toString(36).substr(2, 9);
+    
+    console.log('SimpleWeatherRadar: Cleanup complete');
   }, [map]);
 
   // Load radar frames
   const loadRadarFrames = useCallback(async () => {
-    if (!isActive || !map || !map.isStyleLoaded()) {
-      console.log('Radar: Map not ready or radar not active');
+    if (!isActive || !map || !map.isStyleLoaded() || isLoading || hasLoaded) {
+      console.log('Radar: Skipping load - active:', isActive, 'map ready:', map?.isStyleLoaded(), 'loading:', isLoading, 'hasLoaded:', hasLoaded);
       return;
     }
 
     try {
-      console.log('Radar: Loading radar frames...');
+      console.log('SimpleWeatherRadar: Starting to load radar frames...');
+      setIsLoading(true);
       setError(null);
+      
       const radarFrames = await rainViewerService.getRadarFrames();
       
       if (!mountedRef.current) return;
       
-      console.log('Radar: Loaded', radarFrames.length, 'frames');
-      setFrames(radarFrames);
-      
-      if (radarFrames.length > 0) {
-        // Add sources and layers for each frame
-        radarFrames.forEach((frame, index) => {
-          const layerId = `radar-${instanceId.current}-${index}`;
-          const tileUrl = rainViewerService.getTileUrl(frame.path);
-          
-          try {
-            // Add source
-            if (!map.getSource(layerId)) {
-              console.log('Radar: Adding source', layerId);
-              map.addSource(layerId, {
-                type: 'raster',
-                tiles: [tileUrl],
-                tileSize: 256
-              });
-            }
-            
-            // Add layer
-            if (!map.getLayer(layerId)) {
-              console.log('Radar: Adding layer', layerId);
-              map.addLayer({
-                id: layerId,
-                type: 'raster',
-                source: layerId,
-                paint: {
-                  'raster-opacity': 0,
-                  'raster-fade-duration': 100 // Shorter than animation interval
-                }
-              });
-            }
-            
-            layerIds.current.push(layerId);
-          } catch (error) {
-            console.error('Radar: Error adding layer', layerId, error);
-          }
-        });
-        
-        // Start animation after frames are loaded
-        setTimeout(() => {
-          if (radarFrames.length > 1 && !isAnimating && mountedRef.current) {
-            console.log('Radar: Starting animation with', radarFrames.length, 'frames');
-            startAnimation();
-          } else if (radarFrames.length === 1) {
-            // Show single frame
-            console.log('Radar: Showing single frame');
-            updateFrame(0);
-          }
-        }, 100); // Small delay to ensure layers are added
+      if (radarFrames.length === 0) {
+        console.warn('SimpleWeatherRadar: No radar frames available');
+        setFrames([]);
+        setIsLoading(false);
+        return;
       }
+
+      console.log('SimpleWeatherRadar: Got', radarFrames.length, 'frames, adding to map...');
+
+      // Add sources and layers for each frame
+      radarFrames.forEach((frame, index) => {
+        const layerId = `radar-${instanceId.current}-${index}`;
+        const tileUrl = rainViewerService.getTileUrl(frame.path);
+
+        try {
+          // Add source
+          if (!map.getSource(layerId)) {
+            map.addSource(layerId, {
+              type: 'raster',
+              tiles: [tileUrl],
+              tileSize: 256,
+              maxzoom: 12
+            });
+          }
+
+          // Add layer
+          if (!map.getLayer(layerId)) {
+            map.addLayer({
+              id: layerId,
+              type: 'raster',
+              source: layerId,
+              paint: {
+                'raster-opacity': index === 0 ? 0.6 : 0, // Only first frame visible initially
+                'raster-fade-duration': 100
+              }
+            });
+          }
+
+          layerIds.current.push(layerId);
+        } catch (error) {
+          console.error('Radar: Error adding layer', layerId, error);
+        }
+      });
+
+      setFrames(radarFrames);
+      setCurrentFrame(0);
+      setHasLoaded(true);
+      console.log('SimpleWeatherRadar: Radar frames loaded successfully');
+      
     } catch (error) {
-      console.error('Radar: Error loading frames:', error);
+      console.error('SimpleWeatherRadar: Error loading radar frames:', error);
       setError('Failed to load radar data');
+      setFrames([]);
+    } finally {
+      setIsLoading(false);
     }
-  }, [isActive, map, isAnimating]);
+  }, [isActive, map, isLoading, hasLoaded]);
 
   // Update frame visibility
   const updateFrame = useCallback((frameIndex: number) => {
@@ -157,21 +173,19 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
       return;
     }
     
-    console.log('Radar: Starting animation with', frames.length, 'frames');
+    console.log('SimpleWeatherRadar: Starting animation...');
     setIsAnimating(true);
-    setCurrentFrame(0);
     
-    // Use 600ms interval for smooth animation of 12 frames
     animationRef.current = setInterval(() => {
       if (mountedRef.current) {
         setCurrentFrame(prev => {
           const next = (prev + 1) % frames.length;
-          console.log('Radar: Frame', next + 1, 'of', frames.length);
+          updateFrame(next);
           return next;
         });
       }
     }, 200); // Smoother animation - 200ms per frame
-  }, [isAnimating]); // Remove frames.length dependency to fix the issue
+  }, [isAnimating, frames.length, updateFrame]);
 
   // Stop animation
   const stopAnimation = useCallback(() => {
@@ -190,16 +204,25 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     }
   }, [currentFrame, frames.length, isActive, updateFrame]);
 
-  // Load frames when activated
+  // Effect to handle active state changes
   useEffect(() => {
-    console.log('Radar: Effect triggered - isActive:', isActive, 'mapReady:', map?.isStyleLoaded());
     if (isActive && map && map.isStyleLoaded()) {
       loadRadarFrames();
-    } else {
-      console.log('Radar: Cleaning up');
+    } else if (!isActive) {
       cleanup();
     }
-  }, [isActive, map]); // Remove loadRadarFrames from deps to prevent infinite loops
+  }, [isActive, map, loadRadarFrames, cleanup]);
+
+  // Auto-start animation when frames are loaded
+  useEffect(() => {
+    if (frames.length > 0 && !isAnimating && isActive && hasLoaded) {
+      const timer = setTimeout(() => {
+        startAnimation();
+      }, 100); // Small delay to ensure layers are ready
+      
+      return () => clearTimeout(timer);
+    }
+  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation]);
 
   // Cleanup on unmount
   useEffect(() => {

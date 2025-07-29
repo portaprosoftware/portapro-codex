@@ -22,35 +22,51 @@ class RainViewerService {
   async getRadarData(): Promise<RainViewerData> {
     try {
       console.log('RainViewer: Requesting data from API...');
-      const response = await fetch(RainViewerService.BASE_URL, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        // Ensure we don't store the request object
-        cache: 'no-store'
+      
+      // Use XMLHttpRequest to avoid Request object cloning issues
+      const data = await new Promise<any>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', RainViewerService.BASE_URL, true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              resolve(result);
+            } catch (e) {
+              reject(new Error('Failed to parse JSON response'));
+            }
+          } else {
+            reject(new Error(`HTTP error! status: ${xhr.status}`));
+          }
+        };
+        
+        xhr.onerror = function() {
+          reject(new Error('Network error occurred'));
+        };
+        
+        xhr.send();
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      
       console.log('RainViewer: API response received');
+      
       // Return only serializable data
       return {
         version: data.version,
         generated: data.generated,
         host: data.host,
         radar: {
-          past: data.radar.past,
-          nowcast: data.radar.nowcast
+          past: data.radar.past || [],
+          nowcast: data.radar.nowcast || []
         },
         satellite: {
-          infrared: data.satellite.infrared
+          infrared: data.satellite.infrared || []
         }
       };
     } catch (error) {
       console.error('RainViewer: Error fetching radar data:', error);
-      throw new Error(`Failed to fetch radar data: ${error.message}`);
+      throw new Error(`Failed to fetch radar data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
