@@ -281,16 +281,10 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
           </div>
         </div>
         
-        {/* Frame info */}
-        <div className="flex justify-between items-center bg-slate-800/50 rounded-lg p-2 border border-slate-600/30">
-          <div>
-            <div className="text-xs text-slate-400 font-medium">FRAME</div>
-            <div className="text-white font-semibold">{currentFrame + 1} of {frames.length}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-slate-400 font-medium">COVERAGE</div>
-            <div className="text-blue-300 text-sm font-medium">90min + 30min</div>
-          </div>
+        {/* Coverage info */}
+        <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-600/30 text-center">
+          <div className="text-xs text-slate-400 font-medium mb-1">COVERAGE</div>
+          <div className="text-blue-300 text-sm font-medium">90min + 30min</div>
         </div>
         
         {/* Time range */}
