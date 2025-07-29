@@ -262,19 +262,45 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
   const currentTime = getCurrentTime();
 
   return (
-    <div className="absolute top-4 left-4 z-10 bg-black/80 text-white rounded-lg p-3 text-sm font-mono">
-      <div className="space-y-1">
-        <div className="text-green-400 font-bold">
-          Current: {formatDate(currentTime)} {formatTime(currentTime)}
+    <div className="absolute top-4 left-4 z-10 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20">
+      <div className="p-4 space-y-3">
+        {/* Header with PortaPro branding */}
+        <div className="flex items-center gap-2 pb-2 border-b border-blue-500/20">
+          <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full animate-pulse"></div>
+          <span className="text-white font-semibold text-sm tracking-wide">WEATHER RADAR</span>
         </div>
-        <div className="text-gray-300">
-          Range: {timeRange.start} → {timeRange.end}
+        
+        {/* Current time - prominent display */}
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-3 border border-blue-400/30">
+          <div className="text-xs text-blue-300 font-medium mb-1">CURRENT TIME</div>
+          <div className="text-white font-bold text-lg">
+            {formatTime(currentTime)}
+          </div>
+          <div className="text-blue-200 text-sm">
+            {formatDate(currentTime)}
+          </div>
         </div>
-        <div className="text-blue-400">
-          Frame: {currentFrame + 1} of {frames.length}
+        
+        {/* Frame info */}
+        <div className="flex justify-between items-center bg-slate-800/50 rounded-lg p-2 border border-slate-600/30">
+          <div>
+            <div className="text-xs text-slate-400 font-medium">FRAME</div>
+            <div className="text-white font-semibold">{currentFrame + 1} of {frames.length}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-slate-400 font-medium">COVERAGE</div>
+            <div className="text-blue-300 text-sm font-medium">90min + 30min</div>
+          </div>
         </div>
-        <div className="text-yellow-400 text-xs">
-          90min Past + 30min Future
+        
+        {/* Time range */}
+        <div className="bg-slate-800/30 rounded-lg p-2 border border-slate-600/20">
+          <div className="text-xs text-slate-400 font-medium mb-1">TIME RANGE</div>
+          <div className="text-slate-200 text-xs leading-relaxed">
+            <div>{timeRange.start}</div>
+            <div className="text-slate-400">↓</div>
+            <div>{timeRange.end}</div>
+          </div>
         </div>
       </div>
     </div>
