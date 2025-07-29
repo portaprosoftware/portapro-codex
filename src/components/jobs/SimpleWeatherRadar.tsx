@@ -170,7 +170,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
           return next;
         });
       }
-    }, 300); // Faster animation - 300ms per frame
+    }, 200); // Smoother animation - 200ms per frame
   }, [isAnimating]); // Remove frames.length dependency to fix the issue
 
   // Stop animation
@@ -279,12 +279,6 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
           <div className="text-blue-200 text-sm">
             {formatDate(currentTime)}
           </div>
-        </div>
-        
-        {/* Coverage info */}
-        <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-600/30 text-center">
-          <div className="text-xs text-slate-400 font-medium mb-1">COVERAGE</div>
-          <div className="text-blue-300 text-sm font-medium">90min + 30min</div>
         </div>
         
         {/* Time range */}
