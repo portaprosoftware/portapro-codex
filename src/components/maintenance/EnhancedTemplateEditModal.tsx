@@ -22,9 +22,9 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   DragDropContext, 
   Droppable, 
-  Draggable, 
+  Draggable,
   DropResult 
-} from 'react-beautiful-dnd';
+} from '@hello-pangea/dnd';
 import {
   FileText,
   Users,

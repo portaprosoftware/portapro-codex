@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Calendar, Clock, Plus, Users, Settings, Edit, Trash2, AlertTriangle, CheckCircle, Copy } from 'lucide-react';
 import { DriverWorkingHoursSection } from '@/components/settings/DriverWorkingHoursSection';
 
