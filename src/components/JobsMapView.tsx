@@ -139,9 +139,17 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     
-    map.current.on('load', () => {
+    map.current.on('style.load', () => {
+      console.log('Map style loaded');
       setMapLoaded(true);
       loadPins();
+    });
+
+    map.current.on('styledata', () => {
+      // Style data loaded, safe to add sources/layers
+      if (map.current?.isStyleLoaded()) {
+        console.log('Map style data loaded and ready');
+      }
     });
 
     return () => {
@@ -150,14 +158,19 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   }, [mapboxToken]);
 
   useEffect(() => {
-    if (mapLoaded) {
+    if (mapLoaded && map.current?.isStyleLoaded()) {
       loadPins();
     }
   }, [viewMode, mapLoaded, selectedDriver]);
 
 
   const loadPins = () => {
-    if (!map.current) return;
+    if (!map.current || !map.current.isStyleLoaded()) {
+      console.log('Map not ready for loading pins');
+      return;
+    }
+
+    console.log('Loading pins in', viewMode, 'mode');
 
     // Clear existing sources and layers
     if (map.current.getSource('jobs')) {
@@ -177,7 +190,10 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   };
 
   const loadJobPins = () => {
-    if (!map.current) return;
+    if (!map.current || !map.current.isStyleLoaded()) {
+      console.log('Map not ready for job pins');
+      return;
+    }
 
     const filteredJobs = selectedDriver === 'all' 
       ? mockJobs 
@@ -252,7 +268,10 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   };
 
   const loadDriverPins = () => {
-    if (!map.current) return;
+    if (!map.current || !map.current.isStyleLoaded()) {
+      console.log('Map not ready for driver pins');
+      return;
+    }
 
     const filteredDrivers = selectedDriver === 'all' 
       ? mockDrivers 
@@ -509,7 +528,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           className="w-full h-96 lg:h-[600px]"
         />
         
-        {/* Weather Radar Component */}
+        {/* Weather Radar Component - only load when map is fully ready */}
         {map.current && mapLoaded && (
           <SimpleWeatherRadar 
             map={map.current} 

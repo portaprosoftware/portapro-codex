@@ -10,6 +10,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   const [frames, setFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const layerIds = useRef<string[]>([]);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
@@ -46,12 +47,19 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
 
   // Load radar frames
   const loadRadarFrames = useCallback(async () => {
-    if (!isActive || !map) return;
+    if (!isActive || !map || !map.isStyleLoaded()) {
+      console.log('Radar: Map not ready or radar not active');
+      return;
+    }
 
     try {
+      console.log('Radar: Loading radar frames...');
+      setError(null);
       const radarFrames = await rainViewerService.getRadarFrames();
+      
       if (!mountedRef.current) return;
       
+      console.log('Radar: Loaded', radarFrames.length, 'frames');
       setFrames(radarFrames);
       
       if (radarFrames.length > 0) {
@@ -63,6 +71,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
           try {
             // Add source
             if (!map.getSource(layerId)) {
+              console.log('Radar: Adding source', layerId);
               map.addSource(layerId, {
                 type: 'raster',
                 tiles: [tileUrl],
@@ -72,6 +81,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
             
             // Add layer
             if (!map.getLayer(layerId)) {
+              console.log('Radar: Adding layer', layerId);
               map.addLayer({
                 id: layerId,
                 type: 'raster',
@@ -85,17 +95,23 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
             
             layerIds.current.push(layerId);
           } catch (error) {
-            console.warn('Error adding radar layer:', layerId, error);
+            console.error('Radar: Error adding layer', layerId, error);
           }
         });
         
         // Start animation if we have multiple frames
         if (radarFrames.length > 1 && !isAnimating) {
+          console.log('Radar: Starting animation');
           startAnimation();
+        } else if (radarFrames.length === 1) {
+          // Show single frame
+          console.log('Radar: Showing single frame');
+          updateFrame(0);
         }
       }
     } catch (error) {
-      console.error('Error loading radar frames:', error);
+      console.error('Radar: Error loading frames:', error);
+      setError('Failed to load radar data');
     }
   }, [isActive, map, isAnimating]);
 
@@ -123,20 +139,25 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
 
   // Start animation
   const startAnimation = useCallback(() => {
-    if (animationRef.current || isAnimating || frames.length <= 1) return;
+    if (animationRef.current || isAnimating || frames.length <= 1) {
+      console.log('Radar: Animation already running or insufficient frames');
+      return;
+    }
     
+    console.log('Radar: Starting animation with', frames.length, 'frames');
     setIsAnimating(true);
     setCurrentFrame(0);
     
-    // Use 800ms interval to prevent flashing (much slower than the original 300ms)
+    // Use 1000ms interval to prevent flashing (slower than the original 300ms)
     animationRef.current = setInterval(() => {
       if (mountedRef.current) {
         setCurrentFrame(prev => {
           const next = (prev + 1) % frames.length;
+          console.log('Radar: Frame', next, 'of', frames.length);
           return next;
         });
       }
-    }, 800); // Slower animation to prevent flashing
+    }, 1000); // Very slow animation to prevent flashing
   }, [frames.length, isAnimating]);
 
   // Stop animation
@@ -151,15 +172,18 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   // Update frame when currentFrame changes
   useEffect(() => {
     if (isActive && frames.length > 0) {
+      console.log('Radar: Updating to frame', currentFrame);
       updateFrame(currentFrame);
     }
   }, [currentFrame, frames.length, isActive, updateFrame]);
 
   // Load frames when activated
   useEffect(() => {
-    if (isActive && map) {
+    console.log('Radar: Effect triggered - isActive:', isActive, 'mapReady:', map?.isStyleLoaded());
+    if (isActive && map && map.isStyleLoaded()) {
       loadRadarFrames();
     } else {
+      console.log('Radar: Cleaning up');
       cleanup();
     }
   }, [isActive, map, loadRadarFrames, cleanup]);

@@ -21,14 +21,16 @@ class RainViewerService {
 
   async getRadarData(): Promise<RainViewerData> {
     try {
+      console.log('RainViewer: Requesting data from API...');
       const response = await fetch(RainViewerService.BASE_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log('RainViewer: API response received');
       return data;
     } catch (error) {
-      console.error('Error fetching radar data:', error);
+      console.error('RainViewer: Error fetching radar data:', error);
       throw error;
     }
   }
@@ -39,15 +41,19 @@ class RainViewerService {
 
   async getRadarFrames(): Promise<{ path: string; time: number }[]> {
     try {
+      console.log('RainViewer: Fetching radar data...');
       const data = await this.getRadarData();
       
       // Combine past and nowcast frames, limited to prevent flashing
-      const pastFrames = data.radar.past.slice(-6); // Last 6 past frames
+      const pastFrames = data.radar.past.slice(-4); // Last 4 past frames
       const nowcastFrames = data.radar.nowcast.slice(0, 2); // First 2 nowcast frames
       
-      return [...pastFrames, ...nowcastFrames];
+      const allFrames = [...pastFrames, ...nowcastFrames];
+      console.log('RainViewer: Got', allFrames.length, 'radar frames');
+      
+      return allFrames;
     } catch (error) {
-      console.error('Error getting radar frames:', error);
+      console.error('RainViewer: Error getting radar frames:', error);
       return [];
     }
   }
