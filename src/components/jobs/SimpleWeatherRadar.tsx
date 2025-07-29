@@ -99,15 +99,17 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
           }
         });
         
-        // Start animation if we have multiple frames
-        if (radarFrames.length > 1 && !isAnimating) {
-          console.log('Radar: Starting animation');
-          startAnimation();
-        } else if (radarFrames.length === 1) {
-          // Show single frame
-          console.log('Radar: Showing single frame');
-          updateFrame(0);
-        }
+        // Start animation after frames are loaded
+        setTimeout(() => {
+          if (radarFrames.length > 1 && !isAnimating && mountedRef.current) {
+            console.log('Radar: Starting animation with', radarFrames.length, 'frames');
+            startAnimation();
+          } else if (radarFrames.length === 1) {
+            // Show single frame
+            console.log('Radar: Showing single frame');
+            updateFrame(0);
+          }
+        }, 100); // Small delay to ensure layers are added
       }
     } catch (error) {
       console.error('Radar: Error loading frames:', error);
@@ -139,8 +141,13 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
 
   // Start animation
   const startAnimation = useCallback(() => {
-    if (animationRef.current || isAnimating || frames.length <= 1) {
-      console.log('Radar: Animation already running or insufficient frames');
+    if (animationRef.current || isAnimating) {
+      console.log('Radar: Animation already running');
+      return;
+    }
+    
+    if (frames.length <= 1) {
+      console.log('Radar: Insufficient frames for animation:', frames.length);
       return;
     }
     
@@ -148,17 +155,17 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     setIsAnimating(true);
     setCurrentFrame(0);
     
-    // Use 1000ms interval to prevent flashing (slower than the original 300ms)
+    // Use 600ms interval for smooth animation of 12 frames
     animationRef.current = setInterval(() => {
       if (mountedRef.current) {
         setCurrentFrame(prev => {
           const next = (prev + 1) % frames.length;
-          console.log('Radar: Frame', next, 'of', frames.length);
+          console.log('Radar: Frame', next + 1, 'of', frames.length);
           return next;
         });
       }
-    }, 1000); // Very slow animation to prevent flashing
-  }, [frames.length, isAnimating]);
+    }, 600); // 600ms per frame for smooth playback
+  }, [isAnimating]); // Remove frames.length dependency to fix the issue
 
   // Stop animation
   const stopAnimation = useCallback(() => {
@@ -186,7 +193,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
       console.log('Radar: Cleaning up');
       cleanup();
     }
-  }, [isActive, map, loadRadarFrames, cleanup]);
+  }, [isActive, map]); // Remove loadRadarFrames from deps to prevent infinite loops
 
   // Cleanup on unmount
   useEffect(() => {

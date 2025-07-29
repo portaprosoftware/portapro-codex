@@ -44,12 +44,12 @@ class RainViewerService {
       console.log('RainViewer: Fetching radar data...');
       const data = await this.getRadarData();
       
-      // Combine past and nowcast frames, limited to prevent flashing
-      const pastFrames = data.radar.past.slice(-4); // Last 4 past frames
-      const nowcastFrames = data.radar.nowcast.slice(0, 2); // First 2 nowcast frames
+      // 90 minutes in the past (9 frames at 10-min intervals) + 30 minutes future (3 frames)
+      const pastFrames = data.radar.past.slice(-9); // Last 9 past frames (90 minutes)
+      const nowcastFrames = data.radar.nowcast.slice(0, 3); // First 3 nowcast frames (30 minutes)
       
       const allFrames = [...pastFrames, ...nowcastFrames];
-      console.log('RainViewer: Got', allFrames.length, 'radar frames');
+      console.log('RainViewer: Got', allFrames.length, 'radar frames (90min past + 30min future)');
       
       return allFrames;
     } catch (error) {
