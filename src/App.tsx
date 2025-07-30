@@ -69,6 +69,9 @@ const App = () => {
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
           
+          {/* Testing Route - No Auth Required */}
+          <Route path="/testing" element={<TestingPage />} />
+          
           {/* Explicit Landing Page Route */}
           <Route path="/landing" element={<Landing />} />
 
@@ -102,7 +105,6 @@ const App = () => {
                     <Route path="/fleet/fuel" element={<FleetFuelManagement />} />
                     <Route path="/fleet/files" element={<FleetFiles />} />
                     <Route path="/fleet/maintenance" element={<FleetMaintenancePage />} />
-                    <Route path="/testing" element={<TestingPage />} />
                     <Route path="/maintenance-hub" element={<MaintenanceHub />} />
                     <Route path="/marketing" element={<Marketing />} />
                     <Route path="/marketing/templates" element={<Marketing />} />
