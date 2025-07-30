@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -20,12 +20,19 @@ export default function TeamManagement() {
   // Extract tab from URL or default to 'users'
   const currentTab = (location.pathname.split('/').pop() as TeamTab) || 'users';
   
+  // Redirect to users tab if on base route
+  useEffect(() => {
+    if (location.pathname === '/team-management') {
+      navigate('/team-management/users', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+  
   const handleTabChange = (tab: TeamTab) => {
     navigate(`/team-management/${tab}`);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6 py-6">
       <div className="mb-6">
         <Breadcrumb className="mb-4">
           <BreadcrumbList>
@@ -47,7 +54,7 @@ export default function TeamManagement() {
       </div>
 
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 h-auto">
+        <TabsList className="grid w-full grid-cols-5 h-auto mb-6">
           <TabsTrigger value="users" className="flex items-center gap-1 px-2 py-2 text-xs sm:text-sm">
             <Users className="h-4 w-4 flex-shrink-0" />
             <span className="hidden sm:inline">Users</span>
@@ -75,24 +82,24 @@ export default function TeamManagement() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
-          <TabsContent value="users" className="space-y-6">
+        <div className="space-y-6">
+          <TabsContent value="users" className="space-y-6 mt-0">
             <UserManagementSection />
           </TabsContent>
 
-          <TabsContent value="scheduling" className="space-y-6">
+          <TabsContent value="scheduling" className="space-y-6 mt-0">
             <TeamSchedulingTab />
           </TabsContent>
 
-          <TabsContent value="time-off" className="space-y-6">
+          <TabsContent value="time-off" className="space-y-6 mt-0">
             <DriverTimeOffSection onBack={() => handleTabChange('users')} />
           </TabsContent>
 
-          <TabsContent value="analytics" className="space-y-6">
+          <TabsContent value="analytics" className="space-y-6 mt-0">
             <TeamAnalyticsTab />
           </TabsContent>
 
-          <TabsContent value="training" className="space-y-6">
+          <TabsContent value="training" className="space-y-6 mt-0">
             <TrainingCertificationsTab />
           </TabsContent>
         </div>
