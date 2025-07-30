@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Search, Users, Plus, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 
 interface ServiceLocation {
   id: string;
@@ -37,7 +38,10 @@ interface LocationContactsData {
   customerId: string | null;
   selectedLocationId: string | null;
   newLocationData: {
-    address: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
     coordinates: { lat: number; lng: number } | null;
     saveToProfile: boolean;
   } | null;
@@ -117,11 +121,29 @@ export const LocationContactsStep: React.FC<LocationContactsStepProps> = ({
       ...data,
       selectedLocationId: null,
       newLocationData: {
-        ...data.newLocationData,
-        address: data.newLocationData?.address || '',
+        street: data.newLocationData?.street || '',
+        city: data.newLocationData?.city || '',
+        state: data.newLocationData?.state || '',
+        zip: data.newLocationData?.zip || '',
         coordinates: data.newLocationData?.coordinates || null,
         saveToProfile: data.newLocationData?.saveToProfile || false,
         [field]: value
+      }
+    });
+    setLocationMode('new');
+  };
+
+  const handleAddressChange = (addressData: any) => {
+    onUpdate({
+      ...data,
+      selectedLocationId: null,
+      newLocationData: {
+        street: addressData.street || '',
+        city: addressData.city || '',
+        state: addressData.state || '',
+        zip: addressData.zip || '',
+        coordinates: addressData.coordinates || null,
+        saveToProfile: data.newLocationData?.saveToProfile || false,
       }
     });
     setLocationMode('new');
@@ -167,6 +189,12 @@ export const LocationContactsStep: React.FC<LocationContactsStepProps> = ({
       location.city,
       location.state && location.zip ? `${location.state} ${location.zip}` : location.state || location.zip
     ].filter(Boolean);
+    return parts.join(', ');
+  };
+
+  const formatNewLocationAddress = (locationData: any) => {
+    if (!locationData) return '';
+    const parts = [locationData.street, locationData.city, locationData.state, locationData.zip].filter(Boolean);
     return parts.join(', ');
   };
 
@@ -252,19 +280,18 @@ export const LocationContactsStep: React.FC<LocationContactsStepProps> = ({
 
         {(locationMode === 'new' || serviceLocations.length === 0) && (
           <div className="space-y-4 border border-border rounded-lg p-4">
-            <div className="space-y-3">
-              <Label htmlFor="new-address">Service Address</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  id="new-address"
-                  placeholder="Enter service address..."
-                  value={data.newLocationData?.address || ''}
-                  onChange={(e) => handleNewLocationUpdate('address', e.target.value)}
-                  className="pl-10 h-12"
-                />
-              </div>
-            </div>
+            <AddressAutocomplete
+              label="Service Address"
+              placeholder="Start typing an address..."
+              value={{
+                street: data.newLocationData?.street || '',
+                city: data.newLocationData?.city || '',
+                state: data.newLocationData?.state || '',
+                zip: data.newLocationData?.zip || ''
+              }}
+              onChange={handleAddressChange}
+              required
+            />
 
             <Button
               variant="outline"
@@ -377,7 +404,7 @@ export const LocationContactsStep: React.FC<LocationContactsStepProps> = ({
       </div>
 
       {/* Summary */}
-      {(getSelectedLocation() || data.newLocationData?.address) && (
+      {(getSelectedLocation() || data.newLocationData) && (
         <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-3">
             <MapPin className="w-4 h-4 text-primary" />
@@ -392,7 +419,7 @@ export const LocationContactsStep: React.FC<LocationContactsStepProps> = ({
               <span className="text-sm">
                 {getSelectedLocation() 
                   ? `${getSelectedLocation()?.location_name} - ${formatAddress(getSelectedLocation()!)}`
-                  : data.newLocationData?.address
+                  : formatNewLocationAddress(data.newLocationData)
                 }
               </span>
             </div>

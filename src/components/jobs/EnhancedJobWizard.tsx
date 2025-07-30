@@ -51,8 +51,11 @@ interface WizardData {
   // Step 4: Location & Contacts
   selectedLocation?: any;
   customLocation?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
     coordinates: { lat: number; lng: number } | null;
-    address: string;
     saveToProfile: boolean;
   };
   selectedContacts: any[];
@@ -165,7 +168,7 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
         }
         return true;
       case 4:
-        return data.selectedLocation || (data.customLocation?.address && data.customLocation.address.length > 0);
+        return data.selectedLocation || (data.customLocation?.street && data.customLocation.street.length > 0);
       case 5:
         return true; // Optional step
       case 6:
