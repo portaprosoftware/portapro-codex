@@ -38,7 +38,7 @@ export const CampaignManagement: React.FC = () => {
             </SheetTrigger>
             <SheetContent 
               side="right" 
-              className={`${isMobile ? 'w-full' : 'w-[75%]'} max-w-none overflow-y-auto`}
+              className={`${isMobile ? 'w-full' : 'w-3/4'} max-w-none overflow-y-auto`}
             >
               <SheetHeader>
                 <SheetTitle>Create New Campaign</SheetTitle>
