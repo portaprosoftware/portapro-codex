@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
+import { formatCategoryDisplay } from "@/lib/categoryUtils";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -169,9 +170,9 @@ const CustomerHub: React.FC = () => {
                   </TableCell>
                    <TableCell>
                      {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] ? (
-                        <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
-                          {CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES].label}
-                        </Badge>
+                     <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+                           {formatCategoryDisplay(customer.customer_type)}
+                         </Badge>
                      ) : (
                        <span className="text-gray-500">-</span>
                      )}

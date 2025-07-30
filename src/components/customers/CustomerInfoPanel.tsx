@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText } from 'lucide-react';
 import { EditCustomerModal } from './EditCustomerModal';
 import { toast } from '@/hooks/use-toast';
+import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import {
   Dialog,
   DialogContent,
@@ -160,7 +161,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <label className="text-sm font-medium text-muted-foreground">Customer Type</label>
               <div className="mt-1">
                 <Badge className={getCustomerTypeColor(customer.type)}>
-                  {customer.type || 'Unknown'}
+                  {customer.type ? formatCategoryDisplay(customer.type) : 'Unknown'}
                 </Badge>
               </div>
             </div>
