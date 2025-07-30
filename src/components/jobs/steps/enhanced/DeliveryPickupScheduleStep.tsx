@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatTimezoneLabel } from '@/lib/timezoneUtils';
+import { TimePicker } from '@/components/ui/time-picker';
 
 interface ScheduleData {
   jobType: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
@@ -42,13 +43,6 @@ interface DeliveryPickupScheduleStepProps {
   data: ScheduleData;
   onUpdate: (data: ScheduleData) => void;
 }
-
-const timeSlots = [
-  '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
-  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30', '18:00'
-];
 
 export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProps> = ({ 
   data, 
@@ -87,6 +81,13 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
     });
   };
 
+  const formatTime = (time24: string) => {
+    const [hours, minutes] = time24.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   const generateSummary = () => {
     const parts: string[] = [];
     const tzLabel = formatTimezoneLabel(data.timezone);
@@ -94,7 +95,7 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
     if (data.jobType === 'delivery') {
       if (data.deliveryDate) {
         const dateStr = format(data.deliveryDate, "MMMM do, yyyy");
-        const timeStr = data.addDeliveryTime ? ` at ${data.deliveryTime}` : '';
+        const timeStr = data.addDeliveryTime ? ` at ${formatTime(data.deliveryTime)}` : '';
         parts.push(`Delivery: ${dateStr}${timeStr}`);
       }
 
@@ -102,7 +103,7 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
       data.partialPickups.forEach(pickup => {
         if (pickup.date) {
           const dateStr = format(pickup.date, "MMMM do, yyyy");
-          const timeStr = pickup.addTime ? ` at ${pickup.time}` : '';
+          const timeStr = pickup.addTime ? ` at ${formatTime(pickup.time)}` : '';
           parts.push(`${pickup.label}: ${dateStr}${timeStr}`);
         }
       });
@@ -110,19 +111,19 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
       // Full pickup
       if (data.returnScheduleEnabled && data.fullPickupDate) {
         const dateStr = format(data.fullPickupDate, "MMMM do, yyyy");
-        const timeStr = data.addFullPickupTime ? ` at ${data.fullPickupTime}` : '';
+        const timeStr = data.addFullPickupTime ? ` at ${formatTime(data.fullPickupTime)}` : '';
         parts.push(`Full Pickup: ${dateStr}${timeStr}`);
       }
     } else if (data.jobType === 'pickup') {
       if (data.fullPickupDate) {
         const dateStr = format(data.fullPickupDate, "MMMM do, yyyy");
-        const timeStr = data.addFullPickupTime ? ` at ${data.fullPickupTime}` : '';
+        const timeStr = data.addFullPickupTime ? ` at ${formatTime(data.fullPickupTime)}` : '';
         parts.push(`Pickup: ${dateStr}${timeStr}`);
       }
     } else if (data.jobType === 'service' || data.jobType === 'on-site-survey') {
       if (data.serviceDate) {
         const dateStr = format(data.serviceDate, "MMMM do, yyyy");
-        const timeStr = data.addServiceTime ? ` at ${data.serviceTime}` : '';
+        const timeStr = data.addServiceTime ? ` at ${formatTime(data.serviceTime)}` : '';
         const label = data.jobType === 'service' ? 'Service' : 'On-Site Survey/Estimate';
         parts.push(`${label}: ${dateStr}${timeStr}`);
       }
@@ -155,11 +156,37 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
     required?: boolean;
   }) => (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label className="font-medium">{label}</Label>
+      <Label className="font-medium">{label}</Label>
+
+      <div className="flex gap-2 items-center">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "flex-1 justify-start text-left font-normal h-12",
+                !date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date || undefined}
+              onSelect={onDateChange}
+              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+
         {!required && (
           <div className="flex items-center space-x-2">
-            <Label htmlFor={`${label}-time`} className="text-sm text-muted-foreground">
+            <Label htmlFor={`${label}-time`} className="text-sm text-muted-foreground whitespace-nowrap">
               Add time
             </Label>
             <Switch
@@ -171,50 +198,12 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
         )}
       </div>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left font-normal h-12",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date || undefined}
-            onSelect={onDateChange}
-            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-            initialFocus
-            className="pointer-events-auto"
-          />
-        </PopoverContent>
-      </Popover>
-
       {(addTime || required) && (
-        <div className="grid grid-cols-4 gap-2">
-          {timeSlots.map((timeSlot) => (
-            <Button
-              key={timeSlot}
-              variant={time === timeSlot ? "default" : "outline"}
-              size="sm"
-              onClick={() => onTimeChange(timeSlot)}
-              className={cn(
-                "h-9 text-xs",
-                time === timeSlot
-                  ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  : "hover:border-primary hover:text-primary"
-              )}
-            >
-              {timeSlot}
-            </Button>
-          ))}
-        </div>
+        <TimePicker
+          value={time}
+          onChange={onTimeChange}
+          className="mt-3"
+        />
       )}
     </div>
   );
