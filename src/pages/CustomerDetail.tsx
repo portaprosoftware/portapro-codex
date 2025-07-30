@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { CustomerStatsSection } from '@/components/customers/CustomerStatsSection';
 import { CustomerTabs } from '@/components/customers/CustomerTabs';
+import { formatCategoryDisplay } from '@/lib/categoryUtils';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
@@ -82,7 +83,7 @@ export default function CustomerDetail() {
               <div>
                 <h1 className="text-3xl font-bold text-foreground">{customer.name}</h1>
                 <p className="text-muted-foreground mt-1">
-                  {(customer as any).type || customer.customer_type || 'Customer'} • {customer.email} • {customer.phone}
+                  {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')} • {customer.email} • {customer.phone}
                 </p>
               </div>
             </div>
