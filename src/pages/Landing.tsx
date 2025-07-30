@@ -106,7 +106,7 @@ const completePackage = {
 export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   // Load Calendly widget
   useEffect(() => {
     // Add Calendly CSS
@@ -120,20 +120,19 @@ export const Landing: React.FC = () => {
     script.src = 'https://assets.calendly.com/assets/external/widget.js';
     script.async = true;
     document.head.appendChild(script);
-
     return () => {
       // Cleanup
       document.head.removeChild(link);
       document.head.removeChild(script);
     };
   }, []);
-
   const openCalendlyPopup = () => {
     if ((window as any).Calendly) {
-      (window as any).Calendly.initPopupWidget({ url: 'https://calendly.com/portapro/portapro-software-demo' });
+      (window as any).Calendly.initPopupWidget({
+        url: 'https://calendly.com/portapro/portapro-software-demo'
+      });
     }
   };
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -219,12 +218,7 @@ export const Landing: React.FC = () => {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button 
-                  variant="outline" 
-                  size="default" 
-                  className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10"
-                  onClick={openCalendlyPopup}
-                >
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10" onClick={openCalendlyPopup}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
                 </Button>
@@ -251,12 +245,10 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Why PortaPro */}
-      <section id="about" className="py-20 px-6 bg-white">
+      <section id="about" className="bg-white px-0 my-[10px] py-[10px]">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center space-y-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-              Why PortaPro
-            </h2>
+            
             
             <div className="grid sm:grid-cols-3 gap-8">
               {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
