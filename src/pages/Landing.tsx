@@ -191,7 +191,7 @@ export const Landing: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
+      <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
