@@ -290,7 +290,7 @@ export const Landing: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-6">
-                <h2 className="text-4xl font-bold text-primary">Smart AI Panel Scanning with Google Cloud Vision</h2>
+                <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
                 <p className="text-xl text-muted-foreground">
                   Eliminate manual data entry — just snap a photo.
                 </p>
@@ -301,54 +301,70 @@ export const Landing: React.FC = () => {
               
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
                   <span className="text-foreground">Tool Numbers</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
                   <span className="text-foreground">Vendor IDs</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
                   <span className="text-foreground">Plastic Type Codes (HDPE)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
                   <span className="text-foreground">Manufacturing Dates</span>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg border-l-4 border-gray-300">
-                <p className="text-lg font-semibold text-gray-800 mb-2">This isn't just OCR.</p>
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
                 <p className="text-muted-foreground">
                   It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-primary">Why it matters:</h3>
+                <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <Zap className="h-5 w-5 text-yellow-500 mt-1 flex-shrink-0" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
                     <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
                     <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Clock className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
                     <span className="text-muted-foreground">Save hours per week on manual entry</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Camera className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Camera className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
                     <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
                   </div>
                 </div>
               </div>
 
               <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary text-white rounded-lg font-semibold">
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold">
                   <Camera className="h-5 w-5" />
                   <span>Snap.</span>
                   <Eye className="h-5 w-5" />
