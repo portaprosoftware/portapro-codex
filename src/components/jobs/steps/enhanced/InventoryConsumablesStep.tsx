@@ -175,7 +175,7 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
       const specificUnitsCount = item.selected_units?.length || 0;
       const bulkQuantity = Math.max(0, item.selected_quantity - specificUnitsCount);
       return sum + (bulkQuantity * 50) + (specificUnitsCount * 50);
-    }, 0) + data.selectedUnits.length * 50; // $50 per unit placeholder
+    }, 0); // $50 per unit placeholder
 
     // Calculate consumables subtotal
     let consumablesSubtotal = 0;
@@ -354,7 +354,7 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                       <TableHead className="w-24">Reserved (Accepted)</TableHead>
                       <TableHead className="w-24">Reserved (Pending)</TableHead>
                       <TableHead className="w-24">Available</TableHead>
-                      <TableHead className="w-32">Quantity</TableHead>
+                       <TableHead className="w-48">Quantity & Individual Units</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -378,7 +378,7 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <div className="space-y-2">
+                            <div className="space-y-2 w-full">
                               <Input
                                 type="number"
                                 min="0"
@@ -388,21 +388,24 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                                   product.id, 
                                   parseInt(e.target.value) || 0
                                 )}
-                                className={selectedQty > available ? 'border-destructive' : ''}
+                                className={cn(
+                                  "w-full",
+                                  selectedQty > available ? 'border-destructive' : ''
+                                )}
                                 placeholder="Total quantity"
                               />
                               {selectedQty > 0 && (
-                                <div className="border rounded-lg p-2 bg-muted/30">
+                                <div className="border rounded-lg p-3 bg-muted/30 w-full">
                                   <div className="text-xs text-muted-foreground mb-2">
                                     Specify individual units (optional):
                                   </div>
-                                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                                  <div className="space-y-2 max-h-32 overflow-y-auto">
                                     {individualUnits
                                       .filter(unit => unit.product_id === product.id && unit.status === 'available')
                                       .map((unit) => {
                                         const isSelected = bulkItem?.selected_units?.some(u => u.id === unit.id) || false;
                                         return (
-                                          <div key={unit.id} className="flex items-center space-x-2 text-xs">
+                                          <div key={unit.id} className="flex items-center space-x-2 text-xs p-2 border border-border rounded bg-background">
                                             <Checkbox
                                               checked={isSelected}
                                               onCheckedChange={(checked) => 
@@ -410,24 +413,26 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                                               }
                                               disabled={(bulkItem?.selected_units?.length || 0) >= selectedQty && !isSelected}
                                             />
-                                            <span className="font-mono">{unit.item_code}</span>
-                                            {unit.color && (
-                                              <Badge variant="outline" className="text-xs px-1 py-0">
-                                                {unit.color}
-                                              </Badge>
-                                            )}
-                                            {unit.winterized && (
-                                              <Badge variant="outline" className="text-xs px-1 py-0">
-                                                Winter
-                                              </Badge>
-                                            )}
+                                            <span className="font-mono flex-1">{unit.item_code}</span>
+                                            <div className="flex items-center space-x-1">
+                                              {unit.color && (
+                                                <Badge variant="outline" className="text-xs px-1 py-0">
+                                                  {unit.color}
+                                                </Badge>
+                                              )}
+                                              {unit.winterized && (
+                                                <Badge variant="outline" className="text-xs px-1 py-0">
+                                                  Winter
+                                                </Badge>
+                                              )}
+                                            </div>
                                           </div>
                                         );
                                       })}
                                   </div>
                                   {bulkItem?.selected_units && bulkItem.selected_units.length > 0 && (
-                                    <div className="text-xs text-muted-foreground mt-2">
-                                      {bulkItem.selected_units.length} specific units selected, {Math.max(0, selectedQty - bulkItem.selected_units.length)} from general pool
+                                    <div className="text-xs text-muted-foreground mt-2 p-2 bg-blue-50 rounded">
+                                      <strong>{bulkItem.selected_units.length}</strong> specific units selected, <strong>{Math.max(0, selectedQty - bulkItem.selected_units.length)}</strong> from general pool
                                     </div>
                                   )}
                                 </div>
@@ -443,85 +448,6 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
             </CardContent>
           </Card>
 
-          {/* Additional Individual Units (not part of bulk) */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Grid className="w-5 h-5" />
-                    <span>Additional Individual Units</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Select specific units separate from bulk allocations
-                  </CardDescription>
-                </div>
-                <Switch
-                  checked={data.selectSpecificUnits}
-                  onCheckedChange={(checked) => onUpdate({ 
-                    ...data, 
-                    selectSpecificUnits: checked,
-                    selectedUnits: checked ? data.selectedUnits : []
-                  })}
-                />
-              </div>
-            </CardHeader>
-            
-            {data.selectSpecificUnits && (
-              <CardContent>
-                <div className="grid gap-3 max-h-64 overflow-y-auto">
-                  {filteredUnits.map((unit) => {
-                    // Check if this unit is already selected in bulk allocations
-                    const isInBulk = data.bulkItems.some(item => 
-                      item.selected_units?.some(u => u.id === unit.id)
-                    );
-                    
-                    return (
-                      <div
-                        key={unit.id}
-                        className={cn(
-                          "flex items-center space-x-3 p-3 border border-border rounded-lg",
-                          isInBulk && "opacity-50"
-                        )}
-                      >
-                        <Checkbox
-                          checked={data.selectedUnits.some(u => u.id === unit.id)}
-                          onCheckedChange={(checked) => 
-                            toggleIndividualUnit(unit.id, checked as boolean)
-                          }
-                          disabled={isInBulk}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium">{unit.item_code}</span>
-                            <Badge variant="outline">{unit.product_name}</Badge>
-                            <Badge 
-                              className={unit.status === 'available' 
-                                ? "bg-green-100 text-green-800" 
-                                : "bg-red-100 text-red-800"
-                              }
-                            >
-                              {unit.status}
-                            </Badge>
-                            {isInBulk && (
-                              <Badge variant="secondary" className="text-xs">
-                                In Bulk
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {[unit.color, unit.size, unit.condition, unit.winterized ? 'Winterized' : null]
-                              .filter(Boolean)
-                              .join(' • ')}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            )}
-          </Card>
         </TabsContent>
 
         {/* Consumables Tab */}
