@@ -200,24 +200,40 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-4">
             <Button
               variant={data.templateAssignmentMode === 'automatic' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'automatic' })}
-              className="h-20 flex-col space-y-2"
+              className={`flex-1 h-20 flex-col space-y-2 ${
+                data.templateAssignmentMode === 'automatic' ? 'text-white' : ''
+              }`}
             >
               <Star className="w-5 h-5" />
               <span>Automatic</span>
-              <span className="text-xs text-muted-foreground">Use recommended templates</span>
+              <span className={`text-xs ${
+                data.templateAssignmentMode === 'automatic' 
+                  ? 'text-white/80' 
+                  : 'text-muted-foreground'
+              }`}>
+                Use recommended templates
+              </span>
             </Button>
             <Button
               variant={data.templateAssignmentMode === 'manual' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'manual' })}
-              className="h-20 flex-col space-y-2"
+              className={`flex-1 h-20 flex-col space-y-2 ${
+                data.templateAssignmentMode === 'manual' ? 'text-white' : ''
+              }`}
             >
               <Plus className="w-5 h-5" />
               <span>Manual</span>
-              <span className="text-xs text-muted-foreground">Choose specific templates</span>
+              <span className={`text-xs ${
+                data.templateAssignmentMode === 'manual' 
+                  ? 'text-white/80' 
+                  : 'text-muted-foreground'
+              }`}>
+                Choose specific templates
+              </span>
             </Button>
           </div>
         </CardContent>
