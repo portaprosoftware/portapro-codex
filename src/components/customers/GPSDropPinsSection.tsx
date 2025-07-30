@@ -162,10 +162,23 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     const getMapboxToken = async () => {
       try {
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase function error:', error);
+          throw error;
+        }
+        if (!data?.token) {
+          throw new Error('No token received from Mapbox service');
+        }
+        console.log('Mapbox token received, length:', data.token.length);
         setMapboxToken(data.token);
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
+        // Show user-friendly error message
+        toast({
+          title: "Map Configuration Error",
+          description: "Unable to load map. Please check Mapbox token configuration.",
+          variant: "destructive",
+        });
       }
     };
 
@@ -789,14 +802,26 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
   const handleDeleteCoordinate = async (coordinateId: string) => {
     try {
+      console.log('Attempting to delete coordinate:', coordinateId);
+      
       const { error } = await supabase
         .from('service_location_coordinates')
         .delete()
         .eq('id', coordinateId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
       
-      refetch();
+      console.log('Delete successful, refreshing data...');
+      await refetch();
+      
+      // Update map markers after delete
+      if (map.current) {
+        updateMapMarkers();
+      }
+      
       toast({
         title: "Success",
         description: "GPS drop-pin deleted successfully",
@@ -805,7 +830,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       console.error('Error deleting coordinate:', error);
       toast({
         title: "Error",
-        description: "Failed to delete GPS drop-pin",
+        description: `Failed to delete GPS drop-pin: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }
