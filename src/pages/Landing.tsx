@@ -126,10 +126,11 @@ export const Landing: React.FC = () => {
       document.head.removeChild(script);
     };
   }, []);
+
   const openCalendlyPopup = () => {
     if ((window as any).Calendly) {
       (window as any).Calendly.initPopupWidget({
-        url: 'https://calendly.com/portapro/portapro-software-demo'
+        url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1'
       });
     }
   };
@@ -218,10 +219,10 @@ export const Landing: React.FC = () => {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10" onClick={openCalendlyPopup}>
+                <a href="" onClick={(e) => { e.preventDefault(); openCalendlyPopup(); }} className="inline-flex items-center justify-center font-medium px-6 py-3 border border-white/30 text-white hover:bg-white/10 rounded-md transition-colors">
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
-                </Button>
+                </a>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10">
                   <Play className="w-4 h-4 mr-2" />
                   Watch Preview
