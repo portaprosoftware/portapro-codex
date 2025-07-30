@@ -1,11 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Customer {
@@ -28,23 +24,7 @@ interface CustomerStepProps {
 export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddingNew, setIsAddingNew] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  // New customer form
-  const [newCustomer, setNewCustomer] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    billingStreet: '',
-    billingCity: '',
-    billingState: '',
-    billingZip: '',
-    serviceStreet: '',
-    serviceCity: '',
-    serviceState: '',
-    serviceZip: '',
-  });
 
   useEffect(() => {
     fetchCustomers();
@@ -75,60 +55,6 @@ export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) =>
     }
   };
 
-  const handleCreateCustomer = async () => {
-    try {
-      const { data: customerData, error } = await supabase
-        .from('customers')
-        .insert({
-          name: newCustomer.name,
-          email: newCustomer.email,
-          phone: newCustomer.phone,
-          billing_street: newCustomer.billingStreet,
-          billing_city: newCustomer.billingCity,
-          billing_state: newCustomer.billingState,
-          billing_zip: newCustomer.billingZip,
-          service_street: newCustomer.serviceStreet || newCustomer.billingStreet,
-          service_city: newCustomer.serviceCity || newCustomer.billingCity,
-          service_state: newCustomer.serviceState || newCustomer.billingState,
-          service_zip: newCustomer.serviceZip || newCustomer.billingZip,
-          type: 'business',
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Add to local list
-      const formattedCustomer = {
-        id: customerData.id,
-        name: customerData.name,
-        address: `${customerData.service_street}, ${customerData.service_city}, ${customerData.service_state} ${customerData.service_zip}`,
-        email: customerData.email,
-        phone: customerData.phone,
-      };
-
-      setCustomers(prev => [...prev, formattedCustomer]);
-      onUpdate(formattedCustomer);
-      setIsAddingNew(false);
-      
-      // Reset form
-      setNewCustomer({
-        name: '',
-        email: '',
-        phone: '',
-        billingStreet: '',
-        billingCity: '',
-        billingState: '',
-        billingZip: '',
-        serviceStreet: '',
-        serviceCity: '',
-        serviceState: '',
-        serviceZip: '',
-      });
-    } catch (error) {
-      console.error('Error creating customer:', error);
-    }
-  };
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -140,7 +66,7 @@ export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) =>
       <div className="text-center">
         <User className="w-12 h-12 text-[#3366FF] mx-auto mb-4" />
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Select Customer</h2>
-        <p className="text-gray-600">Choose an existing customer or add a new one</p>
+        <p className="text-gray-600">Choose an existing customer</p>
       </div>
 
       {/* Search */}
@@ -178,114 +104,10 @@ export const CustomerStep: React.FC<CustomerStepProps> = ({ data, onUpdate }) =>
           ))
         ) : (
           <div className="text-center py-8 text-gray-500">
-            No customers found. Try adjusting your search or add a new customer.
+            No customers found. Try adjusting your search.
           </div>
         )}
       </div>
-
-      {/* Add New Customer Button */}
-      <Dialog open={isAddingNew} onOpenChange={setIsAddingNew}>
-        <DialogTrigger asChild>
-          <Button variant="outline" className="w-full border-dashed border-2 border-gray-300 hover:border-[#3366FF] hover:bg-blue-50">
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Customer
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Add New Customer</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <Label htmlFor="name">Company/Customer Name *</Label>
-              <Input
-                id="name"
-                value={newCustomer.name}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter customer name"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={newCustomer.email}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="customer@example.com"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                value={newCustomer.phone}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="(555) 123-4567"
-              />
-            </div>
-
-            <div className="col-span-2">
-              <h3 className="font-medium text-gray-900 mb-3">Service Address</h3>
-            </div>
-            
-            <div className="col-span-2">
-              <Label htmlFor="serviceStreet">Street Address</Label>
-              <Input
-                id="serviceStreet"
-                value={newCustomer.serviceStreet}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceStreet: e.target.value }))}
-                placeholder="123 Main Street"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="serviceCity">City</Label>
-              <Input
-                id="serviceCity"
-                value={newCustomer.serviceCity}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceCity: e.target.value }))}
-                placeholder="City"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="serviceState">State</Label>
-              <Input
-                id="serviceState"
-                value={newCustomer.serviceState}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceState: e.target.value }))}
-                placeholder="State"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="serviceZip">ZIP Code</Label>
-              <Input
-                id="serviceZip"
-                value={newCustomer.serviceZip}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, serviceZip: e.target.value }))}
-                placeholder="12345"
-              />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-3 mt-6">
-            <Button variant="outline" onClick={() => setIsAddingNew(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateCustomer}
-              disabled={!newCustomer.name || !newCustomer.serviceStreet}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-            >
-              Create Customer
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
