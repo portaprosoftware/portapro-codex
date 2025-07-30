@@ -6,8 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Settings, Clock, DollarSign, Wrench } from 'lucide-react';
+import { Settings, Clock, DollarSign, Wrench, CalendarIcon, Plus, X } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+
+interface ServiceDateDetail {
+  date: Date;
+  time?: string;
+  notes?: string;
+}
 
 interface ServiceItem {
   id: string;
@@ -24,7 +34,7 @@ interface ServiceItem {
   custom_frequency_days?: number;
   custom_type?: 'days_interval' | 'days_of_week' | 'specific_dates';
   custom_days_of_week?: string[]; // ['monday', 'wednesday', 'friday']
-  custom_specific_dates?: number[]; // [8, 16, 25] for day of month
+  custom_specific_dates?: ServiceDateDetail[]; // Array of date objects with time and notes
   calculated_cost: number;
 }
 
@@ -225,7 +235,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
-  const updateCustomSpecificDates = (serviceId: string, dates: number[]) => {
+  const updateCustomSpecificDates = (serviceId: string, dates: ServiceDateDetail[]) => {
     const updatedServices = data.selectedServices.map(service => {
       if (service.id === serviceId) {
         return {
@@ -242,6 +252,35 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
+  const addSpecificDate = (serviceId: string, date: Date) => {
+    const service = data.selectedServices.find(s => s.id === serviceId);
+    if (service) {
+      const newDateDetail: ServiceDateDetail = { date };
+      const currentDates = service.custom_specific_dates || [];
+      updateCustomSpecificDates(serviceId, [...currentDates, newDateDetail]);
+    }
+  };
+
+  const removeSpecificDate = (serviceId: string, index: number) => {
+    const service = data.selectedServices.find(s => s.id === serviceId);
+    if (service && service.custom_specific_dates) {
+      const updatedDates = service.custom_specific_dates.filter((_, i) => i !== index);
+      updateCustomSpecificDates(serviceId, updatedDates);
+    }
+  };
+
+  const updateDateDetail = (serviceId: string, index: number, field: 'time' | 'notes', value: string) => {
+    const service = data.selectedServices.find(s => s.id === serviceId);
+    if (service && service.custom_specific_dates && service.custom_specific_dates[index]) {
+      const updatedDates = [...service.custom_specific_dates];
+      updatedDates[index] = {
+        ...updatedDates[index],
+        [field]: value
+      };
+      updateCustomSpecificDates(serviceId, updatedDates);
+    }
+  };
+
   const getPricingDisplay = (service: ServiceItem) => {
     switch (service.pricing_method) {
       case 'per_visit':
@@ -255,7 +294,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     }
   };
 
-  const getFrequencyLabel = (frequency: string, customType?: string, customDays?: number, daysOfWeek?: string[], specificDates?: number[]) => {
+  const getFrequencyLabel = (frequency: string, customType?: string, customDays?: number, daysOfWeek?: string[], specificDates?: ServiceDateDetail[]) => {
     switch (frequency) {
       case 'one-time': return 'One-Time';
       case 'daily': return 'Daily';
@@ -267,7 +306,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         } else if (customType === 'days_of_week') {
           return daysOfWeek?.length ? `${daysOfWeek.join(', ')}` : 'Select days';
         } else if (customType === 'specific_dates') {
-          return specificDates?.length ? `Days: ${specificDates.join(', ')}` : 'Select dates';
+          return specificDates?.length ? `${specificDates.length} dates selected` : 'Select dates';
         }
         return 'Custom';
       default: return 'One-Time';
@@ -440,26 +479,76 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
                                 {selectedService.custom_type === 'specific_dates' && (
                                   <div>
-                                    <Label className="text-sm font-medium">Select Specific Days of Month</Label>
-                                    <div className="mt-1">
-                                      <Input
-                                        placeholder="Enter days separated by commas (e.g., 8, 16, 25)"
-                                        value={selectedService.custom_specific_dates?.join(', ') || ''}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          if (value.trim() === '') {
-                                            updateCustomSpecificDates(service.id, []);
-                                          } else {
-                                            const dates = value.split(',')
-                                              .map(d => parseInt(d.trim()))
-                                              .filter(d => !isNaN(d) && d >= 1 && d <= 31);
-                                            updateCustomSpecificDates(service.id, dates);
-                                          }
-                                        }}
-                                      />
-                                      <div className="text-xs text-muted-foreground mt-1">
-                                        Enter day numbers 1-31, separated by commas
-                                      </div>
+                                    <Label className="text-sm font-medium">Select Specific Dates</Label>
+                                    <div className="mt-1 space-y-3">
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <Button
+                                            variant="outline"
+                                            className={cn(
+                                              "w-full justify-start text-left font-normal",
+                                              "text-muted-foreground"
+                                            )}
+                                          >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Add Date
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                          <Calendar
+                                            mode="single"
+                                            onSelect={(date) => {
+                                              if (date) {
+                                                addSpecificDate(service.id, date);
+                                              }
+                                            }}
+                                            className="p-3 pointer-events-auto"
+                                          />
+                                        </PopoverContent>
+                                      </Popover>
+                                      
+                                      {selectedService.custom_specific_dates && selectedService.custom_specific_dates.length > 0 && (
+                                        <div className="space-y-2">
+                                          {selectedService.custom_specific_dates.map((dateDetail, index) => (
+                                            <div key={index} className="p-3 border rounded-lg bg-muted/30">
+                                              <div className="flex items-center justify-between mb-2">
+                                                <span className="font-medium">
+                                                  {format(dateDetail.date, 'PPP')}
+                                                </span>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => removeSpecificDate(service.id, index)}
+                                                  className="h-6 w-6 p-0"
+                                                >
+                                                  <X className="h-3 w-3" />
+                                                </Button>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                  <Label className="text-xs">Time (optional)</Label>
+                                                  <Input
+                                                    type="time"
+                                                    value={dateDetail.time || ''}
+                                                    onChange={(e) => updateDateDetail(service.id, index, 'time', e.target.value)}
+                                                    className="mt-1 h-8"
+                                                  />
+                                                </div>
+                                                <div>
+                                                  <Label className="text-xs">Notes (optional)</Label>
+                                                  <Input
+                                                    placeholder="Service notes..."
+                                                    value={dateDetail.notes || ''}
+                                                    onChange={(e) => updateDateDetail(service.id, index, 'notes', e.target.value)}
+                                                    className="mt-1 h-8"
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 )}
