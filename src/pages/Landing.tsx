@@ -238,7 +238,7 @@ export const Landing: React.FC = () => {
             
             <div className="relative">
               <div className="bg-white rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition-transform duration-300">
-                <img src="/lovable-uploads/77f5e007-6b85-489b-b01b-5fc1b3765496.png" alt="PortaPro Platform Interface" className="w-full h-auto rounded-xl" />
+                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto rounded-xl" />
               </div>
             </div>
           </div>
