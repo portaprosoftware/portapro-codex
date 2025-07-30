@@ -378,312 +378,306 @@ export const EnhancedTemplateEditModal: React.FC<TemplateEditModalProps> = ({
           </SheetHeader>
 
           <div className="flex-1 overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-              {/* Left Panel - Template Settings and Available Sections */}
-              <div className="flex flex-col border-r overflow-hidden">
-                {/* Template Settings */}
-                <div className="p-6 border-b">
-                  <h3 className="text-lg font-semibold mb-4">Template Settings</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Template Name</label>
-                      <Input
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Enter template name"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Description</label>
-                      <Textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Brief description of the template"
-                        rows={2}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+                {/* Left Panel - Template Settings and Available Sections */}
+                <div className="flex flex-col border-r overflow-hidden">
+                  {/* Template Settings */}
+                  <div className="p-6 border-b">
+                    <h3 className="text-lg font-semibold mb-4">Template Settings</h3>
+                    <div className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium">Page Size</label>
-                        <Select
-                          value={formData.page_size}
-                          onValueChange={(value) => setFormData({ ...formData, page_size: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="letter">Letter</SelectItem>
-                            <SelectItem value="a4">A4</SelectItem>
-                            <SelectItem value="legal">Legal</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <label className="text-sm font-medium">Orientation</label>
-                        <Select
-                          value={formData.orientation}
-                          onValueChange={(value) => setFormData({ ...formData, orientation: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="portrait">Portrait</SelectItem>
-                            <SelectItem value="landscape">Landscape</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium">Accent Color</label>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="color"
-                          value={formData.color_accent}
-                          onChange={(e) => setFormData({ ...formData, color_accent: e.target.value })}
-                          className="h-10 w-20 rounded border border-border"
-                        />
+                        <label className="text-sm font-medium">Template Name</label>
                         <Input
-                          value={formData.color_accent}
-                          onChange={(e) => setFormData({ ...formData, color_accent: e.target.value })}
-                          placeholder="#3B82F6"
-                          className="flex-1"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="Enter template name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium">Description</label>
+                        <Textarea
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          placeholder="Brief description of the template"
+                          rows={2}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium">Page Size</label>
+                          <Select
+                            value={formData.page_size}
+                            onValueChange={(value) => setFormData({ ...formData, page_size: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="letter">Letter</SelectItem>
+                              <SelectItem value="a4">A4</SelectItem>
+                              <SelectItem value="legal">Legal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium">Orientation</label>
+                          <Select
+                            value={formData.orientation}
+                            onValueChange={(value) => setFormData({ ...formData, orientation: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="portrait">Portrait</SelectItem>
+                              <SelectItem value="landscape">Landscape</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium">Accent Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={formData.color_accent}
+                            onChange={(e) => setFormData({ ...formData, color_accent: e.target.value })}
+                            className="h-10 w-20 rounded border border-border"
+                          />
+                          <Input
+                            value={formData.color_accent}
+                            onChange={(e) => setFormData({ ...formData, color_accent: e.target.value })}
+                            placeholder="#3B82F6"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="is_public" className="text-sm font-medium">
+                            Public Template
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Allow drivers and dispatchers to see this template
+                          </p>
+                        </div>
+                        <Switch
+                          id="is_public"
+                          checked={formData.is_public}
+                          onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
                         />
                       </div>
                     </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="is_public" className="text-sm font-medium">
-                          Public Template
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Allow drivers and dispatchers to see this template
-                        </p>
-                      </div>
-                      <Switch
-                        id="is_public"
-                        checked={formData.is_public}
-                        onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
-                      />
-                    </div>
                   </div>
-                </div>
 
-                {/* Available Sections */}
-                <div className="flex-1 flex flex-col p-6 overflow-hidden">
-                  <h3 className="text-lg font-semibold mb-2">Available Sections</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Drag sections from here to add them to your template
-                  </p>
-                  
-                  <div className="flex-1 overflow-hidden">
-                    <ScrollArea className="h-full">
-                      <div className="space-y-4 pr-4">
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="available-sections" isDropDisabled>
-                            {(provided) => (
-                              <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
-                                {Object.entries(groupedSectionTypes).map(([category, sections]) => (
-                                  <div key={category}>
-                                    <h4 className="font-medium text-sm text-muted-foreground mb-2">{category}</h4>
-                                    <div className="space-y-2">
-                                      {sections.map((sectionType, index) => {
-                                        const IconComponent = getIcon(sectionType.icon);
-                                        return (
-                                          <Draggable
-                                            key={sectionType.id}
-                                            draggableId={sectionType.id}
-                                            index={index}
-                                          >
-                                            {(provided, snapshot) => (
-                                              <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={`p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-grab transition-colors ${
-                                                  snapshot.isDragging ? 'shadow-lg bg-accent' : ''
-                                                }`}
-                                              >
-                                                <div className="flex items-center space-x-3">
-                                                  <IconComponent className="h-4 w-4 text-primary" />
-                                                  <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium truncate">
-                                                      {sectionType.display_name}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground truncate">
-                                                      {sectionType.description}
-                                                    </p>
-                                                  </div>
-                                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
-                                                </div>
-                                              </div>
-                                            )}
-                                          </Draggable>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                ))}
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
-                      </div>
-                    </ScrollArea>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Panel - Template Builder & Preview */}
-              <div className="flex flex-col overflow-hidden">
-                {/* Template Sections */}
-                <div className="flex-1 p-6 border-b overflow-hidden">
-                  <h3 className="text-lg font-semibold mb-2">Template Sections</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Drag sections here and reorder as needed
-                  </p>
-                  
-                  <div className="h-full overflow-hidden">
-                    <ScrollArea className="h-full">
-                      <DragDropContext onDragEnd={handleDragEnd}>
-                        <Droppable droppableId="template-sections">
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              className={`min-h-[200px] space-y-2 p-4 rounded-lg border-2 border-dashed transition-colors ${
-                                snapshot.isDraggingOver 
-                                  ? 'border-primary bg-primary/5' 
-                                  : 'border-muted'
-                              }`}
-                            >
-                              {templateSections.length === 0 && (
-                                <div className="text-center py-8 text-muted-foreground">
-                                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                  <p>Drag sections here to build your template</p>
-                                </div>
-                              )}
-                              
-                              {templateSections.map((section, index) => {
-                                const sectionType = sectionTypes.find(st => st.name === section.section_type);
-                                if (!sectionType) return null;
-                                
-                                const IconComponent = getIcon(sectionType.icon);
-                                
-                                return (
-                                  <Draggable
-                                    key={`${section.section_type}-${index}`}
-                                    draggableId={`${section.section_type}-${index}`}
-                                    index={index}
-                                  >
-                                    {(provided, snapshot) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        className={`p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors ${
-                                          snapshot.isDragging ? 'shadow-lg bg-accent' : ''
-                                        }`}
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center space-x-3">
+                  {/* Available Sections */}
+                  <div className="flex-1 flex flex-col p-6 overflow-hidden min-h-0">
+                    <h3 className="text-lg font-semibold mb-2">Available Sections</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Drag sections from here to add them to your template
+                    </p>
+                    
+                    <div className="flex-1 overflow-auto min-h-0">
+                      <div className="space-y-4 pr-2">
+                        <Droppable droppableId="available-sections" isDropDisabled>
+                          {(provided) => (
+                            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
+                              {Object.entries(groupedSectionTypes).map(([category, sections]) => (
+                                <div key={category}>
+                                  <h4 className="font-medium text-sm text-muted-foreground mb-2 capitalize">{category}</h4>
+                                  <div className="space-y-2">
+                                    {sections.map((sectionType, index) => {
+                                      const IconComponent = getIcon(sectionType.icon);
+                                      return (
+                                        <Draggable
+                                          key={sectionType.id}
+                                          draggableId={sectionType.id}
+                                          index={index}
+                                        >
+                                          {(provided, snapshot) => (
                                             <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
                                               {...provided.dragHandleProps}
-                                              className="cursor-grab hover:cursor-grabbing"
+                                              className={`p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-grab transition-colors ${
+                                                snapshot.isDragging ? 'shadow-lg bg-accent z-50' : ''
+                                              }`}
                                             >
-                                              <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                              <div className="flex items-center space-x-3">
+                                                <IconComponent className="h-4 w-4 text-primary" />
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-medium truncate">
+                                                    {sectionType.display_name}
+                                                  </p>
+                                                  <p className="text-xs text-muted-foreground truncate">
+                                                    {sectionType.description}
+                                                  </p>
+                                                </div>
+                                                <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                              </div>
                                             </div>
-                                            <IconComponent className="h-4 w-4 text-primary" />
-                                            <div>
-                                              <p className="text-sm font-medium">
-                                                {sectionType.display_name}
-                                              </p>
-                                              <p className="text-xs text-muted-foreground">
-                                                {sectionType.description}
-                                              </p>
-                                            </div>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => removeSection(index)}
-                                            >
-                                              <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                );
-                              })}
+                                          )}
+                                        </Draggable>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
                               {provided.placeholder}
                             </div>
                           )}
                         </Droppable>
-                      </DragDropContext>
-                    </ScrollArea>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Live Preview */}
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                    <Eye className="h-4 w-4" />
-                    <span>Live Preview</span>
-                  </h3>
-                  
-                  <div 
-                    className="bg-white border rounded-lg p-6 shadow-sm"
-                    style={{ 
-                      aspectRatio: formData.orientation === 'portrait' ? '8.5/11' : '11/8.5',
-                      maxHeight: '300px',
-                      overflow: 'auto'
-                    }}
-                  >
-                    <div className="space-y-4 text-sm">
-                      <div className="text-center pb-4 border-b">
-                        <h3 className="font-bold text-lg" style={{ color: formData.color_accent }}>
-                          {formData.name || 'Template Preview'}
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          {formData.description || 'Template description will appear here'}
-                        </p>
-                      </div>
-                      
-                      {templateSections.map((section, index) => {
-                        const sectionType = sectionTypes.find(st => st.name === section.section_type);
-                        if (!sectionType) return null;
-                        
-                        return (
-                          <div key={index} className="py-2 border-b border-gray-100 last:border-0">
-                            <h4 className="font-medium text-gray-800 mb-1">
-                              {sectionType.display_name}
-                            </h4>
-                            <p className="text-gray-500 text-xs">
-                              {sectionType.description}
-                            </p>
+                {/* Right Panel - Template Builder & Preview */}
+                <div className="flex flex-col overflow-hidden">
+                  {/* Template Sections */}
+                  <div className="flex-1 p-6 border-b overflow-hidden min-h-0">
+                    <h3 className="text-lg font-semibold mb-2">Template Sections</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Drag sections here and reorder as needed
+                    </p>
+                    
+                    <div className="h-full overflow-auto min-h-0">
+                      <Droppable droppableId="template-sections">
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={`min-h-[200px] space-y-2 p-4 rounded-lg border-2 border-dashed transition-colors ${
+                              snapshot.isDraggingOver 
+                                ? 'border-primary bg-primary/5' 
+                                : 'border-muted'
+                            }`}
+                          >
+                            {templateSections.length === 0 && (
+                              <div className="text-center py-8 text-muted-foreground">
+                                <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                <p>Drag sections here to build your template</p>
+                              </div>
+                            )}
+                            
+                            {templateSections.map((section, index) => {
+                              const sectionType = sectionTypes.find(st => st.name === section.section_type);
+                              if (!sectionType) return null;
+                              
+                              const IconComponent = getIcon(sectionType.icon);
+                              
+                              return (
+                                <Draggable
+                                  key={`${section.section_type}-${index}`}
+                                  draggableId={`${section.section_type}-${index}`}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      className={`p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors ${
+                                        snapshot.isDragging ? 'shadow-lg bg-accent z-50' : ''
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                          <div
+                                            {...provided.dragHandleProps}
+                                            className="cursor-grab hover:cursor-grabbing"
+                                          >
+                                            <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                          </div>
+                                          <IconComponent className="h-4 w-4 text-primary" />
+                                          <div>
+                                            <p className="text-sm font-medium">
+                                              {sectionType.display_name}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                              {sectionType.description}
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeSection(index)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
                           </div>
-                        );
-                      })}
-                      
-                      {templateSections.length === 0 && (
-                        <div className="text-center py-8 text-gray-400">
-                          <p>Add sections to see preview</p>
+                        )}
+                      </Droppable>
+                    </div>
+                  </div>
+
+                  {/* Live Preview */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+                      <Eye className="h-4 w-4" />
+                      <span>Live Preview</span>
+                    </h3>
+                    
+                    <div 
+                      className="bg-white border rounded-lg p-6 shadow-sm"
+                      style={{ 
+                        aspectRatio: formData.orientation === 'portrait' ? '8.5/11' : '11/8.5',
+                        maxHeight: '300px',
+                        overflow: 'auto'
+                      }}
+                    >
+                      <div className="space-y-4 text-sm">
+                        <div className="text-center pb-4 border-b">
+                          <h3 className="font-bold text-lg" style={{ color: formData.color_accent }}>
+                            {formData.name || 'Template Preview'}
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            {formData.description || 'Template description will appear here'}
+                          </p>
                         </div>
-                      )}
+                        
+                        {templateSections.map((section, index) => {
+                          const sectionType = sectionTypes.find(st => st.name === section.section_type);
+                          if (!sectionType) return null;
+                          
+                          return (
+                            <div key={index} className="py-2 border-b border-gray-100 last:border-0">
+                              <h4 className="font-medium text-gray-800 mb-1">
+                                {sectionType.display_name}
+                              </h4>
+                              <p className="text-gray-500 text-xs">
+                                {sectionType.description}
+                              </p>
+                            </div>
+                          );
+                        })}
+                        
+                        {templateSections.length === 0 && (
+                          <div className="text-center py-8 text-gray-400">
+                            <p>Add sections to see preview</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </DragDropContext>
           </div>
 
           {/* Footer Actions */}
