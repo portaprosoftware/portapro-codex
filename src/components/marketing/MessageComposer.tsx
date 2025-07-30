@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Bot, Trash2, Eye, ArrowLeft, Upload, X, Image } from 'lucide-react';
+import { Sparkles, Trash2, Eye, ArrowLeft, Upload, X, Image } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -362,12 +362,12 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               >
                 {isGenerating ? (
                   <>
-                    <Bot className="w-4 h-4 mr-2 animate-pulse" />
+                    <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Bot className="w-4 h-4 mr-2" />
+                    <Sparkles className="w-4 h-4 mr-2" />
                     Generate with AI
                   </>
                 )}
