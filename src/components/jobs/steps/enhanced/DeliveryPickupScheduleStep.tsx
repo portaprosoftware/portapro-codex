@@ -305,48 +305,15 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
                             onAddTimeChange={(addTime) => updatePartialPickup(pickup.id, 'addTime', addTime)}
                             label="Pickup Date"
                           />
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label className="text-sm font-medium">Quantity to Remove</Label>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() => updatePartialPickup(pickup.id, 'quantity', Math.max(1, (pickup.quantity || 1) - 1))}
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-                                <Input
-                                  type="number"
-                                  min="1"
-                                  value={pickup.quantity || 1}
-                                  onChange={(e) => updatePartialPickup(pickup.id, 'quantity', Math.max(1, parseInt(e.target.value) || 1))}
-                                  className="w-16 text-center"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() => updatePartialPickup(pickup.id, 'quantity', (pickup.quantity || 1) + 1)}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label className="text-sm font-medium">Special Instructions</Label>
-                              <Textarea
-                                placeholder="e.g., after 2 PM, call first..."
-                                value={pickup.notes || ''}
-                                onChange={(e) => updatePartialPickup(pickup.id, 'notes', e.target.value)}
-                                className="min-h-[60px] resize-none"
-                              />
-                            </div>
+                           
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Special Instructions</Label>
+                            <Textarea
+                              placeholder="e.g., after 2 PM, call first..."
+                              value={pickup.notes || ''}
+                              onChange={(e) => updatePartialPickup(pickup.id, 'notes', e.target.value)}
+                              className="min-h-[60px] resize-none"
+                            />
                           </div>
                         </div>
                       </div>
