@@ -197,9 +197,9 @@ export const Landing: React.FC = () => {
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-7xl relative">
-          <div className="grid lg:grid-cols-5 gap-8 items-center">
-            <div className="lg:col-span-2 space-y-8 z-10">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 order-1 lg:order-1">
               <div className="space-y-6">
                 
                 
@@ -241,9 +241,9 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div className="lg:col-span-3 relative lg:absolute lg:right-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:translate-x-16">
+            <div className="order-2 lg:order-2">
               <div className="transform hover:scale-105 transition-transform duration-300">
-                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto lg:w-[60%] lg:max-w-none" />
+                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto max-w-lg mx-auto lg:max-w-none" />
               </div>
             </div>
           </div>
