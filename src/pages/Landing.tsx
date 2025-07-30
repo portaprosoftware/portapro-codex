@@ -235,9 +235,9 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-wrap gap-6 pt-4 text-sm text-white/80">
-                <span>• No Credit Card Required</span>
+                <span>• Full Support Included</span>
                 <span>• Cancel Anytime</span>
-                <span>• 30-Day Free Trial</span>
+                <span>• 14 Day Free Trial</span>
               </div>
             </div>
             
