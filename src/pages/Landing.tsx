@@ -243,7 +243,7 @@ export const Landing: React.FC = () => {
             
             <div className="lg:col-span-3 relative lg:absolute lg:right-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:translate-x-16">
               <div className="transform hover:scale-105 transition-transform duration-300">
-                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto lg:w-[120%] lg:max-w-none" />
+                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto lg:w-[60%] lg:max-w-none" />
               </div>
             </div>
           </div>
