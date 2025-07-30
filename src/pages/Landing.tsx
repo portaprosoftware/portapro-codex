@@ -251,17 +251,17 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Core Features Grid */}
-      <section id="features" className="py-20 px-6">
+      <section id="features" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80">
         <div className="container mx-auto max-w-6xl">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
                     Learn More <ArrowRight className="w-3 h-3" />
                   </button>
                 </CardContent>
