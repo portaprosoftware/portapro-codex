@@ -8,6 +8,11 @@ import { Logo } from '@/components/ui/logo';
 
 // Core Features Data
 const coreFeatures = [{
+  title: "Google Vision AI",
+  description: "Scan tool numbers and data directly from molded plastic panels.",
+  icon: Camera,
+  href: "#ai-scanning"
+}, {
   title: "Smart Job Wizard",
   description: "Step-by-step job creation: delivery, pickups, crew, and invoicing.",
   icon: ClipboardList,
@@ -27,11 +32,6 @@ const coreFeatures = [{
   description: "Offline-capable route navigation, job updates, and digital checklists.",
   icon: Smartphone,
   href: "#mobile-app"
-}, {
-  title: "Google Vision AI",
-  description: "Scan tool numbers and data directly from molded plastic panels.",
-  icon: Camera,
-  href: "#ai-scanning"
 }];
 
 // Job Wizard Steps
@@ -235,9 +235,9 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-wrap gap-6 pt-4 text-sm text-white/80">
-                <span>• Full Support Included</span>
-                <span>• Cancel Anytime</span>
-                <span>• 14 Day Free Trial</span>
+                <span className="font-bold">• Full Support Included</span>
+                <span className="font-bold">• Cancel Anytime</span>
+                <span className="font-bold">• 14 Day Free Trial</span>
               </div>
             </div>
             
@@ -245,6 +245,27 @@ export const Landing: React.FC = () => {
               <div className="transform hover:scale-105 transition-transform duration-300">
                 <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto max-w-lg mx-auto lg:max-w-none" />
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why PortaPro */}
+      <section id="about" className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center space-y-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+              Why PortaPro
+            </h2>
+            
+            <div className="grid sm:grid-cols-3 gap-8">
+              {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                    <item.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.description}</p>
+                </div>)}
             </div>
           </div>
         </div>
@@ -702,26 +723,6 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Why PortaPro */}
-      <section id="about" className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center space-y-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-              Why PortaPro
-            </h2>
-            
-            <div className="grid sm:grid-cols-3 gap-8">
-              {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                    <item.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                </div>)}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer id="resources" className="py-16 px-6 bg-muted/50 border-t">
