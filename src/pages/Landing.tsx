@@ -245,6 +245,124 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Smart AI Panel Scanning Section */}
+      <section className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-primary">Smart AI Panel Scanning with Google Cloud Vision</h2>
+                <p className="text-xl text-muted-foreground">
+                  Eliminate manual data entry — just snap a photo.
+                </p>
+                <p className="text-lg text-muted-foreground">
+                  PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
+                </p>
+              </div>
+              
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <span className="text-foreground">Tool Numbers</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <span className="text-foreground">Vendor IDs</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <span className="text-foreground">Plastic Type Codes (HDPE)</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                  <span className="text-foreground">Manufacturing Dates</span>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg border-l-4 border-primary">
+                <p className="text-lg font-semibold text-primary mb-2">This isn't just OCR.</p>
+                <p className="text-muted-foreground">
+                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-primary">Why it matters:</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Zap className="h-5 w-5 text-yellow-500 mt-1 flex-shrink-0" />
+                    <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                    <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                    <span className="text-muted-foreground">Save hours per week on manual entry</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Camera className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
+                    <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-blue-600 text-white rounded-lg font-semibold">
+                  <Camera className="h-5 w-5" />
+                  <span>Snap.</span>
+                  <Eye className="h-5 w-5" />
+                  <span>Scan.</span>
+                  <Database className="h-5 w-5" />
+                  <span>Save. That's it.</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 shadow-lg">
+                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-muted-foreground ml-auto">AI Scanner</span>
+                  </div>
+                  
+                  <div className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center bg-primary/5">
+                    <Camera className="h-12 w-12 text-primary mx-auto mb-4" />
+                    <p className="text-sm text-muted-foreground mb-2">Point camera at unit panel</p>
+                    <div className="bg-primary/10 rounded px-3 py-1 text-xs text-primary font-mono">
+                      Scanning: TOOL-4472...
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-2 bg-green-50 rounded border-l-4 border-green-500">
+                      <span className="text-sm">Tool Number:</span>
+                      <span className="font-mono text-sm text-green-700">TOOL-4472</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-blue-50 rounded border-l-4 border-blue-500">
+                      <span className="text-sm">Vendor ID:</span>
+                      <span className="font-mono text-sm text-blue-700">SAT-2024</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-purple-50 rounded border-l-4 border-purple-500">
+                      <span className="text-sm">Material:</span>
+                      <span className="font-mono text-sm text-purple-700">HDPE-2</span>
+                    </div>
+                  </div>
+                  
+                  <button className="w-full bg-primary text-white py-2 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors">
+                    Save to Inventory
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Core Features Grid */}
       <section id="features" className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">
@@ -594,124 +712,6 @@ export const Landing: React.FC = () => {
                   </SignUpButton>
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Smart AI Panel Scanning Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <h2 className="text-4xl font-bold text-primary">Smart AI Panel Scanning with Google Cloud Vision</h2>
-                <p className="text-xl text-muted-foreground">
-                  Eliminate manual data entry — just snap a photo.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
-                </p>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
-                  <span className="text-foreground">Tool Numbers</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
-                  <span className="text-foreground">Vendor IDs</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
-                  <span className="text-foreground">Plastic Type Codes (HDPE)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
-                  <span className="text-foreground">Manufacturing Dates</span>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg border-l-4 border-primary">
-                <p className="text-lg font-semibold text-primary mb-2">This isn't just OCR.</p>
-                <p className="text-muted-foreground">
-                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-primary">Why it matters:</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Zap className="h-5 w-5 text-yellow-500 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">Save hours per week on manual entry</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Camera className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-blue-600 text-white rounded-lg font-semibold">
-                  <Camera className="h-5 w-5" />
-                  <span>Snap.</span>
-                  <Eye className="h-5 w-5" />
-                  <span>Scan.</span>
-                  <Database className="h-5 w-5" />
-                  <span>Save. That's it.</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 shadow-lg">
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-muted-foreground ml-auto">AI Scanner</span>
-                  </div>
-                  
-                  <div className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center bg-primary/5">
-                    <Camera className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <p className="text-sm text-muted-foreground mb-2">Point camera at unit panel</p>
-                    <div className="bg-primary/10 rounded px-3 py-1 text-xs text-primary font-mono">
-                      Scanning: TOOL-4472...
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center p-2 bg-green-50 rounded border-l-4 border-green-500">
-                      <span className="text-sm">Tool Number:</span>
-                      <span className="font-mono text-sm text-green-700">TOOL-4472</span>
-                    </div>
-                    <div className="flex justify-between items-center p-2 bg-blue-50 rounded border-l-4 border-blue-500">
-                      <span className="text-sm">Vendor ID:</span>
-                      <span className="font-mono text-sm text-blue-700">SAT-2024</span>
-                    </div>
-                    <div className="flex justify-between items-center p-2 bg-purple-50 rounded border-l-4 border-purple-500">
-                      <span className="text-sm">Material:</span>
-                      <span className="font-mono text-sm text-purple-700">HDPE-2</span>
-                    </div>
-                  </div>
-                  
-                  <button className="w-full bg-primary text-white py-2 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors">
-                    Save to Inventory
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
