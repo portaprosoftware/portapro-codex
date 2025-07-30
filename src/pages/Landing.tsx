@@ -95,7 +95,7 @@ const whyPortaPro = [{
 
 // Pricing Package
 const completePackage = {
-  name: "PortaPro Complete Package",
+  name: "PortaPro Complete",
   price: {
     monthly: 175,
     annual: 125
@@ -654,21 +654,21 @@ export const Landing: React.FC = () => {
             
             <div className="flex items-center justify-center gap-4">
               <span className={`font-medium ${!isAnnual ? 'text-white' : 'text-white/70'}`}>Monthly</span>
-              <button onClick={() => setIsAnnual(!isAnnual)} className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-white' : 'bg-white/30'}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isAnnual ? 'bg-primary translate-x-7' : 'bg-white translate-x-1'}`} />
+              <button onClick={() => setIsAnnual(!isAnnual)} className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-white/30'}`}>
+                <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isAnnual ? 'bg-white translate-x-7' : 'bg-white translate-x-1'}`} />
               </button>
               <span className={`font-medium ${isAnnual ? 'text-white' : 'text-white/70'}`}>
-                Annual <Badge variant="secondary" className="ml-1 bg-white/20 text-white">Save $50/month</Badge>
+                Annual <Badge variant="secondary" className={`ml-1 ${isAnnual ? 'bg-gradient-to-r from-green-500 to-green-600 text-white font-bold' : 'bg-white/20 text-white'}`}>Save $50/month</Badge>
               </span>
             </div>
             
             <div className="flex justify-center mt-12">
-              <Card className="relative border-white/20 bg-white/10 backdrop-blur-sm max-w-md w-full">
+              <Card className="relative border-white/20 bg-white/10 backdrop-blur-sm max-w-2xl w-full">
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white text-primary">
                   Complete Package
                 </Badge>
                 <CardHeader className="text-center">
-                  <CardTitle className="text-2xl text-white">{completePackage.name}</CardTitle>
+                  <CardTitle className="text-2xl text-white font-bold">{completePackage.name}</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold text-white">
                       ${isAnnual ? completePackage.price.annual : completePackage.price.monthly}
@@ -676,21 +676,21 @@ export const Landing: React.FC = () => {
                         /month
                       </span>
                     </div>
-                    {isAnnual && <div className="text-sm text-white/80">
+                    {isAnnual && <div className="text-sm text-white/80 font-bold">
                         Billed annually (${completePackage.price.annual * 12}/year) - Save $600/year
                       </div>}
                   </div>
-                  <CardDescription className="text-white/90">{completePackage.description}</CardDescription>
+                  <CardDescription className="text-white/90 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <ul className="space-y-3">
+                  <ul className="grid grid-cols-2 gap-3">
                     {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-white/90">{feature}</span>
+                        <span className="text-sm text-white/90 font-bold">{feature}</span>
                       </li>)}
                   </ul>
                   <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                    <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6">
+                    <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6 font-bold">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
