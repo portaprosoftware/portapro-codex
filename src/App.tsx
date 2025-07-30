@@ -68,6 +68,9 @@ const App = () => {
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
+          
+          {/* Explicit Landing Page Route */}
+          <Route path="/landing" element={<Landing />} />
 
           {/* Main authenticated routes */}
           <Route
