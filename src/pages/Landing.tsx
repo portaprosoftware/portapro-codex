@@ -219,10 +219,10 @@ export const Landing: React.FC = () => {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </SignUpButton>
-                <a href="" onClick={(e) => { e.preventDefault(); openCalendlyPopup(); }} className="inline-flex items-center justify-center font-medium px-6 py-3 border border-white/30 text-white hover:bg-white/10 rounded-md transition-colors">
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10" onClick={openCalendlyPopup}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
-                </a>
+                </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10">
                   <Play className="w-4 h-4 mr-2" />
                   Watch Preview
@@ -318,8 +318,8 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg border-l-4 border-primary">
-                <p className="text-lg font-semibold text-primary mb-2">This isn't just OCR.</p>
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg border-l-4 border-gray-300">
+                <p className="text-lg font-semibold text-gray-800 mb-2">This isn't just OCR.</p>
                 <p className="text-muted-foreground">
                   It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
                 </p>
@@ -348,7 +348,7 @@ export const Landing: React.FC = () => {
               </div>
 
               <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-blue-600 text-white rounded-lg font-semibold">
+                <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary text-white rounded-lg font-semibold">
                   <Camera className="h-5 w-5" />
                   <span>Snap.</span>
                   <Eye className="h-5 w-5" />
