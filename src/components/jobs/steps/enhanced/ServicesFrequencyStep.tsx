@@ -121,6 +121,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         const serviceWithCost = {
           ...service,
           selected: true,
+          frequency: 'one-time' as const, // Default frequency when first selected
           calculated_cost: calculateServiceCost(service)
         };
         
@@ -229,42 +230,106 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           <div className="grid gap-4">
             {availableServices.map((service) => {
               const isSelected = data.selectedServices.some(s => s.id === service.id);
+              const selectedService = data.selectedServices.find(s => s.id === service.id);
               
               return (
                 <div
                   key={service.id}
-                  className="flex items-start space-x-3 p-4 border border-border rounded-lg"
+                  className={`p-4 border rounded-lg transition-all ${
+                    isSelected ? 'border-primary bg-primary/5' : 'border-border'
+                  }`}
                 >
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={(checked) => 
-                      toggleService(service.id, checked as boolean)
-                    }
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">{service.name}</div>
-                        {service.description && (
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {service.description}
-                          </div>
-                        )}
-                        <div className="flex items-center space-x-2 mt-2">
-                          {service.service_code && (
-                            <Badge variant="outline">{service.service_code}</Badge>
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={(checked) => 
+                        toggleService(service.id, checked as boolean)
+                      }
+                    />
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">{service.name}</div>
+                          {service.description && (
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {service.description}
+                            </div>
                           )}
-                          <Badge className="bg-green-100 text-green-800">
-                            {getPricingDisplay(service)}
-                          </Badge>
-                          {service.estimated_duration_hours && (
-                            <Badge variant="outline" className="flex items-center space-x-1">
-                              <Clock className="w-3 h-3" />
-                              <span>{service.estimated_duration_hours}h</span>
+                          <div className="flex items-center space-x-2 mt-2">
+                            {service.service_code && (
+                              <Badge variant="outline">{service.service_code}</Badge>
+                            )}
+                            <Badge className="bg-green-100 text-green-800">
+                              {getPricingDisplay(service)}
                             </Badge>
-                          )}
+                            {service.estimated_duration_hours && (
+                              <Badge variant="outline" className="flex items-center space-x-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{service.estimated_duration_hours}h</span>
+                              </Badge>
+                            )}
+                            {isSelected && (
+                              <Badge className="bg-blue-100 text-blue-800">
+                                ${selectedService?.calculated_cost.toFixed(2)}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      
+                      {/* Frequency Selection - Only show when service is selected */}
+                      {isSelected && selectedService && (
+                        <div className="border-t pt-3 mt-3">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex-1">
+                              <Label htmlFor={`frequency-${service.id}`} className="text-sm font-medium">
+                                Service Frequency <span className="text-destructive">*</span>
+                              </Label>
+                              <Select
+                                value={selectedService.frequency}
+                                onValueChange={(value) => updateServiceFrequency(service.id, value)}
+                              >
+                                <SelectTrigger id={`frequency-${service.id}`} className="mt-1">
+                                  <SelectValue placeholder="Select frequency" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="one-time">One-Time</SelectItem>
+                                  <SelectItem value="daily">Daily</SelectItem>
+                                  <SelectItem value="weekly">Weekly</SelectItem>
+                                  <SelectItem value="monthly">Monthly</SelectItem>
+                                  <SelectItem value="custom">Custom</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            {selectedService.frequency === 'custom' && (
+                              <div className="w-32">
+                                <Label htmlFor={`custom-days-${service.id}`} className="text-sm font-medium">
+                                  Every X Days
+                                </Label>
+                                <Input
+                                  id={`custom-days-${service.id}`}
+                                  type="number"
+                                  min="1"
+                                  value={selectedService.custom_frequency_days || 1}
+                                  onChange={(e) => updateCustomFrequency(
+                                    service.id, 
+                                    parseInt(e.target.value) || 1
+                                  )}
+                                  className="mt-1"
+                                />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="text-xs text-muted-foreground mt-2">
+                            Selected frequency: <span className="font-medium">{getFrequencyLabel(selectedService.frequency)}</span>
+                            {selectedService.frequency === 'custom' && selectedService.custom_frequency_days && 
+                              ` (every ${selectedService.custom_frequency_days} days)`
+                            }
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -274,70 +339,34 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         </CardContent>
       </Card>
 
-      {/* Selected Services Configuration */}
+      {/* Services Summary */}
       {data.selectedServices.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Clock className="w-5 h-5" />
-              <span>Service Frequency Configuration</span>
+              <span>Selected Services Summary</span>
             </CardTitle>
             <CardDescription>
-              Set the frequency for each selected service
+              Review your selected services and their frequencies
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {data.selectedServices.map((service) => (
-                <div key={service.id} className="p-4 border border-border rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <div className="font-medium">{service.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {getPricingDisplay(service)}
-                      </div>
+                <div key={service.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div>
+                    <div className="font-medium">{service.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {getFrequencyLabel(service.frequency)}
+                      {service.frequency === 'custom' && service.custom_frequency_days && 
+                        ` (every ${service.custom_frequency_days} days)`
+                      } • {getPricingDisplay(service)}
                     </div>
-                    <Badge className="bg-blue-100 text-blue-800">
-                      ${service.calculated_cost.toFixed(2)}
-                    </Badge>
                   </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                      <Label htmlFor={`frequency-${service.id}`}>Frequency</Label>
-                      <Select
-                        value={service.frequency}
-                        onValueChange={(value) => updateServiceFrequency(service.id, value)}
-                      >
-                        <SelectTrigger id={`frequency-${service.id}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="one-time">One-Time</SelectItem>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="custom">Custom</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {service.frequency === 'custom' && (
-                      <div className="w-32">
-                        <Label htmlFor={`custom-days-${service.id}`}>Every X Days</Label>
-                        <Input
-                          id={`custom-days-${service.id}`}
-                          type="number"
-                          min="1"
-                          value={service.custom_frequency_days || 1}
-                          onChange={(e) => updateCustomFrequency(
-                            service.id, 
-                            parseInt(e.target.value) || 1
-                          )}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <Badge className="bg-blue-100 text-blue-800">
+                    ${service.calculated_cost.toFixed(2)}
+                  </Badge>
                 </div>
               ))}
             </div>
