@@ -214,16 +214,16 @@ export const Landing: React.FC = () => {
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                  <Button size="default" className="bg-white text-primary hover:bg-white/90 font-medium px-6 py-3">
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20" onClick={openCalendlyPopup}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10">
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20">
                   <Play className="w-4 h-4 mr-2" />
                   Watch Preview
                 </Button>
