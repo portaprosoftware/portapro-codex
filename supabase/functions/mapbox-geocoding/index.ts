@@ -39,6 +39,7 @@ serve(async (req) => {
 
     const mapboxToken = Deno.env.get('MAPBOX_PUBLIC_TOKEN');
     if (!mapboxToken) {
+      console.error('MAPBOX_PUBLIC_TOKEN not found in environment variables');
       return new Response(
         JSON.stringify({ error: 'Mapbox token not configured' }),
         { 
@@ -51,24 +52,28 @@ serve(async (req) => {
     // Use Mapbox Geocoding API for address suggestions
     const mapboxUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&limit=${limit}&country=US&types=address,poi`;
     
-    console.log('Fetching from Mapbox:', mapboxUrl);
+    console.log('Fetching from Mapbox for query:', query);
     
     const response = await fetch(mapboxUrl);
-    const data = await response.json();
     
     if (!response.ok) {
-      console.error('Mapbox API error:', data);
+      console.error('Mapbox API response not ok:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Mapbox API error response:', errorText);
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch address suggestions' }),
+        JSON.stringify({ error: 'Failed to fetch address suggestions', details: `${response.status}: ${errorText}` }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
+    
+    const data = await response.json();
+    console.log('Mapbox API response received, features count:', data.features?.length || 0);
 
     // Transform Mapbox response to our format
-    const suggestions = data.features.map((feature: any) => {
+    const suggestions = data.features?.map((feature: any) => {
       // Extract address components from context
       const context = feature.context || [];
       let street = '', city = '', state = '', zip = '';
@@ -120,7 +125,7 @@ serve(async (req) => {
           latitude: feature.center[1]
         }
       };
-    });
+    }) || [];
 
     return new Response(
       JSON.stringify({ 
