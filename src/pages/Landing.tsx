@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -101,6 +101,34 @@ const completePackage = {
 export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Load Calendly widget
+  useEffect(() => {
+    // Add Calendly CSS
+    const link = document.createElement('link');
+    link.href = 'https://assets.calendly.com/assets/external/widget.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    // Add Calendly JS
+    const script = document.createElement('script');
+    script.src = 'https://assets.calendly.com/assets/external/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(link);
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const openCalendlyPopup = () => {
+    if ((window as any).Calendly) {
+      (window as any).Calendly.initPopupWidget({ url: 'https://calendly.com/portapro/portapro-software-demo' });
+    }
+  };
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -186,9 +214,18 @@ export const Landing: React.FC = () => {
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </SignUpButton>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
+                  onClick={openCalendlyPopup}
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Schedule Demo
+                </Button>
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10">
                   <Play className="w-5 h-5 mr-2" />
-                  Watch 60 sec Demo
+                  Watch Preview
                 </Button>
               </div>
               
