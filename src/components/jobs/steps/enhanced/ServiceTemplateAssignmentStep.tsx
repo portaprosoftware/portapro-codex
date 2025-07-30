@@ -200,17 +200,17 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <Button
               variant={data.templateAssignmentMode === 'automatic' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'automatic' })}
-              className={`flex-1 h-20 flex-col space-y-2 ${
+              className={`h-auto p-4 flex flex-col items-center space-y-2 ${
                 data.templateAssignmentMode === 'automatic' ? 'text-white' : ''
               }`}
             >
               <Star className="w-5 h-5" />
-              <span>Automatic</span>
-              <span className={`text-xs ${
+              <span className="font-medium">Automatic</span>
+              <span className={`text-xs text-center ${
                 data.templateAssignmentMode === 'automatic' 
                   ? 'text-white/80' 
                   : 'text-muted-foreground'
@@ -221,13 +221,13 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
             <Button
               variant={data.templateAssignmentMode === 'manual' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'manual' })}
-              className={`flex-1 h-20 flex-col space-y-2 ${
+              className={`h-auto p-4 flex flex-col items-center space-y-2 ${
                 data.templateAssignmentMode === 'manual' ? 'text-white' : ''
               }`}
             >
               <Plus className="w-5 h-5" />
-              <span>Manual</span>
-              <span className={`text-xs ${
+              <span className="font-medium">Manual</span>
+              <span className={`text-xs text-center ${
                 data.templateAssignmentMode === 'manual' 
                   ? 'text-white/80' 
                   : 'text-muted-foreground'
