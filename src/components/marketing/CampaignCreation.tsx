@@ -186,7 +186,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
   })();
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       {/* Progress Steps */}
       <div className="flex items-center justify-center mb-8">
         {[1, 2, 3, 4].map((step) => (
