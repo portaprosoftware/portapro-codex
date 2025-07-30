@@ -27,6 +27,11 @@ const coreFeatures = [{
   description: "Offline-capable route navigation, job updates, and digital checklists.",
   icon: Smartphone,
   href: "#mobile-app"
+}, {
+  title: "Google Vision AI",
+  description: "Scan tool numbers and data directly from molded plastic panels.",
+  icon: Camera,
+  href: "#ai-scanning"
 }];
 
 // Job Wizard Steps
@@ -245,8 +250,28 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Core Features Grid */}
+      <section id="features" className="py-20 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>)}
+          </div>
+        </div>
+      </section>
+
       {/* Smart AI Panel Scanning Section */}
-      <section className="py-20 px-6 bg-white">
+      <section id="ai-scanning" className="py-20 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -359,26 +384,6 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Core Features Grid */}
-      <section id="features" className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
-                    Learn More <ArrowRight className="w-3 h-3" />
-                  </button>
-                </CardContent>
-              </Card>)}
           </div>
         </div>
       </section>
