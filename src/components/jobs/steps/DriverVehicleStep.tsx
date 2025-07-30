@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Truck, User, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
 
 interface Driver {
   id: string;
@@ -27,6 +29,7 @@ interface DriverVehicleStepProps {
   data: {
     driverId: string | null;
     vehicleId: string | null;
+    scheduledDate?: string;
   };
   onUpdate: (assignment: { driverId: string | null; vehicleId: string | null; }) => void;
 }
@@ -35,6 +38,7 @@ export const DriverVehicleStep: React.FC<DriverVehicleStepProps> = ({ data, onUp
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDriverModal, setShowDriverModal] = useState(false);
 
   useEffect(() => {
     fetchDriversAndVehicles();
@@ -75,6 +79,14 @@ export const DriverVehicleStep: React.FC<DriverVehicleStepProps> = ({ data, onUp
     });
   };
 
+  const handleDriverModalSelect = (driver: any) => {
+    onUpdate({
+      ...data,
+      driverId: driver.id,
+    });
+    setShowDriverModal(false);
+  };
+
   const handleVehicleSelect = (vehicleId: string) => {
     onUpdate({
       ...data,
@@ -108,22 +120,25 @@ export const DriverVehicleStep: React.FC<DriverVehicleStepProps> = ({ data, onUp
       {/* Driver Selection */}
       <div className="space-y-3">
         <Label>Assign Driver</Label>
-        <Select value={data.driverId || 'none'} onValueChange={handleDriverSelect}>
-          <SelectTrigger className="h-12">
-            <SelectValue placeholder="Select a driver" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No driver assigned</SelectItem>
-            {drivers.map((driver) => (
-              <SelectItem key={driver.id} value={driver.id}>
-                <div className="flex items-center space-x-3">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span>{driver.first_name} {driver.last_name}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowDriverModal(true)}
+            className="flex-1 h-12 justify-start"
+          >
+            <User className="w-4 h-4 mr-2" />
+            {selectedDriver ? `${selectedDriver.first_name} ${selectedDriver.last_name}` : 'Select driver with availability'}
+          </Button>
+          {data.driverId && (
+            <Button
+              variant="outline"
+              onClick={() => handleDriverSelect('none')}
+              className="h-12 px-3"
+            >
+              <AlertTriangle className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Vehicle Selection */}
@@ -193,6 +208,14 @@ export const DriverVehicleStep: React.FC<DriverVehicleStepProps> = ({ data, onUp
           </div>
         </div>
       )}
+
+      {/* Driver Selection Modal */}
+      <DriverSelectionModal
+        open={showDriverModal}
+        onOpenChange={setShowDriverModal}
+        onDriverSelect={handleDriverModalSelect}
+        selectedDate={data.scheduledDate ? new Date(data.scheduledDate) : new Date()}
+      />
 
       {/* Availability Notice */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
