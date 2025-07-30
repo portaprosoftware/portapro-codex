@@ -199,11 +199,11 @@ export const Landing: React.FC = () => {
                 
                 
                 <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
-                  Everything You Need to Run Your Rental Business
+                  All-in-one platform for portable toilet rental companies
                 </h1>
                 
                 <p className="text-xl text-white/90 leading-relaxed">
-                  From job scheduling to inventory tracking—PortaPro streamlines your day.
+                  Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
               </div>
               
