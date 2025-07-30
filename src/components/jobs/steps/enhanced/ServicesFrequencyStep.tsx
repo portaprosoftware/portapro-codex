@@ -22,6 +22,9 @@ interface ServiceItem {
   selected: boolean;
   frequency: 'one-time' | 'daily' | 'weekly' | 'monthly' | 'custom';
   custom_frequency_days?: number;
+  custom_type?: 'days_interval' | 'days_of_week' | 'specific_dates';
+  custom_days_of_week?: string[]; // ['monday', 'wednesday', 'friday']
+  custom_specific_dates?: number[]; // [8, 16, 25] for day of month
   calculated_cost: number;
 }
 
@@ -59,7 +62,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         .eq('is_active', true)
         .order('name');
 
-      const services = (servicesData || []).map(service => ({
+      const services: ServiceItem[] = (servicesData || []).map(service => ({
         id: service.id,
         name: service.name,
         description: service.description,
@@ -72,6 +75,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         selected: false,
         frequency: 'one-time' as const,
         custom_frequency_days: 1,
+        custom_type: 'days_interval' as const,
+        custom_days_of_week: [],
+        custom_specific_dates: [],
         calculated_cost: 0
       }));
 
@@ -146,6 +152,13 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           frequency: frequency as ServiceItem['frequency'],
           calculated_cost: calculateServiceCost(service)
         };
+        
+        // Set default custom type when switching to custom
+        if (frequency === 'custom' && !updatedService.custom_type) {
+          updatedService.custom_type = 'days_interval';
+          updatedService.custom_frequency_days = 1;
+        }
+        
         return updatedService;
       }
       return service;
@@ -174,6 +187,61 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
+  const updateCustomType = (serviceId: string, customType: string) => {
+    const updatedServices = data.selectedServices.map(service => {
+      if (service.id === serviceId) {
+        return {
+          ...service,
+          custom_type: customType as 'days_interval' | 'days_of_week' | 'specific_dates',
+          // Reset other custom values when changing type
+          custom_frequency_days: customType === 'days_interval' ? (service.custom_frequency_days || 1) : undefined,
+          custom_days_of_week: customType === 'days_of_week' ? [] : undefined,
+          custom_specific_dates: customType === 'specific_dates' ? [] : undefined
+        };
+      }
+      return service;
+    });
+
+    onUpdate({
+      ...data,
+      selectedServices: updatedServices
+    });
+  };
+
+  const updateCustomDaysOfWeek = (serviceId: string, days: string[]) => {
+    const updatedServices = data.selectedServices.map(service => {
+      if (service.id === serviceId) {
+        return {
+          ...service,
+          custom_days_of_week: days
+        };
+      }
+      return service;
+    });
+
+    onUpdate({
+      ...data,
+      selectedServices: updatedServices
+    });
+  };
+
+  const updateCustomSpecificDates = (serviceId: string, dates: number[]) => {
+    const updatedServices = data.selectedServices.map(service => {
+      if (service.id === serviceId) {
+        return {
+          ...service,
+          custom_specific_dates: dates
+        };
+      }
+      return service;
+    });
+
+    onUpdate({
+      ...data,
+      selectedServices: updatedServices
+    });
+  };
+
   const getPricingDisplay = (service: ServiceItem) => {
     switch (service.pricing_method) {
       case 'per_visit':
@@ -187,13 +255,21 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     }
   };
 
-  const getFrequencyLabel = (frequency: string) => {
+  const getFrequencyLabel = (frequency: string, customType?: string, customDays?: number, daysOfWeek?: string[], specificDates?: number[]) => {
     switch (frequency) {
       case 'one-time': return 'One-Time';
       case 'daily': return 'Daily';
       case 'weekly': return 'Weekly';  
       case 'monthly': return 'Monthly';
-      case 'custom': return 'Custom';
+      case 'custom':
+        if (customType === 'days_interval') {
+          return `Every ${customDays || 1} days`;
+        } else if (customType === 'days_of_week') {
+          return daysOfWeek?.length ? `${daysOfWeek.join(', ')}` : 'Select days';
+        } else if (customType === 'specific_dates') {
+          return specificDates?.length ? `Days: ${specificDates.join(', ')}` : 'Select dates';
+        }
+        return 'Custom';
       default: return 'One-Time';
     }
   };
@@ -303,30 +379,104 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                             </div>
                             
                             {selectedService.frequency === 'custom' && (
-                              <div className="w-32">
-                                <Label htmlFor={`custom-days-${service.id}`} className="text-sm font-medium">
-                                  Every X Days
-                                </Label>
-                                <Input
-                                  id={`custom-days-${service.id}`}
-                                  type="number"
-                                  min="1"
-                                  value={selectedService.custom_frequency_days || 1}
-                                  onChange={(e) => updateCustomFrequency(
-                                    service.id, 
-                                    parseInt(e.target.value) || 1
-                                  )}
-                                  className="mt-1"
-                                />
+                              <div className="w-full mt-3 space-y-3">
+                                <div>
+                                  <Label className="text-sm font-medium">Custom Type</Label>
+                                  <Select
+                                    value={selectedService.custom_type || 'days_interval'}
+                                    onValueChange={(value) => updateCustomType(service.id, value)}
+                                  >
+                                    <SelectTrigger className="mt-1">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="days_interval">Every X Days</SelectItem>
+                                      <SelectItem value="days_of_week">Specific Days of Week</SelectItem>
+                                      <SelectItem value="specific_dates">Specific Dates</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                {selectedService.custom_type === 'days_interval' && (
+                                  <div>
+                                    <Label className="text-sm font-medium">Every X Days</Label>
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={selectedService.custom_frequency_days || 1}
+                                      onChange={(e) => updateCustomFrequency(
+                                        service.id, 
+                                        parseInt(e.target.value) || 1
+                                      )}
+                                      className="mt-1"
+                                    />
+                                  </div>
+                                )}
+
+                                {selectedService.custom_type === 'days_of_week' && (
+                                  <div>
+                                    <Label className="text-sm font-medium">Select Days of Week</Label>
+                                    <div className="grid grid-cols-2 gap-2 mt-1">
+                                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                                        <label key={day} className="flex items-center space-x-2 text-sm">
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedService.custom_days_of_week?.includes(day) || false}
+                                            onChange={(e) => {
+                                              const currentDays = selectedService.custom_days_of_week || [];
+                                              const newDays = e.target.checked
+                                                ? [...currentDays, day]
+                                                : currentDays.filter(d => d !== day);
+                                              updateCustomDaysOfWeek(service.id, newDays);
+                                            }}
+                                            className="rounded"
+                                          />
+                                          <span>{day}</span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {selectedService.custom_type === 'specific_dates' && (
+                                  <div>
+                                    <Label className="text-sm font-medium">Select Specific Days of Month</Label>
+                                    <div className="mt-1">
+                                      <Input
+                                        placeholder="Enter days separated by commas (e.g., 8, 16, 25)"
+                                        value={selectedService.custom_specific_dates?.join(', ') || ''}
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          if (value.trim() === '') {
+                                            updateCustomSpecificDates(service.id, []);
+                                          } else {
+                                            const dates = value.split(',')
+                                              .map(d => parseInt(d.trim()))
+                                              .filter(d => !isNaN(d) && d >= 1 && d <= 31);
+                                            updateCustomSpecificDates(service.id, dates);
+                                          }
+                                        }}
+                                      />
+                                      <div className="text-xs text-muted-foreground mt-1">
+                                        Enter day numbers 1-31, separated by commas
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
                           
                           <div className="text-xs text-muted-foreground mt-2">
-                            Selected frequency: <span className="font-medium">{getFrequencyLabel(selectedService.frequency)}</span>
-                            {selectedService.frequency === 'custom' && selectedService.custom_frequency_days && 
-                              ` (every ${selectedService.custom_frequency_days} days)`
-                            }
+                            Selected frequency: <span className="font-medium">
+                              {getFrequencyLabel(
+                                selectedService.frequency,
+                                selectedService.custom_type,
+                                selectedService.custom_frequency_days,
+                                selectedService.custom_days_of_week,
+                                selectedService.custom_specific_dates
+                              )}
+                            </span>
                           </div>
                         </div>
                       )}
@@ -358,8 +508,14 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   <div>
                     <div className="font-medium">{service.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      {getFrequencyLabel(service.frequency)}
-                      {service.frequency === 'custom' && service.custom_frequency_days && 
+                      {getFrequencyLabel(
+                        service.frequency,
+                        service.custom_type,
+                        service.custom_frequency_days,
+                        service.custom_days_of_week,
+                        service.custom_specific_dates
+                      )}
+                      {service.frequency === 'custom' && service.custom_type === 'days_interval' && service.custom_frequency_days && 
                         ` (every ${service.custom_frequency_days} days)`
                       } • {getPricingDisplay(service)}
                     </div>
