@@ -83,9 +83,9 @@
     --shadow-colored: 0 8px 20px -8px;
     
     /* Enhanced Gradient System */
-    --gradient-primary: linear-gradient(135deg, hsl(220, 80%, 50%), hsl(225, 80%, 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220, 80%, 50%), hsl(225, 80%, 60%));
-    --gradient-hero: linear-gradient(135deg, hsl(220, 80%, 50%), hsl(225, 80%, 60%));
+    --gradient-primary: linear-gradient(135deg, hsl(220, 79%, 50%), hsl(225, 79%, 55%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220, 79%, 50%), hsl(225, 79%, 55%));
+    --gradient-hero: linear-gradient(135deg, hsl(220, 79%, 50%), hsl(225, 79%, 55%));
     --gradient-card: linear-gradient(135deg, hsl(210, 40%, 99%), hsl(0, 0%, 100%));
     --gradient-blue: linear-gradient(135deg, hsl(217, 91%, 45%), hsl(217, 91%, 50%));
     --gradient-ocean: linear-gradient(135deg, hsl(205, 100%, 40%), hsl(215, 100%, 45%));
