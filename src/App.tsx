@@ -72,9 +72,12 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
+          {/* Redirect root to landing */}
+          <Route path="/" element={<Landing />} />
+
           {/* Authenticated routes */}
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <SignedIn>
                 <Layout>
@@ -120,15 +123,8 @@ const App = () => {
             }
           />
 
-          {/* Default route for unauthenticated users */}
-          <Route
-            path="*"
-            element={
-              <SignedOut>
-                <Landing />
-              </SignedOut>
-            }
-          />
+          {/* Catch all other routes */}
+          <Route path="*" element={<Landing />} />
         </Routes>
         </div>
       </Router>
