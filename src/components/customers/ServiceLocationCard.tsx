@@ -93,21 +93,21 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
               <h4 className="font-semibold text-foreground">{location.location_name}</h4>
               <div className="flex gap-1">
                 {location.is_default && (
-                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full">
                     <Star className="w-3 h-3 mr-1" />
                     Default
                   </Badge>
                 )}
                 {location.is_locked && (
-                  <Badge className="bg-gray-100 text-gray-800 border-gray-200">
+                  <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full">
                     <Lock className="w-3 h-3 mr-1" />
                     Locked
                   </Badge>
                 )}
                 {location.is_active ? (
-                  <Badge className="bg-blue-100 text-blue-800 border-blue-200">Active</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full">Active</Badge>
                 ) : (
-                  <Badge variant="outline">Inactive</Badge>
+                  <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full">Inactive</Badge>
                 )}
               </div>
             </div>
