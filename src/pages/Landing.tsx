@@ -169,7 +169,7 @@ export const Landing: React.FC = () => {
               <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
             </a>
             <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-primary hover:bg-primary/90 text-sm font-medium">
+              <Button className="bg-gradient-blue text-white text-sm font-medium">
                 Start Free Trial
               </Button>
             </a>
@@ -201,7 +201,7 @@ export const Landing: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
+      <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-10 order-1 lg:order-1">
@@ -270,7 +270,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Core Features Grid */}
-      <section id="features" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80">
+      <section id="features" className="py-20 px-6 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
