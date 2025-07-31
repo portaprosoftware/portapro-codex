@@ -153,7 +153,7 @@ export const Landing: React.FC = () => {
           <Logo />
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8 ml-auto">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
           </nav>
