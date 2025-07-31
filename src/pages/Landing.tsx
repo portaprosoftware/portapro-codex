@@ -109,6 +109,7 @@ export const Landing: React.FC = () => {
   const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
   const [privacySliderOpen, setPrivacySliderOpen] = useState(false);
   const [securitySliderOpen, setSecuritySliderOpen] = useState(false);
+  const [termsSliderOpen, setTermsSliderOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -713,7 +714,7 @@ export const Landing: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Legal</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <a href="#" className="block hover:text-foreground">Terms</a>
+                <button onClick={() => setTermsSliderOpen(true)} className="block hover:text-foreground text-left">Terms</button>
                 <button onClick={() => setPrivacySliderOpen(true)} className="block hover:text-foreground text-left">Privacy</button>
                 <button onClick={() => setSecuritySliderOpen(true)} className="block hover:text-foreground text-left">Security</button>
               </div>
@@ -1194,6 +1195,175 @@ export const Landing: React.FC = () => {
                       <p className="mt-4 text-sm text-muted-foreground">
                         We continuously evolve our controls. Any future material changes to this Security page will be posted here and, when significant, emailed to account administrators.
                       </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Terms of Service Slider */}
+      {termsSliderOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-2xl font-bold text-foreground">Terms of Service</h2>
+                <button 
+                  onClick={() => setTermsSliderOpen(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-8 max-w-4xl">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Last updated: June 11, 2025
+                  </div>
+                  
+                  <div className="space-y-6 text-foreground">
+                    <p>
+                      Welcome to PortaPro ("PortaPro," "we," "our," "us"). These Terms of Service ("Terms") govern your access to and use of:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>portapro.app and any sub‑domains (the "Site"), and</li>
+                      <li>our web or mobile applications, dashboards, APIs, and related services (collectively, the "Service").</li>
+                    </ul>
+                    <p>
+                      By creating an account, signing an order form, or otherwise using the Service, you agree to be bound by these Terms and by our Privacy Policy (together, the "Agreement"). If you do not agree, do not access or use PortaPro.
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">1. Eligibility & Account Registration</h3>
+                      <div className="space-y-2">
+                        <p><strong>1.1 Business use.</strong> The Service is intended for lawful business purposes only. You must be at least 18 years old and authorized to bind your company to this Agreement.</p>
+                        <p><strong>1.2 Accurate information.</strong> You agree to provide and maintain accurate, current, and complete account information, including a valid email address.</p>
+                        <p><strong>1.3 Credentials.</strong> Keep your login credentials confidential. You are responsible for all activity that occurs under your account.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">2. Subscriptions & Fees</h3>
+                      <div className="space-y-2">
+                        <p><strong>2.1 Plans.</strong> Features, user limits, SMS quotas, and support levels vary by the subscription plan you select (the "Plan").</p>
+                        <p><strong>2.2 Billing.</strong> Fees are charged in advance on a monthly or annual basis via Stripe. By adding a payment method, you authorize us to charge all applicable fees and taxes.</p>
+                        <p><strong>2.3 Auto‑renewal.</strong> Plans renew automatically unless canceled at least 5 days before the end of the current term.</p>
+                        <p><strong>2.4 Late payments.</strong> Overdue amounts may accrue interest at 1.5% per month (or the maximum allowed by law). We may suspend access for non‑payment.</p>
+                        <p><strong>2.5 No refunds.</strong> Except as required by law or expressly stated in an order form, all payments are non‑refundable.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">3. Permitted Use & Restrictions</h3>
+                      <div className="space-y-2">
+                        <p><strong>3.1 License.</strong> We grant you a limited, non‑exclusive, non‑transferable license to use the Service during your active subscription.</p>
+                        <p><strong>3.2 Prohibited conduct.</strong> You shall not:</p>
+                        <ul className="list-disc list-inside space-y-1 ml-4">
+                          <li>a. Reverse‑engineer, decompile, or disassemble any part of the Service;</li>
+                          <li>b. Circumvent rate limits or security features;</li>
+                          <li>c. Use the Service to transmit spam, illegal content, or personal data of minors;</li>
+                          <li>d. Use automated systems to scrape or download data except through our published APIs;</li>
+                          <li>e. Misrepresent your affiliation with PortaPro.</li>
+                        </ul>
+                        <p><strong>3.3 Compliance.</strong> You are solely responsible for complying with all applicable laws and regulations (e.g., DOT, OSHA, GDPR, CCPA) in connection with your use of the Service.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">4. Customer Data & Privacy</h3>
+                      <div className="space-y-2">
+                        <p><strong>4.1 Ownership.</strong> "Customer Data" means all data (including job sites, GPS logs, photos, customer lists) submitted to the Service by you or on your behalf. You retain all rights in Customer Data except the limited rights granted herein.</p>
+                        <p><strong>4.2 License to us.</strong> You grant PortaPro a worldwide, non‑exclusive license to host, copy, process, transmit, and display Customer Data solely to provide, secure, and improve the Service.</p>
+                        <p><strong>4.3 Privacy.</strong> Our collection and use of personal information is described in the PortaPro Privacy Policy, which is incorporated by reference.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">5. Intellectual Property</h3>
+                      <div className="space-y-2">
+                        <p><strong>5.1 PortaPro IP.</strong> All software, trademarks, designs, and content provided by PortaPro are the exclusive property of PortaPro Software LLC or its licensors.</p>
+                        <p><strong>5.2 Feedback.</strong> Suggestions or feedback you provide may be used by us without restriction or compensation.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">6. Third‑Party Services</h3>
+                      <p>The Service integrates with third‑party platforms (e.g., Stripe, Twilio, Mapbox). Your use of such services is subject to their separate terms. PortaPro is not responsible for third‑party services or acts.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">7. Confidentiality</h3>
+                      <p>Each party agrees to protect the other's non‑public information ("Confidential Information") with at least reasonable care and to use it solely to fulfill its obligations under these Terms.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">8. Disclaimers</h3>
+                      <p className="text-sm font-semibold uppercase">
+                        THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE." EXCEPT AS EXPRESSLY SET OUT HEREIN, PORTAPRO MAKES NO WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT. MAP DATA AND ROUTING RESULTS MAY CONTAIN ERRORS; YOU ASSUME ALL RISK FOR RELIANCE ON SUCH OUTPUT.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">9. Limitation of Liability</h3>
+                      <p className="text-sm font-semibold uppercase">
+                        TO THE MAXIMUM EXTENT PERMITTED BY LAW, PORTAPRO'S TOTAL LIABILITY UNDER THIS AGREEMENT SHALL NOT EXCEED THE FEES YOU PAID TO PORTAPRO IN THE 12 MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM. IN NO EVENT SHALL PORTAPRO BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR LOSS OF PROFITS, DATA, OR GOODWILL.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">10. Indemnification</h3>
+                      <p>You will indemnify and hold harmless PortaPro, its officers, directors, and employees from any claims, damages, and expenses (including reasonable attorneys' fees) arising out of or related to: (a) your misuse of the Service, (b) Customer Data, or (c) violation of these Terms.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">11. Term & Termination</h3>
+                      <div className="space-y-2">
+                        <p><strong>11.1 Term.</strong> These Terms take effect when you first use the Service and continue until terminated.</p>
+                        <p><strong>11.2 Termination by you.</strong> Cancel via your account settings or by written notice to support@portapro.app.</p>
+                        <p><strong>11.3 Termination by us.</strong> We may suspend or terminate the Service immediately if you breach these Terms or pose a security or legal risk.</p>
+                        <p><strong>11.4 Data export.</strong> Upon termination, you may export Customer Data for 30 days; afterward, we may delete it per our Data Retention Policy.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">12. Changes to the Service or Terms</h3>
+                      <p>We may modify the Service or these Terms at any time. Material changes will be posted on the Site or emailed to your admin contact 30 days before they take effect. Continued use after that date constitutes acceptance.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">13. Governing Law & Dispute Resolution</h3>
+                      <p>These Terms are governed by the laws of the State of Ohio, USA, without regard to conflicts‑of‑law principles. Any dispute not resolved informally shall be submitted to binding arbitration in Cleveland, OH under the Commercial Arbitration Rules of the American Arbitration Association. Each party waives the right to a jury trial and to participate in class actions.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">14. Export & Compliance</h3>
+                      <p>You may not use the Service in violation of U.S. export laws or regulations or in countries embargoed by the United States.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">15. General</h3>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li><strong>Entire agreement.</strong> This Agreement supersedes all prior proposals or agreements.</li>
+                        <li><strong>Severability.</strong> If any provision is unenforceable, the remainder remains in effect.</li>
+                        <li><strong>Assignment.</strong> You may not assign these Terms without our consent; we may assign in connection with a merger or sale of assets.</li>
+                        <li><strong>No waiver.</strong> Failure to enforce a provision is not a waiver of future enforcement.</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">16. Contact</h3>
+                      <div className="space-y-2">
+                        <p>PortaPro Software LLC</p>
+                        <p>1055 Old River Road, Unit 721</p>
+                        <p>Cleveland, OH 44113, USA</p>
+                        <p><strong>📧</strong> legal@portaprosoftware.com</p>
+                      </div>
                     </div>
                   </div>
                 </div>
