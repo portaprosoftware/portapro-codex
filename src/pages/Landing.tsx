@@ -110,6 +110,7 @@ export const Landing: React.FC = () => {
   const [privacySliderOpen, setPrivacySliderOpen] = useState(false);
   const [securitySliderOpen, setSecuritySliderOpen] = useState(false);
   const [termsSliderOpen, setTermsSliderOpen] = useState(false);
+  const [communitySliderOpen, setCommunitySliderOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -706,7 +707,7 @@ export const Landing: React.FC = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <a href="#" className="block hover:text-foreground">Help Center</a>
                 <a href="#" className="block hover:text-foreground">Documentation</a>
-                <a href="#" className="block hover:text-foreground">Community</a>
+                <button onClick={() => setCommunitySliderOpen(true)} className="block hover:text-foreground text-left">Community</button>
               </div>
             </div>
             <div className="space-y-4">
@@ -1362,6 +1363,141 @@ export const Landing: React.FC = () => {
                         <p>Cleveland, OH 44113, USA</p>
                         <p><strong>📧</strong> legal@portaprosoftware.com</p>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Community Slider */}
+      {communitySliderOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-2xl font-bold text-foreground">🚀 Join the PortaPro Community</h2>
+                <button 
+                  onClick={() => setCommunitySliderOpen(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-8 max-w-4xl">
+                  <div className="text-center">
+                    <p className="text-lg text-muted-foreground">
+                      Where modern sanitation pros connect, learn, and grow together.
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-8 text-foreground">
+                    <p className="text-lg">
+                      At PortaPro, we're not just building software — we're building a movement. The PortaPro Community is here to bring together operators, field techs, dispatchers, and business owners who want to modernize operations, reduce chaos, and share real wins from the field.
+                    </p>
+                    
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">👥 Connect with Other Operators</h3>
+                        <p className="mb-4">
+                          Join our exclusive Facebook or Discord group to ask questions, swap dispatch tips, or just talk shop with others in the industry.
+                        </p>
+                        <Button className="bg-white text-primary hover:bg-white/90 font-semibold">
+                          👉 Join the PortaPro Group
+                        </Button>
+                      </div>
+                      
+                      <div className="bg-muted/50 rounded-2xl p-6">
+                        <h3 className="text-xl font-bold mb-4">🗺️ See Where PortaPro Is Used</h3>
+                        <p>
+                          From small towns to major metros, PortaPro is powering smarter operations across the country. Check out our growing footprint and hear real user stories.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-2xl p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">🧠 Share Ideas & Shape the Product</h3>
+                        <p className="mb-4">
+                          We take your feedback seriously. Submit ideas, vote on features, and view our public roadmap.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <Button className="bg-white text-green-700 hover:bg-white/90 font-semibold">
+                            👉 View the Roadmap
+                          </Button>
+                          <Button className="bg-white text-green-700 hover:bg-white/90 font-semibold">
+                            👉 Submit a Feature Request
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-2xl p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">🔓 Become a Beta Tester</h3>
+                        <p className="mb-4">
+                          Be the first to try new features like QR scanning, lock tracking, and mobile updates. Help us test in real-world conditions before launch.
+                        </p>
+                        <Button className="bg-white text-orange-700 hover:bg-white/90 font-semibold">
+                          👉 Sign Up for Early Access
+                        </Button>
+                      </div>
+                      
+                      <div className="bg-muted/50 rounded-2xl p-6">
+                        <h3 className="text-xl font-bold mb-4">📚 The PortaPro Playbook</h3>
+                        <p className="mb-4">
+                          Explore a library of templates and how-to guides to improve your operation. Built by pros, for pros.
+                        </p>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-primary" />
+                            Pricing Calculator Templates
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-primary" />
+                            Inspection Checklists
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-primary" />
+                            Field Tech SOPs
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-primary" />
+                            Service Report Examples
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 rounded-2xl p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">🎉 Shoutouts & Wins from the Field</h3>
+                        <p className="mb-4">
+                          We highlight the real people making PortaPro great. Have a milestone or cool story? We might feature you next.
+                        </p>
+                        <Button className="bg-white text-purple-700 hover:bg-white/90 font-semibold">
+                          👉 Submit Your Win
+                        </Button>
+                      </div>
+                      
+                      <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+                        <h3 className="text-xl font-bold mb-4">📩 Stay in the Loop</h3>
+                        <p className="mb-4">
+                          Get exclusive updates, product announcements, and community invites right in your inbox.
+                        </p>
+                        <Button className="bg-white text-blue-700 hover:bg-white/90 font-semibold">
+                          👉 Subscribe to Updates
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center space-y-2 pt-8 border-t">
+                      <p className="text-xl font-bold text-foreground">
+                        PortaPro Community: Built for the Field — Together.
+                      </p>
+                      <p className="text-lg text-muted-foreground font-medium">
+                        Your crew. Your customers. Your advantage.
+                      </p>
                     </div>
                   </div>
                 </div>
