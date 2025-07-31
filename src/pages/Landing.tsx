@@ -106,6 +106,7 @@ const completePackage = {
 export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -152,6 +153,7 @@ export const Landing: React.FC = () => {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
+            <button onClick={() => setAboutSliderOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors font-medium">About</button>
           </nav>
           
           {/* Desktop Auth Buttons */}
@@ -178,6 +180,7 @@ export const Landing: React.FC = () => {
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-muted-foreground hover:text-foreground">Features</a>
                 <a href="#pricing" className="block py-2 text-muted-foreground hover:text-foreground">Pricing</a>
+                <button onClick={() => setAboutSliderOpen(true)} className="block py-2 text-muted-foreground hover:text-foreground text-left">About</button>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
@@ -677,35 +680,6 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* About Us Section */}
-      <section id="about" className="py-20 px-6 bg-background">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center space-y-12">
-            <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                About Us
-              </h2>
-            </div>
-            
-            <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 lg:p-12 text-white">
-              <div className="space-y-8">
-                <h3 className="text-2xl lg:text-3xl font-bold text-center">WHO WE ARE</h3>
-                
-                <div className="space-y-6 text-lg leading-relaxed">
-                  <p>
-                    PortaPro is the all‑in‑one operations platform built specifically for the needs of portable‑toilet rental operators and their teams. We believe running a successful service business shouldn't require wrestling with unrelated, over‑engineered software or paper‑heavy processes. With PortaPro, you get branded, purpose‑built tools, expert resources, and hands‑on guidance to help operators of every size streamline dispatch, inventory, payments, and customer communications—so you can focus on growth, not grunt work.
-                  </p>
-                  
-                  <p>
-                    Founded in 2023, PortaPro is already trusted by hundreds of rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
 
       {/* Footer */}
       <footer id="resources" className="py-16 px-6 bg-muted/50 border-t">
@@ -760,6 +734,45 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* About Us Slider */}
+      {aboutSliderOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-background shadow-2xl animate-slide-in-right">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-2xl font-bold text-foreground">About Us</h2>
+                <button 
+                  onClick={() => setAboutSliderOpen(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-8">
+                  <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
+                    <h3 className="text-2xl font-bold mb-6 text-center">WHO WE ARE</h3>
+                    
+                    <div className="space-y-6 text-lg leading-relaxed">
+                      <p>
+                        PortaPro is the all‑in‑one operations platform built specifically for the needs of portable‑toilet rental operators and their teams. We believe running a successful service business shouldn't require wrestling with unrelated, over‑engineered software or paper‑heavy processes. With PortaPro, you get branded, purpose‑built tools, expert resources, and hands‑on guidance to help operators of every size streamline dispatch, inventory, payments, and customer communications—so you can focus on growth, not grunt work.
+                      </p>
+                      
+                      <p>
+                        Founded in 2023, PortaPro is already trusted by hundreds of rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default Landing;
