@@ -376,43 +376,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 shadow-lg">
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-muted-foreground ml-auto">AI Scanner</span>
-                  </div>
-                  
-                  <div className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center bg-primary/5">
-                    <Camera className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <p className="text-sm text-muted-foreground mb-2">Point camera at unit panel</p>
-                    <div className="bg-primary/10 rounded px-3 py-1 text-xs text-primary font-mono">
-                      Scanning: TOOL-4472...
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center p-2 bg-green-50 rounded border-l-4 border-green-500">
-                      <span className="text-sm">Tool Number:</span>
-                      <span className="font-mono text-sm text-green-700">TOOL-4472</span>
-                    </div>
-                    <div className="flex justify-between items-center p-2 bg-blue-50 rounded border-l-4 border-blue-500">
-                      <span className="text-sm">Vendor ID:</span>
-                      <span className="font-mono text-sm text-blue-700">SAT-2024</span>
-                    </div>
-                    <div className="flex justify-between items-center p-2 bg-purple-50 rounded border-l-4 border-purple-500">
-                      <span className="text-sm">Material:</span>
-                      <span className="font-mono text-sm text-purple-700">HDPE-2</span>
-                    </div>
-                  </div>
-                  
-                  <button className="w-full bg-primary text-white py-2 rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors">
-                    Save to Inventory
-                  </button>
-                </div>
-              </div>
+              <img 
+                src="/lovable-uploads/0f62ebd0-b15e-44c7-8d4e-7a1a9ca96bd3.png" 
+                alt="AI Panel Scanning - OCR Results showing Tool Number T-20788-V detection"
+                className="w-full h-auto rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
