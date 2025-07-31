@@ -21,6 +21,11 @@ export const AutoCarousel: React.FC<AutoCarouselProps> = ({
     Autoplay({ delay: 3000, stopOnInteraction: false })
   );
 
+  // Safety check: return null if media is not provided or empty
+  if (!media || !Array.isArray(media) || media.length === 0) {
+    return null;
+  }
+
   return (
     <div className={className}>
       <Carousel
