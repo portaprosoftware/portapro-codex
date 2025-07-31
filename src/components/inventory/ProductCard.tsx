@@ -129,7 +129,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
     <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-200 group">
       {/* Top Right Stats Icon with Hover Card */}
       <div className="flex justify-end mb-3">
-        <HoverCard>
+        <HoverCard openDelay={0}>
           <HoverCardTrigger asChild>
             <Button
               variant="ghost"
@@ -139,7 +139,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 e.stopPropagation();
               }}
             >
-              <BarChart3 className="w-4 h-4 text-gray-400 hover:text-blue-600 transition-colors" />
+              <BarChart3 className="w-4 h-4 text-gray-600 hover:text-blue-600 transition-colors" />
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-80" side="left">
