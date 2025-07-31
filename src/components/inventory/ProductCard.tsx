@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -166,7 +167,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 </div>
                 
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Utilization</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Utilization</p>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="w-3 h-3 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center cursor-help">
+                            ?
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-sm">
+                            Utilization rate shows what percentage of your total stock is currently assigned or in service. 
+                            Higher rates indicate better equipment usage but may suggest need for more inventory.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <p className="text-lg font-bold text-purple-600">{quickStats?.utilizationRate || 0}%</p>
                 </div>
               </div>
