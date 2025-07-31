@@ -114,6 +114,7 @@ export const Landing: React.FC = () => {
   const [communitySliderOpen, setCommunitySliderOpen] = useState(false);
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
   const [contactFormOpen, setContactFormOpen] = useState(false);
+  const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
 
   // Load Calendly widget
@@ -673,14 +674,25 @@ export const Landing: React.FC = () => {
                         <span className="text-sm text-white/90 font-bold">{feature}</span>
                       </li>)}
                   </ul>
-                  <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+                  <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
                     <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6 font-bold">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
-                  </SignUpButton>
+                  </a>
                 </CardContent>
               </Card>
+              
+              {/* Questions Button */}
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  className="border-white/30 text-white hover:bg-white/10 font-medium"
+                  onClick={() => setQuestionsFormOpen(true)}
+                >
+                  Still have questions? Ask us and we'll be in touch
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -1635,6 +1647,171 @@ export const Landing: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Questions Form Popup */}
+      {questionsFormOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Have Questions?</h2>
+                <p className="text-muted-foreground">Tell us about your needs and we'll get in touch</p>
+              </div>
+              <button 
+                onClick={() => setQuestionsFormOpen(false)}
+                className="p-2 rounded-lg hover:bg-muted"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault();
+                alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
+                setQuestionsFormOpen(false);
+              }}>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="John"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="john@company.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Phone Number (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Company Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Your Company Name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    How many units are in your fleet?
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option value="">Select fleet size</option>
+                    <option value="1-25">1-25 units</option>
+                    <option value="26-50">26-50 units</option>
+                    <option value="51-100">51-100 units</option>
+                    <option value="101-250">101-250 units</option>
+                    <option value="251-500">251-500 units</option>
+                    <option value="500+">500+ units</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    What's your biggest challenge right now?
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    placeholder="Tell us about your current pain points, scheduling issues, inventory tracking needs, etc."
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Preferred contact method
+                  </label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="email" className="mr-2" defaultChecked />
+                      Email
+                    </label>
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="phone" className="mr-2" />
+                      Phone
+                    </label>
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="either" className="mr-2" />
+                      Either
+                    </label>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">🚀 What's next?</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• We'll review your information and reach out within 24 hours</li>
+                    <li>• Schedule a personalized demo based on your fleet size</li>
+                    <li>• Discuss your specific challenges and how PortaPro can help</li>
+                    <li>• Answer all your questions about features, pricing, and implementation</li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setQuestionsFormOpen(false)}
+                    className="flex-1"
+                  >
+                    Maybe Later
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                  >
+                    Send My Questions
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
