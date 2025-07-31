@@ -167,7 +167,7 @@ export const Landing: React.FC = () => {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" className="text-sm font-medium">Sign In</Button>
+              <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
             </a>
             <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
               <Button className="bg-primary hover:bg-primary/90 text-sm font-medium">
@@ -191,7 +191,7 @@ export const Landing: React.FC = () => {
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" className="w-full text-sm font-medium">Sign In</Button>
+                  <Button variant="ghost" className="w-full text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
                 </a>
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full text-sm font-medium">Start Free Trial</Button>
