@@ -677,6 +677,35 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section id="about" className="py-20 px-6 bg-background">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center space-y-12">
+            <div className="space-y-4">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                About Us
+              </h2>
+            </div>
+            
+            <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 lg:p-12 text-white">
+              <div className="space-y-8">
+                <h3 className="text-2xl lg:text-3xl font-bold text-center">WHO WE ARE</h3>
+                
+                <div className="space-y-6 text-lg leading-relaxed">
+                  <p>
+                    PortaPro is the all‑in‑one operations platform built specifically for the needs of portable‑toilet rental operators and their teams. We believe running a successful service business shouldn't require wrestling with unrelated, over‑engineered software or paper‑heavy processes. With PortaPro, you get branded, purpose‑built tools, expert resources, and hands‑on guidance to help operators of every size streamline dispatch, inventory, payments, and customer communications—so you can focus on growth, not grunt work.
+                  </p>
+                  
+                  <p>
+                    Founded in 2023, PortaPro is already trusted by hundreds of rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer */}
       <footer id="resources" className="py-16 px-6 bg-muted/50 border-t">
