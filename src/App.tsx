@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
+import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
@@ -58,6 +59,9 @@ const App = () => {
           <Route path="/landing" element={<Landing />} />
           <Route path="/help" element={<Help />} />
           
+          {/* Authentication Route */}
+          <Route path="/auth" element={<Auth />} />
+          
           {/* Driver routes */}
           <Route
             path="/driver"
@@ -74,56 +78,70 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Redirect root to landing */}
-          <Route path="/" element={<Landing />} />
+          {/* Redirect root to auth for signed out users, dashboard for signed in */}
+          <Route path="/" element={
+            <>
+              <SignedIn>
+                <Dashboard />
+              </SignedIn>
+              <SignedOut>
+                <Auth />
+              </SignedOut>
+            </>
+          } />
 
           {/* Testing route - outside authentication for easy access */}
           <Route path="/testing" element={<TestingPage />} />
 
           {/* Authenticated routes */}
           <Route
-            path="/dashboard"
+            path="/dashboard/*"
             element={
-              <SignedIn>
-                <Layout>
-                  <Routes>
-                    <Route index element={<Dashboard />} />
-                    <Route path="jobs" element={<Jobs />} />
-                    <Route path="jobs/calendar" element={<Jobs />} />
-                    <Route path="jobs/dispatch" element={<Jobs />} />
-                    <Route path="jobs/map" element={<Jobs />} />
-                     <Route path="inventory" element={<Inventory />} />
-                     <Route path="inventory/items/:itemId" element={<ProductItemDetail />} />
-                    <Route path="consumables" element={<Consumables />} />
-                    <Route path="purchase-orders" element={<PurchaseOrders />} />
-                    <Route path="customer-hub" element={<CustomerHub />} />
-                    <Route path="customers/:id" element={<CustomerDetail />} />
-                    <Route path="quotes-invoices" element={<QuotesInvoices />} />
-                    <Route path="fleet-management" element={<FleetManagement />} />
-                    <Route path="fleet" element={<FleetManagement />} />
-                    <Route path="fleet/assignments" element={<FleetAssignmentsPage />} />
-                    <Route path="fleet/compliance" element={<FleetCompliancePage />} />
-                    <Route path="fleet/loads" element={<FleetLoadsPage />} />
-                    <Route path="fleet/analytics" element={<FleetAnalyticsPage />} />
-                    <Route path="fleet/capacity" element={<FleetCapacityPage />} />
-                    <Route path="fleet/compliance-reports" element={<FleetComplianceReportsPage />} />
-                    <Route path="fleet/fuel" element={<FleetFuelManagement />} />
-                    <Route path="fleet/files" element={<FleetFiles />} />
-                    <Route path="fleet/maintenance" element={<FleetMaintenancePage />} />
-                    <Route path="maintenance-hub" element={<MaintenanceHub />} />
-                    <Route path="marketing" element={<Marketing />} />
-                    <Route path="marketing/templates" element={<Marketing />} />
-                    <Route path="marketing/campaigns" element={<Marketing />} />
-                    <Route path="marketing/analytics" element={<Marketing />} />
-                    <Route path="marketing/segments" element={<Marketing />} />
-                    <Route path="analytics" element={<Analytics />} />
-                    <Route path="storage-sites" element={<StorageSites />} />
-                    <Route path="team-management" element={<TeamManagement />} />
-                    <Route path="team-management/:tab" element={<TeamManagement />} />
-                    <Route path="settings" element={<Settings />} />
-                  </Routes>
-                </Layout>
-              </SignedIn>
+              <>
+                <SignedIn>
+                  <Layout>
+                    <Routes>
+                      <Route index element={<Dashboard />} />
+                      <Route path="jobs" element={<Jobs />} />
+                      <Route path="jobs/calendar" element={<Jobs />} />
+                      <Route path="jobs/dispatch" element={<Jobs />} />
+                      <Route path="jobs/map" element={<Jobs />} />
+                       <Route path="inventory" element={<Inventory />} />
+                       <Route path="inventory/items/:itemId" element={<ProductItemDetail />} />
+                      <Route path="consumables" element={<Consumables />} />
+                      <Route path="purchase-orders" element={<PurchaseOrders />} />
+                      <Route path="customer-hub" element={<CustomerHub />} />
+                      <Route path="customers/:id" element={<CustomerDetail />} />
+                      <Route path="quotes-invoices" element={<QuotesInvoices />} />
+                      <Route path="fleet-management" element={<FleetManagement />} />
+                      <Route path="fleet" element={<FleetManagement />} />
+                      <Route path="fleet/assignments" element={<FleetAssignmentsPage />} />
+                      <Route path="fleet/compliance" element={<FleetCompliancePage />} />
+                      <Route path="fleet/loads" element={<FleetLoadsPage />} />
+                      <Route path="fleet/analytics" element={<FleetAnalyticsPage />} />
+                      <Route path="fleet/capacity" element={<FleetCapacityPage />} />
+                      <Route path="fleet/compliance-reports" element={<FleetComplianceReportsPage />} />
+                      <Route path="fleet/fuel" element={<FleetFuelManagement />} />
+                      <Route path="fleet/files" element={<FleetFiles />} />
+                      <Route path="fleet/maintenance" element={<FleetMaintenancePage />} />
+                      <Route path="maintenance-hub" element={<MaintenanceHub />} />
+                      <Route path="marketing" element={<Marketing />} />
+                      <Route path="marketing/templates" element={<Marketing />} />
+                      <Route path="marketing/campaigns" element={<Marketing />} />
+                      <Route path="marketing/analytics" element={<Marketing />} />
+                      <Route path="marketing/segments" element={<Marketing />} />
+                      <Route path="analytics" element={<Analytics />} />
+                      <Route path="storage-sites" element={<StorageSites />} />
+                      <Route path="team-management" element={<TeamManagement />} />
+                      <Route path="team-management/:tab" element={<TeamManagement />} />
+                      <Route path="settings" element={<Settings />} />
+                    </Routes>
+                  </Layout>
+                </SignedIn>
+                <SignedOut>
+                  <Auth />
+                </SignedOut>
+              </>
             }
           />
 
