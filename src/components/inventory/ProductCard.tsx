@@ -169,7 +169,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Utilization</p>
-                    <TooltipProvider>
+                    <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="w-3 h-3 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center cursor-help">
