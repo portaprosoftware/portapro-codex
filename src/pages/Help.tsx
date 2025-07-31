@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Search, Mail, Phone, ArrowLeft } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, Mail, Phone, ArrowLeft, X, Paperclip, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -357,6 +357,18 @@ export const Help: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [expandedSubsections, setExpandedSubsections] = useState<Set<string>>(new Set());
+  const [showEmailSupport, setShowEmailSupport] = useState(false);
+  const [supportForm, setSupportForm] = useState({
+    name: '',
+    email: '',
+    company: '',
+    category: '',
+    priority: 'medium',
+    subject: '',
+    description: '',
+    currentPage: '',
+    attachments: [] as File[]
+  });
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -385,6 +397,34 @@ export const Help: React.FC = () => {
       subsection.steps.some(step => step.toLowerCase().includes(searchTerm.toLowerCase()))
     )
   );
+
+  const handleSupportFormChange = (field: string, value: string | File[]) => {
+    setSupportForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setSupportForm(prev => ({ ...prev, attachments: [...prev.attachments, ...files] }));
+  };
+
+  const removeAttachment = (index: number) => {
+    setSupportForm(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmitSupport = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the form data to your support system
+    console.log('Support form submitted:', supportForm);
+    alert('Support request submitted successfully! We\'ll get back to you within 24 hours.');
+    setShowEmailSupport(false);
+    setSupportForm({
+      name: '', email: '', company: '', category: '', priority: 'medium',
+      subject: '', description: '', currentPage: '', attachments: []
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -506,13 +546,13 @@ export const Help: React.FC = () => {
                   <Mail className="w-8 h-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-2">Email Support</h3>
                   <p className="text-blue-100 text-sm mb-3">
-                    Get detailed help via email
+                    Get detailed help via email with our support form
                   </p>
                   <Button 
                     className="bg-white text-blue-700 hover:bg-white/90"
-                    onClick={() => window.location.href = 'mailto:support@portaprosoftware.com'}
+                    onClick={() => setShowEmailSupport(true)}
                   >
-                    support@portaprosoftware.com
+                    Open Support Form
                   </Button>
                 </div>
                 
@@ -534,6 +574,233 @@ export const Help: React.FC = () => {
           </Card>
         </div>
       </section>
+
+      {/* Email Support Modal */}
+      {showEmailSupport && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Email Support</h2>
+                <p className="text-muted-foreground">Get detailed help from our support team</p>
+              </div>
+              <button 
+                onClick={() => setShowEmailSupport(false)}
+                className="p-2 rounded-lg hover:bg-muted"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <form onSubmit={handleSubmitSupport} className="space-y-6">
+                {/* Personal Info */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={supportForm.name}
+                      onChange={(e) => handleSupportFormChange('name', e.target.value)}
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={supportForm.email}
+                      onChange={(e) => handleSupportFormChange('email', e.target.value)}
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Company (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={supportForm.company}
+                    onChange={(e) => handleSupportFormChange('company', e.target.value)}
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Your company name"
+                  />
+                </div>
+
+                {/* Issue Details */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Category *
+                    </label>
+                    <select
+                      required
+                      value={supportForm.category}
+                      onChange={(e) => handleSupportFormChange('category', e.target.value)}
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      <option value="">Select a category</option>
+                      <option value="getting-started">Getting Started</option>
+                      <option value="jobs-dispatching">Jobs & Dispatching</option>
+                      <option value="inventory">Inventory Management</option>
+                      <option value="invoicing">Invoicing & Quotes</option>
+                      <option value="ai-tools">AI Tools & OCR</option>
+                      <option value="mobile-app">Mobile App</option>
+                      <option value="integrations">Integrations</option>
+                      <option value="account-billing">Account & Billing</option>
+                      <option value="technical-issue">Technical Issue</option>
+                      <option value="feature-request">Feature Request</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={supportForm.priority}
+                      onChange={(e) => handleSupportFormChange('priority', e.target.value)}
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      <option value="low">Low - General question</option>
+                      <option value="medium">Medium - Standard support</option>
+                      <option value="high">High - Affecting operations</option>
+                      <option value="urgent">Urgent - System down</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Subject *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={supportForm.subject}
+                    onChange={(e) => handleSupportFormChange('subject', e.target.value)}
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Brief description of your issue"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    What page or feature were you using? (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={supportForm.currentPage}
+                    onChange={(e) => handleSupportFormChange('currentPage', e.target.value)}
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="e.g., Jobs Dashboard, Inventory page, Mobile app"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Detailed Description *
+                  </label>
+                  <textarea
+                    required
+                    rows={6}
+                    value={supportForm.description}
+                    onChange={(e) => handleSupportFormChange('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    placeholder="Please describe your issue in detail. Include:&#10;• What you were trying to do&#10;• What happened instead&#10;• Any error messages you saw&#10;• Steps to reproduce the issue"
+                  ></textarea>
+                </div>
+
+                {/* File Attachments */}
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Attachments (Optional)
+                  </label>
+                  <div className="border-2 border-dashed border-muted rounded-lg p-4">
+                    <input
+                      type="file"
+                      multiple
+                      accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="flex flex-col items-center cursor-pointer"
+                    >
+                      <Paperclip className="w-8 h-8 text-muted-foreground mb-2" />
+                      <span className="text-sm text-muted-foreground text-center">
+                        Click to upload screenshots, documents, or other files
+                        <br />
+                        <span className="text-xs">Supports: JPG, PNG, PDF, DOC, TXT (Max 10MB each)</span>
+                      </span>
+                    </label>
+                  </div>
+                  
+                  {supportForm.attachments.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {supportForm.attachments.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-muted/50 rounded-lg p-2">
+                          <span className="text-sm text-foreground truncate">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeAttachment(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Response Info */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">📧 What happens next?</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• You'll receive a confirmation email immediately</li>
+                    <li>• Our support team will respond within 24 hours</li>
+                    <li>• For urgent issues, consider calling (216) 412-3239</li>
+                    <li>• We'll keep you updated via email until resolved</li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowEmailSupport(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Support Request
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
