@@ -112,6 +112,7 @@ export const Landing: React.FC = () => {
   const [termsSliderOpen, setTermsSliderOpen] = useState(false);
   const [communitySliderOpen, setCommunitySliderOpen] = useState(false);
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
+  const [contactFormOpen, setContactFormOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -725,13 +726,20 @@ export const Landing: React.FC = () => {
               <Logo />
               <span className="text-sm text-muted-foreground">© 2024 PortaPro. All rights reserved.</span>
             </div>
-            <div className="flex items-center gap-4 mt-4 md:mt-0">
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+            <div className="flex items-center gap-6 mt-4 md:mt-0">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+                <a href="tel:+12164123239" className="hover:text-foreground transition-colors">
+                  (216) 412-3239
+                </a>
+              </div>
+              <button 
+                onClick={() => setContactFormOpen(true)}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Mail className="w-4 h-4" />
-              </a>
+                <span>Contact Us</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1633,6 +1641,122 @@ export const Landing: React.FC = () => {
                   <Button className="bg-white text-blue-700 hover:bg-white/90 font-semibold">
                     Subscribe to Blog Updates <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Form Popup */}
+      {contactFormOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-2xl font-bold text-foreground">Contact Support</h2>
+              <button 
+                onClick={() => setContactFormOpen(false)}
+                className="p-2 rounded-lg hover:bg-muted"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                    <Mail className="w-8 h-8 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground">
+                    Have a question or need help? Reach out to our support team.
+                  </p>
+                </div>
+
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Company (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Your company name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Subject *
+                    </label>
+                    <select
+                      required
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      <option value="">Select a topic</option>
+                      <option value="general">General Question</option>
+                      <option value="technical">Technical Support</option>
+                      <option value="billing">Billing & Pricing</option>
+                      <option value="demo">Request a Demo</option>
+                      <option value="feature">Feature Request</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Message *
+                    </label>
+                    <textarea
+                      required
+                      rows={4}
+                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      placeholder="How can we help you?"
+                    ></textarea>
+                  </div>
+
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3">
+                    Send Message
+                  </Button>
+                </form>
+
+                <div className="text-center pt-4 border-t">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Or contact us directly:
+                  </p>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">
+                      📧 support@portaprosoftware.com
+                    </p>
+                    <p className="text-sm font-medium">
+                      📞 (216) 412-3239
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
