@@ -170,13 +170,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           throw new Error('No token received from Mapbox service');
         }
         console.log('Mapbox token received, length:', data.token.length);
+        console.log('Token starts with:', data.token.substring(0, 20));
         setMapboxToken(data.token);
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
-        // Show user-friendly error message
+        // Fallback to direct token if available
+        const fallbackToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtnHx7gKoK_Xbw';
+        setMapboxToken(fallbackToken);
         toast({
-          title: "Map Configuration Error",
-          description: "Unable to load map. Please check Mapbox token configuration.",
+          title: "Using fallback map token",
+          description: "Please configure MAPBOX_PUBLIC_TOKEN in Supabase Edge Function secrets for production use.",
           variant: "destructive",
         });
       }
@@ -1414,36 +1417,39 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                                    
                                    <DropdownMenuSeparator />
                                   
-                                  {hasAdminAccess && (
-                                    <AlertDialog>
-                                      <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem
-                                          onClick={(e) => e.preventDefault()}
-                                          className="text-red-600 focus:text-red-600"
-                                        >
-                                          <Trash2 className="w-3 h-3 mr-2" />
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
-                                          <AlertDialogDescription>
-                                            Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
-                                          </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction 
-                                            onClick={() => handleDeleteCoordinate(coordinate.id)}
-                                            className="bg-red-600 hover:bg-red-700"
-                                          >
-                                            Delete
-                                          </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                      </AlertDialogContent>
-                                    </AlertDialog>
-                                  )}
+                                   {hasAdminAccess && (
+                                     <>
+                                       <DropdownMenuSeparator />
+                                       <AlertDialog>
+                                         <AlertDialogTrigger asChild>
+                                           <DropdownMenuItem
+                                             onSelect={(e) => e.preventDefault()}
+                                             className="text-red-600 focus:text-red-600 cursor-pointer"
+                                           >
+                                             <Trash2 className="w-3 h-3 mr-2" />
+                                             Delete
+                                           </DropdownMenuItem>
+                                         </AlertDialogTrigger>
+                                         <AlertDialogContent>
+                                           <AlertDialogHeader>
+                                             <AlertDialogTitle>Delete GPS Drop-Pin</AlertDialogTitle>
+                                             <AlertDialogDescription>
+                                               Are you sure you want to delete "{coordinate.point_name}"? This action cannot be undone.
+                                             </AlertDialogDescription>
+                                           </AlertDialogHeader>
+                                           <AlertDialogFooter>
+                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                             <AlertDialogAction 
+                                               onClick={() => handleDeleteCoordinate(coordinate.id)}
+                                               className="bg-red-600 hover:bg-red-700"
+                                             >
+                                               Delete
+                                             </AlertDialogAction>
+                                           </AlertDialogFooter>
+                                         </AlertDialogContent>
+                                       </AlertDialog>
+                                     </>
+                                   )}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
