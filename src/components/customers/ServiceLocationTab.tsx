@@ -12,8 +12,6 @@ interface ServiceLocationTabProps {
 export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
   const [activeSubTab, setActiveSubTab] = useState('addresses');
 
-  console.log('ServiceLocationTab rendering with activeSubTab:', activeSubTab);
-
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-2xl p-6">
