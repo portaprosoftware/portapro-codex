@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/logo';
 import { BlogSlider } from '@/components/BlogSlider';
+import { AutoCarousel } from '@/components/ui/AutoCarousel';
 
 // Core Features Data
 const coreFeatures = [{
@@ -105,6 +106,13 @@ const completePackage = {
   features: ["Unlimited drivers and users", "Smart job wizard with multi-step creation", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
 export const Landing: React.FC = () => {
+  // Image arrays for carousels
+  const aiPanelImages = ['photo-1488590528505-98d2b5aba04b', 'photo-1461749280684-dccba630e2f6', 'photo-1487058792275-0ad4aaf24ca7'];
+  const jobWizardImages = ['photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21', 'photo-1523712999610-f77fbcfc3843'];
+  const inventoryImages = ['photo-1496307653780-42ee777d4833', 'photo-1517022812141-23620dba5c23', 'photo-1582562124811-c09040d0a901'];
+  const teamImages = ['photo-1441057206919-63d19fac2369', 'photo-1488590528505-98d2b5aba04b', 'photo-1461749280684-dccba630e2f6'];
+  const reportingImages = ['photo-1487058792275-0ad4aaf24ca7', 'photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21'];
+  const mobileImages = ['photo-1523712999610-f77fbcfc3843', 'photo-1496307653780-42ee777d4833', 'photo-1517022812141-23620dba5c23'];
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
@@ -242,9 +250,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="order-2 lg:order-2">
-              <div className="transform hover:scale-105 transition-transform duration-300">
-                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto max-w-2xl mx-auto lg:max-w-4xl scale-110" />
-              </div>
+              <AutoCarousel 
+                images={aiPanelImages}
+                className="max-w-2xl w-full mx-auto lg:max-w-4xl transform scale-110"
+                aspectRatio="aspect-video"
+              />
             </div>
           </div>
         </div>
@@ -381,7 +391,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img src="/lovable-uploads/0f62ebd0-b15e-44c7-8d4e-7a1a9ca96bd3.png" alt="AI Panel Scanning - OCR Results showing Tool Number T-20788-V detection" className="w-full h-auto rounded-2xl shadow-lg" />
+              <AutoCarousel 
+                images={aiPanelImages}
+                className="w-full"
+                aspectRatio="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
@@ -419,7 +433,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <img src="/lovable-uploads/91d616af-290f-42e4-8ff4-3a455984870c.png" alt="Job Creation Wizard - Step 2 of 9: Job Type & Timezone Selection" className="w-full h-auto rounded-lg" />
+              <AutoCarousel 
+                images={jobWizardImages}
+                className="w-full"
+                aspectRatio="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
@@ -448,7 +466,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img src="/lovable-uploads/4670748a-09ef-45f0-aed4-b594ed82994a.png" alt="Real-Time Inventory Management - Products catalog with status tracking" className="w-full h-auto rounded-2xl shadow-lg" />
+              <AutoCarousel 
+                images={inventoryImages}
+                className="w-full"
+                aspectRatio="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
@@ -509,20 +531,12 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <h3 className="font-semibold text-lg mb-4">Schedule Preview</h3>
-              <div className="space-y-3">
-                <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium text-muted-foreground">
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => <div key={day}>{day}</div>)}
-                </div>
-                <div className="grid grid-cols-7 gap-2">
-                  {Array.from({
-                  length: 7
-                }, (_, i) => <div key={i} className="aspect-square bg-muted/50 rounded flex items-center justify-center text-sm">
-                      {i + 1}
-                    </div>)}
-                </div>
-              </div>
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <AutoCarousel 
+                images={teamImages}
+                className="w-full"
+                aspectRatio="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
@@ -547,18 +561,12 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <h3 className="font-semibold text-lg mb-4">Report Template</h3>
-              <div className="space-y-3">
-                <div className="h-6 bg-muted/70 rounded"></div>
-                <div className="h-4 bg-muted/50 rounded w-3/4"></div>
-                <div className="h-4 bg-muted/50 rounded w-1/2"></div>
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="h-16 bg-muted/30 rounded"></div>
-                  <div className="h-16 bg-muted/30 rounded"></div>
-                </div>
-                <div className="h-6 bg-muted/40 rounded mt-4"></div>
-              </div>
+            <div className="lg:col-span-1">
+              <AutoCarousel 
+                images={reportingImages}
+                className="w-full"
+                aspectRatio="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>
@@ -598,13 +606,12 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex justify-center">
-              <div className="w-48 h-96 bg-white rounded-3xl shadow-2xl p-4 relative">
-                <div className="w-full h-full bg-muted/20 rounded-2xl flex items-center justify-center">
-                  <Smartphone className="w-16 h-16 text-muted-foreground" />
-                </div>
-                <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-muted-foreground/20 rounded-full"></div>
-              </div>
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <AutoCarousel 
+                images={mobileImages}
+                className="w-full max-w-sm mx-auto"
+                aspectRatio="aspect-[3/4]"
+              />
             </div>
           </div>
         </div>
