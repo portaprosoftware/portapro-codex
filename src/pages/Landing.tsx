@@ -204,16 +204,16 @@ export const Landing: React.FC = () => {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 order-1 lg:order-1">
-              <div className="space-y-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-10 order-1 lg:order-1">
+              <div className="space-y-8">
                 
                 
-                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
+                <h1 className="text-5xl lg:text-8xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
-                <p className="text-xl text-white/90 leading-relaxed">
+                <p className="text-2xl text-white/90 leading-relaxed">
                   Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
               </div>
@@ -244,7 +244,7 @@ export const Landing: React.FC = () => {
             
             <div className="order-2 lg:order-2">
               <div className="transform hover:scale-105 transition-transform duration-300">
-                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto max-w-lg mx-auto lg:max-w-none" />
+                <img src="/lovable-uploads/f6c9907a-89e5-4b5d-ac0b-7838832bd72c.png" alt="PortaPro Platform Interface" className="w-full h-auto max-w-2xl mx-auto lg:max-w-4xl scale-110" />
               </div>
             </div>
           </div>
