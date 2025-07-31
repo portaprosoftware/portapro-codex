@@ -517,6 +517,10 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       return;
     }
 
+    console.log('=== UPDATE MAP MARKERS DEBUG ===');
+    console.log('Total coordinates to display:', coordinates.length);
+    console.log('Coordinates data:', coordinates);
+
     // Add markers for each coordinate with mobile-optimized clustering
     const clusterThreshold = window.innerWidth < 768 ? 5 : 10; // Fewer markers before clustering on mobile
     
