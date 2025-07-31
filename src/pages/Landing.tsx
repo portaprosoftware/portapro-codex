@@ -136,7 +136,6 @@ export const Landing: React.FC = () => {
       document.head.removeChild(script);
     };
   }, []);
-
   const openCalendlyPopup = () => {
     if ((window as any).Calendly) {
       (window as any).Calendly.initPopupWidget({
@@ -382,11 +381,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img 
-                src="/lovable-uploads/0f62ebd0-b15e-44c7-8d4e-7a1a9ca96bd3.png" 
-                alt="AI Panel Scanning - OCR Results showing Tool Number T-20788-V detection"
-                className="w-full h-auto rounded-2xl shadow-lg"
-              />
+              <img src="/lovable-uploads/0f62ebd0-b15e-44c7-8d4e-7a1a9ca96bd3.png" alt="AI Panel Scanning - OCR Results showing Tool Number T-20788-V detection" className="w-full h-auto rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -424,11 +419,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <img 
-                src="/lovable-uploads/91d616af-290f-42e4-8ff4-3a455984870c.png" 
-                alt="Job Creation Wizard - Step 2 of 9: Job Type & Timezone Selection"
-                className="w-full h-auto rounded-lg"
-              />
+              <img src="/lovable-uploads/91d616af-290f-42e4-8ff4-3a455984870c.png" alt="Job Creation Wizard - Step 2 of 9: Job Type & Timezone Selection" className="w-full h-auto rounded-lg" />
             </div>
           </div>
         </div>
@@ -457,11 +448,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img 
-                src="/lovable-uploads/4670748a-09ef-45f0-aed4-b594ed82994a.png" 
-                alt="Real-Time Inventory Management - Products catalog with status tracking"
-                className="w-full h-auto rounded-2xl shadow-lg"
-              />
+              <img src="/lovable-uploads/4670748a-09ef-45f0-aed4-b594ed82994a.png" alt="Real-Time Inventory Management - Products catalog with status tracking" className="w-full h-auto rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -697,10 +684,7 @@ export const Landing: React.FC = () => {
             <p className="text-lg text-muted-foreground mb-8">
               Tell us about your needs and we'll get in touch within 24 hours
             </p>
-            <Button 
-              className="bg-primary hover:bg-primary/90 text-lg px-8 py-3"
-              onClick={() => setQuestionsFormOpen(true)}
-            >
+            <Button className="bg-primary hover:bg-primary/90 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
               Ask us and we'll be in touch
             </Button>
           </div>
@@ -755,10 +739,7 @@ export const Landing: React.FC = () => {
                   (216) 412-3239
                 </a>
               </div>
-              <button 
-                onClick={() => setContactFormOpen(true)}
-                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-              >
+              <button onClick={() => setContactFormOpen(true)} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
                 <Mail className="w-4 h-4" />
                 <span>Contact Us</span>
               </button>
@@ -768,17 +749,13 @@ export const Landing: React.FC = () => {
       </footer>
 
       {/* About Us Slider */}
-      {aboutSliderOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+      {aboutSliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">About Us</h2>
-                <button 
-                  onClick={() => setAboutSliderOpen(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
-                >
+                <button onClick={() => setAboutSliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -803,21 +780,16 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Privacy Policy Slider */}
-      {privacySliderOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+      {privacySliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">Privacy Policy</h2>
-                <button 
-                  onClick={() => setPrivacySliderOpen(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
-                >
+                <button onClick={() => setPrivacySliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1016,21 +988,16 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Security Center Slider */}
-      {securitySliderOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+      {securitySliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">Security Center</h2>
-                <button 
-                  onClick={() => setSecuritySliderOpen(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
-                >
+                <button onClick={() => setSecuritySliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1230,21 +1197,16 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Terms of Service Slider */}
-      {termsSliderOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+      {termsSliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">Terms of Service</h2>
-                <button 
-                  onClick={() => setTermsSliderOpen(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
-                >
+                <button onClick={() => setTermsSliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1399,21 +1361,16 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Community Slider */}
-      {communitySliderOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+      {communitySliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">🚀 Join the PortaPro Community</h2>
-                <button 
-                  onClick={() => setCommunitySliderOpen(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
-                >
+                <button onClick={() => setCommunitySliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -1534,27 +1491,17 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
-      <BlogSlider 
-        isOpen={blogSliderOpen}
-        onClose={() => setBlogSliderOpen(false)}
-        selectedPost={selectedBlogPost}
-        onSelectPost={setSelectedBlogPost}
-      />
+      <BlogSlider isOpen={blogSliderOpen} onClose={() => setBlogSliderOpen(false)} selectedPost={selectedBlogPost} onSelectPost={setSelectedBlogPost} />
 
       {/* Contact Form Popup */}
-      {contactFormOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+      {contactFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
               <h2 className="text-2xl font-bold text-foreground">Contact Support</h2>
-              <button 
-                onClick={() => setContactFormOpen(false)}
-                className="p-2 rounded-lg hover:bg-muted"
-              >
+              <button onClick={() => setContactFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1576,45 +1523,28 @@ export const Landing: React.FC = () => {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Name *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Your full name"
-                    />
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your full name" />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Email *
                     </label>
-                    <input
-                      type="email"
-                      required
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="your@email.com"
-                    />
+                    <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="your@email.com" />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Company (Optional)
                     </label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Your company name"
-                    />
+                    <input type="text" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your company name" />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Subject *
                     </label>
-                    <select
-                      required
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    >
+                    <select required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                       <option value="">Select a topic</option>
                       <option value="general">General Question</option>
                       <option value="technical">Technical Support</option>
@@ -1628,12 +1558,7 @@ export const Landing: React.FC = () => {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Message *
                     </label>
-                    <textarea
-                      required
-                      rows={4}
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                      placeholder="How can we help you?"
-                    ></textarea>
+                    <textarea required rows={4} className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="How can we help you?"></textarea>
                   </div>
 
                   <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3">
@@ -1657,12 +1582,10 @@ export const Landing: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Questions Form Popup */}
-      {questionsFormOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+      {questionsFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
@@ -1670,43 +1593,30 @@ export const Landing: React.FC = () => {
                 <h2 className="text-2xl font-bold text-foreground">Have Questions?</h2>
                 <p className="text-muted-foreground">Tell us about your needs and we'll get in touch</p>
               </div>
-              <button 
-                onClick={() => setQuestionsFormOpen(false)}
-                className="p-2 rounded-lg hover:bg-muted"
-              >
+              <button onClick={() => setQuestionsFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
-              <form className="space-y-4" onSubmit={(e) => {
-                e.preventDefault();
-                alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
-                setQuestionsFormOpen(false);
-              }}>
+              <form className="space-y-4" onSubmit={e => {
+            e.preventDefault();
+            alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
+            setQuestionsFormOpen(false);
+          }}>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       First Name *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="John"
-                    />
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Last Name *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Doe"
-                    />
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
                   </div>
                 </div>
 
@@ -1714,44 +1624,28 @@ export const Landing: React.FC = () => {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Email *
                   </label>
-                  <input
-                    type="email"
-                    required
-                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="john@company.com"
-                  />
+                  <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Phone Number (Optional)
                   </label>
-                  <input
-                    type="tel"
-                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="(555) 123-4567"
-                  />
+                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Company Name *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Your Company Name"
-                  />
+                  <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     How many units are in your fleet?
                   </label>
-                  <select
-                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  >
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">Select fleet size</option>
                     <option value="1-25">1-25 units</option>
                     <option value="26-50">26-50 units</option>
@@ -1766,11 +1660,7 @@ export const Landing: React.FC = () => {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     What's your biggest challenge right now?
                   </label>
-                  <textarea
-                    rows={3}
-                    className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                    placeholder="Tell us about your current pain points, scheduling issues, inventory tracking needs, etc."
-                  ></textarea>
+                  <textarea rows={3} className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tell us about your current pain points, scheduling issues, inventory tracking needs, etc."></textarea>
                 </div>
 
                 <div>
@@ -1804,26 +1694,17 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setQuestionsFormOpen(false)}
-                    className="flex-1"
-                  >
+                  <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1">
                     Maybe Later
                   </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 bg-primary hover:bg-primary/90"
-                  >
+                  <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
                     Send My Questions
                   </Button>
                 </div>
               </form>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
     </div>;
 };
 export default Landing;
