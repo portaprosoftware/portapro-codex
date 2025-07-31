@@ -107,6 +107,7 @@ export const Landing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
+  const [privacySliderOpen, setPrivacySliderOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -712,7 +713,7 @@ export const Landing: React.FC = () => {
               <h4 className="font-semibold">Legal</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <a href="#" className="block hover:text-foreground">Terms</a>
-                <a href="#" className="block hover:text-foreground">Privacy</a>
+                <button onClick={() => setPrivacySliderOpen(true)} className="block hover:text-foreground text-left">Privacy</button>
                 <a href="#" className="block hover:text-foreground">Security</a>
               </div>
             </div>
@@ -765,6 +766,219 @@ export const Landing: React.FC = () => {
                       <p>
                         Founded in 2023, PortaPro is already trusted by hundreds of rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
                       </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Slider */}
+      {privacySliderOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-2xl font-bold text-foreground">Privacy Policy</h2>
+                <button 
+                  onClick={() => setPrivacySliderOpen(false)}
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-8 max-w-4xl">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Last updated: June 11, 2025
+                  </div>
+                  
+                  <div className="space-y-6 text-foreground">
+                    <p>
+                      Thank you for visiting PortaPro Software LLC ("we," "our," "us"). Protecting your privacy is important to us. This Privacy Policy explains what information we collect, why we collect it, how we use it, and how you can manage or delete your data — including specific instructions for users who sign in using Facebook Login.
+                    </p>
+                    
+                    <p>
+                      This policy applies to:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>https://portaprosoftware.com and any sub-domains (the "Site")</li>
+                      <li>Our web or mobile applications, dashboards, and associated services (collectively, the "Service")</li>
+                    </ul>
+                    
+                    <p>
+                      By accessing or using the Site or Service, you agree to the practices described below. If you do not agree, please do not use PortaPro Software. This policy complies with GDPR, CCPA/CPRA, and similar privacy regulations.
+                    </p>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">1. Information We Collect</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-muted">
+                          <thead>
+                            <tr className="bg-muted/50">
+                              <th className="border border-muted p-3 text-left font-semibold">Category</th>
+                              <th className="border border-muted p-3 text-left font-semibold">Examples</th>
+                              <th className="border border-muted p-3 text-left font-semibold">Purpose</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-muted p-3">Account Data</td>
+                              <td className="border border-muted p-3">Name, business name, email, phone, mailing address, password hash</td>
+                              <td className="border border-muted p-3">Create and secure your account, authenticate you</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-muted p-3">Service Data</td>
+                              <td className="border border-muted p-3">Job sites, unit IDs, driver GPS pings, photos, signatures, billing history</td>
+                              <td className="border border-muted p-3">Operate routing, scheduling, invoicing, compliance logs</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-muted p-3">Payment Data</td>
+                              <td className="border border-muted p-3">Last 4 digits of card, billing ZIP, transaction IDs (processed by Stripe)</td>
+                              <td className="border border-muted p-3">Process subscriptions, one-time fees, refunds</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-muted p-3">Communications</td>
+                              <td className="border border-muted p-3">Emails, SMS, support chat transcripts</td>
+                              <td className="border border-muted p-3">Provide support, send alerts, improve service</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-muted p-3">Usage Data</td>
+                              <td className="border border-muted p-3">IP address, browser type, cookies, pages visited (via Google Analytics)</td>
+                              <td className="border border-muted p-3">Site performance, marketing insights, security</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-sm">
+                        <strong>Children's Data:</strong> PortaPro Software is not directed at children under 18. We do not knowingly collect personal data from minors.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">2. How We Use Your Information</h3>
+                      <ul className="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Provide the Service</strong> – including work-order management, routing, compliance logging, and invoicing</li>
+                        <li><strong>Communications</strong> – service alerts (e.g., driver arrival) and optional marketing messages</li>
+                        <li><strong>Billing</strong> – subscription management, payment processing, and fraud prevention</li>
+                        <li><strong>Product improvement</strong> – feature development, analytics, bug fixes</li>
+                        <li><strong>Legal obligations</strong> – enforcement of Terms, compliance with legal requests</li>
+                      </ul>
+                      <p className="font-semibold">We do not sell your personal information.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">3. Sharing with Third Parties</h3>
+                      <p>
+                        We only share data with service providers essential to delivering PortaPro Software. These parties act as data processors and follow our strict privacy requirements:
+                      </p>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-muted">
+                          <thead>
+                            <tr className="bg-muted/50">
+                              <th className="border border-muted p-3 text-left font-semibold">Provider</th>
+                              <th className="border border-muted p-3 text-left font-semibold">Purpose</th>
+                              <th className="border border-muted p-3 text-left font-semibold">Location</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr><td className="border border-muted p-3">Supabase</td><td className="border border-muted p-3">Application database & auth</td><td className="border border-muted p-3">USA / EU</td></tr>
+                            <tr><td className="border border-muted p-3">Stripe</td><td className="border border-muted p-3">Payment processing</td><td className="border border-muted p-3">USA</td></tr>
+                            <tr><td className="border border-muted p-3">Twilio</td><td className="border border-muted p-3">SMS & email notifications</td><td className="border border-muted p-3">USA</td></tr>
+                            <tr><td className="border border-muted p-3">Mapbox</td><td className="border border-muted p-3">Maps & routing visualizations</td><td className="border border-muted p-3">USA</td></tr>
+                            <tr><td className="border border-muted p-3">Make (Integromat)</td><td className="border border-muted p-3">Workflow automation</td><td className="border border-muted p-3">EU</td></tr>
+                            <tr><td className="border border-muted p-3">Google Analytics</td><td className="border border-muted p-3">IP-anonymized site analytics</td><td className="border border-muted p-3">USA</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p>Data may also be disclosed where required by law or necessary to protect safety or rights.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">4. Cookies & Tracking</h3>
+                      <p>We use:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li><strong>Essential cookies:</strong> For login sessions and user security</li>
+                        <li><strong>Analytics cookies:</strong> From Google Analytics for traffic and performance tracking</li>
+                      </ul>
+                      <p>You can disable cookies in your browser settings, though it may impact functionality.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">5. Data Retention</h3>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li><strong>Account data:</strong> Retained for the duration of your subscription and up to 7 years for audit/compliance</li>
+                        <li><strong>Usage logs:</strong> Retained 30–180 days unless needed longer for security</li>
+                        <li><strong>Payment data:</strong> Retained in accordance with financial and tax regulations</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">6. Data Security</h3>
+                      <p>We follow industry best practices to keep your information secure:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>HTTPS encryption (TLS 1.2+)</li>
+                        <li>Passwords hashed with bcrypt</li>
+                        <li>Role-based access controls</li>
+                        <li>24/7 monitoring and regular security reviews</li>
+                      </ul>
+                      <p>No system is 100% secure, but we are committed to protecting your data.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">7. Your Rights</h3>
+                      <p>You may have the right to:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>Access your personal data</li>
+                        <li>Correct or update your information</li>
+                        <li>Request data deletion ("right to be forgotten")</li>
+                        <li>Restrict or object to data processing</li>
+                        <li>Export your data to another provider</li>
+                        <li>Opt out of marketing communications</li>
+                      </ul>
+                      <p>To exercise these rights, email: <strong>privacy@portaprosoftware.com</strong></p>
+                      <p>We will respond within 30 days.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">8. Facebook Data Deletion Instructions</h3>
+                      <p>If you signed up using Facebook Login and wish to delete your data:</p>
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>Visit https://portaprosoftware.com/privacy</li>
+                        <li>Use the subject line: "Facebook Data Deletion Request"</li>
+                        <li>Include the email address linked to your Facebook account</li>
+                      </ul>
+                      <p>We will verify your request and delete all associated data from our systems within 7 business days. You'll receive confirmation once complete.</p>
+                      <p>You can also send your request directly to <strong>privacy@portaprosoftware.com</strong>.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">9. International Transfers</h3>
+                      <p>We host data in the United States. Where applicable, we use Standard Contractual Clauses (SCCs) or similar lawful mechanisms to facilitate transfers from the EU or UK.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">10. Changes to This Policy</h3>
+                      <p>This Privacy Policy may be updated periodically. If we make material changes, we'll notify you via email or on our website. The "Last updated" date above reflects the latest version.</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold">11. Contact Us</h3>
+                      <div className="space-y-2">
+                        <p><strong>📧 Email:</strong> privacy@portaprosoftware.com</p>
+                        <p><strong>📬 Mailing Address:</strong></p>
+                        <div className="ml-4">
+                          <p>PortaPro Software LLC</p>
+                          <p>1055 Old River Road, Unit 721</p>
+                          <p>Cleveland, OH 44113</p>
+                          <p>USA</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
