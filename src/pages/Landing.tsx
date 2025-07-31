@@ -156,7 +156,6 @@ export const Landing: React.FC = () => {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
-            <button onClick={() => setAboutSliderOpen(true)} className="text-muted-foreground hover:text-foreground transition-colors font-medium">About</button>
           </nav>
           
           {/* Desktop Auth Buttons */}
@@ -183,7 +182,6 @@ export const Landing: React.FC = () => {
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-muted-foreground hover:text-foreground">Features</a>
                 <a href="#pricing" className="block py-2 text-muted-foreground hover:text-foreground">Pricing</a>
-                <button onClick={() => setAboutSliderOpen(true)} className="block py-2 text-muted-foreground hover:text-foreground text-left">About</button>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
@@ -698,7 +696,7 @@ export const Landing: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Company</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <a href="#about" className="block hover:text-foreground">About</a>
+                <button onClick={() => setAboutSliderOpen(true)} className="block hover:text-foreground text-left">About</button>
                 <a href="#" className="block hover:text-foreground">Careers</a>
                 <a href="#" className="block hover:text-foreground">Blog</a>
               </div>
