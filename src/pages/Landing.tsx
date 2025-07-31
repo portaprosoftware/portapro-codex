@@ -450,18 +450,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Job Creation Preview</h3>
-                <div className="space-y-3">
-                  {jobWizardSteps.map((step, index) => <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                      <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-bold text-primary">{step.number}</span>
-                      </div>
-                      <span className="text-sm font-medium">{step.title}</span>
-                      <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
-                    </div>)}
-                </div>
-              </div>
+              <img 
+                src="/lovable-uploads/91d616af-290f-42e4-8ff4-3a455984870c.png" 
+                alt="Job Creation Wizard - Step 2 of 9: Job Type & Timezone Selection"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
         </div>
