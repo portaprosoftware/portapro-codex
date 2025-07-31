@@ -159,17 +159,17 @@ export const Landing: React.FC = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 ml-auto">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</a>
+            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           </nav>
           
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" className="font-medium">Sign In</Button>
+              <Button variant="ghost" className="text-sm font-medium">Sign In</Button>
             </a>
             <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-primary hover:bg-primary/90 font-medium">
+              <Button className="bg-primary hover:bg-primary/90 text-sm font-medium">
                 Start Free Trial
               </Button>
             </a>
@@ -185,15 +185,15 @@ export const Landing: React.FC = () => {
         {mobileMenuOpen && <div className="md:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
-                <a href="#features" className="block py-2 text-muted-foreground hover:text-foreground">Features</a>
-                <a href="#pricing" className="block py-2 text-muted-foreground hover:text-foreground">Pricing</a>
+                <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Features</a>
+                <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Pricing</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" className="w-full">Sign In</Button>
+                  <Button variant="ghost" className="w-full text-sm font-medium">Sign In</Button>
                 </a>
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full">Start Free Trial</Button>
+                  <Button className="w-full text-sm font-medium">Start Free Trial</Button>
                 </a>
               </div>
             </div>
