@@ -95,7 +95,7 @@ const App = () => {
 
           {/* Authenticated routes */}
           <Route
-            path="/dashboard/*"
+            path="/dashboard"
             element={
               <>
                 <SignedIn>
@@ -144,6 +144,50 @@ const App = () => {
               </>
             }
           />
+
+          {/* Direct dashboard routes for backward compatibility */}
+          <Route path="/jobs" element={
+            <>
+              <SignedIn><Layout><Jobs /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/inventory" element={
+            <>
+              <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/customer-hub" element={
+            <>
+              <SignedIn><Layout><CustomerHub /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet-management" element={
+            <>
+              <SignedIn><Layout><FleetManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/marketing" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/analytics" element={
+            <>
+              <SignedIn><Layout><Analytics /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/settings" element={
+            <>
+              <SignedIn><Layout><Settings /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
 
           {/* Catch all other routes */}
           <Route path="*" element={<Landing />} />
