@@ -111,6 +111,7 @@ export const Landing: React.FC = () => {
   const [securitySliderOpen, setSecuritySliderOpen] = useState(false);
   const [termsSliderOpen, setTermsSliderOpen] = useState(false);
   const [communitySliderOpen, setCommunitySliderOpen] = useState(false);
+  const [blogSliderOpen, setBlogSliderOpen] = useState(false);
 
   // Load Calendly widget
   useEffect(() => {
@@ -699,14 +700,13 @@ export const Landing: React.FC = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <button onClick={() => setAboutSliderOpen(true)} className="block hover:text-foreground text-left">About</button>
                 <a href="#" className="block hover:text-foreground">Careers</a>
-                <a href="#" className="block hover:text-foreground">Blog</a>
+                <button onClick={() => setBlogSliderOpen(true)} className="block hover:text-foreground text-left">Blog</button>
               </div>
             </div>
             <div className="space-y-4">
               <h4 className="font-semibold">Resources</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <a href="#" className="block hover:text-foreground">Help Center</a>
-                <a href="#" className="block hover:text-foreground">Documentation</a>
                 <button onClick={() => setCommunitySliderOpen(true)} className="block hover:text-foreground text-left">Community</button>
               </div>
             </div>
@@ -1500,6 +1500,139 @@ export const Landing: React.FC = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blog Slider */}
+      {blogSliderOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-2xl font-bold text-foreground">PortaPro Blog</h2>
+              <button 
+                onClick={() => setBlogSliderOpen(false)}
+                className="p-2 rounded-lg hover:bg-muted"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-8">
+                {/* Blog Posts Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Featured Post */}
+                  <div className="md:col-span-2 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
+                    <Badge className="bg-white text-primary mb-4">Featured</Badge>
+                    <h3 className="text-2xl font-bold mb-3">Why We Built PortaPro</h3>
+                    <p className="text-white/90 mb-4 text-lg">
+                      Discover the story behind PortaPro and how it's transforming operations for modern portable toilet operators.
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/80 text-sm">January 15, 2024 • Company</span>
+                      <Button className="bg-white text-primary hover:bg-white/90">
+                        Read More <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Blog Post 1 */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <CardContent className="p-6">
+                      <Badge className="bg-green-100 text-green-800 mb-3">Case Study</Badge>
+                      <h3 className="text-xl font-bold mb-3">How One Operator Saved 10+ Hours a Week</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Learn how smart scheduling and route optimization transformed this operator's weekly workflow.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground text-sm">January 8, 2024</span>
+                        <Button variant="outline" size="sm">
+                          Read More <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Blog Post 2 */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <CardContent className="p-6">
+                      <Badge className="bg-blue-100 text-blue-800 mb-3">Technology</Badge>
+                      <h3 className="text-xl font-bold mb-3">QR Code Tracking for Portable Toilets</h3>
+                      <p className="text-muted-foreground mb-4">
+                        See how PortaPro uses QR codes to track, service, and manage every unit in the field.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground text-sm">December 28, 2023</span>
+                        <Button variant="outline" size="sm">
+                          Read More <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Blog Post 3 */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <CardContent className="p-6">
+                      <Badge className="bg-orange-100 text-orange-800 mb-3">Business Tips</Badge>
+                      <h3 className="text-xl font-bold mb-3">The Hidden Cost of Missed Cleanings</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Missed cleanings cost more than you think — here's how PortaPro helps prevent them.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground text-sm">December 15, 2023</span>
+                        <Button variant="outline" size="sm">
+                          Read More <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Blog Post 4 */}
+                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <CardContent className="p-6">
+                      <Badge className="bg-purple-100 text-purple-800 mb-3">Product Update</Badge>
+                      <h3 className="text-xl font-bold mb-3">AI Lock Detection + Inventory Scanning</h3>
+                      <p className="text-muted-foreground mb-4">
+                        New feature alert: PortaPro now scans molded panel data and tracks locked units automatically.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground text-sm">December 1, 2023</span>
+                        <Button variant="outline" size="sm">
+                          Read More <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Categories Section */}
+                <div className="border-t pt-8">
+                  <h3 className="text-xl font-bold mb-4">Browse by Category</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Company News</Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Case Studies</Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Technology</Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Business Tips</Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Product Updates</Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Industry Insights</Badge>
+                  </div>
+                </div>
+
+                {/* Subscribe Section */}
+                <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+                  <h3 className="text-xl font-bold mb-3">Stay Updated</h3>
+                  <p className="text-blue-100 mb-4">
+                    Get the latest insights, product updates, and industry tips delivered to your inbox.
+                  </p>
+                  <Button className="bg-white text-blue-700 hover:bg-white/90 font-semibold">
+                    Subscribe to Blog Updates <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
               </div>
             </div>
