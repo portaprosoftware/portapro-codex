@@ -1530,9 +1530,9 @@ export const Landing: React.FC = () => {
                   {/* Featured Post */}
                   <div className="md:col-span-2 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
                     <Badge className="bg-white text-primary mb-4">Featured</Badge>
-                    <h3 className="text-2xl font-bold mb-3">Why We Built PortaPro</h3>
+                    <h3 className="text-2xl font-bold mb-3">Why We Built PortaPro: Behind the Scenes with Our Founding Team</h3>
                     <p className="text-white/90 mb-4 text-lg">
-                      Discover the story behind PortaPro and how it's transforming operations for modern portable toilet operators.
+                      At PortaPro, we didn't just build another SaaS platform — we built a solution to a problem we lived. Our founding team came from the trenches of field service, operations, and tech.
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-white/80 text-sm">January 15, 2024 • Company</span>
@@ -1546,9 +1546,9 @@ export const Landing: React.FC = () => {
                   <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6">
                       <Badge className="bg-green-100 text-green-800 mb-3">Case Study</Badge>
-                      <h3 className="text-xl font-bold mb-3">How One Operator Saved 10+ Hours a Week</h3>
+                      <h3 className="text-xl font-bold mb-3">How One Operator Saved 10 Hours a Week with PortaPro's Smart Scheduling</h3>
                       <p className="text-muted-foreground mb-4">
-                        Learn how smart scheduling and route optimization transformed this operator's weekly workflow.
+                        When Mike, a solo operator in the Midwest, came to us, his biggest complaint was simple: "I'm spending more time coordinating jobs than actually doing them."
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground text-sm">January 8, 2024</span>
@@ -1563,9 +1563,9 @@ export const Landing: React.FC = () => {
                   <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6">
                       <Badge className="bg-blue-100 text-blue-800 mb-3">Technology</Badge>
-                      <h3 className="text-xl font-bold mb-3">QR Code Tracking for Portable Toilets</h3>
+                      <h3 className="text-xl font-bold mb-3">QR Codes on Porta Potties: How It Actually Works</h3>
                       <p className="text-muted-foreground mb-4">
-                        See how PortaPro uses QR codes to track, service, and manage every unit in the field.
+                        Yes, your porta potty can have a QR code — and yes, it can be life-changing. Every individual unit in PortaPro can be tagged with a unique QR code.
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground text-sm">December 28, 2023</span>
@@ -1580,9 +1580,9 @@ export const Landing: React.FC = () => {
                   <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6">
                       <Badge className="bg-orange-100 text-orange-800 mb-3">Business Tips</Badge>
-                      <h3 className="text-xl font-bold mb-3">The Hidden Cost of Missed Cleanings</h3>
+                      <h3 className="text-xl font-bold mb-3">The Hidden Cost of Missed Cleanings (And How to Stop Them)</h3>
                       <p className="text-muted-foreground mb-4">
-                        Missed cleanings cost more than you think — here's how PortaPro helps prevent them.
+                        Missed cleanings don't just mean one unhappy customer. They mean negative reviews, lost contracts, overtime hours, and emergency dispatch costs.
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground text-sm">December 15, 2023</span>
@@ -1597,9 +1597,9 @@ export const Landing: React.FC = () => {
                   <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6">
                       <Badge className="bg-purple-100 text-purple-800 mb-3">Product Update</Badge>
-                      <h3 className="text-xl font-bold mb-3">AI Lock Detection + Inventory Scanning</h3>
+                      <h3 className="text-xl font-bold mb-3">PortaPro Product Update: AI Lock Detection + Inventory Scanning</h3>
                       <p className="text-muted-foreground mb-4">
-                        New feature alert: PortaPro now scans molded panel data and tracks locked units automatically.
+                        We're excited to roll out one of our most-requested features: AI-powered lock detection and molded panel scanning with Google Vision OCR.
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground text-sm">December 1, 2023</span>
