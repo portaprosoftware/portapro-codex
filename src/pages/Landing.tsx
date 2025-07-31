@@ -745,7 +745,7 @@ export const Landing: React.FC = () => {
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t">
             <div className="flex items-center gap-4">
-              <Logo />
+              <Logo variant="footer" />
               <span className="text-sm text-white/80">© 2025 PortaPro. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
