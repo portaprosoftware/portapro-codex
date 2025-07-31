@@ -152,8 +152,6 @@ export const Landing: React.FC = () => {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Features</a>
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Pricing</a>
-            <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">About</a>
-            <a href="#resources" className="text-muted-foreground hover:text-foreground transition-colors font-medium">Resources</a>
           </nav>
           
           {/* Desktop Auth Buttons */}
@@ -180,8 +178,6 @@ export const Landing: React.FC = () => {
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-muted-foreground hover:text-foreground">Features</a>
                 <a href="#pricing" className="block py-2 text-muted-foreground hover:text-foreground">Pricing</a>
-                <a href="#about" className="block py-2 text-muted-foreground hover:text-foreground">About</a>
-                <a href="#resources" className="block py-2 text-muted-foreground hover:text-foreground">Resources</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
@@ -691,7 +687,6 @@ export const Landing: React.FC = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <a href="#features" className="block hover:text-foreground">Features</a>
                 <a href="#mobile-app" className="block hover:text-foreground">Mobile App</a>
-                <a href="#" className="block hover:text-foreground">API</a>
               </div>
             </div>
             <div className="space-y-4">
@@ -715,6 +710,7 @@ export const Landing: React.FC = () => {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <a href="#" className="block hover:text-foreground">Terms</a>
                 <a href="#" className="block hover:text-foreground">Privacy</a>
+                <a href="#" className="block hover:text-foreground">Security</a>
               </div>
             </div>
           </div>
