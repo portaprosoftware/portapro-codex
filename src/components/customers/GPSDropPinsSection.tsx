@@ -204,6 +204,15 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     if (!mapboxToken || !mapContainer.current) return;
 
     const initializeMap = async () => {
+      console.log('GPS Section: Initializing map with token, length:', mapboxToken.length);
+      console.log('GPS Section: Setting mapboxgl.accessToken...');
+      
+      // Ensure we have a valid token before setting
+      if (!mapboxToken.startsWith('pk.')) {
+        console.error('GPS Section: Invalid token format for map initialization');
+        return;
+      }
+      
       mapboxgl.accessToken = mapboxToken;
 
       const center = await getDefaultCenter();
