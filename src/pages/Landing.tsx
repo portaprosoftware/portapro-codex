@@ -708,7 +708,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer id="resources" className="py-16 px-6 bg-muted/50 border-t">
+      <footer id="resources" className="py-16 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white border-t">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
@@ -757,7 +757,7 @@ export const Landing: React.FC = () => {
               </div>
               <button 
                 onClick={() => setContactFormOpen(true)}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 <span>Contact Us</span>
