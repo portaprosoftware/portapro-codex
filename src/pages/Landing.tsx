@@ -450,25 +450,13 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <Card className="p-6">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Storage Locations</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                  <span className="font-medium">Main Yard</span>
-                  <Badge variant="secondary">85 units</Badge>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                  <span className="font-medium">North Depot</span>
-                  <Badge variant="secondary">12 units</Badge>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                  <span className="font-medium">South Garage</span>
-                  <Badge variant="destructive">3 units</Badge>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/4670748a-09ef-45f0-aed4-b594ed82994a.png" 
+                alt="Real-Time Inventory Management - Products catalog with status tracking"
+                className="w-full h-auto rounded-2xl shadow-lg"
+              />
+            </div>
           </div>
         </div>
       </section>
