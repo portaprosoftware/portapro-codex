@@ -193,6 +193,10 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
+      if (!customer?.id) {
+        throw new Error('Customer ID is required');
+      }
+
       const { data: result, error } = await supabase
         .from('customers')
         .update({
@@ -221,9 +225,12 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         })
         .eq('id', customer.id)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error details:', error);
+        throw error;
+      }
       return result;
     },
     onSuccess: () => {
