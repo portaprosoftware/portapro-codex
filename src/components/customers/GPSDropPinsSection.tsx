@@ -161,25 +161,28 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   useEffect(() => {
     const getMapboxToken = async () => {
       try {
+        console.log('Attempting to fetch Mapbox token...');
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
         if (error) {
           console.error('Supabase function error:', error);
           throw error;
         }
+        
         if (!data?.token) {
+          console.error('No token received from Mapbox service');
           throw new Error('No token received from Mapbox service');
         }
-        console.log('Mapbox token received, length:', data.token.length);
+        
+        console.log('Mapbox token received successfully, length:', data.token.length);
         console.log('Token starts with:', data.token.substring(0, 20));
         setMapboxToken(data.token);
+        
       } catch (error) {
         console.error('Error fetching Mapbox token:', error);
-        // Fallback to direct token if available
-        const fallbackToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtnHx7gKoK_Xbw';
-        setMapboxToken(fallbackToken);
         toast({
-          title: "Using fallback map token",
-          description: "Please configure MAPBOX_PUBLIC_TOKEN in Supabase Edge Function secrets for production use.",
+          title: "Map Configuration Error",
+          description: "Unable to load map. Please check Mapbox token configuration.",
           variant: "destructive",
         });
       }
