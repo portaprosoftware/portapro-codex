@@ -243,14 +243,14 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-wrap gap-6 pt-4 text-sm text-white/80">
-                <span className="font-bold">• Full Support Included</span>
-                <span className="font-bold">• Cancel Anytime</span>
+                <span className="font-bold text-base">• Full Support Included</span>
+                <span className="font-bold text-base">• Cancel Anytime</span>
                 <span className="font-bold text-base">• 14 Day Free Trial</span>
               </div>
             </div>
             
             <div className="order-2 lg:order-2">
-              <AutoCarousel media={aiPanelImages} className="max-w-2xl w-full mx-auto lg:max-w-4xl transform scale-110" aspectRatio="aspect-video" />
+              <AutoCarousel images={aiPanelImages} className="max-w-2xl w-full mx-auto lg:max-w-4xl transform scale-110" aspectRatio="aspect-video" />
             </div>
           </div>
         </div>
@@ -387,7 +387,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <AutoCarousel media={aiPanelImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel images={aiPanelImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -425,7 +425,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <AutoCarousel media={jobWizardImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel images={jobWizardImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -454,7 +454,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <AutoCarousel media={inventoryImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel images={inventoryImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -516,7 +516,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <AutoCarousel media={teamImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel images={teamImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -542,7 +542,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1">
-              <AutoCarousel media={reportingImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel images={reportingImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -583,7 +583,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <AutoCarousel media={mobileImages} className="w-full max-w-sm mx-auto" aspectRatio="aspect-[3/4]" />
+              <AutoCarousel images={mobileImages} className="w-full max-w-sm mx-auto" aspectRatio="aspect-[3/4]" />
             </div>
           </div>
         </div>
