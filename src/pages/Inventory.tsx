@@ -92,9 +92,20 @@ const Inventory: React.FC = () => {
       return "border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50";
     }
     
-    return isActive 
-      ? "bg-blue-600 text-white border-blue-600"
-      : "border-gray-300 text-gray-700 hover:border-gray-400";
+    if (isActive) {
+      switch (filterKey) {
+        case "in_stock":
+          return "bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600 hover:from-green-600 hover:to-green-700";
+        case "low_stock":
+          return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-yellow-600 hover:from-yellow-600 hover:to-yellow-700";
+        case "out_of_stock":
+          return "bg-gradient-to-r from-red-500 to-red-600 text-white border-red-600 hover:from-red-600 hover:to-red-700";
+        default:
+          return "bg-blue-600 text-white border-blue-600";
+      }
+    }
+    
+    return "border-gray-300 text-gray-700 hover:border-gray-400";
   };
 
   const handleOCRSearchResult = async (searchTerm: string, confidence?: number) => {
