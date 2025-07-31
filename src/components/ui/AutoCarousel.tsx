@@ -14,7 +14,7 @@ export const AutoCarousel: React.FC<AutoCarouselProps> = ({
   aspectRatio = "aspect-video"
 }) => {
   const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
+    Autoplay({ delay: 3000, stopOnInteraction: false })
   );
 
   return (
@@ -22,8 +22,10 @@ export const AutoCarousel: React.FC<AutoCarouselProps> = ({
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
+        opts={{
+          align: "start",
+          loop: true,
+        }}
       >
         <CarouselContent>
           {images.map((image, index) => (
