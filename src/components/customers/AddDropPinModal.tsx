@@ -117,11 +117,19 @@ export function AddDropPinModal({
   useEffect(() => {
     const getMapboxToken = async () => {
       try {
+        console.log('AddDropPinModal: Fetching Mapbox token...');
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
+        if (error) {
+          console.error('AddDropPinModal: Supabase function error:', error);
+          throw error;
+        }
+        if (!data?.token) {
+          throw new Error('No token received from Mapbox service');
+        }
+        console.log('AddDropPinModal: Token received, length:', data.token.length);
         setMapboxToken(data.token);
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
+        console.error('AddDropPinModal: Error fetching Mapbox token:', error);
         toast({
           title: "Error",
           description: "Failed to load map. Please try again.",
@@ -137,8 +145,13 @@ export function AddDropPinModal({
 
   // Initialize map when modal opens and token is available
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current) return;
+    console.log('AddDropPinModal: Map initialization effect triggered', { isOpen, mapboxToken: !!mapboxToken, mapContainer: !!mapContainer.current });
+    if (!isOpen || !mapboxToken || !mapContainer.current) {
+      console.log('AddDropPinModal: Skipping map init - missing requirements');
+      return;
+    }
 
+    console.log('AddDropPinModal: Setting Mapbox access token');
     mapboxgl.accessToken = mapboxToken;
 
     // Get default coordinates from customer's default service location

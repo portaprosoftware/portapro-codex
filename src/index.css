@@ -625,3 +625,30 @@
     }
   }
 }
+
+/* Mapbox GL JS styling and z-index fixes */
+.mapboxgl-popup {
+  z-index: 200;
+}
+
+.mapboxgl-control-container {
+  z-index: 200;
+}
+
+/* Ensure map markers stay below modals and dialogs */
+.mapboxgl-marker {
+  z-index: 100 !important;
+}
+
+/* Ensure modals and dialogs have higher z-index than map markers */
+[data-radix-popper-content-wrapper],
+[data-radix-dialog-overlay],
+[data-radix-dialog-content],
+[data-vaul-drawer-wrapper] {
+  z-index: 1000 !important;
+}
+
+/* Make sure dropdown menus appear above map elements */
+[data-radix-dropdown-menu-content] {
+  z-index: 1500 !important;
+}
