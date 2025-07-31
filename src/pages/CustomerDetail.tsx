@@ -95,8 +95,6 @@ export default function CustomerDetail() {
         <CustomerStatsSection customerId={id!} />
         <CustomerTabs customer={{
           ...customer,
-          contact_first_name: (customer as any).contact_first_name || '',
-          contact_last_name: (customer as any).contact_last_name || '',
           type: (customer as any).type || customer.customer_type || '',
           service_street: (customer as any).service_street || customer.address?.split(',')[0] || '',
           service_street2: (customer as any).service_street2 || '',

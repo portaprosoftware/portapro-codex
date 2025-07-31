@@ -16,8 +16,6 @@ import {
 interface Customer {
   id: string;
   name: string;
-  contact_first_name: string;
-  contact_last_name: string;
   type: string;
   email?: string;
   phone?: string;

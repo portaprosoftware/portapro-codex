@@ -68,8 +68,6 @@ const US_STATES = [
 
 const customerSchema = z.object({
   name: z.string().min(1, "Company name is required"),
-  contact_first_name: z.string().min(1, "First name is required"),
-  contact_last_name: z.string().min(1, "Last name is required"),
   type: z.string().min(1, "Customer type is required"),
   email: z.string().email("Valid email is required").optional().or(z.literal("")),
   phone: z.string().optional(),
@@ -114,8 +112,6 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 interface Customer {
   id: string;
   name: string;
-  contact_first_name: string;
-  contact_last_name: string;
   type: string;
   email?: string;
   phone?: string;
@@ -168,8 +164,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: customer?.name || "",
-      contact_first_name: customer?.contact_first_name || "",
-      contact_last_name: customer?.contact_last_name || "",
       type: customer?.type || "",
       email: customer?.email || "",
       phone: customer?.phone || "",
@@ -203,8 +197,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         .from('customers')
         .update({
           name: data.name,
-          contact_first_name: data.contact_first_name,
-          contact_last_name: data.contact_last_name,
           type: data.type,
           email: data.email || null,
           phone: data.phone || null,
@@ -469,32 +461,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="contact_first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name *</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="contact_last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name *</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
