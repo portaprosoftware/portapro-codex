@@ -134,12 +134,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
             <Button
               variant="ghost"
               size="sm"
-              className="w-8 h-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="w-8 h-8 p-0 transition-all"
               onClick={(e) => {
                 e.stopPropagation();
               }}
             >
-              <BarChart3 className="w-4 h-4 text-gray-600 hover:text-blue-600 transition-colors" />
+              <BarChart3 className="w-4 h-4 text-gray-600 hover:text-gray-900 transition-colors" />
             </Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-80" side="left">
