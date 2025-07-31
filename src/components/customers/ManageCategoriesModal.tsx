@@ -37,6 +37,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiService } from '@/services/apiService';
 
 interface PinCategory {
   id: string;
@@ -261,26 +262,8 @@ export function ManageCategoriesModal({
           const mapboxToken = tokenData?.token;
 
           if (mapboxToken) {
-            const encodedAddress = encodeURIComponent(fullAddress.trim());
-            const response = await fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
-            );
+            const coords = await apiService.geocodeAddress(fullAddress, mapboxToken);
 
-            if (response.ok) {
-              const data = await response.json();
-              if (data.features && data.features.length > 0) {
-                const [lng, lat] = data.features[0].center;
-                targetCoordinates = [lng, lat];
-
-                // Store the geocoded coordinates for future use
-                await supabase
-                  .from('customer_service_locations')
-                  .update({ 
-                    gps_coordinates: `${lng},${lat}` 
-                  })
-                  .eq('id', primaryLocation.id);
-              }
-            }
           }
         } catch (geocodeError) {
           console.error('Geocoding error:', geocodeError);

@@ -34,6 +34,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, Crosshair, Target, Plus, Save, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { apiService } from '@/services/apiService';
 
 const dropPinSchema = z.object({
   service_location_id: z.string().min(1, 'Service location is required'),
@@ -185,30 +186,23 @@ export function AddDropPinModal({
           ].filter(Boolean).join(' ');
           
           try {
-            const encodedAddress = encodeURIComponent(fullAddress.trim());
-            const response = await fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
-            );
-            
-            if (response.ok) {
-              const data = await response.json();
-              if (data.features && data.features.length > 0) {
-                const [lng, lat] = data.features[0].center;
-                
-                // Store the geocoded coordinates for future use
-                try {
-                  await supabase
-                    .from('customer_service_locations')
-                    .update({ 
-                      gps_coordinates: `${lng},${lat}` 
-                    })
-                    .eq('id', primaryLocation.id);
-                } catch (error) {
-                  console.error('Error storing geocoded coordinates:', error);
-                }
-                
-                return [lng, lat];
+            const coords = await apiService.geocodeAddress(fullAddress, mapboxToken);
+            if (coords) {
+              const [lng, lat] = coords;
+              
+              // Store the geocoded coordinates for future use
+              try {
+                await supabase
+                  .from('customer_service_locations')
+                  .update({ 
+                    gps_coordinates: `${lng},${lat}` 
+                  })
+                  .eq('id', primaryLocation.id);
+              } catch (error) {
+                console.error('Error storing geocoded coordinates:', error);
               }
+              
+              return [lng, lat];
             }
           } catch (error) {
             console.error('Geocoding error in modal:', error);

@@ -48,6 +48,7 @@ import {
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { ManageCategoriesModal } from './ManageCategoriesModal';
+import { apiService } from '@/services/apiService';
 import { ExpandedMapModal } from './ExpandedMapModal';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -422,20 +423,8 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
     if (!mapboxToken || !address.trim()) return null;
     
     try {
-      const encodedAddress = encodeURIComponent(address.trim());
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&country=us`
-      );
-      
-      if (!response.ok) throw new Error('Geocoding failed');
-      
-      const data = await response.json();
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].center;
-        if (typeof lng === 'number' && typeof lat === 'number' && !isNaN(lng) && !isNaN(lat)) {
-          return [lng, lat];
-        }
-      }
+      const coords = await apiService.geocodeAddress(address, mapboxToken);
+      return coords;
     } catch (error) {
       console.error('Geocoding error:', error);
     }
