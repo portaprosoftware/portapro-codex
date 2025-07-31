@@ -158,6 +158,18 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/customers" element={
+            <>
+              <SignedIn><Layout><CustomerHub /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/customers/:id" element={
+            <>
+              <SignedIn><Layout><CustomerDetail /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/customer-hub" element={
             <>
               <SignedIn><Layout><CustomerHub /></Layout></SignedIn>
