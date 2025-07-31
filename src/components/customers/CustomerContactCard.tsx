@@ -65,7 +65,7 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
                   )}
                 </div>
                 <Badge className={getContactTypeColor(contact.contact_type)}>
-                  {contact.contact_type}
+                  {contact.contact_type.charAt(0).toUpperCase() + contact.contact_type.slice(1)}
                 </Badge>
                 {contact.is_primary && (
                   <Badge className="bg-gradient-to-r from-black to-gray-800 text-white border-0 font-bold">
