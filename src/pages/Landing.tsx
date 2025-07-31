@@ -165,14 +165,14 @@ export const Landing: React.FC = () => {
           
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+            <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" className="font-medium">Sign In</Button>
-            </SignInButton>
-            <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+            </a>
+            <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
               <Button className="bg-primary hover:bg-primary/90 font-medium">
                 Start Free Trial
               </Button>
-            </SignUpButton>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -189,12 +189,12 @@ export const Landing: React.FC = () => {
                 <a href="#pricing" className="block py-2 text-muted-foreground hover:text-foreground">Pricing</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
-                <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+                <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" className="w-full">Sign In</Button>
-                </SignInButton>
-                <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+                </a>
+                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full">Start Free Trial</Button>
-                </SignUpButton>
+                </a>
               </div>
             </div>
           </div>}
@@ -218,12 +218,12 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
-                <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
-                </SignUpButton>
+                </a>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white" onClick={openCalendlyPopup}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
@@ -726,7 +726,7 @@ export const Landing: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t">
             <div className="flex items-center gap-4">
               <Logo />
-              <span className="text-sm text-muted-foreground">© 2024 PortaPro. All rights reserved.</span>
+              <span className="text-sm text-muted-foreground">© 2025 PortaPro. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -775,7 +775,7 @@ export const Landing: React.FC = () => {
                       </p>
                       
                       <p>
-                        Founded in 2023, PortaPro is already trusted by hundreds of rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
+                        Founded in <strong>2025</strong>, PortaPro is already trusted by rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
                       </p>
                     </div>
                   </div>
