@@ -160,6 +160,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
   const [showDepositConfirm, setShowDepositConfirm] = useState(false);
   const [depositConfirmText, setDepositConfirmText] = useState('');
 
+  // Don't render if customer is not available
+  if (!customer) {
+    return null;
+  }
+
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -193,36 +198,44 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
   const updateCustomerMutation = useMutation({
     mutationFn: async (data: CustomerFormData) => {
+      console.log('Attempting to update customer:', { customerId: customer?.id, customerData: customer });
+      
       if (!customer?.id) {
+        console.error('Customer ID is missing:', customer);
         throw new Error('Customer ID is required');
       }
 
+      const updateData = {
+        name: data.name,
+        customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected",
+        email: data.email || null,
+        phone: data.phone || null,
+        service_street: data.service_street,
+        service_street2: data.service_street2 || null,
+        service_city: data.service_city,
+        service_state: data.service_state,
+        service_zip: data.service_zip,
+        billing_differs_from_service: data.billing_differs_from_service,
+        billing_street: data.billing_differs_from_service ? data.billing_street : data.service_street,
+        billing_street2: data.billing_differs_from_service ? (data.billing_street2 || null) : (data.service_street2 || null),
+        billing_city: data.billing_differs_from_service ? data.billing_city : data.service_city,
+        billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
+        billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
+        default_service_differs_from_main: data.default_service_differs_from_main,
+        default_service_street: data.default_service_differs_from_main ? data.default_service_street : null,
+        default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : null,
+        default_service_city: data.default_service_differs_from_main ? data.default_service_city : null,
+        default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
+        default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
+        deposit_required: data.deposit_required,
+      };
+
+      console.log('Update data:', updateData);
+      console.log('Customer ID for update:', customer.id);
+
       const { data: result, error } = await supabase
         .from('customers')
-        .update({
-          name: data.name,
-          customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected",
-          email: data.email || null,
-          phone: data.phone || null,
-          service_street: data.service_street,
-          service_street2: data.service_street2 || null,
-          service_city: data.service_city,
-          service_state: data.service_state,
-          service_zip: data.service_zip,
-          billing_differs_from_service: data.billing_differs_from_service,
-          billing_street: data.billing_differs_from_service ? data.billing_street : data.service_street,
-          billing_street2: data.billing_differs_from_service ? (data.billing_street2 || null) : (data.service_street2 || null),
-          billing_city: data.billing_differs_from_service ? data.billing_city : data.service_city,
-          billing_state: data.billing_differs_from_service ? data.billing_state : data.service_state,
-          billing_zip: data.billing_differs_from_service ? data.billing_zip : data.service_zip,
-          default_service_differs_from_main: data.default_service_differs_from_main,
-          default_service_street: data.default_service_differs_from_main ? data.default_service_street : null,
-          default_service_street2: data.default_service_differs_from_main ? (data.default_service_street2 || null) : null,
-          default_service_city: data.default_service_differs_from_main ? data.default_service_city : null,
-          default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
-          default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
-          deposit_required: data.deposit_required,
-        })
+        .update(updateData)
         .eq('id', customer.id)
         .select()
         .maybeSingle();
@@ -231,6 +244,8 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         console.error('Update error details:', error);
         throw error;
       }
+      
+      console.log('Update successful:', result);
       return result;
     },
     onSuccess: () => {
