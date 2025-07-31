@@ -226,12 +226,12 @@ export const Landing: React.FC = () => {
                   </Button>
                 </a>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white" onClick={openCalendlyPopup}>
-                  <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
+                  <Calendar className="w-4 h-4 ml-2" />
                 </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white">
-                  <Play className="w-4 h-4 mr-2" />
                   Watch Preview
+                  <Play className="w-4 h-4 ml-2" />
                 </Button>
               </div>
               
