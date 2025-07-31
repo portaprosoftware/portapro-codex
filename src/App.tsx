@@ -77,6 +77,9 @@ const App = () => {
           {/* Redirect root to landing */}
           <Route path="/" element={<Landing />} />
 
+          {/* Testing route - outside authentication for easy access */}
+          <Route path="/testing" element={<TestingPage />} />
+
           {/* Authenticated routes */}
           <Route
             path="/dashboard"
@@ -107,7 +110,6 @@ const App = () => {
                     <Route path="fleet/fuel" element={<FleetFuelManagement />} />
                     <Route path="fleet/files" element={<FleetFiles />} />
                     <Route path="fleet/maintenance" element={<FleetMaintenancePage />} />
-                    <Route path="testing" element={<TestingPage />} />
                     <Route path="maintenance-hub" element={<MaintenanceHub />} />
                     <Route path="marketing" element={<Marketing />} />
                     <Route path="marketing/templates" element={<Marketing />} />
