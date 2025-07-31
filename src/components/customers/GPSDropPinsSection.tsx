@@ -161,25 +161,33 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   useEffect(() => {
     const getMapboxToken = async () => {
       try {
-        console.log('Attempting to fetch Mapbox token...');
+        console.log('GPS Section: Attempting to fetch Mapbox token...');
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
         
         if (error) {
-          console.error('Supabase function error:', error);
+          console.error('GPS Section: Supabase function error:', error);
           throw error;
         }
         
         if (!data?.token) {
-          console.error('No token received from Mapbox service');
+          console.error('GPS Section: No token received from Mapbox service', data);
           throw new Error('No token received from Mapbox service');
         }
         
-        console.log('Mapbox token received successfully, length:', data.token.length);
-        console.log('Token starts with:', data.token.substring(0, 20));
+        console.log('GPS Section: Mapbox token received successfully');
+        console.log('GPS Section: Token length:', data.token.length);
+        console.log('GPS Section: Token preview:', data.token.substring(0, 50) + '...');
+        
+        // Validate token format
+        if (!data.token.startsWith('pk.')) {
+          console.error('GPS Section: Invalid token format - should start with pk.', data.token.substring(0, 20));
+          throw new Error('Invalid Mapbox token format');
+        }
+        
         setMapboxToken(data.token);
         
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
+        console.error('GPS Section: Error fetching Mapbox token:', error);
         toast({
           title: "Map Configuration Error",
           description: "Unable to load map. Please check Mapbox token configuration.",
