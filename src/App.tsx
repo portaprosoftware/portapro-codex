@@ -78,11 +78,13 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Redirect root to auth for signed out users, dashboard for signed in */}
+          {/* Root route - redirect to dashboard for authenticated users */}
           <Route path="/" element={
             <>
               <SignedIn>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </SignedIn>
               <SignedOut>
                 <Auth />
@@ -93,60 +95,26 @@ const App = () => {
           {/* Testing route - outside authentication for easy access */}
           <Route path="/testing" element={<TestingPage />} />
 
-          {/* Authenticated routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <>
-                <SignedIn>
-                  <Layout>
-                    <Routes>
-                      <Route index element={<Dashboard />} />
-                      <Route path="jobs" element={<Jobs />} />
-                      <Route path="jobs/calendar" element={<Jobs />} />
-                      <Route path="jobs/dispatch" element={<Jobs />} />
-                      <Route path="jobs/map" element={<Jobs />} />
-                       <Route path="inventory" element={<Inventory />} />
-                       <Route path="inventory/items/:itemId" element={<ProductItemDetail />} />
-                      <Route path="consumables" element={<Consumables />} />
-                      <Route path="purchase-orders" element={<PurchaseOrders />} />
-                      <Route path="customer-hub" element={<CustomerHub />} />
-                      <Route path="customers/:id" element={<CustomerDetail />} />
-                      <Route path="quotes-invoices" element={<QuotesInvoices />} />
-                      <Route path="fleet-management" element={<FleetManagement />} />
-                      <Route path="fleet" element={<FleetManagement />} />
-                      <Route path="fleet/assignments" element={<FleetAssignmentsPage />} />
-                      <Route path="fleet/compliance" element={<FleetCompliancePage />} />
-                      <Route path="fleet/loads" element={<FleetLoadsPage />} />
-                      <Route path="fleet/analytics" element={<FleetAnalyticsPage />} />
-                      <Route path="fleet/capacity" element={<FleetCapacityPage />} />
-                      <Route path="fleet/compliance-reports" element={<FleetComplianceReportsPage />} />
-                      <Route path="fleet/fuel" element={<FleetFuelManagement />} />
-                      <Route path="fleet/files" element={<FleetFiles />} />
-                      <Route path="fleet/maintenance" element={<FleetMaintenancePage />} />
-                      <Route path="maintenance-hub" element={<MaintenanceHub />} />
-                      <Route path="marketing" element={<Marketing />} />
-                      <Route path="marketing/templates" element={<Marketing />} />
-                      <Route path="marketing/campaigns" element={<Marketing />} />
-                      <Route path="marketing/analytics" element={<Marketing />} />
-                      <Route path="marketing/segments" element={<Marketing />} />
-                      <Route path="analytics" element={<Analytics />} />
-                      <Route path="storage-sites" element={<StorageSites />} />
-                      <Route path="team-management" element={<TeamManagement />} />
-                      <Route path="team-management/:tab" element={<TeamManagement />} />
-                      <Route path="settings" element={<Settings />} />
-                    </Routes>
-                  </Layout>
-                </SignedIn>
-                <SignedOut>
-                  <Auth />
-                </SignedOut>
-              </>
-            }
-          />
-
-          {/* Direct dashboard routes for backward compatibility */}
+          {/* Direct authenticated routes */}
           <Route path="/jobs" element={
+            <>
+              <SignedIn><Layout><Jobs /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/jobs/calendar" element={
+            <>
+              <SignedIn><Layout><Jobs /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/jobs/dispatch" element={
+            <>
+              <SignedIn><Layout><Jobs /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/jobs/map" element={
             <>
               <SignedIn><Layout><Jobs /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
@@ -155,6 +123,30 @@ const App = () => {
           <Route path="/inventory" element={
             <>
               <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/inventory/items/:itemId" element={
+            <>
+              <SignedIn><Layout><ProductItemDetail /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/consumables" element={
+            <>
+              <SignedIn><Layout><Consumables /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/purchase-orders" element={
+            <>
+              <SignedIn><Layout><PurchaseOrders /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/customer-hub" element={
+            <>
+              <SignedIn><Layout><CustomerHub /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
@@ -170,9 +162,9 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          <Route path="/customer-hub" element={
+          <Route path="/quotes-invoices" element={
             <>
-              <SignedIn><Layout><CustomerHub /></Layout></SignedIn>
+              <SignedIn><Layout><QuotesInvoices /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
@@ -182,7 +174,97 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/fleet" element={
+            <>
+              <SignedIn><Layout><FleetManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/assignments" element={
+            <>
+              <SignedIn><Layout><FleetAssignmentsPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/compliance" element={
+            <>
+              <SignedIn><Layout><FleetCompliancePage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/loads" element={
+            <>
+              <SignedIn><Layout><FleetLoadsPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/analytics" element={
+            <>
+              <SignedIn><Layout><FleetAnalyticsPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/capacity" element={
+            <>
+              <SignedIn><Layout><FleetCapacityPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/compliance-reports" element={
+            <>
+              <SignedIn><Layout><FleetComplianceReportsPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/fuel" element={
+            <>
+              <SignedIn><Layout><FleetFuelManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/files" element={
+            <>
+              <SignedIn><Layout><FleetFiles /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/maintenance" element={
+            <>
+              <SignedIn><Layout><FleetMaintenancePage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/maintenance-hub" element={
+            <>
+              <SignedIn><Layout><MaintenanceHub /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/marketing" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/marketing/templates" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/marketing/campaigns" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/marketing/analytics" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/marketing/segments" element={
             <>
               <SignedIn><Layout><Marketing /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
@@ -194,6 +276,24 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/storage-sites" element={
+            <>
+              <SignedIn><Layout><StorageSites /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management/:tab" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/settings" element={
             <>
               <SignedIn><Layout><Settings /></Layout></SignedIn>
@@ -201,8 +301,19 @@ const App = () => {
             </>
           } />
 
-          {/* Catch all other routes */}
-          <Route path="*" element={<Landing />} />
+          {/* Catch all other routes - redirect to auth */}
+          <Route path="*" element={
+            <>
+              <SignedIn>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </SignedIn>
+              <SignedOut>
+                <Auth />
+              </SignedOut>
+            </>
+          } />
         </Routes>
         </div>
       </Router>
