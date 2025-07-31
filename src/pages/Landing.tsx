@@ -709,7 +709,7 @@ export const Landing: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Resources</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <a href="#" className="block hover:text-foreground">Help Center</a>
+                <a href="/help" className="block hover:text-foreground">Help Center</a>
                 <button onClick={() => setCommunitySliderOpen(true)} className="block hover:text-foreground text-left">Community</button>
               </div>
             </div>

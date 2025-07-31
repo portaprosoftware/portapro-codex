@@ -40,6 +40,7 @@ import { DriverReportsPage } from './pages/DriverReportsPage';
 import TeamManagement from './pages/TeamManagement';
 import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
+import { Help } from './pages/Help';
 
 const App = () => {
   console.log('App component rendering...');
@@ -55,6 +56,7 @@ const App = () => {
           
           {/* Landing Page Route - should be accessible without auth */}
           <Route path="/landing" element={<Landing />} />
+          <Route path="/help" element={<Help />} />
           
           {/* Driver routes */}
           <Route
