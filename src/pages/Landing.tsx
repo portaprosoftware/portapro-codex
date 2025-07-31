@@ -159,8 +159,8 @@ export const Landing: React.FC = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 ml-auto">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
+            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
           </nav>
           
           {/* Desktop Auth Buttons */}
@@ -185,8 +185,8 @@ export const Landing: React.FC = () => {
         {mobileMenuOpen && <div className="md:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
-                <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Features</a>
-                <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Pricing</a>
+                <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
+                <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
