@@ -112,7 +112,7 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 interface Customer {
   id: string;
   name: string;
-  type: string;
+  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected";
   email?: string;
   phone?: string;
   service_street: string;
@@ -164,7 +164,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: customer?.name || "",
-      type: customer?.type || "",
+      type: customer?.customer_type || "",
       email: customer?.email || "",
       phone: customer?.phone || "",
       service_street: customer?.service_street || "",
@@ -197,7 +197,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         .from('customers')
         .update({
           name: data.name,
-          type: data.type,
+          customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected",
           email: data.email || null,
           phone: data.phone || null,
           service_street: data.service_street,

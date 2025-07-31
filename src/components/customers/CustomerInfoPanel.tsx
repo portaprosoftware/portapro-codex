@@ -16,7 +16,7 @@ import {
 interface Customer {
   id: string;
   name: string;
-  type: string;
+  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected";
   email?: string;
   phone?: string;
   service_street: string;
@@ -41,7 +41,6 @@ interface Customer {
   updated_at: string;
   // Legacy fields for backward compatibility
   address?: string;
-  customer_type?: string;
   important_information?: string;
   notes?: string;
 }
@@ -158,8 +157,8 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             <div>
               <label className="text-sm font-medium text-muted-foreground">Customer Type</label>
               <div className="mt-1">
-                <Badge className={getCustomerTypeColor(customer.type)}>
-                  {customer.type ? formatCategoryDisplay(customer.type) : 'Unknown'}
+                <Badge className={getCustomerTypeColor(customer.customer_type)}>
+                  {customer.customer_type ? formatCategoryDisplay(customer.customer_type) : 'Unknown'}
                 </Badge>
               </div>
             </div>

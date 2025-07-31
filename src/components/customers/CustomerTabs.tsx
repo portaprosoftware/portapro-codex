@@ -13,7 +13,7 @@ import { CustomerServiceReportsTab } from './CustomerServiceReportsTab';
 interface Customer {
   id: string;
   name: string;
-  type: string;
+  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected";
   email?: string;
   phone?: string;
   service_street: string;
@@ -38,7 +38,6 @@ interface Customer {
   updated_at: string;
   // Legacy fields for backward compatibility
   address?: string;
-  customer_type?: string;
 }
 
 interface CustomerTabsProps {
