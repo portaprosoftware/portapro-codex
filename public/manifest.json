@@ -10,14 +10,20 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/lovable-uploads/portapro-icon-192x192.png",
+      "src": "/lovable-uploads/26b9c9b0-54e9-45f6-8644-42beb3b5ad04.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/portapro-icon-512x512.png",
-      "type": "image/png", 
+      "src": "/lovable-uploads/26b9c9b0-54e9-45f6-8644-42beb3b5ad04.png",
+      "type": "image/png",
+      "sizes": "256x256", 
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/cbdbf491-27f6-4b6f-9e89-72b7e073c7c6.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
