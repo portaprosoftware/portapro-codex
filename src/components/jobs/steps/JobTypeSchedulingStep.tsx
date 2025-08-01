@@ -63,9 +63,9 @@ export function JobTypeSchedulingStep() {
     updateData({ scheduled_time: time });
   };
 
-  const handleTimeToggle = (hasSpecificTime: boolean) => {
+  const handleTimeToggle = (enabled: boolean) => {
     updateData({ 
-      scheduled_time: hasSpecificTime ? state.data.scheduled_time : undefined
+      scheduled_time: enabled ? '09:00' : undefined
     });
   };
 

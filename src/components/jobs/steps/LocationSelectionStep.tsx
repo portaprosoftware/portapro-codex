@@ -78,17 +78,12 @@ export function LocationSelectionStep() {
   };
 
   const handleCreateLocation = () => {
-    const locationData = {
-      street: newLocation.street,
-      city: newLocation.city,
-      state: newLocation.state,
-      zip: newLocation.zip,
-      saveToProfile: newLocation.saveToProfile,
-    };
-
+    // Store address data in special_instructions for now
+    const addressText = `${newLocation.street}, ${newLocation.city}, ${newLocation.state} ${newLocation.zip}`;
+    
     updateData({
       selected_coordinate_ids: ['new'],
-      special_instructions: newLocation.accessInstructions,
+      special_instructions: `Address: ${addressText}${newLocation.accessInstructions ? '\nInstructions: ' + newLocation.accessInstructions : ''}`,
     });
 
     setShowCreateForm(false);
@@ -253,8 +248,11 @@ export function LocationSelectionStep() {
               Selected Location
             </h3>
             <div className="text-sm">
-              {state.data.selected_coordinate_ids.length > 0 && (
+              {state.data.selected_coordinate_ids.length > 0 && state.data.selected_coordinate_ids[0] !== 'new' && (
                 <p>Using saved location: {serviceLocations.find(l => l.id === state.data.selected_coordinate_ids[0])?.location_name}</p>
+              )}
+              {state.data.selected_coordinate_ids.includes('new') && (
+                <p>New address location</p>
               )}
             </div>
           </CardContent>
