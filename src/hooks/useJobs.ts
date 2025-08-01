@@ -174,6 +174,9 @@ export function useCreateJob() {
 
       const jobNumber = `${jobTypePrefix}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
 
+      console.log('=== JOB PROCESSING IN HOOK ===');
+      console.log('Raw jobData received in hook:', JSON.stringify(jobData, null, 2));
+
       const { consumables_data, partial_pickups, date_returned, return_time, ...jobDataForDB } = jobData;
 
       // Clean up job data - remove invalid IDs

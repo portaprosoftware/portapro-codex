@@ -672,7 +672,13 @@ const JobsPage: React.FC = () => {
       {isJobWizardOpen && (
         <EnhancedJobWizard 
           onComplete={(data) => {
-            console.log('Wizard data received:', data);
+            console.log('=== RAW WIZARD DATA ===');
+            console.log('Full wizard data received:', JSON.stringify(data, null, 2));
+            console.log('Selected Customer:', data.selectedCustomer);
+            console.log('Selected Driver:', data.selectedDriver);
+            console.log('Selected Vehicle:', data.selectedVehicle);
+            console.log('=== END RAW DATA ===');
+            
             
             // Convert wizard data to job creation format
             const jobData = {
