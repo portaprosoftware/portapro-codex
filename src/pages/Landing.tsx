@@ -113,7 +113,7 @@ const completePackage = {
 };
 export const Landing: React.FC = () => {
   // Image arrays for carousels
-  const aiPanelImages = ['photo-1488590528505-98d2b5aba04b', 'photo-1461749280684-dccba630e2f6', 'photo-1487058792275-0ad4aaf24ca7'];
+  const aiPanelImages = ['/lovable-uploads/0aaf6ddd-b2a4-4d47-bbda-6a1a4cd07b9a.png', '/lovable-uploads/08e6861d-9d42-47b5-b316-f6eca46d8f6c.png', '/lovable-uploads/582235ae-4e75-40a2-b31f-680f649aa683.png'];
   const jobWizardImages = ['photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21', 'photo-1523712999610-f77fbcfc3843'];
   const inventoryImages = ['/lovable-uploads/4f491786-7f7a-4dc3-bb83-a919b928c766.png', '/lovable-uploads/b9ab637c-b429-4038-be9d-f8f3b5f6a4eb.png', '/lovable-uploads/540cf6a3-2a5b-465b-ac69-ca6f4645a265.png'];
   const teamImages = ['/lovable-uploads/12ff3d89-29f4-46b2-810b-d4cf0d3d9ca3.png', '/lovable-uploads/512cf733-6eb4-4b1d-9a9c-46787e6e86d6.png', '/lovable-uploads/5e758ed0-03a4-40d8-8ece-677fe1fb285a.png'];
