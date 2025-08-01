@@ -49,8 +49,7 @@ export function CustomerSelectionStep() {
 
   const handleCustomerSelect = (customer: Customer) => {
     updateData({
-      customerId: customer.id,
-      customerName: customer.name,
+      customer_id: customer.id,
     });
   };
 
@@ -71,8 +70,7 @@ export function CustomerSelectionStep() {
       if (error) throw error;
 
       updateData({
-        customerId: data.id,
-        customerName: data.name,
+        customer_id: data.id,
       });
 
       setShowCreateForm(false);
@@ -194,7 +192,7 @@ export function CustomerSelectionStep() {
               key={customer.id}
               className={cn(
                 "cursor-pointer transition-colors hover:bg-muted/50",
-                state.data.customerId === customer.id && "ring-2 ring-primary bg-primary/5"
+                state.data.customer_id === customer.id && "ring-2 ring-primary bg-primary/5"
               )}
               onClick={() => handleCustomerSelect(customer)}
             >
@@ -235,7 +233,7 @@ export function CustomerSelectionStep() {
                     </div>
                   </div>
                   
-                  {state.data.customerId === customer.id && (
+                  {state.data.customer_id === customer.id && (
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
                       <User className="h-3 w-3" />
                     </div>

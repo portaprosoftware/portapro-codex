@@ -46,7 +46,7 @@ export function JobTypeSchedulingStep() {
   const { state, updateData } = useJobWizard();
 
   const handleJobTypeSelect = (jobType: string) => {
-    updateData({ jobType: jobType as any });
+    updateData({ job_type: jobType as any });
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -55,18 +55,17 @@ export function JobTypeSchedulingStep() {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      updateData({ scheduledDate: `${year}-${month}-${day}` });
+      updateData({ scheduled_date: `${year}-${month}-${day}` });
     }
   };
 
   const handleTimeChange = (time: string) => {
-    updateData({ scheduledTime: time });
+    updateData({ scheduled_time: time });
   };
 
   const handleTimeToggle = (hasSpecificTime: boolean) => {
     updateData({ 
-      hasSpecificTime,
-      scheduledTime: hasSpecificTime ? state.data.scheduledTime : undefined
+      scheduled_time: hasSpecificTime ? state.data.scheduled_time : undefined
     });
   };
 
@@ -94,7 +93,7 @@ export function JobTypeSchedulingStep() {
                 key={type.value}
                 className={cn(
                   "cursor-pointer transition-all hover:shadow-md",
-                  state.data.jobType === type.value 
+                  state.data.job_type === type.value 
                     ? "ring-2 ring-primary bg-primary/5" 
                     : "hover:bg-muted/50",
                   type.color
@@ -128,7 +127,7 @@ export function JobTypeSchedulingStep() {
           <CardContent className="p-4">
             <CalendarComponent
               mode="single"
-              selected={state.data.scheduledDate ? new Date(state.data.scheduledDate) : undefined}
+              selected={state.data.scheduled_date ? new Date(state.data.scheduled_date) : undefined}
               onSelect={handleDateSelect}
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
               className="rounded-md"
@@ -146,20 +145,20 @@ export function JobTypeSchedulingStep() {
           <Label className="text-base font-medium">Specific Time</Label>
           <div className="flex items-center space-x-2">
             <Switch
-              checked={state.data.hasSpecificTime}
+              checked={!!state.data.scheduled_time}
               onCheckedChange={handleTimeToggle}
             />
             <Label className="text-sm">Set specific time</Label>
           </div>
         </div>
 
-        {state.data.hasSpecificTime && (
+        {state.data.scheduled_time && (
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <TimePicker
-                  value={state.data.scheduledTime || '09:00'}
+                  value={state.data.scheduled_time || '09:00'}
                   onChange={handleTimeChange}
                 />
               </div>
@@ -184,23 +183,23 @@ export function JobTypeSchedulingStep() {
       </div>
 
       {/* Summary */}
-      {state.data.jobType && state.data.scheduledDate && (
+      {state.data.job_type && state.data.scheduled_date && (
         <Card className="bg-muted/50">
           <CardContent className="p-4">
             <h3 className="font-medium mb-2">Job Summary</h3>
             <div className="space-y-1 text-sm">
               <p>
                 <span className="font-medium">Type:</span>{' '}
-                {jobTypes.find(t => t.value === state.data.jobType)?.label}
+                {jobTypes.find(t => t.value === state.data.job_type)?.label}
               </p>
               <p>
                 <span className="font-medium">Date:</span>{' '}
-                {format(new Date(state.data.scheduledDate), 'EEEE, MMMM d, yyyy')}
+                {format(new Date(state.data.scheduled_date), 'EEEE, MMMM d, yyyy')}
               </p>
-              {state.data.hasSpecificTime && state.data.scheduledTime && (
+              {state.data.scheduled_time && (
                 <p>
                   <span className="font-medium">Time:</span>{' '}
-                  {state.data.scheduledTime}
+                  {state.data.scheduled_time}
                 </p>
               )}
             </div>

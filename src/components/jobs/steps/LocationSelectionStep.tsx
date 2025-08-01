@@ -44,27 +44,26 @@ export function LocationSelectionStep() {
   });
 
   const { data: serviceLocations = [], isLoading } = useQuery({
-    queryKey: ['customerServiceLocations', state.data.customerId],
+    queryKey: ['customerServiceLocations', state.data.customer_id],
     queryFn: async () => {
-      if (!state.data.customerId) return [];
+      if (!state.data.customer_id) return [];
       
       const { data, error } = await supabase
         .from('customer_service_locations')
         .select('*')
-        .eq('customer_id', state.data.customerId)
+        .eq('customer_id', state.data.customer_id)
         .eq('is_active', true)
         .order('is_default', { ascending: false });
 
       if (error) throw error;
       return data as ServiceLocation[];
     },
-    enabled: !!state.data.customerId,
+    enabled: !!state.data.customer_id,
   });
 
   const handleLocationSelect = (location: ServiceLocation) => {
     updateData({
-      serviceLocationId: location.id,
-      newLocationData: undefined,
+      selected_coordinate_ids: [location.id],
     });
   };
 
@@ -88,9 +87,8 @@ export function LocationSelectionStep() {
     };
 
     updateData({
-      serviceLocationId: undefined,
-      newLocationData: locationData,
-      specialInstructions: newLocation.accessInstructions,
+      selected_coordinate_ids: ['new'],
+      special_instructions: newLocation.accessInstructions,
     });
 
     setShowCreateForm(false);
@@ -119,7 +117,7 @@ export function LocationSelectionStep() {
                 key={location.id}
                 className={cn(
                   "cursor-pointer transition-colors hover:bg-muted/50",
-                  state.data.serviceLocationId === location.id && "ring-2 ring-primary bg-primary/5"
+                  state.data.selected_coordinate_ids.includes(location.id) && "ring-2 ring-primary bg-primary/5"
                 )}
                 onClick={() => handleLocationSelect(location)}
               >
@@ -158,7 +156,7 @@ export function LocationSelectionStep() {
                       </div>
                     </div>
                     
-                    {state.data.serviceLocationId === location.id && (
+                    {state.data.selected_coordinate_ids.includes(location.id) && (
                       <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
                         <MapPin className="h-3 w-3" />
                       </div>
@@ -221,13 +219,13 @@ export function LocationSelectionStep() {
       </div>
 
       {/* Special Instructions */}
-      {(state.data.serviceLocationId || state.data.newLocationData) && (
+      {state.data.selected_coordinate_ids.length > 0 && (
         <div className="space-y-4">
           <Label className="text-base font-medium">Special Instructions (Optional)</Label>
           <Textarea
             placeholder="Any special instructions for the crew at this location..."
-            value={state.data.specialInstructions || ''}
-            onChange={(e) => updateData({ specialInstructions: e.target.value })}
+            value={state.data.special_instructions || ''}
+            onChange={(e) => updateData({ special_instructions: e.target.value })}
             rows={3}
           />
         </div>
@@ -247,7 +245,7 @@ export function LocationSelectionStep() {
       )}
 
       {/* Summary */}
-      {(state.data.serviceLocationId || state.data.newLocationData) && (
+      {state.data.selected_coordinate_ids.length > 0 && (
         <Card className="bg-muted/50">
           <CardContent className="p-4">
             <h3 className="font-medium mb-2 flex items-center gap-2">
@@ -255,16 +253,8 @@ export function LocationSelectionStep() {
               Selected Location
             </h3>
             <div className="text-sm">
-              {state.data.serviceLocationId ? (
-                <p>Using saved location: {serviceLocations.find(l => l.id === state.data.serviceLocationId)?.location_name}</p>
-              ) : (
-                <div className="space-y-1">
-                  <p>{state.data.newLocationData?.street}</p>
-                  <p>{state.data.newLocationData?.city}, {state.data.newLocationData?.state} {state.data.newLocationData?.zip}</p>
-                  {state.data.newLocationData?.saveToProfile && (
-                    <p className="text-muted-foreground">Will be saved to customer profile</p>
-                  )}
-                </div>
+              {state.data.selected_coordinate_ids.length > 0 && (
+                <p>Using saved location: {serviceLocations.find(l => l.id === state.data.selected_coordinate_ids[0])?.location_name}</p>
               )}
             </div>
           </CardContent>

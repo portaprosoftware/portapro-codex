@@ -2,29 +2,18 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 export interface JobWizardData {
   // Step 1: Customer Selection
-  customerId?: string;
-  customerName?: string;
+  customer_id?: string;
   
-  // Step 2: Job Type & Scheduling
-  jobType?: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
-  scheduledDate?: string;
-  scheduledTime?: string;
-  hasSpecificTime: boolean;
+  // Step 2: Job Type & Scheduling  
+  job_type?: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
+  scheduled_date?: string;
+  scheduled_time?: string;
   timezone: string;
   notes?: string;
   
   // Step 3: Location Selection
-  serviceLocationId?: string;
-  newLocationData?: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    coordinates?: { lat: number; lng: number };
-    saveToProfile: boolean;
-  };
-  contactIds: string[];
-  specialInstructions?: string;
+  special_instructions?: string;
+  selected_coordinate_ids: string[];
 }
 
 interface JobWizardState {
@@ -44,9 +33,8 @@ type JobWizardAction =
 const initialState: JobWizardState = {
   currentStep: 1,
   data: {
-    hasSpecificTime: false,
     timezone: 'America/New_York',
-    contactIds: [],
+    selected_coordinate_ids: [],
   },
   errors: {},
   isLoading: false,
@@ -122,32 +110,20 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
 
     switch (state.currentStep) {
       case 1:
-        if (!state.data.customerId) {
+        if (!state.data.customer_id) {
           errors.customer = 'Please select a customer';
         }
         break;
       case 2:
-        if (!state.data.jobType) {
+        if (!state.data.job_type) {
           errors.jobType = 'Please select a job type';
         }
-        if (!state.data.scheduledDate) {
+        if (!state.data.scheduled_date) {
           errors.scheduledDate = 'Please select a scheduled date';
-        }
-        if (state.data.hasSpecificTime && !state.data.scheduledTime) {
-          errors.scheduledTime = 'Please select a time';
         }
         break;
       case 3:
-        if (!state.data.serviceLocationId && !state.data.newLocationData) {
-          errors.location = 'Please select or create a location';
-        }
-        if (state.data.newLocationData) {
-          const { street, city, state: locationState, zip } = state.data.newLocationData;
-          if (!street) errors.street = 'Street address is required';
-          if (!city) errors.city = 'City is required';
-          if (!locationState) errors.state = 'State is required';
-          if (!zip) errors.zip = 'ZIP code is required';
-        }
+        // Location validation can be added here if needed
         break;
     }
 

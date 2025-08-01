@@ -34,15 +34,13 @@ function WizardContent({ onClose }: { onClose: () => void }) {
 
     try {
       const jobData = {
-        customer_id: state.data.customerId!,
-        job_type: state.data.jobType!,
-        scheduled_date: state.data.scheduledDate!,
-        scheduled_time: state.data.hasSpecificTime ? state.data.scheduledTime : undefined,
+        customer_id: state.data.customer_id!,
+        job_type: state.data.job_type!,
+        scheduled_date: state.data.scheduled_date!,
+        scheduled_time: state.data.scheduled_time,
         notes: state.data.notes,
-        service_location_id: state.data.serviceLocationId,
-        new_location_data: state.data.newLocationData,
-        contact_ids: state.data.contactIds,
-        special_instructions: state.data.specialInstructions,
+        special_instructions: state.data.special_instructions,
+        selected_coordinate_ids: state.data.selected_coordinate_ids,
       };
 
       await createJobMutation.mutateAsync(jobData);
