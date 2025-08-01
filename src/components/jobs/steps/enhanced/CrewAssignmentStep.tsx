@@ -74,33 +74,31 @@ export const CrewAssignmentStep: React.FC<CrewAssignmentStepProps> = ({
         return;
       }
 
-      // Mock drivers data for now until database schema is updated
-      const mockDriversData = [
-        { id: '11111111-1111-1111-1111-111111111111', first_name: 'John', last_name: 'Smith', email: 'john@company.com' },
-        { id: '22222222-2222-2222-2222-222222222222', first_name: 'Sarah', last_name: 'Johnson', email: 'sarah@company.com' },
-        { id: '33333333-3333-3333-3333-333333333333', first_name: 'Mike', last_name: 'Davis', email: 'mike@company.com' }
-      ];
+      // Fetch real drivers from database
+      const { data: driversData } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .eq('is_active', true);
 
-      // Mock vehicles data for now until database schema is updated
-      const mockVehiclesData = [
-        { id: 'aaaa1111-bbbb-2222-cccc-333333333333', license_plate: 'ABC-123', vehicle_type: 'Service Truck', make: 'Ford', model: 'F-150', year: 2022 },
-        { id: 'bbbb2222-cccc-3333-dddd-444444444444', license_plate: 'DEF-456', vehicle_type: 'Delivery Van', make: 'Chevrolet', model: 'Express', year: 2021 },
-        { id: 'cccc3333-dddd-4444-eeee-555555555555', license_plate: 'GHI-789', vehicle_type: 'Service Truck', make: 'Ram', model: '1500', year: 2023 }
-      ];
+      // Fetch real vehicles from database
+      const { data: vehiclesData } = await supabase
+        .from('vehicles')
+        .select('id, license_plate, vehicle_type, make, model, year')
+        .eq('status', 'active');
 
-      // Check driver availability for each relevant date (using mock data)
-      const driversWithAvailability = mockDriversData.map((driver) => ({
+      // Check driver availability for each relevant date
+      const driversWithAvailability = (driversData || []).map((driver) => ({
         id: driver.id,
         first_name: driver.first_name,
         last_name: driver.last_name,
-        email: driver.email,
-        phone: '(555) 123-4567', // placeholder
+        email: driver.email || '',
+        phone: '(555) 123-4567', // placeholder since phone not in profiles table
         available: true, // simplified for now
         conflictReason: undefined
       }));
 
-      // Check vehicle availability for each relevant date (using mock data)
-      const vehiclesWithAvailability = mockVehiclesData.map((vehicle) => ({
+      // Check vehicle availability for each relevant date
+      const vehiclesWithAvailability = (vehiclesData || []).map((vehicle) => ({
         id: vehicle.id,
         license_plate: vehicle.license_plate,
         vehicle_type: vehicle.vehicle_type,
