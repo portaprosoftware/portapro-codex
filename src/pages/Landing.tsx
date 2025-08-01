@@ -258,9 +258,9 @@ export const Landing: React.FC = () => {
             
             <div className="order-2 lg:order-2">
               <img 
-                src="/lovable-uploads/0aaf6ddd-b2a4-4d47-bbda-6a1a4cd07b9a.png" 
+                src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
                 alt="PortaPro Dashboard Preview" 
-                className="max-w-2xl w-full mx-auto lg:max-w-5xl transform scale-125 rounded-xl shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20" 
+                className="max-w-2xl w-full mx-auto lg:max-w-5xl transform scale-125 rounded-xl shadow-2xl" 
               />
             </div>
           </div>
