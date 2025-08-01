@@ -3506,6 +3506,47 @@ export type Database = {
         }
         Relationships: []
       }
+      padlock_activity_log: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          location_coordinates: unknown | null
+          notes: string | null
+          performed_by: string | null
+          product_item_id: string
+          timestamp: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          location_coordinates?: unknown | null
+          notes?: string | null
+          performed_by?: string | null
+          product_item_id: string
+          timestamp?: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          location_coordinates?: unknown | null
+          notes?: string | null
+          performed_by?: string | null
+          product_item_id?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_padlock_activity_product_item"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pin_categories: {
         Row: {
           color: string
@@ -3618,12 +3659,15 @@ export type Database = {
           condition: string | null
           created_at: string
           current_storage_location_id: string | null
+          currently_padlocked: boolean | null
           gps_enabled: boolean | null
           id: string
           interior_features: string[] | null
           item_code: string
           last_known_location: unknown | null
           last_location_update: string | null
+          last_padlock_timestamp: string | null
+          last_unlock_timestamp: string | null
           location: string | null
           manufacturing_date: string | null
           material: string | null
@@ -3631,6 +3675,9 @@ export type Database = {
           notes: string | null
           ocr_confidence_score: number | null
           ocr_raw_data: Json | null
+          padlock_code_reference: string | null
+          padlock_type: string | null
+          padlocked_by: string | null
           plastic_code: string | null
           power_source: string | null
           product_id: string
@@ -3640,6 +3687,7 @@ export type Database = {
           status: string
           tool_number: string | null
           tracking_photo_url: string | null
+          unlocked_by: string | null
           updated_at: string
           use_case: string | null
           vendor_id: string | null
@@ -3652,12 +3700,15 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
+          currently_padlocked?: boolean | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
           item_code: string
           last_known_location?: unknown | null
           last_location_update?: string | null
+          last_padlock_timestamp?: string | null
+          last_unlock_timestamp?: string | null
           location?: string | null
           manufacturing_date?: string | null
           material?: string | null
@@ -3665,6 +3716,9 @@ export type Database = {
           notes?: string | null
           ocr_confidence_score?: number | null
           ocr_raw_data?: Json | null
+          padlock_code_reference?: string | null
+          padlock_type?: string | null
+          padlocked_by?: string | null
           plastic_code?: string | null
           power_source?: string | null
           product_id: string
@@ -3674,6 +3728,7 @@ export type Database = {
           status?: string
           tool_number?: string | null
           tracking_photo_url?: string | null
+          unlocked_by?: string | null
           updated_at?: string
           use_case?: string | null
           vendor_id?: string | null
@@ -3686,12 +3741,15 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
+          currently_padlocked?: boolean | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
           item_code?: string
           last_known_location?: unknown | null
           last_location_update?: string | null
+          last_padlock_timestamp?: string | null
+          last_unlock_timestamp?: string | null
           location?: string | null
           manufacturing_date?: string | null
           material?: string | null
@@ -3699,6 +3757,9 @@ export type Database = {
           notes?: string | null
           ocr_confidence_score?: number | null
           ocr_raw_data?: Json | null
+          padlock_code_reference?: string | null
+          padlock_type?: string | null
+          padlocked_by?: string | null
           plastic_code?: string | null
           power_source?: string | null
           product_id?: string
@@ -3708,6 +3769,7 @@ export type Database = {
           status?: string
           tool_number?: string | null
           tracking_photo_url?: string | null
+          unlocked_by?: string | null
           updated_at?: string
           use_case?: string | null
           vendor_id?: string | null
@@ -3867,6 +3929,7 @@ export type Database = {
           pricing_method: string | null
           stock_in_service: number
           stock_total: number
+          supports_padlock: boolean | null
           track_inventory: boolean
           updated_at: string
           variations_allowed: boolean
@@ -3891,6 +3954,7 @@ export type Database = {
           pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
+          supports_padlock?: boolean | null
           track_inventory?: boolean
           updated_at?: string
           variations_allowed?: boolean
@@ -3915,6 +3979,7 @@ export type Database = {
           pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
+          supports_padlock?: boolean | null
           track_inventory?: boolean
           updated_at?: string
           variations_allowed?: boolean
@@ -6301,6 +6366,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      get_overdue_padlocked_units: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          item_id: string
+          item_code: string
+          product_name: string
+          padlock_type: string
+          last_padlock_timestamp: string
+          days_overdue: number
+        }[]
+      }
       get_product_availability_enhanced: {
         Args: {
           product_type_id: string
@@ -6371,6 +6447,18 @@ export type Database = {
           total_cost: number
           cost_per_mile: number
         }[]
+      }
+      handle_padlock_operation: {
+        Args: {
+          item_uuid: string
+          operation_type: string
+          user_uuid: string
+          padlock_type_param?: string
+          code_reference?: string
+          location_coords?: unknown
+          notes_param?: string
+        }
+        Returns: Json
       }
       has_role: {
         Args: {

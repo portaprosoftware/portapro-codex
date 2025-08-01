@@ -21,6 +21,7 @@ interface Product {
   stock_in_service: number;
   low_stock_threshold: number;
   track_inventory: boolean;
+  supports_padlock: boolean;
   charge_for_product?: boolean;
   pricing_method?: string;
   daily_rate?: number;
@@ -74,6 +75,25 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     },
     onError: (error) => {
       toast.error("Failed to update tracking setting");
+      console.error(error);
+    }
+  });
+
+  const updatePadlockSupportMutation = useMutation({
+    mutationFn: async (supportsPadlock: boolean) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ supports_padlock: supportsPadlock })
+        .eq("id", product.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, supportsPadlock) => {
+      queryClient.invalidateQueries({ queryKey: ["product", product.id] });
+      toast.success(`Padlock support ${supportsPadlock ? "enabled" : "disabled"}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to update padlock support");
       console.error(error);
     }
   });
@@ -143,6 +163,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const handleTrackingToggle = (checked: boolean) => {
     // Note: Switch checked state is for "disable tracking", so we invert it
     updateTrackingMutation.mutate(!checked);
+  };
+
+  const handlePadlockSupportToggle = (checked: boolean) => {
+    updatePadlockSupportMutation.mutate(checked);
   };
 
   const handleAdjustStock = () => {
@@ -265,8 +289,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         </div>
       </div>
 
-      {/* Disable Tracking */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      {/* Product Settings */}
+      <div className="bg-gray-50 rounded-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium text-gray-900 mb-1">Disable tracking</h3>
@@ -277,6 +301,18 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             onCheckedChange={handleTrackingToggle}
             className="data-[state=checked]:bg-gray-600"
             disabled={updateTrackingMutation.isPending}
+          />
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900 mb-1">Supports Padlock</h3>
+            <p className="text-sm text-gray-600">Enable if this product type accepts external padlocks</p>
+          </div>
+          <Switch
+            checked={product.supports_padlock}
+            onCheckedChange={handlePadlockSupportToggle}
+            disabled={updatePadlockSupportMutation.isPending}
           />
         </div>
       </div>
