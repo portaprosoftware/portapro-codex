@@ -118,7 +118,7 @@ export const Landing: React.FC = () => {
   const jobWizardImages = ['/lovable-uploads/000da128-8181-457e-85c7-8dcbc26734ee.png', '/lovable-uploads/0ac8d222-a55d-4abc-aab0-e9b34dc983e5.png', '/lovable-uploads/baad8a96-f346-4808-bd4b-641dc717fb89.png'];
   const inventoryImages = ['/lovable-uploads/4f491786-7f7a-4dc3-bb83-a919b928c766.png', '/lovable-uploads/b9ab637c-b429-4038-be9d-f8f3b5f6a4eb.png', '/lovable-uploads/540cf6a3-2a5b-465b-ac69-ca6f4645a265.png'];
   const teamImages = ['/lovable-uploads/12ff3d89-29f4-46b2-810b-d4cf0d3d9ca3.png', '/lovable-uploads/512cf733-6eb4-4b1d-9a9c-46787e6e86d6.png', '/lovable-uploads/5e758ed0-03a4-40d8-8ece-677fe1fb285a.png'];
-  const reportingImages = ['photo-1487058792275-0ad4aaf24ca7', 'photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21'];
+  const reportingImages = ['/lovable-uploads/269955d2-a4f5-41ed-aaa3-3c93d6e096c4.png', '/lovable-uploads/62459b5d-e91c-4b88-8e19-55e991482602.png'];
   const mobileImages = ['/lovable-uploads/298c7157-c616-403a-9832-ad5279814883.png', '/lovable-uploads/df397e89-fe41-4640-9f41-42a976d4bb25.png'];
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
