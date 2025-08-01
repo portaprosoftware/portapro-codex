@@ -98,15 +98,13 @@ export const SimpleJobWizard: React.FC<SimpleJobWizardProps> = ({
     }
 
     try {
-      // Create simplified job data
+      // Create simplified job data using only fields that exist in the jobs table
       const jobData = {
         customer_id: data.customer.id,
         job_type: data.jobType as 'delivery' | 'pickup' | 'service' | 'on-site-survey',
         scheduled_date: data.date,
         scheduled_time: data.time,
         timezone: data.timezone,
-        service_address: data.address,
-        gps_coordinates: data.coordinates,
         special_instructions: data.specialInstructions,
         status: 'scheduled' as const
       };
