@@ -992,22 +992,27 @@ export const Landing: React.FC = () => {
               <div className="flex-1 overflow-y-auto p-6">
                 <div className="space-y-8 max-w-4xl">
                   <div className="text-sm text-muted-foreground mb-4">
-                    Last updated: June 11, 2025
+                    <strong>Security Center</strong><br />
+                    <em>Last updated: August 1, 2025</em>
                   </div>
                   
                   <div className="space-y-6 text-foreground">
                     <p>
-                      We know your route data, customer records, and payment details are mission‑critical. Below you'll find a transparent overview of how PortaPro Software LLC ("PortaPro," "we") keeps that information safe.
+                      We know your route data, customer records, and payment details are mission-critical. Below you'll find a transparent overview of how PortaPro Software LLC ("PortaPro," "we") keeps that information safe.
                     </p>
                     
+                    <hr className="border-muted my-6" />
+                    
                     <div className="space-y-4">
-                      <h3 className="text-xl font-bold">1. Security‑First Culture</h3>
+                      <h3 className="text-xl font-bold">1. Security-First Culture</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li><strong>Security champion on every sprint.</strong> New features cannot ship until they clear our security checklist.</li>
-                        <li><strong>Mandatory training.</strong> All employees complete annual OWASP Top 10 and social‑engineering courses.</li>
-                        <li><strong>Least‑privilege access.</strong> Staff accounts are provisioned on a "need‑to‑know" basis and reviewed quarterly.</li>
+                        <li><strong>Dedicated security champion</strong> on every sprint—no feature ships without passing our security checklist.</li>
+                        <li><strong>Mandatory training</strong>: Annual OWASP Top 10 & social-engineering courses for all employees.</li>
+                        <li><strong>Least-privilege access</strong>: Staff accounts are provisioned on a "need-to-know" basis and reviewed quarterly.</li>
                       </ul>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">2. Infrastructure & Hosting</h3>
@@ -1017,78 +1022,93 @@ export const Landing: React.FC = () => {
                             <tr className="bg-muted/50">
                               <th className="border border-muted p-3 text-left font-semibold">Component</th>
                               <th className="border border-muted p-3 text-left font-semibold">Provider</th>
-                              <th className="border border-muted p-3 text-left font-semibold">Controls in place</th>
+                              <th className="border border-muted p-3 text-left font-semibold">Controls in Place</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr>
                               <td className="border border-muted p-3">Application & DB</td>
                               <td className="border border-muted p-3">Supabase (Postgres)</td>
-                              <td className="border border-muted p-3">VPC isolation · Automated patching · Daily encryption‑verified backups</td>
+                              <td className="border border-muted p-3">VPC isolation · Automated patching · Daily encryption-verified backups</td>
                             </tr>
                             <tr>
                               <td className="border border-muted p-3">File storage</td>
-                              <td className="border border-muted p-3">Supabase Storage (S3‑compatible)</td>
-                              <td className="border border-muted p-3">Server‑side AES‑256 encryption · Signed URL access</td>
+                              <td className="border border-muted p-3">Supabase Storage (S3-compatible)</td>
+                              <td className="border border-muted p-3">Server-side AES-256 encryption · Signed-URL access</td>
                             </tr>
                             <tr>
-                              <td className="border border-muted p-3">Automation</td>
-                              <td className="border border-muted p-3">Make (EU data center)</td>
-                              <td className="border border-muted p-3">TLS 1.2+, role‑limited keys</td>
+                              <td className="border border-muted p-3">Authentication</td>
+                              <td className="border border-muted p-3">Clerk (Auth)</td>
+                              <td className="border border-muted p-3">JWT-based auth · Role claims · Multi-factor support</td>
                             </tr>
                             <tr>
                               <td className="border border-muted p-3">Map & routing</td>
                               <td className="border border-muted p-3">Mapbox</td>
-                              <td className="border border-muted p-3">HTTPS API calls, no PII sent</td>
+                              <td className="border border-muted p-3">HTTPS API calls · No PII logged</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-muted p-3">Automations</td>
+                              <td className="border border-muted p-3">Make (EU data center)</td>
+                              <td className="border border-muted p-3">TLS 1.2+ · Role-limited API keys</td>
                             </tr>
                             <tr>
                               <td className="border border-muted p-3">Payments</td>
                               <td className="border border-muted p-3">Stripe</td>
-                              <td className="border border-muted p-3">PCI‑DSS Level 1; PortaPro never stores full card data</td>
+                              <td className="border border-muted p-3">PCI-DSS Level 1 · PortaPro never stores full card data</td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
-                      <p>All production services run within hardened Kubernetes clusters in physically secure, Tier 3/4 data centers located in the United States and European Union.</p>
+                      <p>All production services run in hardened Kubernetes clusters within Tier 3/4 data centers in the U.S. and EU.</p>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">3. Data Encryption</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li><strong>In transit:</strong> TLS 1.2+ for 100% of traffic—including internal service calls.</li>
-                        <li><strong>At rest:</strong> AES‑256 for databases, object storage, and backups.</li>
-                        <li><strong>Password storage:</strong> bcrypt with unique 12‑byte salt, work factor ≥ 12.</li>
+                        <li><strong>In transit</strong>: TLS 1.2+ for 100% of traffic—including internal service calls.</li>
+                        <li><strong>At rest</strong>: AES-256 for databases, object storage, and backups.</li>
+                        <li><strong>Password storage</strong>: bcrypt with unique 12-byte salt, work factor ≥ 12.</li>
                       </ul>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">4. Identity & Access Management</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li><strong>Auth options:</strong> Email + password, Google OAuth, or SSO (SAML 2.0) on request.</li>
-                        <li><strong>MFA:</strong> TOTP and WebAuthn supported for all admin users; recommended for all roles.</li>
-                        <li><strong>Session controls:</strong> Access tokens expire after 1 h; refresh tokens rotate every 24 h or on sign‑out.</li>
+                        <li><strong>Auth methods</strong>: Email/password, Google OAuth, or SSO (SAML 2.0) on request.</li>
+                        <li><strong>MFA</strong>: TOTP & WebAuthn supported for all admin users; recommended for everyone.</li>
+                        <li><strong>Session controls</strong>: Access tokens expire after 1 hr; refresh tokens rotate every 24 hrs or on sign-out.</li>
                       </ul>
                     </div>
                     
+                    <hr className="border-muted my-6" />
+                    
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">5. Application Security</h3>
-                      <ol className="list-decimal list-inside space-y-2 ml-4">
-                        <li><strong>Secure SDLC</strong> – Static analysis (Snyk) on every pull request, dependency scanning nightly.</li>
-                        <li><strong>Penetration tests</strong> – Independent CREST‑certified team tests twice per year; summary available under NDA.</li>
-                        <li><strong>Bug bounty</strong> – Public program on HackerOne with rewards for verified vulnerabilities.</li>
-                        <li><strong>Content Security Policy</strong> – Strict CSP headers; all third‑party scripts whitelisted.</li>
-                      </ol>
+                      <ul className="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Secure SDLC</strong>: Static analysis (Snyk) on every pull request; nightly dependency scanning.</li>
+                        <li><strong>Penetration tests</strong>: Independent CREST-certified team twice per year; summary available under NDA.</li>
+                        <li><strong>Bug bounty</strong>: Public program on HackerOne with rewards for verified vulnerabilities.</li>
+                        <li><strong>Content Security Policy</strong>: Strict CSP headers; only whitelisted third-party scripts allowed.</li>
+                      </ul>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">6. Network & Monitoring</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
                         <li><strong>WAF & DDoS protection</strong> via Cloudflare.</li>
-                        <li><strong>24×7 log aggregation</strong> into Datadog with anomaly alerts ({"<"} 5 min mean‑time‑to‑detect).</li>
-                        <li><strong>Egress allow‑listing</strong> – Only required ports/protocols opened to vendor IPs.</li>
-                        <li><strong>Audit trails</strong> – Immutable logs kept 12 months; critical actions (user creation, billing changes) are double‑logged.</li>
+                        <li><strong>24×7 log aggregation</strong> into Datadog with anomaly alerts (MTTD {"<"} 5 min).</li>
+                        <li><strong>Egress allow-listing</strong>: Only required ports/protocols open to vendor IPs.</li>
+                        <li><strong>Audit trails</strong>: Immutable logs retained 12 months; critical actions double-logged.</li>
                       </ul>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">7. Backup & Disaster Recovery</h3>
@@ -1112,8 +1132,8 @@ export const Landing: React.FC = () => {
                             <tr>
                               <td className="border border-muted p-3">Full encrypted backup</td>
                               <td className="border border-muted p-3">Nightly</td>
-                              <td className="border border-muted p-3">7 years (cold)</td>
-                              <td className="border border-muted p-3">{"<"} 12 h</td>
+                              <td className="border border-muted p-3">7 years (cold storage)</td>
+                              <td className="border border-muted p-3">{"<"} 12 hrs</td>
                             </tr>
                             <tr>
                               <td className="border border-muted p-3">Configuration state</td>
@@ -1127,55 +1147,65 @@ export const Landing: React.FC = () => {
                       <p>Quarterly restore drills validate backup integrity.</p>
                     </div>
                     
+                    <hr className="border-muted my-6" />
+                    
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">8. Compliance & Privacy</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li><strong>GDPR / UK DPA 2018</strong> – Standard contractual clauses (SCCs) for EU transfers.</li>
-                        <li><strong>CCPA/CPRA</strong> – Data Processing Addendum available.</li>
-                        <li><strong>SOC 2 Type II</strong> – Audit in progress, target report Q4 2025.</li>
-                        <li><strong>PCI‑DSS</strong> – Delegated to Stripe (Level 1).</li>
+                        <li><strong>GDPR / UK DPA 2018</strong>: Standard contractual clauses (SCCs) for EU transfers.</li>
+                        <li><strong>CCPA/CPRA</strong>: Data Processing Addendum available.</li>
+                        <li><strong>SOC 2 Type II</strong>: Audit in progress, target report Q4 2025.</li>
+                        <li><strong>PCI-DSS</strong>: Delegated to Stripe (Level 1).</li>
                       </ul>
-                      <p>See our Privacy Policy for full data‑handling details.</p>
+                      <p>See our Privacy Policy for full data-handling details.</p>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">9. Incident Response</h3>
                       <ol className="list-decimal list-inside space-y-2 ml-4">
-                        <li><strong>Detect</strong> – Real‑time alerts into PagerDuty.</li>
+                        <li><strong>Detect</strong> – Real-time alerts into PagerDuty.</li>
                         <li><strong>Contain</strong> – Access revoked or firewall rules adjusted within 15 min.</li>
-                        <li><strong>Investigate</strong> – Forensic logs preserved; root‑cause analysis initiated.</li>
-                        <li><strong>Notify</strong> – Affected customers informed within 72 h (sooner if required by law).</li>
-                        <li><strong>Remediate & review</strong> – Post‑mortem shared internally; controls updated.</li>
+                        <li><strong>Investigate</strong> – Forensic logs preserved; root-cause analysis initiated.</li>
+                        <li><strong>Notify</strong> – Affected customers informed within 72 hrs (sooner if required).</li>
+                        <li><strong>Remediate & Review</strong> – Internal post-mortem; controls updated.</li>
                       </ol>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">10. Responsible Disclosure</h3>
                       <p>
-                        Found a vulnerability? Email <strong>security@portaprosoftware.com</strong> or submit via our HackerOne page. We'll acknowledge within 24 h and keep you informed throughout remediation. Good‑faith reports are never subject to legal action.
+                        Found a vulnerability? Email <strong><a href="mailto:security@portaprosoftware.com" className="text-primary hover:underline">security@portaprosoftware.com</a></strong> or submit via our HackerOne page. We'll acknowledge within 24 hrs and keep you informed throughout remediation. Good-faith reports are never subject to legal action.
                       </p>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">11. Your Security Controls</h3>
                       <ul className="list-disc list-inside space-y-2 ml-4">
-                        <li>Enable MFA for all users (Admin → Settings → Security).</li>
-                        <li>Rotate API keys at least every 90 days.</li>
-                        <li>Set role permissions so drivers only access today's jobs.</li>
-                        <li>Use webhooks with HMAC validation for outbound data.</li>
+                        <li><strong>Enable MFA</strong> for all users: <em>Admin → Settings → Security</em>.</li>
+                        <li><strong>Rotate API keys</strong> every 90 days.</li>
+                        <li><strong>Set role permissions</strong> so drivers only access today's jobs.</li>
+                        <li><strong>Use webhooks</strong> with HMAC validation for outbound data.</li>
                       </ul>
                     </div>
+                    
+                    <hr className="border-muted my-6" />
                     
                     <div className="space-y-4">
                       <h3 className="text-xl font-bold">12. Contact</h3>
                       <div className="space-y-2">
-                        <p>PortaPro Software LLC</p>
+                        <p><strong>PortaPro Software LLC</strong></p>
                         <p>1055 Old River Road, Unit 721</p>
                         <p>Cleveland, OH 44113, USA</p>
-                        <p><strong>📧</strong> security@portaprosoftware.com</p>
+                        <p>📧 <a href="mailto:security@portaprosoftware.com" className="text-primary hover:underline">security@portaprosoftware.com</a></p>
                       </div>
                       <p className="mt-4 text-sm text-muted-foreground">
-                        We continuously evolve our controls. Any future material changes to this Security page will be posted here and, when significant, emailed to account administrators.
+                        We continuously evolve our controls. Any material changes to this Security Center will be posted here and, when significant, emailed to account administrators.
                       </p>
                     </div>
                   </div>
