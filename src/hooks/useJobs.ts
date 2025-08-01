@@ -90,7 +90,7 @@ export function useJobs(filters?: {
         .from('jobs')
         .select(`
           *,
-          customers!inner(id, name, service_street, service_city, service_state),
+          customers(id, name, service_street, service_city, service_state),
           profiles:driver_id(id, first_name, last_name),
           vehicles(id, license_plate, vehicle_type)
         `)
