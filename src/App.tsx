@@ -78,7 +78,7 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Root route - redirect to dashboard for authenticated users */}
+          {/* Root route - show landing page for everyone, dashboard for authenticated users */}
           <Route path="/" element={
             <>
               <SignedIn>
@@ -87,7 +87,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Auth />
+                <Landing />
               </SignedOut>
             </>
           } />
@@ -301,7 +301,7 @@ const App = () => {
             </>
           } />
 
-          {/* Catch all other routes - redirect to auth */}
+          {/* Catch all other routes - redirect to landing for unauthenticated, dashboard for authenticated */}
           <Route path="*" element={
             <>
               <SignedIn>
@@ -310,7 +310,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Auth />
+                <Landing />
               </SignedOut>
             </>
           } />
