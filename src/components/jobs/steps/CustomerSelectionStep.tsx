@@ -22,12 +22,6 @@ interface Customer {
 export function CustomerSelectionStep() {
   const { state, updateData } = useJobWizard();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({
-    name: '',
-    phone: '',
-    email: '',
-  });
 
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ['customers', searchQuery],
@@ -53,32 +47,6 @@ export function CustomerSelectionStep() {
     });
   };
 
-  const handleCreateCustomer = async () => {
-    if (!newCustomer.name.trim() || !newCustomer.phone.trim()) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('customers')
-        .insert({
-          name: newCustomer.name.trim(),
-          phone: newCustomer.phone.trim(),
-          email: newCustomer.email.trim() || null,
-        })
-        .select('id, name')
-        .single();
-
-      if (error) throw error;
-
-      updateData({
-        customer_id: data.id,
-      });
-
-      setShowCreateForm(false);
-      setNewCustomer({ name: '', phone: '', email: '' });
-    } catch (error) {
-      console.error('Error creating customer:', error);
-    }
-  };
 
   const getCustomerTypeColor = (type?: string) => {
     switch (type) {
@@ -95,82 +63,20 @@ export function CustomerSelectionStep() {
       <div>
         <h2 className="text-2xl font-semibold mb-2">Select Customer</h2>
         <p className="text-muted-foreground">
-          Choose an existing customer or create a new one for this job.
+          Choose an existing customer for this job. Create customers in the Customers section first.
         </p>
       </div>
 
-      {/* Search and Create */}
-      <div className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search customers by name, email, or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <Button
-          variant="outline"
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="w-full"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create New Customer
-        </Button>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          placeholder="Search customers by name, email, or phone..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+        />
       </div>
-
-      {/* Create Customer Form */}
-      {showCreateForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Create New Customer</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Customer Name *</label>
-              <Input
-                placeholder="Enter customer name"
-                value={newCustomer.name}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Phone Number *</label>
-              <Input
-                placeholder="Enter phone number"
-                value={newCustomer.phone}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Email (Optional)</label>
-              <Input
-                placeholder="Enter email address"
-                value={newCustomer.email}
-                onChange={(e) => setNewCustomer(prev => ({ ...prev, email: e.target.value }))}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={handleCreateCustomer}
-                disabled={!newCustomer.name.trim() || !newCustomer.phone.trim()}
-                className="flex-1"
-              >
-                Create Customer
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowCreateForm(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Customer List */}
       <div className="space-y-3">
@@ -183,7 +89,7 @@ export function CustomerSelectionStep() {
           <div className="text-center py-8">
             <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery ? 'No customers found' : 'No customers available'}
+              {searchQuery ? 'No customers found' : 'No customers available. Create customers in the Customers section first.'}
             </p>
           </div>
         ) : (

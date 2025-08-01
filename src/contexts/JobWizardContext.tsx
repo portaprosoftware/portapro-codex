@@ -7,7 +7,7 @@ export interface JobWizardData {
   // Step 2: Job Type & Scheduling  
   job_type?: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
   scheduled_date?: string;
-  scheduled_time?: string;
+  scheduled_time?: string | null;
   timezone: string;
   notes?: string;
   
@@ -35,6 +35,7 @@ const initialState: JobWizardState = {
   data: {
     timezone: 'America/New_York',
     selected_coordinate_ids: [],
+    scheduled_time: null,
   },
   errors: {},
   isLoading: false,

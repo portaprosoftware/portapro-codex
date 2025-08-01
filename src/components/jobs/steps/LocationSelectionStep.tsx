@@ -29,18 +29,11 @@ interface ServiceLocation {
 
 export function LocationSelectionStep() {
   const { state, updateData } = useJobWizard();
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [newLocation, setNewLocation] = useState({
-    locationName: '',
     street: '',
-    street2: '',
     city: '',
     state: '',
     zip: '',
-    contactPerson: '',
-    contactPhone: '',
-    accessInstructions: '',
-    saveToProfile: true,
   });
 
   const { data: serviceLocations = [], isLoading } = useQuery({
@@ -83,10 +76,8 @@ export function LocationSelectionStep() {
     
     updateData({
       selected_coordinate_ids: ['new'],
-      special_instructions: `Address: ${addressText}${newLocation.accessInstructions ? '\nInstructions: ' + newLocation.accessInstructions : ''}`,
+      special_instructions: `Address: ${addressText}`,
     });
-
-    setShowCreateForm(false);
   };
 
   const isNewLocationValid = () => {
@@ -98,7 +89,7 @@ export function LocationSelectionStep() {
       <div>
         <h2 className="text-2xl font-semibold mb-2">Service Location</h2>
         <p className="text-muted-foreground">
-          Select where the job will be performed. You can choose from existing locations or create a new one.
+          Select where the job will be performed. Choose from existing locations or enter a temporary address.
         </p>
       </div>
 
