@@ -23,6 +23,7 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
   data,
   onUpdate
 }) => {
+  console.log('SimpleDateTimeStep render - data.time:', data.time);
   const [hasSpecificTime, setHasSpecificTime] = useState(!!data.time);
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
