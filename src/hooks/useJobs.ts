@@ -153,8 +153,6 @@ export function useCreateJob() {
 
   return useMutation({
     mutationFn: async (jobData: JobFormData) => {
-      console.log('Creating job with data:', jobData);
-      
       if (!isOnline) {
         addToQueue({
           type: 'job_creation',
@@ -164,86 +162,23 @@ export function useCreateJob() {
         return null;
       }
 
-      // Generate job number
-      const jobTypePrefix = {
-        'delivery': 'DEL',
-        'pickup': 'PKP',
-        'service': 'SVC',
-        'on-site-survey': 'OSS'
-      }[jobData.job_type];
+      const { consumables_data, partial_pickups, date_returned, return_time, ...cleanJobData } = jobData;
 
-      const jobNumber = `${jobTypePrefix}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-
-      console.log('=== JOB PROCESSING IN HOOK ===');
-      console.log('Raw jobData received in hook:', JSON.stringify(jobData, null, 2));
-
-      const { consumables_data, partial_pickups, date_returned, return_time, ...jobDataForDB } = jobData;
-
-      // Clean up job data - remove invalid IDs
-      const cleanJobData = { ...jobDataForDB };
-      
-      // Validate vehicle_id exists, if not remove it
-      if (cleanJobData.vehicle_id) {
-        const { data: vehicleExists } = await supabase
-          .from('vehicles')
-          .select('id')
-          .eq('id', cleanJobData.vehicle_id)
-          .maybeSingle();
-        
-        if (!vehicleExists) {
-          console.warn('Vehicle ID not found, removing from job data:', cleanJobData.vehicle_id);
-          delete cleanJobData.vehicle_id;
-        }
-      }
-
-      // Validate driver_id exists, if not remove it
-      if (cleanJobData.driver_id) {
-        const { data: driverExists } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', cleanJobData.driver_id)
-          .maybeSingle();
-        
-        if (!driverExists) {
-          console.warn('Driver ID not found, removing from job data:', cleanJobData.driver_id);
-          delete cleanJobData.driver_id;
-        }
-      }
-
-      console.log('Job data being inserted:', {
-        ...cleanJobData,
-        job_number: jobNumber,
-        status: 'assigned',
-        timezone: jobData.timezone || 'America/New_York',
-        assigned_template_ids: jobData.assigned_template_ids || [],
-        default_template_id: jobData.default_template_id || null,
-        date_returned: date_returned,
-        partial_pickups: partial_pickups || []
-      });
-
-      // Create main job record with only required fields to avoid UPDATE error
-      const basicJobData: any = {
-        customer_id: cleanJobData.customer_id,
-        job_type: cleanJobData.job_type,
-        scheduled_date: cleanJobData.scheduled_date,
-        scheduled_time: cleanJobData.scheduled_time,
-        job_number: jobNumber,
-        status: 'assigned',
-        timezone: jobData.timezone || 'America/New_York',
-        notes: cleanJobData.notes || '',
-        special_instructions: cleanJobData.special_instructions || ''
-      };
-
-      // Only add driver_id if it exists and is valid
-      if (cleanJobData.driver_id) {
-        basicJobData.driver_id = cleanJobData.driver_id;
-      }
-
-      console.log('About to insert basic job data:', basicJobData);
-
+      // Create main job record with clean data
       const { data: newJob, error } = await supabase
         .from('jobs')
-        .insert(basicJobData)
+        .insert({
+          customer_id: cleanJobData.customer_id,
+          job_type: cleanJobData.job_type,
+          scheduled_date: cleanJobData.scheduled_date,
+          scheduled_time: cleanJobData.scheduled_time || '09:00',
+          status: 'assigned',
+          timezone: jobData.timezone || 'America/New_York',
+          notes: cleanJobData.notes || '',
+          special_instructions: cleanJobData.special_instructions || '',
+          driver_id: cleanJobData.driver_id || null,
+          vehicle_id: cleanJobData.vehicle_id || null
+        })
         .select()
         .single();
 
@@ -251,8 +186,6 @@ export function useCreateJob() {
         console.error('Database error during job insertion:', error);
         throw error;
       }
-      
-      console.log('Job created successfully:', newJob);
 
       // Create pickup events for partial pickups
       if (partial_pickups && partial_pickups.length > 0) {
