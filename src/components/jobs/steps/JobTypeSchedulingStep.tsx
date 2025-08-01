@@ -55,6 +55,7 @@ export function JobTypeSchedulingStep() {
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       const formattedDate = formatDateForQuery(date);
+      console.log('Date selected:', date, 'Formatted:', formattedDate);
       updateData({ scheduled_date: formattedDate });
     }
   };
@@ -127,7 +128,10 @@ export function JobTypeSchedulingStep() {
           <CardContent className="p-4">
             <CalendarComponent
               mode="single"
-              selected={state.data.scheduled_date ? new Date(state.data.scheduled_date) : undefined}
+              selected={state.data.scheduled_date ? (() => {
+                const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+                return new Date(year, month - 1, day);
+              })() : undefined}
               onSelect={handleDateSelect}
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
               className="rounded-md"
