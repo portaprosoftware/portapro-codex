@@ -221,19 +221,29 @@ export function useCreateJob() {
         partial_pickups: partial_pickups || []
       });
 
-      // Create main job record
+      // Create main job record with only required fields to avoid UPDATE error
+      const basicJobData: any = {
+        customer_id: cleanJobData.customer_id,
+        job_type: cleanJobData.job_type,
+        scheduled_date: cleanJobData.scheduled_date,
+        scheduled_time: cleanJobData.scheduled_time,
+        job_number: jobNumber,
+        status: 'assigned',
+        timezone: jobData.timezone || 'America/New_York',
+        notes: cleanJobData.notes || '',
+        special_instructions: cleanJobData.special_instructions || ''
+      };
+
+      // Only add driver_id if it exists and is valid
+      if (cleanJobData.driver_id) {
+        basicJobData.driver_id = cleanJobData.driver_id;
+      }
+
+      console.log('About to insert basic job data:', basicJobData);
+
       const { data: newJob, error } = await supabase
         .from('jobs')
-        .insert({
-          ...cleanJobData,
-          job_number: jobNumber,
-          status: 'assigned',
-          timezone: jobData.timezone || 'America/New_York',
-          assigned_template_ids: jobData.assigned_template_ids || [],
-          default_template_id: jobData.default_template_id || null,
-          date_returned: date_returned,
-          partial_pickups: partial_pickups || []
-        })
+        .insert(basicJobData)
         .select()
         .single();
 
