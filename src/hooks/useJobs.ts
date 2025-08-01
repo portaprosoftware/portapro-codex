@@ -176,8 +176,39 @@ export function useCreateJob() {
 
       const { consumables_data, partial_pickups, date_returned, return_time, ...jobDataForDB } = jobData;
 
+      // Clean up job data - remove invalid IDs
+      const cleanJobData = { ...jobDataForDB };
+      
+      // Validate vehicle_id exists, if not remove it
+      if (cleanJobData.vehicle_id) {
+        const { data: vehicleExists } = await supabase
+          .from('vehicles')
+          .select('id')
+          .eq('id', cleanJobData.vehicle_id)
+          .single();
+        
+        if (!vehicleExists) {
+          console.warn('Vehicle ID not found, removing from job data:', cleanJobData.vehicle_id);
+          delete cleanJobData.vehicle_id;
+        }
+      }
+
+      // Validate driver_id exists, if not remove it
+      if (cleanJobData.driver_id) {
+        const { data: driverExists } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', cleanJobData.driver_id)
+          .single();
+        
+        if (!driverExists) {
+          console.warn('Driver ID not found, removing from job data:', cleanJobData.driver_id);
+          delete cleanJobData.driver_id;
+        }
+      }
+
       console.log('Job data being inserted:', {
-        ...jobDataForDB,
+        ...cleanJobData,
         job_number: jobNumber,
         status: 'assigned',
         timezone: jobData.timezone || 'America/New_York',
@@ -191,7 +222,7 @@ export function useCreateJob() {
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
-          ...jobDataForDB,
+          ...cleanJobData,
           job_number: jobNumber,
           status: 'assigned',
           timezone: jobData.timezone || 'America/New_York',
