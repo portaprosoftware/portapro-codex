@@ -33,7 +33,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           .from("products")
           .select(`
             *,
-            product_items(count, currently_padlocked, padlock_type, last_padlock_timestamp, last_unlock_timestamp),
+            product_items(*),
             product_location_stock(storage_location_id, quantity, storage_locations(id, name))
           `);
 
@@ -75,7 +75,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               .from("products")
               .select(`
                 *,
-                product_items(count, currently_padlocked, padlock_type, last_padlock_timestamp, last_unlock_timestamp),
+                product_items(*),
                 product_location_stock(storage_location_id, quantity, storage_locations(id, name))
               `)
               .in("id", productIds);
