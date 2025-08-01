@@ -22,6 +22,7 @@ import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const JobsPage: React.FC = () => {
   const updateJobStatusMutation = useUpdateJobStatus();
   const createJobMutation = useCreateJob();
   const queryClient = useQueryClient();
+  const { toast: showToast } = useToast();
 
   // Mutation to update job assignment
   const updateJobAssignmentMutation = useMutation({
@@ -701,12 +703,39 @@ const JobsPage: React.FC = () => {
             
             // Validate required fields
             if (!jobData.customer_id) {
-              toast.error("Customer is required to create a job");
+              showToast({
+                title: "Error",
+                description: "Customer is required to create a job",
+                variant: "destructive",
+              });
               return;
             }
 
-            createJobMutation.mutate(jobData);
-            setIsJobWizardOpen(false);
+            console.log('About to call createJobMutation.mutate with:', jobData);
+            
+            try {
+              createJobMutation.mutate(jobData, {
+                onSuccess: (result) => {
+                  console.log('Job creation successful:', result);
+                  setIsJobWizardOpen(false);
+                },
+                onError: (error) => {
+                  console.error('Job creation failed:', error);
+                  showToast({
+                    title: "Error Creating Job",
+                    description: error?.message || "Failed to create job. Please try again.",
+                    variant: "destructive",
+                  });
+                }
+              });
+            } catch (error) {
+              console.error('Error calling createJobMutation:', error);
+              showToast({
+                title: "Error",
+                description: "Failed to create job. Please try again.",
+                variant: "destructive",
+              });
+            }
           }}
           onCancel={() => setIsJobWizardOpen(false)}
         />
