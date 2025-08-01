@@ -153,6 +153,8 @@ export function useCreateJob() {
 
   return useMutation({
     mutationFn: async (jobData: JobFormData) => {
+      console.log('Creating job with data:', jobData);
+      
       if (!isOnline) {
         addToQueue({
           type: 'job_creation',
@@ -174,6 +176,17 @@ export function useCreateJob() {
 
       const { consumables_data, partial_pickups, date_returned, return_time, ...jobDataForDB } = jobData;
 
+      console.log('Job data being inserted:', {
+        ...jobDataForDB,
+        job_number: jobNumber,
+        status: 'assigned',
+        timezone: jobData.timezone || 'America/New_York',
+        assigned_template_ids: jobData.assigned_template_ids || [],
+        default_template_id: jobData.default_template_id || null,
+        date_returned: date_returned,
+        partial_pickups: partial_pickups || []
+      });
+
       // Create main job record
       const { data: newJob, error } = await supabase
         .from('jobs')
@@ -190,7 +203,12 @@ export function useCreateJob() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error during job insertion:', error);
+        throw error;
+      }
+      
+      console.log('Job created successfully:', newJob);
 
       // Create pickup events for partial pickups
       if (partial_pickups && partial_pickups.length > 0) {

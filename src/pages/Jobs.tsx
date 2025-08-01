@@ -670,6 +670,8 @@ const JobsPage: React.FC = () => {
       {isJobWizardOpen && (
         <EnhancedJobWizard 
           onComplete={(data) => {
+            console.log('Wizard data received:', data);
+            
             // Convert wizard data to job creation format
             const jobData = {
               customer_id: data.selectedCustomer?.id,
@@ -694,6 +696,14 @@ const JobsPage: React.FC = () => {
                 subscription_enabled: data.subscriptionEnabled
               }
             };
+
+            console.log('Transformed job data:', jobData);
+            
+            // Validate required fields
+            if (!jobData.customer_id) {
+              toast.error("Customer is required to create a job");
+              return;
+            }
 
             createJobMutation.mutate(jobData);
             setIsJobWizardOpen(false);
