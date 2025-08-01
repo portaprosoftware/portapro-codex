@@ -103,7 +103,7 @@ export const SimpleJobWizard: React.FC<SimpleJobWizardProps> = ({
       case 1: // Job Details
         return !!(data.jobType && data.timezone);
       case 2: // Scheduling
-        return !!(data.date && data.time);
+        return !!data.date; // Time is now optional
       case 3: // Location
         return !!data.address;
       default:
