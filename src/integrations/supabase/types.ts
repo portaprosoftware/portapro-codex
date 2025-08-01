@@ -3547,6 +3547,106 @@ export type Database = {
           },
         ]
       }
+      padlock_code_access_logs: {
+        Row: {
+          access_reason: string | null
+          access_timestamp: string
+          accessed_by: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          product_item_id: string
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_reason?: string | null
+          access_timestamp?: string
+          accessed_by: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          product_item_id: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_reason?: string | null
+          access_timestamp?: string
+          accessed_by?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          product_item_id?: string
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "padlock_code_access_logs_product_item_id_fkey"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      padlock_security_incidents: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          incident_type: string
+          product_item_id: string
+          reported_at: string
+          reported_by: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          incident_type: string
+          product_item_id: string
+          reported_at?: string
+          reported_by: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          incident_type?: string
+          product_item_id?: string
+          reported_at?: string
+          reported_by?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "padlock_security_incidents_product_item_id_fkey"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pin_categories: {
         Row: {
           color: string
@@ -6377,6 +6477,25 @@ export type Database = {
           days_overdue: number
         }[]
       }
+      get_padlock_security_incidents: {
+        Args: {
+          status_filter?: string
+          severity_filter?: string
+          limit_count?: number
+        }
+        Returns: {
+          incident_id: string
+          item_id: string
+          item_code: string
+          product_name: string
+          incident_type: string
+          severity: string
+          status: string
+          description: string
+          reported_at: string
+          days_since_reported: number
+        }[]
+      }
       get_product_availability_enhanced: {
         Args: {
           product_type_id: string
@@ -6478,6 +6597,17 @@ export type Database = {
         }
         Returns: string
       }
+      log_padlock_code_access: {
+        Args: {
+          item_uuid: string
+          user_uuid: string
+          reason_text?: string
+          session_id_param?: string
+          ip_param?: string
+          user_agent_param?: string
+        }
+        Returns: Json
+      }
       migrate_consumable_stock_to_locations: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -6496,6 +6626,16 @@ export type Database = {
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      report_padlock_incident: {
+        Args: {
+          item_uuid: string
+          incident_type_param: string
+          user_uuid: string
+          description_param: string
+          severity_param?: string
+        }
+        Returns: Json
       }
       reserve_equipment_for_job: {
         Args: {
@@ -6584,6 +6724,15 @@ export type Database = {
           clerk_user_id?: string
         }
         Returns: boolean
+      }
+      update_incident_status: {
+        Args: {
+          incident_uuid: string
+          new_status: string
+          user_uuid: string
+          resolution_notes_param?: string
+        }
+        Returns: Json
       }
       update_overdue_invoices: {
         Args: Record<PropertyKey, never>

@@ -18,7 +18,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePadlockOperations } from '@/hooks/usePadlockOperations';
+import { usePadlockSecurity } from '@/hooks/usePadlockSecurity';
+import { SecurityIncidentDialog } from './SecurityIncidentDialog';
 import { useUser } from '@clerk/clerk-react';
+import { Shield, Eye, EyeOff } from 'lucide-react';
 
 interface PadlockManagementDialogProps {
   isOpen: boolean;
@@ -39,9 +42,29 @@ export const PadlockManagementDialog: React.FC<PadlockManagementDialogProps> = (
 }) => {
   const { user } = useUser();
   const { performOperation, isLoading } = usePadlockOperations();
+  const { accessPadlockCode, isAccessingCode } = usePadlockSecurity();
   const [padlockType, setPadlockType] = useState<'standard' | 'combination' | 'keyed'>('standard');
   const [codeReference, setCodeReference] = useState('');
   const [notes, setNotes] = useState('');
+  const [showSecurityDialog, setShowSecurityDialog] = useState(false);
+  const [showCodeReference, setShowCodeReference] = useState(false);
+  const [accessedCode, setAccessedCode] = useState('');
+
+  const handleAccessCode = () => {
+    if (!user?.id) return;
+    
+    accessPadlockCode({
+      itemId,
+      reason: 'Service access request'
+    }, {
+      onSuccess: (data: any) => {
+        if (data?.success) {
+          setAccessedCode(data.code_reference || '');
+          setShowCodeReference(true);
+        }
+      }
+    });
+  };
 
   const handleSubmit = () => {
     if (!user?.id) return;
@@ -62,6 +85,8 @@ export const PadlockManagementDialog: React.FC<PadlockManagementDialogProps> = (
     setPadlockType('standard');
     setCodeReference('');
     setNotes('');
+    setShowCodeReference(false);
+    setAccessedCode('');
   };
 
   if (!supportsPadlock) {
@@ -96,6 +121,62 @@ export const PadlockManagementDialog: React.FC<PadlockManagementDialogProps> = (
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Security Actions */}
+          {currentlyPadlocked && (
+            <div className="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-yellow-600" />
+                  <span className="text-sm font-medium text-yellow-800">Secure Access</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAccessCode}
+                  disabled={isAccessingCode}
+                  className="w-full"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  {isAccessingCode ? 'Accessing...' : 'View Padlock Code'}
+                </Button>
+                
+                {showCodeReference && accessedCode && (
+                  <div className="p-3 bg-white rounded border">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-gray-600">Code Reference:</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowCodeReference(false)}
+                      >
+                        <EyeOff className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                      {accessedCode}
+                    </code>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Access logged for security audit
+                    </p>
+                  </div>
+                )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSecurityDialog(true)}
+                  className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Report Security Incident
+                </Button>
+              </div>
+            </div>
+          )}
+
           {!currentlyPadlocked && (
             <>
               <div className="space-y-2">
@@ -149,6 +230,13 @@ export const PadlockManagementDialog: React.FC<PadlockManagementDialogProps> = (
             </Button>
           </div>
         </div>
+
+        <SecurityIncidentDialog
+          isOpen={showSecurityDialog}
+          onClose={() => setShowSecurityDialog(false)}
+          itemId={itemId}
+          itemCode={itemCode}
+        />
       </DialogContent>
     </Dialog>
   );
