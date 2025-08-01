@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp } from "lucide-react";
+import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -46,7 +46,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
     }
   });
 
-  // Fetch quick stats for hover card
+  // Fetch quick stats for hover card including padlock data
   const { data: quickStats } = useQuery({
     queryKey: ['product-quick-stats', product.id],
     queryFn: async () => {
@@ -62,10 +62,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       if (assignmentsError) throw assignmentsError;
 
-      // Get total individual items count
+      // Get total individual items count with padlock information
       const { data: items, error: itemsError } = await supabase
         .from('product_items')
-        .select('id, status')
+        .select('id, status, currently_padlocked, padlock_type, last_padlock_timestamp')
         .eq('product_id', product.id);
 
       if (itemsError) throw itemsError;
@@ -75,12 +75,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       const totalItems = items?.length || 0;
       const utilizationRate = totalItems > 0 ? Math.round((activeAssignments / totalItems) * 100) : 0;
 
+      // Calculate padlock statistics
+      const padlockedItems = items?.filter(item => item.currently_padlocked) || [];
+      const unlockedItems = items?.filter(item => !item.currently_padlocked) || [];
+      const overdueItems = items?.filter(item => {
+        if (!item.currently_padlocked || !item.last_padlock_timestamp) return false;
+        const padlockDate = new Date(item.last_padlock_timestamp);
+        const daysSince = (Date.now() - padlockDate.getTime()) / (1000 * 60 * 60 * 24);
+        return daysSince > 7;
+      }) || [];
+
       return {
         activeAssignments,
         completedAssignments,
         totalItems,
         utilizationRate,
-        recentActivity: assignments?.length || 0
+        recentActivity: assignments?.length || 0,
+        padlockStats: {
+          total: totalItems,
+          padlocked: padlockedItems.length,
+          unlocked: unlockedItems.length,
+          overdue: overdueItems.length
+        }
       };
     }
   });
@@ -214,6 +230,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                   <span className="font-medium">{locationCount}</span>
                 </div>
               </div>
+
+              {/* Padlock Status Section */}
+              {quickStats?.padlockStats && quickStats.padlockStats.total > 0 && (
+                <div className="border-t pt-3">
+                  <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Padlock Status</h5>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center space-y-1">
+                      <div className="flex items-center justify-center">
+                        <Lock className="w-3 h-3 text-orange-600" />
+                      </div>
+                      <p className="text-xs text-gray-600">Padlocked</p>
+                      <p className="text-sm font-bold text-orange-600">{quickStats.padlockStats.padlocked}</p>
+                    </div>
+                    <div className="text-center space-y-1">
+                      <div className="flex items-center justify-center">
+                        <Unlock className="w-3 h-3 text-green-600" />
+                      </div>
+                      <p className="text-xs text-gray-600">Unlocked</p>
+                      <p className="text-sm font-bold text-green-600">{quickStats.padlockStats.unlocked}</p>
+                    </div>
+                    <div className="text-center space-y-1">
+                      <div className="flex items-center justify-center">
+                        <AlertTriangle className="w-3 h-3 text-red-600" />
+                      </div>
+                      <p className="text-xs text-gray-600">Overdue</p>
+                      <p className="text-sm font-bold text-red-600">{quickStats.padlockStats.overdue}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="border-t pt-2">
                 <p className="text-xs text-gray-500">Daily Rate: <span className="font-medium text-gray-700">${product.default_price_per_day}</span></p>
