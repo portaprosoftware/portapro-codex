@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 
 interface TimePickerProps {
-  value: string; // Format: "HH:MM" (24-hour format)
+  value: string | null; // Format: "HH:MM" (24-hour format) or null
   onChange: (time: string) => void;
   className?: string;
 }
@@ -28,7 +28,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
     return `${hours24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
 
-  const { hours: currentHours, minutes: currentMinutes, period: currentPeriod } = to12Hour(value);
+  const { hours: currentHours, minutes: currentMinutes, period: currentPeriod } = value ? to12Hour(value) : { hours: 9, minutes: 0, period: 'AM' };
 
   const handleTimeChange = (hours12?: number, minutes?: number, period?: string) => {
     const newHours = hours12 !== undefined ? hours12 : currentHours;
@@ -42,8 +42,8 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
   // Generate hour options (1-12)
   const hourOptions = Array.from({ length: 12 }, (_, i) => i + 1);
   
-  // Generate minute options (00-59)
-  const minuteOptions = Array.from({ length: 60 }, (_, i) => i);
+  // Generate minute options (15-minute intervals)
+  const minuteOptions = [0, 15, 30, 45];
 
   return (
     <div className={`flex gap-2 ${className}`}>
@@ -69,7 +69,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
           <SelectTrigger>
             <SelectValue placeholder="Min" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50 max-h-48 overflow-y-auto">
+          <SelectContent className="bg-background border border-border shadow-lg z-50">
             {minuteOptions.map((minute) => (
               <SelectItem key={minute} value={minute.toString().padStart(2, '0')}>
                 :{minute.toString().padStart(2, '0')}

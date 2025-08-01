@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
+import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -66,7 +67,7 @@ export function JobTypeSchedulingStep() {
 
   const handleTimeToggle = (enabled: boolean) => {
     updateData({ 
-      scheduled_time: enabled ? '09:00' : null
+      scheduled_time: enabled ? null : null
     });
   };
 
@@ -153,9 +154,13 @@ export function JobTypeSchedulingStep() {
           </div>
         </div>
 
-        {state.data.scheduled_time && (
+        {!!state.data.scheduled_time !== false && (
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-4 space-y-4">
+              <TimePresetButtons 
+                onTimeSelect={handleTimeChange}
+                selectedTime={state.data.scheduled_time}
+              />
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <TimePicker
@@ -200,7 +205,12 @@ export function JobTypeSchedulingStep() {
               {state.data.scheduled_time && (
                 <p>
                   <span className="font-medium">Time:</span>{' '}
-                  {state.data.scheduled_time}
+                  {(() => {
+                    const [hours, minutes] = state.data.scheduled_time.split(':').map(Number);
+                    const period = hours >= 12 ? 'PM' : 'AM';
+                    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+                  })()}
                 </p>
               )}
             </div>
