@@ -159,7 +159,7 @@ export function JobTypeSchedulingStep() {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <TimePicker
-                  value={state.data.scheduled_time || '09:00'}
+                  value={state.data.scheduled_time}
                   onChange={handleTimeChange}
                 />
               </div>

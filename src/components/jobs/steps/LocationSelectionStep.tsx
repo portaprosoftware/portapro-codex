@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { MapPin, Plus, Building, Phone, User, Navigation } from 'lucide-react';
+import { MapPin, Building, Phone, User, Navigation } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -60,15 +59,6 @@ export function LocationSelectionStep() {
     });
   };
 
-  const handleAddressChange = (addressData: { street: string; city: string; state: string; zip: string; coordinates?: { longitude: number; latitude: number } }) => {
-    setNewLocation(prev => ({
-      ...prev,
-      street: addressData.street,
-      city: addressData.city,
-      state: addressData.state,
-      zip: addressData.zip,
-    }));
-  };
 
   const handleCreateLocation = () => {
     // Store address data in special_instructions for now
@@ -94,7 +84,7 @@ export function LocationSelectionStep() {
       </div>
 
       {/* Existing Locations */}
-      {serviceLocations.length > 0 && (
+      {serviceLocations.length > 0 ? (
         <div className="space-y-4">
           <Label className="text-base font-medium">Saved Locations</Label>
           <div className="space-y-3">
@@ -152,6 +142,13 @@ export function LocationSelectionStep() {
               </Card>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <Building className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">
+            No saved locations available. Create service locations in the Customer section first.
+          </p>
         </div>
       )}
 
