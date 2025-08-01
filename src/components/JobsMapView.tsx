@@ -1,21 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { format, addDays, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight,
   CloudRain,
   RotateCcw,
-  ZoomIn,
-  ZoomOut,
   Crosshair,
+  X,
   Eye,
-  Play,
-  Filter,
-  X
+  Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,9 +18,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
-
-// Mock data for demonstration
-const mockJobs = [];
+import { useJobs } from '@/hooks/useJobs';
+import { formatDateForQuery } from '@/lib/dateUtils';
 
 const mockDrivers = [
   {
@@ -52,6 +45,7 @@ interface JobsMapViewProps {
   selectedDriver?: string;
   selectedJobType?: string;
   selectedStatus?: string;
+  currentDate?: Date;
 }
 
 const statusColors = {
@@ -93,11 +87,11 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   searchTerm = '', 
   selectedDriver = 'all', 
   selectedJobType = 'all', 
-  selectedStatus = 'all' 
+  selectedStatus = 'all',
+  currentDate = new Date()
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 22));
   const [viewMode, setViewMode] = useState<'status' | 'driver'>('status');
   const [weatherRadar, setWeatherRadar] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -105,6 +99,14 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
+
+  // Get real job data using the same hook as other views
+  const { data: jobs = [], isLoading } = useJobs({
+    date: formatDateForQuery(currentDate),
+    job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
+    status: selectedStatus !== 'all' ? selectedStatus : undefined,
+    driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
+  });
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -195,25 +197,55 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       return;
     }
 
-    const filteredJobs = selectedDriver === 'all' 
-      ? mockJobs 
-      : mockJobs.filter(job => job.driverId.toString() === selectedDriver);
+    // Filter jobs based on search term and current filters
+    const filteredJobs = jobs.filter(job => {
+      const matchesSearch = searchTerm === '' || 
+        job.job_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.customers?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesDriver = selectedDriver === 'all' || job.driver_id === selectedDriver;
+      
+      return matchesSearch && matchesDriver;
+    });
 
-    const features = filteredJobs.map(job => ({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [job.location.lng, job.location.lat]
-      },
-      properties: {
-        id: job.id,
-        status: job.status,
-        jobType: job.jobType,
-        customerName: job.customerName,
-        driverName: job.driverName,
-        address: job.address
-      }
-    }));
+    // Create features for jobs that have location data
+    const features = filteredJobs
+      .filter(job => {
+        // Check if customer has service coordinates or default service address
+        const hasCoordinates = job.customers?.service_street && job.customers?.service_city;
+        return hasCoordinates;
+      })
+      .map(job => {
+        // Use mock coordinates for demonstration - in real app you'd geocode the address
+        const baseLat = 40.4406;
+        const baseLng = -79.9959;
+        const randomLat = baseLat + (Math.random() - 0.5) * 0.1;
+        const randomLng = baseLng + (Math.random() - 0.5) * 0.1;
+        
+        const address = `${job.customers?.service_street || ''} ${job.customers?.service_city || ''} ${job.customers?.service_state || ''}`.trim();
+        
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [randomLng, randomLat]
+          },
+          properties: {
+            id: job.id,
+            status: job.status,
+            jobType: job.job_type,
+            jobNumber: job.job_number,
+            customerName: job.customers?.name || 'Unknown Customer',
+            driverName: job.profiles?.first_name && job.profiles?.last_name 
+              ? `${job.profiles.first_name} ${job.profiles.last_name}` 
+              : 'Unassigned',
+            address,
+            scheduledTime: job.scheduled_time,
+            scheduledDate: job.scheduled_date
+          }
+        };
+      })
+      .filter(Boolean);
 
     map.current.addSource('jobs', {
       type: 'geojson',
@@ -273,24 +305,46 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       return;
     }
 
-    const filteredDrivers = selectedDriver === 'all' 
-      ? mockDrivers 
-      : mockDrivers.filter(driver => driver.id.toString() === selectedDriver);
-
-    const features = filteredDrivers.map(driver => ({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [driver.location.lng, driver.location.lat]
-      },
-      properties: {
-        id: driver.id,
-        name: driver.name,
-        avatar: driver.avatar,
-        status: driver.status,
-        jobCount: driver.jobCount
+    // For driver view, group jobs by driver and show driver locations
+    // This is a simplified implementation - in a real app you'd get actual driver locations
+    const driverJobs = jobs.reduce((acc, job) => {
+      if (job.driver_id && job.profiles) {
+        const driverName = `${job.profiles.first_name} ${job.profiles.last_name}`;
+        if (!acc[job.driver_id]) {
+          acc[job.driver_id] = {
+            id: job.driver_id,
+            name: driverName,
+            jobs: [],
+            // Use mock location based on customer address
+            location: job.customers?.service_street ? '40.4406,-79.9959' : null
+          };
+        }
+        acc[job.driver_id].jobs.push(job);
       }
-    }));
+      return acc;
+    }, {} as Record<string, any>);
+
+    const features = Object.values(driverJobs)
+      .filter((driver: any) => driver.location)
+      .map((driver: any) => {
+        const [lng, lat] = driver.location.split(',').map(Number);
+        if (isNaN(lng) || isNaN(lat)) return null;
+
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [lng, lat]
+          },
+          properties: {
+            id: driver.id,
+            name: driver.name,
+            status: 'active',
+            jobCount: driver.jobs.length
+          }
+        };
+      })
+      .filter(Boolean);
 
     map.current.addSource('drivers', {
       type: 'geojson',
@@ -336,13 +390,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   };
 
 
-  const goToPreviousDay = () => {
-    setCurrentDate(subDays(currentDate, 1));
-  };
-
-  const goToNextDay = () => {
-    setCurrentDate(addDays(currentDate, 1));
-  };
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -368,24 +415,22 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     }
   };
 
-  // Calculate stats with overdue and completed_late logic
-  const totalJobs = mockJobs.length;
-  const completedJobs = mockJobs.filter(job => job.status === 'completed').length;
-  const inProgressJobs = mockJobs.filter(job => job.status === 'in_progress').length;
-  const assignedJobs = mockJobs.filter(job => job.status === 'assigned').length;
-  const cancelledJobs = mockJobs.filter(job => job.status === 'cancelled').length;
-  const overdueJobs = mockJobs.filter(job => {
-    const currentDate = new Date();
-    const scheduledDate = new Date(job.scheduledDate);
+  // Calculate stats from real job data
+  const totalJobs = jobs.length;
+  const completedJobs = jobs.filter(job => job.status === 'completed').length;
+  const inProgressJobs = jobs.filter(job => job.status === 'in_progress').length;
+  const assignedJobs = jobs.filter(job => job.status === 'assigned').length;
+  const cancelledJobs = jobs.filter(job => job.status === 'cancelled').length;
+  const overdueJobs = jobs.filter(job => {
+    const currentDateTime = new Date();
+    const scheduledDate = new Date(job.scheduled_date);
     scheduledDate.setHours(23, 59, 59, 999);
-    return (job.status === 'assigned' || job.status === 'in_progress') && scheduledDate < currentDate;
+    return (job.status === 'assigned' || job.status === 'in_progress') && scheduledDate < currentDateTime;
   }).length;
-  const completedLateJobs = mockJobs.filter(job => {
-    if (job.status !== 'completed') return false;
-    // For demo purposes, assume some completed jobs were late
-    return Math.random() > 0.7; // Randomly mark ~30% as late for demo
-  }).length;
-  const totalDrivers = mockDrivers.length;
+  
+  // Get unique drivers from current jobs
+  const uniqueDrivers = new Set(jobs.filter(job => job.driver_id).map(job => job.driver_id));
+  const totalDrivers = uniqueDrivers.size;
 
   return (
     <div className="space-y-6">
@@ -393,32 +438,13 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            {/* Date Navigation */}
+            {/* Current Date Display */}
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="rounded-full h-10 w-10"
-                onClick={goToPreviousDay}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              
-              <Button variant="outline" className="px-4 rounded-full">
-                <CalendarIcon className="w-4 h-4 mr-2" />
+              <span className="text-sm font-medium text-gray-600">Showing jobs for:</span>
+              <Badge variant="outline" className="px-3 py-1">
                 {format(currentDate, 'MMMM do, yyyy')}
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="rounded-full h-10 w-10"
-                onClick={goToNextDay}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+              </Badge>
             </div>
-
 
             {/* View Toggle */}
             <div className="flex space-x-1 bg-gray-100 rounded-full p-1">
@@ -464,11 +490,11 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             <Button 
               variant="outline"
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={isRefreshing || isLoading}
               className="border-[#3366FF] text-[#3366FF] hover:bg-blue-50 rounded-full"
             >
-              <RotateCcw className={cn("w-4 h-4 mr-2", isRefreshing && "animate-spin")} />
-              Refresh
+              <RotateCcw className={cn("w-4 h-4 mr-2", (isRefreshing || isLoading) && "animate-spin")} />
+              {isLoading ? 'Loading...' : 'Refresh'}
             </Button>
           </div>
         </div>
@@ -501,11 +527,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           {completedJobs > 0 && (
             <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold">
               Completed: {completedJobs}
-            </Badge>
-          )}
-          {completedLateJobs > 0 && (
-            <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-3 py-1 rounded-full font-bold">
-              Completed Late: {completedLateJobs}
             </Badge>
           )}
           {cancelledJobs > 0 && (
