@@ -201,7 +201,7 @@ export function useCreateJob() {
           job_type: cleanJobData.job_type,
           job_number: jobNumber,
           scheduled_date: cleanJobData.scheduled_date,
-          scheduled_time: cleanJobData.scheduled_time || '09:00',
+          scheduled_time: cleanJobData.scheduled_time || null,
           status: 'assigned',
           timezone: jobData.timezone || 'America/New_York',
           notes: cleanJobData.notes || '',
