@@ -223,7 +223,7 @@ export const Landing: React.FC = () => {
               <div className="space-y-8">
                 
                 
-                <h1 className="text-5xl lg:text-8xl font-bold text-white leading-tight">
+                <h1 className="text-3xl lg:text-6xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
@@ -257,7 +257,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="order-2 lg:order-2">
-              <AutoCarousel media={aiPanelImages} className="max-w-2xl w-full mx-auto lg:max-w-4xl transform scale-110" aspectRatio="aspect-video" />
+              <img 
+                src="/lovable-uploads/0aaf6ddd-b2a4-4d47-bbda-6a1a4cd07b9a.png" 
+                alt="PortaPro Dashboard Preview" 
+                className="max-w-2xl w-full mx-auto lg:max-w-5xl transform scale-125 rounded-xl shadow-2xl" 
+              />
             </div>
           </div>
         </div>
