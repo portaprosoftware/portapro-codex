@@ -135,7 +135,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-79.9959, 40.4406],
+      center: [-79.9959, 40.4406], // Will be updated when jobs load
       zoom: 10
     });
 
@@ -163,7 +163,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     if (mapLoaded && map.current?.isStyleLoaded()) {
       loadPins();
     }
-  }, [viewMode, mapLoaded, selectedDriver]);
+  }, [viewMode, mapLoaded, selectedDriver, jobs]);
 
 
   const loadPins = () => {
@@ -208,19 +208,34 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       return matchesSearch && matchesDriver;
     });
 
-    // Create features for jobs that have location data
+    // Create features for jobs that have GPS coordinates
     const features = filteredJobs
       .filter(job => {
-        // Check if customer has service coordinates or default service address
-        const hasCoordinates = job.customers?.service_street && job.customers?.service_city;
-        return hasCoordinates;
+        // Check if customer has GPS coordinates in service locations
+        const serviceLocations = job.customers?.customer_service_locations;
+        const hasGPSCoordinates = Array.isArray(serviceLocations) && serviceLocations.some(
+          (location: any) => location.gps_coordinates
+        );
+        return hasGPSCoordinates;
       })
       .map(job => {
-        // Use mock coordinates for demonstration - in real app you'd geocode the address
-        const baseLat = 40.4406;
-        const baseLng = -79.9959;
-        const randomLat = baseLat + (Math.random() - 0.5) * 0.1;
-        const randomLng = baseLng + (Math.random() - 0.5) * 0.1;
+        // Get the first service location with GPS coordinates (prefer default)
+        const serviceLocations = job.customers?.customer_service_locations || [];
+        const safeServiceLocations = Array.isArray(serviceLocations) ? serviceLocations : [];
+        const defaultLocation = safeServiceLocations.find((loc: any) => loc.is_default && loc.gps_coordinates);
+        const firstLocationWithGPS = safeServiceLocations.find((loc: any) => loc.gps_coordinates);
+        const selectedLocation = defaultLocation || firstLocationWithGPS;
+        
+        if (!selectedLocation?.gps_coordinates) return null;
+        
+        // Parse GPS coordinates from format "(-81.83824,41.36749)" to [lng, lat]
+        const coordMatch = selectedLocation.gps_coordinates.match(/\(([^,]+),([^)]+)\)/);
+        if (!coordMatch) return null;
+        
+        const lng = parseFloat(coordMatch[1]);
+        const lat = parseFloat(coordMatch[2]);
+        
+        if (isNaN(lng) || isNaN(lat)) return null;
         
         const address = `${job.customers?.service_street || ''} ${job.customers?.service_city || ''} ${job.customers?.service_state || ''}`.trim();
         
@@ -228,7 +243,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [randomLng, randomLat]
+            coordinates: [lng, lat]
           },
           properties: {
             id: job.id,
@@ -254,6 +269,20 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
         features: features as any
       }
     });
+
+    // Auto-center map on job locations if we have pins
+    if (features.length > 0 && map.current) {
+      const bounds = new mapboxgl.LngLatBounds();
+      features.forEach((feature: any) => {
+        bounds.extend(feature.geometry.coordinates);
+      });
+      
+      // Fit map to show all job pins with padding
+      map.current.fitBounds(bounds, {
+        padding: 50,
+        maxZoom: 15
+      });
+    }
 
     map.current.addLayer({
       id: 'jobs',
