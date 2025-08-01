@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -101,30 +100,12 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [showTokenInput, setShowTokenInput] = useState(false);
 
-  // Get real job data and service locations separately
+  // Get real job data with embedded service locations
   const { data: jobs = [], isLoading } = useJobs({
     date: formatDateForQuery(currentDate),
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: selectedStatus !== 'all' ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
-  });
-
-  // Get service locations for customers that have jobs
-  const customerIds = jobs.map(job => job.customer_id).filter(Boolean);
-  const { data: serviceLocations = [] } = useQuery({
-    queryKey: ['customer-service-locations', customerIds],
-    queryFn: async () => {
-      if (customerIds.length === 0) return [];
-      
-      const { data, error } = await supabase
-        .from('customer_service_locations')
-        .select('customer_id, id, location_name, gps_coordinates, is_default')
-        .in('customer_id', customerIds);
-        
-      if (error) throw error;
-      return data;
-    },
-    enabled: customerIds.length > 0
   });
 
   useEffect(() => {
@@ -182,7 +163,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     if (mapLoaded && map.current?.isStyleLoaded()) {
       loadPins();
     }
-  }, [viewMode, mapLoaded, selectedDriver, jobs, serviceLocations]);
+  }, [viewMode, mapLoaded, selectedDriver, jobs]);
 
 
   const loadPins = () => {
@@ -230,21 +211,18 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     // Create features for jobs that have GPS coordinates
     const features = filteredJobs
       .filter(job => {
-        // Find service locations for this customer
-        const customerServiceLocations = serviceLocations.filter(
-          loc => loc.customer_id === job.customer_id
+        // Check if customer has service locations with GPS coordinates
+        const serviceLocations = job.customers?.customer_service_locations;
+        return Array.isArray(serviceLocations) && serviceLocations.some(
+          (location: any) => location.gps_coordinates
         );
-        return customerServiceLocations.some(loc => loc.gps_coordinates);
       })
       .map(job => {
-        // Find service locations for this customer
-        const customerServiceLocations = serviceLocations.filter(
-          loc => loc.customer_id === job.customer_id
-        );
-        
         // Get the first service location with GPS coordinates (prefer default)
-        const defaultLocation = customerServiceLocations.find(loc => loc.is_default && loc.gps_coordinates);
-        const firstLocationWithGPS = customerServiceLocations.find(loc => loc.gps_coordinates);
+        const serviceLocations = job.customers?.customer_service_locations || [];
+        const safeServiceLocations = Array.isArray(serviceLocations) ? serviceLocations : [];
+        const defaultLocation = safeServiceLocations.find((loc: any) => loc.is_default && loc.gps_coordinates);
+        const firstLocationWithGPS = safeServiceLocations.find((loc: any) => loc.gps_coordinates);
         const selectedLocation = defaultLocation || firstLocationWithGPS;
         
         if (!selectedLocation?.gps_coordinates) return null;
