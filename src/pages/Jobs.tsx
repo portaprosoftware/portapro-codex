@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
-import { EnhancedJobWizard } from '@/components/jobs/EnhancedJobWizard';
+import { SimpleJobWizard } from '@/components/jobs/SimpleJobWizard';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -668,80 +668,12 @@ const JobsPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Enhanced Job Creation Wizard */}
+      {/* Simple Job Creation Wizard */}
       {isJobWizardOpen && (
-        <EnhancedJobWizard 
-          onComplete={(data) => {
-            console.log('=== RAW WIZARD DATA ===');
-            console.log('Full wizard data received:', JSON.stringify(data, null, 2));
-            console.log('Selected Customer:', data.selectedCustomer);
-            console.log('Selected Driver:', data.selectedDriver);
-            console.log('Selected Vehicle:', data.selectedVehicle);
-            console.log('=== END RAW DATA ===');
-            
-            
-            // Convert wizard data to job creation format
-            const jobData = {
-              customer_id: data.selectedCustomer?.id,
-              job_type: data.jobType,
-              scheduled_date: data.deliveryDate?.toISOString().split('T')[0] || 
-                            data.serviceDate?.toISOString().split('T')[0] || 
-                            new Date().toISOString().split('T')[0],
-              scheduled_time: data.deliveryTime || data.serviceTime || '09:00',
-              notes: data.specialInstructions || '',
-              special_instructions: data.specialInstructions || '',
-              driver_id: data.selectedDriver?.id || undefined,
-              vehicle_id: data.selectedVehicle?.id || undefined,
-              timezone: data.timezone || 'America/New_York',
-              billing_method: data.consumablesBillingMethod || 'per-use',
-              subscription_plan: data.subscriptionEnabled ? 'basic' : undefined,
-              assigned_template_ids: data.selectedTemplateIds || [],
-              default_template_id: data.defaultTemplateId || undefined,
-              consumables_data: {
-                billing_method: data.consumablesBillingMethod,
-                selected_consumables: data.selectedConsumables,
-                selected_bundle: data.selectedBundle,
-                subscription_enabled: data.subscriptionEnabled
-              }
-            };
-
-            console.log('Transformed job data:', jobData);
-            
-            // Validate required fields
-            if (!jobData.customer_id) {
-              showToast({
-                title: "Error",
-                description: "Customer is required to create a job",
-                variant: "destructive",
-              });
-              return;
-            }
-
-            console.log('About to call createJobMutation.mutate with:', jobData);
-            
-            try {
-              createJobMutation.mutate(jobData, {
-                onSuccess: (result) => {
-                  console.log('Job creation successful:', result);
-                  setIsJobWizardOpen(false);
-                },
-                onError: (error) => {
-                  console.error('Job creation failed:', error);
-                  showToast({
-                    title: "Error Creating Job",
-                    description: error?.message || "Failed to create job. Please try again.",
-                    variant: "destructive",
-                  });
-                }
-              });
-            } catch (error) {
-              console.error('Error calling createJobMutation:', error);
-              showToast({
-                title: "Error",
-                description: "Failed to create job. Please try again.",
-                variant: "destructive",
-              });
-            }
+        <SimpleJobWizard 
+          onComplete={() => {
+            console.log('Job created successfully');
+            setIsJobWizardOpen(false);
           }}
           onCancel={() => setIsJobWizardOpen(false)}
         />

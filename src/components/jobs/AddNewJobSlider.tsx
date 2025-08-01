@@ -1,20 +1,20 @@
 
 import React from 'react';
-import { EnhancedJobWizard } from './EnhancedJobWizard';
+import { SimpleJobWizard } from './SimpleJobWizard';
 
 interface AddNewJobSliderProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Legacy component - now uses EnhancedJobWizard
+// Simplified component - now uses SimpleJobWizard
 export const AddNewJobSlider: React.FC<AddNewJobSliderProps> = ({ open, onOpenChange }) => {
   if (!open) return null;
   
   return (
-    <EnhancedJobWizard 
-      onComplete={(data) => {
-        console.log('Job creation data:', data);
+    <SimpleJobWizard 
+      onComplete={() => {
+        console.log('Job created successfully');
         onOpenChange(false);
       }}
       onCancel={() => onOpenChange(false)}
