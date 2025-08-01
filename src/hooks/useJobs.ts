@@ -188,7 +188,7 @@ export function useCreateJob() {
           .from('vehicles')
           .select('id')
           .eq('id', cleanJobData.vehicle_id)
-          .single();
+          .maybeSingle();
         
         if (!vehicleExists) {
           console.warn('Vehicle ID not found, removing from job data:', cleanJobData.vehicle_id);
@@ -202,7 +202,7 @@ export function useCreateJob() {
           .from('profiles')
           .select('id')
           .eq('id', cleanJobData.driver_id)
-          .single();
+          .maybeSingle();
         
         if (!driverExists) {
           console.warn('Driver ID not found, removing from job data:', cleanJobData.driver_id);

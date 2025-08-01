@@ -139,7 +139,8 @@ export const EnhancedJobWizard: React.FC<EnhancedJobWizardProps> = ({
     selectedServices: [],
     servicesSubtotal: 0,
     selectedTemplateIds: [],
-    defaultTemplateId: undefined,
+    selectedDriver: undefined,
+    selectedVehicle: undefined,
     hasConflicts: false,
     specialInstructions: '',
     additionalContacts: []
