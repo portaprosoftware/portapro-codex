@@ -133,7 +133,12 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
       <div className="flex items-center mb-2">
         <Clock className="w-3 h-3 text-gray-400 mr-1 flex-shrink-0" />
         <span className="text-xs text-gray-600">
-          {job.scheduled_time || '9:00 AM'}
+          {job.scheduled_time ? (() => {
+            const [hours, minutes] = job.scheduled_time.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+            return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+          })() : 'No specific time'}
         </span>
       </div>
 
