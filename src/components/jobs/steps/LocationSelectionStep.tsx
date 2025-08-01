@@ -171,123 +171,53 @@ export function LocationSelectionStep() {
         </div>
       )}
 
-      {/* Create New Location */}
+      {/* Simple Address Input */}
       <div className="space-y-4">
-        <Button
-          variant="outline"
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="w-full"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create New Location
-        </Button>
+        <Label className="text-base font-medium">Or Enter Address</Label>
+        <Card>
+          <CardContent className="p-4 space-y-4">
+            <div>
+              <Label>Street Address</Label>
+              <Input
+                placeholder="Enter street address"
+                value={newLocation.street}
+                onChange={(e) => setNewLocation(prev => ({ ...prev, street: e.target.value }))}
+              />
+            </div>
 
-        {showCreateForm && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Create New Location</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label>Location Name</Label>
+                <Label>City</Label>
                 <Input
-                  placeholder="e.g., Main Office, Construction Site A"
-                  value={newLocation.locationName}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, locationName: e.target.value }))}
+                  value={newLocation.city}
+                  onChange={(e) => setNewLocation(prev => ({ ...prev, city: e.target.value }))}
                 />
               </div>
-
               <div>
-                <Label>Address</Label>
-                <AddressAutocomplete
-                  value={undefined}
-                  onChange={handleAddressChange}
-                  placeholder="Enter street address"
-                  className="w-full"
+                <Label>State</Label>
+                <Input
+                  value={newLocation.state}
+                  onChange={(e) => setNewLocation(prev => ({ ...prev, state: e.target.value }))}
                 />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>City</Label>
-                  <Input
-                    value={newLocation.city}
-                    onChange={(e) => setNewLocation(prev => ({ ...prev, city: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label>State</Label>
-                  <Input
-                    value={newLocation.state}
-                    onChange={(e) => setNewLocation(prev => ({ ...prev, state: e.target.value }))}
-                  />
-                </div>
-              </div>
-
               <div>
-                <Label>ZIP Code</Label>
+                <Label>ZIP</Label>
                 <Input
                   value={newLocation.zip}
                   onChange={(e) => setNewLocation(prev => ({ ...prev, zip: e.target.value }))}
-                  className="w-32"
                 />
               </div>
+            </div>
 
-              <div>
-                <Label>Contact Person (Optional)</Label>
-                <Input
-                  placeholder="On-site contact name"
-                  value={newLocation.contactPerson}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, contactPerson: e.target.value }))}
-                />
-              </div>
-
-              <div>
-                <Label>Contact Phone (Optional)</Label>
-                <Input
-                  placeholder="Contact phone number"
-                  value={newLocation.contactPhone}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, contactPhone: e.target.value }))}
-                />
-              </div>
-
-              <div>
-                <Label>Access Instructions (Optional)</Label>
-                <Textarea
-                  placeholder="Gate codes, parking instructions, etc."
-                  value={newLocation.accessInstructions}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, accessInstructions: e.target.value }))}
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={newLocation.saveToProfile}
-                  onCheckedChange={(checked) => setNewLocation(prev => ({ ...prev, saveToProfile: checked }))}
-                />
-                <Label className="text-sm">Save this location to customer profile</Label>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleCreateLocation}
-                  disabled={!isNewLocationValid()}
-                  className="flex-1"
-                >
-                  Use This Location
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowCreateForm(false)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+            <Button
+              onClick={handleCreateLocation}
+              disabled={!isNewLocationValid()}
+              className="w-full"
+            >
+              Use This Address
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Special Instructions */}
