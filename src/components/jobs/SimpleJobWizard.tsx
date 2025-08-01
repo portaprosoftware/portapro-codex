@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { useCreateJob } from '@/hooks/useJobs';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Step Components
@@ -59,6 +61,36 @@ export const SimpleJobWizard: React.FC<SimpleJobWizardProps> = ({
   });
 
   const createJobMutation = useCreateJob();
+
+  // Fetch company settings for default address
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('company_street, company_street2, company_city, company_state, company_zipcode')
+        .single();
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Pre-populate address when reaching step 3 and no address is set
+  useEffect(() => {
+    if (currentStep === 3 && !data.address && companySettings) {
+      const companyAddress = [
+        companySettings.company_street,
+        companySettings.company_street2,
+        companySettings.company_city,
+        companySettings.company_state,
+        companySettings.company_zipcode
+      ].filter(Boolean).join(', ');
+      
+      if (companyAddress) {
+        updateStepData({ address: companyAddress });
+      }
+    }
+  }, [currentStep, data.address, companySettings]);
 
   const updateStepData = (stepData: Partial<SimpleJobData>) => {
     setData(prev => ({ ...prev, ...stepData }));

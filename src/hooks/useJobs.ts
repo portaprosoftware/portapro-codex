@@ -164,12 +164,42 @@ export function useCreateJob() {
 
       const { consumables_data, partial_pickups, date_returned, return_time, ...cleanJobData } = jobData;
 
+      // Get company settings for job numbering
+      const { data: companySettings } = await supabase
+        .from('company_settings')
+        .select('*')
+        .single();
+
+      // Generate job number based on job type
+      let jobNumber = 'TEMP-001';
+      let nextNumberField = '';
+      
+      switch (cleanJobData.job_type) {
+        case 'delivery':
+          jobNumber = `${companySettings?.delivery_prefix || 'DEL'}-${String(companySettings?.next_delivery_number || 1).padStart(3, '0')}`;
+          nextNumberField = 'next_delivery_number';
+          break;
+        case 'pickup':
+          jobNumber = `${companySettings?.pickup_prefix || 'PKP'}-${String(companySettings?.next_pickup_number || 1).padStart(3, '0')}`;
+          nextNumberField = 'next_pickup_number';
+          break;
+        case 'service':
+          jobNumber = `${companySettings?.service_prefix || 'SVC'}-${String(companySettings?.next_service_number || 1).padStart(3, '0')}`;
+          nextNumberField = 'next_service_number';
+          break;
+        case 'on-site-survey':
+          jobNumber = `SURVEY-${String(companySettings?.next_service_number || 1).padStart(3, '0')}`;
+          nextNumberField = 'next_service_number';
+          break;
+      }
+
       // Create main job record with clean data
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
           customer_id: cleanJobData.customer_id,
           job_type: cleanJobData.job_type,
+          job_number: jobNumber,
           scheduled_date: cleanJobData.scheduled_date,
           scheduled_time: cleanJobData.scheduled_time || '09:00',
           status: 'assigned',
@@ -181,6 +211,15 @@ export function useCreateJob() {
         })
         .select()
         .single();
+
+      // Update the next number in company settings
+      if (nextNumberField && companySettings) {
+        const currentNumber = companySettings[nextNumberField] || 1;
+        await supabase
+          .from('company_settings')
+          .update({ [nextNumberField]: currentNumber + 1 })
+          .eq('id', companySettings.id);
+      }
 
       if (error) {
         console.error('Database error during job insertion:', error);
