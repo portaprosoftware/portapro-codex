@@ -2,7 +2,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useOfflineSync } from "./useOfflineSync";
 import { JobWizardData } from "@/contexts/JobWizardContext";
 
 async function processJobConsumables(jobId: string, consumablesData: any) {
@@ -123,18 +122,9 @@ export function useJobs(filters?: {
 export function useCreateJob() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { addToQueue, isOnline } = useOfflineSync();
 
   return useMutation({
     mutationFn: async (jobData: JobWizardData) => {
-      if (!isOnline) {
-        addToQueue({
-          type: 'job_creation',
-          jobId: crypto.randomUUID(),
-          data: jobData
-        });
-        return null;
-      }
 
       // Get company settings for job numbering
       const { data: companySettings } = await supabase
@@ -200,17 +190,10 @@ export function useCreateJob() {
       return newJob;
     },
     onSuccess: (data) => {
-      if (data) {
-        toast({
-          title: "Job Created",
-          description: `Job ${data.job_number} has been created successfully`,
-        });
-      } else {
-        toast({
-          title: "Queued for Sync",
-          description: "Job will be created when connection is restored",
-        });
-      }
+      toast({
+        title: "Job Created",
+        description: `Job ${data.job_number} has been created successfully`,
+      });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
     onError: (error) => {
@@ -227,19 +210,9 @@ export function useCreateJob() {
 export function useUpdateJobStatus() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { addToQueue, isOnline } = useOfflineSync();
 
   return useMutation({
     mutationFn: async ({ jobId, status }: { jobId: string; status: string }) => {
-      if (!isOnline) {
-        addToQueue({
-          type: 'status_update',
-          jobId,
-          data: { status }
-        });
-        return null;
-      }
-
       const { data, error } = await supabase
         .from('jobs')
         .update({ 
@@ -254,17 +227,10 @@ export function useUpdateJobStatus() {
       return data;
     },
     onSuccess: (data) => {
-      if (data) {
-        toast({
-          title: "Status Updated",
-          description: `Job status updated to ${data.status}`,
-        });
-      } else {
-        toast({
-          title: "Queued for Sync",
-          description: "Status will update when connection is restored",
-        });
-      }
+      toast({
+        title: "Status Updated",
+        description: `Job status updated to ${data.status}`,
+      });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
     onError: (error) => {

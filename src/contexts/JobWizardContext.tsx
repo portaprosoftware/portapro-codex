@@ -116,10 +116,10 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         break;
       case 2:
         if (!state.data.job_type) {
-          errors.jobType = 'Please select a job type';
+          errors.job_type = 'Please select a job type';
         }
         if (!state.data.scheduled_date) {
-          errors.scheduledDate = 'Please select a scheduled date';
+          errors.scheduled_date = 'Please select a scheduled date';
         }
         break;
       case 3:

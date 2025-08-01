@@ -44,6 +44,7 @@ const jobTypes = [
 
 export function JobTypeSchedulingStep() {
   const { state, updateData } = useJobWizard();
+  const { errors } = state;
 
   const handleJobTypeSelect = (jobType: string) => {
     updateData({ job_type: jobType as any });
@@ -115,8 +116,8 @@ export function JobTypeSchedulingStep() {
             );
           })}
         </div>
-        {state.errors.jobType && (
-          <p className="text-sm text-destructive">{state.errors.jobType}</p>
+        {errors.job_type && (
+          <p className="text-sm text-destructive">{errors.job_type}</p>
         )}
       </div>
 
@@ -134,8 +135,8 @@ export function JobTypeSchedulingStep() {
             />
           </CardContent>
         </Card>
-        {state.errors.scheduledDate && (
-          <p className="text-sm text-destructive">{state.errors.scheduledDate}</p>
+        {errors.scheduled_date && (
+          <p className="text-sm text-destructive">{errors.scheduled_date}</p>
         )}
       </div>
 
@@ -166,8 +167,8 @@ export function JobTypeSchedulingStep() {
           </Card>
         )}
 
-        {state.errors.scheduledTime && (
-          <p className="text-sm text-destructive">{state.errors.scheduledTime}</p>
+        {errors.scheduled_time && (
+          <p className="text-sm text-destructive">{errors.scheduled_time}</p>
         )}
       </div>
 
