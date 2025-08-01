@@ -115,7 +115,7 @@ export const Landing: React.FC = () => {
   // Image arrays for carousels
   const aiPanelImages = ['/lovable-uploads/0aaf6ddd-b2a4-4d47-bbda-6a1a4cd07b9a.png'];
   const googleAIImages = ['/lovable-uploads/3a4ac684-777f-4bb7-8c3f-7ea6929db26c.png'];
-  const jobWizardImages = ['photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21', 'photo-1523712999610-f77fbcfc3843'];
+  const jobWizardImages = ['/lovable-uploads/000da128-8181-457e-85c7-8dcbc26734ee.png', '/lovable-uploads/0ac8d222-a55d-4abc-aab0-e9b34dc983e5.png', '/lovable-uploads/baad8a96-f346-4808-bd4b-641dc717fb89.png'];
   const inventoryImages = ['/lovable-uploads/4f491786-7f7a-4dc3-bb83-a919b928c766.png', '/lovable-uploads/b9ab637c-b429-4038-be9d-f8f3b5f6a4eb.png', '/lovable-uploads/540cf6a3-2a5b-465b-ac69-ca6f4645a265.png'];
   const teamImages = ['/lovable-uploads/12ff3d89-29f4-46b2-810b-d4cf0d3d9ca3.png', '/lovable-uploads/512cf733-6eb4-4b1d-9a9c-46787e6e86d6.png', '/lovable-uploads/5e758ed0-03a4-40d8-8ece-677fe1fb285a.png'];
   const reportingImages = ['photo-1487058792275-0ad4aaf24ca7', 'photo-1470813740244-df37b8c1edcb', 'photo-1500375592092-40eb2168fd21'];
