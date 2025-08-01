@@ -24,9 +24,9 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
   onUpdate
 }) => {
   const [hasSpecificTime, setHasSpecificTime] = useState(!!data.time);
-  const [hour, setHour] = useState('9');
-  const [minute, setMinute] = useState('00');
-  const [period, setPeriod] = useState('AM');
+  const [hour, setHour] = useState('');
+  const [minute, setMinute] = useState('');
+  const [period, setPeriod] = useState('');
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -37,14 +37,11 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
 
   const handleTimeToggle = (enabled: boolean) => {
     setHasSpecificTime(enabled);
-    if (enabled) {
-      // Only set time if user actually selects time components
-      const timeString = `${hour}:${minute} ${period}`;
-      onUpdate({ ...data, time: timeString });
-    } else {
+    if (!enabled) {
       // Clear time when disabling
       onUpdate({ ...data, time: '' });
     }
+    // Don't set any default time when enabling - wait for user to select
   };
 
   const updateTime = (newHour?: string, newMinute?: string, newPeriod?: string) => {
@@ -56,9 +53,13 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
     if (newMinute) setMinute(newMinute);
     if (newPeriod) setPeriod(newPeriod);
     
-    if (hasSpecificTime) {
+    // Only set time if all three values are selected
+    if (hasSpecificTime && h && m && p) {
       const timeString = `${h}:${m} ${p}`;
       onUpdate({ ...data, time: timeString });
+    } else if (hasSpecificTime) {
+      // Clear time if not all values are set
+      onUpdate({ ...data, time: '' });
     }
   };
 
