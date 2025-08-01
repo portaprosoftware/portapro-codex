@@ -33,17 +33,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     if (!validateCurrentStep()) return;
 
     try {
-      const jobData = {
-        customer_id: state.data.customer_id!,
-        job_type: state.data.job_type!,
-        scheduled_date: state.data.scheduled_date!,
-        scheduled_time: state.data.scheduled_time,
-        notes: state.data.notes,
-        special_instructions: state.data.special_instructions,
-        selected_coordinate_ids: state.data.selected_coordinate_ids,
-      };
-
-      await createJobMutation.mutateAsync(jobData);
+      await createJobMutation.mutateAsync(state.data);
       toast.success('Job created successfully!');
       reset();
       onClose();

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOfflineSync } from "./useOfflineSync";
+import { JobWizardData } from "@/contexts/JobWizardContext";
 
 async function processJobConsumables(jobId: string, consumablesData: any) {
   const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
@@ -75,34 +76,7 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
   }
 }
 
-interface JobFormData {
-  customer_id: string;
-  job_type: 'delivery' | 'pickup' | 'service' | 'on-site-survey';
-  scheduled_date: string;
-  scheduled_time?: string;
-  notes?: string;
-  special_instructions?: string;
-  driver_id?: string;
-  vehicle_id?: string;
-  timezone?: string;
-  billing_method?: string;
-  subscription_plan?: string;
-  consumables_data?: any;
-  assigned_template_ids?: string[];
-  default_template_id?: string;
-  // New pickup scheduling fields
-  date_returned?: string;
-  return_time?: string;
-  partial_pickups?: Array<{
-    id: string;
-    date: string;
-    time: string;
-    addTime: boolean;
-    label: string;
-    quantity?: number;
-    notes?: string;
-  }>;
-}
+// JobFormData interface removed - now using JobWizardData directly
 
 export function useJobs(filters?: {
   date?: string;
@@ -152,7 +126,7 @@ export function useCreateJob() {
   const { addToQueue, isOnline } = useOfflineSync();
 
   return useMutation({
-    mutationFn: async (jobData: JobFormData) => {
+    mutationFn: async (jobData: JobWizardData) => {
       if (!isOnline) {
         addToQueue({
           type: 'job_creation',
@@ -161,8 +135,6 @@ export function useCreateJob() {
         });
         return null;
       }
-
-      const { consumables_data, partial_pickups, date_returned, return_time, ...cleanJobData } = jobData;
 
       // Get company settings for job numbering
       const { data: companySettings } = await supabase
@@ -174,7 +146,7 @@ export function useCreateJob() {
       let jobNumber = 'TEMP-001';
       let nextNumberField = '';
       
-      switch (cleanJobData.job_type) {
+      switch (jobData.job_type) {
         case 'delivery':
           jobNumber = `${companySettings?.delivery_prefix || 'DEL'}-${String(companySettings?.next_delivery_number || 1).padStart(3, '0')}`;
           nextNumberField = 'next_delivery_number';
@@ -193,21 +165,20 @@ export function useCreateJob() {
           break;
       }
 
-      // Create main job record with clean data
+      // Create main job record - direct database insertion with minimal processing
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
-          customer_id: cleanJobData.customer_id,
-          job_type: cleanJobData.job_type,
+          customer_id: jobData.customer_id!,
+          job_type: jobData.job_type!,
           job_number: jobNumber,
-          scheduled_date: cleanJobData.scheduled_date,
-          scheduled_time: cleanJobData.scheduled_time || null,
+          scheduled_date: jobData.scheduled_date!,
+          scheduled_time: jobData.scheduled_time || null,
           status: 'assigned',
           timezone: jobData.timezone || 'America/New_York',
-          notes: cleanJobData.notes || '',
-          special_instructions: cleanJobData.special_instructions || '',
-          driver_id: cleanJobData.driver_id || null,
-          vehicle_id: cleanJobData.vehicle_id || null
+          notes: jobData.notes || '',
+          special_instructions: jobData.special_instructions || '',
+          selected_coordinate_ids: jobData.selected_coordinate_ids || [],
         })
         .select()
         .single();
@@ -224,51 +195,6 @@ export function useCreateJob() {
       if (error) {
         console.error('Database error during job insertion:', error);
         throw error;
-      }
-
-      // Create pickup events for partial pickups
-      if (partial_pickups && partial_pickups.length > 0) {
-        const pickupEvents = partial_pickups.map((pickup, index) => ({
-          job_id: newJob.id,
-          pickup_type: 'partial',
-          scheduled_date: pickup.date,
-          scheduled_time: pickup.addTime ? pickup.time : null,
-          quantity: pickup.quantity || 1,
-          notes: pickup.notes || '',
-          sequence_order: index + 1
-        }));
-
-        const { error: eventsError } = await supabase
-          .from('job_pickup_events')
-          .insert(pickupEvents);
-
-        if (eventsError) {
-          console.error('Error creating pickup events:', eventsError);
-        }
-      }
-
-      // Create final pickup event if return date is specified
-      if (date_returned) {
-        const { error: finalPickupError } = await supabase
-          .from('job_pickup_events')
-          .insert({
-            job_id: newJob.id,
-            pickup_type: 'final',
-            scheduled_date: date_returned,
-            scheduled_time: return_time || null,
-            quantity: 1,
-            notes: 'Final pickup for all remaining equipment',
-            sequence_order: (partial_pickups?.length || 0) + 1
-          });
-
-        if (finalPickupError) {
-          console.error('Error creating final pickup event:', finalPickupError);
-        }
-      }
-
-      // Handle consumables processing
-      if (consumables_data && newJob) {
-        await processJobConsumables(newJob.id, consumables_data);
       }
 
       return newJob;
