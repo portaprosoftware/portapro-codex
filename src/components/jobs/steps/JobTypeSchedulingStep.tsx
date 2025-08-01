@@ -11,6 +11,7 @@ import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 
 const jobTypes = [
   {
@@ -53,11 +54,8 @@ export function JobTypeSchedulingStep() {
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      // Use formatDateForQuery to avoid timezone issues
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      updateData({ scheduled_date: `${year}-${month}-${day}` });
+      const formattedDate = formatDateForQuery(date);
+      updateData({ scheduled_date: formattedDate });
     }
   };
 
@@ -67,7 +65,7 @@ export function JobTypeSchedulingStep() {
 
   const handleTimeToggle = (enabled: boolean) => {
     updateData({ 
-      scheduled_time: enabled ? null : null
+      scheduled_time: !enabled ? null : state.data.scheduled_time
     });
   };
 
@@ -200,7 +198,7 @@ export function JobTypeSchedulingStep() {
               </p>
               <p>
                 <span className="font-medium">Date:</span>{' '}
-                {format(new Date(state.data.scheduled_date), 'EEEE, MMMM d, yyyy')}
+                {formatDateSafe(state.data.scheduled_date, 'long')}
               </p>
               {state.data.scheduled_time && (
                 <p>
