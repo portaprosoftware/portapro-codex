@@ -38,9 +38,9 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
   const handleTimeToggle = (enabled: boolean) => {
     setHasSpecificTime(enabled);
     if (enabled) {
-      // Set default time when enabling
-      const defaultTime = `${hour}:${minute} ${period}`;
-      onUpdate({ ...data, time: defaultTime });
+      // Only set time if user actually selects time components
+      const timeString = `${hour}:${minute} ${period}`;
+      onUpdate({ ...data, time: timeString });
     } else {
       // Clear time when disabling
       onUpdate({ ...data, time: '' });
@@ -145,14 +145,15 @@ export const SimpleDateTimeStep: React.FC<SimpleDateTimeStepProps> = ({
       </div>
 
       {/* Summary */}
-      {data.date && data.time && (
+      {data.date && (
         <Card className="bg-muted/50">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-sm">
               <CalendarIcon className="h-4 w-4" />
               <span className="font-medium">Scheduled for:</span>
               <span>
-                {new Date(data.date).toLocaleDateString()} at {data.time}
+                {new Date(data.date + 'T00:00:00').toLocaleDateString()}
+                {data.time && ` at ${data.time}`}
               </span>
             </div>
           </CardContent>

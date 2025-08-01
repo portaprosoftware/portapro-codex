@@ -135,7 +135,7 @@ export const SimpleJobWizard: React.FC<SimpleJobWizardProps> = ({
         customer_id: data.customer.id,
         job_type: data.jobType as 'delivery' | 'pickup' | 'service' | 'on-site-survey',
         scheduled_date: data.date,
-        scheduled_time: data.time,
+        scheduled_time: data.time || null, // Leave null if no time specified
         timezone: data.timezone,
         special_instructions: data.specialInstructions,
         status: 'scheduled' as const
