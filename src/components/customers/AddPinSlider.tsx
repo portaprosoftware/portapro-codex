@@ -171,12 +171,13 @@ export function AddPinSlider({
         color: '#ef4444'
       }).setLngLat([lng, lat]).addTo(map.current!);
 
-      // Update pin data
+      // Update pin data and auto-disable pin selector
       setFormData(prev => ({
         ...prev,
         latitude: lat,
         longitude: lng
       }));
+      setIsPinModeActive(false);
     });
     return () => {
       // Cleanup handled in handleClose
@@ -200,10 +201,9 @@ export function AddPinSlider({
       // Force style change and re-render
       map.current.setStyle(newStyle);
       map.current.once('styledata', () => {
-        // Re-add markers after style loads
+        // Re-add address marker after style loads (only if we have coordinates and no existing marker)
         const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
-        if (markerCoords && addressMarker.current) {
-          addressMarker.current.remove();
+        if (markerCoords && !addressMarker.current) {
           addressMarker.current = new mapboxgl.Marker({
             color: '#3b82f6',
             scale: 1.2
@@ -334,7 +334,7 @@ export function AddPinSlider({
             </div>
 
             {/* Map Container */}
-            <div className="flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px]">
+            <div className={`flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px] ${isPinModeActive ? 'cursor-crosshair' : ''}`}>
               {mapLoading && <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
                   <div className="flex items-center gap-2 text-foreground">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
