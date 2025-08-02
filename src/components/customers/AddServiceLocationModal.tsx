@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -56,6 +57,19 @@ export function AddServiceLocationModal({
 }: AddServiceLocationModalProps) {
   const { toast } = useToast();
   
+  // Get current location count for this customer
+  const { data: locationCount = 0 } = useQuery({
+    queryKey: ['customer-service-locations-count', customerId],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('customer_service_locations')
+        .select('*', { count: 'exact', head: true })
+        .eq('customer_id', customerId);
+      return count || 0;
+    },
+    enabled: !!customerId && isOpen,
+  });
+  
   const form = useForm<ServiceLocationForm>({
     resolver: zodResolver(serviceLocationSchema),
     defaultValues: {
@@ -74,14 +88,18 @@ export function AddServiceLocationModal({
     },
   });
 
+  // If this is the first location, automatically set it as default
+  useEffect(() => {
+    if (isOpen && locationCount === 0) {
+      form.setValue('is_default', true);
+    }
+  }, [isOpen, locationCount, form]);
+
   const onSubmit = async (data: ServiceLocationForm) => {
     try {
-      // If this is being set as default, remove default from other locations
-      if (data.is_default) {
-        await supabase
-          .from('customer_service_locations')
-          .update({ is_default: false })
-          .eq('customer_id', customerId);
+      // If this is the first location, it must be default
+      if (locationCount === 0) {
+        data.is_default = true;
       }
 
       const { error } = await supabase
@@ -103,6 +121,11 @@ export function AddServiceLocationModal({
         });
 
       if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Service location added successfully",
+      });
 
       form.reset();
       onSuccess();
@@ -301,9 +324,15 @@ export function AddServiceLocationModal({
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={locationCount === 0} // First location must be default
                       />
                     </FormControl>
-                    <FormLabel>Set as Default Location</FormLabel>
+                    <FormLabel>
+                      Set as Default Location
+                      {locationCount === 0 && (
+                        <span className="text-xs text-muted-foreground ml-1">(required for first location)</span>
+                      )}
+                    </FormLabel>
                   </FormItem>
                 )}
               />
