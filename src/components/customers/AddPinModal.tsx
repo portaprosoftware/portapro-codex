@@ -32,6 +32,43 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     longitude: null as number | null,
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [addressCoordinates, setAddressCoordinates] = useState<[number, number] | null>(null);
+
+  // Build full address string
+  const fullAddress = [
+    serviceLocation?.street,
+    serviceLocation?.street2,
+    serviceLocation?.city,
+    serviceLocation?.state,
+    serviceLocation?.zip
+  ].filter(Boolean).join(', ');
+
+  // Geocode address if no GPS coordinates exist
+  useEffect(() => {
+    const geocodeAddress = async () => {
+      if (!mapboxToken || !fullAddress || addressCoordinates) return;
+      
+      try {
+        const { data } = await supabase.functions.invoke('mapbox-geocoding', {
+          body: { 
+            query: fullAddress,
+            limit: 1 
+          }
+        });
+        
+        if (data?.suggestions?.[0]?.coordinates) {
+          const coords = data.suggestions[0].coordinates;
+          setAddressCoordinates([coords.longitude, coords.latitude]);
+        }
+      } catch (error) {
+        console.error('Error geocoding address:', error);
+      }
+    };
+
+    if (isOpen && mapboxToken && !serviceLocation?.gps_coordinates) {
+      geocodeAddress();
+    }
+  }, [isOpen, mapboxToken, fullAddress, serviceLocation?.gps_coordinates, addressCoordinates]);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -59,20 +96,22 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
 
-    // Default center - try to use service location coordinates
+    // Default center - try multiple sources for location
     let center: [number, number] = [-98.5795, 39.8283]; // US center as fallback
     let zoom = 4;
     
-    // Check for GPS coordinates in the service location
-    if (serviceLocation?.gps_coordinates) {
-      const coords = serviceLocation.gps_coordinates;
-      if (coords.x && coords.y) {
-        center = [coords.x, coords.y];
-        zoom = 15;
-      }
-    } else if (serviceLocation?.street && serviceLocation?.city && serviceLocation?.state) {
-      // If no GPS coordinates, try to center on city/state for better starting point
-      // This is a basic approximation - you might want to geocode the address
+    // Priority 1: Use existing GPS coordinates
+    if (serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y) {
+      center = [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y];
+      zoom = 15;
+    } 
+    // Priority 2: Use geocoded coordinates
+    else if (addressCoordinates) {
+      center = addressCoordinates;
+      zoom = 15;
+    }
+    // Priority 3: If we have address but no coordinates, use broader zoom
+    else if (fullAddress) {
       zoom = 10;
     }
 
@@ -90,15 +129,19 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Add address marker if coordinates exist
-    if (serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y) {
+    const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y
+      ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number]
+      : addressCoordinates;
+      
+    if (markerCoords) {
       addressMarker.current = new mapboxgl.Marker({ 
         color: '#3b82f6',
         scale: 1.2
       })
-        .setLngLat([serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y])
+        .setLngLat(markerCoords)
         .setPopup(new mapboxgl.Popup().setHTML(`
           <strong>${serviceLocation.location_name}</strong><br/>
-          <small>Service Location Address</small>
+          <small>${fullAddress}</small>
         `))
         .addTo(map.current);
     }
@@ -130,7 +173,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         map.current.remove();
       }
     };
-  }, [isOpen, mapboxToken, serviceLocation, mapStyle]);
+  }, [isOpen, mapboxToken, serviceLocation, mapStyle, addressCoordinates, fullAddress]);
 
   // Update map style when changed
   useEffect(() => {
@@ -194,8 +237,14 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MapPin className="w-5 h-5" />
-            Add GPS Drop-Pin - {serviceLocation?.location_name}
+            Add GPS Drop-Pin
           </DialogTitle>
+          <div className="text-sm text-muted-foreground mt-2">
+            <strong>{serviceLocation?.location_name}</strong>
+            {fullAddress && (
+              <div className="mt-1">{fullAddress}</div>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="flex-1 flex gap-6">
