@@ -6,6 +6,7 @@ import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, ExternalLink, Satellite, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -381,90 +382,71 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         </div>
       </div>
       
-      {/* Multiple Jobs Selection Slide Panel */}
-      {selectedJobsAtLocation.length > 0 && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/20 z-30"
-            onClick={() => setSelectedJobsAtLocation([])}
-          />
+      
+      {/* Multiple Jobs Modal */}
+      <Dialog open={selectedJobsAtLocation.length > 0} onOpenChange={() => setSelectedJobsAtLocation([])}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>
+              Jobs at Location - {selectedJobsAtLocation.length} job{selectedJobsAtLocation.length !== 1 ? 's' : ''} found
+            </DialogTitle>
+          </DialogHeader>
           
-          {/* Slide Panel from Right */}
-          <div className="absolute top-0 right-0 h-full w-80 bg-white shadow-2xl border-l z-40 transform transition-transform duration-300 ease-in-out">
-            {/* Header */}
-            <div className="p-4 border-b bg-gray-50">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-semibold text-lg">Jobs at Location</h3>
-                  <p className="text-sm text-gray-600">
-                    {selectedJobsAtLocation.length} job{selectedJobsAtLocation.length !== 1 ? 's' : ''} found
-                  </p>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setSelectedJobsAtLocation([])}
-                  className="h-8 w-8 p-0"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            {/* Jobs List */}
-            <div className="h-full overflow-y-auto pb-20">
-              {selectedJobsAtLocation.map((job, index) => (
-                <div key={job.id} className="p-4 border-b hover:bg-gray-50 transition-colors">
-                  <div className="space-y-3">
-                    {/* Job Header */}
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-lg">{job.job_number}</span>
-                      <div className="flex gap-1">
-                        <Badge className={`${getJobTypeColor(job.job_type)} text-white`}>
-                          {job.job_type}
-                        </Badge>
-                        <Badge className={getStatusColor(job.status)} variant="outline">
-                          {job.status}
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    {/* Customer Info */}
+          <div className="overflow-y-auto max-h-[60vh] space-y-4">
+            {selectedJobsAtLocation.map((job, index) => (
+              <Card key={job.id} className="p-4">
+                <div className="space-y-3">
+                  {/* Job Header */}
+                  <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium text-gray-900">{job.customers?.name}</p>
-                      <p className="text-sm text-gray-600">
+                      <h4 className="font-semibold text-lg">{job.job_number}</h4>
+                      <p className="text-gray-600">{job.customers?.name}</p>
+                      <p className="text-sm text-gray-500">
                         {job.scheduled_date && format(new Date(job.scheduled_date), 'MMM d, yyyy')}
                         {job.scheduled_time && ` at ${job.scheduled_time}`}
                       </p>
                     </div>
-                    
-                    {/* Driver Info */}
-                    {job.profiles && (
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">Driver:</span> {job.profiles.first_name} {job.profiles.last_name}
-                      </div>
-                    )}
-                    
-                    {/* Action Button */}
-                    <Button 
-                      onClick={() => {
-                        setSelectedJobsAtLocation([]);
-                        setSelectedJobForModal(job.id);
-                      }}
-                      className="w-full"
-                      size="sm"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Job Details
-                    </Button>
+                    <div className="flex gap-2">
+                      <Badge 
+                        variant="secondary"
+                        className="text-white"
+                        style={{ backgroundColor: getJobTypeColor(job.job_type) }}
+                      >
+                        {job.job_type}
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className={getStatusColor(job.status)}
+                      >
+                        {job.status}
+                      </Badge>
+                    </div>
                   </div>
+                  
+                  {/* Driver Info */}
+                  {job.profiles && (
+                    <p className="text-sm">
+                      <span className="font-medium">Driver:</span> {job.profiles.first_name} {job.profiles.last_name}
+                    </p>
+                  )}
+                  
+                  {/* Action Button */}
+                  <Button 
+                    onClick={() => {
+                      setSelectedJobsAtLocation([]);
+                      setSelectedJobForModal(job.id);
+                    }}
+                    className="w-full"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View Job Details
+                  </Button>
                 </div>
-              ))}
-            </div>
+              </Card>
+            ))}
           </div>
-        </>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Job Detail Modal */}
       <JobDetailModal
