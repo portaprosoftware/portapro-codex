@@ -15,7 +15,6 @@ interface Product {
   stock_total: number;
   stock_in_service: number;
   default_price_per_day?: number;
-  category?: string;
   image_url?: string;
 }
 
@@ -39,7 +38,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, description, stock_total, stock_in_service, default_price_per_day, image_url')
         .eq('track_inventory', true)
         .order('name');
       
@@ -166,10 +165,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
                       />
                       <Package className="w-8 h-8 text-muted-foreground hidden" />
                     </div>
-                    <h4 className="font-medium text-sm truncate">{product.name}</h4>
-                    {product.category && (
-                      <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                    )}
+                     <h4 className="font-medium text-sm truncate">{product.name}</h4>
                     
                     <div className="flex items-center gap-1">
                       <Button
@@ -225,14 +221,11 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-foreground truncate">
-                          {product.name}
-                        </h4>
-                        {product.category && (
-                          <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                        )}
-                      </div>
+                       <div className="flex items-center gap-2 mb-1">
+                         <h4 className="font-medium text-foreground truncate">
+                           {product.name}
+                         </h4>
+                       </div>
                       
                       {product.description && (
                         <p className="text-sm text-muted-foreground line-clamp-1">

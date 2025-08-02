@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AddPinModal } from './AddPinModal';
 import { PinsList } from './PinsList';
-import { PinInventoryModal } from './PinInventoryModal';
+import { PinInventorySlider } from './PinInventorySlider';
 import { MapPin, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -16,7 +16,7 @@ interface GPSDropPinsSectionProps {
 export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const [isInventorySliderOpen, setIsInventorySliderOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState<any>(null);
 
   // Fetch service locations for this customer
@@ -74,7 +74,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
   const handleAssignInventory = (pin: any) => {
     setSelectedPin(pin);
-    setIsInventoryModalOpen(true);
+    setIsInventorySliderOpen(true);
   };
 
   const handleInventoryUpdated = () => {
@@ -163,10 +163,10 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
         />
       )}
 
-      {isInventoryModalOpen && selectedPin && (
-        <PinInventoryModal
-          isOpen={isInventoryModalOpen}
-          onOpenChange={setIsInventoryModalOpen}
+      {selectedPin && (
+        <PinInventorySlider
+          isOpen={isInventorySliderOpen}
+          onClose={() => setIsInventorySliderOpen(false)}
           coordinateId={selectedPin.id}
           pinName={selectedPin.point_name}
           onInventoryUpdated={handleInventoryUpdated}
