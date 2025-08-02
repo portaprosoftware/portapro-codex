@@ -77,12 +77,6 @@ const dayToDayItems: NavigationItem[] = [
     icon: FileText,
     permission: 'admin'
   },
-  { 
-    title: 'Marketing', 
-    url: '/marketing', 
-    icon: Megaphone,
-    permission: 'admin'
-  },
 ];
 
 
@@ -124,6 +118,15 @@ const managementItems: NavigationItem[] = [
     title: 'Services Hub', 
     url: '/maintenance-hub', 
     icon: Settings2,
+    permission: 'admin'
+  },
+];
+
+const adminItems: NavigationItem[] = [
+  { 
+    title: 'Marketing', 
+    url: '/marketing', 
+    icon: Megaphone,
     permission: 'admin'
   },
   { 
@@ -180,6 +183,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const visibleDayToDayItems = getVisibleItems(dayToDayItems);
   const visibleInventoryItems = getVisibleItems(inventoryItems);
   const visibleManagementItems = getVisibleItems(managementItems);
+  const visibleAdminItems = getVisibleItems(adminItems);
 
   return (
     <Sidebar className="w-64 border-r">
@@ -313,6 +317,37 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             <SidebarGroupContent>
               <SidebarMenu>
                 {visibleManagementItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={activeSection === item.url || location.pathname === item.url}
+                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
+                    >
+                      <NavLink
+                        to={item.url}
+                        onClick={() => onSectionChange?.(item.url)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span className="text-sm font-medium">{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Admin Section */}
+        {visibleAdminItems.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              ADMIN
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleAdminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
                       asChild 
