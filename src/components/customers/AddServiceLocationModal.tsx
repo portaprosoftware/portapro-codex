@@ -102,6 +102,25 @@ export function AddServiceLocationModal({
         data.is_default = true;
       }
 
+      // If setting this location as default, first remove default status from all other locations
+      if (data.is_default) {
+        const { error: updateError } = await supabase
+          .from('customer_service_locations')
+          .update({ is_default: false })
+          .eq('customer_id', customerId)
+          .eq('is_default', true);
+
+        if (updateError) {
+          console.error('Error updating existing default locations:', updateError);
+          toast({
+            title: "Error",
+            description: "Failed to update existing locations. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('customer_service_locations')
         .insert({
