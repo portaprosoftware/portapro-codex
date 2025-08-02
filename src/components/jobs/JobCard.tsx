@@ -38,10 +38,7 @@ interface JobCardProps {
     };
   };
   onView?: (jobId: string) => void;
-  onStart?: (jobId: string) => void;
-  onStatusUpdate?: (jobId: string, status: string) => void;
   onEquipmentAssign?: (jobId: string) => void;
-  onReverse?: (jobId: string) => void;
   compact?: boolean;
 }
 
@@ -130,10 +127,7 @@ const statusConfig = {
 export const JobCard: React.FC<JobCardProps> = ({
   job,
   onView,
-  onStart,
-  onStatusUpdate,
   onEquipmentAssign,
-  onReverse,
   compact = false
 }) => {
   // Use unified dual status logic
@@ -145,40 +139,6 @@ export const JobCard: React.FC<JobCardProps> = ({
     onView?.(job.id);
   };
 
-  const handleStartJob = () => {
-    if (job.status === 'assigned') {
-      onStatusUpdate?.(job.id, 'in-progress');
-    } else if (job.status === 'in-progress') {
-      onStatusUpdate?.(job.id, 'completed');
-    }
-    // If completed, do nothing (button will be disabled)
-  };
-
-  const getJobButtonText = () => {
-    switch (job.status) {
-      case 'assigned':
-        return 'Start Job';
-      case 'in-progress':
-        return 'Complete Job';
-      case 'completed':
-        return 'Job Complete';
-      default:
-        return 'View Job';
-    }
-  };
-
-  const isJobCompleted = job.status === 'completed';
-  const showReverseButton = job.status === 'in-progress' || job.status === 'completed';
-
-  const handleReverse = () => {
-    if (job.status === 'completed') {
-      onReverse?.(job.id);
-      onStatusUpdate?.(job.id, 'in-progress');
-    } else if (job.status === 'in-progress') {
-      onReverse?.(job.id);
-      onStatusUpdate?.(job.id, 'assigned');
-    }
-  };
 
   if (compact) {
     return (
@@ -244,40 +204,16 @@ export const JobCard: React.FC<JobCardProps> = ({
           )}
         </div>
         
-        {showReverseButton && (
-          <div className="mb-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReverse}
-              className="w-full px-2 py-1 h-6 text-xs border-gray-300 hover:border-gray-400"
-              aria-label={`Reverse job ${job.job_number}`}
-            >
-              <Undo2 className="w-3 h-3 mr-1" />
-              Reverse
-            </Button>
-          </div>
-        )}
-        
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={handleViewJob} 
-            className="flex-1 text-xs"
+            className="w-full text-xs"
             aria-label={`View job ${job.job_number}`}
           >
             <Eye className="w-3 h-3 mr-1" />
             View
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={handleStartJob}
-            disabled={isJobCompleted}
-            className={`flex-1 text-xs ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'}`}
-            aria-label={`${getJobButtonText()} ${job.job_number}`}
-          >
-            {getJobButtonText()}
           </Button>
         </div>
       </div>
@@ -375,21 +311,6 @@ export const JobCard: React.FC<JobCardProps> = ({
           </div>
         )}
         
-        {showReverseButton && (
-          <div className="mb-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReverse}
-              className="w-full px-3 py-2 border-gray-300 hover:border-gray-400"
-              aria-label={`Reverse job ${job.job_number}`}
-            >
-              <Undo2 className="w-4 h-4 mr-2" />
-              Reverse Job
-            </Button>
-          </div>
-        )}
-        
         <div className="flex space-x-2 pt-2">
           <Button 
             variant="outline" 
@@ -434,16 +355,6 @@ export const JobCard: React.FC<JobCardProps> = ({
               Equipment
             </Button>
           )}
-          
-          <Button 
-            size="sm" 
-            onClick={handleStartJob}
-            disabled={isJobCompleted}
-            className={`flex-1 ${isJobCompleted ? 'opacity-50 cursor-not-allowed' : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'}`}
-            aria-label={`${getJobButtonText()} ${job.job_number}`}
-          >
-            {getJobButtonText()}
-          </Button>
         </div>
       </div>
     </div>

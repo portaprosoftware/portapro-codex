@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,10 @@ import {
   Mail,
   MessageSquare,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  Play,
+  CheckCircle,
+  Undo2
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
@@ -211,6 +214,40 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     }
   });
 
+  // Job status update mutation
+  const statusUpdateMutation = useMutation({
+    mutationFn: async ({ status }: { status: string }) => {
+      if (!jobId) throw new Error('No job ID');
+      
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          status,
+          actual_completion_time: status === 'completed' ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', jobId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Job Updated",
+        description: "Job status updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update job status",
+        variant: "destructive",
+      });
+      console.error('Job status update error:', error);
+    }
+  });
+
   const handleSectionEdit = (section: string) => {
     setEditingSections(prev => ({ ...prev, [section]: true }));
   };
@@ -266,6 +303,40 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     });
   };
 
+  // Job action handlers
+  const handleStartJob = () => {
+    if (job?.status === 'assigned' || job?.status === 'unassigned') {
+      statusUpdateMutation.mutate({ status: 'in_progress' });
+    } else if (job?.status === 'in_progress') {
+      statusUpdateMutation.mutate({ status: 'completed' });
+    }
+  };
+
+  const handleReverseJob = () => {
+    if (job?.status === 'completed') {
+      statusUpdateMutation.mutate({ status: 'in_progress' });
+    } else if (job?.status === 'in_progress') {
+      statusUpdateMutation.mutate({ status: 'assigned' });
+    }
+  };
+
+  const getJobButtonText = () => {
+    if (!job) return '';
+    switch (job.status) {
+      case 'assigned':
+      case 'unassigned':
+        return 'Start Job';
+      case 'in_progress':
+        return 'Complete Job';
+      case 'completed':
+        return 'Job Complete';
+      default:
+        return 'Update Status';
+    }
+  };
+
+  const isJobCompleted = job?.status === 'completed';
+  const showReverseButton = job?.status === 'in_progress' || job?.status === 'completed';
 
   const jobTypeConfig = {
     delivery: {
@@ -473,12 +544,13 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                           <SelectContent>
-                             <SelectItem value="assigned">Assigned</SelectItem>
-                             <SelectItem value="in_progress">In Progress</SelectItem>
-                             <SelectItem value="completed">Completed</SelectItem>
-                             <SelectItem value="cancelled">Cancelled</SelectItem>
-                           </SelectContent>
+                            <SelectContent>
+                              <SelectItem value="assigned">Assigned</SelectItem>
+                              <SelectItem value="unassigned">Unassigned</SelectItem>
+                              <SelectItem value="in_progress">In Progress</SelectItem>
+                              <SelectItem value="completed">Completed</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
                         </Select>
                       </div>
                     </>
@@ -819,6 +891,55 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           </div>
           <JobConsumablesTab jobId={jobId || ''} />
         </div>
+
+        {/* Action Buttons Footer */}
+        {job && (
+          <DialogFooter className="flex justify-between items-center pt-4 border-t">
+            {showReverseButton && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReverseJob}
+                disabled={statusUpdateMutation.isPending}
+                className="flex items-center gap-2"
+              >
+                <Undo2 className="w-4 h-4" />
+                Reverse Job
+              </Button>
+            )}
+            
+            <div className="flex space-x-2 ml-auto">
+              <Button 
+                size="sm" 
+                onClick={handleStartJob}
+                disabled={isJobCompleted || statusUpdateMutation.isPending}
+                className={`${
+                  isJobCompleted 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5'
+                }`}
+              >
+                {statusUpdateMutation.isPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                    Updating...
+                  </div>
+                ) : (
+                  <>
+                    {!isJobCompleted && (
+                      job.status === 'in_progress' ? (
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                      ) : (
+                        <Play className="w-4 h-4 mr-2" />
+                      )
+                    )}
+                    {getJobButtonText()}
+                  </>
+                )}
+              </Button>
+            </div>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
