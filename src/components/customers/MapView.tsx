@@ -67,10 +67,33 @@ export function MapView({ pins, selectedLocation, onPinClick, className = "w-ful
     let center: [number, number] = [-81.8392, 41.3668]; // Default to Ohio
     
     if (selectedLocation?.gps_coordinates) {
-      center = [selectedLocation.gps_coordinates.x, selectedLocation.gps_coordinates.y];
+      // Handle different coordinate formats
+      let lng, lat;
+      if (typeof selectedLocation.gps_coordinates === 'object' && selectedLocation.gps_coordinates !== null) {
+        if ('x' in selectedLocation.gps_coordinates && 'y' in selectedLocation.gps_coordinates) {
+          lng = selectedLocation.gps_coordinates.x;
+          lat = selectedLocation.gps_coordinates.y;
+        } else if (Array.isArray(selectedLocation.gps_coordinates)) {
+          lng = selectedLocation.gps_coordinates[0];
+          lat = selectedLocation.gps_coordinates[1];
+        }
+      }
+      
+      // Validate coordinates are valid numbers
+      if (typeof lng === 'number' && typeof lat === 'number' && 
+          !isNaN(lng) && !isNaN(lat) && 
+          lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+        center = [lng, lat];
+      }
     } else if (pins.length > 0) {
-      // Center on first pin if no location selected
-      center = [pins[0].longitude, pins[0].latitude];
+      // Center on first pin if no location selected and coordinates are valid
+      const firstPin = pins[0];
+      if (typeof firstPin.longitude === 'number' && typeof firstPin.latitude === 'number' &&
+          !isNaN(firstPin.longitude) && !isNaN(firstPin.latitude) &&
+          firstPin.longitude >= -180 && firstPin.longitude <= 180 && 
+          firstPin.latitude >= -90 && firstPin.latitude <= 90) {
+        center = [firstPin.longitude, firstPin.latitude];
+      }
     }
 
     map.current = new mapboxgl.Map({
@@ -86,6 +109,15 @@ export function MapView({ pins, selectedLocation, onPinClick, className = "w-ful
     // Add markers for pins
     pins.forEach((pin) => {
       if (!map.current) return;
+
+      // Validate pin coordinates before creating marker
+      if (typeof pin.longitude !== 'number' || typeof pin.latitude !== 'number' ||
+          isNaN(pin.longitude) || isNaN(pin.latitude) ||
+          pin.longitude < -180 || pin.longitude > 180 ||
+          pin.latitude < -90 || pin.latitude > 90) {
+        console.warn('Invalid coordinates for pin:', pin);
+        return;
+      }
 
       // Create custom marker element
       const markerEl = document.createElement('div');
@@ -120,25 +152,42 @@ export function MapView({ pins, selectedLocation, onPinClick, className = "w-ful
 
     // Add marker for service location if available
     if (selectedLocation?.gps_coordinates) {
-      const locationMarkerEl = document.createElement('div');
-      locationMarkerEl.className = 'location-marker';
-      locationMarkerEl.style.width = '40px';
-      locationMarkerEl.style.height = '40px';
-      locationMarkerEl.style.backgroundImage = 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTkiIGZpbGw9IiMyNTYzRUIiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjxwb2x5Z29uIHBvaW50cz0iMjAsMTAgMjUsMTggMTUsMTgiIGZpbGw9IiNGRkZGRkYiLz4KPC9zdmc+)';
-      locationMarkerEl.style.backgroundSize = 'contain';
+      let lng, lat;
+      if (typeof selectedLocation.gps_coordinates === 'object' && selectedLocation.gps_coordinates !== null) {
+        if ('x' in selectedLocation.gps_coordinates && 'y' in selectedLocation.gps_coordinates) {
+          lng = selectedLocation.gps_coordinates.x;
+          lat = selectedLocation.gps_coordinates.y;
+        } else if (Array.isArray(selectedLocation.gps_coordinates)) {
+          lng = selectedLocation.gps_coordinates[0];
+          lat = selectedLocation.gps_coordinates[1];
+        }
+      }
+      
+      // Only add marker if coordinates are valid
+      if (typeof lng === 'number' && typeof lat === 'number' && 
+          !isNaN(lng) && !isNaN(lat) && 
+          lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+        
+        const locationMarkerEl = document.createElement('div');
+        locationMarkerEl.className = 'location-marker';
+        locationMarkerEl.style.width = '40px';
+        locationMarkerEl.style.height = '40px';
+        locationMarkerEl.style.backgroundImage = 'url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTkiIGZpbGw9IiMyNTYzRUIiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjxwb2x5Z29uIHBvaW50cz0iMjAsMTAgMjUsMTggMTUsMTgiIGZpbGw9IiNGRkZGRkYiLz4KPC9zdmc+)';
+        locationMarkerEl.style.backgroundSize = 'contain';
 
-      new mapboxgl.Marker(locationMarkerEl)
-        .setLngLat([selectedLocation.gps_coordinates.x, selectedLocation.gps_coordinates.y])
-        .addTo(map.current!)
-        .setPopup(
-          new mapboxgl.Popup({ offset: 30 })
-            .setHTML(`
-              <div class="p-2">
-                <h3 class="font-medium text-sm">${selectedLocation.location_name}</h3>
-                <p class="text-xs text-gray-600 mt-1">Service Location</p>
-              </div>
-            `)
-        );
+        new mapboxgl.Marker(locationMarkerEl)
+          .setLngLat([lng, lat])
+          .addTo(map.current!)
+          .setPopup(
+            new mapboxgl.Popup({ offset: 30 })
+              .setHTML(`
+                <div class="p-2">
+                  <h3 class="font-medium text-sm">${selectedLocation.location_name}</h3>
+                  <p class="text-xs text-gray-600 mt-1">Service Location</p>
+                </div>
+              `)
+          );
+      }
     }
 
     // Cleanup
