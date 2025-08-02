@@ -16,6 +16,7 @@ interface Product {
   stock_in_service: number;
   default_price_per_day?: number;
   category?: string;
+  image_url?: string;
 }
 
 interface TemplateAssignment {
@@ -68,8 +69,13 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
     onAssignmentsChange(newAssignments);
   };
 
-  const getPlaceholderImage = (productName: string) => {
-    // Use a consistent placeholder based on product name
+  const getPlaceholderImage = (product: Product) => {
+    // First try to use actual product image if available
+    if (product.image_url) {
+      return product.image_url;
+    }
+    
+    // Fallback to placeholder based on product name
     const images = [
       'photo-1488590528505-98d2b5aba04b', // laptop
       'photo-1518770660439-4636190af475', // circuit board  
@@ -78,7 +84,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
       'photo-1441057206919-63d19fac2369', // penguins
       'photo-1501286353178-1ec881214838'  // monkey
     ];
-    const index = productName.length % images.length;
+    const index = product.name.length % images.length;
     return `https://images.unsplash.com/${images[index]}?w=100&h=100&fit=crop`;
   };
 
@@ -150,7 +156,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
                   <div className="text-center space-y-2">
                     <div className="w-16 h-16 mx-auto bg-muted rounded-lg flex items-center justify-center overflow-hidden">
                       <img 
-                        src={getPlaceholderImage(product.name)}
+                        src={getPlaceholderImage(product)}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -207,7 +213,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                       <img 
-                        src={getPlaceholderImage(product.name)}
+                        src={getPlaceholderImage(product)}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {

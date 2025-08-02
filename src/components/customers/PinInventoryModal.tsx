@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { PinInventorySelector } from './PinInventorySelector';
 import { AssignedInventoryList } from './AssignedInventoryList';
 
@@ -26,6 +27,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('current');
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleSaveAssignments = async () => {
     if (assignments.length === 0) {
@@ -59,6 +61,8 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
 
       setAssignments([]);
       setActiveTab('current');
+      // Force refresh of the inventory list
+      await queryClient.invalidateQueries({ queryKey: ['pin-inventory-assignments', coordinateId] });
       onInventoryUpdated?.();
     } catch (error) {
       console.error('Error saving inventory assignments:', error);
@@ -80,7 +84,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-5xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
