@@ -273,61 +273,68 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
       
       {/* Multiple Jobs Selection Popup */}
       {selectedJobsAtLocation.length > 0 && (
-        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg border max-w-md z-20">
-          <div className="p-4 border-b">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold">Select Job</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setSelectedJobsAtLocation([])}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <p className="text-sm text-gray-600 mt-1">
-              {selectedJobsAtLocation.length} jobs at this location
-            </p>
-          </div>
-          <div className="max-h-64 overflow-y-auto">
-            {selectedJobsAtLocation.map((job, index) => (
-              <div key={job.id} className="p-3 border-b last:border-b-0 hover:bg-gray-50">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium text-sm">{job.job_number}</span>
-                      <Badge className={getJobTypeColor(job.job_type)} variant="secondary">
-                        {job.job_type}
-                      </Badge>
-                      <Badge className={getStatusColor(job.status)} variant="outline">
-                        {job.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-gray-600">{job.customers?.name}</p>
-                    {job.profiles && (
-                      <p className="text-xs text-gray-500">
-                        Driver: {job.profiles.first_name} {job.profiles.last_name}
-                      </p>
-                    )}
-                  </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedJobsAtLocation([]);
-                      setSelectedJobForModal(job.id);
-                    }}
-                    className="ml-2"
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    View
-                  </Button>
-                </div>
+        <>
+          {/* Backdrop to ensure proper layering */}
+          <div 
+            className="absolute inset-0 bg-black/10 z-40"
+            onClick={() => setSelectedJobsAtLocation([])}
+          />
+          <div className="absolute top-4 right-4 bg-white rounded-lg shadow-xl border max-w-md z-50">
+            <div className="p-4 border-b">
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold">Select Job</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setSelectedJobsAtLocation([])}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-            ))}
+              <p className="text-sm text-gray-600 mt-1">
+                {selectedJobsAtLocation.length} jobs at this location
+              </p>
+            </div>
+            <div className="max-h-64 overflow-y-auto">
+              {selectedJobsAtLocation.map((job, index) => (
+                <div key={job.id} className="p-3 border-b last:border-b-0 hover:bg-gray-50">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-sm">{job.job_number}</span>
+                        <Badge className={getJobTypeColor(job.job_type)} variant="secondary">
+                          {job.job_type}
+                        </Badge>
+                        <Badge className={getStatusColor(job.status)} variant="outline">
+                          {job.status}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-600">{job.customers?.name}</p>
+                      {job.profiles && (
+                        <p className="text-xs text-gray-500">
+                          Driver: {job.profiles.first_name} {job.profiles.last_name}
+                        </p>
+                      )}
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedJobsAtLocation([]);
+                        setSelectedJobForModal(job.id);
+                      }}
+                      className="ml-2"
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Job Detail Modal */}
