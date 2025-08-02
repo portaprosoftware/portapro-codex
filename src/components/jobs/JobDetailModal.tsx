@@ -285,13 +285,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 </Badge>
               )}
             </div>
-          </div>
-        </DialogHeader>
-
-        {/* Action Buttons Row */}
-        <div className="flex-shrink-0 flex items-center justify-end gap-2 py-3 px-1 border-b">
-          {!isEditing && (
-            <>
+            
+            {/* Priority Toggle */}
+            {!isEditing && (
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={(job as any)?.is_priority || false}
@@ -300,9 +296,17 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 />
                 <Label className="text-sm flex items-center gap-1 cursor-pointer">
                   <Star className="w-4 h-4 text-yellow-500" />
-                  Priority
+                  Mark Job A Priority
                 </Label>
               </div>
+            )}
+          </div>
+        </DialogHeader>
+
+        {/* Action Buttons Row */}
+        <div className="flex-shrink-0 flex items-center justify-end gap-2 py-3 px-1 border-b">
+          {!isEditing && (
+            <>
               <Button
                 onClick={() => setIsEditing(true)}
                 size="sm"
