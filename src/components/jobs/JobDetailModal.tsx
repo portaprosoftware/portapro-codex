@@ -16,11 +16,12 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 // Job types from wizard for consistency
 const jobTypes = [
@@ -53,6 +54,7 @@ interface JobDetailModalProps {
 export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProps) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Fetch job data
   const { data: job, isLoading } = useQuery({
@@ -210,6 +212,11 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     statusUpdateMutation.mutate({ status: newStatus });
   };
 
+  const handleCancelJob = () => {
+    statusUpdateMutation.mutate({ status: 'cancelled' });
+    setShowCancelDialog(false);
+  };
+
   const getJobButtonText = () => {
     if (!job) return 'Start Job';
     return job.status === 'assigned' ? 'Start Job' : 'Complete Job';
@@ -226,6 +233,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
 
   const canStartJob = job?.status === 'assigned' || job?.status === 'in_progress';
   const canReverseJob = job?.status === 'in_progress' || job?.status === 'completed';
+  const canCancelJob = job?.status === 'assigned' || job?.status === 'in_progress';
 
   if (!job && !isLoading) return null;
 
@@ -301,6 +309,17 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 >
                   <RotateCcw className="w-4 h-4 mr-1" />
                   Reverse
+                </Button>
+              )}
+              {canCancelJob && !isEditing && (
+                <Button
+                  onClick={() => setShowCancelDialog(true)}
+                  disabled={statusUpdateMutation.isPending}
+                  size="sm"
+                  variant="destructive"
+                >
+                  <Ban className="w-4 h-4 mr-1" />
+                  Cancel Job
                 </Button>
               )}
             </div>
@@ -653,6 +672,35 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           )}
         </div>
       </DialogContent>
+
+      {/* Cancel Job Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <Ban className="w-5 h-5" />
+              Cancel Job
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this job? This action will mark the job as cancelled and cannot be undone.
+              <br /><br />
+              <strong>Job:</strong> {job?.job_number}
+              <br />
+              <strong>Customer:</strong> {job?.customer?.name}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Job</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelJob}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={statusUpdateMutation.isPending}
+            >
+              {statusUpdateMutation.isPending ? 'Cancelling...' : 'Cancel Job'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
