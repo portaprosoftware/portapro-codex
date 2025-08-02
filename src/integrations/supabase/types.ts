@@ -2359,6 +2359,7 @@ export type Database = {
           default_template_id: string | null
           driver_id: string | null
           id: string
+          is_priority: boolean
           is_service_job: boolean
           job_number: string
           job_type: string
@@ -2390,6 +2391,7 @@ export type Database = {
           default_template_id?: string | null
           driver_id?: string | null
           id?: string
+          is_priority?: boolean
           is_service_job?: boolean
           job_number?: string
           job_type: string
@@ -2421,6 +2423,7 @@ export type Database = {
           default_template_id?: string | null
           driver_id?: string | null
           id?: string
+          is_priority?: boolean
           is_service_job?: boolean
           job_number?: string
           job_type?: string
