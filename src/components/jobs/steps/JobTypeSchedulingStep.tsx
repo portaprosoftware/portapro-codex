@@ -196,20 +196,19 @@ export function JobTypeSchedulingStep() {
 
       {/* Priority Toggle */}
       <div className="space-y-4">
-        <Label className="text-base font-medium">Priority Settings</Label>
-        <Button
-          onClick={handleTogglePriority}
-          size="sm"
-          className={
-            state.data.is_priority
-              ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold"
-              : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
-          }
-          variant={state.data.is_priority ? "default" : "outline"}
-        >
-          <Star className="w-4 h-4 mr-1" />
-          {state.data.is_priority ? 'Priority Job' : 'Mark as Priority'}
-        </Button>
+        <div className="flex items-center justify-between">
+          <Label className="text-base font-medium">Priority Settings</Label>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={state.data.is_priority || false}
+              onCheckedChange={handleTogglePriority}
+            />
+            <Label className="text-sm flex items-center gap-1">
+              <Star className="w-4 h-4 text-yellow-500" />
+              Mark as Priority
+            </Label>
+          </div>
+        </div>
         {state.data.is_priority && (
           <p className="text-sm text-muted-foreground">
             This job will be marked as priority and highlighted for drivers.

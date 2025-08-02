@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -291,20 +292,17 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         <div className="flex-shrink-0 flex items-center justify-end gap-2 py-3 px-1 border-b">
           {!isEditing && (
             <>
-              <Button
-                onClick={handleTogglePriority}
-                disabled={priorityMutation.isPending}
-                size="sm"
-                className={
-                  (job as any)?.is_priority 
-                    ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold"
-                    : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
-                }
-                variant={(job as any)?.is_priority ? "default" : "outline"}
-              >
-                <Star className="w-4 h-4 mr-1" />
-                {(job as any)?.is_priority ? 'Priority' : 'Mark Priority'}
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={(job as any)?.is_priority || false}
+                  onCheckedChange={() => handleTogglePriority()}
+                  disabled={priorityMutation.isPending}
+                />
+                <Label className="text-sm flex items-center gap-1 cursor-pointer">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Priority
+                </Label>
+              </div>
               <Button
                 onClick={() => setIsEditing(true)}
                 size="sm"
