@@ -141,7 +141,14 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
     const { dateRange, searchTerm, selectedDriver, selectedJobType, selectedStatus } = preset.filter_data;
     
     // Apply all filters from the preset
-    if (dateRange) onDateRangeChange(dateRange);
+    if (dateRange) {
+      // Ensure date range has proper Date objects
+      const convertedRange = {
+        from: dateRange.from ? new Date(dateRange.from) : undefined,
+        to: dateRange.to ? new Date(dateRange.to) : undefined,
+      };
+      onDateRangeChange(convertedRange);
+    }
     if (searchTerm) onSearchTermChange(searchTerm);
     if (selectedDriver) onDriverChange(selectedDriver);
     if (selectedJobType) onJobTypeChange(selectedJobType);

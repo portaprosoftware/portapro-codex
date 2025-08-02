@@ -67,19 +67,28 @@ export const FilterChipBar: React.FC<FilterChipBarProps> = ({
   };
 
   const formatDateRange = (range: DateRange) => {
-    if (range.from && range.to) {
-      if (range.from.toDateString() === range.to.toDateString()) {
-        return format(range.from, 'MMM d, yyyy');
+    // Ensure dates are Date objects
+    const fromDate = range.from ? (range.from instanceof Date ? range.from : new Date(range.from)) : null;
+    const toDate = range.to ? (range.to instanceof Date ? range.to : new Date(range.to)) : null;
+    
+    if (fromDate && toDate) {
+      // Check if dates are valid
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        return 'Invalid date range';
       }
-      return `${format(range.from, 'MMM d')} - ${format(range.to, 'MMM d, yyyy')}`;
+      
+      if (fromDate.toDateString() === toDate.toDateString()) {
+        return format(fromDate, 'MMM d, yyyy');
+      }
+      return `${format(fromDate, 'MMM d')} - ${format(toDate, 'MMM d, yyyy')}`;
     }
-    if (range.from) {
-      return `From ${format(range.from, 'MMM d, yyyy')}`;
+    if (fromDate && !isNaN(fromDate.getTime())) {
+      return `From ${format(fromDate, 'MMM d, yyyy')}`;
     }
-    if (range.to) {
-      return `Until ${format(range.to, 'MMM d, yyyy')}`;
+    if (toDate && !isNaN(toDate.getTime())) {
+      return `Until ${format(toDate, 'MMM d, yyyy')}`;
     }
-    return '';
+    return 'Invalid date range';
   };
 
   const hasActiveFilters = dateRange || 
