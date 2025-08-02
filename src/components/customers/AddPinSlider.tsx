@@ -108,9 +108,9 @@ export function AddPinSlider({
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
 
-    // Default center - try multiple sources for location
-    let center: [number, number] = [-98.5795, 39.8283]; // US center as fallback
-    let zoom = 4;
+    // Default center - Ohio center for this project
+    let center: [number, number] = [-82.9071, 40.4173]; // Ohio center as fallback
+    let zoom = 8;
 
     // Priority 1: Use existing GPS coordinates
     if (serviceLocation?.gps_coordinates) {
@@ -131,16 +131,21 @@ export function AddPinSlider({
           lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
         center = [lng, lat];
         zoom = 15;
+        console.log('Using GPS coordinates:', lng, lat);
+      } else {
+        console.log('Invalid GPS coordinates:', lng, lat);
       }
     }
     // Priority 2: Use geocoded coordinates
     else if (addressCoordinates) {
       center = addressCoordinates;
       zoom = 15;
+      console.log('Using geocoded coordinates:', addressCoordinates);
     }
-    // Priority 3: If we have address but no coordinates, use broader zoom
+    // Priority 3: If we have address but no coordinates, center on Ohio
     else if (fullAddress) {
       zoom = 10;
+      console.log('Using address fallback for:', fullAddress);
     }
 
     // Initialize map
