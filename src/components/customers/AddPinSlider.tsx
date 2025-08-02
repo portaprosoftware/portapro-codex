@@ -55,31 +55,48 @@ export function AddPinSlider({
   // Build full address string
   const fullAddress = [serviceLocation?.street, serviceLocation?.street2, serviceLocation?.city, serviceLocation?.state, serviceLocation?.zip].filter(Boolean).join(', ');
 
-  // Geocode address if no GPS coordinates exist
+  // Geocode address immediately when modal opens
   useEffect(() => {
     const geocodeAddress = async () => {
-      if (!mapboxToken || !fullAddress || addressCoordinates) return;
+      if (!mapboxToken || !fullAddress) {
+        console.log('Skipping geocoding - missing token or address:', { mapboxToken: !!mapboxToken, fullAddress });
+        return;
+      }
+      
+      if (serviceLocation?.gps_coordinates) {
+        console.log('Skipping geocoding - GPS coordinates exist:', serviceLocation.gps_coordinates);
+        return;
+      }
+
+      console.log('Starting geocoding for address:', fullAddress);
+      
       try {
-        const {
-          data
-        } = await supabase.functions.invoke('mapbox-geocoding', {
+        const { data } = await supabase.functions.invoke('mapbox-geocoding', {
           body: {
             query: fullAddress,
             limit: 1
           }
         });
+        
+        console.log('Geocoding response:', data);
+        
         if (data?.suggestions?.[0]?.coordinates) {
           const coords = data.suggestions[0].coordinates;
-          setAddressCoordinates([coords.longitude, coords.latitude]);
+          const addressCoords: [number, number] = [coords.longitude, coords.latitude];
+          console.log('Setting address coordinates:', addressCoords);
+          setAddressCoordinates(addressCoords);
+        } else {
+          console.error('No coordinates found in geocoding response');
         }
       } catch (error) {
         console.error('Error geocoding address:', error);
       }
     };
-    if (isOpen && mapboxToken && !serviceLocation?.gps_coordinates) {
+
+    if (isOpen && mapboxToken && fullAddress && !serviceLocation?.gps_coordinates) {
       geocodeAddress();
     }
-  }, [isOpen, mapboxToken, fullAddress, serviceLocation?.gps_coordinates, addressCoordinates]);
+  }, [isOpen, mapboxToken, fullAddress, serviceLocation?.gps_coordinates]);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -218,7 +235,7 @@ export function AddPinSlider({
     console.log('Updating map center to geocoded coordinates:', addressCoordinates);
     map.current.flyTo({
       center: addressCoordinates,
-      zoom: 15,
+      zoom: 18, // Much closer zoom
       duration: 1000
     });
     
