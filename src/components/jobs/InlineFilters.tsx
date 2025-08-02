@@ -44,12 +44,14 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
       {/* Instructions */}
       <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
         <div className="flex items-center gap-2">
-          <TooltipProvider>
+          <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="w-3 h-3 cursor-help hover:text-primary transition-colors" />
+                <div className="cursor-help">
+                  <Info className="w-3 h-3 hover:text-primary transition-colors" />
+                </div>
               </TooltipTrigger>
-              <TooltipContent className="max-w-sm">
+              <TooltipContent side="bottom" align="start" className="max-w-sm">
                 <p className="text-sm">
                   <strong>Info:</strong> Jobs set before today that aren't completed get a red "Overdue" badge. 
                   After you reschedule an overdue job, the badge turns gold and says "Overdue – Rescheduled". 
