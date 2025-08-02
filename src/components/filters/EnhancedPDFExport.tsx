@@ -107,32 +107,35 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
 
       console.log('Enhanced PDF generated successfully:', data.metadata);
 
-      // Check if we received PDF data or HTML
-      if (data.pdfUrl) {
-        // PDF was generated successfully - trigger download
+      // Check if we received PDF data
+      if (data.pdfData) {
+        // Convert base64 to blob and download
+        const binaryString = atob(data.pdfData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        
+        const pdfBlob = new Blob([bytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(pdfBlob);
+        
         const link = document.createElement('a');
-        link.href = data.pdfUrl;
-        
-        const timestamp = new Date().toISOString().split('T')[0];
-        const presetName = filterContext.presetName ? `-${filterContext.presetName.replace(/\s+/g, '-')}` : '';
-        const fileName = `jobs-report${presetName}-${timestamp}.pdf`;
-        
-        link.download = fileName;
+        link.href = url;
+        link.download = data.filename || 'jobs-report.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
       } else if (data.htmlContent) {
         // Fallback to HTML if PDF generation failed
+        console.warn('PDF generation failed, downloading HTML fallback');
         const htmlBlob = new Blob([data.htmlContent], { type: 'text/html' });
         const url = URL.createObjectURL(htmlBlob);
         
         const link = document.createElement('a');
         link.href = url;
-        
-        const timestamp = new Date().toISOString().split('T')[0];
-        const fileName = `jobs-report-${timestamp}.html`;
-        
-        link.download = fileName;
+        link.download = `jobs-report-${new Date().toISOString().split('T')[0]}.html`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -140,8 +143,8 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
       }
 
       toast({
-        title: 'Enhanced PDF Generated',
-        description: `Report generated with ${data.metadata.jobCount} jobs${data.metadata.hasMap ? ' and location map' : ''}.`,
+        title: 'PDF Generated Successfully',
+        description: `Report downloaded with ${data.metadata.jobCount} jobs${data.metadata.hasMap ? ' and location map' : ''}.`,
       });
 
     } catch (error) {

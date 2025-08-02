@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { DOMParser } from 'https://deno.land/x/deno_dom@v0.1.43/deno-dom-wasm.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,6 +54,46 @@ interface PDFRequest {
   filterContext: FilterContext;
   totalCount: number;
   userEmail?: string;
+}
+
+// Simple PDF generation function using HTML to PDF conversion
+async function generatePDFFromHTML(htmlContent: string): Promise<Uint8Array> {
+  try {
+    // Use a simple PDF generation service or library
+    // For now, we'll use a browser automation approach via API
+    const htmlToPdfApiUrl = 'https://api.htmltopdf.app/v1/generate';
+    
+    const response = await fetch(htmlToPdfApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': Deno.env.get('HTML_TO_PDF_API_KEY') || 'demo-key'
+      },
+      body: JSON.stringify({
+        html: htmlContent,
+        format: 'A4',
+        margin: {
+          top: '1cm',
+          right: '1cm',
+          bottom: '1cm',
+          left: '1cm'
+        },
+        printBackground: true,
+        landscape: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`PDF generation failed: ${response.statusText}`);
+    }
+
+    const pdfBuffer = await response.arrayBuffer();
+    return new Uint8Array(pdfBuffer);
+  } catch (error) {
+    console.error('PDF generation error:', error);
+    // Fallback: return null to indicate PDF generation failed
+    throw error;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -137,31 +178,62 @@ Deno.serve(async (req) => {
       statusDistribution: statusCounts,
       sparklineSvg,
       mapImageUrl,
-      jobs: jobs.slice(0, 5), // First 5 jobs for detailed view
-      hasMoreJobs: jobs.length > 5,
-      remainingCount: Math.max(0, jobs.length - 5),
+      jobs: jobs.slice(0, 20), // Show more jobs in PDF
+      hasMoreJobs: jobs.length > 20,
+      remainingCount: Math.max(0, jobs.length - 20),
       shareUrl: `${supabaseUrl.replace('supabase.co', 'supabase.app')}/jobs/custom?preset=${filterContext.presetName || 'shared'}`,
       locations
     });
 
-    // Convert HTML to PDF using Puppeteer or similar service
-    // For now, we'll return the HTML content that can be converted client-side
-    const response = {
-      success: true,
-      htmlContent,
-      metadata: {
-        jobCount: jobs.length,
-        totalCount,
-        timestamp: new Date().toISOString(),
-        filterContext,
-        hasMap: !!mapImageUrl,
-        locationCount: locations.length
-      }
-    };
+    // Try to generate actual PDF
+    try {
+      const pdfBuffer = await generatePDFFromHTML(htmlContent);
+      
+      // Return PDF as base64 for download
+      const base64Pdf = btoa(String.fromCharCode(...pdfBuffer));
+      
+      const response = {
+        success: true,
+        pdfData: base64Pdf,
+        contentType: 'application/pdf',
+        filename: `jobs-report-${new Date().toISOString().split('T')[0]}.pdf`,
+        metadata: {
+          jobCount: jobs.length,
+          totalCount,
+          timestamp: new Date().toISOString(),
+          filterContext,
+          hasMap: !!mapImageUrl,
+          locationCount: locations.length
+        }
+      };
 
-    return new Response(JSON.stringify(response), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      return new Response(JSON.stringify(response), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+      
+    } catch (pdfError) {
+      console.error('PDF generation failed, falling back to HTML:', pdfError);
+      
+      // Fallback to HTML if PDF generation fails
+      const response = {
+        success: true,
+        htmlContent,
+        fallbackToHtml: true,
+        error: 'PDF generation service unavailable, providing HTML fallback',
+        metadata: {
+          jobCount: jobs.length,
+          totalCount,
+          timestamp: new Date().toISOString(),
+          filterContext,
+          hasMap: !!mapImageUrl,
+          locationCount: locations.length
+        }
+      };
+
+      return new Response(JSON.stringify(response), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
   } catch (error) {
     console.error('Error generating enhanced PDF:', error);
@@ -252,34 +324,36 @@ function generatePDFHTML(data: any): string {
   <meta charset="UTF-8">
   <title>${data.title}</title>
   <style>
-    body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 20px; font-size: 12px; }
-    .header { border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 20px; }
-    .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-    .metadata { display: flex; justify-content: space-between; margin-bottom: 15px; color: #6b7280; }
-    .filter-summary { background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    .filter-summary h3 { margin: 0 0 10px 0; font-size: 14px; }
-    .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .filter-tag { background: #e5e7eb; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
-    .analytics { display: flex; gap: 20px; margin-bottom: 20px; }
+    @page { margin: 1cm; size: A4; }
+    body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; font-size: 11px; line-height: 1.4; }
+    .header { border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px; }
+    .title { font-size: 20px; font-weight: bold; margin-bottom: 8px; color: #1f2937; }
+    .metadata { display: flex; justify-content: space-between; margin-bottom: 10px; color: #6b7280; font-size: 10px; }
+    .filter-summary { background: #f9fafb; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+    .filter-summary h3 { margin: 0 0 8px 0; font-size: 12px; color: #374151; }
+    .filter-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-tag { background: #e5e7eb; padding: 3px 6px; border-radius: 3px; font-size: 9px; }
+    .analytics { display: flex; gap: 15px; margin-bottom: 15px; }
     .analytics-item { flex: 1; }
-    .analytics-item h4 { margin: 0 0 8px 0; font-size: 12px; color: #6b7280; }
-    .sparkline { margin: 10px 0; }
-    .map-section { margin: 20px 0; }
-    .map-section img { max-width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; }
-    .jobs-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    .jobs-table th, .jobs-table td { padding: 8px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .jobs-table th { background: #f9fafb; font-weight: 600; }
-    .status-badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500; }
+    .analytics-item h4 { margin: 0 0 6px 0; font-size: 11px; color: #6b7280; }
+    .sparkline { margin: 8px 0; }
+    .map-section { margin: 15px 0; }
+    .map-section img { max-width: 100%; border-radius: 6px; border: 1px solid #e5e7eb; }
+    .jobs-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 10px; }
+    .jobs-table th, .jobs-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    .jobs-table th { background: #f9fafb; font-weight: 600; font-size: 9px; }
+    .status-badge { padding: 2px 5px; border-radius: 3px; font-size: 8px; font-weight: 500; }
     .status-completed { background: #dcfce7; color: #166534; }
     .status-in_progress { background: #fef3c7; color: #92400e; }
     .status-assigned { background: #dbeafe; color: #1e40af; }
     .status-overdue { background: #fecaca; color: #991b1b; }
     .status-unassigned { background: #f3f4f6; color: #374151; }
-    .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #6b7280; }
+    .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; font-size: 9px; color: #6b7280; }
     .page-break { page-break-before: always; }
-    .more-jobs { background: #f0f9ff; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
-    .deep-link { color: #2563eb; text-decoration: none; }
-    .deep-link:hover { text-decoration: underline; }
+    .more-jobs { background: #f0f9ff; padding: 12px; border-radius: 6px; text-align: center; margin: 15px 0; }
+    .deep-link { color: #2563eb; text-decoration: none; font-size: 9px; }
+    .location-count { font-size: 9px; color: #6b7280; margin-top: 4px; }
+    .compact-row td { padding: 4px; }
   </style>
 </head>
 <body>
@@ -296,7 +370,7 @@ function generatePDFHTML(data: any): string {
   </div>
 
   <div class="filter-summary">
-    <h3>Filter Summary</h3>
+    <h3>Applied Filters</h3>
     <div class="filter-tags">
       ${data.filterSummary.map((filter: string) => `<span class="filter-tag">${filter}</span>`).join('')}
     </div>
@@ -306,7 +380,7 @@ function generatePDFHTML(data: any): string {
     <div class="analytics-item">
       <h4>Status Distribution</h4>
       <div class="sparkline">${data.sparklineSvg}</div>
-      <div style="font-size: 10px; color: #6b7280;">
+      <div style="font-size: 9px; color: #6b7280; margin-top: 4px;">
         ${Object.entries(data.statusDistribution).map(([status, count]) => 
           `${status.replace('_', ' ')}: ${count}`
         ).join(' • ')}
@@ -314,9 +388,10 @@ function generatePDFHTML(data: any): string {
     </div>
     ${data.mapImageUrl ? `
     <div class="analytics-item">
-      <h4>Location Overview (${data.locations.length} locations)</h4>
+      <h4>Locations Map</h4>
       <div class="map-section">
-        <img src="${data.mapImageUrl}" alt="Job locations map" />
+        <img src="${data.mapImageUrl}" alt="Job locations map" style="max-height: 120px;" />
+        <div class="location-count">${data.locations.length} unique locations</div>
       </div>
     </div>
     ` : ''}
@@ -335,8 +410,8 @@ function generatePDFHTML(data: any): string {
     </thead>
     <tbody>
       ${data.jobs.map((job: Job) => `
-        <tr>
-          <td>${job.job_number}</td>
+        <tr class="compact-row">
+          <td style="font-weight: 600;">${job.job_number}</td>
           <td>${new Date(job.scheduled_date).toLocaleDateString()}</td>
           <td>${job.job_type.replace('-', ' ')}</td>
           <td><span class="status-badge status-${job.status}">${job.status.replace('_', ' ')}</span></td>
@@ -349,20 +424,20 @@ function generatePDFHTML(data: any): string {
 
   ${data.hasMoreJobs ? `
   <div class="more-jobs">
-    <strong>+${data.remainingCount} more jobs...</strong><br>
-    <small>This preview shows the first 5 jobs. View complete results in the app.</small>
+    <strong>+${data.remainingCount} additional jobs match your filters</strong><br>
+    <small style="font-size: 9px;">Showing first 20 jobs. Use the app link below to view all results.</small>
   </div>
   ` : ''}
 
   <div class="footer">
-    <div style="display: flex; justify-content: space-between;">
-      <span>Filtered on ${data.timestamp}</span>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span>Report generated on ${data.timestamp}</span>
       <span>
-        <a href="${data.shareUrl}" class="deep-link">📱 View Live in App</a>
+        <a href="${data.shareUrl}" class="deep-link">🔗 View complete results in PortaPro</a>
       </span>
     </div>
-    <div style="margin-top: 10px; text-align: center;">
-      Generated by PortaPro Advanced Search • Page 1
+    <div style="margin-top: 8px; text-align: center;">
+      PortaPro Advanced Search • Enhanced PDF Report
     </div>
   </div>
 </body>
