@@ -24,7 +24,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
   const addressMarker = useRef<mapboxgl.Marker | null>(null);
   
   const [mapboxToken, setMapboxToken] = useState<string>('');
-  const [mapStyle, setMapStyle] = useState<'satellite' | 'street'>('street');
+  const [mapStyle, setMapStyle] = useState<'satellite' | 'street'>('satellite');
   const [pinData, setPinData] = useState({
     name: '',
     description: '',
@@ -250,7 +250,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         <div className="flex-1 flex gap-6">
           {/* Map */}
           <div className="flex-1 relative">
-            <div className="absolute top-4 right-4 z-10 flex gap-2">
+            <div className="absolute top-4 left-4 z-10 flex gap-2">
               <Button
                 size="sm"
                 variant={mapStyle === 'street' ? 'default' : 'outline'}
