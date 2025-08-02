@@ -236,6 +236,9 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
                 <p className="text-sm text-gray-600">
                   Jobs become overdue the day after their scheduled date.
                 </p>
+                <p className="text-sm text-gray-600">
+                  To mark any job as a priority, toggle the Priority switch when creating or viewing a job.
+                </p>
               </div>
             </DialogContent>
           </Dialog>
