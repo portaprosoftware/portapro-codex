@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -413,28 +414,21 @@ export function AddPinSlider({
     setPinPlaced(false);
     onClose();
   };
-  if (!isOpen) return null;
-  return <>
-      {/* Backdrop - Only render when actually open */}
-      
-      {/* Slider */}
-      <div className="fixed right-0 top-0 h-full w-full md:w-3/4 bg-background border-l shadow-xl z-10 flex flex-col transition-transform duration-300 ease-out">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-background">
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-7xl w-full h-[95vh] p-0">
+        <DialogHeader className="p-6 border-b">
           <div className="flex items-center gap-3">
             <Plus className="w-6 h-6 text-primary" />
             <div>
-              <h2 className="text-xl font-semibold">Add GPS Drop-Pin</h2>
+              <DialogTitle className="text-xl font-semibold">Add GPS Drop-Pin</DialogTitle>
               <p className="text-sm text-muted-foreground">
                 Add a new GPS coordinate for {serviceLocation.location_name}
               </p>
               {fullAddress && <p className="text-xs text-muted-foreground mt-1">{fullAddress}</p>}
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+        </DialogHeader>
 
         {/* Content */}
         <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-6 p-6">
@@ -477,47 +471,80 @@ export function AddPinSlider({
 
             {/* Map Container */}
             <div className={`flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px] ${isPinModeActive ? 'cursor-crosshair' : 'cursor-auto'}`} style={isPinModeActive ? { cursor: 'crosshair' } : {}}>
-              {mapLoading && <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
+              {mapLoading && (
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
                   <div className="flex items-center gap-2 text-foreground">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    <span>Loading map...</span>
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium">Loading map...</span>
                   </div>
-                </div>}
-              
+                </div>
+              )}
               <div ref={mapContainer} className="w-full h-full" />
-              
-              {/* Map Status */}
-              <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur rounded-lg p-3 text-sm max-w-xs">
-                {!isPinModeActive ? <p className="text-muted-foreground">Click "Activate Pin Selector" to drop pins</p> : formData.latitude && formData.longitude ? <p className="text-primary font-medium">
-                    Pin: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
-                  </p> : <p className="text-primary">Click on the map to drop a pin</p>}
-              </div>
             </div>
           </div>
 
           {/* Form Section */}
-          <div className="w-full lg:w-80 space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="point_name">Pin Name *</Label>
-                <Input id="point_name" value={formData.point_name} onChange={e => handleInputChange('point_name', e.target.value)} placeholder="e.g., Loading Dock, Front Entrance" required />
+          <div className="w-full lg:w-80 flex-shrink-0">
+            <form onSubmit={handleSubmit} className="h-full flex flex-col">
+              <div className="space-y-4 flex-1">
+                <div>
+                  <Label htmlFor="point_name" className="text-sm font-medium">Pin Name *</Label>
+                  <Input
+                    id="point_name"
+                    placeholder="e.g., Loading Dock, Front Entrance"
+                    value={formData.point_name}
+                    onChange={(e) => handleInputChange('point_name', e.target.value)}
+                    className="mt-1"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Optional description for this location"
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    className="mt-1 resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                {formData.latitude && formData.longitude && (
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <h4 className="text-sm font-medium text-foreground mb-2">Pin Coordinates</h4>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <div>Lat: {formData.latitude.toFixed(6)}</div>
+                      <div>Lng: {formData.longitude.toFixed(6)}</div>
+                    </div>
+                  </div>
+                )}
+
+                {!pinPlaced && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p className="text-sm text-amber-800">
+                      <strong>Step:</strong> Activate the pin selector above and click on the map to drop a pin.
+                    </p>
+                  </div>
+                )}
+
+                {pinPlaced && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-sm text-green-800">
+                      <strong>Ready:</strong> Pin dropped successfully! Fill in the details and save.
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" value={formData.description} onChange={e => handleInputChange('description', e.target.value)} placeholder="Optional description for this location" rows={3} />
-              </div>
-
-              {formData.latitude && formData.longitude && <div className="bg-muted rounded-lg p-3 text-sm">
-                  <p className="font-medium mb-1">Coordinates:</p>
-                  <p>Lat: {formData.latitude.toFixed(6)}</p>
-                  <p>Lng: {formData.longitude.toFixed(6)}</p>
-                </div>}
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" disabled={!formData.latitude || !formData.longitude || !formData.point_name || isSubmitting} className="flex items-center gap-2 flex-1">
-                  <Plus className="w-4 h-4" />
-                  {isSubmitting ? 'Adding...' : 'Add Pin'}
+              <div className="flex gap-2 pt-4 border-t mt-4">
+                <Button
+                  type="submit"
+                  disabled={!formData.point_name || !formData.latitude || !formData.longitude || isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? 'Adding Pin...' : 'Add Pin'}
                 </Button>
                 <Button type="button" variant="outline" onClick={handleClose}>
                   Cancel
@@ -526,6 +553,7 @@ export function AddPinSlider({
             </form>
           </div>
         </div>
-      </div>
-    </>;
+      </DialogContent>
+    </Dialog>
+  );
 }
