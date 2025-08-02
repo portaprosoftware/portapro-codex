@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 
 interface JobsMapViewProps {
@@ -12,176 +11,126 @@ interface JobsMapViewProps {
   selectedDate: Date;
 }
 
-interface Job {
-  id: string;
-  job_number: string;
-  job_type: string;
-  status: string;
-  customer_id: string;
-  driver_id?: string;
-  vehicle_id?: string;
-  gps_coordinates?: [number, number];
-  customers?: {
-    id: string;
-    name: string;
-  };
-  profiles?: {
-    id: string;
-    first_name: string;
-    last_name: string;
-  };
-  vehicles?: {
-    id: string;
-    license_plate: string;
-  };
-}
-
-interface ServiceLocation {
-  id: string;
-  customer_id: string;
-  gps_coordinates?: unknown;
-}
-
-const JobsMapPage: React.FC<JobsMapViewProps> = ({
-  searchTerm,
-  selectedDriver,
-  jobType,
-  status,
-  selectedDate
-}) => {
+const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate }: JobsMapViewProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   
   const [mapboxToken, setMapboxToken] = useState<string>('');
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [serviceLocations, setServiceLocations] = useState<ServiceLocation[]>([]);
-  const [selectedPin, setSelectedPin] = useState<Job | null>(null);
-  const [isLoadingToken, setIsLoadingToken] = useState(true);
-  const [isLoadingMap, setIsLoadingMap] = useState(false);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [serviceLocations, setServiceLocations] = useState<any[]>([]);
+  const [selectedPin, setSelectedPin] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch Mapbox token
+  // Get Mapbox token
   useEffect(() => {
-    const fetchMapboxToken = async () => {
+    const getToken = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (data?.token) {
+        const response = await fetch(`https://unpnuonbndubcuzxfnmg.supabase.co/functions/v1/get-mapbox-token`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucG51b25ibmR1YmN1enhmbm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzkyMjgsImV4cCI6MjA2NDcxNTIyOH0.goME2hFzqxm0tnFdXAB_0evuiueh8wWfGLIY1vvvqmE`
+          }
+        });
+        const data = await response.json();
+        if (data.token) {
           setMapboxToken(data.token);
         } else {
-          const storedToken = localStorage.getItem('mapbox-token');
-          if (storedToken) {
-            setMapboxToken(storedToken);
-          }
+          const stored = localStorage.getItem('mapbox-token');
+          if (stored) setMapboxToken(stored);
         }
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
-        const storedToken = localStorage.getItem('mapbox-token');
-        if (storedToken) {
-          setMapboxToken(storedToken);
-        }
-      } finally {
-        setIsLoadingToken(false);
+        const stored = localStorage.getItem('mapbox-token');
+        if (stored) setMapboxToken(stored);
       }
+      setLoading(false);
     };
-
-    fetchMapboxToken();
+    getToken();
   }, []);
 
   // Initialize map
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current || map.current) return;
 
-    setIsLoadingMap(true);
-    
     mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12', // Changed to streets style
       center: [-95.7129, 37.0902],
       zoom: 4
     });
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    map.current.on('load', () => {
-      setIsLoadingMap(false);
-    });
-
     return () => {
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
-      map.current?.remove();
-      map.current = null;
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
   }, [mapboxToken]);
 
-  // Fetch jobs data
+  // Fetch jobs data - completely isolated from React Query
   useEffect(() => {
-    const fetchJobs = async () => {
-      if (!selectedDate) return;
+    if (!selectedDate || !mapboxToken) return;
 
-      setIsLoadingJobs(true);
-      
+    const fetchData = async () => {
       try {
-        const dateString = selectedDate.toISOString().split('T')[0];
-        
-        let query = supabase
+        // Convert date to string for SQL query
+        const dateStr = selectedDate.getFullYear() + '-' + 
+          String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(selectedDate.getDate()).padStart(2, '0');
+
+        // Direct Supabase call - no React Query
+        const { data: jobsData } = await supabase
           .from('jobs')
           .select(`
-            *,
-            customers!inner(*),
-            profiles(*),
-            vehicles(*)
+            id,
+            job_number,
+            job_type,
+            status,
+            customer_id,
+            driver_id,
+            vehicle_id,
+            gps_coordinates,
+            customers (
+              id,
+              name
+            ),
+            profiles (
+              id,
+              first_name,
+              last_name
+            ),
+            vehicles (
+              id,
+              license_plate
+            )
           `)
-          .eq('scheduled_date', dateString);
+          .eq('scheduled_date', dateStr);
 
-        if (searchTerm) {
-          query = query.or(`job_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%`);
-        }
-
-        if (selectedDriver && selectedDriver !== 'all') {
-          query = query.eq('driver_id', selectedDriver);
-        }
-
-        if (jobType && jobType !== 'all') {
-          query = query.eq('job_type', jobType);
-        }
-
-        if (status && status !== 'all') {
-          query = query.eq('status', status);
-        }
-
-        const { data: jobsData, error: jobsError } = await query;
-
-        if (jobsError) {
-          console.error('Error fetching jobs:', jobsError);
-          return;
-        }
+        // Get service locations
+        const { data: locationsData } = await supabase
+          .from('customer_service_locations')
+          .select('id, customer_id, gps_coordinates');
 
         setJobs(jobsData || []);
-
-        // Fetch service locations
-        const { data: locationsData, error: locationsError } = await supabase
-          .from('customer_service_locations')
-          .select('*');
-
-        if (!locationsError) {
-          setServiceLocations(locationsData || []);
-        }
+        setServiceLocations(locationsData || []);
 
       } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoadingJobs(false);
+        console.error('Fetch error:', error);
+        setJobs([]);
+        setServiceLocations([]);
       }
     };
 
-    fetchJobs();
-  }, [selectedDate, searchTerm, selectedDriver, jobType, status]);
+    fetchData();
+  }, [selectedDate, mapboxToken]);
 
-  // Create map pins
+  // Create pins - your exact working pattern
   useEffect(() => {
     if (!map.current || !jobs.length) return;
 
@@ -189,230 +138,175 @@ const JobsMapPage: React.FC<JobsMapViewProps> = ({
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
-    const coordinates: [number, number][] = [];
+    const bounds = new mapboxgl.LngLatBounds();
+    let hasCoordinates = false;
 
     jobs.forEach(job => {
-      let jobCoordinates: [number, number] | null = null;
+      let coordinates = null;
 
-      // Use job's GPS coordinates if available
+      // Try job coordinates first
       if (job.gps_coordinates && Array.isArray(job.gps_coordinates) && job.gps_coordinates.length === 2) {
-        jobCoordinates = [job.gps_coordinates[1], job.gps_coordinates[0]]; // [lng, lat]
+        coordinates = [job.gps_coordinates[1], job.gps_coordinates[0]]; // [lng, lat]
       } else {
-        // Find customer's default service location
-        const serviceLocation = serviceLocations.find(loc => 
+        // Find service location
+        const location = serviceLocations.find(loc => 
           loc.customer_id === job.customer_id && 
           loc.gps_coordinates && 
           Array.isArray(loc.gps_coordinates) && 
           loc.gps_coordinates.length === 2
         );
-        
-        if (serviceLocation?.gps_coordinates) {
-          jobCoordinates = [serviceLocation.gps_coordinates[1], serviceLocation.gps_coordinates[0]]; // [lng, lat]
+        if (location) {
+          coordinates = [location.gps_coordinates[1], location.gps_coordinates[0]]; // [lng, lat]
         }
       }
 
-      if (!jobCoordinates) return;
+      if (!coordinates) return;
 
-      coordinates.push(jobCoordinates);
+      hasCoordinates = true;
+      bounds.extend(coordinates);
 
-      // Get pin color based on job type
-      const getPinColor = (type: string) => {
-        switch (type) {
-          case 'delivery': return '#3B82F6';
-          case 'pickup': return '#EF4444';
-          case 'service': return '#F59E0B';
-          case 'return': return '#10B981';
-          default: return '#6B7280';
-        }
+      // Pin colors
+      const colors = {
+        delivery: '#3B82F6',
+        pickup: '#EF4444', 
+        service: '#F59E0B',
+        return: '#10B981'
       };
 
-      // Get job type code
-      const getJobTypeCode = (type: string) => {
-        switch (type) {
-          case 'delivery': return 'D';
-          case 'pickup': return 'P';
-          case 'service': return 'S';
-          case 'return': return 'R';
-          default: return 'J';
-        }
+      // Job codes
+      const codes = {
+        delivery: 'D',
+        pickup: 'P',
+        service: 'S', 
+        return: 'R'
       };
 
-      const pinColor = getPinColor(job.job_type);
-      const jobTypeCode = getJobTypeCode(job.job_type);
+      const color = colors[job.job_type] || '#6B7280';
+      const code = codes[job.job_type] || 'J';
 
-      // Create pin element with inline styles (your exact pattern)
-      const pinElement = document.createElement('div');
-      pinElement.innerHTML = `
-        <div style="
-          width: 28px;
-          height: 28px;
-          background-color: ${pinColor};
-          border: 2px solid white;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 12px;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        ">${jobTypeCode}</div>
-      `;
+      // Create pin element - your exact inline pattern
+      const pinEl = document.createElement('div');
+      pinEl.innerHTML = `<div style="width: 28px; height: 28px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${code}</div>`;
 
-      // Add click handler
-      pinElement.addEventListener('click', (e) => {
+      // Click handler
+      pinEl.addEventListener('click', (e) => {
         e.stopPropagation();
         setSelectedPin(job);
       });
 
-      // Create and add marker
-      const marker = new mapboxgl.Marker(pinElement)
-        .setLngLat(jobCoordinates)
-        .addTo(map.current!);
+      // Add marker
+      const marker = new mapboxgl.Marker(pinEl)
+        .setLngLat(coordinates)
+        .addTo(map.current);
 
       markersRef.current.push(marker);
     });
 
-    // Fit map to show all pins
-    if (coordinates.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      coordinates.forEach(coord => bounds.extend(coord));
+    // Fit bounds
+    if (hasCoordinates) {
       map.current.fitBounds(bounds, { padding: 50 });
     }
   }, [jobs, serviceLocations]);
 
-  const handleTokenSubmit = (token: string) => {
-    localStorage.setItem('mapbox-token', token);
-    setMapboxToken(token);
-  };
-
-  const handleNavigateToLocation = (coordinates: [number, number]) => {
-    const [lng, lat] = coordinates;
-    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-    window.open(googleMapsUrl, '_blank');
-  };
-
-  if (isLoadingToken) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-lg">Loading Mapbox token...</div>
-      </div>
-    );
+  if (loading) {
+    return <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
   }
 
   if (!mapboxToken) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 space-y-4">
-        <div className="text-lg font-semibold">Mapbox Token Required</div>
-        <div className="text-sm text-muted-foreground text-center max-w-md">
-          Please enter your Mapbox public token to display the map.
-        </div>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Enter Mapbox token..."
-            className="px-3 py-2 border rounded-md"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleTokenSubmit((e.target as HTMLInputElement).value);
-              }
-            }}
-          />
-          <button
-            onClick={(e) => {
-              const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-              handleTokenSubmit(input.value);
-            }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
-          >
-            Submit
-          </button>
-        </div>
+      <div style={{ height: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+        <div>Enter Mapbox Token:</div>
+        <input 
+          type="text" 
+          placeholder="Mapbox token..."
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              const token = (e.target as HTMLInputElement).value;
+              localStorage.setItem('mapbox-token', token);
+              setMapboxToken(token);
+            }
+          }}
+          style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+        />
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-96">
-      {isLoadingMap && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
-          <div className="text-lg">Loading map...</div>
-        </div>
-      )}
+    <div style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
-      {isLoadingJobs && (
-        <div className="absolute top-4 left-4 bg-background/90 px-3 py-1 rounded-md shadow z-10">
-          <div className="text-sm">Loading jobs...</div>
-        </div>
-      )}
-
-      <div ref={mapContainer} className="w-full h-full rounded-lg" />
-
       {selectedPin && (
-        <Card className="absolute top-4 right-4 p-4 max-w-sm z-10">
-          <div className="space-y-2">
-            <div className="font-semibold">{selectedPin.job_number}</div>
-            <div className="text-sm text-muted-foreground">
-              Type: {selectedPin.job_type} | Status: {selectedPin.status}
+        <div style={{
+          position: 'absolute',
+          top: '16px',
+          right: '16px',
+          background: 'white',
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          maxWidth: '300px',
+          zIndex: 10
+        }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{selectedPin.job_number}</div>
+          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Type: {selectedPin.job_type}</div>
+          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Status: {selectedPin.status}</div>
+          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Customer: {selectedPin.customers?.name}</div>
+          {selectedPin.profiles && (
+            <div style={{ fontSize: '14px', marginBottom: '4px' }}>
+              Driver: {selectedPin.profiles.first_name} {selectedPin.profiles.last_name}
             </div>
-            <div className="text-sm">
-              Customer: {selectedPin.customers?.name}
+          )}
+          {selectedPin.vehicles && (
+            <div style={{ fontSize: '14px', marginBottom: '8px' }}>
+              Vehicle: {selectedPin.vehicles.license_plate}
             </div>
-            {selectedPin.profiles && (
-              <div className="text-sm">
-                Driver: {selectedPin.profiles.first_name} {selectedPin.profiles.last_name}
-              </div>
-            )}
-            {selectedPin.vehicles && (
-              <div className="text-sm">
-                Vehicle: {selectedPin.vehicles.license_plate}
-              </div>
-            )}
-            {selectedPin.gps_coordinates && (
-              <button
-                onClick={() => handleNavigateToLocation([
-                  selectedPin.gps_coordinates![1],
-                  selectedPin.gps_coordinates![0]
-                ])}
-                className="w-full px-3 py-1 bg-primary text-primary-foreground rounded-md text-sm"
-              >
-                Navigate
-              </button>
-            )}
-            <button
-              onClick={() => setSelectedPin(null)}
-              className="w-full px-3 py-1 bg-secondary text-secondary-foreground rounded-md text-sm"
-            >
-              Close
-            </button>
-          </div>
-        </Card>
+          )}
+          <button 
+            onClick={() => setSelectedPin(null)}
+            style={{ 
+              padding: '4px 8px', 
+              background: '#f0f0f0', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: 'pointer' 
+            }}
+          >
+            Close
+          </button>
+        </div>
       )}
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-background/90 p-3 rounded-md shadow z-10">
-        <div className="text-sm font-semibold mb-2">Job Types</div>
-        <div className="space-y-1 text-xs">
-          <div className="flex items-center space-x-2">
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
-            <span>Delivery (D)</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#EF4444', borderRadius: '50%' }}></div>
-            <span>Pickup (P)</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#F59E0B', borderRadius: '50%' }}></div>
-            <span>Service (S)</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#10B981', borderRadius: '50%' }}></div>
-            <span>Return (R)</span>
-          </div>
+      <div style={{
+        position: 'absolute',
+        bottom: '16px',
+        left: '16px',
+        background: 'rgba(255,255,255,0.9)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        zIndex: 10
+      }}>
+        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Job Types</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
+          <span>Delivery (D)</span>
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">
-          Jobs for {selectedDate.toLocaleDateString()}: {jobs.length}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#EF4444', borderRadius: '50%' }}></div>
+          <span>Pickup (P)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#F59E0B', borderRadius: '50%' }}></div>
+          <span>Service (S)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#10B981', borderRadius: '50%' }}></div>
+          <span>Return (R)</span>
+        </div>
+        <div style={{ fontSize: '11px', color: '#666' }}>
+          Jobs: {jobs.length}
         </div>
       </div>
     </div>
