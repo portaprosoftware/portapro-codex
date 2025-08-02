@@ -154,7 +154,7 @@ export function AddPinSlider({
       container: mapContainer.current,
       style: mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v12',
       center: center,
-      zoom: 14,
+      zoom: 18,
     });
 
     // Set loading to false once map is ready
