@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 import { useJobsWithDateRange } from '@/hooks/useJobsWithDateRange';
+import { useJobSearch } from '@/hooks/useJobSearch';
 import { CustomJobFilters } from '@/components/jobs/CustomJobFilters';
 import { CustomJobsList } from '@/components/jobs/CustomJobsList';
 import { exportJobsToCSV } from '@/utils/jobsExport';
@@ -62,6 +63,30 @@ const JobsPage: React.FC = () => {
   const createJobMutation = useCreateJob();
   const queryClient = useQueryClient();
   const { toast: showToast } = useToast();
+
+  // Smart job search for cross-date navigation
+  const { data: foundJob } = useJobSearch(searchTerm.length > 2 ? searchTerm : undefined);
+
+  // Handle smart job search and date navigation
+  const handleSmartSearch = useCallback((jobId: string) => {
+    if (!foundJob) return;
+    
+    const jobDate = new Date(foundJob.scheduled_date);
+    const currentDate = selectedDate;
+    
+    // If job is found but not on current date, navigate to that date
+    if (formatDateForQuery(jobDate) !== formatDateForQuery(currentDate)) {
+      setSelectedDate(jobDate);
+      toast.success(`Found job ${foundJob.job_number} on ${format(jobDate, 'MMM d, yyyy')} - navigating...`);
+    }
+  }, [foundJob, selectedDate, toast]);
+
+  // Trigger smart search when a job is found
+  useEffect(() => {
+    if (foundJob && searchTerm.length > 2 && activeTab !== 'custom') {
+      handleSmartSearch(searchTerm);
+    }
+  }, [foundJob, searchTerm, handleSmartSearch, activeTab]);
 
   // Mutation to update job assignment
   const updateJobAssignmentMutation = useMutation({
@@ -155,6 +180,8 @@ const JobsPage: React.FC = () => {
       setActiveTab('dispatch');
     } else if (location.pathname.includes('/map')) {
       setActiveTab('map');
+    } else if (location.pathname.includes('/custom')) {
+      setActiveTab('custom');
     } else if (location.pathname === '/jobs') {
       // Default to calendar view for /jobs route
       setActiveTab('calendar');
