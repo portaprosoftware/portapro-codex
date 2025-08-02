@@ -86,8 +86,8 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
             <Package className="w-5 h-5" />
             Manage Inventory Template for "{pinName}"
           </DialogTitle>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-            <p className="text-sm text-blue-800">
+          <div className="bg-muted/50 border border-border rounded-lg p-4 mt-4">
+            <p className="text-sm text-foreground">
               <strong>Note:</strong> Assigning inventory here is purely for reference and does not reserve or alter your actual stock levels. 
               When you go to add these items to a new job, you'll have a chance to select and confirm the exact units and dates, ensuring real-time availability. 
               This module simply records the typical types and quantities you usually assign to this pin for repeat events.
@@ -107,8 +107,8 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="current" className="flex-1 mt-6">
-            <div className="h-full overflow-hidden">
+          <TabsContent value="current" className="flex-1 mt-6 flex flex-col">
+            <div className="flex-1 overflow-hidden">
               <AssignedInventoryList
                 coordinateId={coordinateId}
                 onDelete={() => onInventoryUpdated?.()}
@@ -122,7 +122,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
             </div>
           </TabsContent>
 
-          <TabsContent value="assign" className="flex-1 mt-6">
+          <TabsContent value="assign" className="flex-1 mt-6 flex flex-col">
             <div className="space-y-4 h-full flex flex-col">
               <div className="flex-1 overflow-hidden">
                 <PinInventorySelector
