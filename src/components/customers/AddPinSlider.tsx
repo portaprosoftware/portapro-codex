@@ -113,9 +113,25 @@ export function AddPinSlider({
     let zoom = 4;
 
     // Priority 1: Use existing GPS coordinates
-    if (serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y) {
-      center = [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y];
-      zoom = 15;
+    if (serviceLocation?.gps_coordinates) {
+      let lng, lat;
+      if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
+        if ('x' in serviceLocation.gps_coordinates && 'y' in serviceLocation.gps_coordinates) {
+          lng = serviceLocation.gps_coordinates.x;
+          lat = serviceLocation.gps_coordinates.y;
+        } else if (Array.isArray(serviceLocation.gps_coordinates)) {
+          lng = serviceLocation.gps_coordinates[0];
+          lat = serviceLocation.gps_coordinates[1];
+        }
+      }
+      
+      // Validate coordinates are valid numbers
+      if (typeof lng === 'number' && typeof lat === 'number' && 
+          !isNaN(lng) && !isNaN(lat) && 
+          lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+        center = [lng, lat];
+        zoom = 15;
+      }
     }
     // Priority 2: Use geocoded coordinates
     else if (addressCoordinates) {
@@ -144,7 +160,26 @@ export function AddPinSlider({
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Add address marker if coordinates exist (only once during initialization)
-    const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
+    let markerCoords: [number, number] | null = null;
+    
+    if (serviceLocation?.gps_coordinates) {
+      let lng, lat;
+      if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
+        if ('x' in serviceLocation.gps_coordinates && 'y' in serviceLocation.gps_coordinates) {
+          lng = serviceLocation.gps_coordinates.x;
+          lat = serviceLocation.gps_coordinates.y;
+        }
+      }
+      
+      if (typeof lng === 'number' && typeof lat === 'number' && 
+          !isNaN(lng) && !isNaN(lat) && 
+          lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+        markerCoords = [lng, lat];
+      }
+    } else if (addressCoordinates) {
+      markerCoords = addressCoordinates;
+    }
+    
     if (markerCoords) {
       addressMarker.current = new mapboxgl.Marker({
         color: '#3b82f6',
@@ -225,7 +260,22 @@ export function AddPinSlider({
       map.current.setStyle(newStyle);
       map.current.once('styledata', () => {
         // Re-add address marker after style loads (style change removes all markers)
-        const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
+        const markerCoords = (() => {
+          if (serviceLocation?.gps_coordinates) {
+            let lng, lat;
+            if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
+              if ('x' in serviceLocation.gps_coordinates && 'y' in serviceLocation.gps_coordinates) {
+                lng = serviceLocation.gps_coordinates.x;
+                lat = serviceLocation.gps_coordinates.y;
+              }
+            }
+            if (typeof lng === 'number' && typeof lat === 'number' && 
+                !isNaN(lng) && !isNaN(lat)) {
+              return [lng, lat] as [number, number];
+            }
+          }
+          return addressCoordinates;
+        })();
         if (markerCoords) {
           // Remove existing marker reference since style change cleared it
           addressMarker.current = null;
