@@ -124,10 +124,12 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
       container: mapContainer.current,
       style: getMapStyleUrl(mapStyle),
       center: [-95.7129, 37.0902],
-      zoom: 4
+      zoom: 4,
+      attributionControl: false
     });
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
     return () => {
       markersRef.current.forEach(marker => marker.remove());
