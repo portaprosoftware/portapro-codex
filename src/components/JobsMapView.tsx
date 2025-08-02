@@ -40,12 +40,33 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   });
 
   // Get jobs data with proper "all" filter handling
-  const { data: jobs, isLoading: jobsLoading } = useJobs({
+  const { data: jobs, isLoading: jobsLoading, error: jobsError } = useJobs({
     date: dateString,
     status: selectedStatus === 'all' ? undefined : selectedStatus,
     driver_id: selectedDriver === 'all' ? undefined : selectedDriver,
     job_type: selectedJobType === 'all' ? undefined : selectedJobType,
   });
+
+  // Enhanced debugging for jobs data
+  console.log('JobsMapView: Jobs loading state:', jobsLoading);
+  console.log('JobsMapView: Jobs error:', jobsError);
+  console.log('JobsMapView: Jobs data:', jobs);
+  console.log('JobsMapView: Jobs count:', jobs?.length || 0);
+  
+  // Log individual job details for debugging
+  if (jobs && jobs.length > 0) {
+    jobs.forEach((job, index) => {
+      console.log(`Job ${index + 1}:`, {
+        job_number: job.job_number,
+        customer_id: job.customer_id,
+        customer_name: job.customers?.name,
+        scheduled_date: job.scheduled_date,
+        status: job.status,
+        driver_id: job.driver_id,
+        job_type: job.job_type
+      });
+    });
+  }
 
   // Get Mapbox token
   useEffect(() => {
@@ -118,14 +139,40 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
   // Add job pins to map
   useEffect(() => {
-    if (!map.current || !jobs || jobs.length === 0) {
-      console.log('Map pin loading skipped:', { 
-        hasMap: !!map.current, 
-        jobsCount: jobs?.length || 0 
+    console.log('Pin effect triggered:', {
+      hasMap: !!map.current,
+      mapLoaded: map.current?.loaded(),
+      jobsCount: jobs?.length || 0,
+      jobsLoading,
+      jobsError
+    });
+
+    if (!map.current) {
+      console.log('Map not initialized yet');
+      return;
+    }
+
+    if (jobsLoading) {
+      console.log('Jobs still loading, waiting...');
+      return;
+    }
+
+    if (jobsError) {
+      console.error('Jobs error:', jobsError);
+      return;
+    }
+
+    if (!jobs || jobs.length === 0) {
+      console.log('No jobs data available:', { 
+        jobs: jobs,
+        hasJobs: !!jobs,
+        jobsLength: jobs?.length,
+        isArray: Array.isArray(jobs)
       });
       return;
     }
 
+    console.log('READY TO ADD PINS - All conditions met!');
     console.log('Starting to add pins for', jobs.length, 'jobs');
 
     const addPins = async () => {
