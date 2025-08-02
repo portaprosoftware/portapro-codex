@@ -101,27 +101,30 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
             {job.job_number}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col gap-1">
-            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
-              {statusInfo.primary.label}
+        <div className="flex flex-col gap-1">
+          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
+            {statusInfo.primary.label}
+          </Badge>
+          {statusInfo.secondary && (
+            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
+              {statusInfo.secondary.label}
             </Badge>
-            {statusInfo.secondary && (
-              <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
-                {statusInfo.secondary.label}
-              </Badge>
-            )}
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleViewJob}
-            className="h-6 w-6 p-0 hover:bg-gray-100"
-            aria-label={`View job ${job.job_number}`}
-          >
-            <Eye className="w-3 h-3" />
-          </Button>
+          )}
         </div>
+      </div>
+
+      {/* View Button under job name */}
+      <div className="mb-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleViewJob}
+          className="h-6 px-2 text-xs border-gray-300 hover:bg-gray-50"
+          aria-label={`View job ${job.job_number}`}
+        >
+          <Eye className="w-3 h-3 mr-1" />
+          View
+        </Button>
       </div>
 
       {/* Customer Name */}

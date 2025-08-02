@@ -376,7 +376,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[900px] h-[600px] max-w-none">
+      <DialogContent className="w-[900px] h-[80vh] max-w-none flex flex-col">
         <DialogHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -474,7 +474,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
           </div>
         ) : job ? (
-          <div className="overflow-y-auto flex-1 space-y-6 pr-2">
+          <div className="overflow-y-auto flex-1 space-y-6 pr-2 pb-4">
             {/* Details Section */}
             <div className="grid grid-cols-2 gap-6">
               {/* Schedule Information */}
@@ -894,7 +894,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
         {/* Action Buttons Footer */}
         {job && (
-          <DialogFooter className="flex justify-between items-center pt-4 border-t">
+          <DialogFooter className="flex justify-between items-center pt-4 border-t bg-white sticky bottom-0">
             {showReverseButton && (
               <Button
                 variant="outline"
