@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useJobs } from '@/hooks/useJobs';
+import { JobDetailModal } from '@/components/jobs/JobDetailModal';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { X, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 
 interface JobsMapViewProps {
@@ -17,10 +24,37 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   
   const [mapboxToken, setMapboxToken] = useState<string>('');
-  const [jobs, setJobs] = useState<any[]>([]);
   const [serviceLocations, setServiceLocations] = useState<any[]>([]);
-  const [selectedPin, setSelectedPin] = useState<any>(null);
+  const [selectedJobsAtLocation, setSelectedJobsAtLocation] = useState<any[]>([]);
+  const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Use the same data fetching as other views - this ensures data consistency
+  const formatDateForQuery = (date: Date) => {
+    return date.getFullYear() + '-' + 
+      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(date.getDate()).padStart(2, '0');
+  };
+
+  const { data: allJobs = [] } = useJobs({
+    date: formatDateForQuery(selectedDate),
+    job_type: jobType !== 'all' ? jobType : undefined,
+    status: status !== 'all' ? status : undefined,
+    driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
+  });
+
+  // Apply the same filtering logic as other views
+  const filterJobs = (jobs: any[]) => {
+    return jobs.filter(job => {
+      const matchesSearch = searchTerm === '' || 
+        job.job_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.customers?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return matchesSearch;
+    });
+  };
+
+  const filteredJobs = filterJobs(allJobs);
 
   // Get Mapbox token
   useEffect(() => {
@@ -73,65 +107,27 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     };
   }, [mapboxToken]);
 
-  // Fetch jobs data - completely isolated from React Query
+  // Fetch service locations separately
   useEffect(() => {
-    if (!selectedDate || !mapboxToken) return;
-
-    const fetchData = async () => {
+    const fetchServiceLocations = async () => {
       try {
-        // Convert date to string for SQL query
-        const dateStr = selectedDate.getFullYear() + '-' + 
-          String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + 
-          String(selectedDate.getDate()).padStart(2, '0');
-
-        // Direct Supabase call - no React Query
-        const { data: jobsData } = await supabase
-          .from('jobs')
-          .select(`
-            id,
-            job_number,
-            job_type,
-            status,
-            customer_id,
-            driver_id,
-            vehicle_id,
-            customers (
-              id,
-              name
-            ),
-            profiles (
-              id,
-              first_name,
-              last_name
-            ),
-            vehicles (
-              id,
-              license_plate
-            )
-          `)
-          .eq('scheduled_date', dateStr);
-
-        // Get service locations
         const { data: locationsData } = await supabase
           .from('customer_service_locations')
           .select('id, customer_id, gps_coordinates');
 
-        setJobs(jobsData || []);
         setServiceLocations(locationsData || []);
-
       } catch (error) {
-        console.error('Fetch error:', error);
-        setJobs([]);
+        console.error('Service locations fetch error:', error);
         setServiceLocations([]);
       }
     };
 
-    fetchData();
-  }, [selectedDate, mapboxToken]);
+    fetchServiceLocations();
+  }, []);
 
-  // Create pins - your exact working pattern
+  // Create pins with multiple jobs per location support
   useEffect(() => {
-    if (!map.current || !jobs.length) return;
+    if (!map.current || !filteredJobs.length) return;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove());
@@ -140,28 +136,42 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     const bounds = new mapboxgl.LngLatBounds();
     let hasCoordinates = false;
 
-    jobs.forEach(job => {
-      let coordinates = null;
-
-      // Jobs don't have gps_coordinates, so find service location
+    // Group jobs by customer location
+    const jobsByLocation = new Map();
+    
+    filteredJobs.forEach(job => {
       const location = serviceLocations.find(loc => 
         loc.customer_id === job.customer_id && 
         loc.gps_coordinates
       );
       
       if (location?.gps_coordinates) {
-        // Parse coordinates from string format "(-81.83824,41.36749)"
-        const coordStr = location.gps_coordinates.replace(/[()]/g, '');
-        const [lng, lat] = coordStr.split(',').map(parseFloat);
-        coordinates = [lng, lat];
+        const key = `${job.customer_id}-${location.gps_coordinates}`;
+        if (!jobsByLocation.has(key)) {
+          jobsByLocation.set(key, {
+            location,
+            jobs: [],
+            coordinates: null
+          });
+        }
+        jobsByLocation.get(key).jobs.push(job);
       }
+    });
 
-      if (!coordinates) return;
+    // Create pins for each location
+    jobsByLocation.forEach(({ location, jobs, coordinates: _, customer_id }) => {
+      // Parse coordinates from string format "(-81.83824,41.36749)"
+      const coordStr = location.gps_coordinates.replace(/[()]/g, '');
+      const [lng, lat] = coordStr.split(',').map(parseFloat);
+      const coordinates: [number, number] = [lng, lat];
+
+      if (!coordinates || isNaN(lng) || isNaN(lat)) return;
 
       hasCoordinates = true;
       bounds.extend(coordinates);
 
-      // Pin colors
+      // Pin colors - use first job's type for color, but show count
+      const firstJob = jobs[0];
       const colors = {
         delivery: '#3B82F6',
         pickup: '#EF4444', 
@@ -169,31 +179,40 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         return: '#10B981'
       };
 
-      // Job codes
-      const codes = {
-        delivery: 'D',
-        pickup: 'P',
-        service: 'S', 
-        return: 'R'
-      };
+      const color = colors[firstJob.job_type] || '#6B7280';
+      const count = jobs.length;
 
-      const color = colors[job.job_type] || '#6B7280';
-      const code = codes[job.job_type] || 'J';
-
-      // Create pin element - your exact inline pattern
+      // Create pin element with job count
       const pinEl = document.createElement('div');
-      pinEl.innerHTML = `<div style="width: 28px; height: 28px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${code}</div>`;
+      if (count === 1) {
+        // Single job - show job type code
+        const codes = {
+          delivery: 'D',
+          pickup: 'P',
+          service: 'S', 
+          return: 'R'
+        };
+        const code = codes[firstJob.job_type] || 'J';
+        pinEl.innerHTML = `<div style="width: 28px; height: 28px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${code}</div>`;
+      } else {
+        // Multiple jobs - show count
+        pinEl.innerHTML = `<div style="width: 32px; height: 32px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${count}</div>`;
+      }
 
       // Click handler
       pinEl.addEventListener('click', (e) => {
         e.stopPropagation();
-        setSelectedPin(job);
+        if (jobs.length === 1) {
+          setSelectedJobForModal(jobs[0].id);
+        } else {
+          setSelectedJobsAtLocation(jobs);
+        }
       });
 
       // Add marker
       const marker = new mapboxgl.Marker(pinEl)
         .setLngLat(coordinates)
-        .addTo(map.current);
+        .addTo(map.current!);
 
       markersRef.current.push(marker);
     });
@@ -202,7 +221,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     if (hasCoordinates) {
       map.current.fitBounds(bounds, { padding: 50 });
     }
-  }, [jobs, serviceLocations]);
+  }, [filteredJobs, serviceLocations]);
 
   if (loading) {
     return <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
@@ -228,50 +247,97 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     );
   }
 
+  const getJobTypeColor = (type: string) => {
+    const colors = {
+      delivery: 'bg-blue-500',
+      pickup: 'bg-red-500',
+      service: 'bg-amber-500',
+      return: 'bg-green-500'
+    };
+    return colors[type] || 'bg-gray-500';
+  };
+
+  const getStatusColor = (status: string) => {
+    const colors = {
+      assigned: 'bg-blue-100 text-blue-800',
+      in_progress: 'bg-yellow-100 text-yellow-800',
+      completed: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '400px' }}>
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
-      {selectedPin && (
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px',
-          background: 'white',
-          padding: '16px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          maxWidth: '300px',
-          zIndex: 10
-        }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{selectedPin.job_number}</div>
-          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Type: {selectedPin.job_type}</div>
-          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Status: {selectedPin.status}</div>
-          <div style={{ fontSize: '14px', marginBottom: '4px' }}>Customer: {selectedPin.customers?.name}</div>
-          {selectedPin.profiles && (
-            <div style={{ fontSize: '14px', marginBottom: '4px' }}>
-              Driver: {selectedPin.profiles.first_name} {selectedPin.profiles.last_name}
+      {/* Multiple Jobs Selection Popup */}
+      {selectedJobsAtLocation.length > 0 && (
+        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg border max-w-md z-20">
+          <div className="p-4 border-b">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold">Select Job</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedJobsAtLocation([])}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
-          )}
-          {selectedPin.vehicles && (
-            <div style={{ fontSize: '14px', marginBottom: '8px' }}>
-              Vehicle: {selectedPin.vehicles.license_plate}
-            </div>
-          )}
-          <button 
-            onClick={() => setSelectedPin(null)}
-            style={{ 
-              padding: '4px 8px', 
-              background: '#f0f0f0', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer' 
-            }}
-          >
-            Close
-          </button>
+            <p className="text-sm text-gray-600 mt-1">
+              {selectedJobsAtLocation.length} jobs at this location
+            </p>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            {selectedJobsAtLocation.map((job, index) => (
+              <div key={job.id} className="p-3 border-b last:border-b-0 hover:bg-gray-50">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-medium text-sm">{job.job_number}</span>
+                      <Badge className={getJobTypeColor(job.job_type)} variant="secondary">
+                        {job.job_type}
+                      </Badge>
+                      <Badge className={getStatusColor(job.status)} variant="outline">
+                        {job.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-600">{job.customers?.name}</p>
+                    {job.profiles && (
+                      <p className="text-xs text-gray-500">
+                        Driver: {job.profiles.first_name} {job.profiles.last_name}
+                      </p>
+                    )}
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedJobsAtLocation([]);
+                      setSelectedJobForModal(job.id);
+                    }}
+                    className="ml-2"
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    View
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Job Detail Modal */}
+      <JobDetailModal
+        jobId={selectedJobForModal}
+        open={!!selectedJobForModal}
+        onOpenChange={(open) => {
+          if (!open) setSelectedJobForModal(null);
+        }}
+      />
 
       {/* Legend */}
       <div style={{
@@ -302,7 +368,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
           <span>Return (R)</span>
         </div>
         <div style={{ fontSize: '11px', color: '#666' }}>
-          Jobs: {jobs.length}
+          Jobs: {filteredJobs.length}
         </div>
       </div>
     </div>
