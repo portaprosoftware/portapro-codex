@@ -89,8 +89,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [-84.6229, 41.0846], // ABC Carnival coordinates
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [-81.83824, 41.36749], // Updated to match actual job coordinates
         zoom: 12,
       });
 
@@ -171,10 +171,11 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             );
 
             if (location?.gps_coordinates) {
-              // Parse GPS coordinates (POINT format: POINT(lng lat))
-              const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
+              // Parse GPS coordinates from (lng,lat) format
+              const coordString = String(location.gps_coordinates);
+              const coords = coordString.match(/\(([^)]+)\)/)?.[1];
               if (coords) {
-                const [lng, lat] = coords.split(' ').map(Number);
+                const [lng, lat] = coords.split(',').map(coord => parseFloat(coord.trim()));
                 coordinates = [lng, lat];
                 console.log(`Using default location for job ${job.job_number}: [${lng}, ${lat}]`);
               }
@@ -205,15 +206,21 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
               .setLngLat([lng, lat])
               .addTo(map.current!);
 
-            // Add click handler
+            // Add click handler with simplified data
             marker.getElement().addEventListener('click', () => {
-              setSelectedPin({
-                ...job,
+              const pinData = {
+                job_number: job.job_number,
+                job_type: job.job_type,
+                status: job.status,
                 coordinates: [lng, lat],
+                customer_name: job.customers?.name,
+                driver_name: job.profiles ? `${job.profiles.first_name} ${job.profiles.last_name}` : null,
+                vehicle_plate: job.vehicles?.license_plate,
                 locationName: locations?.find(loc => 
                   loc.customer_id === job.customer_id && loc.is_default
                 )?.location_name || 'Service Location',
-              });
+              };
+              setSelectedPin(pinData);
             });
 
             bounds.extend([lng, lat]);
@@ -327,15 +334,15 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             </div>
             
             <div className="space-y-2 text-sm">
-              <div><strong>Customer:</strong> {selectedPin.customers?.name}</div>
+              <div><strong>Customer:</strong> {selectedPin.customer_name}</div>
               <div><strong>Type:</strong> {selectedPin.job_type}</div>
               <div><strong>Status:</strong> {selectedPin.status}</div>
               <div><strong>Location:</strong> {selectedPin.locationName}</div>
-              {selectedPin.drivers && (
-                <div><strong>Driver:</strong> {selectedPin.drivers.first_name} {selectedPin.drivers.last_name}</div>
+              {selectedPin.driver_name && (
+                <div><strong>Driver:</strong> {selectedPin.driver_name}</div>
               )}
-              {selectedPin.vehicles && (
-                <div><strong>Vehicle:</strong> {selectedPin.vehicles.license_plate}</div>
+              {selectedPin.vehicle_plate && (
+                <div><strong>Vehicle:</strong> {selectedPin.vehicle_plate}</div>
               )}
             </div>
 
