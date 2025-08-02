@@ -505,7 +505,7 @@ const JobsPage: React.FC = () => {
                     <div className="p-4 border-b border-gray-200">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-4">
-                          <span className="text-sm font-medium">1 job</span>
+                          <span className="text-sm font-medium">{dispatchJobs.length} jobs</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
                           <div className="flex items-center gap-2">
@@ -531,15 +531,29 @@ const JobsPage: React.FC = () => {
                         <span className="font-medium text-gray-900">
                           {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                         </span>
-                        <span className="text-sm text-gray-600">1 job scheduled</span>
+                        <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
                       </div>
                     </div>
 
                     {/* Driver Columns */}
                     <div className="p-6">
                       <div className="grid grid-cols-3 gap-6">
-                        {drivers.slice(0, 3).map(driver => {
-                          const driverJobs = filterJobs(getJobsByDriver(driver.id));
+                        {/* Get drivers who actually have jobs for this date, plus first few available drivers */}
+                        {(() => {
+                          const driversWithJobs = drivers.filter(driver => 
+                            getJobsByDriver(driver.id).length > 0
+                          );
+                          
+                          // Get drivers without jobs to fill remaining slots
+                          const driversWithoutJobs = drivers.filter(driver => 
+                            getJobsByDriver(driver.id).length === 0
+                          ).slice(0, Math.max(0, 3 - driversWithJobs.length));
+                          
+                          // Combine and limit to 3 total columns
+                          const displayDrivers = [...driversWithJobs, ...driversWithoutJobs].slice(0, 3);
+                          
+                          return displayDrivers.map(driver => {
+                            const driverJobs = filterJobs(getJobsByDriver(driver.id));
                           
                           return (
                             <div key={driver.id} className="space-y-4">
@@ -608,8 +622,9 @@ const JobsPage: React.FC = () => {
                                 )}
                               </Droppable>
                             </div>
-                          );
-                        })}
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
                   </div>
