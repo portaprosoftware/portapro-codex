@@ -181,9 +181,31 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
       const newStyle = mapStyle === 'satellite' 
         ? 'mapbox://styles/mapbox/satellite-v9'
         : 'mapbox://styles/mapbox/streets-v12';
+      
+      // Force style change and re-render
       map.current.setStyle(newStyle);
+      map.current.once('styledata', () => {
+        // Re-add markers after style loads
+        const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y
+          ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number]
+          : addressCoordinates;
+          
+        if (markerCoords && addressMarker.current) {
+          addressMarker.current.remove();
+          addressMarker.current = new mapboxgl.Marker({ 
+            color: '#3b82f6',
+            scale: 1.2
+          })
+            .setLngLat(markerCoords)
+            .setPopup(new mapboxgl.Popup().setHTML(`
+              <strong>${serviceLocation.location_name}</strong><br/>
+              <small>${fullAddress}</small>
+            `))
+            .addTo(map.current!);
+        }
+      });
     }
-  }, [mapStyle]);
+  }, [mapStyle, serviceLocation, addressCoordinates, fullAddress]);
 
   const handleSave = async () => {
     if (!pinData.latitude || !pinData.longitude || !pinData.name.trim()) {
@@ -250,31 +272,31 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         <div className="flex-1 flex gap-6">
           {/* Map */}
           <div className="flex-1 relative">
-            <div className="absolute top-4 left-4 z-10 flex gap-2">
-              <Button
-                size="sm"
-                variant={mapStyle === 'street' ? 'default' : 'outline'}
-                onClick={() => setMapStyle('street')}
-                className={mapStyle === 'street' 
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                  : "bg-background/90 backdrop-blur text-foreground border-border hover:bg-accent hover:text-accent-foreground"
-                }
-              >
-                <Map className="w-4 h-4 mr-1" />
-                Street
-              </Button>
-              <Button
-                size="sm"
-                variant={mapStyle === 'satellite' ? 'default' : 'outline'}
-                onClick={() => setMapStyle('satellite')}
-                className={mapStyle === 'satellite' 
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                  : "bg-background/90 backdrop-blur text-foreground border-border hover:bg-accent hover:text-accent-foreground"
-                }
-              >
-                <Satellite className="w-4 h-4 mr-1" />
-                Satellite
-              </Button>
+            <div className="absolute top-4 left-4 z-10">
+              <div className="bg-white rounded-lg shadow-lg border border-gray-200 flex overflow-hidden">
+                <button
+                  onClick={() => setMapStyle('satellite')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    mapStyle === 'satellite'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Satellite className="w-4 h-4 mr-2 inline" />
+                  Satellite
+                </button>
+                <button
+                  onClick={() => setMapStyle('street')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    mapStyle === 'street'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Map className="w-4 h-4 mr-2 inline" />
+                  Streets
+                </button>
+              </div>
             </div>
             
             <div ref={mapContainer} className="w-full h-full rounded-lg" />
