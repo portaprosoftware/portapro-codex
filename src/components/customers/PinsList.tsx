@@ -121,15 +121,15 @@ export function PinsList({ pins, isLoading, onPinDeleted, onAssignInventory }: P
       </div>
 
       {/* Pins list */}
-      <div className="max-h-96 overflow-y-auto space-y-3">
+      <div className="max-h-96 overflow-y-auto space-y-3 px-3">
         {pins.map((pin) => (
           <div key={pin.id} className="flex items-start gap-3">
             <Checkbox
               checked={selectedPins.has(pin.id)}
               onCheckedChange={(checked) => handleSelectPin(pin.id, checked as boolean)}
-              className="mt-3"
+              className="mt-3 flex-shrink-0"
             />
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <PinCard pin={pin} onAssignInventory={onAssignInventory} />
             </div>
           </div>

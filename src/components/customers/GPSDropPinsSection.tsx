@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AddPinModal } from './AddPinModal';
 import { PinsList } from './PinsList';
-import { PinInventorySlider } from './PinInventorySlider';
+import { PinInventoryModal } from './PinInventoryModal';
 import { MapView } from './MapView';
 import { PinsMapSlider } from './PinsMapSlider';
 import { MapPin, Plus, Map } from 'lucide-react';
@@ -39,7 +39,7 @@ interface ServiceLocation {
 export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isInventorySliderOpen, setIsInventorySliderOpen] = useState(false);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
   const [isMapSliderOpen, setIsMapSliderOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
 
@@ -98,12 +98,12 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
   const handleAssignInventory = (pin: Pin) => {
     setSelectedPin(pin);
-    setIsInventorySliderOpen(true);
+    setIsInventoryModalOpen(true);
   };
 
   const handleMapPinClick = (pin: Pin) => {
     setSelectedPin(pin);
-    setIsInventorySliderOpen(true);
+    setIsInventoryModalOpen(true);
   };
 
   const handleInventoryUpdated = () => {
@@ -185,7 +185,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                 className="flex items-center gap-2"
               >
                 <Map className="w-4 h-4" />
-                See Pins on Map
+                Enlarge Map
               </Button>
             </div>
 
@@ -250,9 +250,9 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       />
 
       {selectedPin && (
-        <PinInventorySlider
-          isOpen={isInventorySliderOpen}
-          onClose={() => setIsInventorySliderOpen(false)}
+        <PinInventoryModal
+          isOpen={isInventoryModalOpen}
+          onOpenChange={setIsInventoryModalOpen}
           coordinateId={selectedPin.id}
           pinName={selectedPin.point_name}
           onInventoryUpdated={handleInventoryUpdated}
