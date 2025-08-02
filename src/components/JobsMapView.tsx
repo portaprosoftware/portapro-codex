@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Navigation } from 'lucide-react';
 import { formatDateForQuery } from '@/lib/dateUtils';
 
+// Utility function to capitalize first letter of each word
+const capitalizeWords = (str: string): string => {
+  return str.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+};
+
 interface JobsMapViewProps {
   searchTerm?: string;
   selectedDriver?: string;
@@ -385,8 +392,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             
             <div className="space-y-2 text-sm">
               <div><strong>Customer:</strong> {selectedPin.customer_name}</div>
-              <div><strong>Type:</strong> {selectedPin.job_type}</div>
-              <div><strong>Status:</strong> {selectedPin.status}</div>
+              <div><strong>Type:</strong> {capitalizeWords(selectedPin.job_type)}</div>
+              <div><strong>Status:</strong> {capitalizeWords(selectedPin.status)}</div>
               <div><strong>Location:</strong> {selectedPin.locationName}</div>
               {selectedPin.driver_name && (
                 <div><strong>Driver:</strong> {selectedPin.driver_name}</div>
