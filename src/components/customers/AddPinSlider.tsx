@@ -198,7 +198,30 @@ export function AddPinSlider({
     return () => {
       // Cleanup handled in handleClose
     };
-  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle]);
+  }, [isOpen, mapboxToken, serviceLocation, fullAddress, mapStyle]);
+
+  // Update map center when geocoded coordinates become available
+  useEffect(() => {
+    if (!map.current || !addressCoordinates || serviceLocation?.gps_coordinates) return;
+    
+    console.log('Updating map center to geocoded coordinates:', addressCoordinates);
+    map.current.flyTo({
+      center: addressCoordinates,
+      zoom: 15,
+      duration: 1000
+    });
+    
+    // Add address marker if it doesn't exist
+    if (!addressMarker.current) {
+      addressMarker.current = new mapboxgl.Marker({
+        color: '#3b82f6',
+        scale: 1.2
+      }).setLngLat(addressCoordinates).setPopup(new mapboxgl.Popup().setHTML(`
+          <strong>${serviceLocation.location_name}</strong><br/>
+          <small>${fullAddress}</small>
+        `)).addTo(map.current);
+    }
+  }, [addressCoordinates, serviceLocation?.gps_coordinates, serviceLocation.location_name, fullAddress]);
 
   // Separate useEffect for handling pin mode click events and cursor
   useEffect(() => {
