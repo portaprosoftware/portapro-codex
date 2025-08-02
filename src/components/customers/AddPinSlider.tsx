@@ -159,12 +159,27 @@ export function AddPinSlider({
     // Set loading to false once map is ready
     map.current.on('load', () => {
       setMapLoading(false);
+      addAddressMarker(); // Add marker after map loads
     });
 
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // Add address marker if coordinates exist (only once during initialization)
+    return () => {
+      // Cleanup handled in handleClose
+    };
+  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle]);
+
+  // Function to add address marker
+  const addAddressMarker = () => {
+    if (!map.current) return;
+    
+    // Remove existing address marker
+    if (addressMarker.current) {
+      addressMarker.current.remove();
+      addressMarker.current = null;
+    }
+
     let markerCoords: [number, number] | null = null;
     
     if (serviceLocation?.gps_coordinates) {
@@ -194,11 +209,7 @@ export function AddPinSlider({
           <small>${fullAddress}</small>
         `)).addTo(map.current);
     }
-
-    return () => {
-      // Cleanup handled in handleClose
-    };
-  }, [isOpen, mapboxToken, serviceLocation, fullAddress, mapStyle]);
+  };
 
   // Update map center when geocoded coordinates become available
   useEffect(() => {
@@ -211,17 +222,9 @@ export function AddPinSlider({
       duration: 1000
     });
     
-    // Add address marker if it doesn't exist
-    if (!addressMarker.current) {
-      addressMarker.current = new mapboxgl.Marker({
-        color: '#3b82f6',
-        scale: 1.2
-      }).setLngLat(addressCoordinates).setPopup(new mapboxgl.Popup().setHTML(`
-          <strong>${serviceLocation.location_name}</strong><br/>
-          <small>${fullAddress}</small>
-        `)).addTo(map.current);
-    }
-  }, [addressCoordinates, serviceLocation?.gps_coordinates, serviceLocation.location_name, fullAddress]);
+    // Add the address marker
+    addAddressMarker();
+  }, [addressCoordinates]);
 
   // Separate useEffect for handling pin mode click events and cursor
   useEffect(() => {
