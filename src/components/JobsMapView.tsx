@@ -13,6 +13,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
 import { isJobOverdue, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 import { useQuery } from '@tanstack/react-query';
+import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface JobsMapViewProps {
   searchTerm?: string;
@@ -359,6 +362,14 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     <div className="relative w-full h-full">{/* Remove fixed 400px height */}
       <div ref={mapContainer} style={{ width: '100%', height: '100%', zIndex: 1 }} />
       
+      {/* Weather Radar */}
+      {map.current && (
+        <SimpleWeatherRadar 
+          map={map.current} 
+          isActive={radarEnabled} 
+        />
+      )}
+      
       {/* Map Style Toggle */}
       <div className="absolute top-4 left-4 z-20">
         <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
@@ -383,16 +394,18 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         </div>
         
         {/* Radar Toggle */}
-        <div className="mt-2 bg-white p-1 rounded-lg shadow-lg border">
-          <Button
-            variant={radarEnabled ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setRadarEnabled(!radarEnabled)}
-            className="h-8 px-3 text-sm font-medium w-full"
-          >
-            <Radar className="w-4 h-4 mr-1.5" />
-            Radar
-          </Button>
+        <div className="mt-2 bg-white p-3 rounded-lg shadow-lg border">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="radar-toggle"
+              checked={radarEnabled}
+              onCheckedChange={setRadarEnabled}
+            />
+            <Label htmlFor="radar-toggle" className="text-sm font-medium flex items-center">
+              <Radar className="w-4 h-4 mr-1.5" />
+              Radar
+            </Label>
+          </div>
         </div>
       </div>
       
