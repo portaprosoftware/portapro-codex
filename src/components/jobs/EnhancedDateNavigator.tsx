@@ -4,11 +4,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronLeft, ChevronRight, CalendarIcon } from 'lucide-react';
 import { format, addDays, subDays } from 'date-fns';
-import { addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
 
 interface EnhancedDateNavigatorProps {
-  date: string | Date; // Accept both for compatibility
-  onDateChange: (date: Date) => void;
+  date: string; // Always expect string date
+  onDateChange: (date: string) => void; // Always return string date
   label: string;
 }
 
@@ -19,27 +18,29 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
 }) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  const currentDate = typeof date === 'string' ? new Date(date) : date;
+  // Work with Date objects internally but always convert to string for output
+  const currentDate = new Date(date);
 
   const handlePrevious = () => {
-    const newDate = subtractDaysFromDate(currentDate, 1);
-    onDateChange(newDate);
+    const newDate = subDays(currentDate, 1);
+    onDateChange(format(newDate, 'yyyy-MM-dd')); // Return as string
   };
 
   const handleNext = () => {
-    const newDate = addDaysToDate(currentDate, 1);
-    onDateChange(newDate);
+    const newDate = addDays(currentDate, 1);
+    onDateChange(format(newDate, 'yyyy-MM-dd')); // Return as string
   };
 
   const handleQuickSelect = (days: number) => {
-    const newDate = addDaysToDate(new Date(), days);
-    onDateChange(newDate);
+    const today = new Date();
+    const newDate = addDays(today, days);
+    onDateChange(format(newDate, 'yyyy-MM-dd')); // Return as string
     setIsCalendarOpen(false);
   };
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      onDateChange(selectedDate);
+      onDateChange(format(selectedDate, 'yyyy-MM-dd')); // Return as string
       setIsCalendarOpen(false);
     }
   };

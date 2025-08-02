@@ -17,7 +17,7 @@ interface InlineFiltersProps {
   driversWithJobsToday?: Set<string>;
   // Optional date navigation props
   selectedDate?: string; // Changed to string to match serialized date
-  onDateChange?: (date: Date) => void;
+  onDateChange?: (date: string) => void;
   showDateNavigator?: boolean;
 }
 

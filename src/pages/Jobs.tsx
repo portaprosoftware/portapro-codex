@@ -335,7 +335,7 @@ const JobsPage: React.FC = () => {
               drivers={drivers}
               driversWithJobsToday={driversWithJobsToday}
               selectedDate={selectedDate}
-              onDateChange={(newDate: Date) => setSelectedDate(formatDateForQuery(newDate))}
+              onDateChange={setSelectedDate}
               showDateNavigator={true}
             />
           </div>
@@ -433,7 +433,7 @@ const JobsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm text-gray-900">
-                        {format(selectedDate, 'MMMM do, yyyy')}
+                        {format(new Date(selectedDate), 'MMMM do, yyyy')}
                       </span>
                     </div>
                   </div>
