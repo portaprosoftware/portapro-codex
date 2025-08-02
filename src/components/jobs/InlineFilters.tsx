@@ -155,6 +155,30 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
               Cancelled
             </div>
           </SelectItem>
+          <SelectItem value="priority">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+              Priority
+            </div>
+          </SelectItem>
+          <SelectItem value="was_overdue">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
+              Overdue - Rescheduled
+            </div>
+          </SelectItem>
+          <SelectItem value="overdue">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-red-500"></div>
+              Overdue
+            </div>
+          </SelectItem>
+          <SelectItem value="completed_late">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+              Job Completed Late
+            </div>
+          </SelectItem>
         </SelectContent>
       </Select>
 

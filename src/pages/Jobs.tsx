@@ -24,6 +24,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
+import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -74,10 +75,11 @@ const JobsPage: React.FC = () => {
   });
 
   // Get jobs for all views using unified date (convert Date to string at query boundary)
+  // Only pass database-queryable filters to the hook
   const { data: allJobs = [] } = useJobs({
     date: formatDateForQuery(selectedDate), // Convert Date to string here
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
-    status: selectedStatus !== 'all' ? selectedStatus : undefined,
+    status: ['assigned', 'unassigned', 'in_progress', 'completed', 'cancelled'].includes(selectedStatus) ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
@@ -241,7 +243,14 @@ const JobsPage: React.FC = () => {
       
       const matchesDriver = selectedDriver === 'all' || job.driver_id === selectedDriver;
       const matchesJobType = selectedJobType === 'all' || job.job_type === selectedJobType;
-      const matchesStatus = selectedStatus === 'all' || job.status === selectedStatus;
+      
+      // Handle badge-based status filters client-side
+      const matchesStatus = selectedStatus === 'all' || 
+        job.status === selectedStatus ||
+        (selectedStatus === 'priority' && shouldShowPriorityBadge(job)) ||
+        (selectedStatus === 'was_overdue' && shouldShowWasOverdueBadge(job)) ||
+        (selectedStatus === 'overdue' && isJobOverdue(job)) ||
+        (selectedStatus === 'completed_late' && isJobCompletedLate(job));
       
       return matchesSearch && matchesDriver && matchesJobType && matchesStatus;
     });
