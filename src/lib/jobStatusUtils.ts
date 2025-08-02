@@ -102,7 +102,7 @@ export const getJobStatusConfig = () => ({
   },
   priority: { 
     gradient: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white', 
-    label: 'Priority',
+    label: 'Was Overdue',
     color: '#F59E0B'
   }
 });
