@@ -154,7 +154,7 @@ export function AddPinSlider({
       container: mapContainer.current,
       style: mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v12',
       center: center,
-      zoom: 18,
+      zoom: 16,
     });
 
     // Set loading to false once map is ready
@@ -173,7 +173,10 @@ export function AddPinSlider({
 
   // Function to add address marker
   const addAddressMarker = () => {
-    if (!map.current) return;
+    if (!map.current) {
+      console.log('No map instance available');
+      return;
+    }
     
     // Remove existing address marker
     if (addressMarker.current) {
@@ -183,6 +186,7 @@ export function AddPinSlider({
 
     let markerCoords: [number, number] | null = null;
     
+    // Priority 1: Use GPS coordinates if available
     if (serviceLocation?.gps_coordinates) {
       let lng, lat;
       if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
@@ -196,12 +200,18 @@ export function AddPinSlider({
           !isNaN(lng) && !isNaN(lat) && 
           lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
         markerCoords = [lng, lat];
+        console.log('Using GPS coordinates for marker:', markerCoords);
       }
-    } else if (addressCoordinates) {
+    } 
+    // Priority 2: Use geocoded coordinates if no GPS coordinates
+    else if (addressCoordinates) {
       markerCoords = addressCoordinates;
+      console.log('Using geocoded coordinates for marker:', markerCoords);
     }
     
+    // Create and add the blue address marker if we have valid coordinates
     if (markerCoords) {
+      console.log('Creating blue address marker at:', markerCoords);
       addressMarker.current = new mapboxgl.Marker({
         color: '#3b82f6',
         scale: 1.2
@@ -209,6 +219,9 @@ export function AddPinSlider({
           <strong>${serviceLocation.location_name}</strong><br/>
           <small>${fullAddress}</small>
         `)).addTo(map.current);
+      console.log('Blue address marker added successfully');
+    } else {
+      console.log('No valid coordinates found for address marker');
     }
   };
 
