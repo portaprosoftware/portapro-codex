@@ -804,7 +804,7 @@ const JobsPage: React.FC = () => {
               </div>
               
               {/* Right Side - Map */}
-              <div className="flex-1 bg-white rounded-lg border shadow-sm overflow-hidden">
+              <div className="flex-1 rounded-lg overflow-hidden">
                 <JobsMapErrorBoundary 
                   onRetry={() => {
                     console.log('Retrying map with fresh data');
