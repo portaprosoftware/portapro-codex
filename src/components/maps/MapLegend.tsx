@@ -93,11 +93,14 @@ export const MapLegend: React.FC<MapLegendProps> = ({
           <h3 className="text-sm font-semibold text-gray-900 mb-2">
             {isDriverMode ? 'Driver Mode' : 'Standard Mode'}
           </h3>
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-gray-600 mb-2">
             {isDriverMode 
               ? 'Jobs are colored by driver assignment, with status shown as border color.'
               : 'Jobs are colored by type, with status shown as border color.'
             }
+          </p>
+          <p className="text-xs text-gray-500 italic">
+            Switch between job type view and driver assignment view. You can still drill down using the standard filters above.
           </p>
         </div>
 

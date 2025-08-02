@@ -18,7 +18,7 @@ export const MapModeToggle: React.FC<MapModeToggleProps> = ({
           variant={!isDriverMode ? "default" : "ghost"}
           size="sm"
           onClick={() => onModeChange(false)}
-          className="h-8 px-4 text-sm font-medium whitespace-nowrap"
+          className="h-8 px-3 text-sm font-medium whitespace-nowrap"
         >
           <MapPin className="w-4 h-4 mr-1.5" />
           Standard Mode
@@ -27,7 +27,7 @@ export const MapModeToggle: React.FC<MapModeToggleProps> = ({
           variant={isDriverMode ? "default" : "ghost"}
           size="sm"
           onClick={() => onModeChange(true)}
-          className="h-8 px-4 text-sm font-medium whitespace-nowrap"
+          className="h-8 px-3 text-sm font-medium whitespace-nowrap"
         >
           <Users className="w-4 h-4 mr-1.5" />
           Driver Mode
