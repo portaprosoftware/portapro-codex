@@ -40,6 +40,11 @@ export class JobsMapErrorBoundary extends Component<Props, State> {
 
   private handleRetry = () => {
     if (this.state.retryAttempts < this.maxRetries) {
+      // Clear React Query cache to prevent DataCloneError propagation
+      if (typeof window !== 'undefined' && (window as any).queryClient) {
+        (window as any).queryClient.clear();
+      }
+      
       this.setState(prevState => ({
         hasError: false,
         error: undefined,

@@ -39,6 +39,9 @@ const queryClient = new QueryClient({
   },
 });
 
+// Make queryClient globally available for error boundary
+(window as any).queryClient = queryClient;
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -20,7 +20,7 @@ interface JobsMapViewProps {
   selectedDriver?: string;
   selectedJobType?: string;
   selectedStatus?: string;
-  selectedDate: Date;
+  selectedDate: string; // Changed to string to prevent DataCloneError
 }
 
 const JobsMapView: React.FC<JobsMapViewProps> = ({
@@ -36,9 +36,10 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [tokenLoading, setTokenLoading] = useState(true);
   const [selectedPin, setSelectedPin] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Format date for jobs query using unified date
-  const dateString = formatDateForQuery(selectedDate);
+  // Use the already formatted date string directly
+  const dateString = selectedDate;
 
   // Get jobs data with proper "all" filter handling
   const { data: jobs, isLoading: jobsLoading, error: jobsError } = useJobs({
@@ -124,20 +125,24 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     };
   }, [mapboxToken]);
 
-  // Add job pins to map
+  // Add job pins to map with loading state
   useEffect(() => {
     if (!map.current || !map.current.loaded()) {
       return;
     }
 
     if (jobsLoading) {
+      setIsLoading(true);
       return;
     }
 
     if (jobsError) {
       console.error('Jobs error:', jobsError);
+      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     const managePins = async () => {
       try {
@@ -252,6 +257,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
         }
       } catch (error) {
         console.error('Error managing job pins:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -308,10 +315,17 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     );
   }
 
-  if (jobsLoading) {
+  if (jobsLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-muted-foreground">Loading jobs...</div>
+      <div className="relative h-full w-full">
+        <div 
+          ref={mapContainer} 
+          className="w-full h-full min-h-[400px] opacity-50"
+          style={{ height: '100%', width: '100%' }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+          <div className="text-muted-foreground">Loading jobs...</div>
+        </div>
       </div>
     );
   }
@@ -401,7 +415,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {jobs?.length || 0} jobs on {selectedDate.toLocaleDateString()}
+                {jobs?.length || 0} jobs on {selectedDate}
               </span>
             </div>
           </CardContent>

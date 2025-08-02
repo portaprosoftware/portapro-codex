@@ -7,7 +7,7 @@ import { format, addDays, subDays } from 'date-fns';
 import { addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
 
 interface EnhancedDateNavigatorProps {
-  date: Date;
+  date: string | Date; // Accept both for compatibility
   onDateChange: (date: Date) => void;
   label: string;
 }
@@ -19,13 +19,15 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
 }) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
+  const currentDate = typeof date === 'string' ? new Date(date) : date;
+
   const handlePrevious = () => {
-    const newDate = subtractDaysFromDate(date, 1);
+    const newDate = subtractDaysFromDate(currentDate, 1);
     onDateChange(newDate);
   };
 
   const handleNext = () => {
-    const newDate = addDaysToDate(date, 1);
+    const newDate = addDaysToDate(currentDate, 1);
     onDateChange(newDate);
   };
 
@@ -60,7 +62,7 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
             className="bg-white border border-gray-200 text-gray-700 px-5 py-2 rounded-full font-semibold text-sm shadow-sm transition-all duration-200 hover:shadow-md hover:bg-gray-50"
           >
             <CalendarIcon className="w-4 h-4 mr-2" />
-            {format(date, 'MMM d, yyyy')}
+            {format(currentDate, 'MMM d, yyyy')}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 bg-white border shadow-lg z-50" align="center">
@@ -88,7 +90,7 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
             </div>
             <Calendar
               mode="single"
-              selected={date}
+              selected={currentDate}
               onSelect={handleDateSelect}
               initialFocus
               className="p-3 pointer-events-auto"
