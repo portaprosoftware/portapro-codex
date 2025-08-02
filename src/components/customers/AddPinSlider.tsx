@@ -118,19 +118,18 @@ export function AddPinSlider({
     }
   }, [isOpen]);
 
-  // Initialize map
+  // Initialize map (copied exactly from working MapView)
   useEffect(() => {
     if (!isOpen || !mapboxToken || !mapContainer.current) return;
 
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
 
-    // Default center - Ohio center for this project
-    let center: [number, number] = [-82.9071, 40.4173]; // Ohio center as fallback
-    let zoom = 14; // Use street-level zoom like the working MapView
-
-    // Priority 1: Use existing GPS coordinates (same logic as working MapView)
+    // Determine center point (exact same logic as MapView)
+    let center: [number, number] = [-81.8392, 41.3668]; // Default to Ohio
+    
     if (serviceLocation?.gps_coordinates) {
+      // Handle different coordinate formats
       let lng, lat;
       if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
         if ('x' in serviceLocation.gps_coordinates && 'y' in serviceLocation.gps_coordinates) {
@@ -147,30 +146,15 @@ export function AddPinSlider({
           !isNaN(lng) && !isNaN(lat) && 
           lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
         center = [lng, lat];
-        zoom = 14; // Same zoom as working MapView
-        console.log('Using GPS coordinates:', lng, lat);
-      } else {
-        console.log('Invalid GPS coordinates:', lng, lat);
       }
     }
-    // Priority 2: Use geocoded coordinates
-    else if (addressCoordinates) {
-      center = addressCoordinates;
-      zoom = 14; // Same zoom as working MapView
-      console.log('Using geocoded coordinates:', addressCoordinates);
-    }
-    // Priority 3: If we have address but no coordinates, center on Ohio
-    else if (fullAddress) {
-      zoom = 10;
-      console.log('Using address fallback for:', fullAddress);
-    }
 
-    // Initialize map
+    // Initialize map (exact same as MapView)
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v12',
-      center,
-      zoom
+      center: center,
+      zoom: 14,
     });
 
     // Set loading to false once map is ready
@@ -185,7 +169,7 @@ export function AddPinSlider({
     return () => {
       // Cleanup handled in handleClose
     };
-  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle]);
+  }, [isOpen, mapboxToken, serviceLocation, mapStyle]);
 
   // Function to add address marker
   const addAddressMarker = () => {
