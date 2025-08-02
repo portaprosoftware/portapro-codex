@@ -102,7 +102,7 @@ export const getJobStatusConfig = () => ({
   },
   was_overdue: { 
     gradient: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white', 
-    label: 'Was Overdue',
+    label: 'Overdue - Rescheduled',
     color: '#F59E0B'
   },
   priority: { 
