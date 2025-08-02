@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { JobsMapErrorBoundary } from '@/components/JobsMapErrorBoundary';
@@ -25,11 +26,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
+import { useJobsWithDateRange } from '@/hooks/useJobsWithDateRange';
+import { CustomJobFilters } from '@/components/jobs/CustomJobFilters';
+import { CustomJobsList } from '@/components/jobs/CustomJobsList';
+import { exportJobsToCSV } from '@/utils/jobsExport';
+import { DateRange } from 'react-day-picker';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map' | 'custom'>('calendar');
   // Unified date state for all views - using Date objects (converted to string at query boundary)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
@@ -44,6 +50,13 @@ const JobsPage: React.FC = () => {
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [selectedJobType, setSelectedJobType] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+
+  // Custom date range filters
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>();
+  const [customSearchTerm, setCustomSearchTerm] = useState('');
+  const [customSelectedDriver, setCustomSelectedDriver] = useState('all');
+  const [customSelectedJobType, setCustomSelectedJobType] = useState('all');
+  const [customSelectedStatus, setCustomSelectedStatus] = useState('all');
 
   const updateJobStatusMutation = useUpdateJobStatus();
   const createJobMutation = useCreateJob();
@@ -94,6 +107,16 @@ const JobsPage: React.FC = () => {
 
   // All jobs for dispatch view
   const dispatchJobs = allJobs;
+
+  // Custom date range jobs
+  const { data: customJobs = [] } = useJobsWithDateRange({
+    startDate: customDateRange?.from ? formatDateForQuery(customDateRange.from) : undefined,
+    endDate: customDateRange?.to ? formatDateForQuery(customDateRange.to) : undefined,
+    job_type: customSelectedJobType !== 'all' ? customSelectedJobType : undefined,
+    status: ['assigned', 'unassigned', 'in_progress', 'completed', 'cancelled'].includes(customSelectedStatus) ? customSelectedStatus : undefined,
+    driver_id: customSelectedDriver !== 'all' ? customSelectedDriver : undefined,
+    job_id: customSearchTerm || undefined
+  });
 
   // Get drivers for filter
   const { data: drivers = [] } = useQuery({
@@ -159,7 +182,7 @@ const JobsPage: React.FC = () => {
     }
   }, [activeTab]);
 
-  const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map') => {
+  const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map' | 'custom') => {
     setActiveTab(tab);
     
     switch (tab) {
@@ -172,10 +195,37 @@ const JobsPage: React.FC = () => {
       case 'map':
         navigate('/jobs/map');
         break;
+      case 'custom':
+        navigate('/jobs/custom');
+        break;
       default:
         navigate('/jobs');
         break;
     }
+  };
+
+  // Filter custom jobs with badge-based filtering
+  const filterCustomJobs = (jobs: any[]) => {
+    return jobs.filter(job => {
+      // Handle badge-based status filters client-side for custom view
+      const matchesStatus = customSelectedStatus === 'all' || 
+        job.status === customSelectedStatus ||
+        (customSelectedStatus === 'priority' && shouldShowPriorityBadge(job)) ||
+        (customSelectedStatus === 'was_overdue' && shouldShowWasOverdueBadge(job)) ||
+        (customSelectedStatus === 'overdue' && isJobOverdue(job)) ||
+        (customSelectedStatus === 'completed_late' && isJobCompletedLate(job));
+      
+      return matchesStatus;
+    });
+  };
+
+  const handleCustomExport = () => {
+    const filteredJobs = filterCustomJobs(customJobs);
+    const dateRangeLabel = customDateRange?.from && customDateRange?.to 
+      ? `${formatDateForQuery(customDateRange.from)}_to_${formatDateForQuery(customDateRange.to)}`
+      : 'custom-date-range';
+    
+    exportJobsToCSV(filteredJobs, `jobs-export-${dateRangeLabel}`);
   };
 
   const handleJobView = (jobId: string) => {
@@ -312,6 +362,14 @@ const JobsPage: React.FC = () => {
                     <MapPin className="w-4 h-4" />
                     Map
                   </TabNav.Item>
+                  <TabNav.Item 
+                    to="/jobs/custom" 
+                    isActive={activeTab === 'custom'}
+                    onClick={() => navigateToTab('custom')}
+                  >
+                    <Filter className="w-4 h-4" />
+                    Custom Dates & Filters
+                  </TabNav.Item>
                 </TabNav>
               </div>
               <Button 
@@ -325,29 +383,67 @@ const JobsPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Unified Filters Bar for All Views */}
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <InlineFilters
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              selectedDriver={selectedDriver}
-              onDriverChange={setSelectedDriver}
-              selectedJobType={selectedJobType}
-              onJobTypeChange={setSelectedJobType}
-              selectedStatus={selectedStatus}
-              onStatusChange={setSelectedStatus}
-              drivers={drivers}
-              driversWithJobsToday={driversWithJobsToday}
-              selectedDate={selectedDate}
-              onDateChange={setSelectedDate}
-              showDateNavigator={true}
-            />
+        {/* Conditional Filters Bar */}
+        {activeTab !== 'custom' && (
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <InlineFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                selectedDriver={selectedDriver}
+                onDriverChange={setSelectedDriver}
+                selectedJobType={selectedJobType}
+                onJobTypeChange={setSelectedJobType}
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
+                drivers={drivers}
+                driversWithJobsToday={driversWithJobsToday}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+                showDateNavigator={true}
+              />
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Custom Filters for Custom Tab */}
+        {activeTab === 'custom' && (
+          <CustomJobFilters
+            dateRange={customDateRange}
+            onDateRangeChange={setCustomDateRange}
+            searchTerm={customSearchTerm}
+            onSearchTermChange={setCustomSearchTerm}
+            selectedDriver={customSelectedDriver}
+            onDriverChange={setCustomSelectedDriver}
+            selectedJobType={customSelectedJobType}
+            onJobTypeChange={setCustomSelectedJobType}
+            selectedStatus={customSelectedStatus}
+            onStatusChange={setCustomSelectedStatus}
+            drivers={drivers}
+            onExport={handleCustomExport}
+            resultsCount={filterCustomJobs(customJobs).length}
+          />
+        )}
 
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
+          {activeTab === 'custom' && (
+            <div className="space-y-6">
+              {customDateRange?.from && customDateRange?.to ? (
+                <CustomJobsList
+                  jobs={filterCustomJobs(customJobs)}
+                  onJobClick={handleJobView}
+                />
+              ) : (
+                <Card className="p-8 text-center">
+                  <Filter className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-medium mb-2">Select a date range</h3>
+                  <p className="text-muted-foreground">Choose a date range above to view jobs and apply filters.</p>
+                </Card>
+              )}
+            </div>
+          )}
+
           {activeTab === 'calendar' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Going Out Card */}
