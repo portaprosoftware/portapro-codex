@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { geocodeAddress } from '@/services/geocoding';
 
 const serviceLocationSchema = z.object({
   location_name: z.string().min(1, 'Location name is required'),
@@ -88,6 +89,18 @@ export function AddServiceLocationModal({
 
   const onSubmit = async (data: ServiceLocationForm) => {
     try {
+      // Get Mapbox token and geocode the address
+      const { data: tokenData } = await supabase.functions.invoke('get-mapbox-token');
+      let gpsCoordinates = null;
+
+      if (tokenData?.token) {
+        const fullAddress = `${data.street} ${data.street2 || ''} ${data.city} ${data.state} ${data.zip}`.trim();
+        const coordinates = await geocodeAddress(fullAddress, tokenData.token);
+        if (coordinates) {
+          gpsCoordinates = `point(${coordinates[0]} ${coordinates[1]})`;
+        }
+      }
+
       const { error } = await supabase
         .from('customer_service_locations')
         .insert({
@@ -104,6 +117,7 @@ export function AddServiceLocationModal({
           contact_phone: data.onsite_contact_phone,
           is_active: data.is_active,
           is_default: false, // Never default - only the customer service address is default
+          gps_coordinates: gpsCoordinates,
         });
 
       if (error) throw error;
