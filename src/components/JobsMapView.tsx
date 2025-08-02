@@ -365,38 +365,6 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         }}
       />
 
-      {/* Legend */}
-      <div style={{
-        position: 'absolute',
-        bottom: '16px',
-        left: '16px',
-        background: 'rgba(255,255,255,0.9)',
-        padding: '12px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        zIndex: 10
-      }}>
-        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Job Types</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#3B82F6', borderRadius: '50%' }}></div>
-          <span>Delivery (D)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#EF4444', borderRadius: '50%' }}></div>
-          <span>Pickup (P)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#F59E0B', borderRadius: '50%' }}></div>
-          <span>Service (S)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#10B981', borderRadius: '50%' }}></div>
-          <span>Return (R)</span>
-        </div>
-        <div style={{ fontSize: '11px', color: '#666' }}>
-          Jobs: {filteredJobs.length}
-        </div>
-      </div>
     </div>
   );
 };
