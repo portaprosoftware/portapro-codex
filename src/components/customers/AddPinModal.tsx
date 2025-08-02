@@ -235,6 +235,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
           description: pinData.description.trim() || null,
           latitude: pinData.latitude,
           longitude: pinData.longitude,
+          category: 'general', // Add default category to satisfy constraint
         });
 
       if (error) throw error;
