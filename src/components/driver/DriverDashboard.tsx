@@ -10,11 +10,12 @@ import { SearchBar } from './SearchBar';
 import { StatusFilter } from './StatusFilter';
 import { InstallPrompt } from './InstallPrompt';
 import { JobStatus } from '@/types';
+import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 
 export const DriverDashboard: React.FC = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority' | 'was_overdue'>('all');
+  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority' | 'was_overdue' | 'overdue' | 'completed_late'>('all');
 
   const { data: jobs, isLoading, refetch } = useQuery({
     queryKey: ['driver-jobs', user?.id],
@@ -53,8 +54,10 @@ export const DriverDashboard: React.FC = () => {
     
     const matchesStatus = statusFilter === 'all' || 
       job.status === statusFilter ||
-      (statusFilter === 'priority' && (job as any).is_priority === true) ||
-      (statusFilter === 'was_overdue' && job.was_overdue === true);
+      (statusFilter === 'priority' && shouldShowPriorityBadge(job)) ||
+      (statusFilter === 'was_overdue' && shouldShowWasOverdueBadge(job)) ||
+      (statusFilter === 'overdue' && isJobOverdue(job)) ||
+      (statusFilter === 'completed_late' && isJobCompletedLate(job));
     
     return matchesSearch && matchesStatus;
   });
