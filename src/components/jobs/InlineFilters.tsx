@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Check } from 'lucide-react';
+import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -14,6 +15,10 @@ interface InlineFiltersProps {
   onStatusChange: (value: string) => void;
   drivers: Array<{ id: string; first_name: string; last_name: string }>;
   driversWithJobsToday?: Set<string>;
+  // Optional date navigation props
+  selectedDate?: Date;
+  onDateChange?: (date: Date) => void;
+  showDateNavigator?: boolean;
 }
 
 export const InlineFilters: React.FC<InlineFiltersProps> = ({
@@ -26,7 +31,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   selectedStatus,
   onStatusChange,
   drivers,
-  driversWithJobsToday = new Set()
+  driversWithJobsToday = new Set(),
+  selectedDate,
+  onDateChange,
+  showDateNavigator = false
 }) => {
   return (
     <div className="flex items-center gap-4 flex-wrap">
@@ -142,6 +150,15 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           </SelectItem>
         </SelectContent>
       </Select>
+
+      {/* Date Navigator */}
+      {showDateNavigator && selectedDate && onDateChange && (
+        <EnhancedDateNavigator
+          date={selectedDate}
+          onDateChange={onDateChange}
+          label="Date"
+        />
+      )}
     </div>
   );
 };

@@ -28,9 +28,8 @@ const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map'>('calendar');
-  const [selectedDateOut, setSelectedDateOut] = useState(new Date());
-  const [selectedDateBack, setSelectedDateBack] = useState(new Date());
-  const [dispatchDate, setDispatchDate] = useState(new Date());
+  // Unified date state for all views
+  const [selectedDate, setSelectedDate] = useState(new Date());
   
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
@@ -69,22 +68,25 @@ const JobsPage: React.FC = () => {
     }
   });
 
-  // Get jobs for calendar view
-  const { data: outgoingJobs = [] } = useJobs({
-    date: formatDateForQuery(selectedDateOut),
+  // Get jobs for all views using unified date
+  const { data: allJobs = [] } = useJobs({
+    date: formatDateForQuery(selectedDate),
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: selectedStatus !== 'all' ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
-  const { data: incomingJobs = [] } = useJobs({
-    date: formatDateForQuery(selectedDateBack),
-    job_type: 'pickup'
-  });
+  // Separate jobs by type for calendar view
+  const outgoingJobs = allJobs.filter(job => 
+    ['delivery', 'service', 'on-site-survey'].includes(job.job_type)
+  );
 
-  const { data: dispatchJobs = [] } = useJobs({
-    date: formatDateForQuery(dispatchDate)
-  });
+  const incomingJobs = allJobs.filter(job => 
+    ['pickup', 'partial-pickup'].includes(job.job_type)
+  );
+
+  // All jobs for dispatch view
+  const dispatchJobs = allJobs;
 
   // Get drivers for filter
   const { data: drivers = [] } = useQuery({
@@ -105,15 +107,15 @@ const JobsPage: React.FC = () => {
   const driversWithJobsToday = React.useMemo(() => {
     const driverSet = new Set<string>();
     
-    // Check jobs from all sources for today's date
-    [...outgoingJobs, ...incomingJobs, ...dispatchJobs].forEach(job => {
+    // Check jobs for today's date
+    allJobs.forEach(job => {
       if (job.driver_id && format(new Date(job.scheduled_date), 'yyyy-MM-dd') === today) {
         driverSet.add(job.driver_id);
       }
     });
     
     return driverSet;
-  }, [outgoingJobs, incomingJobs, dispatchJobs, today]);
+  }, [allJobs, today]);
 
   // Set the active tab based on route and force reinitialization
   useEffect(() => {
@@ -317,25 +319,26 @@ const JobsPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Filters Bar - Locked to Second Card */}
-        {(activeTab === 'calendar' || activeTab === 'dispatch') && (
-          <div className="bg-white rounded-lg border shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <InlineFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                selectedDriver={selectedDriver}
-                onDriverChange={setSelectedDriver}
-                selectedJobType={selectedJobType}
-                onJobTypeChange={setSelectedJobType}
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
-                drivers={drivers}
-                driversWithJobsToday={driversWithJobsToday}
-              />
-            </div>
+        {/* Unified Filters Bar for All Views */}
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <InlineFilters
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedDriver={selectedDriver}
+              onDriverChange={setSelectedDriver}
+              selectedJobType={selectedJobType}
+              onJobTypeChange={setSelectedJobType}
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
+              drivers={drivers}
+              driversWithJobsToday={driversWithJobsToday}
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+              showDateNavigator={true}
+            />
           </div>
-        )}
+        </div>
 
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
@@ -348,11 +351,6 @@ const JobsPage: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
                     </div>
-                    <EnhancedDateNavigator
-                      date={selectedDateOut}
-                      onDateChange={setSelectedDateOut}
-                      label="Going Out"
-                    />
                   </div>
                 </div>
                 
@@ -388,11 +386,6 @@ const JobsPage: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
                     </div>
-                    <EnhancedDateNavigator
-                      date={selectedDateBack}
-                      onDateChange={setSelectedDateBack}
-                      label="Coming Back"
-                    />
                   </div>
                 </div>
                 
@@ -438,25 +431,9 @@ const JobsPage: React.FC = () => {
                       <h2 className="text-lg font-semibold text-gray-900">Dispatch Board</h2>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="p-1"
-                        onClick={() => setDispatchDate(prev => subtractDaysFromDate(prev, 1))}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
                       <span className="font-medium text-sm text-gray-900">
-                        {format(dispatchDate, 'MMMM do, yyyy')}
+                        {format(selectedDate, 'MMMM do, yyyy')}
                       </span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="p-1"
-                        onClick={() => setDispatchDate(prev => addDaysToDate(prev, 1))}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600">Manage driver schedules and job assignments</p>
@@ -551,7 +528,7 @@ const JobsPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 text-gray-600" />
                         <span className="font-medium text-gray-900">
-                          {format(dispatchDate, 'EEEE, MMMM d, yyyy')}
+                          {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                         </span>
                         <span className="text-sm text-gray-600">1 job scheduled</span>
                       </div>
@@ -642,26 +619,13 @@ const JobsPage: React.FC = () => {
           
           {activeTab === 'map' && (
             <div className="bg-white">
-              {/* Map Filters */}
-              <div className="border-b border-gray-200 p-4">
-                <InlineFilters
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  selectedDriver={selectedDriver}
-                  onDriverChange={setSelectedDriver}
-                  selectedJobType={selectedJobType}
-                  onJobTypeChange={setSelectedJobType}
-                  selectedStatus={selectedStatus}
-                  onStatusChange={setSelectedStatus}
-                  drivers={drivers}
-                  driversWithJobsToday={driversWithJobsToday}
-                />
-              </div>
-              <JobsMapPage 
+              {/* Map view - filters handled by unified filter bar above */}
+              <JobsMapPage
                 searchTerm={searchTerm}
                 selectedDriver={selectedDriver}
                 selectedJobType={selectedJobType}
                 selectedStatus={selectedStatus}
+                selectedDate={selectedDate}
               />
             </div>
           )}

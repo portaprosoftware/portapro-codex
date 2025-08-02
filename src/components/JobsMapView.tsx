@@ -6,7 +6,6 @@ import { useJobs } from '@/hooks/useJobs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Navigation } from 'lucide-react';
-import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { formatDateForQuery } from '@/lib/dateUtils';
 
 interface JobsMapViewProps {
@@ -14,6 +13,7 @@ interface JobsMapViewProps {
   selectedDriver?: string;
   selectedJobType?: string;
   selectedStatus?: string;
+  selectedDate: Date;
 }
 
 const JobsMapView: React.FC<JobsMapViewProps> = ({
@@ -21,20 +21,18 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   selectedDriver,
   selectedJobType,
   selectedStatus,
+  selectedDate,
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [tokenLoading, setTokenLoading] = useState(true);
   const [selectedPin, setSelectedPin] = useState<any>(null);
-  
-  // Create dedicated map date state
-  const [mapDate, setMapDate] = useState<Date>(new Date());
 
-  // Format date for jobs query
-  const dateString = formatDateForQuery(mapDate);
+  // Format date for jobs query using unified date
+  const dateString = formatDateForQuery(selectedDate);
   
-  console.log('JobsMapView: Map date:', dateString);
+  console.log('JobsMapView: Selected date:', dateString);
   console.log('JobsMapView: Query filters:', { 
     date: dateString, 
     status: selectedStatus, 
@@ -361,19 +359,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   }
 
   return (
-    <div className="relative h-full w-full">
-      {/* Date Navigator - positioned over the map */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-        <Card>
-          <CardContent className="p-3">
-            <EnhancedDateNavigator 
-              date={mapDate}
-              onDateChange={setMapDate}
-              label="Map Date"
-            />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="relative h-full w-full">{/* Map view - date controlled by unified filter bar */}
 
       <div 
         ref={mapContainer} 
@@ -428,7 +414,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {jobs?.length || 0} jobs on {mapDate.toLocaleDateString()}
+                {jobs?.length || 0} jobs on {selectedDate.toLocaleDateString()}
               </span>
             </div>
           </CardContent>
