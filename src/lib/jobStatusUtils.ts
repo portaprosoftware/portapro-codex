@@ -16,15 +16,14 @@ export interface Job {
  * Jobs become overdue the day AFTER their scheduled date
  */
 export const isJobOverdue = (job: Job): boolean => {
-  const currentDate = new Date();
-  const scheduledDate = new Date(job.scheduled_date);
+  // Use string-based comparison to avoid timezone issues
+  const today = new Date().toISOString().split('T')[0]; // Format: '2025-08-02'
+  const scheduledDate = job.scheduled_date; // Should be in format: '2025-08-02'
   
-  // Reset both dates to midnight for date-only comparison
-  currentDate.setHours(0, 0, 0, 0);
-  scheduledDate.setHours(0, 0, 0, 0);
+  console.log('Overdue check:', { today, scheduledDate, isOverdue: today > scheduledDate });
   
-  // Job is overdue only if current date is AFTER scheduled date
-  return currentDate > scheduledDate;
+  // Job is overdue only if today's date string is AFTER scheduled date string
+  return today > scheduledDate;
 };
 
 /**
