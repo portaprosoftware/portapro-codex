@@ -29,8 +29,8 @@ const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map'>('calendar');
-  // Unified date state for all views - serialized as string to prevent DataCloneError
-  const [selectedDate, setSelectedDate] = useState(formatDateForQuery(new Date()));
+  // Unified date state for all views - using Date objects (converted to string at query boundary)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
@@ -69,9 +69,9 @@ const JobsPage: React.FC = () => {
     }
   });
 
-  // Get jobs for all views using unified date
+  // Get jobs for all views using unified date (convert Date to string at query boundary)
   const { data: allJobs = [] } = useJobs({
-    date: selectedDate, // Already formatted as string
+    date: formatDateForQuery(selectedDate), // Convert Date to string here
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: selectedStatus !== 'all' ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
@@ -433,7 +433,7 @@ const JobsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm text-gray-900">
-                        {format(new Date(selectedDate), 'MMMM do, yyyy')}
+                        {format(selectedDate, 'MMMM do, yyyy')}
                       </span>
                     </div>
                   </div>

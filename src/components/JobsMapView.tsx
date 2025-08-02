@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs } from '@/hooks/useJobs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,7 +21,7 @@ interface JobsMapViewProps {
   selectedDriver?: string;
   selectedJobType?: string;
   selectedStatus?: string;
-  selectedDate: string; // Changed to string to prevent DataCloneError
+  selectedDate: Date; // Back to Date objects
 }
 
 const JobsMapView: React.FC<JobsMapViewProps> = ({
@@ -38,8 +39,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   const [selectedPin, setSelectedPin] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Use the already formatted date string directly
-  const dateString = selectedDate;
+  // Convert Date to string for query
+  const dateString = formatDateForQuery(selectedDate);
 
   // Get jobs data with proper "all" filter handling
   const { data: jobs, isLoading: jobsLoading, error: jobsError } = useJobs({
@@ -216,9 +217,43 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
               'return': '#ef4444',   // Red
             };
 
-            // Create marker
+            // Create static pin element
+            const pinElement = document.createElement('div');
+            const pinColor = jobTypeColors[job.job_type] || '#6b7280';
+            const jobTypeCode = job.job_type.charAt(0).toUpperCase();
+            
+            pinElement.innerHTML = `
+              <div style="
+                width: 28px;
+                height: 28px;
+                background-color: ${pinColor};
+                border: 2px solid #ffffff;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 9px;
+                font-weight: bold;
+                color: #ffffff;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                user-select: none;
+                position: static;
+                transform: none;
+                transition: none;
+                pointer-events: auto;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+              ">${jobTypeCode}</div>
+            `;
+
+            // Create marker with static element
             const marker = new mapboxgl.Marker({
-              color: jobTypeColors[job.job_type] || '#6b7280'
+              element: pinElement,
+              anchor: 'center',
+              draggable: false,
+              rotation: 0,
+              rotationAlignment: 'map',
+              pitchAlignment: 'map'
             })
               .setLngLat([lng, lat])
               .addTo(map.current!);
@@ -226,8 +261,9 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             // Store marker reference for proper cleanup
             markersRef.current.push(marker);
 
-            // Add click handler with simplified data
-            marker.getElement().addEventListener('click', () => {
+            // Add click handler with stopPropagation
+            pinElement.addEventListener('click', (e) => {
+              e.stopPropagation();
               const pinData = {
                 job_number: job.job_number,
                 job_type: job.job_type,
@@ -415,7 +451,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {jobs?.length || 0} jobs on {selectedDate}
+                {jobs?.length || 0} jobs on {format(selectedDate, 'MMM d, yyyy')}
               </span>
             </div>
           </CardContent>
