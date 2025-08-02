@@ -209,7 +209,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
       
       const { error } = await supabase
         .from('jobs')
-        .update({ is_priority })
+        .update({ is_priority } as any)
         .eq('id', jobId);
 
       if (error) throw error;
@@ -217,7 +217,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job-detail'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      toast.success(job?.is_priority ? 'Priority removed' : 'Job marked as priority');
+      toast.success((job as any)?.is_priority ? 'Priority removed' : 'Job marked as priority');
     },
     onError: (error) => {
       toast.error('Failed to update priority status');

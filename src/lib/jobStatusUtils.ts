@@ -108,11 +108,12 @@ export const getJobStatusConfig = () => ({
 });
 
 /**
- * Check if a job should show priority indicator
+ * Should a priority indicator be shown for this job?
+ * True if the job was_overdue (rescheduled from overdue) but is not currently overdue,
+ * OR if the job is manually marked as priority
  */
 export const shouldShowPriorityIndicator = (job: Job): boolean => {
-  // Show priority indicator if job was ever overdue OR manually marked as priority (and not completed)
-  return Boolean((job.was_overdue || job.is_priority) && job.status !== 'completed' && job.status !== 'cancelled');
+  return ((job.was_overdue === true) && !isJobOverdue(job)) || (job as any).is_priority === true;
 };
 
 /**
