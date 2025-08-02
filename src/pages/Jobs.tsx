@@ -184,24 +184,7 @@ const JobsPage: React.FC = () => {
 
   const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map' | 'custom') => {
     setActiveTab(tab);
-    
-    switch (tab) {
-      case 'calendar':
-        navigate('/jobs/calendar');
-        break;
-      case 'dispatch':
-        navigate('/jobs/dispatch');
-        break;
-      case 'map':
-        navigate('/jobs/map');
-        break;
-      case 'custom':
-        navigate('/jobs/custom');
-        break;
-      default:
-        navigate('/jobs');
-        break;
-    }
+    navigate(`/jobs/${tab}`);
   };
 
   // Filter custom jobs with badge-based filtering
@@ -368,7 +351,7 @@ const JobsPage: React.FC = () => {
                     onClick={() => navigateToTab('custom')}
                   >
                     <Filter className="w-4 h-4" />
-                    Custom Dates & Filters
+                    Advanced Search
                   </TabNav.Item>
                 </TabNav>
               </div>
