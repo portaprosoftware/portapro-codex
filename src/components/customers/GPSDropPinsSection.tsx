@@ -189,6 +189,13 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
               </Button>
             </div>
 
+            {/* Explainer Text */}
+            <div className="mb-6 p-4 bg-muted/30 border border-border rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                <strong>Note:</strong> Saved template inventory for each created pin acts simply as a guide or template for future jobs.
+              </p>
+            </div>
+
             {/* Split View Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[500px]">
               {/* Left Pane - Pins List */}
