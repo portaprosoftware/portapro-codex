@@ -74,17 +74,33 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
       return product.image_url;
     }
     
-    // Fallback to placeholder based on product name
-    const images = [
-      'photo-1488590528505-98d2b5aba04b', // laptop
-      'photo-1518770660439-4636190af475', // circuit board  
-      'photo-1487058792275-0ad4aaf24ca7', // code
-      'photo-1485833077593-4278bba3f11f', // deer
-      'photo-1441057206919-63d19fac2369', // penguins
-      'photo-1501286353178-1ec881214838'  // monkey
-    ];
-    const index = product.name.length % images.length;
-    return `https://images.unsplash.com/${images[index]}?w=100&h=100&fit=crop`;
+    // Use proper inventory images based on product name
+    const productName = product.name.toLowerCase();
+    
+    if (productName.includes('250-gallon waste tank') || productName.includes('waste tank')) {
+      return 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('ada porta potty')) {
+      return 'https://images.unsplash.com/photo-1466721591366-2d5fba72006d?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('flushable vip unit') || productName.includes('vip unit')) {
+      return 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('hand sanitizer stand') || productName.includes('sanitizer')) {
+      return 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('handwashing station') || productName.includes('washing station')) {
+      return 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('high-rise unit') || productName.includes('high rise')) {
+      return 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=100&h=100&fit=crop';
+    }
+    if (productName.includes('standard porta potty') || productName.includes('porta potty')) {
+      return 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=100&h=100&fit=crop';
+    }
+    
+    // Default fallback for unknown products
+    return 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=100&h=100&fit=crop';
   };
 
   if (isLoading) {
@@ -144,7 +160,7 @@ export function PinInventorySelector({ onAssignmentsChange, existingAssignments 
       )}
 
       {/* Product Display */}
-      <div className={`max-h-96 overflow-y-auto ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3' : 'space-y-3'}`}>
+      <div className={`max-h-[50vh] overflow-y-auto ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3' : 'space-y-3'}`}>
         {filteredProducts.map((product) => {
           const assignedQuantity = getAssignedQuantity(product.id);
           
