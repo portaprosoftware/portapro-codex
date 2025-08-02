@@ -33,6 +33,9 @@ export const MapModeToggle: React.FC<MapModeToggleProps> = ({
           Driver Mode
         </Button>
       </div>
+      <p className="text-xs text-gray-500 text-center mt-2">
+        Switch between job type view and driver assignment view. You can still drill down using the standard filters above.
+      </p>
     </div>
   );
 };
