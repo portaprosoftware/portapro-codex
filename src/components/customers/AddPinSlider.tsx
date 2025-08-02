@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { X, MapPin, Plus, Target, Map, Satellite } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
 interface ServiceLocation {
   id: string;
   location_name: string;
@@ -17,22 +16,27 @@ interface ServiceLocation {
   city?: string;
   state?: string;
   zip?: string;
-  gps_coordinates?: { x: number; y: number } | null;
+  gps_coordinates?: {
+    x: number;
+    y: number;
+  } | null;
 }
-
 interface AddPinSliderProps {
   isOpen: boolean;
   onClose: () => void;
   serviceLocation: ServiceLocation;
   onPinAdded: () => void;
 }
-
-export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: AddPinSliderProps) {
+export function AddPinSlider({
+  isOpen,
+  onClose,
+  serviceLocation,
+  onPinAdded
+}: AddPinSliderProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const currentMarker = useRef<mapboxgl.Marker | null>(null);
   const addressMarker = useRef<mapboxgl.Marker | null>(null);
-  
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [mapStyle, setMapStyle] = useState<'satellite' | 'street'>('satellite');
   const [isPinModeActive, setIsPinModeActive] = useState(false);
@@ -43,31 +47,25 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
     point_name: '',
     description: '',
     latitude: null as number | null,
-    longitude: null as number | null,
+    longitude: null as number | null
   });
 
   // Build full address string
-  const fullAddress = [
-    serviceLocation?.street,
-    serviceLocation?.street2,
-    serviceLocation?.city,
-    serviceLocation?.state,
-    serviceLocation?.zip
-  ].filter(Boolean).join(', ');
+  const fullAddress = [serviceLocation?.street, serviceLocation?.street2, serviceLocation?.city, serviceLocation?.state, serviceLocation?.zip].filter(Boolean).join(', ');
 
   // Geocode address if no GPS coordinates exist
   useEffect(() => {
     const geocodeAddress = async () => {
       if (!mapboxToken || !fullAddress || addressCoordinates) return;
-      
       try {
-        const { data } = await supabase.functions.invoke('mapbox-geocoding', {
-          body: { 
+        const {
+          data
+        } = await supabase.functions.invoke('mapbox-geocoding', {
+          body: {
             query: fullAddress,
-            limit: 1 
+            limit: 1
           }
         });
-        
         if (data?.suggestions?.[0]?.coordinates) {
           const coords = data.suggestions[0].coordinates;
           setAddressCoordinates([coords.longitude, coords.latitude]);
@@ -76,7 +74,6 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
         console.error('Error geocoding address:', error);
       }
     };
-
     if (isOpen && mapboxToken && !serviceLocation?.gps_coordinates) {
       geocodeAddress();
     }
@@ -86,7 +83,9 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const { data } = await supabase.functions.invoke('get-mapbox-token');
+        const {
+          data
+        } = await supabase.functions.invoke('get-mapbox-token');
         if (data?.token) {
           setMapboxToken(data.token);
         }
@@ -95,7 +94,6 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
         toast.error('Failed to load map');
       }
     };
-
     if (isOpen) {
       fetchToken();
     }
@@ -111,12 +109,12 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
     // Default center - try multiple sources for location
     let center: [number, number] = [-98.5795, 39.8283]; // US center as fallback
     let zoom = 4;
-    
+
     // Priority 1: Use existing GPS coordinates
     if (serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y) {
       center = [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y];
       zoom = 15;
-    } 
+    }
     // Priority 2: Use geocoded coordinates
     else if (addressCoordinates) {
       center = addressCoordinates;
@@ -130,11 +128,9 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
     // Initialize map
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: mapStyle === 'satellite' 
-        ? 'mapbox://styles/mapbox/satellite-v9'
-        : 'mapbox://styles/mapbox/streets-v12',
+      style: mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v12',
       center,
-      zoom,
+      zoom
     });
 
     // Set loading to false once map is ready
@@ -146,47 +142,42 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Add address marker if coordinates exist
-    const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y
-      ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number]
-      : addressCoordinates;
-      
+    const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
     if (markerCoords) {
-      addressMarker.current = new mapboxgl.Marker({ 
+      addressMarker.current = new mapboxgl.Marker({
         color: '#3b82f6',
         scale: 1.2
-      })
-        .setLngLat(markerCoords)
-        .setPopup(new mapboxgl.Popup().setHTML(`
+      }).setLngLat(markerCoords).setPopup(new mapboxgl.Popup().setHTML(`
           <strong>${serviceLocation.location_name}</strong><br/>
           <small>${fullAddress}</small>
-        `))
-        .addTo(map.current);
+        `)).addTo(map.current);
     }
 
     // Add click handler for dropping pins (only when pin mode is active)
-    map.current.on('click', (e) => {
+    map.current.on('click', e => {
       if (!isPinModeActive) return;
-      
-      const { lng, lat } = e.lngLat;
-      
+      const {
+        lng,
+        lat
+      } = e.lngLat;
+
       // Remove existing marker
       if (currentMarker.current) {
         currentMarker.current.remove();
       }
 
       // Add new marker
-      currentMarker.current = new mapboxgl.Marker({ color: '#ef4444' })
-        .setLngLat([lng, lat])
-        .addTo(map.current!);
+      currentMarker.current = new mapboxgl.Marker({
+        color: '#ef4444'
+      }).setLngLat([lng, lat]).addTo(map.current!);
 
       // Update pin data
       setFormData(prev => ({
         ...prev,
         latitude: lat,
-        longitude: lng,
+        longitude: lng
       }));
     });
-
     return () => {
       // Cleanup handled in handleClose
     };
@@ -204,57 +195,44 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
   // Update map style when changed
   useEffect(() => {
     if (map.current) {
-      const newStyle = mapStyle === 'satellite' 
-        ? 'mapbox://styles/mapbox/satellite-v9'
-        : 'mapbox://styles/mapbox/streets-v12';
-      
+      const newStyle = mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-v9' : 'mapbox://styles/mapbox/streets-v12';
+
       // Force style change and re-render
       map.current.setStyle(newStyle);
       map.current.once('styledata', () => {
         // Re-add markers after style loads
-        const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y
-          ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number]
-          : addressCoordinates;
-          
+        const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
         if (markerCoords && addressMarker.current) {
           addressMarker.current.remove();
-          addressMarker.current = new mapboxgl.Marker({ 
+          addressMarker.current = new mapboxgl.Marker({
             color: '#3b82f6',
             scale: 1.2
-          })
-            .setLngLat(markerCoords)
-            .setPopup(new mapboxgl.Popup().setHTML(`
+          }).setLngLat(markerCoords).setPopup(new mapboxgl.Popup().setHTML(`
               <strong>${serviceLocation.location_name}</strong><br/>
               <small>${fullAddress}</small>
-            `))
-            .addTo(map.current!);
+            `)).addTo(map.current!);
         }
       });
     }
   }, [mapStyle, serviceLocation, addressCoordinates, fullAddress]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formData.point_name || !formData.latitude || !formData.longitude) {
       toast.error('Please fill in all required fields and drop a pin on the map');
       return;
     }
-
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('service_location_coordinates')
-        .insert({
-          service_location_id: serviceLocation.id,
-          point_name: formData.point_name,
-          description: formData.description || null,
-          latitude: formData.latitude,
-          longitude: formData.longitude,
-        });
-
+      const {
+        error
+      } = await supabase.from('service_location_coordinates').insert({
+        service_location_id: serviceLocation.id,
+        point_name: formData.point_name,
+        description: formData.description || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude
+      });
       if (error) throw error;
-
       handleClose();
       onPinAdded();
     } catch (error) {
@@ -264,11 +242,12 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
       setIsSubmitting(false);
     }
   };
-
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
-
   const handleClose = () => {
     // Clean up map and markers
     if (currentMarker.current) {
@@ -283,30 +262,23 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
       map.current.remove();
       map.current = null;
     }
-    
+
     // Reset all state
     setFormData({
       point_name: '',
       description: '',
       latitude: null,
-      longitude: null,
+      longitude: null
     });
     setAddressCoordinates(null);
     setMapLoading(true);
     setIsPinModeActive(false);
-    
     onClose();
   };
-
   if (!isOpen) return null;
-
-  return (
-    <>
+  return <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 z-40 transition-opacity" onClick={onClose} />
       
       {/* Slider */}
       <div className="fixed right-0 top-0 h-full w-full md:w-3/4 bg-background border-l shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out">
@@ -319,9 +291,7 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
               <p className="text-sm text-muted-foreground">
                 Add a new GPS coordinate for {serviceLocation.location_name}
               </p>
-              {fullAddress && (
-                <p className="text-xs text-muted-foreground mt-1">{fullAddress}</p>
-              )}
+              {fullAddress && <p className="text-xs text-muted-foreground mt-1">{fullAddress}</p>}
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={handleClose}>
@@ -339,7 +309,7 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
               <ol className="text-xs text-muted-foreground space-y-1">
                 <li>1. Zoom to desired location</li>
                 <li>2. Select: Activate Pin Selector</li>
-                <li>3. Drop anywhere on map</li>
+                <li>3. Drop target anywhere on map</li>
                 <li>4. Name and save pin location</li>
               </ol>
             </div>
@@ -347,35 +317,17 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
             {/* Map Controls */}
             <div className="flex items-center justify-between mb-4">
               <div className="bg-background rounded-lg shadow-sm border flex overflow-hidden">
-                <button
-                  onClick={() => setMapStyle('satellite')}
-                  className={`px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
-                    mapStyle === 'satellite'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-background text-foreground hover:bg-muted'
-                  }`}
-                >
+                <button onClick={() => setMapStyle('satellite')} className={`px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${mapStyle === 'satellite' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground hover:bg-muted'}`}>
                   <Satellite className="w-4 h-4" />
                   Satellite
                 </button>
-                <button
-                  onClick={() => setMapStyle('street')}
-                  className={`px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
-                    mapStyle === 'street'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-background text-foreground hover:bg-muted'
-                  }`}
-                >
+                <button onClick={() => setMapStyle('street')} className={`px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${mapStyle === 'street' ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground hover:bg-muted'}`}>
                   <Map className="w-4 h-4" />
                   Streets
                 </button>
               </div>
 
-              <Button
-                onClick={() => setIsPinModeActive(!isPinModeActive)}
-                variant={isPinModeActive ? "default" : "outline"}
-                className="flex items-center gap-2"
-              >
+              <Button onClick={() => setIsPinModeActive(!isPinModeActive)} variant={isPinModeActive ? "default" : "outline"} className="flex items-center gap-2">
                 <Target className={`w-4 h-4 ${isPinModeActive ? 'text-red-600' : ''}`} />
                 {isPinModeActive ? 'Pin Mode: ON' : 'Activate Pin Selector'}
               </Button>
@@ -383,28 +335,20 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
 
             {/* Map Container */}
             <div className="flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px]">
-              {mapLoading && (
-                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
+              {mapLoading && <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
                   <div className="flex items-center gap-2 text-foreground">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                     <span>Loading map...</span>
                   </div>
-                </div>
-              )}
+                </div>}
               
               <div ref={mapContainer} className="w-full h-full" />
               
               {/* Map Status */}
               <div className="absolute bottom-4 left-4 bg-background/90 backdrop-blur rounded-lg p-3 text-sm max-w-xs">
-                {!isPinModeActive ? (
-                  <p className="text-muted-foreground">Click "Activate Pin Selector" to drop pins</p>
-                ) : formData.latitude && formData.longitude ? (
-                  <p className="text-primary font-medium">
+                {!isPinModeActive ? <p className="text-muted-foreground">Click "Activate Pin Selector" to drop pins</p> : formData.latitude && formData.longitude ? <p className="text-primary font-medium">
                     Pin: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
-                  </p>
-                ) : (
-                  <p className="text-primary">Click on the map to drop a pin</p>
-                )}
+                  </p> : <p className="text-primary">Click on the map to drop a pin</p>}
               </div>
             </div>
           </div>
@@ -414,40 +358,22 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="point_name">Pin Name *</Label>
-                <Input
-                  id="point_name"
-                  value={formData.point_name}
-                  onChange={(e) => handleInputChange('point_name', e.target.value)}
-                  placeholder="e.g., Loading Dock, Front Entrance"
-                  required
-                />
+                <Input id="point_name" value={formData.point_name} onChange={e => handleInputChange('point_name', e.target.value)} placeholder="e.g., Loading Dock, Front Entrance" required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Optional description for this location"
-                  rows={3}
-                />
+                <Textarea id="description" value={formData.description} onChange={e => handleInputChange('description', e.target.value)} placeholder="Optional description for this location" rows={3} />
               </div>
 
-              {formData.latitude && formData.longitude && (
-                <div className="bg-muted rounded-lg p-3 text-sm">
+              {formData.latitude && formData.longitude && <div className="bg-muted rounded-lg p-3 text-sm">
                   <p className="font-medium mb-1">Coordinates:</p>
                   <p>Lat: {formData.latitude.toFixed(6)}</p>
                   <p>Lng: {formData.longitude.toFixed(6)}</p>
-                </div>
-              )}
+                </div>}
 
               <div className="flex gap-3 pt-4">
-                <Button
-                  type="submit"
-                  disabled={!formData.latitude || !formData.longitude || !formData.point_name || isSubmitting}
-                  className="flex items-center gap-2 flex-1"
-                >
+                <Button type="submit" disabled={!formData.latitude || !formData.longitude || !formData.point_name || isSubmitting} className="flex items-center gap-2 flex-1">
                   <Plus className="w-4 h-4" />
                   {isSubmitting ? 'Adding...' : 'Add Pin'}
                 </Button>
@@ -459,6 +385,5 @@ export function AddPinSlider({ isOpen, onClose, serviceLocation, onPinAdded }: A
           </div>
         </div>
       </div>
-    </>
-  );
+    </>;
 }
