@@ -59,14 +59,21 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
 
-    // Default center - use service location coordinates if available
-    let center: [number, number] = [-98.5795, 39.8283]; // US center
+    // Default center - try to use service location coordinates
+    let center: [number, number] = [-98.5795, 39.8283]; // US center as fallback
+    let zoom = 4;
     
+    // Check for GPS coordinates in the service location
     if (serviceLocation?.gps_coordinates) {
       const coords = serviceLocation.gps_coordinates;
       if (coords.x && coords.y) {
         center = [coords.x, coords.y];
+        zoom = 15;
       }
+    } else if (serviceLocation?.street && serviceLocation?.city && serviceLocation?.state) {
+      // If no GPS coordinates, try to center on city/state for better starting point
+      // This is a basic approximation - you might want to geocode the address
+      zoom = 10;
     }
 
     // Initialize map
@@ -76,7 +83,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         ? 'mapbox://styles/mapbox/satellite-v9'
         : 'mapbox://styles/mapbox/streets-v12',
       center,
-      zoom: 15,
+      zoom,
     });
 
     // Add navigation controls
@@ -199,7 +206,10 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
                 size="sm"
                 variant={mapStyle === 'street' ? 'default' : 'outline'}
                 onClick={() => setMapStyle('street')}
-                className="bg-background/90 backdrop-blur"
+                className={mapStyle === 'street' 
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                  : "bg-background/90 backdrop-blur text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                }
               >
                 <Map className="w-4 h-4 mr-1" />
                 Street
@@ -208,7 +218,10 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
                 size="sm"
                 variant={mapStyle === 'satellite' ? 'default' : 'outline'}
                 onClick={() => setMapStyle('satellite')}
-                className="bg-background/90 backdrop-blur"
+                className={mapStyle === 'satellite' 
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                  : "bg-background/90 backdrop-blur text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                }
               >
                 <Satellite className="w-4 h-4 mr-1" />
                 Satellite
