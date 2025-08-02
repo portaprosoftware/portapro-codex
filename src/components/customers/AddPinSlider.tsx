@@ -415,11 +415,10 @@ export function AddPinSlider({
   };
   if (!isOpen) return null;
   return <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40 transition-opacity" onClick={onClose} />
+      {/* Backdrop - Only render when actually open */}
       
       {/* Slider */}
-      <div className="fixed right-0 top-0 h-full w-full md:w-3/4 bg-background border-l shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out">
+      <div className="fixed right-0 top-0 h-full w-full md:w-3/4 bg-background border-l shadow-xl z-10 flex flex-col transition-transform duration-300 ease-out">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b bg-background">
           <div className="flex items-center gap-3">

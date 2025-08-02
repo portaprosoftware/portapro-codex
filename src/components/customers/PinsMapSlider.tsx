@@ -36,14 +36,10 @@ export function PinsMapSlider({ isOpen, onClose, pins, selectedLocation, onPinCl
 
   return (
     <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-        onClick={onClose}
-      />
+      {/* Backdrop - Removed to fix dropdown conflicts */}
       
       {/* Slider */}
-      <div className="fixed right-0 top-0 h-full w-full bg-background border-l shadow-xl z-50 flex flex-col transition-transform duration-300 ease-out">
+      <div className="fixed right-0 top-0 h-full w-full bg-background border-l shadow-xl z-10 flex flex-col transition-transform duration-300 ease-out">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-background">
           <div className="flex items-center gap-3">
