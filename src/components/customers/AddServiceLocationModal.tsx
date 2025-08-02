@@ -114,8 +114,8 @@ export function AddServiceLocationModal({
           state: data.state,
           zip: data.zip,
           access_instructions: data.access_instructions,
-          onsite_contact_name: data.onsite_contact_name,
-          onsite_contact_phone: data.onsite_contact_phone,
+          contact_person: data.onsite_contact_name,
+          contact_phone: data.onsite_contact_phone,
           is_active: data.is_active,
           is_default: data.is_default,
         });
