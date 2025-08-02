@@ -79,11 +79,20 @@ const JobsPage: React.FC = () => {
     }
     
     console.log('Found job:', foundJob);
-    const jobDate = new Date(foundJob.scheduled_date);
+    console.log('Job scheduled_date from DB:', foundJob.scheduled_date);
+    
+    // Parse the date string properly to avoid timezone issues
+    const jobDate = new Date(foundJob.scheduled_date + 'T00:00:00');
+    console.log('Parsed job date:', jobDate);
+    console.log('Job date getFullYear:', jobDate.getFullYear(), 'getMonth:', jobDate.getMonth() + 1, 'getDate:', jobDate.getDate());
+    
     const currentDateStr = formatDateForQuery(selectedDate);
     const jobDateStr = formatDateForQuery(jobDate);
     
-    console.log('Current date:', currentDateStr, 'Job date:', jobDateStr);
+    console.log('Current date string:', currentDateStr);
+    console.log('Job date string:', jobDateStr);
+    console.log('Selected date object:', selectedDate);
+    console.log('Selected date getFullYear:', selectedDate.getFullYear(), 'getMonth:', selectedDate.getMonth() + 1, 'getDate:', selectedDate.getDate());
     
     // Only navigate if job is found on a different date
     if (jobDateStr !== currentDateStr) {
