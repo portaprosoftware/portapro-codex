@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, List, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -81,27 +82,18 @@ export function PinInventorySlider({ isOpen, onClose, coordinateId, pinName, onI
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop - Removed to fix dropdown conflicts */}
-      
-      {/* Slide Panel */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-4xl bg-background border-l shadow-xl z-10 flex flex-col transition-transform duration-300 ease-out">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-background">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-4xl w-full h-[90vh] p-0">
+        <DialogHeader className="p-6 border-b">
           <div className="flex items-center gap-3">
             <Package className="w-6 h-6 text-primary" />
             <div>
-              <h2 className="text-xl font-semibold">Manage Inventory Template</h2>
+              <DialogTitle className="text-xl font-semibold">Manage Inventory Template</DialogTitle>
               <p className="text-sm text-muted-foreground">For "{pinName}"</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+        </DialogHeader>
 
         {/* Info Note */}
         <div className="p-6 border-b bg-muted/30">
@@ -168,7 +160,7 @@ export function PinInventorySlider({ isOpen, onClose, coordinateId, pinName, onI
             </TabsContent>
           </Tabs>
         </div>
-      </div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }

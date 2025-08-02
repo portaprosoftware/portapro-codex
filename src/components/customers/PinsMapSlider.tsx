@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, MapPin } from 'lucide-react';
 import { MapView } from './MapView';
 
@@ -32,33 +33,24 @@ interface PinsMapSliderProps {
 }
 
 export function PinsMapSlider({ isOpen, onClose, pins, selectedLocation, onPinClick }: PinsMapSliderProps) {
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop - Removed to fix dropdown conflicts */}
-      
-      {/* Slider */}
-      <div className="fixed right-0 top-0 h-full w-full bg-background border-l shadow-xl z-10 flex flex-col transition-transform duration-300 ease-out">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-background">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
+        <DialogHeader className="p-4 border-b">
           <div className="flex items-center gap-3">
             <MapPin className="w-6 h-6 text-primary" />
             <div>
-              <h2 className="text-xl font-semibold">Pin Locations Map</h2>
+              <DialogTitle className="text-xl font-semibold">Pin Locations Map</DialogTitle>
               <p className="text-sm text-muted-foreground">
                 {pins.length} pin{pins.length !== 1 ? 's' : ''} found
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+        </DialogHeader>
 
         {/* Map Content */}
         <div className="flex-1 p-4">
-          <div className="h-full rounded-lg overflow-hidden border">
+          <div className="h-[70vh] rounded-lg overflow-hidden border">
             <MapView 
               pins={pins}
               selectedLocation={selectedLocation}
@@ -77,7 +69,7 @@ export function PinsMapSlider({ isOpen, onClose, pins, selectedLocation, onPinCl
             </Button>
           </div>
         </div>
-      </div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }
