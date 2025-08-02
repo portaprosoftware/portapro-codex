@@ -92,7 +92,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
 
   // Initialize map
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current || map.current) return;
+    if (!isOpen || !mapboxToken || !mapContainer.current) return;
 
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
