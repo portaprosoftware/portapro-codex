@@ -662,7 +662,6 @@ const JobsPage: React.FC = () => {
                 selectedDriver={selectedDriver}
                 selectedJobType={selectedJobType}
                 selectedStatus={selectedStatus}
-                currentDate={dispatchDate}
               />
             </div>
           )}
