@@ -6,7 +6,7 @@ import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, Satellite, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
@@ -33,6 +33,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   const [selectedJobsAtLocation, setSelectedJobsAtLocation] = useState<any[]>([]);
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
 
   // Use the same data fetching as other views - this ensures data consistency
   const formatDateForQuery = (date: Date) => {
@@ -75,6 +76,13 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     }
   });
 
+  // Helper function to get map style URL
+  const getMapStyleUrl = (style: 'streets' | 'satellite') => {
+    return style === 'satellite' 
+      ? 'mapbox://styles/mapbox/satellite-v9'
+      : 'mapbox://styles/mapbox/streets-v12';
+  };
+
   // Get Mapbox token
   useEffect(() => {
     const getToken = async () => {
@@ -109,7 +117,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12', // Changed to streets style
+      style: getMapStyleUrl(mapStyle),
       center: [-95.7129, 37.0902],
       zoom: 4
     });
@@ -125,6 +133,13 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
       }
     };
   }, [mapboxToken]);
+
+  // Update map style when changed
+  useEffect(() => {
+    if (map.current) {
+      map.current.setStyle(getMapStyleUrl(mapStyle));
+    }
+  }, [mapStyle]);
 
   // Fetch service locations separately
   useEffect(() => {
@@ -169,8 +184,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         if (!jobsByLocation.has(key)) {
           jobsByLocation.set(key, {
             location,
-            jobs: [],
-            coordinates: null
+            jobs: []
           });
         }
         jobsByLocation.get(key).jobs.push(job);
@@ -342,6 +356,30 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   return (
     <div className="relative w-full h-full">{/* Remove fixed 400px height */}
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
+      
+      {/* Map Style Toggle */}
+      <div className="absolute top-4 left-4 z-20">
+        <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
+          <Button
+            variant={mapStyle === 'streets' ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setMapStyle('streets')}
+            className="h-8 px-3 text-sm font-medium"
+          >
+            <MapIcon className="w-4 h-4 mr-1.5" />
+            Streets
+          </Button>
+          <Button
+            variant={mapStyle === 'satellite' ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setMapStyle('satellite')}
+            className="h-8 px-3 text-sm font-medium"
+          >
+            <Satellite className="w-4 h-4 mr-1.5" />
+            Satellite
+          </Button>
+        </div>
+      </div>
       
       {/* Multiple Jobs Selection Slide Panel */}
       {selectedJobsAtLocation.length > 0 && (
