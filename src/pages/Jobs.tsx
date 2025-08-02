@@ -28,9 +28,10 @@ import { useToast } from '@/hooks/use-toast';
 import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 import { useJobsWithDateRange } from '@/hooks/useJobsWithDateRange';
 import { useJobSearch } from '@/hooks/useJobSearch';
-import { CustomJobFilters } from '@/components/jobs/CustomJobFilters';
+import { EnhancedJobFilters } from '@/components/filters/EnhancedJobFilters';
 import { CustomJobsList } from '@/components/jobs/CustomJobsList';
-import { exportJobsToCSV } from '@/utils/jobsExport';
+import { exportJobsToCSV, generatePDFContent } from '@/utils/jobsExport';
+import { useUser } from '@clerk/clerk-react';
 import { DateRange } from 'react-day-picker';
 import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
@@ -454,9 +455,9 @@ const JobsPage: React.FC = () => {
           </div>
         )}
 
-        {/* Custom Filters for Custom Tab */}
+        {/* Enhanced Filters for Custom Tab */}
         {activeTab === 'custom' && (
-          <CustomJobFilters
+          <EnhancedJobFilters
             dateRange={customDateRange}
             onDateRangeChange={setCustomDateRange}
             searchTerm={customSearchTerm}
@@ -470,6 +471,7 @@ const JobsPage: React.FC = () => {
             drivers={drivers}
             onExport={handleCustomExport}
             resultsCount={filterCustomJobs(customJobs).length}
+            totalCount={customJobs.length}
           />
         )}
 

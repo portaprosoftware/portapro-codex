@@ -1669,6 +1669,83 @@ export type Database = {
         }
         Relationships: []
       }
+      filter_preset_usage: {
+        Row: {
+          filter_modifications: Json | null
+          id: string
+          preset_id: string | null
+          results_count: number | null
+          used_at: string
+          user_id: string | null
+        }
+        Insert: {
+          filter_modifications?: Json | null
+          id?: string
+          preset_id?: string | null
+          results_count?: number | null
+          used_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          filter_modifications?: Json | null
+          id?: string
+          preset_id?: string | null
+          results_count?: number | null
+          used_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_preset_usage_preset_id_fkey"
+            columns: ["preset_id"]
+            isOneToOne: false
+            referencedRelation: "filter_presets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      filter_presets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          filter_data: Json
+          id: string
+          is_public: boolean
+          last_used_at: string | null
+          name: string
+          preset_type: string
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          filter_data?: Json
+          id?: string
+          is_public?: boolean
+          last_used_at?: string | null
+          name: string
+          preset_type?: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          filter_data?: Json
+          id?: string
+          is_public?: boolean
+          last_used_at?: string | null
+          name?: string
+          preset_type?: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: []
+      }
       fleet_utilization_analytics: {
         Row: {
           created_at: string
