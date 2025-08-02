@@ -790,7 +790,7 @@ const JobsPage: React.FC = () => {
                       onModeChange={setIsDriverMode}
                     />
                     <p className="text-sm text-gray-600">
-                      Switch between job type view and driver assignment view
+                      Switch between job type view and driver assignment view. You can drill down further using the standard filters above.
                     </p>
                   </div>
                 </div>
