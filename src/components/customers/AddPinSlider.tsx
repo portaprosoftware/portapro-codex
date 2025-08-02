@@ -159,8 +159,14 @@ export function AddPinSlider({
 
     // Set loading to false once map is ready
     map.current.on('load', () => {
+      console.log('Map loaded, attempting to add address marker');
       setMapLoading(false);
-      addAddressMarker(); // Add marker after map loads
+      
+      // Force add the blue address marker immediately
+      setTimeout(() => {
+        console.log('Adding address marker after map load');
+        addAddressMarker();
+      }, 100);
     });
 
     // Add navigation controls
