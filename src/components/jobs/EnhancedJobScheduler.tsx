@@ -232,7 +232,7 @@ export const EnhancedJobScheduler: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'assigned': return 'bg-blue-500';
-      case 'in_progress': return 'bg-orange-500';
+      case 'in-progress': return 'bg-orange-500';
       case 'completed': return 'bg-green-500';
       case 'cancelled': return 'bg-red-500';
       default: return 'bg-gray-500';
@@ -372,7 +372,7 @@ export const EnhancedJobScheduler: React.FC = () => {
                 <SelectItem value="priority">Priority</SelectItem>
                 <SelectItem value="assigned">Assigned</SelectItem>
                 <SelectItem value="unassigned">Unassigned</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>

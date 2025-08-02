@@ -53,7 +53,7 @@ export const getDisplayStatus = (job: Job): string => {
   }
   
   // For non-completed jobs (assigned, unassigned, in-progress), check if overdue
-  if (job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') {
+  if (job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress') {
     return isJobOverdue(job) ? 'overdue' : job.status;
   }
   
@@ -74,11 +74,6 @@ export const getJobStatusConfig = () => ({
     gradient: 'bg-gradient-to-r from-gray-400 to-gray-500 text-white', 
     label: 'Unassigned',
     color: '#9CA3AF'
-  },
-  in_progress: { 
-    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
-    label: 'In Progress',
-    color: '#F97316'
   },
   'in-progress': { 
     gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
@@ -148,7 +143,7 @@ export const getDualJobStatusInfo = (job: Job) => {
   }
   
   // For non-completed jobs, check if currently overdue
-  if ((job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
+  if ((job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress') && isJobOverdue(job)) {
     // Currently overdue: show "Overdue" + actual status (2 badges)
     return {
       primary: statusConfig.overdue,

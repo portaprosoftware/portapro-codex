@@ -203,12 +203,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   });
 
   const handleStartJob = () => {
-    const newStatus = job?.status === 'assigned' ? 'in_progress' : 'completed';
+    const newStatus = job?.status === 'assigned' ? 'in-progress' : 'completed';
     statusUpdateMutation.mutate({ status: newStatus });
   };
 
   const handleReverseJob = () => {
-    const newStatus = job?.status === 'completed' ? 'in_progress' : 'assigned';
+    const newStatus = job?.status === 'completed' ? 'in-progress' : 'assigned';
     statusUpdateMutation.mutate({ status: newStatus });
   };
 
@@ -231,9 +231,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     setIsEditing(false);
   };
 
-  const canStartJob = job?.status === 'assigned' || job?.status === 'in_progress';
-  const canReverseJob = job?.status === 'in_progress' || job?.status === 'completed';
-  const canCancelJob = job?.status === 'assigned' || job?.status === 'in_progress';
+  const canStartJob = job?.status === 'assigned' || job?.status === 'in-progress';
+  const canReverseJob = job?.status === 'in-progress' || job?.status === 'completed';
+  const canCancelJob = job?.status === 'assigned' || job?.status === 'in-progress';
 
   if (!job && !isLoading) return null;
 
