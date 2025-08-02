@@ -127,9 +127,9 @@ export function AddPinSlider({
 
     // Default center - Ohio center for this project
     let center: [number, number] = [-82.9071, 40.4173]; // Ohio center as fallback
-    let zoom = 8;
+    let zoom = 14; // Use street-level zoom like the working MapView
 
-    // Priority 1: Use existing GPS coordinates
+    // Priority 1: Use existing GPS coordinates (same logic as working MapView)
     if (serviceLocation?.gps_coordinates) {
       let lng, lat;
       if (typeof serviceLocation.gps_coordinates === 'object' && serviceLocation.gps_coordinates !== null) {
@@ -147,7 +147,7 @@ export function AddPinSlider({
           !isNaN(lng) && !isNaN(lat) && 
           lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
         center = [lng, lat];
-        zoom = 15;
+        zoom = 14; // Same zoom as working MapView
         console.log('Using GPS coordinates:', lng, lat);
       } else {
         console.log('Invalid GPS coordinates:', lng, lat);
@@ -156,7 +156,7 @@ export function AddPinSlider({
     // Priority 2: Use geocoded coordinates
     else if (addressCoordinates) {
       center = addressCoordinates;
-      zoom = 15;
+      zoom = 14; // Same zoom as working MapView
       console.log('Using geocoded coordinates:', addressCoordinates);
     }
     // Priority 3: If we have address but no coordinates, center on Ohio
