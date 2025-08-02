@@ -14,7 +14,7 @@ import { JobStatus } from '@/types';
 export const DriverDashboard: React.FC = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority'>('all');
+  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority' | 'was_overdue'>('all');
 
   const { data: jobs, isLoading, refetch } = useQuery({
     queryKey: ['driver-jobs', user?.id],
@@ -51,7 +51,10 @@ export const DriverDashboard: React.FC = () => {
       job.customers?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.job_number.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || 
+      job.status === statusFilter ||
+      (statusFilter === 'priority' && (job as any).is_priority === true) ||
+      (statusFilter === 'was_overdue' && job.was_overdue === true);
     
     return matchesSearch && matchesStatus;
   });

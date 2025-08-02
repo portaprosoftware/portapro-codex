@@ -188,6 +188,11 @@ export const JobCard: React.FC<JobCardProps> = ({
                 {statusInfo.secondary.label}
               </Badge>
             )}
+            {statusInfo.wasOverdue && (
+              <Badge className={`${statusInfo.wasOverdue.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
+                {statusInfo.wasOverdue.label}
+              </Badge>
+            )}
             {statusInfo.priority && (
               <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
                 <AlertTriangle className="w-3 h-3 mr-1" />
@@ -268,6 +273,11 @@ export const JobCard: React.FC<JobCardProps> = ({
             {statusInfo.secondary && (
               <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
                 {statusInfo.secondary.label}
+              </Badge>
+            )}
+            {statusInfo.wasOverdue && (
+              <Badge className={`${statusInfo.wasOverdue.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
+                {statusInfo.wasOverdue.label}
               </Badge>
             )}
             {statusInfo.priority && (

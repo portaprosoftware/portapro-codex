@@ -4,13 +4,14 @@ import { Badge } from '@/components/ui/badge';
 import { JobStatus } from '@/types';
 
 interface StatusFilterProps {
-  value: JobStatus | 'all' | 'priority';
-  onChange: (status: JobStatus | 'all' | 'priority') => void;
+  value: JobStatus | 'all' | 'priority' | 'was_overdue';
+  onChange: (status: JobStatus | 'all' | 'priority' | 'was_overdue') => void;
 }
 
 const statusOptions = [
   { value: 'all' as const, label: 'All', count: 0 },
-  { value: 'priority' as const, label: 'Was Overdue', count: 0 },
+  { value: 'priority' as const, label: 'Priority', count: 0 },
+  { value: 'was_overdue' as const, label: 'Was Overdue', count: 0 },
   { value: 'assigned' as const, label: 'Assigned', count: 0 },
   { value: 'unassigned' as const, label: 'Unassigned', count: 0 },
   { value: 'in-progress' as const, label: 'In Progress', count: 0 },
