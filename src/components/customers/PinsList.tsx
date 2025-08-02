@@ -19,9 +19,10 @@ interface PinsListProps {
   pins: Pin[];
   isLoading: boolean;
   onPinDeleted: () => void;
+  onAssignInventory?: (pin: Pin) => void;
 }
 
-export function PinsList({ pins, isLoading, onPinDeleted }: PinsListProps) {
+export function PinsList({ pins, isLoading, onPinDeleted, onAssignInventory }: PinsListProps) {
   const [selectedPins, setSelectedPins] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -129,7 +130,7 @@ export function PinsList({ pins, isLoading, onPinDeleted }: PinsListProps) {
               className="mt-3"
             />
             <div className="flex-1">
-              <PinCard pin={pin} onAssignInventory={() => {}} />
+              <PinCard pin={pin} onAssignInventory={onAssignInventory} />
             </div>
           </div>
         ))}

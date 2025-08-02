@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AddPinModal } from './AddPinModal';
 import { PinsList } from './PinsList';
+import { PinInventoryModal } from './PinInventoryModal';
 import { MapPin, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -15,6 +16,8 @@ interface GPSDropPinsSectionProps {
 export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const [selectedPin, setSelectedPin] = useState<any>(null);
 
   // Fetch service locations for this customer
   const { data: serviceLocations, isLoading: locationsLoading } = useQuery({
@@ -67,6 +70,15 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const handlePinDeleted = () => {
     refetchPins();
     toast.success('GPS pin deleted successfully');
+  };
+
+  const handleAssignInventory = (pin: any) => {
+    setSelectedPin(pin);
+    setIsInventoryModalOpen(true);
+  };
+
+  const handleInventoryUpdated = () => {
+    refetchPins();
   };
 
   if (locationsLoading) {
@@ -138,6 +150,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           pins={pins || []} 
           isLoading={pinsLoading}
           onPinDeleted={handlePinDeleted}
+          onAssignInventory={handleAssignInventory}
         />
       </div>
 
@@ -147,6 +160,16 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
           onClose={() => setIsAddModalOpen(false)}
           serviceLocation={selectedLocation}
           onPinAdded={handlePinAdded}
+        />
+      )}
+
+      {isInventoryModalOpen && selectedPin && (
+        <PinInventoryModal
+          isOpen={isInventoryModalOpen}
+          onOpenChange={setIsInventoryModalOpen}
+          coordinateId={selectedPin.id}
+          pinName={selectedPin.point_name}
+          onInventoryUpdated={handleInventoryUpdated}
         />
       )}
     </div>
