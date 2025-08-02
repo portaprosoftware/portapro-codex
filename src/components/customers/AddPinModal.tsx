@@ -33,6 +33,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
   });
   const [isSaving, setIsSaving] = useState(false);
   const [addressCoordinates, setAddressCoordinates] = useState<[number, number] | null>(null);
+  const [mapLoading, setMapLoading] = useState(true);
 
   // Build full address string
   const fullAddress = [
@@ -91,7 +92,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
 
   // Initialize map
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current) return;
+    if (!isOpen || !mapboxToken || !mapContainer.current || map.current) return;
 
     // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
@@ -123,6 +124,11 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         : 'mapbox://styles/mapbox/streets-v12',
       center,
       zoom,
+    });
+
+    // Set loading to false once map is ready
+    map.current.on('load', () => {
+      setMapLoading(false);
     });
 
     // Add navigation controls
@@ -169,11 +175,17 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     });
 
     return () => {
-      if (map.current) {
-        map.current.remove();
-      }
+      // Cleanup is handled in handleClose to avoid conflicts
     };
-  }, [isOpen, mapboxToken, serviceLocation, mapStyle, addressCoordinates, fullAddress]);
+  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress]);
+
+  // Reset coordinates when modal reopens
+  useEffect(() => {
+    if (isOpen) {
+      setAddressCoordinates(null);
+      setMapLoading(true);
+    }
+  }, [isOpen]);
 
   // Update map style when changed
   useEffect(() => {
@@ -238,18 +250,30 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
   };
 
   const handleClose = () => {
+    // Clean up map and markers
+    if (currentMarker.current) {
+      currentMarker.current.remove();
+      currentMarker.current = null;
+    }
+    if (addressMarker.current) {
+      addressMarker.current.remove();
+      addressMarker.current = null;
+    }
+    if (map.current) {
+      map.current.remove();
+      map.current = null;
+    }
+    
+    // Reset all state
     setPinData({
       name: '',
       description: '',
       latitude: null,
       longitude: null,
     });
-    if (currentMarker.current) {
-      currentMarker.current.remove();
-    }
-    if (addressMarker.current) {
-      addressMarker.current.remove();
-    }
+    setAddressCoordinates(null);
+    setMapLoading(true);
+    
     onClose();
   };
 
@@ -298,6 +322,15 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
                 </button>
               </div>
             </div>
+            
+            {mapLoading && (
+              <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
+                <div className="flex items-center gap-2 text-foreground">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span>Loading map...</span>
+                </div>
+              </div>
+            )}
             
             <div ref={mapContainer} className="w-full h-full rounded-lg" />
             
