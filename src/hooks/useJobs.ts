@@ -125,7 +125,6 @@ export function useCreateJob() {
 
   return useMutation({
     mutationFn: async (jobData: JobWizardData) => {
-
       // Get company settings for job numbering
       const { data: companySettings } = await supabase
         .from('company_settings')
