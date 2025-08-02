@@ -201,9 +201,13 @@ export function AddPinSlider({
       // Force style change and re-render
       map.current.setStyle(newStyle);
       map.current.once('styledata', () => {
-        // Re-add address marker after style loads (only if we have coordinates and no existing marker)
+        // Re-add address marker after style loads (style change removes all markers)
         const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
-        if (markerCoords && !addressMarker.current) {
+        if (markerCoords) {
+          // Remove existing marker reference since style change cleared it
+          addressMarker.current = null;
+          
+          // Create new address marker
           addressMarker.current = new mapboxgl.Marker({
             color: '#3b82f6',
             scale: 1.2
@@ -212,9 +216,16 @@ export function AddPinSlider({
               <small>${fullAddress}</small>
             `)).addTo(map.current!);
         }
+        
+        // Re-add red pin if it exists
+        if (formData.latitude && formData.longitude) {
+          currentMarker.current = new mapboxgl.Marker({
+            color: '#ef4444'
+          }).setLngLat([formData.longitude, formData.latitude]).addTo(map.current!);
+        }
       });
     }
-  }, [mapStyle, serviceLocation, addressCoordinates, fullAddress]);
+  }, [mapStyle, serviceLocation, addressCoordinates, fullAddress, formData.latitude, formData.longitude]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.point_name || !formData.latitude || !formData.longitude) {
