@@ -626,7 +626,7 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'map' && (
-            <div className="bg-white">
+            <div className="bg-white rounded-lg border shadow-sm overflow-hidden" style={{ height: 'calc(100vh - 280px)' }}>
               {/* Map view - filters handled by unified filter bar above */}
               <JobsMapErrorBoundary 
                 onRetry={() => {

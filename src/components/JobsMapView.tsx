@@ -268,7 +268,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '400px' }}>
+    <div className="relative w-full h-full">{/* Remove fixed 400px height */}
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
       {/* Multiple Jobs Selection Slide Panel */}
