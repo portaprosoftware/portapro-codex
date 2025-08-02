@@ -471,11 +471,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormLabel>Customer Type *</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white border shadow-sm">
                               <SelectValue placeholder="Select customer type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="bg-white border shadow-lg z-50">
                             {CUSTOMER_TYPES.map((type) => (
                               <SelectItem key={type.value} value={type.value}>
                                 {type.label}
@@ -567,14 +567,14 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                         <FormLabel>State *</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-white border shadow-sm">
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="bg-white border shadow-lg z-50">
                             {US_STATES.map((state) => (
                               <SelectItem key={state.value} value={state.value}>
-                                {state.label}
+                                {state.value} - {state.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -675,14 +675,14 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                           <FormLabel>State *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="bg-white border shadow-sm">
                                 <SelectValue placeholder="Select state" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-white border shadow-lg z-50">
                               {US_STATES.map((state) => (
                                 <SelectItem key={state.value} value={state.value}>
-                                  {state.label}
+                                  {state.value} - {state.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -784,14 +784,14 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                           <FormLabel>State *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="bg-white border shadow-sm">
                                 <SelectValue placeholder="Select state" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="bg-white border shadow-lg z-50">
                               {US_STATES.map((state) => (
                                 <SelectItem key={state.value} value={state.value}>
-                                  {state.label}
+                                  {state.value} - {state.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
