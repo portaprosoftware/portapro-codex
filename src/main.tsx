@@ -17,6 +17,24 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error) => {
+        // Don't retry DataCloneError - it won't fix itself
+        if (error?.name === 'DataCloneError' || error?.message?.includes('DataCloneError')) {
+          console.error('DataCloneError detected - not retrying');
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+    mutations: {
+      retry: (failureCount, error) => {
+        // Don't retry DataCloneError - it won't fix itself
+        if (error?.name === 'DataCloneError' || error?.message?.includes('DataCloneError')) {
+          console.error('DataCloneError in mutation - not retrying');
+          return false;
+        }
+        return failureCount < 2;
+      },
     },
   },
 });

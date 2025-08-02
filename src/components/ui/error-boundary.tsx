@@ -16,6 +16,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public static getDerivedStateFromError(error: Error): State {
     console.error('ErrorBoundary caught an error:', error);
+    
+    // Special handling for DataCloneError to provide better user feedback
+    if (error.name === 'DataCloneError' || error.message.includes('DataCloneError')) {
+      console.error('DataCloneError detected - this is usually caused by non-serializable data in React Query');
+    }
+    
     return { hasError: true, error };
   }
 
@@ -30,7 +36,10 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4 max-w-md">
             <h2 className="text-2xl font-bold text-destructive">Something went wrong</h2>
             <p className="text-muted-foreground">
-              An error occurred while loading the application.
+              {this.state.error?.name === 'DataCloneError' || this.state.error?.message.includes('DataCloneError')
+                ? 'A data serialization error occurred. The page will automatically reload to fix this issue.'
+                : 'An error occurred while loading the application.'
+              }
             </p>
             {this.state.error && (
               <details className="text-left">

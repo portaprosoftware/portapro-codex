@@ -83,8 +83,16 @@ export function useJobs(filters?: {
   driver_id?: string;
   job_type?: string;
 }) {
+  // Ensure filters are serializable for React Query
+  const serializedFilters = filters ? {
+    date: filters.date,
+    status: filters.status,
+    driver_id: filters.driver_id,
+    job_type: filters.job_type
+  } : undefined;
+
   return useQuery({
-    queryKey: ['jobs', filters],
+    queryKey: ['jobs', serializedFilters],
     queryFn: async () => {
       let query = supabase
         .from('jobs')
@@ -251,8 +259,11 @@ export function useUpdateJobStatus() {
 }
 
 export function useDriverJobs(driverId?: string) {
+  // Use ISO string for date comparison to avoid serialization issues
+  const todayISOString = new Date().toISOString().split('T')[0];
+  
   return useQuery({
-    queryKey: ['driver-jobs', driverId],
+    queryKey: ['driver-jobs', driverId, todayISOString],
     queryFn: async () => {
       if (!driverId) return [];
 
@@ -264,7 +275,7 @@ export function useDriverJobs(driverId?: string) {
           vehicles(id, license_plate, vehicle_type)
         `)
         .eq('driver_id', driverId)
-        .gte('scheduled_date', new Date().toISOString().split('T')[0])
+        .gte('scheduled_date', todayISOString)
         .order('scheduled_date', { ascending: true });
 
       if (error) throw error;

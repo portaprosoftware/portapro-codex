@@ -39,14 +39,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
   // Format date for jobs query using unified date
   const dateString = formatDateForQuery(selectedDate);
-  
-  console.log('JobsMapView: Selected date:', dateString);
-  console.log('JobsMapView: Query filters:', { 
-    date: dateString, 
-    status: selectedStatus, 
-    driver_id: selectedDriver, 
-    job_type: selectedJobType 
-  });
 
   // Get jobs data with proper "all" filter handling
   const { data: jobs, isLoading: jobsLoading, error: jobsError } = useJobs({
@@ -56,25 +48,9 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     job_type: selectedJobType === 'all' ? undefined : selectedJobType,
   });
 
-  // Enhanced debugging for jobs data
-  console.log('JobsMapView: Jobs loading state:', jobsLoading);
-  console.log('JobsMapView: Jobs error:', jobsError);
-  console.log('JobsMapView: Jobs data:', jobs);
-  console.log('JobsMapView: Jobs count:', jobs?.length || 0);
-  
-  // Log individual job details for debugging
-  if (jobs && jobs.length > 0) {
-    jobs.forEach((job, index) => {
-      console.log(`Job ${index + 1}:`, {
-        job_number: job.job_number,
-        customer_id: job.customer_id,
-        customer_name: job.customers?.name,
-        scheduled_date: job.scheduled_date,
-        status: job.status,
-        driver_id: job.driver_id,
-        job_type: job.job_type
-      });
-    });
+  // Only log errors, remove verbose debugging in production
+  if (jobsError) {
+    console.error('JobsMapView: Jobs error:', jobsError);
   }
 
   // Get Mapbox token
@@ -112,8 +88,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current || map.current) return;
 
-    console.log('Initializing map with token:', mapboxToken.substring(0, 10) + '...');
-
     try {
       mapboxgl.accessToken = mapboxToken;
 
@@ -127,7 +101,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
       map.current.on('load', () => {
-        console.log('Map loaded successfully');
+        // Map loaded successfully
       });
 
       map.current.on('error', (e) => {
@@ -152,21 +126,11 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
   // Add job pins to map
   useEffect(() => {
-    console.log('Pin effect triggered:', {
-      hasMap: !!map.current,
-      mapLoaded: map.current?.loaded(),
-      jobsCount: jobs?.length || 0,
-      jobsLoading,
-      jobsError
-    });
-
     if (!map.current || !map.current.loaded()) {
-      console.log('Map not ready yet');
       return;
     }
 
     if (jobsLoading) {
-      console.log('Jobs still loading, waiting...');
       return;
     }
 
@@ -175,26 +139,19 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       return;
     }
 
-    console.log('READY TO MANAGE PINS');
-
     const managePins = async () => {
       try {
         // Clear existing markers properly
         markersRef.current.forEach(marker => marker.remove());
         markersRef.current = [];
-        console.log('Cleared existing markers');
 
         // If no jobs, stop here (pins are cleared)
         if (!jobs || jobs.length === 0) {
-          console.log('No jobs to display pins for');
           return;
         }
 
-        console.log('Starting to add pins for', jobs.length, 'jobs');
-
         // Get service locations for customers
         const customerIds = [...new Set(jobs.map(job => job.customer_id))];
-        console.log('Fetching locations for customer IDs:', customerIds);
         
         const { data: locations, error } = await supabase
           .from('customer_service_locations')
@@ -206,8 +163,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           return;
         }
 
-        console.log('Jobs:', jobs);
-        console.log('Service locations:', locations);
 
         let pinsAdded = 0;
         const bounds = new mapboxgl.LngLatBounds();
@@ -219,7 +174,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           
           if (job.selected_coordinate_ids && Array.isArray(job.selected_coordinate_ids) && job.selected_coordinate_ids.length > 0) {
             // TODO: Fetch coordinates from service_location_coordinates table
-            console.log('Job has selected coordinates:', job.selected_coordinate_ids);
+            // For now, skip to default location
           }
           
           // Fallback to default service location
@@ -235,14 +190,12 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
               if (coords) {
                 const [lng, lat] = coords.split(',').map(coord => parseFloat(coord.trim()));
                 coordinates = [lng, lat];
-                console.log(`Using default location for job ${job.job_number}: [${lng}, ${lat}]`);
               }
             }
           }
 
-          // If we still don't have coordinates, try the customer's service address
+          // If we still don't have coordinates, skip this job
           if (!coordinates && job.customers) {
-            console.log(`No GPS coordinates for job ${job.job_number}, customer: ${job.customers.name}`);
             return;
           }
 
@@ -287,11 +240,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
             bounds.extend([lng, lat]);
             pinsAdded++;
-            console.log(`Added pin ${pinsAdded} for job ${job.job_number} at [${lng}, ${lat}]`);
           }
         });
-
-        console.log(`Total pins added: ${pinsAdded}`);
 
         // Fit map to show all pins if we have any
         if (pinsAdded > 0 && !bounds.isEmpty()) {
@@ -299,7 +249,6 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
             padding: 50,
             maxZoom: 15 
           });
-          console.log('Map bounds fitted to show all pins');
         }
       } catch (error) {
         console.error('Error managing job pins:', error);
@@ -307,7 +256,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     };
 
     managePins();
-  }, [jobs, selectedDate]);
+  }, [jobs, dateString]); // Use serialized date string instead of Date object
 
   const handleTokenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

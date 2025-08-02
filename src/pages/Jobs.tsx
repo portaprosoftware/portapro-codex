@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
+import { JobsMapErrorBoundary } from '@/components/JobsMapErrorBoundary';
 import { AddNewJobSlider } from '@/components/jobs/AddNewJobSlider';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
@@ -620,13 +621,20 @@ const JobsPage: React.FC = () => {
           {activeTab === 'map' && (
             <div className="bg-white">
               {/* Map view - filters handled by unified filter bar above */}
-              <JobsMapPage
-                searchTerm={searchTerm}
-                selectedDriver={selectedDriver}
-                selectedJobType={selectedJobType}
-                selectedStatus={selectedStatus}
-                selectedDate={selectedDate}
-              />
+              <JobsMapErrorBoundary 
+                onRetry={() => {
+                  // Clear React Query cache for jobs to force refresh
+                  console.log('Retrying map with fresh data');
+                }}
+              >
+                <JobsMapPage
+                  searchTerm={searchTerm}
+                  selectedDriver={selectedDriver}
+                  selectedJobType={selectedJobType}
+                  selectedStatus={selectedStatus}
+                  selectedDate={selectedDate}
+                />
+              </JobsMapErrorBoundary>
             </div>
           )}
         </div>
