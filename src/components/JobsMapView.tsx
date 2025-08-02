@@ -39,12 +39,12 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     job_type: selectedJobType 
   });
 
-  // Get jobs data
+  // Get jobs data with proper "all" filter handling
   const { data: jobs, isLoading: jobsLoading } = useJobs({
     date: dateString,
-    status: selectedStatus,
-    driver_id: selectedDriver,
-    job_type: selectedJobType,
+    status: selectedStatus === 'all' ? undefined : selectedStatus,
+    driver_id: selectedDriver === 'all' ? undefined : selectedDriver,
+    job_type: selectedJobType === 'all' ? undefined : selectedJobType,
   });
 
   // Get Mapbox token
@@ -82,16 +82,31 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current || map.current) return;
 
-    mapboxgl.accessToken = mapboxToken;
+    console.log('Initializing map with token:', mapboxToken.substring(0, 10) + '...');
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [-84.6229, 41.0846], // ABC Carnival coordinates
-      zoom: 12,
-    });
+    try {
+      mapboxgl.accessToken = mapboxToken;
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [-84.6229, 41.0846], // ABC Carnival coordinates
+        zoom: 12,
+      });
+
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      map.current.on('load', () => {
+        console.log('Map loaded successfully');
+      });
+
+      map.current.on('error', (e) => {
+        console.error('Map error:', e);
+      });
+
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
 
     return () => {
       if (map.current) {
@@ -103,84 +118,131 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
   // Add job pins to map
   useEffect(() => {
-    if (!map.current || !jobs || jobs.length === 0) return;
+    if (!map.current || !jobs || jobs.length === 0) {
+      console.log('Map pin loading skipped:', { 
+        hasMap: !!map.current, 
+        jobsCount: jobs?.length || 0 
+      });
+      return;
+    }
+
+    console.log('Starting to add pins for', jobs.length, 'jobs');
 
     const addPins = async () => {
       try {
+        // Clear existing markers first
+        const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
+        existingMarkers.forEach(marker => marker.remove());
+
         // Get service locations for customers
-        const customerIds = jobs.map(job => job.customer_id);
-        const { data: locations } = await supabase
+        const customerIds = [...new Set(jobs.map(job => job.customer_id))];
+        console.log('Fetching locations for customer IDs:', customerIds);
+        
+        const { data: locations, error } = await supabase
           .from('customer_service_locations')
           .select('*')
           .in('customer_id', customerIds);
 
+        if (error) {
+          console.error('Error fetching service locations:', error);
+          return;
+        }
+
         console.log('Jobs:', jobs);
         console.log('Service locations:', locations);
 
+        let pinsAdded = 0;
+        const bounds = new mapboxgl.LngLatBounds();
+
         // Create pins for jobs with locations
         jobs.forEach((job) => {
-          const location = locations?.find(loc => 
-            loc.customer_id === job.customer_id && loc.is_default
-          );
+          // First try to get coordinates from job itself
+          let coordinates: [number, number] | null = null;
+          
+          if (job.selected_coordinate_ids && Array.isArray(job.selected_coordinate_ids) && job.selected_coordinate_ids.length > 0) {
+            // TODO: Fetch coordinates from service_location_coordinates table
+            console.log('Job has selected coordinates:', job.selected_coordinate_ids);
+          }
+          
+          // Fallback to default service location
+          if (!coordinates) {
+            const location = locations?.find(loc => 
+              loc.customer_id === job.customer_id && loc.is_default
+            );
 
-          if (location?.gps_coordinates) {
-            // Parse GPS coordinates
-            const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
-            if (coords) {
-              const [lng, lat] = coords.split(',').map(Number);
-              
-              // Status colors
-              const statusColors: Record<string, string> = {
-                'assigned': '#3b82f6',
-                'in_progress': '#f59e0b',
-                'completed': '#10b981',
-                'cancelled': '#ef4444',
-              };
-
-              // Create marker
-              const marker = new mapboxgl.Marker({
-                color: statusColors[job.status] || '#6b7280'
-              })
-                .setLngLat([lng, lat])
-                .addTo(map.current!);
-
-              // Add click handler
-              marker.getElement().addEventListener('click', () => {
-                setSelectedPin({
-                  ...job,
-                  coordinates: [lng, lat],
-                  locationName: location.location_name,
-                });
-              });
-
-              console.log(`Added pin for job ${job.job_number} at [${lng}, ${lat}]`);
+            if (location?.gps_coordinates) {
+              // Parse GPS coordinates (POINT format: POINT(lng lat))
+              const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
+              if (coords) {
+                const [lng, lat] = coords.split(' ').map(Number);
+                coordinates = [lng, lat];
+                console.log(`Using default location for job ${job.job_number}: [${lng}, ${lat}]`);
+              }
             }
+          }
+
+          // If we still don't have coordinates, try the customer's service address
+          if (!coordinates && job.customers) {
+            console.log(`No GPS coordinates for job ${job.job_number}, customer: ${job.customers.name}`);
+            return;
+          }
+
+          if (coordinates) {
+            const [lng, lat] = coordinates;
+            
+            // Status colors
+            const statusColors: Record<string, string> = {
+              'assigned': '#3b82f6',
+              'in_progress': '#f59e0b', 
+              'completed': '#10b981',
+              'cancelled': '#ef4444',
+            };
+
+            // Create marker
+            const marker = new mapboxgl.Marker({
+              color: statusColors[job.status] || '#6b7280'
+            })
+              .setLngLat([lng, lat])
+              .addTo(map.current!);
+
+            // Add click handler
+            marker.getElement().addEventListener('click', () => {
+              setSelectedPin({
+                ...job,
+                coordinates: [lng, lat],
+                locationName: locations?.find(loc => 
+                  loc.customer_id === job.customer_id && loc.is_default
+                )?.location_name || 'Service Location',
+              });
+            });
+
+            bounds.extend([lng, lat]);
+            pinsAdded++;
+            console.log(`Added pin ${pinsAdded} for job ${job.job_number} at [${lng}, ${lat}]`);
           }
         });
 
-        // Fit map to show all pins if we have locations
-        if (locations && locations.length > 0) {
-          const bounds = new mapboxgl.LngLatBounds();
-          locations.forEach(location => {
-            if (location.gps_coordinates) {
-              const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
-              if (coords) {
-                const [lng, lat] = coords.split(',').map(Number);
-                bounds.extend([lng, lat]);
-              }
-            }
+        console.log(`Total pins added: ${pinsAdded}`);
+
+        // Fit map to show all pins if we have any
+        if (pinsAdded > 0 && !bounds.isEmpty()) {
+          map.current?.fitBounds(bounds, { 
+            padding: 50,
+            maxZoom: 15 
           });
-          
-          if (!bounds.isEmpty()) {
-            map.current?.fitBounds(bounds, { padding: 50 });
-          }
+          console.log('Map bounds fitted to show all pins');
         }
       } catch (error) {
         console.error('Error adding job pins:', error);
       }
     };
 
-    addPins();
+    // Wait for map to be loaded before adding pins
+    if (map.current.loaded()) {
+      addPins();
+    } else {
+      map.current.on('load', addPins);
+    }
   }, [jobs]);
 
   const handleTokenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -242,8 +304,12 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   }
 
   return (
-    <div className="relative h-full">
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="relative h-full w-full">
+      <div 
+        ref={mapContainer} 
+        className="w-full h-full min-h-[400px]"
+        style={{ height: '100%', width: '100%' }}
+      />
       
       {/* Selected pin details */}
       {selectedPin && (
