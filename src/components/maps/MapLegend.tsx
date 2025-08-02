@@ -30,7 +30,7 @@ export const getJobTypeColor = (jobType: string) => {
     delivery: '#3B82F6',       // blue-500
     pickup: '#10B981',         // emerald-500
     partial_pickup: '#F97316', // orange-500
-    service: '#F59E0B',        // amber-500
+    service: '#8B5CF6',        // violet-500 (changed from amber to match dropdown)
     return: '#8B5CF6',         // violet-500
     cleaning: '#06B6D4',       // cyan-500
     survey_estimate: '#1D4ED8', // blue-700
@@ -65,8 +65,6 @@ export const MapLegend: React.FC<MapLegendProps> = ({
     { key: 'pickup', label: 'Pickup', color: getJobTypeColor('pickup') },
     { key: 'partial_pickup', label: 'Partial Pickup', color: getJobTypeColor('partial_pickup') },
     { key: 'service', label: 'Service', color: getJobTypeColor('service') },
-    { key: 'return', label: 'Return', color: getJobTypeColor('return') },
-    { key: 'cleaning', label: 'Cleaning', color: getJobTypeColor('cleaning') },
     { key: 'survey_estimate', label: 'On-Site Survey/Estimate', color: getJobTypeColor('survey_estimate') },
   ];
 
