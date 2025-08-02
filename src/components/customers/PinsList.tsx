@@ -129,7 +129,7 @@ export function PinsList({ pins, isLoading, onPinDeleted }: PinsListProps) {
               className="mt-3"
             />
             <div className="flex-1">
-              <PinCard pin={pin} />
+              <PinCard pin={pin} onAssignInventory={() => {}} />
             </div>
           </div>
         ))}

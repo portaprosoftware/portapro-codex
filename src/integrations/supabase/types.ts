@@ -3760,6 +3760,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pin_inventory_assignments: {
+        Row: {
+          assigned_quantity: number
+          coordinate_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          product_id: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_quantity?: number
+          coordinate_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_quantity?: number
+          coordinate_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_inventory_assignments_coordinate_id_fkey"
+            columns: ["coordinate_id"]
+            isOneToOne: false
+            referencedRelation: "service_location_coordinates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pin_inventory_assignments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pricing_rules: {
         Row: {
           adjustment_type: string

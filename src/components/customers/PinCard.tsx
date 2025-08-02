@@ -1,6 +1,10 @@
 import React from 'react';
-import { MapPin, Calendar } from 'lucide-react';
+import { MapPin, Calendar, Package } from 'lucide-react';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Pin {
   id: string;
@@ -13,9 +17,10 @@ interface Pin {
 
 interface PinCardProps {
   pin: Pin;
+  onAssignInventory?: (pin: Pin) => void;
 }
 
-export function PinCard({ pin }: PinCardProps) {
+export function PinCard({ pin, onAssignInventory }: PinCardProps) {
   const openInMaps = () => {
     const url = `https://www.google.com/maps?q=${pin.latitude},${pin.longitude}`;
     window.open(url, '_blank');
@@ -50,6 +55,20 @@ export function PinCard({ pin }: PinCardProps) {
               {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
             </button>
           </div>
+
+          {onAssignInventory && (
+            <div className="mt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onAssignInventory(pin)}
+                className="w-full"
+              >
+                <Package className="w-3 h-3 mr-1" />
+                Assign Inventory
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
