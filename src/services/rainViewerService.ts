@@ -1,4 +1,4 @@
-import { apiService } from './apiService';
+// Direct fetch for rain viewer data
 
 interface RadarFrame {
   time: number;
@@ -25,7 +25,11 @@ class RainViewerService {
     try {
       console.log('RainViewer: Requesting data from API...');
       
-      const data = await apiService.get(RainViewerService.BASE_URL);
+      const response = await fetch(RainViewerService.BASE_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
       
       console.log('RainViewer: API response received');
       

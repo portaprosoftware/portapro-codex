@@ -48,7 +48,7 @@ import {
 import { AddDropPinModal } from './AddDropPinModal';
 import { EditDropPinModal } from './EditDropPinModal';
 import { ManageCategoriesModal } from './ManageCategoriesModal';
-import { apiService } from '@/services/apiService';
+import { geocodeAddress } from '@/services/geocoding';
 import { ExpandedMapModal } from './ExpandedMapModal';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -367,7 +367,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
       ].filter(Boolean).join(' ');
 
       try {
-        const geocoded = await geocodeAddress(fullAddress);
+        const geocoded = await geocodeAddressLocal(fullAddress);
         if (geocoded) {
           targetCoordinates = geocoded;
           
@@ -419,11 +419,11 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   };
 
   // Geocoding function to convert address to coordinates
-  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+  const geocodeAddressLocal = async (address: string): Promise<[number, number] | null> => {
     if (!mapboxToken || !address.trim()) return null;
     
     try {
-      const coords = await apiService.geocodeAddress(address, mapboxToken);
+      const coords = await geocodeAddress(address, mapboxToken);
       return coords;
     } catch (error) {
       console.error('Geocoding error:', error);
@@ -461,7 +461,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
             primaryLocation.zip
           ].filter(Boolean).join(' ');
           
-          const geocoded = await geocodeAddress(fullAddress);
+          const geocoded = await geocodeAddressLocal(fullAddress);
           if (geocoded) {
             // Store the geocoded coordinates for future use
             try {

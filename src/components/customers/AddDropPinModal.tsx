@@ -34,7 +34,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, Crosshair, Target, Plus, Save, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { apiService } from '@/services/apiService';
+import { geocodeAddress } from '@/services/geocoding';
 
 const dropPinSchema = z.object({
   service_location_id: z.string().min(1, 'Service location is required'),
@@ -186,7 +186,7 @@ export function AddDropPinModal({
           ].filter(Boolean).join(' ');
           
           try {
-            const coords = await apiService.geocodeAddress(fullAddress, mapboxToken);
+            const coords = await geocodeAddress(fullAddress, mapboxToken);
             if (coords) {
               const [lng, lat] = coords;
               

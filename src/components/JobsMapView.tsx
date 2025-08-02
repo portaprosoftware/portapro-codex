@@ -1,24 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { format } from 'date-fns';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobs } from '@/hooks/useJobs';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  MapPin, 
-  RefreshCw, 
-  Navigation, 
-  X,
-  Calendar,
-  Clock,
-  User,
-  Truck
-} from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 
 interface JobsMapViewProps {
   searchTerm?: string;
@@ -28,545 +15,281 @@ interface JobsMapViewProps {
   currentDate: Date;
 }
 
-const statusColors = {
-  'scheduled': '#3b82f6',
-  'assigned': '#eab308', 
-  'en_route': '#f97316',
-  'in_progress': '#8b5cf6',
-  'completed': '#22c55e',
-  'cancelled': '#ef4444'
-};
-
-const statusLabels = {
-  'scheduled': 'Scheduled',
-  'assigned': 'Assigned',
-  'en_route': 'En Route', 
-  'in_progress': 'In Progress',
-  'completed': 'Completed',
-  'cancelled': 'Cancelled'
-};
-
-const jobTypeLetters = {
-  'delivery': 'D',
-  'pickup': 'P', 
-  'service': 'S',
-  'return': 'R'
-};
-
-const formatDateForQuery = (date: Date) => {
-  return format(date, 'yyyy-MM-dd');
-};
-
 const JobsMapView: React.FC<JobsMapViewProps> = ({
-  searchTerm = '',
-  selectedDriver = 'all',
-  selectedJobType = 'all',
-  selectedStatus = 'all',
-  currentDate
+  searchTerm,
+  selectedDriver,
+  selectedJobType,
+  selectedStatus,
+  currentDate,
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [selectedPin, setSelectedPin] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
-  const [showTokenInput, setShowTokenInput] = useState(false);
-  const [tokenInput, setTokenInput] = useState('');
+  const [tokenLoading, setTokenLoading] = useState(true);
+  const [selectedPin, setSelectedPin] = useState<any>(null);
 
-  // Get job data
-  const { data: jobs = [], isLoading } = useJobs({
-    date: formatDateForQuery(currentDate),
-    job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
-    status: selectedStatus !== 'all' ? selectedStatus : undefined,
-    driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
+  // Format date for jobs query
+  const dateString = currentDate.toISOString().split('T')[0];
+
+  // Get jobs data
+  const { data: jobs, isLoading: jobsLoading } = useJobs({
+    date: dateString,
+    status: selectedStatus,
+    driver_id: selectedDriver,
+    job_type: selectedJobType,
   });
 
-  // Fetch Mapbox token
+  // Get Mapbox token
   useEffect(() => {
-    const fetchMapboxToken = async () => {
+    const getToken = async () => {
       try {
-        console.log('Fetching Mapbox token...');
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        
-        if (error) {
-          console.error('Supabase function error:', error);
-          throw error;
-        }
-        
+        // Try Supabase edge function first
+        const { data } = await supabase.functions.invoke('get-mapbox-token');
         if (data?.token) {
-          console.log('Token received:', data.token.substring(0, 20) + '...');
           setMapboxToken(data.token);
           localStorage.setItem('mapbox_token', data.token);
         } else {
-          console.log('No token in response, checking localStorage...');
-          const saved = localStorage.getItem('mapbox_token');
-          if (saved) {
-            console.log('Using saved token');
-            setMapboxToken(saved);
-          } else {
-            console.log('No saved token, showing input');
-            setShowTokenInput(true);
+          // Fallback to localStorage
+          const storedToken = localStorage.getItem('mapbox_token');
+          if (storedToken) {
+            setMapboxToken(storedToken);
           }
         }
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
-        const saved = localStorage.getItem('mapbox_token');
-        if (saved) {
-          console.log('Using saved token as fallback');
-          setMapboxToken(saved);
-        } else {
-          console.log('No fallback available, showing input');
-          setShowTokenInput(true);
+        console.error('Failed to get Mapbox token:', error);
+        // Try localStorage as fallback
+        const storedToken = localStorage.getItem('mapbox_token');
+        if (storedToken) {
+          setMapboxToken(storedToken);
         }
+      } finally {
+        setTokenLoading(false);
       }
     };
-    
-    fetchMapboxToken();
+
+    getToken();
   }, []);
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) {
-      console.log('Map initialization skipped:', { 
-        container: !!mapContainer.current, 
-        token: !!mapboxToken 
-      });
-      return;
-    }
+    if (!mapboxToken || !mapContainer.current || map.current) return;
 
-    console.log('Initializing map with token:', mapboxToken.substring(0, 20) + '...');
+    mapboxgl.accessToken = mapboxToken;
 
-    try {
-      mapboxgl.accessToken = mapboxToken;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [-84.6229, 41.0846], // ABC Carnival coordinates
+      zoom: 12,
+    });
 
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [-81.83824, 41.36749], // ABC Carnival location
-        zoom: 10
-      });
-
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-      
-      map.current.on('style.load', () => {
-        console.log('Map style loaded successfully');
-        setMapLoaded(true);
-      });
-
-      map.current.on('error', (e) => {
-        console.error('Map error:', e);
-      });
-
-    } catch (error) {
-      console.error('Map initialization failed:', error);
-    }
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     return () => {
       if (map.current) {
         map.current.remove();
+        map.current = null;
       }
     };
   }, [mapboxToken]);
 
-  // Load job pins when map and data are ready
+  // Add job pins to map
   useEffect(() => {
-    if (mapLoaded && map.current?.isStyleLoaded() && jobs.length > 0) {
-      console.log('Loading pins for', jobs.length, 'jobs');
-      loadJobPins();
-    }
-  }, [mapLoaded, jobs]);
+    if (!map.current || !jobs || jobs.length === 0) return;
 
-  const loadJobPins = async () => {
-    if (!map.current || !mapLoaded) {
-      console.log('Map not ready for pins');
-      return;
-    }
+    const addPins = async () => {
+      try {
+        // Get service locations for customers
+        const customerIds = jobs.map(job => job.customer_id);
+        const { data: locations } = await supabase
+          .from('customer_service_locations')
+          .select('*')
+          .in('customer_id', customerIds);
 
-    console.log('Starting to load job pins...');
+        console.log('Jobs:', jobs);
+        console.log('Service locations:', locations);
 
-    // Clear existing sources
-    if (map.current.getSource('jobs')) {
-      map.current.removeLayer('jobs-layer');
-      map.current.removeSource('jobs');
-      console.log('Cleared existing job pins');
-    }
+        // Create pins for jobs with locations
+        jobs.forEach((job) => {
+          const location = locations?.find(loc => 
+            loc.customer_id === job.customer_id && loc.is_default
+          );
 
-    // Get customer IDs from jobs
-    const customerIds = [...new Set(jobs.map(job => job.customer_id).filter(Boolean))];
-    console.log('Customer IDs:', customerIds);
-    
-    if (customerIds.length === 0) {
-      console.log('No customer IDs found');
-      return;
-    }
+          if (location?.gps_coordinates) {
+            // Parse GPS coordinates
+            const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
+            if (coords) {
+              const [lng, lat] = coords.split(',').map(Number);
+              
+              // Status colors
+              const statusColors: Record<string, string> = {
+                'assigned': '#3b82f6',
+                'in_progress': '#f59e0b',
+                'completed': '#10b981',
+                'cancelled': '#ef4444',
+              };
 
-    try {
-      // Fetch service locations
-      console.log('Fetching service locations...');
-      const { data: serviceLocations, error } = await supabase
-        .from('customer_service_locations')
-        .select('customer_id, gps_coordinates, is_default, location_name')
-        .in('customer_id', customerIds);
+              // Create marker
+              const marker = new mapboxgl.Marker({
+                color: statusColors[job.status] || '#6b7280'
+              })
+                .setLngLat([lng, lat])
+                .addTo(map.current!);
 
-      if (error) {
-        console.error('Error fetching service locations:', error);
-        return;
-      }
+              // Add click handler
+              marker.getElement().addEventListener('click', () => {
+                setSelectedPin({
+                  ...job,
+                  coordinates: [lng, lat],
+                  locationName: location.location_name,
+                });
+              });
 
-      console.log('Service locations found:', serviceLocations);
-
-      // Create job features with coordinates
-      const features = jobs
-        .map(job => {
-          console.log('Processing job:', job.job_number);
-          
-          const customerServiceLocations = serviceLocations?.filter(
-            loc => loc.customer_id === job.customer_id
-          ) || [];
-          
-          console.log('Service locations for job:', customerServiceLocations);
-          
-          const defaultLocation = customerServiceLocations.find(loc => loc.is_default && loc.gps_coordinates);
-          const anyLocationWithGPS = customerServiceLocations.find(loc => loc.gps_coordinates);
-          const location = defaultLocation || anyLocationWithGPS;
-          
-          if (!location?.gps_coordinates) {
-            console.log('No GPS coordinates for job', job.job_number);
-            return null;
-          }
-          
-          // Parse GPS coordinates from PostgreSQL point format
-          const coordString = String(location.gps_coordinates);
-          console.log('Parsing coordinates:', coordString);
-          
-          const coordMatch = coordString.match(/\(([^,]+),([^)]+)\)/);
-          if (!coordMatch) {
-            console.log('Failed to parse coordinates:', coordString);
-            return null;
-          }
-          
-          const lng = parseFloat(coordMatch[1]);
-          const lat = parseFloat(coordMatch[2]);
-          
-          if (isNaN(lng) || isNaN(lat)) {
-            console.log('Invalid coordinates:', coordMatch);
-            return null;
-          }
-
-          console.log('Adding pin for job', job.job_number, 'at', [lng, lat]);
-
-          return {
-            type: 'Feature' as const,
-            geometry: {
-              type: 'Point' as const,
-              coordinates: [lng, lat]
-            },
-            properties: {
-              id: job.id,
-              job_number: job.job_number,
-              job_type: job.job_type,
-              status: job.status,
-              customer_name: job.customers?.name || 'Unknown',
-              scheduled_date: job.scheduled_date,
-              scheduled_time: job.scheduled_time,
-              driver_name: job.profiles ? `${job.profiles.first_name} ${job.profiles.last_name}` : 'Unassigned',
-              vehicle_info: job.vehicles ? `${job.vehicles.license_plate} (${job.vehicles.vehicle_type})` : 'No vehicle'
+              console.log(`Added pin for job ${job.job_number} at [${lng}, ${lat}]`);
             }
-          };
-        })
-        .filter(Boolean);
+          }
+        });
 
-      console.log('Created', features.length, 'valid features');
-
-      if (features.length === 0) {
-        console.log('No features to display');
-        return;
+        // Fit map to show all pins if we have locations
+        if (locations && locations.length > 0) {
+          const bounds = new mapboxgl.LngLatBounds();
+          locations.forEach(location => {
+            if (location.gps_coordinates) {
+              const coords = String(location.gps_coordinates).match(/\(([^)]+)\)/)?.[1];
+              if (coords) {
+                const [lng, lat] = coords.split(',').map(Number);
+                bounds.extend([lng, lat]);
+              }
+            }
+          });
+          
+          if (!bounds.isEmpty()) {
+            map.current?.fitBounds(bounds, { padding: 50 });
+          }
+        }
+      } catch (error) {
+        console.error('Error adding job pins:', error);
       }
+    };
 
-      // Add source and layer
-      map.current.addSource('jobs', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: features
-        }
-      });
+    addPins();
+  }, [jobs]);
 
-      map.current.addLayer({
-        id: 'jobs-layer',
-        type: 'circle',
-        source: 'jobs',
-        paint: {
-          'circle-radius': 12,
-          'circle-color': [
-            'case',
-            ['==', ['get', 'status'], 'scheduled'], statusColors.scheduled,
-            ['==', ['get', 'status'], 'assigned'], statusColors.assigned,
-            ['==', ['get', 'status'], 'en_route'], statusColors.en_route,
-            ['==', ['get', 'status'], 'in_progress'], statusColors.in_progress,
-            ['==', ['get', 'status'], 'completed'], statusColors.completed,
-            ['==', ['get', 'status'], 'cancelled'], statusColors.cancelled,
-            '#666666'
-          ],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#ffffff'
-        }
-      });
-
-      console.log('Added job pins to map');
-
-      // Add click event
-      map.current.on('click', 'jobs-layer', (e) => {
-        if (e.features && e.features[0]) {
-          console.log('Pin clicked:', e.features[0].properties);
-          setSelectedPin(e.features[0].properties);
-        }
-      });
-
-      // Auto-fit to show all pins
-      const bounds = new mapboxgl.LngLatBounds();
-      features.forEach(feature => {
-        if (feature && feature.geometry && feature.geometry.coordinates) {
-          bounds.extend([feature.geometry.coordinates[0], feature.geometry.coordinates[1]]);
-        }
-      });
-      
-      if (!bounds.isEmpty()) {
-        console.log('Fitting map to bounds');
-        map.current.fitBounds(bounds, { padding: 50, maxZoom: 15 });
-      }
-
-    } catch (error) {
-      console.error('Error loading job pins:', error);
-    }
-  };
-
-  const handleTokenSubmit = () => {
-    if (tokenInput.trim()) {
-      setMapboxToken(tokenInput.trim());
-      localStorage.setItem('mapbox_token', tokenInput.trim());
-      setShowTokenInput(false);
-    }
-  };
-
-  const handleNavigateToLocation = async (pin: any) => {
-    const job = jobs.find(j => j.id === pin.id);
-    if (!job) return;
-
-    // Fetch service locations for this customer
-    const { data: serviceLocations } = await supabase
-      .from('customer_service_locations')
-      .select('customer_id, gps_coordinates, is_default, location_name')
-      .eq('customer_id', job.customer_id);
+  const handleTokenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const token = formData.get('token') as string;
     
-    const location = serviceLocations?.find(loc => loc.is_default && loc.gps_coordinates) || 
-                    serviceLocations?.find(loc => loc.gps_coordinates);
-    
-    if (location?.gps_coordinates) {
-      const coordString = String(location.gps_coordinates);
-      const coordMatch = coordString.match(/\(([^,]+),([^)]+)\)/);
-      if (coordMatch) {
-        const lng = parseFloat(coordMatch[1]);
-        const lat = parseFloat(coordMatch[2]);
-        const address = `${lat},${lng}`;
-        window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`, '_blank');
-      }
+    if (token) {
+      localStorage.setItem('mapbox_token', token);
+      setMapboxToken(token);
     }
   };
 
-  if (showTokenInput) {
-    return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Mapbox Token Required</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-600">
-              To display the map, please enter your Mapbox public token. You can get one from{' '}
-              <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                mapbox.com
-              </a>
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
-              <Input
-                id="mapbox-token"
-                type="text"
-                placeholder="pk.eyJ1Ijoi..."
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-              />
-            </div>
-            <Button onClick={handleTokenSubmit} className="w-full">
-              Continue
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handleNavigateToLocation = (coordinates: [number, number]) => {
+    const [lng, lat] = coordinates;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  };
 
-  if (isLoading) {
+  if (tokenLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center space-y-2">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto" />
-          <p>Loading jobs...</p>
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-muted-foreground">Loading map...</div>
       </div>
     );
   }
 
   if (!mapboxToken) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center space-y-2">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto" />
-          <p>Setting up map...</p>
-        </div>
+      <Card className="max-w-md mx-auto mt-8">
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Mapbox Token Required</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Please enter your Mapbox public token to display the map.
+          </p>
+          <form onSubmit={handleTokenSubmit} className="space-y-4">
+            <input
+              type="text"
+              name="token"
+              placeholder="pk.eyJ1..."
+              className="w-full px-3 py-2 border rounded-md"
+              required
+            />
+            <Button type="submit" className="w-full">
+              Save Token
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (jobsLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-muted-foreground">Loading jobs...</div>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full w-full">
-      {/* Map container */}
-      <div ref={mapContainer} className="absolute inset-0" />
+    <div className="relative h-full">
+      <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Date indicator */}
-      <div className="absolute top-4 left-4 z-10">
-        <Card className="p-3">
-          <div className="flex items-center space-x-2 text-sm">
-            <Calendar className="h-4 w-4" />
-            <span>{format(currentDate, 'MMMM d, yyyy')}</span>
-          </div>
-        </Card>
-      </div>
-
-      {/* Job counts */}
-      <div className="absolute top-4 right-4 z-10">
-        <div className="flex gap-2 flex-wrap">
-          {Object.entries(statusLabels).map(([status, label]) => {
-            const count = jobs.filter(job => job.status === status).length;
-            if (count === 0) return null;
-            
-            return (
-              <Badge
-                key={status}
-                variant="secondary"
-                className="text-xs"
-                style={{ backgroundColor: statusColors[status as keyof typeof statusColors], color: 'white' }}
-              >
-                {label}: {count}
-              </Badge>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Selected pin details */}
       {selectedPin && (
-        <Card className="absolute bottom-4 left-4 z-10 w-80">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Job #{selectedPin.job_number}
-              </CardTitle>
+        <Card className="absolute top-4 right-4 w-80 max-h-96 overflow-y-auto">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold">{selectedPin.job_number}</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedPin(null)}
               >
-                <X className="h-4 w-4" />
+                ×
               </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  style={{ backgroundColor: statusColors[selectedPin.status as keyof typeof statusColors], color: 'white' }}
-                >
-                  {statusLabels[selectedPin.status as keyof typeof statusLabels]}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                  {jobTypeLetters[selectedPin.job_type as keyof typeof jobTypeLetters]}
-                </span>
-                <span className="text-xs capitalize">{selectedPin.job_type}</span>
-              </div>
             </div>
             
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{selectedPin.customer_name}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <span>{selectedPin.scheduled_date}</span>
-                <Clock className="h-4 w-4 text-gray-500 ml-2" />
-                <span>{selectedPin.scheduled_time || 'No time set'}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-gray-500" />
-                <span>{selectedPin.driver_name}</span>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-gray-500" />
-                <span>{selectedPin.vehicle_info}</span>
-              </div>
+              <div><strong>Customer:</strong> {selectedPin.customers?.name}</div>
+              <div><strong>Type:</strong> {selectedPin.job_type}</div>
+              <div><strong>Status:</strong> {selectedPin.status}</div>
+              <div><strong>Location:</strong> {selectedPin.locationName}</div>
+              {selectedPin.drivers && (
+                <div><strong>Driver:</strong> {selectedPin.drivers.first_name} {selectedPin.drivers.last_name}</div>
+              )}
+              {selectedPin.vehicles && (
+                <div><strong>Vehicle:</strong> {selectedPin.vehicles.license_plate}</div>
+              )}
             </div>
-            
-            <div className="flex gap-2 pt-2">
-              <Button
-                size="sm"
-                onClick={() => handleNavigateToLocation(selectedPin)}
-                className="flex-1"
-              >
-                <Navigation className="h-4 w-4 mr-1" />
-                Navigate
-              </Button>
-            </div>
+
+            <Button
+              onClick={() => handleNavigateToLocation(selectedPin.coordinates)}
+              className="w-full mt-4"
+              size="sm"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Navigate
+            </Button>
           </CardContent>
         </Card>
       )}
 
-      {/* Legend */}
-      <Card className="absolute bottom-4 right-4 z-10 p-3">
-        <div className="space-y-2">
-          <div className="font-medium text-sm">Job Types</div>
-          <div className="grid grid-cols-2 gap-1 text-xs">
-            {Object.entries(jobTypeLetters).map(([type, letter]) => (
-              <div key={type} className="flex items-center gap-1">
-                <span className="bg-blue-100 text-blue-800 px-1 py-0.5 rounded font-medium">
-                  {letter}
-                </span>
-                <span className="capitalize">{type}</span>
-              </div>
-            ))}
-          </div>
-          
-          <div className="font-medium text-sm pt-2">Status Colors</div>
-          <div className="grid grid-cols-1 gap-1 text-xs">
-            {Object.entries(statusColors).map(([status, color]) => (
-              <div key={status} className="flex items-center gap-1">
-                <div 
-                  className="w-3 h-3 rounded-full border border-white"
-                  style={{ backgroundColor: color }}
-                />
-                <span className="capitalize">{statusLabels[status as keyof typeof statusLabels]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Card>
+      {/* Job count indicator */}
+      <div className="absolute top-4 left-4">
+        <Card>
+          <CardContent className="p-3">
+            <div className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {jobs?.length || 0} jobs on {currentDate.toLocaleDateString()}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -37,7 +37,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '@/services/apiService';
+import { geocodeAddress } from '@/services/geocoding';
 
 interface PinCategory {
   id: string;
@@ -262,7 +262,7 @@ export function ManageCategoriesModal({
           const mapboxToken = tokenData?.token;
 
           if (mapboxToken) {
-            const coords = await apiService.geocodeAddress(fullAddress, mapboxToken);
+            const coords = await geocodeAddress(fullAddress, mapboxToken);
 
           }
         } catch (geocodeError) {
