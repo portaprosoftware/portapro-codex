@@ -158,9 +158,16 @@ export function AddPinSlider({
     };
   }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle]);
 
-  // Separate useEffect for handling pin mode click events
+  // Separate useEffect for handling pin mode click events and cursor
   useEffect(() => {
     if (!map.current) return;
+
+    // Change cursor style when pin mode changes
+    if (isPinModeActive) {
+      map.current.getCanvas().style.cursor = 'crosshair';
+    } else {
+      map.current.getCanvas().style.cursor = '';
+    }
 
     // Add click handler for dropping pins (only when pin mode is active)
     const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
@@ -191,6 +198,8 @@ export function AddPinSlider({
     return () => {
       if (map.current) {
         map.current.off('click', handleMapClick);
+        // Reset cursor on cleanup
+        map.current.getCanvas().style.cursor = '';
       }
     };
   }, [isPinModeActive]);
@@ -356,7 +365,7 @@ export function AddPinSlider({
             </div>
 
             {/* Map Container */}
-            <div className={`flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px] ${isPinModeActive ? 'cursor-crosshair' : ''}`}>
+            <div className={`flex-1 relative bg-muted/20 border border-border rounded-lg overflow-hidden min-h-[400px] ${isPinModeActive ? 'cursor-crosshair' : 'cursor-auto'}`} style={isPinModeActive ? { cursor: 'crosshair' } : {}}>
               {mapLoading && <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
                   <div className="flex items-center gap-2 text-foreground">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
