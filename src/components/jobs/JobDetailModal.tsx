@@ -15,7 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
@@ -38,6 +39,7 @@ const jobEditSchema = z.object({
   vehicle_id: z.string().nullable(),
   special_instructions: z.string().optional(),
   notes: z.string().optional(),
+  is_priority: z.boolean().optional(),
 });
 
 type JobEditForm = z.infer<typeof jobEditSchema>;
@@ -115,6 +117,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
       vehicle_id: null,
       special_instructions: '',
       notes: '',
+      is_priority: false,
     },
   });
 
@@ -130,6 +133,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         vehicle_id: job.vehicle_id || null,
         special_instructions: job.special_instructions || '',
         notes: job.notes || '',
+        is_priority: (job as any).is_priority ?? false,
       });
     }
   }, [job, form]);
@@ -149,6 +153,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           vehicle_id: data.vehicle_id,
           special_instructions: data.special_instructions,
           notes: data.notes,
+          is_priority: data.is_priority,
           updated_at: new Date().toISOString(),
         })
         .eq('id', jobId);
@@ -577,7 +582,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                   </CardContent>
                 </Card>
 
-                {/* Notes */}
+                 {/* Notes */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-base">
@@ -609,6 +614,40 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Priority Toggle */}
+                {isEditing && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Star className="w-4 h-4" />
+                        Priority Settings
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <FormField
+                        control={form.control}
+                        name="is_priority"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Mark as Priority</FormLabel>
+                              <p className="text-sm text-muted-foreground">
+                                This job will be highlighted with a priority badge
+                              </p>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </form>
             </Form>
           )}

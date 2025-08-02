@@ -10,6 +10,7 @@ export interface Job {
   scheduled_time?: string;
   actual_completion_time?: string;
   was_overdue?: boolean;
+  is_priority?: boolean;
 }
 
 /**

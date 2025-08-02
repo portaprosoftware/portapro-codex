@@ -14,7 +14,7 @@ import { JobStatus } from '@/types';
 export const DriverDashboard: React.FC = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority'>('all');
 
   const { data: jobs, isLoading, refetch } = useQuery({
     queryKey: ['driver-jobs', user?.id],
