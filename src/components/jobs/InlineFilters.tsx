@@ -130,6 +130,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
               Assigned
             </div>
           </SelectItem>
+          <SelectItem value="unassigned">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              Unassigned
+            </div>
+          </SelectItem>
           <SelectItem value="in_progress">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-orange-500"></div>

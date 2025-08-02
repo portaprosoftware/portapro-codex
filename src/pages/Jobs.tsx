@@ -54,7 +54,11 @@ const JobsPage: React.FC = () => {
     mutationFn: async ({ jobId, driverId }: { jobId: string; driverId: string | null }) => {
       const { error } = await supabase
         .from('jobs')
-        .update({ driver_id: driverId })
+        .update({ 
+          driver_id: driverId,
+          status: driverId ? 'assigned' : 'unassigned',
+          updated_at: new Date().toISOString()
+        })
         .eq('id', jobId);
       
       if (error) throw error;

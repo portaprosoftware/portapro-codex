@@ -50,8 +50,8 @@ export const getDisplayStatus = (job: Job): string => {
     return isJobCompletedLate(job) ? 'completed_late' : 'completed';
   }
   
-  // For non-completed jobs (assigned, in-progress), check if overdue
-  if (job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') {
+  // For non-completed jobs (assigned, unassigned, in-progress), check if overdue
+  if (job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') {
     return isJobOverdue(job) ? 'overdue' : job.status;
   }
   
@@ -67,6 +67,11 @@ export const getJobStatusConfig = () => ({
     gradient: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white', 
     label: 'Assigned',
     color: '#3B82F6'
+  },
+  unassigned: { 
+    gradient: 'bg-gradient-to-r from-gray-400 to-gray-500 text-white', 
+    label: 'Unassigned',
+    color: '#9CA3AF'
   },
   in_progress: { 
     gradient: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white', 
@@ -126,7 +131,7 @@ export const getDualJobStatusInfo = (job: Job) => {
   }
   
   // For non-completed jobs, check if overdue
-  if ((job.status === 'assigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
+  if ((job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
     return {
       primary: statusConfig.overdue,
       secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned
