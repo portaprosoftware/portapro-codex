@@ -43,6 +43,7 @@ export function AddPinSlider({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addressCoordinates, setAddressCoordinates] = useState<[number, number] | null>(null);
   const [mapLoading, setMapLoading] = useState(true);
+  const [pinPlaced, setPinPlaced] = useState(false);
   const [formData, setFormData] = useState({
     point_name: '',
     description: '',
@@ -184,12 +185,13 @@ export function AddPinSlider({
         color: '#ef4444'
       }).setLngLat([lng, lat]).addTo(map.current!);
 
-      // Update pin data and auto-disable pin selector
+      // Update pin data and mark pin as placed
       setFormData(prev => ({
         ...prev,
         latitude: lat,
         longitude: lng
       }));
+      setPinPlaced(true);
       setIsPinModeActive(false);
     };
 
@@ -304,6 +306,7 @@ export function AddPinSlider({
     setAddressCoordinates(null);
     setMapLoading(true);
     setIsPinModeActive(false);
+    setPinPlaced(false);
     onClose();
   };
   if (!isOpen) return null;
@@ -358,9 +361,14 @@ export function AddPinSlider({
                 </button>
               </div>
 
-              <Button onClick={() => setIsPinModeActive(!isPinModeActive)} variant={isPinModeActive ? "default" : "outline"} className="flex items-center gap-2">
+              <Button 
+                onClick={() => setIsPinModeActive(!isPinModeActive)} 
+                variant={isPinModeActive ? "default" : "outline"} 
+                disabled={pinPlaced}
+                className="flex items-center gap-2"
+              >
                 <Target className={`w-4 h-4 ${isPinModeActive ? 'text-red-600' : ''}`} />
-                {isPinModeActive ? 'Pin Mode: ON' : 'Activate Pin Selector'}
+                {pinPlaced ? 'Pin Added' : isPinModeActive ? 'Pin Mode: ON' : 'Activate Pin Selector'}
               </Button>
             </div>
 
