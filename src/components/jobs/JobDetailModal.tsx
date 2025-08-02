@@ -14,7 +14,6 @@ import {
   MapPin, 
   User, 
   Truck, 
-  Package, 
   Edit3, 
   Save, 
   X,
@@ -34,7 +33,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
-import { JobConsumablesTab } from './JobConsumablesTab';
 
 interface JobDetailModalProps {
   jobId: string | null;
@@ -64,16 +62,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           *,
           customers!inner(id, name, email, phone, service_street, service_city, service_state, service_zip),
           profiles:driver_id(id, first_name, last_name, email),
-          vehicles(id, license_plate, vehicle_type),
-          equipment_assignments(
-            id,
-            quantity,
-            assigned_date,
-            return_date,
-            status,
-            products(id, name),
-            product_items(id, item_code, status)
-          )
+          vehicles(id, license_plate, vehicle_type)
         `)
         .eq('id', jobId)
         .single();
@@ -113,7 +102,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     enabled: Object.values(editingSections).some(Boolean)
   });
 
-  // Individual section forms
+  // Form states
   const [scheduleForm, setScheduleForm] = useState({
     scheduled_date: '',
     scheduled_time: '',
@@ -169,7 +158,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         title: "Job Updated",
         description: `${result.sectionName} updated successfully`,
       });
-      // Clear the editing state for the specific section
       setEditingSections(prev => ({ ...prev, [result.section]: false }));
       queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -248,6 +236,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     }
   });
 
+  // Section editing handlers
   const handleSectionEdit = (section: string) => {
     setEditingSections(prev => ({ ...prev, [section]: true }));
   };
@@ -284,7 +273,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
       updates = scheduleForm;
       sectionName = 'Schedule';
     } else if (section === 'assignment') {
-      // Convert "unassigned" back to null for database storage
       const processedForm = {
         driver_id: assignmentForm.driver_id === 'unassigned' ? null : assignmentForm.driver_id,
         vehicle_id: assignmentForm.vehicle_id === 'unassigned' ? null : assignmentForm.vehicle_id
@@ -365,7 +353,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     }
   };
 
-
   const getJobTypeColor = (type: string) => {
     return jobTypeConfig[type as keyof typeof jobTypeConfig]?.color || 'bg-gray-500';
   };
@@ -376,8 +363,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[900px] h-[80vh] max-w-none flex flex-col">
-        <DialogHeader>
+      <DialogContent className="w-[900px] max-h-[90vh] max-w-none flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <div className="flex justify-between items-center">
             <div>
               <DialogTitle className="text-xl">
@@ -416,7 +403,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white shadow-lg border z-50">
+              <DropdownMenuContent align="end" className="bg-white shadow-lg border z-[60]">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <DropdownMenuItem 
@@ -474,8 +461,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
           </div>
         ) : job ? (
-          <div className="overflow-y-auto flex-1 space-y-6 pr-2 pb-4">
-            {/* Details Section */}
+          <div className="overflow-y-auto flex-1 space-y-6 pr-2">
+            {/* Job Information Grid */}
             <div className="grid grid-cols-2 gap-6">
               {/* Schedule Information */}
               <Card>
@@ -544,13 +531,13 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="assigned">Assigned</SelectItem>
-                              <SelectItem value="unassigned">Unassigned</SelectItem>
-                              <SelectItem value="in_progress">In Progress</SelectItem>
-                              <SelectItem value="completed">Completed</SelectItem>
-                              <SelectItem value="cancelled">Cancelled</SelectItem>
-                            </SelectContent>
+                          <SelectContent className="bg-white border shadow-lg z-[60]">
+                            <SelectItem value="assigned">Assigned</SelectItem>
+                            <SelectItem value="unassigned">Unassigned</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
                         </Select>
                       </div>
                     </>
@@ -620,7 +607,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                           <SelectTrigger>
                             <SelectValue placeholder="Select driver" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border shadow-lg z-[60]">
                             <SelectItem value="unassigned">No driver assigned</SelectItem>
                             {drivers.map(driver => (
                               <SelectItem key={driver.id} value={driver.id}>
@@ -636,7 +623,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                           <SelectTrigger>
                             <SelectValue placeholder="Select vehicle" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white border shadow-lg z-[60]">
                             <SelectItem value="unassigned">No vehicle assigned</SelectItem>
                             {vehicles.map(vehicle => (
                               <SelectItem key={vehicle.id} value={vehicle.id}>
@@ -675,12 +662,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             {/* Customer Section */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg flex items-center">
-                    <User className="w-5 h-5 mr-2" />
-                    Customer Information
-                  </CardTitle>
-                </div>
+                <CardTitle className="text-lg flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  Customer Information
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -734,68 +719,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     Message
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Equipment Section */}
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg flex items-center">
-                    <Package className="w-5 h-5 mr-2" />
-                    Equipment Assignments
-                  </CardTitle>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {job.equipment_assignments && job.equipment_assignments.length > 0 ? (
-                  <div className="space-y-4">
-                    {job.equipment_assignments.map((assignment: any) => (
-                      <div key={assignment.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">
-                              {assignment.products?.name || 'Product'}
-                            </h4>
-                            <p className="text-sm text-gray-600">
-                              Quantity: {assignment.quantity}
-                            </p>
-                            {assignment.product_items && (
-                              <p className="text-sm text-gray-600">
-                                Item: {assignment.product_items.item_code}
-                              </p>
-                            )}
-                          </div>
-                          <Badge className="bg-gradient-blue text-white border-0 font-medium px-2 py-1 rounded-full text-xs">
-                            {assignment.status.replace('_', ' ').toUpperCase()}
-                          </Badge>
-                        </div>
-                        <div className="mt-2 text-xs text-gray-500">
-                          Assigned: {format(new Date(assignment.assigned_date), 'MMM d, yyyy')}
-                          {assignment.return_date && (
-                            <span> - Return: {format(new Date(assignment.return_date), 'MMM d, yyyy')}</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p>No equipment assigned to this job</p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      <Package className="w-4 h-4 mr-2" />
-                      Assign Equipment
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -862,20 +785,22 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </>
                 ) : (
                   <>
-                    {job.notes && (
+                    {job.notes ? (
                       <div>
                         <Label className="text-sm font-medium">General Notes</Label>
                         <p className="text-sm text-gray-600 mt-1">{job.notes}</p>
                       </div>
+                    ) : (
+                      <div className="text-sm text-gray-400">No general notes</div>
                     )}
-                    {job.special_instructions && (
+                    
+                    {job.special_instructions ? (
                       <div>
                         <Label className="text-sm font-medium">Special Instructions</Label>
                         <p className="text-sm text-gray-600 mt-1">{job.special_instructions}</p>
                       </div>
-                    )}
-                    {!job.notes && !job.special_instructions && (
-                      <p className="text-sm text-gray-400">No notes or special instructions</p>
+                    ) : (
+                      <div className="text-sm text-gray-400">No special instructions</div>
                     )}
                   </>
                 )}
@@ -884,17 +809,9 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           </div>
         ) : null}
 
-        {/* Consumables Tab */}
-        <div className="space-y-4">
-          <div className="border-b">
-            <h3 className="text-lg font-semibold pb-2">Consumables Used</h3>
-          </div>
-          <JobConsumablesTab jobId={jobId || ''} />
-        </div>
-
         {/* Action Buttons Footer */}
         {job && (
-          <DialogFooter className="flex justify-between items-center pt-4 border-t bg-white sticky bottom-0">
+          <DialogFooter className="flex justify-between items-center pt-4 border-t bg-white sticky bottom-0 flex-shrink-0">
             {showReverseButton && (
               <Button
                 variant="outline"
