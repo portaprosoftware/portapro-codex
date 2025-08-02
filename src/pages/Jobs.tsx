@@ -630,8 +630,8 @@ const JobsPage: React.FC = () => {
                 <JobsMapPage
                   searchTerm={searchTerm}
                   selectedDriver={selectedDriver}
-                  selectedJobType={selectedJobType}
-                  selectedStatus={selectedStatus}
+                  jobType={selectedJobType}
+                  status={selectedStatus}
                   selectedDate={selectedDate}
                 />
               </JobsMapErrorBoundary>
