@@ -9,6 +9,7 @@ import { Search, Download, Filter, Settings, BookmarkPlus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { FilterChipBar } from './FilterChipBar';
 import { SavePresetModal } from './SavePresetModal';
+import { EnhancedPDFExport } from './EnhancedPDFExport';
 import { useFilterPresets, FilterData } from '@/hooks/useFilterPresets';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -29,6 +30,7 @@ interface EnhancedJobFiltersProps {
   selectedStatus: string;
   onStatusChange: (status: string) => void;
   drivers: any[];
+  jobs: any[]; // Add jobs for enhanced PDF export
   onExport: () => void;
   resultsCount: number;
   totalCount: number;
@@ -46,6 +48,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
   selectedStatus,
   onStatusChange,
   drivers,
+  jobs,
   onExport,
   resultsCount,
   totalCount
@@ -161,8 +164,15 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
             disabled={resultsCount === 0}
           >
             <Download className="h-4 w-4 mr-2" />
-            Export PDF ({resultsCount})
+            Basic PDF ({resultsCount})
           </Button>
+          
+          <EnhancedPDFExport
+            jobs={jobs}
+            totalCount={totalCount}
+            filterData={getCurrentFilterData()}
+            drivers={drivers}
+          />
         </div>
 
         <CollapsibleContent>

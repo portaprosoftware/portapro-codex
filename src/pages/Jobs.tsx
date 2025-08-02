@@ -469,6 +469,7 @@ const JobsPage: React.FC = () => {
             selectedStatus={customSelectedStatus}
             onStatusChange={setCustomSelectedStatus}
             drivers={drivers}
+            jobs={filterCustomJobs(customJobs)}
             onExport={handleCustomExport}
             resultsCount={filterCustomJobs(customJobs).length}
             totalCount={customJobs.length}
