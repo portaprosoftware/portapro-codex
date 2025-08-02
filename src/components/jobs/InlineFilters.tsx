@@ -1,7 +1,8 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Check } from 'lucide-react';
+import { Search, Check, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 
 interface InlineFiltersProps {
@@ -159,11 +160,23 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
 
       {/* Date Navigator */}
       {showDateNavigator && selectedDate && onDateChange && (
-        <EnhancedDateNavigator
-          date={selectedDate}
-          onDateChange={onDateChange}
-          label="Date"
-        />
+        <div className="flex items-center gap-2">
+          <EnhancedDateNavigator
+            date={selectedDate}
+            onDateChange={onDateChange}
+            label="Date"
+          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">Jobs become overdue the day after their scheduled date</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       )}
     </div>
   );
