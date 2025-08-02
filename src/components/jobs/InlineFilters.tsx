@@ -51,13 +51,11 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
                   <Info className="w-3 h-3 hover:text-primary transition-colors" />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom" align="start" className="max-w-sm">
-                <p className="text-sm">
-                  <strong>Info:</strong> Jobs set before today that aren't completed get a red "Overdue" badge. 
-                  After you reschedule an overdue job, the badge turns gold and says "Overdue – Rescheduled". 
-                  To mark any job with a priority badge, toggle the Priority switch when viewing or creating a new job.
-                </p>
-              </TooltipContent>
+               <TooltipContent side="bottom" align="start" className="max-w-sm">
+                 <p className="text-sm">
+                   <strong>Info:</strong> Any job scheduled before today that isn't completed by end of day gets a red "Overdue" badge. After you reschedule it, the badge turns gold and reads "Overdue – Rescheduled." To mark any job as a priority, toggle the Priority switch when creating or viewing it.
+                 </p>
+               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <span>
