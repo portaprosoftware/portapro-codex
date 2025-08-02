@@ -64,33 +64,45 @@ const JobsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast: showToast } = useToast();
 
-  // Smart job search for cross-date navigation - only trigger on Enter key or when search looks complete
+  // Smart job search for cross-date navigation - only trigger on Enter key
   const [shouldTriggerSmartSearch, setShouldTriggerSmartSearch] = useState(false);
-  const searchLooksLikeJobId = searchTerm.length > 4 && searchTerm.includes('-');
-  const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm : undefined);
+  const searchLooksLikeJobId = searchTerm.length >= 6 && /^[A-Z]{3}-\d+$/i.test(searchTerm.toUpperCase());
+  const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm.toUpperCase() : undefined);
 
   // Handle smart job search and date navigation
   const handleSmartSearch = useCallback(() => {
-    if (!foundJob) return;
+    if (!foundJob) {
+      console.log('No job found for search term:', searchTerm);
+      toast.error(`Job ${searchTerm} not found`);
+      setShouldTriggerSmartSearch(false);
+      return;
+    }
     
+    console.log('Found job:', foundJob);
     const jobDate = new Date(foundJob.scheduled_date);
     const currentDateStr = formatDateForQuery(selectedDate);
     const jobDateStr = formatDateForQuery(jobDate);
     
+    console.log('Current date:', currentDateStr, 'Job date:', jobDateStr);
+    
     // Only navigate if job is found on a different date
     if (jobDateStr !== currentDateStr) {
+      console.log('Navigating to job date:', jobDate);
       setSelectedDate(jobDate);
       toast.success(`Found job ${foundJob.job_number} on ${format(jobDate, 'MMM d, yyyy')} - navigating...`);
+    } else {
+      toast.success(`Found job ${foundJob.job_number} on current date`);
     }
     setShouldTriggerSmartSearch(false);
-  }, [foundJob, selectedDate, toast]);
+  }, [foundJob, selectedDate, toast, searchTerm]);
 
   // Handle Enter key for smart search
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchLooksLikeJobId && activeTab !== 'custom') {
+      console.log('Enter pressed for job search:', searchTerm);
       setShouldTriggerSmartSearch(true);
     }
-  }, [searchLooksLikeJobId, activeTab]);
+  }, [searchLooksLikeJobId, activeTab, searchTerm]);
 
   // Trigger smart search when job is found
   useEffect(() => {

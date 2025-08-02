@@ -7,6 +7,8 @@ export function useJobSearch(jobId?: string) {
     queryFn: async () => {
       if (!jobId) return null;
       
+      console.log('Job search triggered for:', jobId);
+      
       // First try exact match
       let { data, error } = await supabase
         .from('jobs')
@@ -19,8 +21,11 @@ export function useJobSearch(jobId?: string) {
         .eq('job_number', jobId)
         .maybeSingle();
       
-      // If no exact match and looks like a complete job ID (contains dash and numbers), try starts-with
-      if (!data && jobId.includes('-') && /\d/.test(jobId)) {
+      console.log('Exact match result:', data);
+      
+      // Only try partial match if no exact match and job ID looks complete (at least 6-7 chars like DEL-012)
+      if (!data && jobId.length >= 6 && jobId.includes('-') && /^[A-Z]{3}-\d+$/.test(jobId)) {
+        console.log('Trying partial match for:', jobId);
         ({ data, error } = await supabase
           .from('jobs')
           .select(`
@@ -29,15 +34,32 @@ export function useJobSearch(jobId?: string) {
             profiles:driver_id(id, first_name, last_name),
             vehicles(id, license_plate, vehicle_type)
           `)
-          .ilike('job_number', `${jobId}%`)
-          .order('scheduled_date', { ascending: false })
-          .limit(1)
-          .maybeSingle());
+          .eq('job_number', jobId)
+          .maybeSingle()); // Try exact match again in case of case sensitivity
+        
+        // If still no match, try case-insensitive exact match
+        if (!data) {
+          ({ data, error } = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              customers(id, name, service_street, service_city, service_state),
+              profiles:driver_id(id, first_name, last_name),
+              vehicles(id, license_plate, vehicle_type)
+            `)
+            .ilike('job_number', jobId)
+            .limit(1)
+            .maybeSingle());
+        }
       }
       
-      if (error) throw error;
+      console.log('Final search result:', data);
+      if (error) {
+        console.error('Job search error:', error);
+        throw error;
+      }
       return data;
     },
-    enabled: !!jobId && jobId.length > 4 && (jobId.includes('-') || /^\w{3,}-?\d/.test(jobId)),
+    enabled: !!jobId && jobId.length >= 6 && /^[A-Z]{3}-\d+$/i.test(jobId),
   });
 }
