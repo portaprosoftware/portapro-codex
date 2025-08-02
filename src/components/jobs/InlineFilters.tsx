@@ -43,29 +43,6 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
 }) => {
   return (
     <div className="space-y-3">
-      {/* Instructions */}
-      <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
-        <div className="flex items-center gap-2">
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="cursor-help">
-                  <Info className="w-3 h-3 hover:text-primary transition-colors" />
-                </div>
-              </TooltipTrigger>
-               <TooltipContent side="bottom" align="start" className="max-w-sm">
-                 <p className="text-sm">
-                   <strong>Info:</strong> Any job scheduled before today that isn't completed by end of day gets a red "Overdue" badge. After you reschedule it, the badge turns gold and reads "Overdue – Rescheduled." To mark any job as a priority, toggle the Priority switch when creating or viewing it.
-                 </p>
-               </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <span>
-            <strong>Quick Job Search:</strong> Type a complete Job ID (e.g., DEL-012) and press Enter to find jobs across all dates. 
-            Regular search filters current date only.
-          </span>
-        </div>
-      </div>
 
       <div className="flex items-center gap-4 flex-wrap">
         {/* Search Input */}
