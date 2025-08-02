@@ -416,7 +416,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       )}
 
       {/* Job Type Legend */}
-      <Card className="absolute top-4 left-4">
+      <Card className="absolute bottom-4 right-4">
         <CardContent className="p-3">
           <h4 className="font-semibold text-sm mb-2">Job Types</h4>
           <div className="space-y-1 text-xs">
