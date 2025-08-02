@@ -64,13 +64,14 @@ const JobsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast: showToast } = useToast();
 
-  // Smart job search for cross-date navigation - only for job-like search terms
-  const searchLooksLikeJobId = searchTerm.length > 4 && (searchTerm.includes('-') || /^\w{3,}-?\d/.test(searchTerm));
-  const { data: foundJob } = useJobSearch(searchLooksLikeJobId ? searchTerm : undefined);
+  // Smart job search for cross-date navigation - only trigger on Enter key or when search looks complete
+  const [shouldTriggerSmartSearch, setShouldTriggerSmartSearch] = useState(false);
+  const searchLooksLikeJobId = searchTerm.length > 4 && searchTerm.includes('-');
+  const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm : undefined);
 
   // Handle smart job search and date navigation
-  const handleSmartSearch = useCallback((jobId: string) => {
-    if (!foundJob || !searchLooksLikeJobId) return;
+  const handleSmartSearch = useCallback(() => {
+    if (!foundJob) return;
     
     const jobDate = new Date(foundJob.scheduled_date);
     const currentDateStr = formatDateForQuery(selectedDate);
@@ -81,14 +82,22 @@ const JobsPage: React.FC = () => {
       setSelectedDate(jobDate);
       toast.success(`Found job ${foundJob.job_number} on ${format(jobDate, 'MMM d, yyyy')} - navigating...`);
     }
-  }, [foundJob, selectedDate, searchLooksLikeJobId, toast]);
+    setShouldTriggerSmartSearch(false);
+  }, [foundJob, selectedDate, toast]);
 
-  // Trigger smart search when a complete job ID is found
-  useEffect(() => {
-    if (foundJob && searchLooksLikeJobId && activeTab !== 'custom') {
-      handleSmartSearch(searchTerm);
+  // Handle Enter key for smart search
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchLooksLikeJobId && activeTab !== 'custom') {
+      setShouldTriggerSmartSearch(true);
     }
-  }, [foundJob, searchTerm, handleSmartSearch, activeTab, searchLooksLikeJobId]);
+  }, [searchLooksLikeJobId, activeTab]);
+
+  // Trigger smart search when job is found
+  useEffect(() => {
+    if (foundJob && shouldTriggerSmartSearch) {
+      handleSmartSearch();
+    }
+  }, [foundJob, shouldTriggerSmartSearch, handleSmartSearch]);
 
   // Mutation to update job assignment
   const updateJobAssignmentMutation = useMutation({
@@ -402,6 +411,7 @@ const JobsPage: React.FC = () => {
               <InlineFilters
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
+                onSearchKeyDown={handleSearchKeyDown}
                 selectedDriver={selectedDriver}
                 onDriverChange={setSelectedDriver}
                 selectedJobType={selectedJobType}

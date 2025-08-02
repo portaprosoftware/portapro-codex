@@ -8,6 +8,7 @@ import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 interface InlineFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
+  onSearchKeyDown?: (e: React.KeyboardEvent) => void;
   selectedDriver: string;
   onDriverChange: (value: string) => void;
   selectedJobType: string;
@@ -25,6 +26,7 @@ interface InlineFiltersProps {
 export const InlineFilters: React.FC<InlineFiltersProps> = ({
   searchTerm,
   onSearchChange,
+  onSearchKeyDown,
   selectedDriver,
   onDriverChange,
   selectedJobType,
@@ -45,9 +47,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             type="text"
-            placeholder="Enter Job ID or Customer"
+            placeholder="Enter Job ID or Customer (Press Enter to search all dates)"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={onSearchKeyDown}
             className="pl-10"
           />
         </div>
