@@ -81,9 +81,9 @@ export function AssignedInventoryList({ coordinateId, onEdit, onDelete }: Assign
     return (
       <div className="text-center py-8">
         <Package className="w-12 h-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-        <p className="text-muted-foreground mb-2">No inventory assigned</p>
+        <p className="text-muted-foreground mb-2">No template items defined</p>
         <p className="text-sm text-muted-foreground">
-          Use the "Assign Inventory" button to add items to this pin
+          Use the "Add Template Items" tab to define typical inventory for this pin
         </p>
       </div>
     );
@@ -98,7 +98,7 @@ export function AssignedInventoryList({ coordinateId, onEdit, onDelete }: Assign
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium text-primary">
-            {assignments.length} item type(s) • {totalItems} total units assigned
+            {assignments.length} template item type(s) • {totalItems} total units
           </span>
         </div>
       </div>

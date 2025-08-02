@@ -31,7 +31,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
     if (assignments.length === 0) {
       toast({
         title: "No items selected",
-        description: "Please select at least one inventory item to assign.",
+        description: "Please select at least one inventory item for the template.",
         variant: "destructive"
       });
       return;
@@ -53,8 +53,8 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
       if (error) throw error;
 
       toast({
-        title: "Inventory assigned",
-        description: `Successfully assigned ${assignments.length} item type(s) to "${pinName}"`
+        title: "Template saved",
+        description: `Successfully saved ${assignments.length} item type(s) to "${pinName}" template`
       });
 
       setAssignments([]);
@@ -63,8 +63,8 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
     } catch (error) {
       console.error('Error saving inventory assignments:', error);
       toast({
-        title: "Error saving assignments",
-        description: "Failed to save inventory assignments. Please try again.",
+        title: "Error saving template",
+        description: "Failed to save inventory template. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -84,19 +84,26 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
-            Manage Inventory for "{pinName}"
+            Manage Inventory Template for "{pinName}"
           </DialogTitle>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> Assigning inventory here is purely for reference and does not reserve or alter your actual stock levels. 
+              When you go to add these items to a new job, you'll have a chance to select and confirm the exact units and dates, ensuring real-time availability. 
+              This module simply records the typical types and quantities you usually assign to this pin for repeat events.
+            </p>
+          </div>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="assign" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
-              Assign New Items
+              Add Template Items
             </TabsTrigger>
             <TabsTrigger value="current" className="flex items-center gap-2">
               <List className="w-4 h-4" />
-              Current Assignments
+              Template Items
             </TabsTrigger>
           </TabsList>
 
@@ -115,7 +122,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
                   disabled={assignments.length === 0 || isSaving}
                   className="flex-1"
                 >
-                  {isSaving ? 'Saving...' : `Assign ${assignments.length} Item${assignments.length !== 1 ? 's' : ''}`}
+                  {isSaving ? 'Saving...' : `Save ${assignments.length} Template Item${assignments.length !== 1 ? 's' : ''}`}
                 </Button>
                 <Button variant="outline" onClick={handleClose}>
                   Cancel
