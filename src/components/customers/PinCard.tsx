@@ -110,7 +110,7 @@ export function PinCard({ pin, onAssignInventory }: PinCardProps) {
                 className="w-full"
               >
                 <Package className="w-3 h-3 mr-1" />
-                {totalAssignedItems > 0 ? 'Manage Inventory' : 'Assign Inventory'}
+                {totalAssignedItems > 0 ? 'Manage Template Inventory' : 'Add Template Inventory to this Pin'}
               </Button>
             </div>
           )}
