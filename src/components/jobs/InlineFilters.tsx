@@ -1,8 +1,10 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Check, Info } from 'lucide-react';
+import { Search, Check, Info, X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 
 interface InlineFiltersProps {
@@ -218,16 +220,25 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             onDateChange={onDateChange}
             label="Date"
           />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs">Jobs become overdue the day after their scheduled date</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center justify-between">
+                  Overdue Jobs Info
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Jobs become overdue the day after their scheduled date.
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
         )}
       </div>
