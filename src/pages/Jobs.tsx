@@ -779,7 +779,7 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'map' && (
-            <div className="flex gap-4" style={{ height: 'calc(100vh - 200px)' }}>
+            <div className="flex gap-4" style={{ height: 'calc(100vh - 140px)' }}>
               {/* Left Sidebar - Map Controls */}
               <div className="w-80 space-y-4">
                 {/* Map Mode Toggle */}
