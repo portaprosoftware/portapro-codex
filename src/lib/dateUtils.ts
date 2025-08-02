@@ -7,7 +7,20 @@
  * Formats a Date object to YYYY-MM-DD string using local date components
  * This avoids timezone issues that can occur with format() from date-fns
  */
-export const formatDateForQuery = (date: Date): string => {
+export const formatDateForQuery = (date: Date | string | null | undefined): string | undefined => {
+  if (!date) return undefined;
+  
+  // If it's already a string, return it
+  if (typeof date === 'string') return date;
+  
+  // If it's not a Date object, try to create one
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+  
+  // Check if it's a valid date
+  if (isNaN(date.getTime())) return undefined;
+  
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');

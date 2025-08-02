@@ -12,6 +12,7 @@ import { SavePresetModal } from './SavePresetModal';
 import { EnhancedPDFExport } from './EnhancedPDFExport';
 import { SavedPresets } from './SavedPresets';
 import { useFilterPresets, FilterData, FilterPreset } from '@/hooks/useFilterPresets';
+import { useJobCounts } from '@/hooks/useJobCounts';
 import { useToast } from '@/hooks/use-toast';
 import {
   Collapsible,
@@ -57,6 +58,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const { savePreset, generateShareUrl, isSaving } = useFilterPresets('jobs');
+  const { data: jobCounts } = useJobCounts();
   const { toast } = useToast();
 
   const quickRanges = [
@@ -202,26 +204,37 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
 
             {/* Main Filters */}
             <Card className="p-6 space-y-6 lg:col-span-2">
-            {/* Quick Range Buttons with Counts */}
+            {/* Quick Range Buttons with Live Counts */}
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-muted-foreground">Quick Date Ranges</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {quickRanges.map((quickRange) => (
-                  <Button
-                    key={quickRange.label}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onDateRangeChange(quickRange.range)}
-                    className="text-xs justify-start h-auto py-3 px-4"
-                  >
-                    <div className="text-left">
-                      <div className="font-medium">{quickRange.label}</div>
-                      <div className="text-muted-foreground text-xs">
-                        Click to filter
+                {quickRanges.map((quickRange, index) => {
+                  const counts = [
+                    jobCounts?.last7Days || 0,
+                    jobCounts?.last30Days || 0,
+                    jobCounts?.monthToDate || 0,
+                    null, // Last Quarter - not in our counts yet
+                    jobCounts?.quarterToDate || 0,
+                    jobCounts?.yearToDate || 0,
+                  ];
+                  
+                  return (
+                    <Button
+                      key={quickRange.label}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onDateRangeChange(quickRange.range)}
+                      className="text-xs justify-start h-auto py-3 px-4"
+                    >
+                      <div className="text-left">
+                        <div className="font-medium">{quickRange.label}</div>
+                        <div className="text-muted-foreground text-xs">
+                          {counts[index] !== null ? `${counts[index]} jobs` : 'Click to filter'}
+                        </div>
                       </div>
-                    </div>
-                  </Button>
-                ))}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
 
