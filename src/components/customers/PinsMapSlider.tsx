@@ -73,7 +73,7 @@ export function PinsMapSlider({ isOpen, onClose, pins, selectedLocation, onPinCl
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t bg-muted/30">
+        <div className="p-4 border-t bg-muted/30 flex-shrink-0">
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>Click pins on the map to view details</span>
             <Button variant="outline" size="sm" onClick={onClose}>

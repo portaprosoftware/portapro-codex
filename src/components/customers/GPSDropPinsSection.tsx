@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AddPinModal } from './AddPinModal';
+import { AddPinSlider } from './AddPinSlider';
 import { PinsList } from './PinsList';
 import { PinInventoryModal } from './PinInventoryModal';
 import { MapView } from './MapView';
@@ -38,7 +38,7 @@ interface ServiceLocation {
 
 export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddSliderOpen, setIsAddSliderOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
   const [isMapSliderOpen, setIsMapSliderOpen] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
@@ -87,7 +87,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
   const handlePinAdded = () => {
     refetchPins();
-    setIsAddModalOpen(false);
+    setIsAddSliderOpen(false);
     toast.success('GPS pin added successfully');
   };
 
@@ -173,7 +173,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 mb-6">
               <Button 
-                onClick={() => setIsAddModalOpen(true)}
+                onClick={() => setIsAddSliderOpen(true)}
                 className="flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -191,25 +191,7 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
 
             {/* Split View Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[500px]">
-              {/* Left Pane - Map */}
-              <div className="bg-muted/20 border border-border rounded-lg overflow-hidden">
-                <div className="p-3 border-b bg-muted/50">
-                  <h4 className="font-medium text-sm">Location Map</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Click pins to manage inventory
-                  </p>
-                </div>
-                <div className="h-[calc(100%-60px)]">
-                  <MapView 
-                    pins={pins || []}
-                    selectedLocation={selectedLocation}
-                    onPinClick={handleMapPinClick}
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-
-              {/* Right Pane - Pins List */}
+              {/* Left Pane - Pins List */}
               <div className="bg-muted/20 border border-border rounded-lg overflow-hidden">
                 <div className="p-3 border-b bg-muted/50">
                   <h4 className="font-medium text-sm">Saved Pins</h4>
@@ -226,16 +208,34 @@ export function GPSDropPinsSection({ customerId }: GPSDropPinsSectionProps) {
                   />
                 </div>
               </div>
+
+              {/* Right Pane - Map */}
+              <div className="bg-muted/20 border border-border rounded-lg overflow-hidden">
+                <div className="p-3 border-b bg-muted/50">
+                  <h4 className="font-medium text-sm">Location Map</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Click pins to manage inventory
+                  </p>
+                </div>
+                <div className="h-[calc(100%-60px)]">
+                  <MapView 
+                    pins={pins || []}
+                    selectedLocation={selectedLocation}
+                    onPinClick={handleMapPinClick}
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
             </div>
           </>
         )}
       </div>
 
-      {/* Modals and Sliders */}
+      {/* Sliders and Modals */}
       {selectedLocation && (
-        <AddPinModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+        <AddPinSlider
+          isOpen={isAddSliderOpen}
+          onClose={() => setIsAddSliderOpen(false)}
           serviceLocation={selectedLocation}
           onPinAdded={handlePinAdded}
         />
