@@ -473,30 +473,6 @@ const JobsPage: React.FC = () => {
           />
         )}
 
-        {/* Map-Specific Controls */}
-        {activeTab === 'map' && (
-          <div className="bg-white rounded-lg border shadow-sm p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <MapModeToggle 
-                  isDriverMode={isDriverMode}
-                  onModeChange={setIsDriverMode}
-                />
-                <div className="text-sm text-gray-600">
-                  Switch between job type view and driver assignment view
-                </div>
-              </div>
-              <div className="w-80">
-                <MapLegend 
-                  isDriverMode={isDriverMode}
-                  filteredJobsCount={filterJobs(allJobs).length}
-                  availableDrivers={drivers}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
           {activeTab === 'custom' && (
@@ -803,24 +779,48 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'map' && (
-            <div className="bg-white rounded-lg border shadow-sm overflow-hidden" style={{ height: 'calc(100vh - 280px)' }}>
-              {/* Map view - filters handled by unified filter bar above */}
-              <JobsMapErrorBoundary 
-                onRetry={() => {
-                  // Clear React Query cache for jobs to force refresh
-                  console.log('Retrying map with fresh data');
-                }}
-              >
-                <JobsMapPage
-                  searchTerm={searchTerm}
-                  selectedDriver={selectedDriver}
-                  jobType={selectedJobType}
-                  status={selectedStatus}
-                  selectedDate={selectedDate}
+            <div className="flex gap-4" style={{ height: 'calc(100vh - 280px)' }}>
+              {/* Left Sidebar - Map Controls */}
+              <div className="w-80 space-y-4">
+                {/* Map Mode Toggle */}
+                <div className="bg-white rounded-lg border shadow-sm p-4">
+                  <div className="space-y-3">
+                    <MapModeToggle 
+                      isDriverMode={isDriverMode}
+                      onModeChange={setIsDriverMode}
+                    />
+                    <p className="text-sm text-gray-600">
+                      Switch between job type view and driver assignment view
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Map Legend */}
+                <MapLegend 
                   isDriverMode={isDriverMode}
-                  onMapModeChange={setIsDriverMode}
+                  filteredJobsCount={filterJobs(allJobs).length}
+                  availableDrivers={drivers}
                 />
-              </JobsMapErrorBoundary>
+              </div>
+              
+              {/* Right Side - Map */}
+              <div className="flex-1 bg-white rounded-lg border shadow-sm overflow-hidden">
+                <JobsMapErrorBoundary 
+                  onRetry={() => {
+                    console.log('Retrying map with fresh data');
+                  }}
+                >
+                  <JobsMapPage
+                    searchTerm={searchTerm}
+                    selectedDriver={selectedDriver}
+                    jobType={selectedJobType}
+                    status={selectedStatus}
+                    selectedDate={selectedDate}
+                    isDriverMode={isDriverMode}
+                    onMapModeChange={setIsDriverMode}
+                  />
+                </JobsMapErrorBoundary>
+              </div>
             </div>
           )}
         </div>
