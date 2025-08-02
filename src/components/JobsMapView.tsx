@@ -249,17 +249,18 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           if (coordinates) {
             const [lng, lat] = coordinates;
             
-            // Status colors
-            const statusColors: Record<string, string> = {
-              'assigned': '#3b82f6',
-              'in_progress': '#f59e0b', 
-              'completed': '#10b981',
-              'cancelled': '#ef4444',
+            // Job type colors
+            const jobTypeColors: Record<string, string> = {
+              'delivery': '#3b82f6', // Blue
+              'pickup': '#10b981',   // Green
+              'service': '#f59e0b',  // Orange
+              'cleaning': '#8b5cf6', // Purple
+              'return': '#ef4444',   // Red
             };
 
             // Create marker
             const marker = new mapboxgl.Marker({
-              color: statusColors[job.status] || '#6b7280'
+              color: jobTypeColors[job.job_type] || '#6b7280'
             })
               .setLngLat([lng, lat])
               .addTo(map.current!);
@@ -414,6 +415,35 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           </CardContent>
         </Card>
       )}
+
+      {/* Job Type Legend */}
+      <Card className="absolute top-4 left-4">
+        <CardContent className="p-3">
+          <h4 className="font-semibold text-sm mb-2">Job Types</h4>
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <span>Delivery</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span>Pickup</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+              <span>Service</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+              <span>Cleaning</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <span>Return</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Job count indicator */}
       <div className="absolute bottom-4 left-4">
