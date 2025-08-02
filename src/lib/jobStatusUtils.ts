@@ -131,6 +131,7 @@ export const getJobStatusInfo = (job: Job) => {
 
 /**
  * Get dual status info for jobs with priority and overdue handling
+ * Shows only ONE badge at a time for cleaner UI
  */
 export const getDualJobStatusInfo = (job: Job) => {
   const statusConfig = getJobStatusConfig();
@@ -145,28 +146,28 @@ export const getDualJobStatusInfo = (job: Job) => {
     };
   }
   
-  // Check for priority indicator (was ever overdue)
-  const showPriority = shouldShowPriorityIndicator(job);
-  
   // For non-completed jobs, check if currently overdue
   if ((job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
+    // Currently overdue: show ONLY overdue badge (never with priority)
     return {
       primary: statusConfig.overdue,
-      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
-      priority: showPriority ? statusConfig.priority : null
-    };
-  }
-  
-  // For regular jobs that were previously overdue but now rescheduled
-  if (showPriority) {
-    return {
-      primary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
       secondary: null,
-      priority: statusConfig.priority
+      priority: null
     };
   }
   
-  // For cancelled or regular jobs, only show single status
+  // Check for priority indicator (was ever overdue but not currently overdue)
+  const showPriority = shouldShowPriorityIndicator(job);
+  if (showPriority) {
+    // Was overdue but rescheduled: show ONLY priority badge
+    return {
+      primary: statusConfig.priority,
+      secondary: null,
+      priority: null
+    };
+  }
+  
+  // For regular jobs, show normal status
   const displayStatus = getDisplayStatus(job);
   return {
     primary: statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.assigned,
