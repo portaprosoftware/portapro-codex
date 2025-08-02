@@ -370,7 +370,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         />
       )}
       
-      {/* Map Style Toggle */}
+      {/* Map Style Toggle and Radar */}
       <div className="absolute top-4 left-4 z-20">
         <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
           <Button
@@ -391,18 +391,16 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
             <Satellite className="w-4 h-4 mr-1.5" />
             Satellite
           </Button>
-        </div>
-        
-        {/* Radar Toggle */}
-        <div className="mt-2 bg-white p-3 rounded-lg shadow-lg border">
-          <div className="flex items-center space-x-2">
+          
+          {/* Radar Toggle - Inline */}
+          <div className="flex items-center px-2">
             <Switch
               id="radar-toggle"
               checked={radarEnabled}
               onCheckedChange={setRadarEnabled}
             />
-            <Label htmlFor="radar-toggle" className="text-sm font-medium flex items-center">
-              <Radar className="w-4 h-4 mr-1.5" />
+            <Label htmlFor="radar-toggle" className="text-sm font-medium flex items-center ml-2">
+              <Radar className="w-4 h-4 mr-1" />
               Radar
             </Label>
           </div>

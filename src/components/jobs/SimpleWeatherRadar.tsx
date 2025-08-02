@@ -285,7 +285,7 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
   const currentTime = getCurrentTime();
 
   return (
-    <div className="absolute top-4 left-4 z-10 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20">
+    <div className="absolute bottom-4 left-4 z-10 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20">
       <div className="p-4 space-y-3">
         {/* Header with PortaPro branding */}
         <div className="flex items-center gap-2 pb-2 border-b border-blue-500/20">
