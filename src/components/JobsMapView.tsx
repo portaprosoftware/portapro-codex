@@ -30,6 +30,14 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 
   // Format date for jobs query
   const dateString = currentDate.toISOString().split('T')[0];
+  
+  console.log('JobsMapView: Current date:', dateString);
+  console.log('JobsMapView: Query filters:', { 
+    date: dateString, 
+    status: selectedStatus, 
+    driver_id: selectedDriver, 
+    job_type: selectedJobType 
+  });
 
   // Get jobs data
   const { data: jobs, isLoading: jobsLoading } = useJobs({
