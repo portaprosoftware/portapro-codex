@@ -194,20 +194,20 @@ const JobsPage: React.FC = () => {
     }
   });
 
-  // Calculate drivers with jobs today
-  const today = format(new Date(), 'yyyy-MM-dd');
+  // Calculate drivers with jobs for the selected date (not just today)
+  const selectedDateFormatted = formatDateForQuery(selectedDate);
   const driversWithJobsToday = React.useMemo(() => {
     const driverSet = new Set<string>();
     
-    // Check jobs for today's date
+    // Check jobs for the selected date
     allJobs.forEach(job => {
-      if (job.driver_id && format(new Date(job.scheduled_date), 'yyyy-MM-dd') === today) {
+      if (job.driver_id && format(new Date(job.scheduled_date), 'yyyy-MM-dd') === selectedDateFormatted) {
         driverSet.add(job.driver_id);
       }
     });
     
     return driverSet;
-  }, [allJobs, today]);
+  }, [allJobs, selectedDateFormatted]);
 
   // Set the active tab based on route and force reinitialization
   useEffect(() => {
