@@ -1,5 +1,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Plus } from 'lucide-react';
 
 interface MapLegendProps {
   isDriverMode: boolean;
@@ -167,12 +168,22 @@ export const MapLegend: React.FC<MapLegendProps> = ({
         {/* Clusters */}
         <div>
           <h4 className="text-xs font-medium text-gray-700 mb-2">Multiple Jobs</h4>
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs font-semibold">
-              3
+          <div className="flex items-center gap-3">
+            {/* Show examples: 2, 3, 4, + */}
+            {[2, 3, 4].map((num) => (
+              <div key={num} className="flex items-center gap-1">
+                <div className="w-5 h-5 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                  {num}
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center gap-1">
+              <div className="w-5 h-5 bg-gray-800 text-white rounded-full flex items-center justify-center">
+                <Plus className="w-3 h-3" />
+              </div>
             </div>
-            <span className="text-xs text-gray-700">Click to expand individual jobs</span>
           </div>
+          <p className="text-xs text-gray-600 mt-1">Click to expand individual jobs</p>
         </div>
 
         {/* Job Count */}
