@@ -10,6 +10,7 @@ export interface JobWizardData {
   scheduled_time?: string | null;
   timezone: string;
   notes?: string;
+  is_priority?: boolean;
   
   // Step 3: Location Selection
   special_instructions?: string;
@@ -36,6 +37,7 @@ const initialState: JobWizardState = {
     timezone: 'America/New_York',
     selected_coordinate_ids: [],
     scheduled_time: null,
+    is_priority: false,
   },
   errors: {},
   isLoading: false,

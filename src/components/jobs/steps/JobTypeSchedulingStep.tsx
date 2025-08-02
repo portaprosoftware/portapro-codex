@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Package, Truck, Wrench, Search } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, Wrench, Search, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -72,6 +72,10 @@ export function JobTypeSchedulingStep() {
 
   const handleNotesChange = (notes: string) => {
     updateData({ notes });
+  };
+
+  const handleTogglePriority = () => {
+    updateData({ is_priority: !state.data.is_priority });
   };
 
   return (
@@ -190,6 +194,29 @@ export function JobTypeSchedulingStep() {
         />
       </div>
 
+      {/* Priority Toggle */}
+      <div className="space-y-4">
+        <Label className="text-base font-medium">Priority Settings</Label>
+        <Button
+          onClick={handleTogglePriority}
+          size="sm"
+          className={
+            state.data.is_priority
+              ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold"
+              : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+          }
+          variant={state.data.is_priority ? "default" : "outline"}
+        >
+          <Star className="w-4 h-4 mr-1" />
+          {state.data.is_priority ? 'Priority Job' : 'Mark as Priority'}
+        </Button>
+        {state.data.is_priority && (
+          <p className="text-sm text-muted-foreground">
+            This job will be marked as priority and highlighted for drivers.
+          </p>
+        )}
+      </div>
+
       {/* Summary */}
       {state.data.job_type && state.data.scheduled_date && (
         <Card className="bg-muted/50">
@@ -204,17 +231,26 @@ export function JobTypeSchedulingStep() {
                 <span className="font-medium">Date:</span>{' '}
                 {formatDateSafe(state.data.scheduled_date, 'long')}
               </p>
-              {state.data.scheduled_time && (
-                <p>
-                  <span className="font-medium">Time:</span>{' '}
-                  {(() => {
-                    const [hours, minutes] = state.data.scheduled_time.split(':').map(Number);
-                    const period = hours >= 12 ? 'PM' : 'AM';
-                    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-                    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-                  })()}
-                </p>
-              )}
+               {state.data.scheduled_time && (
+                 <p>
+                   <span className="font-medium">Time:</span>{' '}
+                   {(() => {
+                     const [hours, minutes] = state.data.scheduled_time.split(':').map(Number);
+                     const period = hours >= 12 ? 'PM' : 'AM';
+                     const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                     return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+                   })()}
+                 </p>
+               )}
+               {state.data.is_priority && (
+                 <p>
+                   <span className="font-medium">Priority:</span>{' '}
+                   <span className="inline-flex items-center gap-1 text-yellow-600">
+                     <Star className="w-3 h-3" />
+                     High Priority
+                   </span>
+                 </p>
+               )}
             </div>
           </CardContent>
         </Card>
