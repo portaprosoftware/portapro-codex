@@ -271,63 +271,82 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     <div style={{ position: 'relative', width: '100%', height: '400px' }}>
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
-      {/* Multiple Jobs Selection Popup */}
+      {/* Multiple Jobs Selection Slide Panel */}
       {selectedJobsAtLocation.length > 0 && (
         <>
-          {/* Backdrop to ensure proper layering */}
+          {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/10 z-40"
+            className="absolute inset-0 bg-black/20 z-30"
             onClick={() => setSelectedJobsAtLocation([])}
           />
-          <div className="absolute top-4 right-4 bg-white rounded-lg shadow-xl border max-w-md z-50">
-            <div className="p-4 border-b">
+          
+          {/* Slide Panel from Right */}
+          <div className="absolute top-0 right-0 h-full w-80 bg-white shadow-2xl border-l z-40 transform transition-transform duration-300 ease-in-out">
+            {/* Header */}
+            <div className="p-4 border-b bg-gray-50">
               <div className="flex justify-between items-center">
-                <h3 className="font-semibold">Select Job</h3>
+                <div>
+                  <h3 className="font-semibold text-lg">Jobs at Location</h3>
+                  <p className="text-sm text-gray-600">
+                    {selectedJobsAtLocation.length} job{selectedJobsAtLocation.length !== 1 ? 's' : ''} found
+                  </p>
+                </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setSelectedJobsAtLocation([])}
-                  className="h-6 w-6 p-0"
+                  className="h-8 w-8 p-0"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="text-sm text-gray-600 mt-1">
-                {selectedJobsAtLocation.length} jobs at this location
-              </p>
             </div>
-            <div className="max-h-64 overflow-y-auto">
+            
+            {/* Jobs List */}
+            <div className="h-full overflow-y-auto pb-20">
               {selectedJobsAtLocation.map((job, index) => (
-                <div key={job.id} className="p-3 border-b last:border-b-0 hover:bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-medium text-sm">{job.job_number}</span>
-                        <Badge className={getJobTypeColor(job.job_type)} variant="secondary">
+                <div key={job.id} className="p-4 border-b hover:bg-gray-50 transition-colors">
+                  <div className="space-y-3">
+                    {/* Job Header */}
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-lg">{job.job_number}</span>
+                      <div className="flex gap-1">
+                        <Badge className={`${getJobTypeColor(job.job_type)} text-white`}>
                           {job.job_type}
                         </Badge>
                         <Badge className={getStatusColor(job.status)} variant="outline">
                           {job.status}
                         </Badge>
                       </div>
-                      <p className="text-xs text-gray-600">{job.customers?.name}</p>
-                      {job.profiles && (
-                        <p className="text-xs text-gray-500">
-                          Driver: {job.profiles.first_name} {job.profiles.last_name}
-                        </p>
-                      )}
                     </div>
+                    
+                    {/* Customer Info */}
+                    <div>
+                      <p className="font-medium text-gray-900">{job.customers?.name}</p>
+                      <p className="text-sm text-gray-600">
+                        {job.scheduled_date && format(new Date(job.scheduled_date), 'MMM d, yyyy')}
+                        {job.scheduled_time && ` at ${job.scheduled_time}`}
+                      </p>
+                    </div>
+                    
+                    {/* Driver Info */}
+                    {job.profiles && (
+                      <div className="text-sm text-gray-600">
+                        <span className="font-medium">Driver:</span> {job.profiles.first_name} {job.profiles.last_name}
+                      </div>
+                    )}
+                    
+                    {/* Action Button */}
                     <Button 
-                      size="sm" 
-                      variant="outline"
                       onClick={() => {
                         setSelectedJobsAtLocation([]);
                         setSelectedJobForModal(job.id);
                       }}
-                      className="ml-2"
+                      className="w-full"
+                      size="sm"
                     >
-                      <ExternalLink className="h-3 w-3 mr-1" />
-                      View
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Job Details
                     </Button>
                   </div>
                 </div>
