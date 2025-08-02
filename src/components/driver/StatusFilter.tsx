@@ -2,6 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { JobStatus } from '@/types';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 
 interface StatusFilterProps {
   value: JobStatus | 'all' | 'priority' | 'was_overdue' | 'overdue' | 'completed_late';
@@ -30,7 +31,7 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({
       {statusOptions.map((option) => (
         <Badge
           key={option.value}
-          variant={value === option.value ? "default" : "outline"}
+          variant={value === option.value ? getStatusBadgeVariant(option.value) : "outline"}
           className="cursor-pointer whitespace-nowrap"
           onClick={() => onChange(option.value)}
         >

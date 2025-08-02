@@ -406,21 +406,14 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
                         {job.scheduled_time && ` at ${job.scheduled_time}`}
                       </p>
                     </div>
-                    <div className="flex gap-2">
-                      <Badge 
-                        variant="secondary"
-                        className="text-white"
-                        style={{ backgroundColor: getJobTypeColor(job.job_type) }}
-                      >
-                        {job.job_type}
-                      </Badge>
-                      <Badge 
-                        variant="outline"
-                        className={getStatusColor(job.status)}
-                      >
-                        {job.status}
-                      </Badge>
-                    </div>
+                     <div className="flex gap-2">
+                       <Badge variant="info">
+                         {job.job_type}
+                       </Badge>
+                       <Badge variant={job.status as any}>
+                         {job.status}
+                       </Badge>
+                     </div>
                   </div>
                   
                   {/* Driver Info */}
