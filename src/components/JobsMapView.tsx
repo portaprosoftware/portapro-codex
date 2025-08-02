@@ -95,7 +95,6 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
             customer_id,
             driver_id,
             vehicle_id,
-            gps_coordinates,
             customers (
               id,
               name
@@ -144,20 +143,17 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     jobs.forEach(job => {
       let coordinates = null;
 
-      // Try job coordinates first
-      if (job.gps_coordinates && Array.isArray(job.gps_coordinates) && job.gps_coordinates.length === 2) {
-        coordinates = [job.gps_coordinates[1], job.gps_coordinates[0]]; // [lng, lat]
-      } else {
-        // Find service location
-        const location = serviceLocations.find(loc => 
-          loc.customer_id === job.customer_id && 
-          loc.gps_coordinates && 
-          Array.isArray(loc.gps_coordinates) && 
-          loc.gps_coordinates.length === 2
-        );
-        if (location) {
-          coordinates = [location.gps_coordinates[1], location.gps_coordinates[0]]; // [lng, lat]
-        }
+      // Jobs don't have gps_coordinates, so find service location
+      const location = serviceLocations.find(loc => 
+        loc.customer_id === job.customer_id && 
+        loc.gps_coordinates
+      );
+      
+      if (location?.gps_coordinates) {
+        // Parse coordinates from string format "(-81.83824,41.36749)"
+        const coordStr = location.gps_coordinates.replace(/[()]/g, '');
+        const [lng, lat] = coordStr.split(',').map(parseFloat);
+        coordinates = [lng, lat];
       }
 
       if (!coordinates) return;
