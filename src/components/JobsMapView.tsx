@@ -9,6 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { X, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
+import { getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
+import { isJobOverdue, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
+import { useQuery } from '@tanstack/react-query';
 
 interface JobsMapViewProps {
   searchTerm?: string;
@@ -16,9 +19,11 @@ interface JobsMapViewProps {
   jobType?: string;
   status?: string;
   selectedDate: Date;
+  isDriverMode: boolean;
+  onMapModeChange: (isDriverMode: boolean) => void;
 }
 
-const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate }: JobsMapViewProps) => {
+const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate, isDriverMode, onMapModeChange }: JobsMapViewProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -55,6 +60,20 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   };
 
   const filteredJobs = filterJobs(allJobs);
+
+  // Get drivers for color mapping
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('is_active', true);
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   // Get Mapbox token
   useEffect(() => {
@@ -125,7 +144,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     fetchServiceLocations();
   }, []);
 
-  // Create pins with multiple jobs per location support
+  // Create pins with enhanced styling based on mode
   useEffect(() => {
     if (!map.current || !filteredJobs.length) return;
 
@@ -159,7 +178,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     });
 
     // Create pins for each location
-    jobsByLocation.forEach(({ location, jobs, coordinates: _, customer_id }) => {
+    jobsByLocation.forEach(({ location, jobs }) => {
       // Parse coordinates from string format "(-81.83824,41.36749)"
       const coordStr = location.gps_coordinates.replace(/[()]/g, '');
       const [lng, lat] = coordStr.split(',').map(parseFloat);
@@ -170,33 +189,86 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
       hasCoordinates = true;
       bounds.extend(coordinates);
 
-      // Pin colors - use first job's type for color, but show count
       const firstJob = jobs[0];
-      const colors = {
-        delivery: '#3B82F6',
-        pickup: '#EF4444', 
-        service: '#F59E0B',
-        return: '#10B981'
-      };
-
-      const color = colors[firstJob.job_type] || '#6B7280';
       const count = jobs.length;
 
-      // Create pin element with job count
+      // Create pin element with enhanced styling
       const pinEl = document.createElement('div');
+      
       if (count === 1) {
-        // Single job - show job type code
-        const codes = {
-          delivery: 'D',
-          pickup: 'P',
-          service: 'S', 
-          return: 'R'
-        };
-        const code = codes[firstJob.job_type] || 'J';
-        pinEl.innerHTML = `<div style="width: 28px; height: 28px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${code}</div>`;
+        // Single job marker with status border
+        const fillColor = isDriverMode 
+          ? getDriverColor(firstJob.driver_id || 'unassigned', drivers)
+          : getJobTypeColor(firstJob.job_type);
+        
+        const borderColor = getStatusBorderColor(
+          firstJob.status, 
+          isJobOverdue(firstJob), 
+          shouldShowPriorityBadge(firstJob)
+        );
+
+        const displayText = isDriverMode 
+          ? (drivers.find(d => d.id === firstJob.driver_id)?.first_name?.charAt(0) || 'U')
+          : firstJob.job_type.charAt(0).toUpperCase();
+
+        pinEl.innerHTML = `
+          <div style="
+            width: 32px; 
+            height: 32px; 
+            background-color: ${fillColor}; 
+            border: 3px solid ${borderColor}; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 12px; 
+            cursor: pointer; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            transition: transform 0.2s ease;
+          " 
+          onmouseover="this.style.transform='scale(1.1)'" 
+          onmouseout="this.style.transform='scale(1)'"
+          >${displayText}</div>
+        `;
       } else {
-        // Multiple jobs - show count
-        pinEl.innerHTML = `<div style="width: 32px; height: 32px; background-color: ${color}; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${count}</div>`;
+        // Multiple jobs cluster - use dominant color and status
+        const dominantColor = isDriverMode
+          ? getDriverColor(firstJob.driver_id || 'unassigned', drivers) 
+          : '#374151'; // gray-700 for multi-job clusters
+        
+        // Get dominant status for border
+        const hasOverdue = jobs.some(job => isJobOverdue(job));
+        const hasPriority = jobs.some(job => shouldShowPriorityBadge(job));
+        const hasInProgress = jobs.some(job => job.status === 'in_progress');
+        
+        let borderColor = '#6B7280'; // gray-500 default
+        if (hasOverdue) borderColor = '#EF4444'; // red-500
+        else if (hasPriority) borderColor = '#F59E0B'; // amber-500  
+        else if (hasInProgress) borderColor = '#EAB308'; // yellow-500
+
+        pinEl.innerHTML = `
+          <div style="
+            width: 36px; 
+            height: 36px; 
+            background-color: ${dominantColor}; 
+            border: 3px solid ${borderColor}; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 13px; 
+            cursor: pointer; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+          "
+          onmouseover="this.style.transform='scale(1.1)'" 
+          onmouseout="this.style.transform='scale(1)'"
+          >${count}</div>
+        `;
       }
 
       // Click handler
@@ -221,7 +293,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     if (hasCoordinates) {
       map.current.fitBounds(bounds, { padding: 50 });
     }
-  }, [filteredJobs, serviceLocations]);
+  }, [filteredJobs, serviceLocations, isDriverMode, drivers]);
 
   if (loading) {
     return <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;

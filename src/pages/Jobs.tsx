@@ -32,6 +32,8 @@ import { CustomJobFilters } from '@/components/jobs/CustomJobFilters';
 import { CustomJobsList } from '@/components/jobs/CustomJobsList';
 import { exportJobsToCSV } from '@/utils/jobsExport';
 import { DateRange } from 'react-day-picker';
+import { MapModeToggle } from '@/components/maps/MapModeToggle';
+import { MapLegend } from '@/components/maps/MapLegend';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -58,6 +60,9 @@ const JobsPage: React.FC = () => {
   const [customSelectedDriver, setCustomSelectedDriver] = useState('all');
   const [customSelectedJobType, setCustomSelectedJobType] = useState('all');
   const [customSelectedStatus, setCustomSelectedStatus] = useState('all');
+
+  // Map-specific state
+  const [isDriverMode, setIsDriverMode] = useState(false);
 
   const updateJobStatusMutation = useUpdateJobStatus();
   const createJobMutation = useCreateJob();
@@ -468,6 +473,30 @@ const JobsPage: React.FC = () => {
           />
         )}
 
+        {/* Map-Specific Controls */}
+        {activeTab === 'map' && (
+          <div className="bg-white rounded-lg border shadow-sm p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <MapModeToggle 
+                  isDriverMode={isDriverMode}
+                  onModeChange={setIsDriverMode}
+                />
+                <div className="text-sm text-gray-600">
+                  Switch between job type view and driver assignment view
+                </div>
+              </div>
+              <div className="w-80">
+                <MapLegend 
+                  isDriverMode={isDriverMode}
+                  filteredJobsCount={filterJobs(allJobs).length}
+                  availableDrivers={drivers}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
           {activeTab === 'custom' && (
@@ -788,6 +817,8 @@ const JobsPage: React.FC = () => {
                   jobType={selectedJobType}
                   status={selectedStatus}
                   selectedDate={selectedDate}
+                  isDriverMode={isDriverMode}
+                  onMapModeChange={setIsDriverMode}
                 />
               </JobsMapErrorBoundary>
             </div>
