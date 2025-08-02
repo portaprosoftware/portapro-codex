@@ -141,7 +141,7 @@ export function AddPinSlider({
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // Add address marker if coordinates exist
+    // Add address marker if coordinates exist (only once during initialization)
     const markerCoords = serviceLocation?.gps_coordinates?.x && serviceLocation?.gps_coordinates?.y ? [serviceLocation.gps_coordinates.x, serviceLocation.gps_coordinates.y] as [number, number] : addressCoordinates;
     if (markerCoords) {
       addressMarker.current = new mapboxgl.Marker({
@@ -153,20 +153,26 @@ export function AddPinSlider({
         `)).addTo(map.current);
     }
 
-    // Add click handler for dropping pins (only when pin mode is active)
-    map.current.on('click', e => {
-      if (!isPinModeActive) return;
-      const {
-        lng,
-        lat
-      } = e.lngLat;
+    return () => {
+      // Cleanup handled in handleClose
+    };
+  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle]);
 
-      // Remove existing marker
+  // Separate useEffect for handling pin mode click events
+  useEffect(() => {
+    if (!map.current) return;
+
+    // Add click handler for dropping pins (only when pin mode is active)
+    const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+      if (!isPinModeActive) return;
+      const { lng, lat } = e.lngLat;
+
+      // Remove existing red marker
       if (currentMarker.current) {
         currentMarker.current.remove();
       }
 
-      // Add new marker
+      // Add new red marker
       currentMarker.current = new mapboxgl.Marker({
         color: '#ef4444'
       }).setLngLat([lng, lat]).addTo(map.current!);
@@ -178,11 +184,16 @@ export function AddPinSlider({
         longitude: lng
       }));
       setIsPinModeActive(false);
-    });
-    return () => {
-      // Cleanup handled in handleClose
     };
-  }, [isOpen, mapboxToken, serviceLocation, addressCoordinates, fullAddress, mapStyle, isPinModeActive]);
+
+    map.current.on('click', handleMapClick);
+
+    return () => {
+      if (map.current) {
+        map.current.off('click', handleMapClick);
+      }
+    };
+  }, [isPinModeActive]);
 
   // Reset coordinates when modal reopens
   useEffect(() => {
