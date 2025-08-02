@@ -107,23 +107,37 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
 
       console.log('Enhanced PDF generated successfully:', data.metadata);
 
-      // Create a blob from the HTML content and trigger download
-      const htmlBlob = new Blob([data.htmlContent], { type: 'text/html' });
-      const url = URL.createObjectURL(htmlBlob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      
-      // Generate filename with filter context
-      const timestamp = new Date().toISOString().split('T')[0];
-      const presetName = filterContext.presetName ? `-${filterContext.presetName.replace(/\s+/g, '-')}` : '';
-      const fileName = `jobs-report${presetName}-${timestamp}.html`;
-      
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // Check if we received PDF data or HTML
+      if (data.pdfUrl) {
+        // PDF was generated successfully - trigger download
+        const link = document.createElement('a');
+        link.href = data.pdfUrl;
+        
+        const timestamp = new Date().toISOString().split('T')[0];
+        const presetName = filterContext.presetName ? `-${filterContext.presetName.replace(/\s+/g, '-')}` : '';
+        const fileName = `jobs-report${presetName}-${timestamp}.pdf`;
+        
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else if (data.htmlContent) {
+        // Fallback to HTML if PDF generation failed
+        const htmlBlob = new Blob([data.htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(htmlBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        
+        const timestamp = new Date().toISOString().split('T')[0];
+        const fileName = `jobs-report-${timestamp}.html`;
+        
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
 
       toast({
         title: 'Enhanced PDF Generated',

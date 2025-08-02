@@ -10,7 +10,8 @@ import { Card } from '@/components/ui/card';
 import { FilterChipBar } from './FilterChipBar';
 import { SavePresetModal } from './SavePresetModal';
 import { EnhancedPDFExport } from './EnhancedPDFExport';
-import { useFilterPresets, FilterData } from '@/hooks/useFilterPresets';
+import { SavedPresets } from './SavedPresets';
+import { useFilterPresets, FilterData, FilterPreset } from '@/hooks/useFilterPresets';
 import { useToast } from '@/hooks/use-toast';
 import {
   Collapsible,
@@ -125,6 +126,22 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
     });
   };
 
+  const handleApplyPreset = (preset: FilterPreset) => {
+    const { dateRange, searchTerm, selectedDriver, selectedJobType, selectedStatus } = preset.filter_data;
+    
+    // Apply all filters from the preset
+    if (dateRange) onDateRangeChange(dateRange);
+    if (searchTerm) onSearchTermChange(searchTerm);
+    if (selectedDriver) onDriverChange(selectedDriver);
+    if (selectedJobType) onJobTypeChange(selectedJobType);
+    if (selectedStatus) onStatusChange(selectedStatus);
+    
+    toast({
+      title: 'Preset Applied',
+      description: `Applied "${preset.name}" filter preset.`,
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Filter Chip Bar */}
@@ -164,7 +181,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
             disabled={resultsCount === 0}
           >
             <Download className="h-4 w-4 mr-2" />
-            Basic PDF ({resultsCount})
+            CSV Export ({resultsCount})
           </Button>
           
           <EnhancedPDFExport
@@ -176,20 +193,33 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
         </div>
 
         <CollapsibleContent>
-          <Card className="p-6 space-y-6 mt-4">
-            {/* Quick Range Buttons */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+            {/* Saved Presets */}
+            <SavedPresets 
+              onApplyPreset={handleApplyPreset}
+              className="lg:col-span-1"
+            />
+
+            {/* Main Filters */}
+            <Card className="p-6 space-y-6 lg:col-span-2">
+            {/* Quick Range Buttons with Counts */}
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-muted-foreground">Quick Date Ranges</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {quickRanges.map((quickRange) => (
                   <Button
                     key={quickRange.label}
                     variant="outline"
                     size="sm"
                     onClick={() => onDateRangeChange(quickRange.range)}
-                    className="text-xs"
+                    className="text-xs justify-start h-auto py-3 px-4"
                   >
-                    {quickRange.label}
+                    <div className="text-left">
+                      <div className="font-medium">{quickRange.label}</div>
+                      <div className="text-muted-foreground text-xs">
+                        Click to filter
+                      </div>
+                    </div>
                   </Button>
                 ))}
               </div>
@@ -315,7 +345,8 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                 </SelectContent>
               </Select>
             </div>
-          </Card>
+            </Card>
+          </div>
         </CollapsibleContent>
       </Collapsible>
 

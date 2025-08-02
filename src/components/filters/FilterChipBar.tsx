@@ -91,9 +91,14 @@ export const FilterChipBar: React.FC<FilterChipBarProps> = ({
   if (!hasActiveFilters) {
     return (
       <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
-        <span className="text-sm text-muted-foreground">
-          Showing all {totalCount} jobs
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-lg font-semibold text-foreground">
+            {totalCount} Total Jobs
+          </span>
+          <span className="text-sm text-muted-foreground">
+            All jobs across all dates
+          </span>
+        </div>
       </div>
     );
   }
@@ -156,15 +161,21 @@ export const FilterChipBar: React.FC<FilterChipBarProps> = ({
       </div>
 
       {/* Results Summary and Actions */}
-      <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
+      <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg border border-primary/20">
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">
-            Showing {resultsCount} of {totalCount} jobs
+          <span className="text-lg font-semibold text-foreground">
+            {resultsCount} Jobs Found
           </span>
           
+          {dateRange && (
+            <span className="text-sm text-muted-foreground">
+              {formatDateRange(dateRange)}
+            </span>
+          )}
+          
           {resultsCount !== totalCount && (
-            <span className="text-xs text-muted-foreground">
-              ({totalCount - resultsCount} filtered out)
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+              {totalCount - resultsCount} filtered out
             </span>
           )}
         </div>
