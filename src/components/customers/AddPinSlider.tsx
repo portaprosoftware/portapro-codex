@@ -47,6 +47,7 @@ export function AddPinSlider({
   const [formData, setFormData] = useState({
     point_name: '',
     description: '',
+    category: 'service_location', // Add required category field
     latitude: null as number | null,
     longitude: null as number | null
   });
@@ -262,6 +263,7 @@ export function AddPinSlider({
         service_location_id: serviceLocation.id,
         point_name: formData.point_name,
         description: formData.description || null,
+        category: formData.category,
         latitude: formData.latitude,
         longitude: formData.longitude
       });
@@ -300,6 +302,7 @@ export function AddPinSlider({
     setFormData({
       point_name: '',
       description: '',
+      category: 'service_location',
       latitude: null,
       longitude: null
     });
