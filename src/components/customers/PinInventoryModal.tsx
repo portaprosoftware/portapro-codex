@@ -24,7 +24,7 @@ interface PinInventoryModalProps {
 export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName, onInventoryUpdated }: PinInventoryModalProps) {
   const [assignments, setAssignments] = useState<InventoryAssignment[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('assign');
+  const [activeTab, setActiveTab] = useState('current');
   const { toast } = useToast();
 
   const handleSaveAssignments = async () => {
@@ -74,7 +74,7 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
 
   const handleClose = () => {
     setAssignments([]);
-    setActiveTab('assign');
+    setActiveTab('current');
     onOpenChange(false);
   };
 
@@ -97,15 +97,30 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="current" className="flex items-center gap-2">
+              <List className="w-4 h-4" />
+              Saved Template Inventory Items
+            </TabsTrigger>
             <TabsTrigger value="assign" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
               Add Template Items
             </TabsTrigger>
-            <TabsTrigger value="current" className="flex items-center gap-2">
-              <List className="w-4 h-4" />
-              Template Items
-            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="current" className="flex-1 mt-6">
+            <div className="h-full overflow-hidden">
+              <AssignedInventoryList
+                coordinateId={coordinateId}
+                onDelete={() => onInventoryUpdated?.()}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+              <Button variant="outline" onClick={handleClose}>
+                Close
+              </Button>
+            </div>
+          </TabsContent>
 
           <TabsContent value="assign" className="flex-1 mt-6">
             <div className="space-y-4 h-full flex flex-col">
@@ -128,21 +143,6 @@ export function PinInventoryModal({ isOpen, onOpenChange, coordinateId, pinName,
                   Cancel
                 </Button>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="current" className="flex-1 mt-6">
-            <div className="h-full overflow-hidden">
-              <AssignedInventoryList
-                coordinateId={coordinateId}
-                onDelete={() => onInventoryUpdated?.()}
-              />
-            </div>
-            
-            <div className="flex justify-end gap-2 pt-4 border-t mt-4">
-              <Button variant="outline" onClick={handleClose}>
-                Close
-              </Button>
             </div>
           </TabsContent>
         </Tabs>
