@@ -125,6 +125,8 @@ export function useCreateJob() {
 
   return useMutation({
     mutationFn: async (jobData: JobWizardData) => {
+      // Create a serializable copy to avoid DataCloneError
+      const serializedJobData = JSON.parse(JSON.stringify(jobData));
       // Get company settings for job numbering
       const { data: companySettings } = await supabase
         .from('company_settings')
@@ -135,7 +137,7 @@ export function useCreateJob() {
       let jobNumber = 'TEMP-001';
       let nextNumberField = '';
       
-      switch (jobData.job_type) {
+      switch (serializedJobData.job_type) {
         case 'delivery':
           jobNumber = `${companySettings?.delivery_prefix || 'DEL'}-${String(companySettings?.next_delivery_number || 1).padStart(3, '0')}`;
           nextNumberField = 'next_delivery_number';
@@ -149,6 +151,8 @@ export function useCreateJob() {
           nextNumberField = 'next_service_number';
           break;
         case 'on-site-survey':
+          // Map to 'service' type for database constraint compliance
+          serializedJobData.job_type = 'service';
           jobNumber = `SURVEY-${String(companySettings?.next_service_number || 1).padStart(3, '0')}`;
           nextNumberField = 'next_service_number';
           break;
@@ -158,16 +162,16 @@ export function useCreateJob() {
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
-          customer_id: jobData.customer_id!,
-          job_type: jobData.job_type!,
+          customer_id: serializedJobData.customer_id!,
+          job_type: serializedJobData.job_type!,
           job_number: jobNumber,
-          scheduled_date: jobData.scheduled_date!,
-          scheduled_time: jobData.scheduled_time || null,
+          scheduled_date: serializedJobData.scheduled_date!,
+          scheduled_time: serializedJobData.scheduled_time || null,
           status: 'assigned',
-          timezone: jobData.timezone || 'America/New_York',
-          notes: jobData.notes || '',
-          special_instructions: jobData.special_instructions || '',
-          selected_coordinate_ids: jobData.selected_coordinate_ids || [],
+          timezone: serializedJobData.timezone || 'America/New_York',
+          notes: serializedJobData.notes || '',
+          special_instructions: serializedJobData.special_instructions || '',
+          selected_coordinate_ids: serializedJobData.selected_coordinate_ids || [],
         })
         .select()
         .single();
@@ -212,12 +216,15 @@ export function useUpdateJobStatus() {
 
   return useMutation({
     mutationFn: async ({ jobId, status }: { jobId: string; status: string }) => {
+      // Use ISO string to avoid DataCloneError
+      const updateData = { 
+        status,
+        updated_at: new Date().toISOString()
+      };
+      
       const { data, error } = await supabase
         .from('jobs')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', jobId)
         .select()
         .single();

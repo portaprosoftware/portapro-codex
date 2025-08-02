@@ -25,6 +25,7 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [tokenLoading, setTokenLoading] = useState(true);
   const [selectedPin, setSelectedPin] = useState<any>(null);
@@ -131,6 +132,10 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
     }
 
     return () => {
+      // Clear markers before removing map
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+      
       if (map.current) {
         map.current.remove();
         map.current = null;
@@ -148,8 +153,8 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       jobsError
     });
 
-    if (!map.current) {
-      console.log('Map not initialized yet');
+    if (!map.current || !map.current.loaded()) {
+      console.log('Map not ready yet');
       return;
     }
 
@@ -163,24 +168,22 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
       return;
     }
 
-    if (!jobs || jobs.length === 0) {
-      console.log('No jobs data available:', { 
-        jobs: jobs,
-        hasJobs: !!jobs,
-        jobsLength: jobs?.length,
-        isArray: Array.isArray(jobs)
-      });
-      return;
-    }
+    console.log('READY TO MANAGE PINS');
 
-    console.log('READY TO ADD PINS - All conditions met!');
-    console.log('Starting to add pins for', jobs.length, 'jobs');
-
-    const addPins = async () => {
+    const managePins = async () => {
       try {
-        // Clear existing markers first
-        const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
-        existingMarkers.forEach(marker => marker.remove());
+        // Clear existing markers properly
+        markersRef.current.forEach(marker => marker.remove());
+        markersRef.current = [];
+        console.log('Cleared existing markers');
+
+        // If no jobs, stop here (pins are cleared)
+        if (!jobs || jobs.length === 0) {
+          console.log('No jobs to display pins for');
+          return;
+        }
+
+        console.log('Starting to add pins for', jobs.length, 'jobs');
 
         // Get service locations for customers
         const customerIds = [...new Set(jobs.map(job => job.customer_id))];
@@ -254,6 +257,9 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
               .setLngLat([lng, lat])
               .addTo(map.current!);
 
+            // Store marker reference for proper cleanup
+            markersRef.current.push(marker);
+
             // Add click handler with simplified data
             marker.getElement().addEventListener('click', () => {
               const pinData = {
@@ -288,17 +294,12 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
           console.log('Map bounds fitted to show all pins');
         }
       } catch (error) {
-        console.error('Error adding job pins:', error);
+        console.error('Error managing job pins:', error);
       }
     };
 
-    // Wait for map to be loaded before adding pins
-    if (map.current.loaded()) {
-      addPins();
-    } else {
-      map.current.on('load', addPins);
-    }
-  }, [jobs]);
+    managePins();
+  }, [jobs, selectedDate]);
 
   const handleTokenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
