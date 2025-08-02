@@ -37,7 +37,6 @@ const serviceLocationSchema = z.object({
   onsite_contact_name: z.string().optional(),
   onsite_contact_phone: z.string().optional(),
   is_active: z.boolean().default(true),
-  is_default: z.boolean().default(false),
 });
 
 type ServiceLocationForm = z.infer<typeof serviceLocationSchema>;
@@ -84,43 +83,11 @@ export function AddServiceLocationModal({
       onsite_contact_name: '',
       onsite_contact_phone: '',
       is_active: true,
-      is_default: false,
     },
   });
 
-  // If this is the first location, automatically set it as default
-  useEffect(() => {
-    if (isOpen && locationCount === 0) {
-      form.setValue('is_default', true);
-    }
-  }, [isOpen, locationCount, form]);
-
   const onSubmit = async (data: ServiceLocationForm) => {
     try {
-      // If this is the first location, it must be default
-      if (locationCount === 0) {
-        data.is_default = true;
-      }
-
-      // If setting this location as default, first remove default status from all other locations
-      if (data.is_default) {
-        const { error: updateError } = await supabase
-          .from('customer_service_locations')
-          .update({ is_default: false })
-          .eq('customer_id', customerId)
-          .eq('is_default', true);
-
-        if (updateError) {
-          console.error('Error updating existing default locations:', updateError);
-          toast({
-            title: "Error",
-            description: "Failed to update existing locations. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-
       const { error } = await supabase
         .from('customer_service_locations')
         .insert({
@@ -136,7 +103,7 @@ export function AddServiceLocationModal({
           contact_person: data.onsite_contact_name,
           contact_phone: data.onsite_contact_phone,
           is_active: data.is_active,
-          is_default: data.is_default,
+          is_default: false, // Never default - only the customer service address is default
         });
 
       if (error) throw error;
@@ -330,28 +297,6 @@ export function AddServiceLocationModal({
                       />
                     </FormControl>
                     <FormLabel>Active Location</FormLabel>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="is_default"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={locationCount === 0} // First location must be default
-                      />
-                    </FormControl>
-                    <FormLabel>
-                      Set as Default Location
-                      {locationCount === 0 && (
-                        <span className="text-xs text-muted-foreground ml-1">(required for first location)</span>
-                      )}
-                    </FormLabel>
                   </FormItem>
                 )}
               />

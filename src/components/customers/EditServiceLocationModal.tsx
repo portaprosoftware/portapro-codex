@@ -1,6 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,16 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -44,10 +32,9 @@ const serviceLocationSchema = z.object({
   state: z.string().min(1, 'State is required'),
   zip: z.string().min(1, 'ZIP code is required'),
   access_instructions: z.string().optional(),
-  onsite_contact_name: z.string().optional(),
-  onsite_contact_phone: z.string().optional(),
+  contact_person: z.string().optional(),
+  contact_phone: z.string().optional(),
   is_active: z.boolean().default(true),
-  is_default: z.boolean().default(false),
 });
 
 type ServiceLocationForm = z.infer<typeof serviceLocationSchema>;
@@ -66,25 +53,9 @@ export function EditServiceLocationModal({
   onSuccess 
 }: EditServiceLocationModalProps) {
   const { toast } = useToast();
-  const [showDefaultConfirmation, setShowDefaultConfirmation] = useState(false);
-  const [pendingFormData, setPendingFormData] = useState<ServiceLocationForm | null>(null);
   
   const form = useForm<ServiceLocationForm>({
     resolver: zodResolver(serviceLocationSchema),
-  });
-
-  // Get total location count for this customer
-  const { data: locationCount = 0 } = useQuery({
-    queryKey: ['customer-service-locations-count', location?.customer_id],
-    queryFn: async () => {
-      if (!location?.customer_id) return 0;
-      const { count } = await supabase
-        .from('customer_service_locations')
-        .select('*', { count: 'exact', head: true })
-        .eq('customer_id', location.customer_id);
-      return count || 0;
-    },
-    enabled: !!location?.customer_id && isOpen,
   });
 
   useEffect(() => {
@@ -98,36 +69,15 @@ export function EditServiceLocationModal({
         state: location.state || '',
         zip: location.zip || '',
         access_instructions: location.access_instructions || '',
-        onsite_contact_name: location.onsite_contact_name || '',
-        onsite_contact_phone: location.onsite_contact_phone || '',
+        contact_person: location.contact_person || '',
+        contact_phone: location.contact_phone || '',
         is_active: location.is_active ?? true,
-        is_default: location.is_default ?? false,
       });
     }
   }, [location, isOpen, form]);
 
-  const performUpdate = async (data: ServiceLocationForm) => {
+  const onSubmit = async (data: ServiceLocationForm) => {
     try {
-      // If setting this location as default, first remove default status from all other locations
-      if (data.is_default) {
-        const { error: updateError } = await supabase
-          .from('customer_service_locations')
-          .update({ is_default: false })
-          .eq('customer_id', location.customer_id)
-          .eq('is_default', true)
-          .neq('id', location.id); // Don't update the current location
-
-        if (updateError) {
-          console.error('Error updating existing default locations:', updateError);
-          toast({
-            title: "Error",
-            description: "Failed to update existing locations. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-
       const { error } = await supabase
         .from('customer_service_locations')
         .update(data)
@@ -148,30 +98,6 @@ export function EditServiceLocationModal({
         description: "Failed to update service location",
         variant: "destructive",
       });
-    }
-  };
-
-  const onSubmit = async (data: ServiceLocationForm) => {
-    // If this is the only location, it must be default
-    if (locationCount === 1) {
-      data.is_default = true;
-    }
-    
-    // If changing to default from non-default, show confirmation
-    if (data.is_default && !location.is_default && locationCount > 1) {
-      setPendingFormData(data);
-      setShowDefaultConfirmation(true);
-      return;
-    }
-
-    await performUpdate(data);
-  };
-
-  const handleConfirmDefaultChange = async () => {
-    if (pendingFormData) {
-      await performUpdate(pendingFormData);
-      setShowDefaultConfirmation(false);
-      setPendingFormData(null);
     }
   };
 
@@ -307,7 +233,7 @@ export function EditServiceLocationModal({
 
               <FormField
                 control={form.control}
-                name="onsite_contact_name"
+                name="contact_person"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Onsite Contact Name</FormLabel>
@@ -321,7 +247,7 @@ export function EditServiceLocationModal({
 
               <FormField
                 control={form.control}
-                name="onsite_contact_phone"
+                name="contact_phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Onsite Contact Phone</FormLabel>
@@ -351,28 +277,6 @@ export function EditServiceLocationModal({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="is_default"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={location.is_locked || locationCount === 1} // Can't change if locked or only location
-                      />
-                    </FormControl>
-                    <FormLabel>
-                      Set as Default Location
-                      {locationCount === 1 && (
-                        <span className="text-xs text-muted-foreground ml-1">(only location must be default)</span>
-                      )}
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
             </div>
 
             <div className="flex justify-end gap-3 pt-6">
@@ -390,40 +294,6 @@ export function EditServiceLocationModal({
           </form>
         </Form>
       </DialogContent>
-
-      {/* Default Location Change Confirmation */}
-      <AlertDialog open={showDefaultConfirmation} onOpenChange={setShowDefaultConfirmation}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Change Default Service Location</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>
-                Are you sure you want to make "{pendingFormData?.location_name}" the default service location for this customer?
-              </p>
-              <p className="text-yellow-600 font-medium">
-                ⚠️ This will remove the default status from the current default location.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                The default service location is used for job scheduling and determines the primary physical address for this customer.
-              </p>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setShowDefaultConfirmation(false);
-              setPendingFormData(null);
-            }}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirmDefaultChange}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Yes, Change Default
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Dialog>
   );
 }
