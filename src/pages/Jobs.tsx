@@ -64,29 +64,31 @@ const JobsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast: showToast } = useToast();
 
-  // Smart job search for cross-date navigation
-  const { data: foundJob } = useJobSearch(searchTerm.length > 2 ? searchTerm : undefined);
+  // Smart job search for cross-date navigation - only for job-like search terms
+  const searchLooksLikeJobId = searchTerm.length > 4 && (searchTerm.includes('-') || /^\w{3,}-?\d/.test(searchTerm));
+  const { data: foundJob } = useJobSearch(searchLooksLikeJobId ? searchTerm : undefined);
 
   // Handle smart job search and date navigation
   const handleSmartSearch = useCallback((jobId: string) => {
-    if (!foundJob) return;
+    if (!foundJob || !searchLooksLikeJobId) return;
     
     const jobDate = new Date(foundJob.scheduled_date);
-    const currentDate = selectedDate;
+    const currentDateStr = formatDateForQuery(selectedDate);
+    const jobDateStr = formatDateForQuery(jobDate);
     
-    // If job is found but not on current date, navigate to that date
-    if (formatDateForQuery(jobDate) !== formatDateForQuery(currentDate)) {
+    // Only navigate if job is found on a different date
+    if (jobDateStr !== currentDateStr) {
       setSelectedDate(jobDate);
       toast.success(`Found job ${foundJob.job_number} on ${format(jobDate, 'MMM d, yyyy')} - navigating...`);
     }
-  }, [foundJob, selectedDate, toast]);
+  }, [foundJob, selectedDate, searchLooksLikeJobId, toast]);
 
-  // Trigger smart search when a job is found
+  // Trigger smart search when a complete job ID is found
   useEffect(() => {
-    if (foundJob && searchTerm.length > 2 && activeTab !== 'custom') {
+    if (foundJob && searchLooksLikeJobId && activeTab !== 'custom') {
       handleSmartSearch(searchTerm);
     }
-  }, [foundJob, searchTerm, handleSmartSearch, activeTab]);
+  }, [foundJob, searchTerm, handleSmartSearch, activeTab, searchLooksLikeJobId]);
 
   // Mutation to update job assignment
   const updateJobAssignmentMutation = useMutation({
