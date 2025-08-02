@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { GPSDropPinsSection } from './GPSDropPinsSection';
 import { MapPin, Navigation } from 'lucide-react';
 
 interface ServiceLocationTabProps {
@@ -34,7 +33,10 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
           </TabsContent>
 
           <TabsContent value="coordinates" className="mt-6">
-            <GPSDropPinsSection customerId={customerId} />
+            <div className="text-center text-muted-foreground py-8">
+              <Navigation className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>GPS Drop-Pins section will be rebuilt here</p>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
