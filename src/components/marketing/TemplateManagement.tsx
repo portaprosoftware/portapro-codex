@@ -289,7 +289,7 @@ export const TemplateManagement: React.FC = () => {
             </SheetHeader>
             <div className="mt-6">
               <CreateTemplateModal 
-                isOpen={true} 
+                isOpen={false} 
                 onClose={() => setShowCreateModal(false)} 
                 isSlider={true}
               />

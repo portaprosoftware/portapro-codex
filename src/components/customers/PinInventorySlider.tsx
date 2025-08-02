@@ -84,7 +84,10 @@ export function PinInventorySlider({ isOpen, onClose, coordinateId, pinName, onI
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl w-full h-[90vh] p-0">
+      <DialogContent className="max-w-4xl w-full h-[90vh] p-0" aria-describedby="pin-inventory-description">
+        <div id="pin-inventory-description" className="sr-only">
+          Manage inventory template assignments for the selected GPS pin location
+        </div>
         <DialogHeader className="p-6 border-b">
           <div className="flex items-center gap-3">
             <Package className="w-6 h-6 text-primary" />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { X, Plus } from 'lucide-react';
 import { JobWizardProvider, useJobWizard } from '@/contexts/JobWizardContext';
 import { WizardNavigation } from './WizardNavigation';
@@ -123,17 +124,20 @@ function WizardContent({ onClose }: { onClose: () => void }) {
 }
 
 export function NewJobWizard({ open, onOpenChange }: NewJobWizardProps) {
-  if (!open) return null;
-
   const handleClose = () => {
     onOpenChange(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <JobWizardProvider>
-        <WizardContent onClose={handleClose} />
-      </JobWizardProvider>
-    </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0" aria-describedby="new-job-wizard-description">
+        <div id="new-job-wizard-description" className="sr-only">
+          Create a new job by following the wizard steps
+        </div>
+        <JobWizardProvider>
+          <WizardContent onClose={handleClose} />
+        </JobWizardProvider>
+      </DialogContent>
+    </Dialog>
   );
 }

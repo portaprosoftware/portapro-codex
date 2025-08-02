@@ -35,7 +35,10 @@ interface PinsMapSliderProps {
 export function PinsMapSlider({ isOpen, onClose, pins, selectedLocation, onPinClick }: PinsMapSliderProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
+      <DialogContent className="max-w-6xl w-full h-[90vh] p-0" aria-describedby="pins-map-description">
+        <div id="pins-map-description" className="sr-only">
+          View and interact with GPS pins on an interactive map
+        </div>
         <DialogHeader className="p-4 border-b">
           <div className="flex items-center gap-3">
             <MapPin className="w-6 h-6 text-primary" />

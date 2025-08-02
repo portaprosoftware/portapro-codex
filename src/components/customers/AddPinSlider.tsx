@@ -416,7 +416,10 @@ export function AddPinSlider({
   };
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-7xl w-full h-[95vh] p-0">
+      <DialogContent className="max-w-7xl w-full h-[95vh] p-0" aria-describedby="add-pin-description">
+        <div id="add-pin-description" className="sr-only">
+          Add a new GPS coordinate pin for the selected service location
+        </div>
         <DialogHeader className="p-6 border-b">
           <div className="flex items-center gap-3">
             <Plus className="w-6 h-6 text-primary" />
