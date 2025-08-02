@@ -148,7 +148,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     }
   }, [mapStyle]);
 
-  // Fetch service locations separately
+  // Fetch service locations and coordinates separately
   useEffect(() => {
     const fetchServiceLocations = async () => {
       try {
@@ -166,6 +166,26 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     fetchServiceLocations();
   }, []);
 
+  // Fetch coordinate data for jobs with selected coordinate IDs
+  const [coordinateData, setCoordinateData] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const fetchCoordinateData = async () => {
+      try {
+        const { data: coordData } = await supabase
+          .from('service_location_coordinates')
+          .select('id, service_location_id, latitude, longitude');
+
+        setCoordinateData(coordData || []);
+      } catch (error) {
+        console.error('Coordinate data fetch error:', error);
+        setCoordinateData([]);
+      }
+    };
+
+    fetchCoordinateData();
+  }, []);
+
   // Create pins with enhanced styling based on mode
   useEffect(() => {
     if (!map.current || !filteredJobs.length) return;
@@ -181,6 +201,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     const jobsByLocation = new Map();
     
     filteredJobs.forEach(job => {
+      // First, try to find location with GPS coordinates
       const location = serviceLocations.find(loc => 
         loc.customer_id === job.customer_id && 
         loc.gps_coordinates
@@ -191,21 +212,47 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
         if (!jobsByLocation.has(key)) {
           jobsByLocation.set(key, {
             location,
-            jobs: []
+            jobs: [],
+            coordinateType: 'service_location'
           });
         }
         jobsByLocation.get(key).jobs.push(job);
+      } else if (job.selected_coordinate_ids && job.selected_coordinate_ids.length > 0) {
+        // If no service location GPS, look for selected coordinates
+        const selectedCoordId = job.selected_coordinate_ids[0]; // Use first coordinate
+        const coordinate = coordinateData.find(coord => coord.id === selectedCoordId);
+        
+        if (coordinate?.latitude && coordinate?.longitude) {
+          const key = `${job.customer_id}-coord-${coordinate.latitude},${coordinate.longitude}`;
+          if (!jobsByLocation.has(key)) {
+            jobsByLocation.set(key, {
+              coordinate: coordinate,
+              jobs: [],
+              coordinateType: 'selected_coordinate'
+            });
+          }
+          jobsByLocation.get(key).jobs.push(job);
+        }
       }
     });
 
     // Create pins for each location
-    jobsByLocation.forEach(({ location, jobs }) => {
-      // Parse coordinates from string format "(-81.83824,41.36749)"
-      const coordStr = location.gps_coordinates.replace(/[()]/g, '');
-      const [lng, lat] = coordStr.split(',').map(parseFloat);
-      const coordinates: [number, number] = [lng, lat];
+    jobsByLocation.forEach(({ location, coordinate, jobs, coordinateType }) => {
+      let coordinates: [number, number];
+      
+      if (coordinateType === 'service_location' && location?.gps_coordinates) {
+        // Parse coordinates from string format "(-81.83824,41.36749)"
+        const coordStr = location.gps_coordinates.replace(/[()]/g, '');
+        const [lng, lat] = coordStr.split(',').map(parseFloat);
+        coordinates = [lng, lat];
+      } else if (coordinateType === 'selected_coordinate' && coordinate) {
+        // Use coordinate data directly
+        coordinates = [coordinate.longitude, coordinate.latitude];
+      } else {
+        return; // Skip if no valid coordinates
+      }
 
-      if (!coordinates || isNaN(lng) || isNaN(lat)) return;
+      if (!coordinates || isNaN(coordinates[0]) || isNaN(coordinates[1])) return;
 
       hasCoordinates = true;
       bounds.extend(coordinates);
