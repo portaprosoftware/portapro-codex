@@ -640,12 +640,27 @@
   z-index: 100 !important;
 }
 
+/* Force map canvas and container to low z-index */
+.mapboxgl-canvas-container,
+.mapboxgl-canvas {
+  z-index: 1 !important;
+}
+
+.mapboxgl-map {
+  z-index: 1 !important;
+}
+
 /* Ensure modals and dialogs have higher z-index than map markers */
 [data-radix-popper-content-wrapper],
 [data-radix-dialog-overlay],
 [data-radix-dialog-content],
 [data-vaul-drawer-wrapper] {
-  z-index: 1000 !important;
+  z-index: 9000 !important;
+}
+
+/* Additional dialog portal enforcement */
+[data-radix-portal] {
+  z-index: 9000 !important;
 }
 
 /* Make sure dropdown menus appear above map elements */

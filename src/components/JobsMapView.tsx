@@ -356,7 +356,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
 
   return (
     <div className="relative w-full h-full">{/* Remove fixed 400px height */}
-      <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
+      <div ref={mapContainer} style={{ width: '100%', height: '100%', zIndex: 1 }} />
       
       {/* Map Style Toggle */}
       <div className="absolute top-4 left-4 z-20">
