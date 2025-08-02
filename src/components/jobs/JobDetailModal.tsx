@@ -202,6 +202,29 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     },
   });
 
+  // Priority update mutation
+  const priorityMutation = useMutation({
+    mutationFn: async ({ is_priority }: { is_priority: boolean }) => {
+      if (!jobId) throw new Error('No job ID');
+      
+      const { error } = await supabase
+        .from('jobs')
+        .update({ is_priority })
+        .eq('id', jobId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      toast.success(job?.is_priority ? 'Priority removed' : 'Job marked as priority');
+    },
+    onError: (error) => {
+      toast.error('Failed to update priority status');
+      console.error('Priority update error:', error);
+    },
+  });
+
   const handleStartJob = () => {
     const newStatus = job?.status === 'assigned' ? 'in-progress' : 'completed';
     statusUpdateMutation.mutate({ status: newStatus });
@@ -215,6 +238,10 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   const handleCancelJob = () => {
     statusUpdateMutation.mutate({ status: 'cancelled' });
     setShowCancelDialog(false);
+  };
+
+  const handleTogglePriority = () => {
+    priorityMutation.mutate({ is_priority: !(job as any)?.is_priority });
   };
 
   const getJobButtonText = () => {
@@ -263,14 +290,30 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         {/* Action Buttons Row */}
         <div className="flex-shrink-0 flex items-center justify-end gap-2 py-3 px-1 border-b">
           {!isEditing && (
-            <Button
-              onClick={() => setIsEditing(true)}
-              size="sm"
-              variant="outline"
-            >
-              <Edit2 className="w-4 h-4 mr-1" />
-              Edit
-            </Button>
+            <>
+              <Button
+                onClick={handleTogglePriority}
+                disabled={priorityMutation.isPending}
+                size="sm"
+                className={
+                  (job as any)?.is_priority 
+                    ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold"
+                    : "border-yellow-500 text-yellow-600 hover:bg-yellow-50"
+                }
+                variant={(job as any)?.is_priority ? "default" : "outline"}
+              >
+                <Star className="w-4 h-4 mr-1" />
+                {(job as any)?.is_priority ? 'Priority' : 'Mark Priority'}
+              </Button>
+              <Button
+                onClick={() => setIsEditing(true)}
+                size="sm"
+                variant="outline"
+              >
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </>
           )}
           {isEditing && (
             <>
@@ -636,39 +679,6 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                   </CardContent>
                 </Card>
 
-                {/* Priority Toggle */}
-                {isEditing && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Star className="w-4 h-4" />
-                        Priority Settings
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <FormField
-                        control={form.control}
-                        name="is_priority"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                              <FormLabel className="text-base">Mark as Priority</FormLabel>
-                              <p className="text-sm text-muted-foreground">
-                                This job will be highlighted with a priority badge
-                              </p>
-                            </div>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
-                )}
               </form>
             </Form>
           )}
