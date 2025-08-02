@@ -9,6 +9,7 @@ export interface Job {
   scheduled_date: string;
   scheduled_time?: string;
   actual_completion_time?: string;
+  was_overdue?: boolean;
 }
 
 /**
@@ -19,8 +20,6 @@ export const isJobOverdue = (job: Job): boolean => {
   // Use string-based comparison to avoid timezone issues
   const today = new Date().toISOString().split('T')[0]; // Format: '2025-08-02'
   const scheduledDate = job.scheduled_date; // Should be in format: '2025-08-02'
-  
-  console.log('Overdue check:', { today, scheduledDate, isOverdue: today > scheduledDate });
   
   // Job is overdue only if today's date string is AFTER scheduled date string
   return today > scheduledDate;
@@ -104,8 +103,21 @@ export const getJobStatusConfig = () => ({
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
     label: 'Cancelled',
     color: '#6B7280'
+  },
+  priority: { 
+    gradient: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white', 
+    label: 'Priority',
+    color: '#F59E0B'
   }
 });
+
+/**
+ * Check if a job should show priority indicator
+ */
+export const shouldShowPriorityIndicator = (job: Job): boolean => {
+  // Show priority indicator if job was ever overdue and not completed
+  return Boolean(job.was_overdue && job.status !== 'completed' && job.status !== 'cancelled');
+};
 
 /**
  * Get status info for a job (returns primary display status)
@@ -118,7 +130,7 @@ export const getJobStatusInfo = (job: Job) => {
 };
 
 /**
- * Get dual status info for overdue jobs (returns both overdue and original status)
+ * Get dual status info for jobs with priority and overdue handling
  */
 export const getDualJobStatusInfo = (job: Job) => {
   const statusConfig = getJobStatusConfig();
@@ -128,15 +140,29 @@ export const getDualJobStatusInfo = (job: Job) => {
     const displayStatus = getDisplayStatus(job);
     return {
       primary: statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.completed,
-      secondary: null
+      secondary: null,
+      priority: null
     };
   }
   
-  // For non-completed jobs, check if overdue
+  // Check for priority indicator (was ever overdue)
+  const showPriority = shouldShowPriorityIndicator(job);
+  
+  // For non-completed jobs, check if currently overdue
   if ((job.status === 'assigned' || job.status === 'unassigned' || job.status === 'in-progress' || job.status === 'in_progress') && isJobOverdue(job)) {
     return {
       primary: statusConfig.overdue,
-      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned
+      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
+      priority: showPriority ? statusConfig.priority : null
+    };
+  }
+  
+  // For regular jobs that were previously overdue but now rescheduled
+  if (showPriority) {
+    return {
+      primary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
+      secondary: null,
+      priority: statusConfig.priority
     };
   }
   
@@ -144,6 +170,7 @@ export const getDualJobStatusInfo = (job: Job) => {
   const displayStatus = getDisplayStatus(job);
   return {
     primary: statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.assigned,
-    secondary: null
+    secondary: null,
+    priority: null
   };
 };

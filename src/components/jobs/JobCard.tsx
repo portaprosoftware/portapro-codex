@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw, Undo2 } from 'lucide-react';
+import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw, Undo2, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatDateSafe } from '@/lib/dateUtils';
@@ -18,6 +18,7 @@ interface JobCardProps {
     scheduled_date: string;
     scheduled_time?: string;
     actual_completion_time?: string;
+    was_overdue?: boolean;
     notes?: string;
     customers: {
       id: string;
@@ -187,6 +188,12 @@ export const JobCard: React.FC<JobCardProps> = ({
                 {statusInfo.secondary.label}
               </Badge>
             )}
+            {statusInfo.priority && (
+              <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                {statusInfo.priority.label}
+              </Badge>
+            )}
           </div>
         </div>
         
@@ -261,6 +268,12 @@ export const JobCard: React.FC<JobCardProps> = ({
             {statusInfo.secondary && (
               <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
                 {statusInfo.secondary.label}
+              </Badge>
+            )}
+            {statusInfo.priority && (
+              <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs text-center flex items-center justify-center`}>
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                {statusInfo.priority.label}
               </Badge>
             )}
           </div>

@@ -2378,6 +2378,7 @@ export type Database = {
           total_price: number | null
           updated_at: string
           vehicle_id: string | null
+          was_overdue: boolean
         }
         Insert: {
           actual_completion_time?: string | null
@@ -2408,6 +2409,7 @@ export type Database = {
           total_price?: number | null
           updated_at?: string
           vehicle_id?: string | null
+          was_overdue?: boolean
         }
         Update: {
           actual_completion_time?: string | null
@@ -2438,6 +2440,7 @@ export type Database = {
           total_price?: number | null
           updated_at?: string
           vehicle_id?: string | null
+          was_overdue?: boolean
         }
         Relationships: [
           {
@@ -6179,6 +6182,10 @@ export type Database = {
       can_delete_user: {
         Args: { user_uuid: string }
         Returns: Json
+      }
+      check_and_flag_overdue_jobs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       check_unit_availability: {
         Args: { unit_id: string; start_date: string; end_date: string }

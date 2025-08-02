@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { formatDateSafe } from '@/lib/dateUtils';
-import { MapPin, Clock, Phone, Navigation, Play, CheckCircle2 } from 'lucide-react';
+import { MapPin, Clock, Phone, Navigation, Play, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,6 +24,7 @@ interface Job {
   driver_id?: string;
   assigned_template_ids?: any;
   default_template_id?: string;
+  was_overdue?: boolean;
   customers: {
     name?: string;
   } | null;
@@ -124,6 +125,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
               {statusInfo.secondary && (
                 <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full text-xs`}>
                   {statusInfo.secondary.label}
+                </Badge>
+              )}
+              {statusInfo.priority && (
+                <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-medium px-2 py-0.5 rounded-full text-xs`}>
+                  <AlertTriangle className="w-3 h-3 mr-1" />
+                  {statusInfo.priority.label}
                 </Badge>
               )}
             </div>
