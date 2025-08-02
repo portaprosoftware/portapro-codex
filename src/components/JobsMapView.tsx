@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, ExternalLink, Satellite, Map as MapIcon } from 'lucide-react';
+import { X, ExternalLink, Satellite, Map as MapIcon, Radar } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
@@ -35,6 +35,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
+  const [radarEnabled, setRadarEnabled] = useState(false);
 
   // Use the same data fetching as other views - this ensures data consistency
   const formatDateForQuery = (date: Date) => {
@@ -378,6 +379,19 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
           >
             <Satellite className="w-4 h-4 mr-1.5" />
             Satellite
+          </Button>
+        </div>
+        
+        {/* Radar Toggle */}
+        <div className="mt-2 bg-white p-1 rounded-lg shadow-lg border">
+          <Button
+            variant={radarEnabled ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setRadarEnabled(!radarEnabled)}
+            className="h-8 px-3 text-sm font-medium w-full"
+          >
+            <Radar className="w-4 h-4 mr-1.5" />
+            Radar
           </Button>
         </div>
       </div>
