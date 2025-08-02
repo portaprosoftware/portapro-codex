@@ -367,128 +367,95 @@ const JobsMapView: React.FC<JobsMapViewProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full w-full">
-      {/* Map Container */}
-      <div className="relative flex-1 w-full">{/* Map view - date controlled by unified filter bar */}
+    <div className="relative h-full w-full">{/* Map view - date controlled by unified filter bar */}
 
-        <div 
-          ref={mapContainer} 
-          className="w-full h-full min-h-[400px]"
-          style={{ height: '100%', width: '100%' }}
-        />
-        
-        {/* Selected pin details */}
-        {selectedPin && (
-          <Card className="absolute top-4 right-4 w-80 max-h-96 overflow-y-auto">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-semibold">{selectedPin.job_number}</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedPin(null)}
-                >
-                  ×
-                </Button>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div><strong>Customer:</strong> {selectedPin.customer_name}</div>
-                <div><strong>Type:</strong> {capitalizeWords(selectedPin.job_type)}</div>
-                <div><strong>Status:</strong> {capitalizeWords(selectedPin.status)}</div>
-                <div><strong>Location:</strong> {selectedPin.locationName}</div>
-                {selectedPin.driver_name && (
-                  <div><strong>Driver:</strong> {selectedPin.driver_name}</div>
-                )}
-                {selectedPin.vehicle_plate && (
-                  <div><strong>Vehicle:</strong> {selectedPin.vehicle_plate}</div>
-                )}
-              </div>
-
+      <div 
+        ref={mapContainer} 
+        className="w-full h-full min-h-[400px]"
+        style={{ height: '100%', width: '100%' }}
+      />
+      
+      {/* Selected pin details */}
+      {selectedPin && (
+        <Card className="absolute top-4 right-4 w-80 max-h-96 overflow-y-auto">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold">{selectedPin.job_number}</h3>
               <Button
-                onClick={() => handleNavigateToLocation(selectedPin.coordinates)}
-                className="w-full mt-4"
+                variant="ghost"
                 size="sm"
+                onClick={() => setSelectedPin(null)}
               >
-                <Navigation className="w-4 h-4 mr-2" />
-                Navigate
+                ×
               </Button>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              <div><strong>Customer:</strong> {selectedPin.customer_name}</div>
+              <div><strong>Type:</strong> {capitalizeWords(selectedPin.job_type)}</div>
+              <div><strong>Status:</strong> {capitalizeWords(selectedPin.status)}</div>
+              <div><strong>Location:</strong> {selectedPin.locationName}</div>
+              {selectedPin.driver_name && (
+                <div><strong>Driver:</strong> {selectedPin.driver_name}</div>
+              )}
+              {selectedPin.vehicle_plate && (
+                <div><strong>Vehicle:</strong> {selectedPin.vehicle_plate}</div>
+              )}
+            </div>
 
-        {/* Job count indicator */}
-        <div className="absolute bottom-4 left-4">
-          <Card>
-            <CardContent className="p-3">
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {jobs?.length || 0} jobs on {format(selectedDate, 'MMM d, yyyy')}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            <Button
+              onClick={() => handleNavigateToLocation(selectedPin.coordinates)}
+              className="w-full mt-4"
+              size="sm"
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Navigate
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Horizontal Legend Rows Below Map */}
-      <div className="bg-white border-t p-4 space-y-3">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Job Types Legend - Horizontal */}
-          <Card>
-            <CardContent className="p-3">
-              <h4 className="font-semibold text-sm mb-2">Job Types</h4>
-              <div className="flex flex-wrap gap-3 text-xs">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span>Delivery</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span>Pickup</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span>Service</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <span>Cleaning</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <span>Return</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Job Type Legend */}
+      <Card className="absolute top-4 left-4">
+        <CardContent className="p-3">
+          <h4 className="font-semibold text-sm mb-2">Job Types</h4>
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <span>Delivery</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span>Pickup</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+              <span>Service</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+              <span>Cleaning</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <span>Return</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-          {/* Job Status Legend - Horizontal */}
-          <Card>
-            <CardContent className="p-3">
-              <h4 className="font-semibold text-sm mb-2">Job Status</h4>
-              <div className="flex flex-wrap gap-3 text-xs">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span>Assigned</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <span>In Progress</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span>Completed</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-                  <span>Cancelled</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Job count indicator */}
+      <div className="absolute bottom-4 left-4">
+        <Card>
+          <CardContent className="p-3">
+            <div className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {jobs?.length || 0} jobs on {format(selectedDate, 'MMM d, yyyy')}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
