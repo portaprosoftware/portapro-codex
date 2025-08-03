@@ -98,7 +98,7 @@ export function JobTypeSchedulingStep() {
                 key={type.value}
                 className={cn(
                   "p-1 rounded-xl transition-all",
-                  state.data.job_type === type.value && "ring-2 ring-offset-2",
+                  state.data.job_type === type.value && "ring-4 ring-offset-2",
                   type.value === 'delivery' && state.data.job_type === type.value && "ring-blue-500",
                   type.value === 'pickup' && state.data.job_type === type.value && "ring-green-500",
                   type.value === 'service' && state.data.job_type === type.value && "ring-purple-500",
