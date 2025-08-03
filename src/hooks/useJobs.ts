@@ -100,7 +100,7 @@ export function useJobs(filters?: {
           *,
           customers(
             id, name, service_street, service_city, service_state,
-            customer_service_locations!customer_service_locations_customer_id_fkey(
+            customer_service_locations(
               id, gps_coordinates, is_default, location_name
             )
           ),

@@ -18,19 +18,32 @@ const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes
       retry: (failureCount, error) => {
-        // Don't retry DataCloneError - it won't fix itself
-        if (error?.name === 'DataCloneError' || error?.message?.includes('DataCloneError')) {
-          console.error('DataCloneError detected - not retrying');
+        // Don't retry DataCloneError or network request errors
+        if (error?.name === 'DataCloneError' || 
+            error?.message?.includes('DataCloneError') ||
+            error?.message?.includes('Request object could not be cloned') ||
+            error?.message?.includes('postMessage')) {
+          console.error('Non-serializable error detected - not retrying:', error?.name);
+          return false;
+        }
+        // Don't retry 400 errors (bad request) 
+        if ((error as any)?.code === '400' || (error as any)?.status === 400) {
+          console.error('Bad request error - not retrying:', error);
           return false;
         }
         return failureCount < 3;
       },
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
     },
     mutations: {
       retry: (failureCount, error) => {
-        // Don't retry DataCloneError - it won't fix itself
-        if (error?.name === 'DataCloneError' || error?.message?.includes('DataCloneError')) {
-          console.error('DataCloneError in mutation - not retrying');
+        // Don't retry DataCloneError or network request errors
+        if (error?.name === 'DataCloneError' || 
+            error?.message?.includes('DataCloneError') ||
+            error?.message?.includes('Request object could not be cloned') ||
+            error?.message?.includes('postMessage')) {
+          console.error('Non-serializable error in mutation - not retrying:', error?.name);
           return false;
         }
         return failureCount < 2;
