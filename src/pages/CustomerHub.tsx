@@ -42,17 +42,28 @@ const CustomerHub: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Fetch customers data
-  const { data: customers = [], isLoading } = useQuery({
+  const { data: customers = [], isLoading, error } = useQuery({
     queryKey: ['customers'],
     queryFn: async () => {
+      console.log('Fetching customers...');
       const { data, error } = await supabase
         .from('customers')
         .select('*')
         .order('name');
       
-      if (error) throw error;
-      return data;
-    }
+      if (error) {
+        console.error('Customer fetch error:', error);
+        throw error;
+      }
+      console.log('Customers fetched successfully:', data?.length || 0);
+      return data || [];
+    },
+    retry: (failureCount, error) => {
+      console.log('Query retry attempt:', failureCount, error);
+      return failureCount < 2;
+    },
+    retryDelay: 1000,
+    staleTime: 30000, // 30 seconds
   });
 
   // Filter customers based on search and type
