@@ -1021,6 +1021,8 @@ export type Database = {
           coordinate_points: Json | null
           created_at: string | null
           customer_id: string
+          geocoding_attempted_at: string | null
+          geocoding_status: string | null
           gps_coordinates: unknown | null
           id: string
           image_url: string | null
@@ -1044,6 +1046,8 @@ export type Database = {
           coordinate_points?: Json | null
           created_at?: string | null
           customer_id: string
+          geocoding_attempted_at?: string | null
+          geocoding_status?: string | null
           gps_coordinates?: unknown | null
           id?: string
           image_url?: string | null
@@ -1067,6 +1071,8 @@ export type Database = {
           coordinate_points?: Json | null
           created_at?: string | null
           customer_id?: string
+          geocoding_attempted_at?: string | null
+          geocoding_status?: string | null
           gps_coordinates?: unknown | null
           id?: string
           image_url?: string | null

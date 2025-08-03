@@ -50,17 +50,29 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
       const result = await geocodeAddress(address);
       
       if (result) {
-        // Update the service location with GPS coordinates
+        // Update the service location with GPS coordinates and success status
         const { error } = await supabase
           .from('customer_service_locations')
           .update({
-            gps_coordinates: `POINT(${result.longitude} ${result.latitude})`
+            gps_coordinates: `POINT(${result.longitude} ${result.latitude})`,
+            geocoding_status: 'success',
+            geocoding_attempted_at: new Date().toISOString()
           })
           .eq('customer_id', customerId)
           .eq('is_default', true);
 
         if (error) {
           console.error('Failed to update GPS coordinates:', error);
+          // Update status to failed
+          await supabase
+            .from('customer_service_locations')
+            .update({
+              geocoding_status: 'failed',
+              geocoding_attempted_at: new Date().toISOString()
+            })
+            .eq('customer_id', customerId)
+            .eq('is_default', true);
+          
           toast({
             title: "Warning",
             description: "Customer created but GPS coordinates could not be saved.",
@@ -69,11 +81,31 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
         } else {
           console.log(`Updated GPS coordinates for customer ${customerId}: ${result.latitude}, ${result.longitude}`);
         }
+      } else {
+        // Update status to failed if geocoding returned no results
+        await supabase
+          .from('customer_service_locations')
+          .update({
+            geocoding_status: 'failed',
+            geocoding_attempted_at: new Date().toISOString()
+          })
+          .eq('customer_id', customerId)
+          .eq('is_default', true);
       }
 
       return result;
     } catch (error) {
       console.error('Geocoding failed:', error);
+      // Update status to failed on exception
+      await supabase
+        .from('customer_service_locations')
+        .update({
+          geocoding_status: 'failed',
+          geocoding_attempted_at: new Date().toISOString()
+        })
+        .eq('customer_id', customerId)
+        .eq('is_default', true);
+      
       return null;
     } finally {
       setIsGeocoding(false);
@@ -84,14 +116,15 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
     setIsGeocoding(true);
 
     try {
-      // Get locations that need geocoding
+      // Get locations that need geocoding (only those with pending status)
       const { data: locations, error: fetchError } = await supabase
         .from('customer_service_locations')
         .select('id, street, street2, city, state, zip, location_name')
         .is('gps_coordinates', null)
         .not('street', 'is', null)
         .not('city', 'is', null)
-        .not('state', 'is', null);
+        .not('state', 'is', null)
+        .in('geocoding_status', ['pending', 'failed']); // Include failed ones for retry
 
       if (fetchError) {
         throw fetchError;
@@ -124,7 +157,9 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
           const { error } = await supabase
             .from('customer_service_locations')
             .update({
-              gps_coordinates: `POINT(${result.longitude} ${result.latitude})`
+              gps_coordinates: `POINT(${result.longitude} ${result.latitude})`,
+              geocoding_status: 'success',
+              geocoding_attempted_at: new Date().toISOString()
             })
             .eq('id', location.id);
 
@@ -134,10 +169,26 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
           } else {
             failureCount++;
             console.error(`Failed to update ${location.location_name}:`, error);
+            // Mark as failed
+            await supabase
+              .from('customer_service_locations')
+              .update({
+                geocoding_status: 'failed',
+                geocoding_attempted_at: new Date().toISOString()
+              })
+              .eq('id', location.id);
           }
         } else {
           failureCount++;
           console.log(`Could not geocode ${location.location_name}: ${fullAddress}`);
+          // Mark as failed
+          await supabase
+            .from('customer_service_locations')
+            .update({
+              geocoding_status: 'failed',
+              geocoding_attempted_at: new Date().toISOString()
+            })
+            .eq('id', location.id);
         }
 
         // Add a small delay between requests to be respectful to the API
