@@ -393,10 +393,9 @@ export function SimpleJobsMapView({
       {selectedJobForModal && (
         <JobDetailModal
           jobId={selectedJobForModal}
-          isOpen={!!selectedJobForModal}
-          onClose={() => setSelectedJobForModal(null)}
-          onUpdate={() => {
-            // Refresh jobs data if needed
+          open={!!selectedJobForModal}
+          onOpenChange={(open) => {
+            if (!open) setSelectedJobForModal(null);
           }}
         />
       )}

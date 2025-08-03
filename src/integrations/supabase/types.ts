@@ -1021,8 +1021,6 @@ export type Database = {
           coordinate_points: Json | null
           created_at: string | null
           customer_id: string
-          geocoding_attempted_at: string | null
-          geocoding_status: string | null
           gps_coordinates: unknown | null
           id: string
           image_url: string | null
@@ -1046,8 +1044,6 @@ export type Database = {
           coordinate_points?: Json | null
           created_at?: string | null
           customer_id: string
-          geocoding_attempted_at?: string | null
-          geocoding_status?: string | null
           gps_coordinates?: unknown | null
           id?: string
           image_url?: string | null
@@ -1071,8 +1067,6 @@ export type Database = {
           coordinate_points?: Json | null
           created_at?: string | null
           customer_id?: string
-          geocoding_attempted_at?: string | null
-          geocoding_status?: string | null
           gps_coordinates?: unknown | null
           id?: string
           image_url?: string | null
@@ -2454,7 +2448,6 @@ export type Database = {
           quote_id: string | null
           scheduled_date: string
           scheduled_time: string | null
-          selected_coordinate_ids: Json | null
           service_due_date: string | null
           service_schedule_info: Json | null
           special_instructions: string | null
@@ -2489,7 +2482,6 @@ export type Database = {
           quote_id?: string | null
           scheduled_date: string
           scheduled_time?: string | null
-          selected_coordinate_ids?: Json | null
           service_due_date?: string | null
           service_schedule_info?: Json | null
           special_instructions?: string | null
@@ -2524,7 +2516,6 @@ export type Database = {
           quote_id?: string | null
           scheduled_date?: string
           scheduled_time?: string | null
-          selected_coordinate_ids?: Json | null
           service_due_date?: string | null
           service_schedule_info?: Json | null
           special_instructions?: string | null
