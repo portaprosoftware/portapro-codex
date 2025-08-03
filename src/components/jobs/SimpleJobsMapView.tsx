@@ -140,16 +140,43 @@ export function SimpleJobsMapView({
     
     filteredJobs.forEach(job => {
       // Get customer's default service location GPS coordinates
-      const defaultLocation = job.customers?.customer_service_locations?.find(loc => loc.is_default) || 
-                             job.customers?.customer_service_locations?.[0];
+      const serviceLocations = job.customers?.customer_service_locations;
+      const defaultLocation = serviceLocations?.find(loc => loc.is_default) || serviceLocations?.[0];
       const gpsCoords = defaultLocation?.gps_coordinates;
       
-      if (gpsCoords) {
-        const key = gpsCoords.toString();
-        if (!jobsByLocation.has(key)) {
-          jobsByLocation.set(key, []);
+      if (gpsCoords && typeof gpsCoords === 'string') {
+        // Parse the POINT format: (longitude,latitude)
+        const match = gpsCoords.match(/\(([^,]+),([^)]+)\)/);
+        if (match) {
+          const lng = parseFloat(match[1]);
+          const lat = parseFloat(match[2]);
+          
+          if (!isNaN(lng) && !isNaN(lat)) {
+            const key = `${lng},${lat}`;
+            if (!jobsByLocation.has(key)) {
+              jobsByLocation.set(key, []);
+            }
+            jobsByLocation.get(key).push(job);
+          } else {
+            jobsWithoutLocation.push({
+              job_number: job.job_number,
+              customer_name: job.customers?.name,
+              address: job.customers?.service_street ? 
+                `${job.customers.service_street}, ${job.customers.service_city}, ${job.customers.service_state}` : 
+                'No address available',
+              reason: 'Invalid GPS coordinates format'
+            });
+          }
+        } else {
+          jobsWithoutLocation.push({
+            job_number: job.job_number,
+            customer_name: job.customers?.name,
+            address: job.customers?.service_street ? 
+              `${job.customers.service_street}, ${job.customers.service_city}, ${job.customers.service_state}` : 
+              'No address available',
+            reason: 'GPS coordinates parsing failed'
+          });
         }
-        jobsByLocation.get(key).push(job);
       } else {
         jobsWithoutLocation.push({
           job_number: job.job_number,
@@ -168,18 +195,9 @@ export function SimpleJobsMapView({
     }
 
     // Create static pins for each location
-    jobsByLocation.forEach((jobs, gpsCoords) => {
-      // Parse coordinates - handle both string and point format
-      let lng, lat;
-      if (typeof gpsCoords === 'string') {
-        const coordStr = gpsCoords.replace(/[()]/g, '');
-        [lng, lat] = coordStr.split(',').map(parseFloat);
-      } else if (gpsCoords && gpsCoords.x !== undefined && gpsCoords.y !== undefined) {
-        lng = gpsCoords.x;
-        lat = gpsCoords.y;
-      } else {
-        return; // Skip if coordinates are not in expected format
-      }
+    jobsByLocation.forEach((jobs, locationKey) => {
+      // Parse coordinates from the key format "lng,lat"
+      const [lng, lat] = locationKey.split(',').map(parseFloat);
       
       if (isNaN(lng) || isNaN(lat)) return;
 
