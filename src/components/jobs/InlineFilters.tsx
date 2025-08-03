@@ -72,7 +72,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         <SelectTrigger className="w-48">
           <SelectValue placeholder="All Drivers" />
         </SelectTrigger>
-        <SelectContent className="bg-white border shadow-lg z-50">
+        <SelectContent className="bg-white border shadow-lg z-[9999]">
           {/* Key directly above driver names */}
           <div className="flex items-center gap-2 text-sm text-gray-600 px-2 py-1 border-b border-gray-100">
             <span>Drivers With Jobs Today</span>
@@ -97,7 +97,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         <SelectTrigger className="w-48">
           <SelectValue placeholder="All Job Types" />
         </SelectTrigger>
-        <SelectContent className="bg-white border shadow-lg z-50">
+        <SelectContent className="bg-white border shadow-lg z-[9999]">
           <SelectItem value="all">All Job Types</SelectItem>
           <SelectItem value="delivery">
             <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         <SelectTrigger className="w-48">
           <SelectValue placeholder="All Statuses" />
         </SelectTrigger>
-        <SelectContent className="bg-white border shadow-lg z-50">
+        <SelectContent className="bg-white border shadow-lg z-[9999]">
           <SelectItem value="all">All Statuses</SelectItem>
           <SelectItem value="assigned">
             <div className="flex items-center gap-2">

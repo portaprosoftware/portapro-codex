@@ -53,7 +53,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
           <SelectTrigger>
             <SelectValue placeholder="Hour" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
             {hourOptions.map((hour) => (
               <SelectItem key={hour} value={hour.toString()}>
                 {hour}
@@ -69,7 +69,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
           <SelectTrigger>
             <SelectValue placeholder="Min" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
             {minuteOptions.map((minute) => (
               <SelectItem key={minute} value={minute.toString().padStart(2, '0')}>
                 :{minute.toString().padStart(2, '0')}
@@ -85,7 +85,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
           <SelectTrigger>
             <SelectValue placeholder="AM/PM" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
             <SelectItem value="AM">AM</SelectItem>
             <SelectItem value="PM">PM</SelectItem>
           </SelectContent>

@@ -289,7 +289,7 @@ export function AddServiceLocationModal({
                           <SelectValue placeholder="Select State" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white border shadow-lg z-50">
+                      <SelectContent className="bg-white border shadow-lg z-[9999]">
                         {US_STATES.map((state) => (
                           <SelectItem key={state.value} value={state.value}>
                             {state.value} - {state.label}

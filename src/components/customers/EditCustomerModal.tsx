@@ -475,7 +475,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                               <SelectValue placeholder="Select customer type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-white border shadow-lg z-50">
+                          <SelectContent className="bg-white border shadow-lg z-[9999]">
                             {CUSTOMER_TYPES.map((type) => (
                               <SelectItem key={type.value} value={type.value}>
                                 {type.label}
@@ -571,7 +571,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-white border shadow-lg z-50">
+                          <SelectContent className="bg-white border shadow-lg z-[9999]">
                             {US_STATES.map((state) => (
                               <SelectItem key={state.value} value={state.value}>
                                 {state.value} - {state.label}
@@ -679,7 +679,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                                 <SelectValue placeholder="Select state" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-white border shadow-lg z-50">
+                            <SelectContent className="bg-white border shadow-lg z-[9999]">
                               {US_STATES.map((state) => (
                                 <SelectItem key={state.value} value={state.value}>
                                   {state.value} - {state.label}
@@ -788,7 +788,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                                 <SelectValue placeholder="Select state" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-white border shadow-lg z-50">
+                            <SelectContent className="bg-white border shadow-lg z-[9999]">
                               {US_STATES.map((state) => (
                                 <SelectItem key={state.value} value={state.value}>
                                   {state.value} - {state.label}

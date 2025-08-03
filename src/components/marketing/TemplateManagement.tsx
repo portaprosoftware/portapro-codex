@@ -260,7 +260,7 @@ export const TemplateManagement: React.FC = () => {
             <SelectTrigger className="bg-white border shadow-sm">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
-            <SelectContent className="bg-white border shadow-lg z-50">
+            <SelectContent className="bg-white border shadow-lg z-[9999]">
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="reminder">Reminder</SelectItem>
               <SelectItem value="marketing">Marketing</SelectItem>
