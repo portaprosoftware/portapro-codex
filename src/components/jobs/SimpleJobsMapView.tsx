@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { X, Satellite, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
+import { useAutoGeocoding } from '@/hooks/useAutoGeocoding';
+import { fixDisasterServicesGeocoding } from '@/utils/fixExistingGeocodingUtil';
 
 interface SimpleJobsMapViewProps {
   searchTerm?: string;
@@ -34,6 +36,9 @@ export function SimpleJobsMapView({
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
+  
+  // Enable automatic geocoding for existing locations
+  useAutoGeocoding();
 
   // Get jobs data
   const { data: allJobs = [] } = useJobs({
@@ -329,8 +334,25 @@ export function SimpleJobsMapView({
     <div className="relative w-full h-full">
       {/* Debug Info */}
       {filteredJobs.length > 0 && (
-        <div className="absolute top-4 right-4 z-10 bg-white p-2 rounded shadow text-xs">
-          Jobs: {filteredJobs.length} | Map initialized: {map.current ? 'Yes' : 'No'}
+        <div className="absolute top-4 right-4 z-10 bg-white p-2 rounded shadow text-xs flex flex-col gap-2">
+          <div>Jobs: {filteredJobs.length} | Map initialized: {map.current ? 'Yes' : 'No'}</div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              console.log('Fixing Disaster Services coordinates...');
+              const result = await fixDisasterServicesGeocoding();
+              if (result.success) {
+                console.log('Successfully fixed coordinates, reloading...');
+                window.location.reload();
+              } else {
+                console.error('Failed to fix coordinates:', result.error);
+              }
+            }}
+            className="text-xs h-6"
+          >
+            Fix Coordinates
+          </Button>
         </div>
       )}
       

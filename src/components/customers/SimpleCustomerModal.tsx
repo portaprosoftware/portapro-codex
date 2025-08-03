@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { createServiceLocationWithGeocoding } from '@/utils/geocoding';
 
 interface SimpleCustomerModalProps {
   isOpen: boolean;
@@ -120,6 +121,25 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       }
       
       console.log('Customer created successfully:', insertedCustomer);
+      
+      // Create service location with automatic geocoding
+      if (insertedCustomer && insertedCustomer[0]) {
+        try {
+          await createServiceLocationWithGeocoding(
+            insertedCustomer[0].id,
+            `${customerData.name} - Main Location`,
+            customerData.service_street,
+            customerData.service_city,
+            customerData.service_state,
+            customerData.service_zip
+          );
+          console.log('Service location with geocoding created successfully');
+        } catch (geocodingError) {
+          console.error('Failed to create service location with geocoding:', geocodingError);
+          // Don't fail the entire customer creation if geocoding fails
+        }
+      }
+      
       return insertedCustomer;
     },
     onSuccess: (insertedCustomer) => {
