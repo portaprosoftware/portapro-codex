@@ -658,6 +658,15 @@
   z-index: 9000 !important;
 }
 
+/* Force all Radix UI select and dropdown content to appear above everything */
+[data-radix-select-content],
+[data-radix-popper-content],
+[data-radix-dropdown-menu-content],
+[data-radix-context-menu-content] {
+  z-index: 1500 !important;
+  position: relative !important;
+}
+
 /* Additional dialog portal enforcement */
 [data-radix-portal] {
   z-index: 9000 !important;
