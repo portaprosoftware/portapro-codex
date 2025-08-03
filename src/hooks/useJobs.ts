@@ -98,7 +98,12 @@ export function useJobs(filters?: {
         .from('jobs')
         .select(`
           *,
-          customers(id, name, service_street, service_city, service_state),
+          customers(
+            id, name, service_street, service_city, service_state,
+            customer_service_locations!customer_service_locations_customer_id_fkey(
+              id, gps_coordinates, is_default, location_name
+            )
+          ),
           profiles:driver_id(id, first_name, last_name),
           vehicles(id, license_plate, vehicle_type)
         `)
@@ -133,8 +138,16 @@ export function useCreateJob() {
 
   return useMutation({
     mutationFn: async (jobData: JobWizardData) => {
-      // Create a serializable copy to avoid DataCloneError
-      const serializedJobData = JSON.parse(JSON.stringify(jobData));
+      // Create properly serialized job data to avoid DataCloneError
+      const serializedJobData = {
+        customer_id: jobData.customer_id,
+        job_type: jobData.job_type,
+        scheduled_date: jobData.scheduled_date,
+        scheduled_time: jobData.scheduled_time,
+        timezone: jobData.timezone,
+        notes: jobData.notes,
+        special_instructions: jobData.special_instructions
+      };
       // Get company settings for job numbering
       const { data: companySettings } = await supabase
         .from('company_settings')

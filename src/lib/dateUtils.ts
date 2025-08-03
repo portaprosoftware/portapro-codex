@@ -28,21 +28,37 @@ export const formatDateForQuery = (date: Date | string | null | undefined): stri
 };
 
 /**
- * Adds days to a date without timezone issues
+ * Adds days to a date and returns a new Date object.
  */
-export const addDaysToDate = (date: Date, days: number): Date => {
+export const addDays = (date: Date, days: number): Date => {
   const newDate = new Date(date);
   newDate.setDate(newDate.getDate() + days);
   return newDate;
 };
 
 /**
- * Subtracts days from a date without timezone issues
+ * Subtracts days from a date and returns a new Date object.
  */
-export const subtractDaysFromDate = (date: Date, days: number): Date => {
+export const subtractDays = (date: Date, days: number): Date => {
   const newDate = new Date(date);
   newDate.setDate(newDate.getDate() - days);
   return newDate;
+};
+
+/**
+ * Adds days to a date without timezone issues
+ * Alias for addDays for compatibility.
+ */
+export const addDaysToDate = (date: Date, days: number): Date => {
+  return addDays(date, days);
+};
+
+/**
+ * Subtracts days from a date without timezone issues
+ * Alias for subtractDays for compatibility.
+ */
+export const subtractDaysFromDate = (date: Date, days: number): Date => {
+  return subtractDays(date, days);
 };
 
 /**
