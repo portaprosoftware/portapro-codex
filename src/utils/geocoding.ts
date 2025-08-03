@@ -26,17 +26,33 @@ export async function geocodeAddress(
       return { success: false, error: error.message };
     }
 
+    console.log('Geocoding API response:', data);
+    
     if (data?.suggestions && data.suggestions.length > 0) {
       const suggestion = data.suggestions[0];
-      const coordinates: [number, number] = [
-        suggestion.coordinates.longitude,
-        suggestion.coordinates.latitude
-      ];
+      console.log('First suggestion:', suggestion);
+      
+      // Handle the coordinate structure from the edge function
+      let coordinates: [number, number];
+      if (suggestion.coordinates && typeof suggestion.coordinates === 'object') {
+        if ('longitude' in suggestion.coordinates && 'latitude' in suggestion.coordinates) {
+          coordinates = [suggestion.coordinates.longitude, suggestion.coordinates.latitude];
+        } else if (Array.isArray(suggestion.coordinates) && suggestion.coordinates.length >= 2) {
+          coordinates = [suggestion.coordinates[0], suggestion.coordinates[1]];
+        } else {
+          console.error('Invalid coordinate structure:', suggestion.coordinates);
+          return { success: false, error: 'Invalid coordinate format received from geocoding service' };
+        }
+      } else {
+        console.error('Missing coordinates in suggestion:', suggestion);
+        return { success: false, error: 'No coordinates found in geocoding response' };
+      }
       
       console.log('Geocoding successful:', coordinates);
       return { success: true, coordinates };
     } else {
       console.warn('No geocoding results found for:', fullAddress);
+      console.log('Full response data:', data);
       return { success: false, error: 'No coordinates found for this address' };
     }
   } catch (error) {
