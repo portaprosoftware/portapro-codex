@@ -136,10 +136,16 @@ export function SimpleJobsMapView({
     const jobsWithoutLocation = [];
     
     filteredJobs.forEach(job => {
-      // Get customer's default service location GPS coordinates
+      // Get customer's default service location GPS coordinates - STEP 4 DEBUG
       const defaultLocation = job.customers?.customer_service_locations?.find(loc => loc.is_default) || 
                              job.customers?.customer_service_locations?.[0];
       const gpsCoords = defaultLocation?.gps_coordinates;
+      
+      console.log('=== STEP 4: GPS Coordinates Debug ===');
+      console.log(`Job ${job.job_number} - Customer: ${job.customers?.name}`);
+      console.log('Service locations found:', job.customers?.customer_service_locations);
+      console.log('Default location:', defaultLocation);
+      console.log('GPS coordinates:', gpsCoords);
       
       if (gpsCoords) {
         const key = gpsCoords.toString();

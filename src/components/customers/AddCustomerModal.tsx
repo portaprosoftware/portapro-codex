@@ -163,6 +163,9 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: CustomerFormData) => {
+      console.log('=== STEP 3: Customer Creation Debug ===');
+      console.log('Starting customer creation with data:', customerData);
+      
       // Create customer - database trigger will automatically create default service location
       const customerInsertData = {
         name: customerData.name,
@@ -191,6 +194,8 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         deposit_required: customerData.deposit_required,
       };
 
+      console.log('Processed customer insert data:', customerInsertData);
+
       const { data: customerData_result, error: customerError } = await supabase
         .from('customers')
         .insert([customerInsertData])
@@ -198,13 +203,15 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         .single();
 
       if (customerError) {
-        console.error('Customer insert error:', customerError);
+        console.error('❌ Customer insert error:', customerError);
         throw customerError;
       }
 
+      console.log('✅ Customer created successfully:', customerData_result);
       return customerData_result;
     },
     onSuccess: () => {
+      console.log('✅ Customer creation succeeded - invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
         title: "Success",
@@ -214,10 +221,16 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       onClose();
     },
     onError: (error) => {
-      console.error("Error creating customer:", error);
+      console.error("❌ Error creating customer:", error);
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        code: (error as any)?.code,
+        details: (error as any)?.details
+      });
       toast({
         title: "Error", 
-        description: "Failed to create customer. Please try again.",
+        description: `Failed to create customer: ${error.message}`,
         variant: "destructive",
       });
     },
