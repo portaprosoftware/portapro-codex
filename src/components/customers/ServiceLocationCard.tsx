@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,6 @@ import {
 import { EditServiceLocationModal } from './EditServiceLocationModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useCustomerGeocoding } from '@/hooks/useCustomerGeocoding';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +34,6 @@ interface ServiceLocationCardProps {
 export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLocationCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { toast } = useToast();
-  const { geocodeCustomerLocation, isGeocoding } = useCustomerGeocoding();
 
   const fullAddress = [
     location.street,
@@ -47,20 +44,6 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
   ].filter(Boolean).join(', ');
 
   const hasGpsCoordinates = location.gps_coordinates !== null;
-
-  const handleGetGpsCoordinates = async () => {
-    if (!fullAddress) {
-      toast({
-        title: "Error",
-        description: "Cannot geocode location without a complete address.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    await geocodeCustomerLocation(location.customer_id, fullAddress);
-    onUpdate(); // Refresh the location data
-  };
 
   const handleDelete = async () => {
     try {
@@ -122,6 +105,12 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
                     Locked
                   </Badge>
                  )}
+                {hasGpsCoordinates && (
+                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    GPS Ready
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -144,48 +133,33 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             </div>
 
             <div className="flex gap-2">
-              {!hasGpsCoordinates ? (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleGetGpsCoordinates}
-                  disabled={isGeocoding}
-                  className="text-xs bg-primary text-primary-foreground"
-                >
-                  <MapPin className="w-3 h-3 mr-1" />
-                  {isGeocoding ? 'Getting GPS...' : 'Get GPS Coordinates'}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={openInGoogleMaps}
-                    className="text-xs"
-                  >
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Google Maps
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={openInAppleMaps}
-                    className="text-xs"
-                  >
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Apple Maps
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={openInWaze}
-                    className="text-xs"
-                  >
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Waze
-                  </Button>
-                </>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInGoogleMaps}
+                className="text-xs"
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Google Maps
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInAppleMaps}
+                className="text-xs"
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Apple Maps
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInWaze}
+                className="text-xs"
+              >
+                <ExternalLink className="w-3 h-3 mr-1" />
+                Waze
+              </Button>
             </div>
           </div>
 
@@ -205,32 +179,32 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
-                  <AlertDialogDescription className="space-y-2">
-                    <p>Are you sure you want to delete "{location.location_name}"?</p>
-                    {location.is_default && (
-                      <p className="text-yellow-600 font-medium">
-                        ⚠️ This is the default service location for this customer.
-                      </p>
-                    )}
-                    {location.is_locked && (
-                      <p className="text-orange-600 font-medium">
-                        🔒 This is a system-generated location based on the customer's service address.
-                      </p>
-                    )}
-                    <p className="text-red-600">This action cannot be undone.</p>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                    Delete Location
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
+                      <AlertDialogDescription className="space-y-2">
+                        <p>Are you sure you want to delete "{location.location_name}"?</p>
+                        {location.is_default && (
+                          <p className="text-yellow-600 font-medium">
+                            ⚠️ This is the default service location for this customer.
+                          </p>
+                        )}
+                        {location.is_locked && (
+                          <p className="text-orange-600 font-medium">
+                            🔒 This is a system-generated location based on the customer's service address.
+                          </p>
+                        )}
+                        <p className="text-red-600">This action cannot be undone.</p>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                        Delete Location
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </>
             )}
           </div>
