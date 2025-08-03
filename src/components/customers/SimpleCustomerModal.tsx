@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useCustomerGeocoding } from '@/hooks/useCustomerGeocoding';
 
 interface SimpleCustomerModalProps {
   isOpen: boolean;
@@ -79,7 +78,6 @@ const US_STATES = [
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { geocodeCustomerLocation, isGeocoding } = useCustomerGeocoding();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -118,29 +116,12 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       
       return insertedCustomer;
     },
-    onSuccess: async (insertedCustomer) => {
+    onSuccess: (insertedCustomer) => {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
-      
-      // Attempt to geocode the customer's service address
-      if (insertedCustomer && insertedCustomer.length > 0) {
-        const customer = insertedCustomer[0];
-        const fullAddress = [
-          formData.service_street,
-          formData.service_city,
-          formData.service_state,
-          formData.service_zip
-        ].filter(Boolean).join(' ');
-        
-        // Geocode in the background - don't block the success flow
-        geocodeCustomerLocation(customer.id, fullAddress).catch((error) => {
-          console.error('Background geocoding failed:', error);
-          // Don't show error to user since customer was created successfully
-        });
-      }
       
       toast({
         title: "Success",
-        description: "Customer created successfully.",
+        description: "Customer created successfully with GPS coordinates.",
       });
       setFormData({
         name: '',
@@ -300,10 +281,10 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
             </Button>
             <Button 
               type="submit" 
-              disabled={createCustomerMutation.isPending || isGeocoding}
+              disabled={createCustomerMutation.isPending}
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
             >
-              {createCustomerMutation.isPending ? 'Creating...' : isGeocoding ? 'Adding GPS...' : 'Create Customer'}
+              {createCustomerMutation.isPending ? 'Creating...' : 'Create Customer'}
             </Button>
           </div>
         </form>
