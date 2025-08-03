@@ -92,6 +92,8 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: typeof formData) => {
+      console.log('Creating customer with data:', customerData);
+      
       const insertData = {
         name: customerData.name,
         customer_type: customerData.customer_type as any,
@@ -105,18 +107,23 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
         deposit_required: true,
       };
       
+      console.log('Inserting customer data:', insertData);
+
       const { data: insertedCustomer, error } = await supabase
         .from('customers')
         .insert(insertData)
         .select();
 
       if (error) {
+        console.error('Customer creation error:', error);
         throw new Error(`Database error: ${error.message}${error.details ? ` - ${error.details}` : ''}${error.hint ? ` (${error.hint})` : ''}`);
       }
       
+      console.log('Customer created successfully:', insertedCustomer);
       return insertedCustomer;
     },
     onSuccess: (insertedCustomer) => {
+      console.log('Customer creation mutation succeeded');
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       
       toast({
@@ -136,6 +143,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       onClose();
     },
     onError: (error: Error) => {
+      console.error('Customer creation mutation failed:', error);
       toast({
         title: "Error", 
         description: error.message || "Failed to create customer. Please try again.",

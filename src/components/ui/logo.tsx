@@ -19,7 +19,7 @@ export const Logo: React.FC<LogoProps> = ({
       const {
         data,
         error
-      } = await supabase.from('company_settings').select('company_logo, company_name').single();
+      } = await supabase.from('company_settings').select('company_logo, company_name').maybeSingle();
       if (error) throw error;
       return data;
     }
