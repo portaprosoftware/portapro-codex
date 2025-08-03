@@ -39,6 +39,9 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [radarEnabled, setRadarEnabled] = useState(false);
+  
+  // Track if multi-job dialog is open to control pin interactions
+  const isMultiJobDialogOpen = selectedJobsAtLocation.length > 0;
 
   // Use the same data fetching as other views - this ensures data consistency
   const formatDateForQuery = (date: Date) => {
@@ -254,6 +257,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
             cursor: pointer; 
             box-shadow: 0 2px 6px rgba(0,0,0,0.25);
             transition: transform 0.2s ease;
+            pointer-events: ${isMultiJobDialogOpen ? 'none' : 'auto'};
           " 
           onmouseover="this.style.transform='scale(1.1)'" 
           onmouseout="this.style.transform='scale(1)'"
@@ -291,6 +295,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
             cursor: pointer; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.3);
             transition: transform 0.2s ease;
+            pointer-events: ${isMultiJobDialogOpen ? 'none' : 'auto'};
           "
           onmouseover="this.style.transform='scale(1.1)'" 
           onmouseout="this.style.transform='scale(1)'"
@@ -320,7 +325,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     if (hasCoordinates) {
       map.current.fitBounds(bounds, { padding: 50 });
     }
-  }, [filteredJobs, serviceLocations, isDriverMode, drivers]);
+  }, [filteredJobs, serviceLocations, isDriverMode, drivers, isMultiJobDialogOpen]);
 
   if (loading) {
     return <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
