@@ -637,7 +637,7 @@
 
 /* Ensure map markers stay below modals and dialogs */
 .mapboxgl-marker {
-  z-index: 10 !important;
+  z-index: 10;
 }
 
 /* Force map canvas and container to low z-index */
@@ -658,14 +658,6 @@
   z-index: 9000 !important;
 }
 
-/* Force all Radix UI select and dropdown content to appear above everything */
-[data-radix-select-content],
-[data-radix-popper-content],
-[data-radix-dropdown-menu-content],
-[data-radix-context-menu-content] {
-  z-index: 1500 !important;
-  position: relative !important;
-}
 
 /* Additional dialog portal enforcement */
 [data-radix-portal] {
