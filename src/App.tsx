@@ -42,14 +42,14 @@ import TeamManagement from './pages/TeamManagement';
 import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
-import { DropdownDebugger } from './components/debug/DropdownDebugger';
+
 
 const App = () => {
   return (
     <ErrorBoundary>
       <Router>
         <div className="min-h-screen bg-background font-sans antialiased">
-        <DropdownDebugger />
+        
         <Routes>
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
