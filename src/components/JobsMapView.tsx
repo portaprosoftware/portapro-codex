@@ -43,6 +43,30 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   // Track if multi-job dialog is open to control pin interactions
   const isMultiJobDialogOpen = selectedJobsAtLocation.length > 0;
 
+  // CRITICAL FIX: Clear phantom dialog states on unmount and route changes
+  useEffect(() => {
+    // Clear dialog states when component mounts (defensive)
+    setSelectedJobsAtLocation([]);
+    setSelectedJobForModal(null);
+
+    // Cleanup function to clear states on unmount
+    return () => {
+      setSelectedJobsAtLocation([]);
+      setSelectedJobForModal(null);
+    };
+  }, []);
+
+  // CRITICAL FIX: Clear dialog states when not on map routes
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const isMapRoute = currentPath.includes('/jobs') && currentPath.includes('map');
+    
+    if (!isMapRoute) {
+      setSelectedJobsAtLocation([]);
+      setSelectedJobForModal(null);
+    }
+  }, [window.location.pathname]);
+
   // Use the same data fetching as other views - this ensures data consistency
   const formatDateForQuery = (date: Date) => {
     return date.getFullYear() + '-' + 
@@ -422,8 +446,16 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
       
       
       {/* Multiple Jobs Modal */}
-      <Dialog open={selectedJobsAtLocation.length > 0} onOpenChange={() => setSelectedJobsAtLocation([])}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+      <Dialog 
+        open={selectedJobsAtLocation.length > 0} 
+        onOpenChange={(open) => {
+          if (!open) setSelectedJobsAtLocation([]);
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden"
+          onPointerDownOutside={() => setSelectedJobsAtLocation([])}
+          onEscapeKeyDown={() => setSelectedJobsAtLocation([])}
+        >
           <DialogHeader>
             <DialogTitle>
               Jobs at Location - {selectedJobsAtLocation.length} job{selectedJobsAtLocation.length !== 1 ? 's' : ''} found
