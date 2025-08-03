@@ -6150,6 +6150,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      cleanup_failed_geocoding: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       clerk_user_has_role: {
         Args: { clerk_user_id: string; required_role: string }
         Returns: boolean

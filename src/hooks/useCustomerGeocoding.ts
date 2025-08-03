@@ -19,9 +19,13 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
 
   const geocodeAddress = async (address: string): Promise<GeocodeResult | null> => {
     try {
+      console.log('Geocoding address:', address);
+      
       const { data, error } = await supabase.functions.invoke('mapbox-geocoding', {
         body: { q: address, limit: '1' }
       });
+
+      console.log('Geocoding response:', data, error);
 
       if (error) {
         console.error('Geocoding error:', error);
@@ -30,12 +34,14 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
 
       if (data?.suggestions && data.suggestions.length > 0) {
         const suggestion = data.suggestions[0];
+        console.log('Using geocoding result:', suggestion);
         return {
           latitude: suggestion.coordinates.latitude,
           longitude: suggestion.coordinates.longitude
         };
       }
 
+      console.log('No geocoding results found');
       return null;
     } catch (error) {
       console.error('Geocoding request failed:', error);
@@ -55,11 +61,10 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
           .from('customer_service_locations')
           .update({
             gps_coordinates: `POINT(${result.longitude} ${result.latitude})`,
-            geocoding_status: 'success',
+            geocoding_status: 'completed',
             geocoding_attempted_at: new Date().toISOString()
           })
-          .eq('customer_id', customerId)
-          .eq('is_default', true);
+          .eq('customer_id', customerId);
 
         if (error) {
           console.error('Failed to update GPS coordinates:', error);
@@ -70,8 +75,7 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
               geocoding_status: 'failed',
               geocoding_attempted_at: new Date().toISOString()
             })
-            .eq('customer_id', customerId)
-            .eq('is_default', true);
+            .eq('customer_id', customerId);
           
           toast({
             title: "Warning",
@@ -80,6 +84,10 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
           });
         } else {
           console.log(`Updated GPS coordinates for customer ${customerId}: ${result.latitude}, ${result.longitude}`);
+          toast({
+            title: "GPS Added",
+            description: "Location coordinates have been added successfully.",
+          });
         }
       } else {
         // Update status to failed if geocoding returned no results
@@ -89,8 +97,7 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
             geocoding_status: 'failed',
             geocoding_attempted_at: new Date().toISOString()
           })
-          .eq('customer_id', customerId)
-          .eq('is_default', true);
+          .eq('customer_id', customerId);
       }
 
       return result;
@@ -103,8 +110,7 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
           geocoding_status: 'failed',
           geocoding_attempted_at: new Date().toISOString()
         })
-        .eq('customer_id', customerId)
-        .eq('is_default', true);
+        .eq('customer_id', customerId);
       
       return null;
     } finally {
@@ -158,7 +164,7 @@ export const useCustomerGeocoding = (): CustomerGeocodeHook => {
             .from('customer_service_locations')
             .update({
               gps_coordinates: `POINT(${result.longitude} ${result.latitude})`,
-              geocoding_status: 'success',
+              geocoding_status: 'completed',
               geocoding_attempted_at: new Date().toISOString()
             })
             .eq('id', location.id);

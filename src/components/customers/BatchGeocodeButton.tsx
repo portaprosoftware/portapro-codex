@@ -11,18 +11,23 @@ export function BatchGeocodeButton() {
 
   const handleBatchProcess = async () => {
     try {
-      // Step 1: Create default service locations for existing customers
-      const { data, error } = await supabase.rpc('create_default_service_locations');
+      // Step 1: Reset failed geocoding statuses to pending
+      const { data: cleanupData, error: cleanupError } = await supabase.rpc('cleanup_failed_geocoding');
       
-      if (error) {
-        console.error('Error creating default service locations:', error);
+      if (cleanupError) {
+        console.error('Error resetting geocoding statuses:', cleanupError);
         toast({
           title: "Warning",
-          description: "Could not create all default service locations. Proceeding with geocoding.",
+          description: "Could not reset all failed geocoding statuses. Proceeding with batch geocoding.",
           variant: "destructive"
         });
       } else {
-        console.log('Default service locations created');
+        console.log('Geocoding statuses reset:', cleanupData);
+        const result = cleanupData as any;
+        toast({
+          title: "Reset Complete",
+          description: `${result?.locations_reset_for_geocoding || 0} locations reset for geocoding.`,
+        });
       }
 
       // Step 2: Batch geocode all locations that need coordinates
