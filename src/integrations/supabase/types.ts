@@ -6082,6 +6082,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      batch_geocode_service_locations: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       bulk_update_service_status: {
         Args: {
           record_ids: string[]
@@ -6237,6 +6241,18 @@ export type Database = {
       generate_storage_location_report: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      geocode_and_create_service_location: {
+        Args: {
+          p_customer_id: string
+          p_location_name: string
+          p_street: string
+          p_city: string
+          p_state: string
+          p_zip: string
+          p_street2?: string
+        }
+        Returns: string
       }
       get_available_units: {
         Args: { product_type_id: string; start_date: string; end_date: string }

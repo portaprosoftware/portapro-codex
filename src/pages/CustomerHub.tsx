@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
+import { BatchGeocodeButton } from "@/components/customers/BatchGeocodeButton";
 import { formatCategoryDisplay } from "@/lib/categoryUtils";
 
 import { useQuery } from "@tanstack/react-query";
@@ -83,6 +84,7 @@ const CustomerHub: React.FC = () => {
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
+            <BatchGeocodeButton />
             <Button 
               onClick={() => setIsAddModalOpen(true)}
               className="gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 rounded-md border-0"
