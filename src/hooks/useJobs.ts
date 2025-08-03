@@ -98,7 +98,8 @@ export function useJobs(filters?: {
         .from('jobs')
         .select(`
           *,
-          customers(id, name, service_street, service_city, service_state),
+          customers(id, name, service_street, service_city, service_state, 
+                   customer_service_locations!customer_service_locations_customer_id_fkey(gps_coordinates, is_default)),
           profiles:driver_id(id, first_name, last_name),
           vehicles(id, license_plate, vehicle_type)
         `)
@@ -179,7 +180,6 @@ export function useCreateJob() {
           timezone: serializedJobData.timezone || 'America/New_York',
           notes: serializedJobData.notes || '',
           special_instructions: serializedJobData.special_instructions || '',
-          selected_coordinate_ids: serializedJobData.selected_coordinate_ids || [],
         })
         .select()
         .single();

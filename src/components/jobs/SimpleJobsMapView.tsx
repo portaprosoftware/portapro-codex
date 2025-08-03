@@ -136,11 +136,13 @@ export function SimpleJobsMapView({
     const jobsWithoutLocation = [];
     
     filteredJobs.forEach(job => {
-      // Simple logic: use customer's default service location GPS coordinates
-      const gpsCoords = job.customers?.service_location_gps;
+      // Get customer's default service location GPS coordinates
+      const defaultLocation = job.customers?.customer_service_locations?.find(loc => loc.is_default) || 
+                             job.customers?.customer_service_locations?.[0];
+      const gpsCoords = defaultLocation?.gps_coordinates;
       
       if (gpsCoords) {
-        const key = gpsCoords;
+        const key = gpsCoords.toString();
         if (!jobsByLocation.has(key)) {
           jobsByLocation.set(key, []);
         }
@@ -160,9 +162,17 @@ export function SimpleJobsMapView({
 
     // Create static pins for each location
     jobsByLocation.forEach((jobs, gpsCoords) => {
-      // Parse coordinates
-      const coordStr = gpsCoords.replace(/[()]/g, '');
-      const [lng, lat] = coordStr.split(',').map(parseFloat);
+      // Parse coordinates - handle both string and point format
+      let lng, lat;
+      if (typeof gpsCoords === 'string') {
+        const coordStr = gpsCoords.replace(/[()]/g, '');
+        [lng, lat] = coordStr.split(',').map(parseFloat);
+      } else if (gpsCoords && gpsCoords.x !== undefined && gpsCoords.y !== undefined) {
+        lng = gpsCoords.x;
+        lat = gpsCoords.y;
+      } else {
+        return; // Skip if coordinates are not in expected format
+      }
       
       if (isNaN(lng) || isNaN(lat)) return;
 
