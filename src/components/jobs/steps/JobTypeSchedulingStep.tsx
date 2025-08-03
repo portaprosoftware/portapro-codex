@@ -131,7 +131,7 @@ export function JobTypeSchedulingStep() {
         <div className="lg:col-span-2 space-y-4">
           <Label className="text-base font-medium">Scheduled Date</Label>
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-4 flex justify-center">
               <CalendarComponent
                 mode="single"
                 selected={state.data.scheduled_date ? (() => {
@@ -140,7 +140,7 @@ export function JobTypeSchedulingStep() {
                 })() : undefined}
                 onSelect={handleDateSelect}
                 disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                className="rounded-md"
+                className="rounded-md font-semibold text-base [&_.rdp-day]:font-semibold [&_.rdp-day]:text-base [&_.rdp-caption]:font-bold [&_.rdp-caption]:text-lg [&_.rdp-nav_button]:font-semibold [&_.rdp-weekday]:font-semibold [&_.rdp-weekday]:text-sm"
               />
             </CardContent>
           </Card>
