@@ -1,5 +1,8 @@
 project_id = "unpnuonbndubcuzxfnmg"
 
+[functions.mapbox-geocoding]
+verify_jwt = false
+
 [functions.get-mapbox-token]
 verify_jwt = false
 
