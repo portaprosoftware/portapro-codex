@@ -66,7 +66,7 @@ export function JobTypeSchedulingStep() {
 
   const handleTimeToggle = (enabled: boolean) => {
     updateData({ 
-      scheduled_time: !enabled ? null : state.data.scheduled_time
+      scheduled_time: enabled ? (state.data.scheduled_time || '09:00') : null
     });
   };
 
@@ -160,7 +160,7 @@ export function JobTypeSchedulingStep() {
           </div>
         </div>
 
-        {!!state.data.scheduled_time !== false && (
+        {state.data.scheduled_time !== null && (
           <Card>
             <CardContent className="p-4 space-y-4">
               <TimePresetButtons 
