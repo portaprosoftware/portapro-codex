@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { MobilePadlockActions } from './MobilePadlockActions';
-import { PadlockStatusIcon } from '@/components/inventory/PadlockStatusIcon';
 import { CheckCircle, Clock, MapPin, AlertTriangle, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -124,12 +122,6 @@ export const MobileServiceChecklist: React.FC<MobileServiceChecklistProps> = ({
         </Card>
       )}
 
-      {/* Padlock Management */}
-      <MobilePadlockActions
-        items={items}
-        jobId={jobId}
-        onLocationCapture={handleLocationCapture}
-      />
 
       {/* Service Checklist */}
       <Card>

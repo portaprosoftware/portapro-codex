@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Lock } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,8 +21,6 @@ import { OCRSearchCapture } from "./OCRSearchCapture";
 import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
 import { BatchOCRProcessor } from "./BatchOCRProcessor";
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
-import { PadlockStatusIcon } from "./PadlockStatusIcon";
-import { PadlockManagementDialog } from "./PadlockManagementDialog";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -44,8 +42,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [showMobileOCR, setShowMobileOCR] = useState(false);
   const [ocrItemId, setOcrItemId] = useState<string | null>(null);
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
-  const [showPadlockDialog, setShowPadlockDialog] = useState(false);
-  const [selectedPadlockItem, setSelectedPadlockItem] = useState<any>(null);
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
     size?: string;
@@ -77,7 +73,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     queryFn: async () => {
       let query = supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, currently_padlocked, padlock_type, last_padlock_timestamp, last_unlock_timestamp")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url")
         .eq("product_id", productId);
 
       if (searchQuery) {
@@ -129,7 +125,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("name, stock_total, supports_padlock")
+        .select("name, stock_total")
         .eq("id", productId)
         .single();
       
@@ -356,7 +352,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
               <TableHead className="w-12"></TableHead>
               <TableHead className="font-medium">Item Code</TableHead>
               <TableHead className="font-medium">Status</TableHead>
-              {product?.supports_padlock && <TableHead className="font-medium">Padlock</TableHead>}
               <TableHead className="font-medium">Variations</TableHead>
               <TableHead className="font-medium">Tool Number</TableHead>
               <TableHead className="font-medium">Verification</TableHead>
@@ -389,29 +384,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   </TableCell>
                   <TableCell className="font-medium">{item.item_code}</TableCell>
                   <TableCell>{getStatusBadge(item.status)}</TableCell>
-                  {product?.supports_padlock && (
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <PadlockStatusIcon 
-                          currentlyPadlocked={item.currently_padlocked || false}
-                          padlockType={item.padlock_type as 'standard' | 'combination' | 'keyed'}
-                        />
-                        {product.supports_padlock && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                            onClick={() => {
-                              setSelectedPadlockItem(item);
-                              setShowPadlockDialog(true);
-                            }}
-                          >
-                            <Lock className="h-3 w-3 text-gray-400 hover:text-orange-600" />
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  )}
                   <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
                   <TableCell className="text-gray-600 font-mono text-xs">
                     {item.tool_number || "—"}
@@ -456,7 +428,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 // Expanded Row Details
                 expandedRows.includes(item.id) ? (
                 <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={product?.supports_padlock ? 10 : 9} className="border-t">
+                    <TableCell colSpan={9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         {/* OCR Tracking Information */}
                         {(item.tool_number || item.vendor_id || item.plastic_code) && (
@@ -496,38 +468,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                           </div>
                         )}
 
-                        {/* Padlock Information */}
-                        {product?.supports_padlock && item.currently_padlocked && (
-                          <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                            <h4 className="font-medium text-orange-900 mb-2 flex items-center">
-                              <Lock className="w-4 h-4 mr-2" />
-                              Padlock Information
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                              <div>
-                                <span className="font-medium text-orange-700">Type:</span>
-                                <p className="text-orange-600 mt-1 capitalize">{item.padlock_type || "Standard"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-orange-700">Locked Since:</span>
-                                <p className="text-orange-600 mt-1">
-                                  {item.last_padlock_timestamp 
-                                    ? new Date(item.last_padlock_timestamp).toLocaleString()
-                                    : "—"
-                                  }
-                                </p>
-                              </div>
-                              {item.last_unlock_timestamp && (
-                                <div>
-                                  <span className="font-medium text-orange-700">Last Unlocked:</span>
-                                  <p className="text-orange-600 mt-1">
-                                    {new Date(item.last_unlock_timestamp).toLocaleString()}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
                         
                         {/* Standard Item Details */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -640,20 +580,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         productId={productId}
       />
 
-      {/* Padlock Management Dialog */}
-      {showPadlockDialog && selectedPadlockItem && (
-        <PadlockManagementDialog
-          isOpen={showPadlockDialog}
-          onClose={() => {
-            setShowPadlockDialog(false);
-            setSelectedPadlockItem(null);
-          }}
-          itemId={selectedPadlockItem.id}
-          itemCode={selectedPadlockItem.item_code}
-          currentlyPadlocked={selectedPadlockItem.currently_padlocked || false}
-          supportsPadlock={product?.supports_padlock || false}
-        />
-      )}
     </div>
   );
 };

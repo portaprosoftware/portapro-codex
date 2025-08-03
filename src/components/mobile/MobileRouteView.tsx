@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PadlockStatusIcon } from '@/components/inventory/PadlockStatusIcon';
+
 import { MapPin, Clock, Key, AlertTriangle, Navigation } from 'lucide-react';
 
 interface RouteJob {
@@ -168,12 +168,9 @@ export const MobileRouteView: React.FC<MobileRouteViewProps> = ({
                       .slice(0, 5)
                       .map(item => (
                         <div key={item.id} className="flex items-center gap-1">
-                          <PadlockStatusIcon
-                            currentlyPadlocked={item.currently_padlocked}
-                            padlockType={item.padlock_type as any}
-                            className="h-3 w-3"
-                            showTooltip={false}
-                          />
+                          <span className="text-xs">
+                            {item.currently_padlocked ? '🔒' : '🔓'}
+                          </span>
                           <span className="text-xs font-mono">{item.item_code}</span>
                         </div>
                       ))}

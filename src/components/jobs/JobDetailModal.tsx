@@ -42,6 +42,9 @@ const jobEditSchema = z.object({
   special_instructions: z.string().optional(),
   notes: z.string().optional(),
   is_priority: z.boolean().optional(),
+  locks_requested: z.boolean().optional(),
+  lock_notes: z.string().optional(),
+  zip_tied_on_dropoff: z.boolean().optional(),
 });
 
 type JobEditForm = z.infer<typeof jobEditSchema>;
@@ -137,6 +140,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         special_instructions: job.special_instructions || '',
         notes: job.notes || '',
         is_priority: (job as any).is_priority ?? false,
+        locks_requested: (job as any).locks_requested ?? false,
+        lock_notes: (job as any).lock_notes || '',
+        zip_tied_on_dropoff: (job as any).zip_tied_on_dropoff ?? false,
       });
     }
   }, [job, form]);
@@ -157,6 +163,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           special_instructions: data.special_instructions,
           notes: data.notes,
           is_priority: data.is_priority,
+          locks_requested: data.locks_requested,
+          lock_notes: data.lock_notes,
+          zip_tied_on_dropoff: data.zip_tied_on_dropoff,
           updated_at: new Date().toISOString(),
         })
         .eq('id', jobId);
@@ -644,6 +653,100 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                       />
                     ) : (
                       <p className="text-sm whitespace-pre-wrap">{job?.special_instructions || 'None'}</p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Lock Options */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      🔒 Lock Options
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {isEditing ? (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="locks_requested"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-base">Provide Locks for Units</FormLabel>
+                                <div className="text-sm text-muted-foreground">
+                                  Enable this if locks are needed for the units on this job
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        {form.watch('locks_requested') && (
+                          <FormField
+                            control={form.control}
+                            name="lock_notes"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Lock Details (Optional)</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Enter combination codes, key details, or lock type information..."
+                                    {...field}
+                                    value={field.value || ''}
+                                    rows={2}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        <FormField
+                          control={form.control}
+                          name="zip_tied_on_dropoff"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-base">Units Zip-Tied Upon Drop-off</FormLabel>
+                                <div className="text-sm text-muted-foreground">
+                                  Used primarily for event setups to prevent public usage before events start
+                                </div>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Locks Requested:</span>
+                          <span className="text-sm">{(job as any)?.locks_requested ? 'Yes' : 'No'}</span>
+                        </div>
+                        {(job as any)?.locks_requested && (job as any)?.lock_notes && (
+                          <div>
+                            <span className="text-sm font-medium text-muted-foreground">Lock Details:</span>
+                            <p className="text-sm mt-1">{(job as any).lock_notes}</p>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Zip-Tied on Drop-off:</span>
+                          <span className="text-sm">{(job as any)?.zip_tied_on_dropoff ? 'Yes' : 'No'}</span>
+                        </div>
+                      </div>
                     )}
                   </CardContent>
                 </Card>

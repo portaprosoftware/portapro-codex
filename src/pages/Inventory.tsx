@@ -15,13 +15,13 @@ import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
 import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard";
 import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
-import { PadlockStatusSummary } from "@/components/inventory/PadlockStatusSummary";
+
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now" | "padlocked" | "unlocked" | "overdue_padlocked";
+type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
 type ViewType = "grid" | "list";
 
 const Inventory: React.FC = () => {
@@ -101,12 +101,6 @@ const Inventory: React.FC = () => {
           return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-yellow-600 hover:from-yellow-600 hover:to-yellow-700";
         case "out_of_stock":
           return "bg-gradient-to-r from-red-500 to-red-600 text-white border-red-600 hover:from-red-600 hover:to-red-700";
-        case "padlocked":
-          return "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-orange-600 hover:from-orange-600 hover:to-orange-700";
-        case "unlocked":
-          return "bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600 hover:from-green-600 hover:to-green-700";
-        case "overdue_padlocked":
-          return "bg-gradient-to-r from-red-600 to-red-700 text-white border-red-700 hover:from-red-700 hover:to-red-800";
         default:
           return "bg-blue-600 text-white border-blue-600";
       }
@@ -222,10 +216,7 @@ const Inventory: React.FC = () => {
     { key: "in_stock" as FilterType, label: "In Stock" },
     { key: "low_stock" as FilterType, label: "Low Stock" },
     { key: "out_of_stock" as FilterType, label: "Out of Stock" },
-    { key: "available_now" as FilterType, label: "Available Now", icon: SlidersHorizontal },
-    { key: "padlocked" as FilterType, label: "Padlocked", icon: Lock },
-    { key: "unlocked" as FilterType, label: "Unlocked", icon: Unlock },
-    { key: "overdue_padlocked" as FilterType, label: "Overdue Padlocked", icon: AlertTriangle }
+    { key: "available_now" as FilterType, label: "Available Now", icon: SlidersHorizontal }
   ];
 
   if (selectedProduct) {
@@ -260,8 +251,6 @@ const Inventory: React.FC = () => {
         </div>
       </div>
 
-      {/* Padlock Status Summary */}
-      <PadlockStatusSummary />
 
       {/* Filter Bar */}
       <div className="space-y-4">

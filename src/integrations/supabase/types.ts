@@ -2440,6 +2440,8 @@ export type Database = {
           is_service_job: boolean
           job_number: string
           job_type: string
+          lock_notes: string | null
+          locks_requested: boolean | null
           notes: string | null
           parent_job_id: string | null
           partial_pickups: Json | null
@@ -2457,6 +2459,7 @@ export type Database = {
           updated_at: string
           vehicle_id: string | null
           was_overdue: boolean
+          zip_tied_on_dropoff: boolean | null
         }
         Insert: {
           actual_completion_time?: string | null
@@ -2472,6 +2475,8 @@ export type Database = {
           is_service_job?: boolean
           job_number?: string
           job_type: string
+          lock_notes?: string | null
+          locks_requested?: boolean | null
           notes?: string | null
           parent_job_id?: string | null
           partial_pickups?: Json | null
@@ -2489,6 +2494,7 @@ export type Database = {
           updated_at?: string
           vehicle_id?: string | null
           was_overdue?: boolean
+          zip_tied_on_dropoff?: boolean | null
         }
         Update: {
           actual_completion_time?: string | null
@@ -2504,6 +2510,8 @@ export type Database = {
           is_service_job?: boolean
           job_number?: string
           job_type?: string
+          lock_notes?: string | null
+          locks_requested?: boolean | null
           notes?: string | null
           parent_job_id?: string | null
           partial_pickups?: Json | null
@@ -2521,6 +2529,7 @@ export type Database = {
           updated_at?: string
           vehicle_id?: string | null
           was_overdue?: boolean
+          zip_tied_on_dropoff?: boolean | null
         }
         Relationships: [
           {
@@ -2712,36 +2721,6 @@ export type Database = {
           updated_at?: string
           user_id?: string
           work_duration?: number | null
-        }
-        Relationships: []
-      }
-      maintenance_notification_schedules: {
-        Row: {
-          created_at: string
-          id: string
-          maintenance_record_id: string
-          notification_type: string
-          scheduled_for: string
-          sent_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          maintenance_record_id: string
-          notification_type: string
-          scheduled_for: string
-          sent_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          maintenance_record_id?: string
-          notification_type?: string
-          scheduled_for?: string
-          sent_at?: string | null
-          updated_at?: string
         }
         Relationships: []
       }
@@ -3589,47 +3568,6 @@ export type Database = {
         }
         Relationships: []
       }
-      padlock_activity_log: {
-        Row: {
-          action_type: string
-          created_at: string
-          id: string
-          location_coordinates: unknown | null
-          notes: string | null
-          performed_by: string | null
-          product_item_id: string
-          timestamp: string
-        }
-        Insert: {
-          action_type: string
-          created_at?: string
-          id?: string
-          location_coordinates?: unknown | null
-          notes?: string | null
-          performed_by?: string | null
-          product_item_id: string
-          timestamp?: string
-        }
-        Update: {
-          action_type?: string
-          created_at?: string
-          id?: string
-          location_coordinates?: unknown | null
-          notes?: string | null
-          performed_by?: string | null
-          product_item_id?: string
-          timestamp?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_padlock_activity_product_item"
-            columns: ["product_item_id"]
-            isOneToOne: false
-            referencedRelation: "product_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       padlock_code_access_logs: {
         Row: {
           access_reason: string | null
@@ -3667,62 +3605,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "padlock_code_access_logs_product_item_id_fkey"
-            columns: ["product_item_id"]
-            isOneToOne: false
-            referencedRelation: "product_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      padlock_security_incidents: {
-        Row: {
-          created_at: string
-          description: string
-          id: string
-          incident_type: string
-          product_item_id: string
-          reported_at: string
-          reported_by: string
-          resolution_notes: string | null
-          resolved_at: string | null
-          resolved_by: string | null
-          severity: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          id?: string
-          incident_type: string
-          product_item_id: string
-          reported_at?: string
-          reported_by: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity?: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          id?: string
-          incident_type?: string
-          product_item_id?: string
-          reported_at?: string
-          reported_by?: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          severity?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "padlock_security_incidents_product_item_id_fkey"
             columns: ["product_item_id"]
             isOneToOne: false
             referencedRelation: "product_items"
@@ -3887,15 +3769,12 @@ export type Database = {
           condition: string | null
           created_at: string
           current_storage_location_id: string | null
-          currently_padlocked: boolean | null
           gps_enabled: boolean | null
           id: string
           interior_features: string[] | null
           item_code: string
           last_known_location: unknown | null
           last_location_update: string | null
-          last_padlock_timestamp: string | null
-          last_unlock_timestamp: string | null
           location: string | null
           manufacturing_date: string | null
           material: string | null
@@ -3903,9 +3782,6 @@ export type Database = {
           notes: string | null
           ocr_confidence_score: number | null
           ocr_raw_data: Json | null
-          padlock_code_reference: string | null
-          padlock_type: string | null
-          padlocked_by: string | null
           plastic_code: string | null
           power_source: string | null
           product_id: string
@@ -3915,7 +3791,6 @@ export type Database = {
           status: string
           tool_number: string | null
           tracking_photo_url: string | null
-          unlocked_by: string | null
           updated_at: string
           use_case: string | null
           vendor_id: string | null
@@ -3928,15 +3803,12 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
-          currently_padlocked?: boolean | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
           item_code: string
           last_known_location?: unknown | null
           last_location_update?: string | null
-          last_padlock_timestamp?: string | null
-          last_unlock_timestamp?: string | null
           location?: string | null
           manufacturing_date?: string | null
           material?: string | null
@@ -3944,9 +3816,6 @@ export type Database = {
           notes?: string | null
           ocr_confidence_score?: number | null
           ocr_raw_data?: Json | null
-          padlock_code_reference?: string | null
-          padlock_type?: string | null
-          padlocked_by?: string | null
           plastic_code?: string | null
           power_source?: string | null
           product_id: string
@@ -3956,7 +3825,6 @@ export type Database = {
           status?: string
           tool_number?: string | null
           tracking_photo_url?: string | null
-          unlocked_by?: string | null
           updated_at?: string
           use_case?: string | null
           vendor_id?: string | null
@@ -3969,15 +3837,12 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
-          currently_padlocked?: boolean | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
           item_code?: string
           last_known_location?: unknown | null
           last_location_update?: string | null
-          last_padlock_timestamp?: string | null
-          last_unlock_timestamp?: string | null
           location?: string | null
           manufacturing_date?: string | null
           material?: string | null
@@ -3985,9 +3850,6 @@ export type Database = {
           notes?: string | null
           ocr_confidence_score?: number | null
           ocr_raw_data?: Json | null
-          padlock_code_reference?: string | null
-          padlock_type?: string | null
-          padlocked_by?: string | null
           plastic_code?: string | null
           power_source?: string | null
           product_id?: string
@@ -3997,7 +3859,6 @@ export type Database = {
           status?: string
           tool_number?: string | null
           tracking_photo_url?: string | null
-          unlocked_by?: string | null
           updated_at?: string
           use_case?: string | null
           vendor_id?: string | null
@@ -4151,6 +4012,7 @@ export type Database = {
           hourly_rate: number | null
           id: string
           image_url: string | null
+          includes_lock: boolean | null
           low_stock_threshold: number
           monthly_rate: number | null
           name: string
@@ -4176,6 +4038,7 @@ export type Database = {
           hourly_rate?: number | null
           id?: string
           image_url?: string | null
+          includes_lock?: boolean | null
           low_stock_threshold?: number
           monthly_rate?: number | null
           name: string
@@ -4201,6 +4064,7 @@ export type Database = {
           hourly_rate?: number | null
           id?: string
           image_url?: string | null
+          includes_lock?: boolean | null
           low_stock_threshold?: number
           monthly_rate?: number | null
           name?: string
