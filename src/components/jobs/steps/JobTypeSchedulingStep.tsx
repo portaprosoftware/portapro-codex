@@ -94,17 +94,24 @@ export function JobTypeSchedulingStep() {
           {jobTypes.map((type) => {
             const Icon = type.icon;
             return (
-              <Card
+              <div
                 key={type.value}
                 className={cn(
-                  "cursor-pointer transition-all hover:shadow-md",
-                  state.data.job_type === type.value 
-                    ? "ring-2 ring-white" 
-                    : "hover:bg-muted/50",
-                  type.color
+                  "p-1 rounded-xl transition-all",
+                  state.data.job_type === type.value && "ring-2 ring-offset-2",
+                  type.value === 'delivery' && state.data.job_type === type.value && "ring-blue-500",
+                  type.value === 'pickup' && state.data.job_type === type.value && "ring-green-500",
+                  type.value === 'service' && state.data.job_type === type.value && "ring-purple-500",
+                  type.value === 'on-site-survey' && state.data.job_type === type.value && "ring-red-700"
                 )}
-                onClick={() => handleJobTypeSelect(type.value)}
               >
+                <Card
+                  className={cn(
+                    "cursor-pointer transition-all hover:shadow-md hover:scale-[1.02]",
+                    type.color
+                  )}
+                  onClick={() => handleJobTypeSelect(type.value)}
+                >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20">
@@ -116,7 +123,8 @@ export function JobTypeSchedulingStep() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             );
           })}
         </div>
