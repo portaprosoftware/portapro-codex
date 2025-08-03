@@ -126,7 +126,7 @@ export function JobTypeSchedulingStep() {
       </div>
 
       {/* Date Selection and Right Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Date Selection - Left side */}
         <div className="lg:col-span-2 space-y-4">
           <Label className="text-base font-medium">Scheduled Date</Label>
@@ -150,18 +150,18 @@ export function JobTypeSchedulingStep() {
         </div>
 
         {/* Right Panel - Time Toggle, Priority, and Notes */}
-        <div className="space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           {/* Time Selection */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-medium">Specific Time</Label>
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={!!state.data.scheduled_time}
                   onCheckedChange={handleTimeToggle}
                 />
-                <Label className="text-sm">Set time</Label>
+                <Label className="text-base font-medium">Specific Time</Label>
               </div>
+              <Label className="text-sm">Set time</Label>
             </div>
 
             {state.data.scheduled_time !== null && (
@@ -190,17 +190,17 @@ export function JobTypeSchedulingStep() {
           {/* Priority Toggle */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-medium">Priority</Label>
               <div className="flex items-center space-x-2">
                 <Switch
                   checked={state.data.is_priority || false}
                   onCheckedChange={handleTogglePriority}
                 />
-                <Label className="text-sm flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  Priority
-                </Label>
+                <Label className="text-base font-medium">Priority</Label>
               </div>
+              <Label className="text-sm flex items-center gap-1">
+                <Star className="w-4 h-4 text-yellow-500" />
+                Priority
+              </Label>
             </div>
             {state.data.is_priority && (
               <p className="text-sm text-muted-foreground">

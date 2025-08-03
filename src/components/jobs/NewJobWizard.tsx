@@ -62,19 +62,11 @@ function WizardContent({ onClose }: { onClose: () => void }) {
 
   return (
     <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b">
+      <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
         <CardTitle className="text-xl font-semibold flex items-center gap-2">
           <Plus className="h-5 w-5" />
           Create New Job
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClose}
-          className="h-8 w-8 p-0"
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </CardHeader>
 
       <div className="flex-1 flex flex-col overflow-hidden">
