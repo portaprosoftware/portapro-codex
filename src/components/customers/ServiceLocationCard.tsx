@@ -14,6 +14,7 @@ import {
 import { EditServiceLocationModal } from './EditServiceLocationModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useCustomerGeocoding } from '@/hooks/useCustomerGeocoding';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,7 @@ interface ServiceLocationCardProps {
 export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLocationCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { toast } = useToast();
+  const { geocodeCustomerLocation, isGeocoding } = useCustomerGeocoding();
 
   const fullAddress = [
     location.street,
@@ -43,6 +45,22 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
     location.state,
     location.zip
   ].filter(Boolean).join(', ');
+
+  const hasGpsCoordinates = location.gps_coordinates !== null;
+
+  const handleGetGpsCoordinates = async () => {
+    if (!fullAddress) {
+      toast({
+        title: "Error",
+        description: "Cannot geocode location without a complete address.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    await geocodeCustomerLocation(location.customer_id, fullAddress);
+    onUpdate(); // Refresh the location data
+  };
 
   const handleDelete = async () => {
     try {
@@ -103,12 +121,7 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
                     <Lock className="w-3 h-3 mr-1" />
                     Locked
                   </Badge>
-                )}
-                {location.is_active ? (
-                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full">Active</Badge>
-                ) : (
-                  <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full">Inactive</Badge>
-                )}
+                 )}
               </div>
             </div>
 
@@ -131,50 +144,67 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             </div>
 
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInGoogleMaps}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Google Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInAppleMaps}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Apple Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInWaze}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Waze
-              </Button>
+              {!hasGpsCoordinates ? (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleGetGpsCoordinates}
+                  disabled={isGeocoding}
+                  className="text-xs bg-primary text-primary-foreground"
+                >
+                  <MapPin className="w-3 h-3 mr-1" />
+                  {isGeocoding ? 'Getting GPS...' : 'Get GPS Coordinates'}
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openInGoogleMaps}
+                    className="text-xs"
+                  >
+                    <ExternalLink className="w-3 h-3 mr-1" />
+                    Google Maps
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openInAppleMaps}
+                    className="text-xs"
+                  >
+                    <ExternalLink className="w-3 h-3 mr-1" />
+                    Apple Maps
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openInWaze}
+                    className="text-xs"
+                  >
+                    <ExternalLink className="w-3 h-3 mr-1" />
+                    Waze
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
           <div className="flex gap-2 ml-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditModalOpen(true)}
-            >
-              <Edit className="w-4 h-4" />
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Trash2 className="w-4 h-4" />
+            {!location.is_locked && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditModalOpen(true)}
+                >
+                  <Edit className="w-4 h-4" />
                 </Button>
-              </AlertDialogTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
@@ -201,18 +231,22 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+              </>
+            )}
           </div>
         </div>
 
-        <EditServiceLocationModal
-          location={location}
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          onSuccess={() => {
-            setIsEditModalOpen(false);
-            onUpdate();
-          }}
-        />
+        {!location.is_locked && (
+          <EditServiceLocationModal
+            location={location}
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onSuccess={() => {
+              setIsEditModalOpen(false);
+              onUpdate();
+            }}
+          />
+        )}
       </CardContent>
     </Card>
   );
