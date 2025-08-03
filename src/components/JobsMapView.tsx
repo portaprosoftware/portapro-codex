@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
 import { isJobOverdue, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 import { useQuery } from '@tanstack/react-query';
+import { formatDateForQuery } from '@/lib/dateUtils';
 import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -68,11 +69,6 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
   }, [window.location.pathname]);
 
   // Use the same data fetching as other views - this ensures data consistency
-  const formatDateForQuery = (date: Date) => {
-    return date.getFullYear() + '-' + 
-      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-      String(date.getDate()).padStart(2, '0');
-  };
 
   const { data: allJobs = [] } = useJobs({
     date: formatDateForQuery(selectedDate),
@@ -175,19 +171,63 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     }
   }, [mapStyle]);
 
-  // Fetch service locations
+  // Fetch service locations - enhanced to include coordinate_ids referenced by jobs
   useEffect(() => {
     const fetchServiceLocations = async () => {
       try {
-        const { data: locations } = await supabase
+        // Get unique coordinate IDs from filtered jobs
+        const coordinateIds = new Set();
+        const customerIds = new Set();
+        
+        filteredJobs.forEach(job => {
+          customerIds.add(job.customer_id);
+          if (job.selected_coordinate_ids && Array.isArray(job.selected_coordinate_ids)) {
+            job.selected_coordinate_ids.forEach(id => coordinateIds.add(id));
+          }
+        });
+
+        if (customerIds.size === 0) {
+          setServiceLocations([]);
+          return;
+        }
+
+        // Fetch locations that are either default for customers with jobs OR referenced in selected_coordinate_ids
+        const query = supabase
           .from('customer_service_locations')
           .select(`
             id,
             customer_id,
             gps_coordinates,
-            location_name
-          `)
-          .eq('is_default', true);
+            location_name,
+            is_default
+          `);
+
+        // Build OR condition for locations
+        const conditions = [];
+        
+        // Include default locations for customers with jobs
+        if (customerIds.size > 0) {
+          conditions.push(`customer_id.in.(${Array.from(customerIds).join(',')}),is_default.eq.true`);
+        }
+        
+        // Include specific locations referenced by jobs
+        if (coordinateIds.size > 0) {
+          conditions.push(`id.in.(${Array.from(coordinateIds).join(',')})`);
+        }
+
+        const { data: locations } = await query.or(conditions.join(','));
+
+        console.log('Fetched service locations:', locations?.length);
+        
+        // Log locations without GPS coordinates for debugging
+        const locationsWithoutGPS = locations?.filter(loc => !loc.gps_coordinates) || [];
+        if (locationsWithoutGPS.length > 0) {
+          console.warn('Service locations without GPS coordinates:', locationsWithoutGPS.map(loc => ({
+            name: loc.location_name,
+            customer_id: loc.customer_id,
+            id: loc.id
+          })));
+        }
 
         setServiceLocations(locations || []);
       } catch (error) {
@@ -197,7 +237,7 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     };
 
     fetchServiceLocations();
-  }, []);
+  }, [filteredJobs]);
 
   // Create pins with enhanced styling based on mode
   useEffect(() => {
@@ -210,17 +250,32 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
     const bounds = new mapboxgl.LngLatBounds();
     let hasCoordinates = false;
 
-    // Group jobs by customer location
+    // Group jobs by customer location - enhanced logic
     const jobsByLocation = new Map();
+    const jobsWithoutLocation = [];
     
     filteredJobs.forEach(job => {
-      const location = serviceLocations.find(loc => 
-        loc.customer_id === job.customer_id && 
-        loc.gps_coordinates
-      );
+      let location = null;
+      
+      // First, try to find location using selected_coordinate_ids
+      if (job.selected_coordinate_ids && Array.isArray(job.selected_coordinate_ids) && job.selected_coordinate_ids.length > 0) {
+        location = serviceLocations.find(loc => 
+          job.selected_coordinate_ids.includes(loc.id) && 
+          loc.gps_coordinates
+        );
+      }
+      
+      // If no coordinate-specific location found, fall back to default location
+      if (!location) {
+        location = serviceLocations.find(loc => 
+          loc.customer_id === job.customer_id && 
+          loc.is_default && 
+          loc.gps_coordinates
+        );
+      }
       
       if (location?.gps_coordinates) {
-        const key = `${job.customer_id}-${location.gps_coordinates}`;
+        const key = `${location.id}-${location.gps_coordinates}`;
         if (!jobsByLocation.has(key)) {
           jobsByLocation.set(key, {
             location,
@@ -228,8 +283,19 @@ const JobsMapPage = ({ searchTerm, selectedDriver, jobType, status, selectedDate
           });
         }
         jobsByLocation.get(key).jobs.push(job);
+      } else {
+        jobsWithoutLocation.push({
+          job_number: job.job_number,
+          customer_name: job.customers?.name,
+          selected_coordinate_ids: job.selected_coordinate_ids
+        });
       }
     });
+
+    // Debug logging for jobs without locations
+    if (jobsWithoutLocation.length > 0) {
+      console.warn('Jobs without valid GPS coordinates:', jobsWithoutLocation);
+    }
 
     // Create pins for each location
     jobsByLocation.forEach(({ location, jobs }) => {
