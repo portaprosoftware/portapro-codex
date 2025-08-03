@@ -136,23 +136,24 @@ export function SimpleJobsMapView({
     const jobsWithoutLocation = [];
     
     filteredJobs.forEach(job => {
-      // Get customer's default service location GPS coordinates
-      const defaultLocation = job.customers?.customer_service_locations?.find(loc => loc.is_default) || 
-                             job.customers?.customer_service_locations?.[0];
-      const gpsCoords = defaultLocation?.gps_coordinates;
-      
-      if (gpsCoords) {
-        const key = gpsCoords.toString();
-        if (!jobsByLocation.has(key)) {
-          jobsByLocation.set(key, []);
-        }
-        jobsByLocation.get(key).push(job);
-      } else {
+      // Skip jobs without customer address
+      if (!job.customers?.service_street || !job.customers?.service_city || !job.customers?.service_state) {
         jobsWithoutLocation.push({
           job_number: job.job_number,
-          customer_name: job.customers?.name
+          customer_name: job.customers?.name,
+          reason: 'Missing address'
         });
+        return;
       }
+      
+      // For now, we can't show jobs on map because customers don't have GPS coordinates
+      // We need GPS coordinates to display pins
+      jobsWithoutLocation.push({
+        job_number: job.job_number,
+        customer_name: job.customers?.name,
+        address: `${job.customers.service_street}, ${job.customers.service_city}, ${job.customers.service_state}`,
+        reason: 'No GPS coordinates available'
+      });
     });
 
     // Log jobs without coordinates for debugging
@@ -323,6 +324,13 @@ export function SimpleJobsMapView({
 
   return (
     <div className="relative w-full h-full">
+      {/* Debug Info */}
+      {filteredJobs.length > 0 && (
+        <div className="absolute top-4 right-4 z-10 bg-white p-2 rounded shadow text-xs">
+          Jobs: {filteredJobs.length} | GPS: 0 (customers need geocoding)
+        </div>
+      )}
+      
       <div ref={mapContainer} className="w-full h-full" />
       
       {/* Map Style Toggle */}
