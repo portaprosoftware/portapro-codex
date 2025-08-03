@@ -44,8 +44,6 @@ import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 
 const App = () => {
-  console.log('App component rendering...');
-  
   return (
     <ErrorBoundary>
       <Router>
