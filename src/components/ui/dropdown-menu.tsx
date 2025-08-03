@@ -7,7 +7,19 @@ import { cn } from "@/lib/utils"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>((props, ref) => (
+  <DropdownMenuPrimitive.Trigger
+    {...props}
+    ref={ref}
+    onClick={(e) => {
+      console.log("Dropdown trigger clicked", e);
+      props.onClick?.(e);
+    }}
+  />
+))
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group
 
