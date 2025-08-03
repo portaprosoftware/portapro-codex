@@ -10,7 +10,7 @@ import { X, Satellite, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
 import { useAutoGeocoding } from '@/hooks/useAutoGeocoding';
-import { fixDisasterServicesGeocoding } from '@/utils/fixExistingGeocodingUtil';
+
 
 interface SimpleJobsMapViewProps {
   searchTerm?: string;
