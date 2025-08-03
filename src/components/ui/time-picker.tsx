@@ -58,7 +58,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
               <SelectItem 
                 key={hour} 
                 value={hour.toString()}
-                className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+                className="py-3 pl-10 pr-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
               >
                 {hour}
               </SelectItem>
@@ -78,7 +78,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
               <SelectItem 
                 key={minute} 
                 value={minute.toString().padStart(2, '0')}
-                className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+                className="py-3 pl-10 pr-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
               >
                 :{minute.toString().padStart(2, '0')}
               </SelectItem>
@@ -96,13 +96,13 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
           <SelectContent className="bg-background border border-border shadow-xl z-[9999] max-h-[280px] md:max-h-96">
             <SelectItem 
               value="AM"
-              className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+              className="py-3 pl-10 pr-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
             >
               AM
             </SelectItem>
             <SelectItem 
               value="PM"
-              className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+              className="py-3 pl-10 pr-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
             >
               PM
             </SelectItem>
