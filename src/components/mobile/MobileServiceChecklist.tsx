@@ -3,23 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, MapPin, AlertTriangle, Shield } from 'lucide-react';
+import { CheckCircle, Clock, MapPin, AlertTriangle, Shield, Key } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ServiceItem {
   id: string;
   item_code: string;
   product_name: string;
-  currently_padlocked: boolean;
-  padlock_type?: string;
-  supports_padlock: boolean;
-  last_padlock_timestamp?: string;
-  last_unlock_timestamp?: string;
+  includes_lock: boolean;
 }
 
 interface MobileServiceChecklistProps {
   jobId: string;
   items: ServiceItem[];
+  locks_requested?: boolean;
+  lock_notes?: string;
+  zip_tied_on_dropoff?: boolean;
   onServiceComplete?: (itemId: string, completed: boolean) => void;
 }
 
@@ -34,6 +33,9 @@ const defaultChecklistItems = [
 export const MobileServiceChecklist: React.FC<MobileServiceChecklistProps> = ({
   jobId,
   items,
+  locks_requested = false,
+  lock_notes,
+  zip_tied_on_dropoff = false,
   onServiceComplete
 }) => {
   const { toast } = useToast();
@@ -41,14 +43,7 @@ export const MobileServiceChecklist: React.FC<MobileServiceChecklistProps> = ({
   const [serviceStartTime] = useState(new Date());
   const [currentLocation, setCurrentLocation] = useState<GeolocationPosition | null>(null);
 
-  const padlockedItems = items.filter(item => item.currently_padlocked && item.supports_padlock);
-  const overdueItems = items.filter(item => {
-    if (!item.currently_padlocked || !item.last_padlock_timestamp) return false;
-    const padlockTime = new Date(item.last_padlock_timestamp);
-    const now = new Date();
-    const hoursOverdue = (now.getTime() - padlockTime.getTime()) / (1000 * 60 * 60);
-    return hoursOverdue > 24; // Overdue after 24 hours
-  });
+  const unitsWithLocks = items.filter(item => item.includes_lock);
 
   const handleLocationCapture = async (): Promise<GeolocationPosition> => {
     return new Promise((resolve, reject) => {
@@ -96,26 +91,37 @@ export const MobileServiceChecklist: React.FC<MobileServiceChecklistProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Pre-Service Alerts */}
-      {(padlockedItems.length > 0 || overdueItems.length > 0) && (
-        <Card className="border-yellow-200 bg-yellow-50">
+      {/* Lock Information */}
+      {(locks_requested || unitsWithLocks.length > 0) && (
+        <Card className="border-blue-200 bg-blue-50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2 text-yellow-800">
-              <AlertTriangle className="h-5 w-5" />
-              Pre-Service Alerts
+            <CardTitle className="text-lg flex items-center gap-2 text-blue-800">
+              <Key className="h-5 w-5" />
+              Lock Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {padlockedItems.length > 0 && (
+            {locks_requested && (
               <div className="flex items-center gap-2 text-sm">
-                <Shield className="h-4 w-4 text-red-500" />
-                <span>{padlockedItems.length} units require unlocking before service</span>
+                <CheckCircle className="h-4 w-4 text-blue-500" />
+                <span>Customer has requested locks for this job</span>
               </div>
             )}
-            {overdueItems.length > 0 && (
+            {unitsWithLocks.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-orange-500" />
-                <span>{overdueItems.length} units are overdue for pickup</span>
+                <Key className="h-4 w-4 text-blue-500" />
+                <span>{unitsWithLocks.length} units include locks and keys</span>
+              </div>
+            )}
+            {zip_tied_on_dropoff && (
+              <div className="flex items-center gap-2 text-sm">
+                <Shield className="h-4 w-4 text-blue-500" />
+                <span>Units should be zip-tied upon drop-off</span>
+              </div>
+            )}
+            {lock_notes && (
+              <div className="text-xs text-blue-700 bg-blue-100 rounded p-2">
+                <strong>Lock Notes:</strong> {lock_notes}
               </div>
             )}
           </CardContent>

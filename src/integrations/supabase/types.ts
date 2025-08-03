@@ -3568,50 +3568,6 @@ export type Database = {
         }
         Relationships: []
       }
-      padlock_code_access_logs: {
-        Row: {
-          access_reason: string | null
-          access_timestamp: string
-          accessed_by: string
-          created_at: string
-          id: string
-          ip_address: string | null
-          product_item_id: string
-          session_id: string | null
-          user_agent: string | null
-        }
-        Insert: {
-          access_reason?: string | null
-          access_timestamp?: string
-          accessed_by: string
-          created_at?: string
-          id?: string
-          ip_address?: string | null
-          product_item_id: string
-          session_id?: string | null
-          user_agent?: string | null
-        }
-        Update: {
-          access_reason?: string | null
-          access_timestamp?: string
-          accessed_by?: string
-          created_at?: string
-          id?: string
-          ip_address?: string | null
-          product_item_id?: string
-          session_id?: string | null
-          user_agent?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "padlock_code_access_logs_product_item_id_fkey"
-            columns: ["product_item_id"]
-            isOneToOne: false
-            referencedRelation: "product_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       pin_categories: {
         Row: {
           color: string

@@ -21,7 +21,7 @@ interface Product {
   stock_in_service: number;
   low_stock_threshold: number;
   track_inventory: boolean;
-  supports_padlock: boolean;
+  includes_lock: boolean;
   charge_for_product?: boolean;
   pricing_method?: string;
   daily_rate?: number;
@@ -79,21 +79,21 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     }
   });
 
-  const updatePadlockSupportMutation = useMutation({
-    mutationFn: async (supportsPadlock: boolean) => {
+  const updateIncludesLockMutation = useMutation({
+    mutationFn: async (includesLock: boolean) => {
       const { error } = await supabase
         .from("products")
-        .update({ supports_padlock: supportsPadlock })
+        .update({ includes_lock: includesLock })
         .eq("id", product.id);
       
       if (error) throw error;
     },
-    onSuccess: (_, supportsPadlock) => {
+    onSuccess: (_, includesLock) => {
       queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-      toast.success(`Padlock support ${supportsPadlock ? "enabled" : "disabled"}`);
+      toast.success(`Lock inclusion ${includesLock ? "enabled" : "disabled"}`);
     },
     onError: (error) => {
-      toast.error("Failed to update padlock support");
+      toast.error("Failed to update lock inclusion");
       console.error(error);
     }
   });
@@ -165,8 +165,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     updateTrackingMutation.mutate(!checked);
   };
 
-  const handlePadlockSupportToggle = (checked: boolean) => {
-    updatePadlockSupportMutation.mutate(checked);
+  const handleIncludesLockToggle = (checked: boolean) => {
+    updateIncludesLockMutation.mutate(checked);
   };
 
   const handleAdjustStock = () => {
@@ -306,13 +306,13 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-medium text-gray-900 mb-1">Supports Padlock</h3>
-            <p className="text-sm text-gray-600">Enable if this product type accepts external padlocks</p>
+            <h3 className="font-medium text-gray-900 mb-1">Includes Lock and Key</h3>
+            <p className="text-sm text-gray-600">Enable if this product type comes with a lock and key</p>
           </div>
           <Switch
-            checked={product.supports_padlock}
-            onCheckedChange={handlePadlockSupportToggle}
-            disabled={updatePadlockSupportMutation.isPending}
+            checked={product.includes_lock}
+            onCheckedChange={handleIncludesLockToggle}
+            disabled={updateIncludesLockMutation.isPending}
           />
         </div>
       </div>

@@ -12,13 +12,14 @@ interface RouteJob {
   scheduled_time: string;
   job_type: string;
   status: string;
+  locks_requested: boolean;
+  lock_notes?: string;
+  zip_tied_on_dropoff?: boolean;
   items: Array<{
     id: string;
     item_code: string;
     product_name: string;
-    currently_padlocked: boolean;
-    padlock_type?: string;
-    supports_padlock: boolean;
+    includes_lock: boolean;
   }>;
 }
 
@@ -54,17 +55,15 @@ export const MobileRouteView: React.FC<MobileRouteViewProps> = ({
     }
   };
 
-  const getJobPadlockSummary = (items: RouteJob['items']) => {
-    const padlockSupported = items.filter(item => item.supports_padlock);
-    const padlocked = padlockSupported.filter(item => item.currently_padlocked);
-    const needsKey = padlocked.filter(item => item.padlock_type === 'keyed');
-    const needsCombination = padlocked.filter(item => item.padlock_type === 'combination');
-
+  const getJobLockSummary = (job: RouteJob) => {
+    const unitsWithLocks = job.items.filter(item => item.includes_lock);
+    
     return {
-      total: padlockSupported.length,
-      padlocked: padlocked.length,
-      needsKey: needsKey.length,
-      needsCombination: needsCombination.length
+      hasLockRequest: job.locks_requested,
+      lockNotes: job.lock_notes,
+      zipTiedOnDropoff: job.zip_tied_on_dropoff,
+      unitsWithLocks: unitsWithLocks.length,
+      totalUnits: job.items.length
     };
   };
 
@@ -98,18 +97,18 @@ export const MobileRouteView: React.FC<MobileRouteViewProps> = ({
             <div className="text-center">
               <div className="font-medium">
                 {jobs.reduce((acc, job) => {
-                  const summary = getJobPadlockSummary(job.items);
-                  return acc + summary.padlocked;
+                  const summary = getJobLockSummary(job);
+                  return acc + (summary.hasLockRequest ? 1 : 0);
                 }, 0)}
               </div>
-              <div className="text-muted-foreground">Locked Units</div>
+              <div className="text-muted-foreground">Lock Requests</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {sortedJobs.map((job) => {
-        const padlockSummary = getJobPadlockSummary(job.items);
+        const lockSummary = getJobLockSummary(job);
         
         return (
           <Card key={job.id} className="relative">
@@ -136,50 +135,32 @@ export const MobileRouteView: React.FC<MobileRouteViewProps> = ({
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {/* Padlock Requirements */}
-              {padlockSummary.total > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              {/* Lock Requirements */}
+              {lockSummary.hasLockRequest && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-2">
-                    <Key className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm font-medium text-yellow-800">
-                      Padlock Requirements
+                    <Key className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">
+                      Lock Requirements
                     </span>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                     <div className="text-center">
-                      <div className="font-medium">{padlockSummary.padlocked}</div>
-                      <div className="text-muted-foreground">Locked</div>
+                      <div className="font-medium">{lockSummary.unitsWithLocks}</div>
+                      <div className="text-muted-foreground">Units with Locks</div>
                     </div>
                     <div className="text-center">
-                      <div className="font-medium">{padlockSummary.needsKey}</div>
-                      <div className="text-muted-foreground">Need Key</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-medium">{padlockSummary.needsCombination}</div>
-                      <div className="text-muted-foreground">Need Code</div>
+                      <div className="font-medium">{lockSummary.zipTiedOnDropoff ? 'Yes' : 'No'}</div>
+                      <div className="text-muted-foreground">Zip-Tie on Drop-off</div>
                     </div>
                   </div>
 
-                  {/* Quick preview of units */}
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {job.items
-                      .filter(item => item.supports_padlock)
-                      .slice(0, 5)
-                      .map(item => (
-                        <div key={item.id} className="flex items-center gap-1">
-                          <span className="text-xs">
-                            {item.currently_padlocked ? '🔒' : '🔓'}
-                          </span>
-                          <span className="text-xs font-mono">{item.item_code}</span>
-                        </div>
-                      ))}
-                    {job.items.filter(item => item.supports_padlock).length > 5 && (
-                      <span className="text-xs text-muted-foreground">
-                        +{job.items.filter(item => item.supports_padlock).length - 5} more
-                      </span>
-                    )}
-                  </div>
+                  {lockSummary.lockNotes && (
+                    <div className="text-xs text-blue-700 bg-blue-100 rounded p-2">
+                      <strong>Notes:</strong> {lockSummary.lockNotes}
+                    </div>
+                  )}
                 </div>
               )}
 
