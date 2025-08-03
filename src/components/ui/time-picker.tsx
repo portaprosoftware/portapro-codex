@@ -46,16 +46,20 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
   const minuteOptions = [0, 15, 30, 45];
 
   return (
-    <div className={`flex gap-2 ${className}`}>
+    <div className={`flex gap-3 ${className}`}>
       {/* Hours */}
       <div className="flex-1">
         <Select value={currentHours.toString()} onValueChange={(value) => handleTimeChange(parseInt(value))}>
-          <SelectTrigger>
+          <SelectTrigger className="h-12 px-4 text-base font-medium">
             <SelectValue placeholder="Hour" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
+          <SelectContent className="bg-background border border-border shadow-xl z-[9999] max-h-[280px] md:max-h-96">
             {hourOptions.map((hour) => (
-              <SelectItem key={hour} value={hour.toString()}>
+              <SelectItem 
+                key={hour} 
+                value={hour.toString()}
+                className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+              >
                 {hour}
               </SelectItem>
             ))}
@@ -66,12 +70,16 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
       {/* Minutes */}
       <div className="flex-1">
         <Select value={currentMinutes.toString().padStart(2, '0')} onValueChange={(value) => handleTimeChange(undefined, parseInt(value))}>
-          <SelectTrigger>
+          <SelectTrigger className="h-12 px-4 text-base font-medium">
             <SelectValue placeholder="Min" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
+          <SelectContent className="bg-background border border-border shadow-xl z-[9999] max-h-[280px] md:max-h-96">
             {minuteOptions.map((minute) => (
-              <SelectItem key={minute} value={minute.toString().padStart(2, '0')}>
+              <SelectItem 
+                key={minute} 
+                value={minute.toString().padStart(2, '0')}
+                className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+              >
                 :{minute.toString().padStart(2, '0')}
               </SelectItem>
             ))}
@@ -82,12 +90,22 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, classNa
       {/* AM/PM */}
       <div className="flex-1">
         <Select value={currentPeriod} onValueChange={(value) => handleTimeChange(undefined, undefined, value)}>
-          <SelectTrigger>
+          <SelectTrigger className="h-12 px-4 text-base font-medium">
             <SelectValue placeholder="AM/PM" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-[9999]">
-            <SelectItem value="AM">AM</SelectItem>
-            <SelectItem value="PM">PM</SelectItem>
+          <SelectContent className="bg-background border border-border shadow-xl z-[9999] max-h-[280px] md:max-h-96">
+            <SelectItem 
+              value="AM"
+              className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+            >
+              AM
+            </SelectItem>
+            <SelectItem 
+              value="PM"
+              className="py-3 px-4 text-base cursor-pointer hover:bg-accent/50 focus:bg-accent data-[highlighted]:bg-accent"
+            >
+              PM
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
