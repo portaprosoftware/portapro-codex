@@ -636,9 +636,10 @@
 }
 
 /* Ensure map markers stay below modals and dialogs */
-.mapboxgl-marker {
+/* TESTING: Temporarily commented out to test dropdown conflict */
+/* .mapboxgl-marker {
   z-index: 100 !important;
-}
+} */
 
 /* Force map canvas and container to low z-index */
 .mapboxgl-canvas-container,
