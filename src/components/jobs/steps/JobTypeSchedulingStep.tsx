@@ -19,28 +19,28 @@ const jobTypes = [
     label: 'Delivery',
     description: 'Deliver equipment to customer location',
     icon: Truck,
-    color: 'bg-blue-50 border-blue-200 text-blue-700',
+    color: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white',
   },
   {
     value: 'pickup',
     label: 'Pickup',
     description: 'Pick up equipment from customer location',
     icon: Package,
-    color: 'bg-green-50 border-green-200 text-green-700',
+    color: 'bg-gradient-to-r from-green-500 to-green-600 text-white',
   },
   {
     value: 'service',
     label: 'Service',
     description: 'Perform maintenance or cleaning service',
     icon: Wrench,
-    color: 'bg-orange-50 border-orange-200 text-orange-700',
+    color: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
   },
   {
     value: 'on-site-survey',
     label: 'Site Survey',
     description: 'Survey location for future service',
     icon: Search,
-    color: 'bg-purple-50 border-purple-200 text-purple-700',
+    color: 'bg-gradient-to-r from-red-800 to-red-900 text-white',
   },
 ] as const;
 
@@ -99,7 +99,7 @@ export function JobTypeSchedulingStep() {
                 className={cn(
                   "cursor-pointer transition-all hover:shadow-md",
                   state.data.job_type === type.value 
-                    ? "ring-2 ring-primary bg-primary/5" 
+                    ? "ring-2 ring-white" 
                     : "hover:bg-muted/50",
                   type.color
                 )}
@@ -107,12 +107,12 @@ export function JobTypeSchedulingStep() {
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/80">
-                      <Icon className="h-5 w-5" />
+                    <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20">
+                      <Icon className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium mb-1">{type.label}</h3>
-                      <p className="text-sm opacity-80">{type.description}</p>
+                      <h3 className="font-medium mb-1 text-white">{type.label}</h3>
+                      <p className="text-sm text-white/80">{type.description}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -125,95 +125,102 @@ export function JobTypeSchedulingStep() {
         )}
       </div>
 
-      {/* Date Selection */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Scheduled Date</Label>
-        <Card>
-          <CardContent className="p-4">
-            <CalendarComponent
-              mode="single"
-              selected={state.data.scheduled_date ? (() => {
-                const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
-                return new Date(year, month - 1, day);
-              })() : undefined}
-              onSelect={handleDateSelect}
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-              className="rounded-md"
-            />
-          </CardContent>
-        </Card>
-        {errors.scheduled_date && (
-          <p className="text-sm text-destructive">{errors.scheduled_date}</p>
-        )}
-      </div>
-
-      {/* Time Selection */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label className="text-base font-medium">Specific Time</Label>
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={!!state.data.scheduled_time}
-              onCheckedChange={handleTimeToggle}
-            />
-            <Label className="text-sm">Set specific time</Label>
-          </div>
-        </div>
-
-        {state.data.scheduled_time !== null && (
+      {/* Date Selection and Right Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Date Selection - Left side */}
+        <div className="lg:col-span-2 space-y-4">
+          <Label className="text-base font-medium">Scheduled Date</Label>
           <Card>
-            <CardContent className="p-4 space-y-4">
-              <TimePresetButtons 
-                onTimeSelect={handleTimeChange}
-                selectedTime={state.data.scheduled_time}
+            <CardContent className="p-4">
+              <CalendarComponent
+                mode="single"
+                selected={state.data.scheduled_date ? (() => {
+                  const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+                  return new Date(year, month - 1, day);
+                })() : undefined}
+                onSelect={handleDateSelect}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                className="rounded-md"
               />
-              <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <TimePicker
-                  value={state.data.scheduled_time}
-                  onChange={handleTimeChange}
-                />
-              </div>
             </CardContent>
           </Card>
-        )}
+          {errors.scheduled_date && (
+            <p className="text-sm text-destructive">{errors.scheduled_date}</p>
+          )}
+        </div>
 
-        {errors.scheduled_time && (
-          <p className="text-sm text-destructive">{errors.scheduled_time}</p>
-        )}
-      </div>
+        {/* Right Panel - Time Toggle, Priority, and Notes */}
+        <div className="space-y-6">
+          {/* Time Selection */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-medium">Specific Time</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={!!state.data.scheduled_time}
+                  onCheckedChange={handleTimeToggle}
+                />
+                <Label className="text-sm">Set time</Label>
+              </div>
+            </div>
 
-      {/* Notes */}
-      <div className="space-y-4">
-        <Label className="text-base font-medium">Job Notes (Optional)</Label>
-        <Textarea
-          placeholder="Add any special instructions or notes for this job..."
-          value={state.data.notes || ''}
-          onChange={(e) => handleNotesChange(e.target.value)}
-          rows={4}
-        />
-      </div>
+            {state.data.scheduled_time !== null && (
+              <Card>
+                <CardContent className="p-4 space-y-4">
+                  <TimePresetButtons 
+                    onTimeSelect={handleTimeChange}
+                    selectedTime={state.data.scheduled_time}
+                  />
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <TimePicker
+                      value={state.data.scheduled_time}
+                      onChange={handleTimeChange}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-      {/* Priority Toggle */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label className="text-base font-medium">Priority Settings</Label>
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={state.data.is_priority || false}
-              onCheckedChange={handleTogglePriority}
+            {errors.scheduled_time && (
+              <p className="text-sm text-destructive">{errors.scheduled_time}</p>
+            )}
+          </div>
+
+          {/* Priority Toggle */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-medium">Priority</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={state.data.is_priority || false}
+                  onCheckedChange={handleTogglePriority}
+                />
+                <Label className="text-sm flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  Priority
+                </Label>
+              </div>
+            </div>
+            {state.data.is_priority && (
+              <p className="text-sm text-muted-foreground">
+                This job will be highlighted for drivers.
+              </p>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-4">
+            <Label className="text-base font-medium">Job Notes (Optional)</Label>
+            <Textarea
+              placeholder="Add special instructions..."
+              value={state.data.notes || ''}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              rows={4}
+              className="resize-none"
             />
-            <Label className="text-sm flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-500" />
-              Mark as Priority
-            </Label>
           </div>
         </div>
-        {state.data.is_priority && (
-          <p className="text-sm text-muted-foreground">
-            This job will be marked as priority and highlighted for drivers.
-          </p>
-        )}
       </div>
 
       {/* Summary */}
