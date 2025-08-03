@@ -91,7 +91,7 @@ export async function createServiceLocationWithGeocoding(
     geocoding_status: geocodeResult.success ? 'success' : 'failed',
     geocoding_attempted_at: new Date().toISOString(),
     gps_coordinates: geocodeResult.success && geocodeResult.coordinates 
-      ? `POINT(${geocodeResult.coordinates[0]} ${geocodeResult.coordinates[1]})`
+      ? `(${geocodeResult.coordinates[0]},${geocodeResult.coordinates[1]})`
       : null
   };
 
