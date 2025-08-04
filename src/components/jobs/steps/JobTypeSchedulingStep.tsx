@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Package, Truck, Wrench, Crosshair, Star } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -32,7 +32,7 @@ const jobTypes = [
     value: 'service',
     label: 'Service',
     description: 'Perform maintenance or cleaning service',
-    icon: Wrench,
+    icon: ClipboardCheck,
     color: 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
   },
   {
