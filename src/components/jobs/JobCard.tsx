@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw, Undo2, AlertTriangle, Search } from 'lucide-react';
+import { Eye, Play, MapPin, Clock, User, Phone, MessageSquare, Package, Truck, Settings, RotateCcw, Undo2, AlertTriangle, Search, ClipboardCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { formatDateSafe } from '@/lib/dateUtils';
@@ -73,7 +73,7 @@ const jobTypeConfig = {
     lightColor: 'bg-[hsl(var(--status-service)/0.1)]',
     textColor: 'text-[hsl(var(--status-service))]',
     borderColor: 'border-l-[hsl(var(--status-service))]',
-    icon: Settings,
+    icon: ClipboardCheck,
     label: 'Service'
   },
   'on-site-survey': {
