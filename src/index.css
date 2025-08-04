@@ -360,7 +360,7 @@
     left: 0;
     width: 4px;
     height: 100%;
-    background: var(--gradient-orange);
+    background: var(--gradient-green);
     border-top-left-radius: 0.75rem;
     border-bottom-left-radius: 0.75rem;
   }
@@ -378,6 +378,23 @@
     width: 4px;
     height: 100%;
     background: var(--gradient-purple);
+    border-top-left-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
+  }
+
+  .enterprise-job-card.on-site-survey {
+    position: relative;
+    border-left: none;
+  }
+
+  .enterprise-job-card.on-site-survey::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: hsl(var(--status-survey));
     border-top-left-radius: 0.75rem;
     border-bottom-left-radius: 0.75rem;
   }
