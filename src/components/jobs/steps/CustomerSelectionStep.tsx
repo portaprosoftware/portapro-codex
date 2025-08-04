@@ -8,6 +8,7 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { formatCategoryDisplay } from '@/lib/categoryUtils';
 
 interface Customer {
   id: string;
@@ -49,13 +50,16 @@ export function CustomerSelectionStep() {
 
 
   const getCustomerTypeColor = (type?: string) => {
-    switch (type) {
-      case 'events': return 'bg-purple-100 text-purple-800';
-      case 'construction': return 'bg-orange-100 text-orange-800';
-      case 'residential': return 'bg-green-100 text-green-800';
-      case 'commercial': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+    const typeGradients = {
+      'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'sports_recreation': 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full', 
+      'municipal_government': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'commercial': 'bg-gradient-to-r from-gray-600 to-gray-700 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'construction': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-bold px-3 py-1 rounded-full'
+    };
+    return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full';
   };
 
   return (
@@ -108,11 +112,8 @@ export function CustomerSelectionStep() {
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-medium">{customer.name}</h3>
                       {customer.customer_type && (
-                        <Badge 
-                          variant="secondary"
-                          className={getCustomerTypeColor(customer.customer_type)}
-                        >
-                          {customer.customer_type}
+                        <Badge className={getCustomerTypeColor(customer.customer_type)}>
+                          {formatCategoryDisplay(customer.customer_type)}
                         </Badge>
                       )}
                     </div>
