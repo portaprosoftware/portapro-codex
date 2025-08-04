@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { EditContactModal } from './EditContactModal';
+import { formatPhoneNumber } from '@/lib/utils';
 
 interface CustomerContact {
   id: string;
@@ -97,7 +98,7 @@ export function CustomerContactCard({ contact, onDelete, customerId }: CustomerC
                       href={`tel:${contact.phone}`}
                       className="text-primary hover:underline"
                     >
-                      {contact.phone}
+                      {formatPhoneNumber(contact.phone)}
                     </a>
                   </div>
                 )}

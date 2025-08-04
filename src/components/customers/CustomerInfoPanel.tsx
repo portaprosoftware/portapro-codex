@@ -6,6 +6,7 @@ import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText } from 'lucide-r
 import { EditCustomerModal } from './EditCustomerModal';
 import { toast } from '@/hooks/use-toast';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
+import { formatPhoneNumber } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -168,7 +169,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Phone</label>
-              <p className="text-foreground">{customer.phone || 'Not provided'}</p>
+              <p className="text-foreground">{formatPhoneNumber(customer.phone) || 'Not provided'}</p>
             </div>
           </div>
         </CardContent>

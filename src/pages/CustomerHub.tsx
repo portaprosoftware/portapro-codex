@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
 import { formatCategoryDisplay } from "@/lib/categoryUtils";
+import { formatPhoneNumber } from "@/lib/utils";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -188,7 +189,7 @@ const CustomerHub: React.FC = () => {
                        <span className="text-gray-500">-</span>
                      )}
                   </TableCell>
-                  <TableCell>{customer.phone || '-'}</TableCell>
+                  <TableCell>{formatPhoneNumber(customer.phone) || '-'}</TableCell>
                   <TableCell>{customer.email || '-'}</TableCell>
                   <TableCell>
                     <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full">
