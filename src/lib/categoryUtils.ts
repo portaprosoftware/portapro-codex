@@ -27,6 +27,6 @@ export const formatCategoryDisplay = (category: string): string => {
   if (category.includes('_')) {
     return snakeCaseToTitleCase(category);
   }
-  // Otherwise, return as-is (assuming it's already properly formatted)
-  return category;
+  // Otherwise, capitalize the first letter of the word
+  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 };
