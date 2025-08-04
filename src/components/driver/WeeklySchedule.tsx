@@ -80,6 +80,7 @@ export const WeeklySchedule: React.FC = () => {
       'delivery': 'bg-gradient-blue',
       'pickup': 'bg-gradient-green', 
       'service': 'bg-gradient-orange',
+      'on-site-survey': 'bg-red-800',
       'estimate': 'bg-gradient-purple'
     };
     return colors[jobType] || 'bg-gradient-gray';

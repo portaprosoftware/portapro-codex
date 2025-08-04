@@ -87,6 +87,7 @@ export const DailySchedule: React.FC = () => {
       'delivery': 'bg-blue-500 text-white',
       'pickup': 'bg-green-500 text-white', 
       'service': 'bg-orange-500 text-white',
+      'on-site-survey': 'bg-red-800 text-white',
       'estimate': 'bg-purple-500 text-white'
     };
     return colors[jobType] || 'bg-gray-500 text-white';

@@ -303,6 +303,7 @@ export function SimpleJobsMapView({
       delivery: 'bg-blue-500',
       pickup: 'bg-red-500', 
       service: 'bg-amber-500',
+      'on-site-survey': 'bg-red-800',
       return: 'bg-green-500'
     };
     return colors[type] || 'bg-gray-500';

@@ -172,10 +172,8 @@ export function useCreateJob() {
           nextNumberField = 'next_service_number';
           break;
         case 'on-site-survey':
-          // Map to 'service' type for database constraint compliance
-          serializedJobData.job_type = 'service';
-          jobNumber = `SURVEY-${String(companySettings?.next_service_number || 1).padStart(3, '0')}`;
-          nextNumberField = 'next_service_number';
+          jobNumber = `${companySettings?.survey_prefix || 'SURVEY'}-${String(companySettings?.next_survey_number || 1).padStart(3, '0')}`;
+          nextNumberField = 'next_survey_number';
           break;
       }
 

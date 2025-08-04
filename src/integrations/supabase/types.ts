@@ -265,6 +265,7 @@ export type Database = {
           next_quote_number: number | null
           next_return_number: number | null
           next_service_number: number | null
+          next_survey_number: number | null
           pickup_prefix: string | null
           qr_feedback_email: string | null
           qr_feedback_notifications_enabled: boolean | null
@@ -272,6 +273,7 @@ export type Database = {
           return_prefix: string | null
           service_prefix: string | null
           support_email: string | null
+          survey_prefix: string | null
           updated_at: string | null
         }
         Insert: {
@@ -302,6 +304,7 @@ export type Database = {
           next_quote_number?: number | null
           next_return_number?: number | null
           next_service_number?: number | null
+          next_survey_number?: number | null
           pickup_prefix?: string | null
           qr_feedback_email?: string | null
           qr_feedback_notifications_enabled?: boolean | null
@@ -309,6 +312,7 @@ export type Database = {
           return_prefix?: string | null
           service_prefix?: string | null
           support_email?: string | null
+          survey_prefix?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -339,6 +343,7 @@ export type Database = {
           next_quote_number?: number | null
           next_return_number?: number | null
           next_service_number?: number | null
+          next_survey_number?: number | null
           pickup_prefix?: string | null
           qr_feedback_email?: string | null
           qr_feedback_notifications_enabled?: boolean | null
@@ -346,6 +351,7 @@ export type Database = {
           return_prefix?: string | null
           service_prefix?: string | null
           support_email?: string | null
+          survey_prefix?: string | null
           updated_at?: string | null
         }
         Relationships: []

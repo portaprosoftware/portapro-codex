@@ -34,7 +34,8 @@ export const getJobTypeColor = (jobType: string) => {
     service: '#8B5CF6',        // violet-500 (changed from amber to match dropdown)
     return: '#8B5CF6',         // violet-500
     cleaning: '#06B6D4',       // cyan-500
-    survey_estimate: '#1D4ED8', // blue-700
+    survey_estimate: '#991B1B',    // red-800 (maroon)
+    'on-site-survey': '#991B1B',   // red-800 (maroon) - handle both keys
   };
   return colors[jobType] || '#6B7280';
 };
