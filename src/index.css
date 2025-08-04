@@ -106,7 +106,7 @@
     --status-pickup: 142 71% 45%;          /* Green (#10B981) */
     --status-partial-pickup: 25 95% 53%;   /* Orange (#F97316) */
     --status-service: 259 55% 52%;         /* Purple (#8B5CF6) */
-    --status-survey: 221 83% 53%;          /* Light Blue (#3B82F6) */
+    --status-survey: 0 74% 35%;            /* Maroon (#B91C1C) */
     --status-cancelled: 0 84% 60%;         /* Red (#EF4444) */
 
     /* Sidebar System */
