@@ -9,7 +9,7 @@ import {
   Package, 
   Users2, 
   Truck, 
-  Settings2,
+  ClipboardCheck,
   FileText,
   BarChart4,
   Building2,
@@ -117,7 +117,7 @@ const managementItems: NavigationItem[] = [
   { 
     title: 'Services Hub', 
     url: '/maintenance-hub', 
-    icon: Settings2,
+    icon: ClipboardCheck,
     permission: 'admin'
   },
 ];
