@@ -29,7 +29,7 @@ const jobTypes = [
   { value: 'delivery', label: 'Delivery' },
   { value: 'pickup', label: 'Pickup' },
   { value: 'service', label: 'Service' },
-  { value: 'on-site-survey', label: 'Site Survey' },
+  { value: 'on-site-survey', label: 'Survey/Estimate' },
 ] as const;
 
 // Form schema (same validation as wizard)

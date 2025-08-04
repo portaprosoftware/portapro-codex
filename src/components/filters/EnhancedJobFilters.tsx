@@ -298,7 +298,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                 <SelectItem value="return">Return</SelectItem>
                 <SelectItem value="cleaning">Cleaning</SelectItem>
                 <SelectItem value="partial-pickup">Partial Pickup</SelectItem>
-                <SelectItem value="on-site-survey">On-Site Survey</SelectItem>
+                <SelectItem value="on-site-survey">Survey/Estimate</SelectItem>
               </SelectContent>
             </Select>
 

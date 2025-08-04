@@ -62,7 +62,7 @@ const jobTypeConfig = {
   'on-site-survey': { 
     color: 'bg-[hsl(var(--status-survey))]', 
     borderColor: 'border-l-[hsl(var(--status-survey))]', 
-    label: 'On-Site Survey/Estimate' 
+    label: 'Survey/Estimate' 
   },
   return: { 
     color: 'bg-[hsl(var(--status-cancelled))]', 

@@ -124,7 +124,7 @@ export const DeliveryPickupScheduleStep: React.FC<DeliveryPickupScheduleStepProp
       if (data.serviceDate) {
         const dateStr = format(data.serviceDate, "MMMM do, yyyy");
         const timeStr = data.addServiceTime ? ` at ${formatTime(data.serviceTime)}` : '';
-        const label = data.jobType === 'service' ? 'Service' : 'On-Site Survey/Estimate';
+        const label = data.jobType === 'service' ? 'Service' : 'Survey/Estimate';
         parts.push(`${label}: ${dateStr}${timeStr}`);
       }
     }

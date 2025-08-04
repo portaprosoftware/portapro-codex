@@ -66,7 +66,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
     { key: 'pickup', label: 'Pickup', color: getJobTypeColor('pickup') },
     { key: 'partial_pickup', label: 'Partial Pickup', color: getJobTypeColor('partial_pickup') },
     { key: 'service', label: 'Service', color: getJobTypeColor('service') },
-    { key: 'survey_estimate', label: 'On-Site Survey/Estimate', color: getJobTypeColor('survey_estimate') },
+    { key: 'survey_estimate', label: 'Survey/Estimate', color: getJobTypeColor('survey_estimate') },
   ];
 
   const jobStatusesLeft = [

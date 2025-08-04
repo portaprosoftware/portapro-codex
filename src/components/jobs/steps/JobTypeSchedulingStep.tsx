@@ -37,7 +37,7 @@ const jobTypes = [
   },
   {
     value: 'on-site-survey',
-    label: 'Site Survey',
+    label: 'Survey/Estimate',
     description: 'Survey location for future service',
     icon: Search,
     color: 'bg-gradient-to-r from-red-800 to-red-900 text-white',
