@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,27 +37,103 @@ const getCustomerTypeGradient = (type: string) => {
   }
 };
 
+type SortDirection = 'asc' | 'desc' | 'default';
+type SortColumn = 'customer' | 'type' | 'engagement' | 'jobs' | 'balance' | null;
+
+interface CustomerWithEngagement {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  customer_type?: string;
+  created_at: string;
+  updated_at: string;
+  // Add other customer fields as needed
+  engagement_score: number;
+  engagement_level: 'Low' | 'Medium' | 'High';
+  jobs_count: number;
+  total_balance: number;
+}
+
+const calculateEngagementLevel = (score: number): 'Low' | 'Medium' | 'High' => {
+  if (score <= 30) return 'Low';
+  if (score <= 70) return 'Medium';
+  return 'High';
+};
+
+const getEngagementGradient = (level: string) => {
+  switch (level) {
+    case 'High': return 'from-green-500 to-green-600';
+    case 'Medium': return 'from-yellow-500 to-yellow-600';
+    case 'Low': return 'from-red-500 to-red-600';
+    default: return 'from-gray-500 to-gray-600';
+  }
+};
+
 const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [sortColumn, setSortColumn] = useState<SortColumn>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('default');
 
-  // Fetch customers data
-  const { data: customers = [], isLoading, error } = useQuery({
-    queryKey: ['customers'],
+  // Handle column sorting
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn !== column) {
+      setSortColumn(column);
+      setSortDirection('asc');
+    } else {
+      if (sortDirection === 'default') {
+        setSortDirection('asc');
+      } else if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortDirection('default');
+        setSortColumn(null);
+      }
+    }
+  };
+
+  // Fetch customers data with engagement calculations
+  const { data: customersData = [], isLoading, error } = useQuery({
+    queryKey: ['customers-with-engagement'],
     queryFn: async () => {
-      console.log('Fetching customers...');
-      const { data, error } = await supabase
+      console.log('Fetching customers with engagement data...');
+      
+      // Get customers basic data first
+      const { data: customers, error: customerError } = await supabase
         .from('customers')
         .select('*')
         .order('name');
       
-      if (error) {
-        console.error('Customer fetch error:', error);
-        throw error;
+      if (customerError) {
+        console.error('Customer fetch error:', customerError);
+        throw customerError;
       }
-      console.log('Customers fetched successfully:', data?.length || 0);
-      return data || [];
+
+      // For now, calculate engagement with mock data since we need to establish the structure
+      // In production, this would be calculated from actual job/interaction data
+      const customersWithEngagement: CustomerWithEngagement[] = customers?.map(customer => {
+        // Mock engagement calculation - replace with real data later
+        const mockJobsCount = Math.floor(Math.random() * 20);
+        const mockInteractionsCount = Math.floor(Math.random() * 10);
+        const mockCommunicationsCount = Math.floor(Math.random() * 15);
+        
+        // Calculate engagement score
+        const engagementScore = (mockJobsCount * 10) + (mockInteractionsCount * 15) + (mockCommunicationsCount * 5);
+        const engagementLevel = calculateEngagementLevel(engagementScore);
+        
+        return {
+          ...customer,
+          engagement_score: engagementScore,
+          engagement_level: engagementLevel,
+          jobs_count: mockJobsCount,
+          total_balance: Math.floor(Math.random() * 5000) // Mock balance
+        };
+      }) || [];
+      
+      console.log('Customers with engagement fetched successfully:', customersWithEngagement.length);
+      return customersWithEngagement;
     },
     retry: (failureCount, error) => {
       console.log('Query retry attempt:', failureCount, error);
@@ -67,9 +143,36 @@ const CustomerHub: React.FC = () => {
     staleTime: 30000, // 30 seconds
   });
 
-  // Filter customers based on search and type
-  const filteredCustomers = useMemo(() => {
-    return customers.filter(customer => {
+  // Create sortable header component
+  const SortableHeader = ({ column, children, className = "" }: { 
+    column: SortColumn; 
+    children: React.ReactNode; 
+    className?: string;
+  }) => {
+    const isActive = sortColumn === column;
+    const getSortIcon = () => {
+      if (!isActive) return <ChevronsUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+      if (sortDirection === 'asc') return <ChevronUp className="w-4 h-4 ml-1 text-gray-600" />;
+      if (sortDirection === 'desc') return <ChevronDown className="w-4 h-4 ml-1 text-gray-600" />;
+      return <ChevronsUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+    };
+
+    return (
+      <TableHead 
+        className={`font-medium text-gray-900 cursor-pointer hover:bg-gray-50 select-none ${className}`}
+        onClick={() => handleSort(column)}
+      >
+        <div className="flex items-center">
+          {children}
+          {getSortIcon()}
+        </div>
+      </TableHead>
+    );
+  };
+
+  // Filter and sort customers
+  const filteredAndSortedCustomers = useMemo(() => {
+    let filtered = customersData.filter(customer => {
       const matchesSearch = customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            customer.phone?.includes(searchTerm);
@@ -78,7 +181,41 @@ const CustomerHub: React.FC = () => {
       
       return matchesSearch && matchesType;
     });
-  }, [customers, searchTerm, selectedType]);
+
+    // Apply sorting
+    if (sortColumn && sortDirection !== 'default') {
+      filtered = [...filtered].sort((a, b) => {
+        let comparison = 0;
+        
+        switch (sortColumn) {
+          case 'customer':
+            comparison = a.name.localeCompare(b.name);
+            break;
+          case 'type':
+            const typeA = a.customer_type || '';
+            const typeB = b.customer_type || '';
+            comparison = typeA.localeCompare(typeB);
+            break;
+          case 'engagement':
+            // Sort by engagement level first, then by score
+            const levelOrder = { 'Low': 1, 'Medium': 2, 'High': 3 };
+            const levelComparison = levelOrder[a.engagement_level] - levelOrder[b.engagement_level];
+            comparison = levelComparison !== 0 ? levelComparison : a.engagement_score - b.engagement_score;
+            break;
+          case 'jobs':
+            comparison = a.jobs_count - b.jobs_count;
+            break;
+          case 'balance':
+            comparison = a.total_balance - b.total_balance;
+            break;
+        }
+        
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    return filtered;
+  }, [customersData, searchTerm, selectedType, sortColumn, sortDirection]);
 
 
   return (
@@ -143,13 +280,13 @@ const CustomerHub: React.FC = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-medium text-gray-900">Customer</TableHead>
-              <TableHead className="font-medium text-gray-900">Type</TableHead>
+              <SortableHeader column="customer">Customer</SortableHeader>
+              <SortableHeader column="type">Type</SortableHeader>
               <TableHead className="font-medium text-gray-900">Phone</TableHead>
               <TableHead className="font-medium text-gray-900">Email</TableHead>
-              <TableHead className="font-medium text-gray-900">Engagement</TableHead>
-              <TableHead className="font-medium text-gray-900">Jobs</TableHead>
-              <TableHead className="font-medium text-gray-900">Balance</TableHead>
+              <SortableHeader column="engagement">Engagement</SortableHeader>
+              <SortableHeader column="jobs">Jobs</SortableHeader>
+              <SortableHeader column="balance">Balance</SortableHeader>
               <TableHead className="font-medium text-gray-900">View</TableHead>
             </TableRow>
           </TableHeader>
@@ -160,14 +297,14 @@ const CustomerHub: React.FC = () => {
                   Loading customers...
                 </TableCell>
               </TableRow>
-            ) : filteredCustomers.length === 0 ? (
+            ) : filteredAndSortedCustomers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                   No customers found
                 </TableCell>
               </TableRow>
             ) : (
-              filteredCustomers.map((customer, index) => (
+              filteredAndSortedCustomers.map((customer, index) => (
                 <TableRow 
                   key={customer.id} 
                   className={`transition-colors hover:bg-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
@@ -192,12 +329,12 @@ const CustomerHub: React.FC = () => {
                   <TableCell>{formatPhoneNumber(customer.phone) || '-'}</TableCell>
                   <TableCell>{customer.email || '-'}</TableCell>
                   <TableCell>
-                    <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full">
-                      Low (0)
+                    <Badge className={`bg-gradient-to-r ${getEngagementGradient(customer.engagement_level)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+                      {customer.engagement_level} ({customer.engagement_score})
                     </Badge>
                   </TableCell>
-                  <TableCell>0</TableCell>
-                  <TableCell>$0.00</TableCell>
+                  <TableCell>{customer.jobs_count}</TableCell>
+                  <TableCell>${customer.total_balance.toFixed(2)}</TableCell>
                   <TableCell>
                     <Link to={`/customers/${customer.id}`}>
                       <Button variant="ghost" size="sm">
