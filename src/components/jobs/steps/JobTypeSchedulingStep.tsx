@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Package, Truck, Wrench, Search, Star } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, Wrench, Crosshair, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -39,7 +39,7 @@ const jobTypes = [
     value: 'on-site-survey',
     label: 'Survey/Estimate',
     description: 'Survey location for future service',
-    icon: Search,
+    icon: Crosshair,
     color: 'bg-gradient-to-r from-red-800 to-red-900 text-white',
   },
 ] as const;
