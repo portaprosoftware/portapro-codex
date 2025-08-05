@@ -72,7 +72,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('system');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
-  const [step3Mode, setStep3Mode] = useState<'selector' | 'template' | 'custom'>('selector');
+  
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(initialDraftId);
@@ -160,7 +160,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       });
       setCurrentStep(1);
       setScheduledDate(undefined);
-      setStep3Mode('selector');
       onClose?.();
     },
     onError: () => {
@@ -313,10 +312,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         </div>
       )}
 
-        {/* Step 2: Select Recipients */}
+        {/* Step 2: Select Recipients and Message Source */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4 font-inter">Recipients</h2>
+            <h2 className="text-xl font-semibold mb-4 font-inter">Recipients & Message Source</h2>
             
             <div className="space-y-4">
               <div>
@@ -525,6 +524,14 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   )}
                 </div>
               )}
+              
+              {/* Message Source Selection */}
+              <div className="mt-6 pt-6 border-t">
+                <TemplateOrCustomSelector
+                  onSelectTemplate={() => setCampaignData(prev => ({ ...prev, message_source: 'template' }))}
+                  onCreateCustom={() => setCampaignData(prev => ({ ...prev, message_source: 'custom' }))}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -534,29 +541,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         <div className="space-y-6">
           <h2 className="text-xl font-semibold mb-4">Message Content</h2>
 
-          {step3Mode === 'selector' && (
-            <TemplateOrCustomSelector
-              onSelectTemplate={() => {
-                setStep3Mode('template');
-                setCampaignData(prev => ({ ...prev, message_source: 'template' }));
-              }}
-              onCreateCustom={() => {
-                setStep3Mode('custom');
-                setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
-              }}
-            />
-          )}
-
-            {step3Mode === 'template' && (
+            {campaignData.message_source === 'template' && (
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setStep3Mode('selector')}
-                  >
-                    ← Back to Options
-                  </Button>
                   <h2 className="text-xl font-semibold font-inter">Select Template</h2>
                 </div>
                 
@@ -795,7 +782,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               </div>
             )}
 
-            {step3Mode === 'custom' && (
+            {campaignData.message_source === 'custom' && (
               <MessageComposer
                 campaignType={campaignData.campaign_type}
                 onSave={(messageData) => {
@@ -804,10 +791,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                     custom_message: messageData,
                     message_source: 'custom'
                   }));
-                  setStep3Mode('selector');
                   toast({ title: 'Custom message saved!' });
                 }}
-                onBack={() => setStep3Mode('selector')}
+                onBack={() => {}}
                 initialData={campaignData.custom_message}
               />
             )}
@@ -901,11 +887,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         </Button>
         
         <div className="flex gap-3">
-          {/* Save as Draft button - Show on step 3 if content exists, always on step 4 */}
-          {((currentStep === 3 && step3Mode !== 'selector' && (
-            (campaignData.message_source === 'custom' && campaignData.custom_message?.content) ||
-            (campaignData.message_source === 'template' && campaignData.template_id)
-          )) || currentStep === 4) && (
+          {/* Save as Draft button - Show on steps 3 and 4 */}
+          {(currentStep === 3 || currentStep === 4) && (
             <Button
               variant="outline"
               onClick={async () => {
@@ -940,9 +923,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 (currentStep === 2 && (
                   (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
                   (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
-                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
+                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0) ||
+                  !campaignData.message_source
                 )) ||
-                (currentStep === 3 && step3Mode !== 'selector' && (
+                (currentStep === 3 && (
                   (campaignData.message_source === 'template' && !campaignData.template_id) ||
                   (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
                 ))
