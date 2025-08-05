@@ -182,20 +182,20 @@ export const ButtonBuilder: React.FC<ButtonBuilderProps> = ({ onAddButton }) => 
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="primary">
-                <div>
-                  <div>Primary</div>
-                  <div className="text-xs text-muted-foreground">Blue button with white text (ex: save button)</div>
-                </div>
-              </SelectItem>
-              <SelectItem value="secondary">
-                <div>
-                  <div>Secondary</div>
-                  <div className="text-xs text-muted-foreground">Grey button with black text (ex: cancel button)</div>
-                </div>
-              </SelectItem>
+              <SelectItem value="primary">Primary</SelectItem>
+              <SelectItem value="secondary">Secondary</SelectItem>
             </SelectContent>
           </Select>
+          
+          {/* Example buttons */}
+          <div className="flex gap-2 mt-2">
+            <Button variant="default" size="sm" className="pointer-events-none">
+              Primary
+            </Button>
+            <Button variant="secondary" size="sm" className="pointer-events-none">
+              Secondary
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">
