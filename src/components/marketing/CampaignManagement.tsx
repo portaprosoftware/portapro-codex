@@ -3,7 +3,7 @@ import { CampaignCreation } from './CampaignCreation';
 import { CampaignAnalytics } from './CampaignAnalytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -37,14 +37,31 @@ export const CampaignManagement: React.FC = () => {
             <DialogContent 
               className="max-w-4xl max-h-[90vh] overflow-y-auto"
               onInteractOutside={(e) => e.preventDefault()}
+              onOpenAutoFocus={(e) => e.preventDefault()}
             >
-              <DialogHeader>
+              <DialogHeader className="relative">
                 <DialogTitle>Create New Campaign</DialogTitle>
                 <DialogDescription>
                   Create and configure your marketing campaign with targeted messaging.
                 </DialogDescription>
+                {/* Override the default close button to show exit confirmation */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // This will trigger the campaign creation component's exit confirmation
+                    const campaignComponent = document.querySelector('[data-campaign-creation]');
+                    if (campaignComponent) {
+                      const event = new CustomEvent('trigger-exit-confirmation');
+                      campaignComponent.dispatchEvent(event);
+                    }
+                  }}
+                  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </button>
               </DialogHeader>
-              <div className="mt-6">
+              <div className="mt-6" data-campaign-creation>
                 <CampaignCreation onClose={() => setIsCreateOpen(false)} />
               </div>
             </DialogContent>

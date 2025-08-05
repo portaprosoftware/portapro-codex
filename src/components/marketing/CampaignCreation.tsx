@@ -197,6 +197,21 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     setHasUnsavedChanges(true);
   }, [campaignData, scheduledDate]);
 
+  // Listen for custom exit confirmation event from dialog close button
+  useEffect(() => {
+    const handleExitConfirmation = () => {
+      handleClose();
+    };
+
+    const element = document.querySelector('[data-campaign-creation]');
+    if (element) {
+      element.addEventListener('trigger-exit-confirmation', handleExitConfirmation);
+      return () => {
+        element.removeEventListener('trigger-exit-confirmation', handleExitConfirmation);
+      };
+    }
+  }, []);
+
   const handleNext = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -909,42 +924,76 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           Back
         </Button>
         
-        {currentStep < 4 ? (
-          <Button 
-            onClick={handleNext}
-            disabled={
-              (currentStep === 2 && (
-                (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
-                (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
-                (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
-              )) ||
-              (currentStep === 3 && step3Mode !== 'selector' && (
-                (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
-              ))
-            }
-          >
-            Next
-          </Button>
-        ) : (
-          <Button 
-            onClick={handleSubmit}
-            disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
-            className="bg-primary text-white"
-          >
-            {scheduledDate ? (
-              <>
-                <Clock className="w-4 h-4 mr-2" />
-                Schedule Campaign
-              </>
-            ) : (
-              <>
-                <Send className="w-4 h-4 mr-2" />
-                Send Campaign
-              </>
-            )}
-          </Button>
-        )}
+        <div className="flex gap-3">
+          {/* Save as Draft button - Show on step 3 if content exists, always on step 4 */}
+          {((currentStep === 3 && step3Mode !== 'selector' && (
+            (campaignData.message_source === 'custom' && campaignData.custom_message?.content) ||
+            (campaignData.message_source === 'template' && campaignData.template_id)
+          )) || currentStep === 4) && (
+            <Button
+              variant="outline"
+              onClick={async () => {
+                try {
+                  const draftName = campaignData.name.trim() || `Campaign Draft - ${new Date().toLocaleDateString()}`;
+                  await saveDraft(draftName, campaignData, currentDraftId);
+                  toast({
+                    title: "Draft saved",
+                    description: "Your campaign progress has been saved.",
+                  });
+                } catch (error) {
+                  console.error('Save draft error:', error);
+                  toast({
+                    title: "Save failed",
+                    description: "Could not save draft. Please try again.",
+                    variant: "destructive"
+                  });
+                }
+              }}
+              disabled={isSaving}
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {isSaving ? 'Saving...' : 'Save as Draft'}
+            </Button>
+          )}
+          
+          {currentStep < 4 ? (
+            <Button 
+              onClick={handleNext}
+              disabled={
+                (currentStep === 2 && (
+                  (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
+                  (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
+                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
+                )) ||
+                (currentStep === 3 && step3Mode !== 'selector' && (
+                  (campaignData.message_source === 'template' && !campaignData.template_id) ||
+                  (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
+                ))
+              }
+            >
+              Next
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleSubmit}
+              disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
+              className="bg-primary text-white"
+            >
+              {scheduledDate ? (
+                <>
+                  <Clock className="w-4 h-4 mr-2" />
+                  Schedule Campaign
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Campaign
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Template Preview Modal */}

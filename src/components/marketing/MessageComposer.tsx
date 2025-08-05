@@ -717,14 +717,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         {/* Saved Buttons */}
         <SavedButtons onSelectButton={addButton} />
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 pt-4">
-          {hasGeneratedWithAI && (
-            <Button onClick={handleSave} className="flex-1">
-              Use This Message
-            </Button>
-          )}
-        </div>
+        {/* Removed redundant "Use This Message" button - users proceed via Next button */}
       </div>
 
       {/* Full Preview Modal */}
