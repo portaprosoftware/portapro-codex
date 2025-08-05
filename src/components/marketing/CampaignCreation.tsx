@@ -67,15 +67,24 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [showingTemplates, setShowingTemplates] = useState(false);
   const [campaignData, setCampaignData] = useState<CampaignData>(() => {
     if (initialData) {
-      return {
+      console.log('🔍 Loading draft with initialData:', initialData);
+      const defaults = {
         name: '',
-        campaign_type: 'email',
-        message_source: 'template',
+        campaign_type: 'email' as const,
+        message_source: 'template' as const,
         target_segments: [],
         target_customer_types: [],
         target_customers: [],
-        recipient_type: 'all',
+        recipient_type: 'all' as const,
+      };
+      
+      const result: CampaignData = {
+        ...defaults,
         ...initialData,
+        // Ensure proper types for required fields
+        campaign_type: (initialData.campaign_type || defaults.campaign_type) as 'email' | 'sms' | 'both',
+        message_source: (initialData.message_source || defaults.message_source) as 'template' | 'custom',
+        recipient_type: (initialData.recipient_type || defaults.recipient_type) as 'all' | 'segments' | 'types' | 'individuals',
         // Ensure custom message has all required fields
         custom_message: initialData.custom_message ? {
           subject: '',
@@ -84,6 +93,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           ...initialData.custom_message
         } : undefined
       };
+      console.log('🔍 Final campaignData:', result);
+      console.log('🔍 Custom message data:', result.custom_message);
+      return result;
     }
     return {
       name: '',
@@ -852,7 +864,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 }}
                 onContentChange={setHasMessageContent}
                 onSubjectChange={setHasSubjectContent}
-                initialData={campaignData.custom_message}
+                initialData={(() => {
+                  console.log('🔍 Passing to MessageComposer - campaignData:', campaignData);
+                  console.log('🔍 Passing to MessageComposer - custom_message:', campaignData.custom_message);
+                  return campaignData.custom_message;
+                })()}
               />
             )}
 

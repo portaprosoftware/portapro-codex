@@ -70,8 +70,9 @@ export const MessageComposer = React.forwardRef<{
   initialData
 }, ref) => {
   const [messageData, setMessageData] = useState<MessageData>(() => {
+    console.log('🔍 MessageComposer initialData received:', initialData);
     if (initialData) {
-      return {
+      const result = {
         subject: initialData.subject || '',
         content: initialData.content || '',
         buttons: initialData.buttons || [],
@@ -80,6 +81,8 @@ export const MessageComposer = React.forwardRef<{
         showCompanyLogo: initialData.showCompanyLogo !== undefined ? initialData.showCompanyLogo : true,
         logoSize: initialData.logoSize || 'medium'
       };
+      console.log('🔍 MessageComposer final messageData:', result);
+      return result;
     }
     return {
       subject: '',
