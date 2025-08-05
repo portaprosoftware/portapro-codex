@@ -5,6 +5,7 @@ import { useJobs } from '@/hooks/useJobs';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, Satellite, Map as MapIcon, Radar } from 'lucide-react';
 import { format } from 'date-fns';
@@ -380,21 +381,20 @@ export function SimpleJobsMapView({
         {/* Map Status */}
         {filteredJobs.length > 0 && (
           <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
-            Jobs: {filteredJobs.length} | Map: {map.current ? 'Ready' : 'Loading...'}
+            Jobs for {format(selectedDate, 'MMM d, yyyy')}: {filteredJobs.length}
           </div>
         )}
 
         {/* Radar Toggle */}
-        <div className="bg-white p-1 rounded-lg shadow-lg border">
-          <Button
-            variant={radarEnabled ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setRadarEnabled(!radarEnabled)}
-            className="h-8 px-3 text-sm font-medium"
-          >
-            <Radar className="w-4 h-4 mr-1.5" />
-            Weather Radar
-          </Button>
+        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
+          <div className="flex items-center gap-2">
+            <Radar className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
+            <Switch
+              checked={radarEnabled}
+              onCheckedChange={setRadarEnabled}
+            />
+          </div>
         </div>
       </div>
 
