@@ -967,6 +967,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               variant="outline"
               onClick={async () => {
                 try {
+                  // Save message content first if we're on step 3
+                  if (currentStep === 3 && messageComposerRef.current) {
+                    messageComposerRef.current.saveMessage();
+                  }
+                  
                   const draftName = campaignData.name.trim() || `Campaign Draft - ${new Date().toLocaleDateString()}`;
                   
                   // Include current step and all form data in the draft
@@ -974,6 +979,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                     ...campaignData,
                     currentStep,
                   };
+                  
+                  console.log('🔍 Saving draft with data:', draftData);
+                  console.log('🔍 Custom message in draft:', draftData.custom_message);
                   
                   await saveDraft(draftName, draftData, currentDraftId);
                   toast({
