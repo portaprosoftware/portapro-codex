@@ -19,7 +19,7 @@ import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { OCRSearchCapture } from "./OCRSearchCapture";
 import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
-import { BatchOCRProcessor } from "./BatchOCRProcessor";
+
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 
 interface IndividualUnitsTabProps {
@@ -38,7 +38,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
-  const [showBatchOCR, setShowBatchOCR] = useState(false);
+  
   const [showMobileOCR, setShowMobileOCR] = useState(false);
   const [ocrItemId, setOcrItemId] = useState<string | null>(null);
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
@@ -314,15 +314,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             Adjust Stock
           </Button>
           <Button 
-            variant="outline"
-            onClick={() => setShowBatchOCR(true)}
-            className="border-green-600 text-green-600 hover:bg-green-50"
-            title="Process multiple items automatically using OCR"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Batch OCR
-          </Button>
-          <Button 
             onClick={() => setShowCreateModal(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
@@ -573,12 +564,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         onSearchResult={handleOCRSearchResult}
       />
 
-      {/* Batch OCR Processor */}
-      <BatchOCRProcessor
-        open={showBatchOCR}
-        onClose={() => setShowBatchOCR(false)}
-        productId={productId}
-      />
 
     </div>
   );
