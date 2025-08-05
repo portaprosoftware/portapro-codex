@@ -304,9 +304,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         <h2 className="text-xl font-semibold font-inter">Create Your Message</h2>
       </div>
 
-      <div className="grid xl:grid-cols-[75%_25%] gap-4 lg:gap-6">
+      <div className="grid xl:grid-cols-3 gap-4 lg:gap-6">
         {/* Message Composer */}
-        <div className="space-y-4 lg:space-y-6">
+        <div className="xl:col-span-2 space-y-4 lg:space-y-6">
           <Card className="p-4 lg:p-6">
             <h3 className="text-lg font-semibold mb-4 font-inter">AI Assistant</h3>
             
@@ -348,7 +348,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               <div>
                 <Label>Custom Instructions *</Label>
                 <Textarea
-                  placeholder="Create a friendly marketing message about our special offer..."
+                  placeholder="Add basic context for a friendly marketing message or status update about anything"
                   value={aiParams.customInstructions}
                   onChange={(e) => setAiParams(prev => ({ ...prev, customInstructions: e.target.value }))}
                   rows={3}
@@ -622,7 +622,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </div>
 
         {/* Preview */}
-        <div className="space-y-4 lg:space-y-6">
+        <div className="xl:col-span-1 space-y-4 lg:space-y-6">
           <Card className="p-4 lg:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold font-inter">Preview</h3>
