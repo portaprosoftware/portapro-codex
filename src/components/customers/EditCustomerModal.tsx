@@ -852,7 +852,10 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                     type="button"
                     variant="destructive"
                     size="sm"
-                    onClick={() => setShowDeleteConfirm(true)}
+                    onClick={() => {
+                      console.log('Delete button clicked, showing confirmation');
+                      setShowDeleteConfirm(true);
+                    }}
                   >
                     Delete Customer
                   </Button>
