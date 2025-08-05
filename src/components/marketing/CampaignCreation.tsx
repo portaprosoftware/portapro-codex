@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight, X } from 'lucide-react';
+import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight } from 'lucide-react';
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
@@ -235,12 +235,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl font-semibold font-inter">Create New Campaign</h1>
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="sm" 
           onClick={onClose}
-          className="h-8 w-8 p-0"
         >
-          <X className="h-4 w-4" />
+          Close
         </Button>
       </div>
       
