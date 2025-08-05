@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
 type ViewType = "grid" | "list";
@@ -43,6 +44,20 @@ const Inventory: React.FC = () => {
   const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
   const [matchingItemId, setMatchingItemId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"products" | "location-map" | "ocr-quality">("products");
+
+  // Fetch count of inactive products (those with track_inventory = false)
+  const { data: inactiveProductsCount = 0 } = useQuery({
+    queryKey: ['inactive-products-count'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id', { count: 'exact' })
+        .eq('track_inventory', false);
+      
+      if (error) throw error;
+      return data?.length || 0;
+    }
+  });
 
   // Auto-search with debouncing
   useEffect(() => {
@@ -373,7 +388,18 @@ const Inventory: React.FC = () => {
                 className="data-[state=checked]:bg-gray-600"
               />
               <span className="text-sm text-gray-700">Hide Inactive</span>
-              <Badge variant="outline" className="ml-1 text-xs">1</Badge>
+              {inactiveProductsCount > 0 && (
+                <Badge 
+                  className={cn(
+                    "ml-1 text-xs text-white border-0 font-bold flex items-center justify-center min-w-[20px] h-5",
+                    hideInactive 
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700" 
+                      : "bg-gray-500"
+                  )}
+                >
+                  {inactiveProductsCount}
+                </Badge>
+              )}
             </div>
           </div>
 
