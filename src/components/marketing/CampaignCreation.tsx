@@ -683,19 +683,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           {campaignData.message_source === 'template' && (
             <div className="space-y-4">
               {campaignData.template_id ? (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="font-semibold text-green-800 mb-2">Template Selected</h3>
-                  <p className="text-green-700">
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">Template Selected</h3>
+                  <p className="text-gray-700">
                     {templates.find(t => t.id === campaignData.template_id)?.name || 'Selected template'}
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleBack}
-                    className="mt-2"
-                  >
-                    Back
-                  </Button>
                 </div>
               ) : (
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
