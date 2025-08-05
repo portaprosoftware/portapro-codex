@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ProductGrid } from "@/components/inventory/ProductGrid";
 import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
@@ -522,12 +523,14 @@ const Inventory: React.FC = () => {
       />
 
       {/* QR Scanner Dialog */}
-      {showQRScanner && (
-        <QRCodeScanner
-          onScan={handleQRScanResult}
-          onClose={() => setShowQRScanner(false)}
-        />
-      )}
+      <Dialog open={showQRScanner} onOpenChange={setShowQRScanner}>
+        <DialogContent className="sm:max-w-md">
+          <QRCodeScanner
+            onScan={handleQRScanResult}
+            onClose={() => setShowQRScanner(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
