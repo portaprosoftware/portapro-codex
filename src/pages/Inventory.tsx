@@ -387,7 +387,7 @@ const Inventory: React.FC = () => {
                   <Switch
                     checked={hideInactive}
                     onCheckedChange={setHideInactive}
-                    className="data-[state=checked]:bg-gray-600"
+                    className="data-[state=checked]:bg-blue-600"
                   />
                   <span className="text-sm text-gray-700">Hide Inactive</span>
                   {inactiveProductsCount > 0 && (
@@ -398,7 +398,7 @@ const Inventory: React.FC = () => {
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-gray-500 mt-1 ml-8">Products that have inventory tracking disabled</span>
+                <span className="text-xs text-gray-500 mt-1">Inventory tracking disabled</span>
               </div>
             </div>
           </div>
