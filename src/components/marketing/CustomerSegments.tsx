@@ -196,7 +196,6 @@ export const CustomerSegments: React.FC = () => {
                       {segment.customer_count.toLocaleString()} customers
                     </span>
                   </div>
-                  <Badge variant="secondary">Active</Badge>
                 </div>
                 <div className="mt-4">
                   <div className="text-xs text-muted-foreground">
