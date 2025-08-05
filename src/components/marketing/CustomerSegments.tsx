@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { SmartSegmentBuilder } from './SmartSegmentBuilder';
+import { SegmentDetailsModal } from './SegmentDetailsModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +24,9 @@ interface CustomerSegment {
 export const CustomerSegments: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingSegment, setEditingSegment] = useState<CustomerSegment | null>(null);
+  const [viewingSegment, setViewingSegment] = useState<CustomerSegment | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Fetch existing customer segments
   const { data: segments = [], isLoading } = useQuery({
@@ -70,13 +74,17 @@ export const CustomerSegments: React.FC = () => {
   };
 
   const handleEditSegment = (segment: CustomerSegment) => {
-    // TODO: Open SmartSegmentBuilder with existing segment data for editing
-    console.log('Edit segment:', segment);
+    setEditingSegment(segment);
+    setIsEditDialogOpen(true);
   };
 
   const handleViewSegment = (segment: CustomerSegment) => {
-    // TODO: Open segment details/preview modal
-    console.log('View segment:', segment);
+    setViewingSegment(segment);
+  };
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditingSegment(null);
   };
 
   if (isLoading) {
@@ -200,6 +208,24 @@ export const CustomerSegments: React.FC = () => {
           ))}
         </div>
       )}
+
+      {/* Edit Dialog */}
+      {editingSegment && (
+        <SmartSegmentBuilder
+          existingSegment={editingSegment}
+          mode="edit"
+          isOpen={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          key={`edit-${editingSegment.id}`}
+        />
+      )}
+
+      {/* View Details Modal */}
+      <SegmentDetailsModal
+        segment={viewingSegment}
+        isOpen={!!viewingSegment}
+        onClose={() => setViewingSegment(null)}
+      />
     </div>
   );
 };

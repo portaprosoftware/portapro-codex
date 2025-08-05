@@ -29,15 +29,49 @@ interface SegmentData {
   rules: SegmentRule[];
 }
 
-export const SmartSegmentBuilder: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface CustomerSegment {
+  id: string;
+  name: string;
+  description?: string;
+  rule_set: Record<string, any>;
+  customer_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface SmartSegmentBuilderProps {
+  existingSegment?: CustomerSegment;
+  mode?: 'create' | 'edit';
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({ 
+  existingSegment,
+  mode = 'create',
+  isOpen: controlledOpen,
+  onOpenChange
+}) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setIsOpen = onOpenChange || setInternalOpen;
   const [isInfoExpanded, setIsInfoExpanded] = useState(false);
-  const [segmentData, setSegmentData] = useState<SegmentData>({
-    name: '',
-    description: '',
-    rules: [{ id: '1', field: '', operator: '', value: '' }]
+  const [segmentData, setSegmentData] = useState<SegmentData>(() => {
+    if (existingSegment && mode === 'edit') {
+      return {
+        name: existingSegment.name,
+        description: existingSegment.description || '',
+        rules: existingSegment.rule_set?.rules || [{ id: '1', field: '', operator: '', value: '' }]
+      };
+    }
+    return {
+      name: '',
+      description: '',
+      rules: [{ id: '1', field: '', operator: '', value: '' }]
+    };
   });
-  const [estimatedCount, setEstimatedCount] = useState(0);
+  const [estimatedCount, setEstimatedCount] = useState(existingSegment?.customer_count || 0);
   const queryClient = useQueryClient();
 
   const availableFields = [
@@ -102,29 +136,49 @@ export const SmartSegmentBuilder: React.FC = () => {
     'commercial'
   ];
 
-  // Create segment mutation
-  const createSegmentMutation = useMutation({
+  // Create/Update segment mutation
+  const saveSegmentMutation = useMutation({
     mutationFn: async (data: SegmentData) => {
-      const { error } = await supabase
-        .from('customer_segments')
-        .insert({
-          name: data.name,
-          description: data.description,
-          rule_set: { rules: data.rules } as any,
-          customer_count: estimatedCount,
-          segment_type: 'smart'
-        });
-      
-      if (error) throw error;
+      if (mode === 'edit' && existingSegment) {
+        const { error } = await supabase
+          .from('customer_segments')
+          .update({
+            name: data.name,
+            description: data.description,
+            rule_set: { rules: data.rules } as any,
+            customer_count: estimatedCount,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSegment.id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('customer_segments')
+          .insert({
+            name: data.name,
+            description: data.description,
+            rule_set: { rules: data.rules } as any,
+            customer_count: estimatedCount,
+            segment_type: 'smart'
+          });
+        
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer-segments'] });
-      toast({ title: 'Smart segment created successfully!' });
+      toast({ 
+        title: mode === 'edit' ? 'Segment updated successfully!' : 'Smart segment created successfully!' 
+      });
       setIsOpen(false);
       resetForm();
     },
     onError: () => {
-      toast({ title: 'Error creating segment', variant: 'destructive' });
+      toast({ 
+        title: mode === 'edit' ? 'Error updating segment' : 'Error creating segment', 
+        variant: 'destructive' 
+      });
     }
   });
 
@@ -256,16 +310,18 @@ export const SmartSegmentBuilder: React.FC = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-primary text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Smart Segment
-        </Button>
-      </DialogTrigger>
+      {mode === 'create' && (
+        <DialogTrigger asChild>
+          <Button className="bg-primary text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Smart Segment
+          </Button>
+        </DialogTrigger>
+      )}
       
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" aria-describedby="smart-segment-description">
         <DialogHeader>
-          <DialogTitle>Create Smart Segment</DialogTitle>
+          <DialogTitle>{mode === 'edit' ? 'Edit Smart Segment' : 'Create Smart Segment'}</DialogTitle>
         </DialogHeader>
         
         <div id="smart-segment-description" className="sr-only">
@@ -470,11 +526,14 @@ export const SmartSegmentBuilder: React.FC = () => {
               Cancel
             </Button>
             <Button 
-              onClick={() => createSegmentMutation.mutate(segmentData)}
-              disabled={!segmentData.name || segmentData.rules.some(r => !r.field || !r.operator)}
+              onClick={() => saveSegmentMutation.mutate(segmentData)}
+              disabled={!segmentData.name || segmentData.rules.some(rule => !rule.field || !rule.operator) || saveSegmentMutation.isPending}
               className="bg-primary text-white"
             >
-              Create Segment
+              {saveSegmentMutation.isPending ? 
+                (mode === 'edit' ? 'Updating...' : 'Creating...') : 
+                (mode === 'edit' ? 'Update Segment' : 'Create Segment')
+              }
             </Button>
           </div>
         </div>
