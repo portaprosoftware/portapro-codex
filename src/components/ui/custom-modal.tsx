@@ -80,6 +80,17 @@ export const CustomModal: React.FC<CustomModalProps> = ({
         </div>
         <div className="p-6">
           {children}
+          {preventClose && (
+            <div className="flex justify-end mt-6 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                className="font-inter"
+              >
+                Close
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>,
