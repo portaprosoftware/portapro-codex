@@ -4,14 +4,7 @@ import { CampaignAnalytics } from './CampaignAnalytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { CustomModal } from '@/components/ui/custom-modal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,48 +44,25 @@ export const CampaignManagement: React.FC = () => {
               Emails and texts will go to the company phone number and email address listed in each customer's profile under 'Overview'.
             </p>
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={(open) => {
-            if (!open) {
-              setShowExitConfirmation(true);
-            } else {
-              setIsCreateOpen(open);
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Campaign
-              </Button>
-            </DialogTrigger>
-            <DialogContent 
-              className="max-w-4xl max-h-[90vh] overflow-y-auto"
-              onInteractOutside={(e) => e.preventDefault()}
-              onOpenAutoFocus={(e) => e.preventDefault()}
-              hideCloseButton={true}
-            >
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <DialogTitle>Create New Campaign</DialogTitle>
-                    <DialogDescription>
-                      Create and configure your marketing campaign with targeted messaging.
-                    </DialogDescription>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DialogHeader>
-              <div className="mt-6" data-campaign-creation>
-                <CampaignCreation onClose={() => setIsCreateOpen(false)} />
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            onClick={() => setIsCreateOpen(true)}
+            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Campaign
+          </Button>
+
+          <CustomModal
+            isOpen={isCreateOpen}
+            onClose={handleClose}
+            title="Create New Campaign"
+            description="Create and configure your marketing campaign with targeted messaging."
+            className="max-w-4xl max-h-[90vh] overflow-y-auto"
+          >
+            <div data-campaign-creation>
+              <CampaignCreation onClose={() => setIsCreateOpen(false)} />
+            </div>
+          </CustomModal>
         </div>
       </div>
 

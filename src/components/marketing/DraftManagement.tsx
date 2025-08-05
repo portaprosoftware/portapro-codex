@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { CustomModal } from '@/components/ui/custom-modal';
 import { FileText, Calendar, Trash2, Play, Edit, AlertTriangle, X } from 'lucide-react';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 import { formatDistanceToNow } from 'date-fns';
@@ -168,42 +168,26 @@ export const DraftManagement: React.FC = () => {
       </div>
 
       {/* Resume Draft Dialog */}
-      <Dialog open={isResumeOpen} onOpenChange={setIsResumeOpen}>
-        <DialogContent 
-          className="max-w-4xl max-h-[90vh] overflow-y-auto"
-          onInteractOutside={(e) => e.preventDefault()}
-          hideCloseButton={true}
-        >
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle>Resume Campaign Draft</DialogTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsResumeOpen(false);
-                  setSelectedDraft(null);
-                }}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </DialogHeader>
-          <div className="mt-6">
-            {selectedDraft && (
-              <CampaignCreation 
-                onClose={() => {
-                  setIsResumeOpen(false);
-                  setSelectedDraft(null);
-                }}
-                draftId={selectedDraft.id}
-                initialData={selectedDraft.campaign_data?.campaignData}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CustomModal
+        isOpen={isResumeOpen}
+        onClose={() => {
+          setIsResumeOpen(false);
+          setSelectedDraft(null);
+        }}
+        title="Resume Campaign Draft"
+        className="max-w-4xl max-h-[90vh] overflow-y-auto"
+      >
+        {selectedDraft && (
+          <CampaignCreation 
+            onClose={() => {
+              setIsResumeOpen(false);
+              setSelectedDraft(null);
+            }}
+            draftId={selectedDraft.id}
+            initialData={selectedDraft.campaign_data?.campaignData}
+          />
+        )}
+      </CustomModal>
     </div>
   );
 };
