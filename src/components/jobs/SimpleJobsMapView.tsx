@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { X, Satellite, Map as MapIcon, Radar } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
-import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
+import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
 
 
 
@@ -40,6 +40,8 @@ export function SimpleJobsMapView({
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [radarEnabled, setRadarEnabled] = useState(false);
   const [radarResetKey, setRadarResetKey] = useState(0);
+  const [radarFrames, setRadarFrames] = useState<{ path: string; time: number }[]>([]);
+  const [currentRadarFrame, setCurrentRadarFrame] = useState(0);
   
   // Check if selected date is today
   const isToday = (date: Date) => {
@@ -428,6 +430,17 @@ export function SimpleJobsMapView({
             </div>
           )}
         </div>
+        
+        {/* Weather Radar Timestamp Display - positioned directly under toggle */}
+        {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
+          <div className="mt-2">
+            <TimestampDisplay 
+              frames={radarFrames} 
+              currentFrame={currentRadarFrame} 
+              isActive={radarEnabled} 
+            />
+          </div>
+        )}
       </div>
 
       {/* Weather Radar */}
@@ -435,7 +448,11 @@ export function SimpleJobsMapView({
         <SimpleWeatherRadar 
           key={radarResetKey}
           map={map.current} 
-          isActive={radarEnabled} 
+          isActive={radarEnabled}
+          onFramesUpdate={(frames, currentFrame) => {
+            setRadarFrames(frames);
+            setCurrentRadarFrame(currentFrame);
+          }}
         />
       )}
 

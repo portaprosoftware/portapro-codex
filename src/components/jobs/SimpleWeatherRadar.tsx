@@ -4,6 +4,7 @@ import { rainViewerService } from '@/services/rainViewerService';
 interface SimpleWeatherRadarProps {
   map: mapboxgl.Map;
   isActive: boolean;
+  onFramesUpdate?: (frames: { path: string; time: number }[], currentFrame: number) => void;
 }
 
 interface TimeStampDisplayProps {
@@ -12,7 +13,7 @@ interface TimeStampDisplayProps {
   isActive: boolean;
 }
 
-export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isActive }) => {
+export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isActive, onFramesUpdate }) => {
   const [frames, setFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -201,8 +202,11 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     if (isActive && frames.length > 0) {
       console.log('Radar: Updating to frame', currentFrame);
       updateFrame(currentFrame);
+      
+      // Notify parent component about frame updates
+      onFramesUpdate?.(frames, currentFrame);
     }
-  }, [currentFrame, frames.length, isActive, updateFrame]);
+  }, [currentFrame, frames.length, isActive, updateFrame, onFramesUpdate]);
 
   // Effect to handle active state changes
   useEffect(() => {
@@ -216,13 +220,16 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   // Auto-start animation when frames are loaded
   useEffect(() => {
     if (frames.length > 0 && !isAnimating && isActive && hasLoaded) {
+      // Notify parent about initial frames
+      onFramesUpdate?.(frames, currentFrame);
+      
       const timer = setTimeout(() => {
         startAnimation();
       }, 100); // Small delay to ensure layers are ready
       
       return () => clearTimeout(timer);
     }
-  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation]);
+  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation, onFramesUpdate, currentFrame]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -234,11 +241,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     };
   }, [cleanup]);
 
-  return (
-    <>
-      {isActive && <TimestampDisplay frames={frames} currentFrame={currentFrame} isActive={isActive} />}
-    </>
-  );
+  return null; // No longer rendering timestamp display here
 };
 
 // Timestamp display component
@@ -285,7 +288,7 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
   const currentTime = getCurrentTime();
 
   return (
-    <div className="absolute bottom-4 left-4 z-10 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20">
+    <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20">
       <div className="p-4 space-y-3">
         {/* Header with PortaPro branding */}
         <div className="flex items-center gap-2 pb-2 border-b border-blue-500/20">
@@ -317,3 +320,6 @@ const TimestampDisplay: React.FC<TimeStampDisplayProps> = ({ frames, currentFram
     </div>
   );
 };
+
+// Export the TimestampDisplay component for use in parent
+export { TimestampDisplay };
