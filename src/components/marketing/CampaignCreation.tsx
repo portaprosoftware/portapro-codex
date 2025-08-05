@@ -57,6 +57,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   initialData 
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [showingTemplates, setShowingTemplates] = useState(false);
   const [campaignData, setCampaignData] = useState<CampaignData>({
     name: '',
     campaign_type: 'email',
@@ -192,7 +193,13 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   };
 
   const handleBack = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      // Reset template view when going back to step 2
+      if (currentStep === 3 && campaignData.message_source === 'template') {
+        setShowingTemplates(false);
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -527,16 +534,193 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               
               {/* Message Source Selection */}
               <div className="mt-6 pt-6 border-t">
-                <TemplateOrCustomSelector
-                  onSelectTemplate={() => {
-                    setCampaignData(prev => ({ ...prev, message_source: 'template' }));
-                    setCurrentStep(3);
-                  }}
-                  onCreateCustom={() => {
-                    setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
-                    setCurrentStep(3);
-                  }}
-                />
+                {!showingTemplates ? (
+                  <TemplateOrCustomSelector
+                    onSelectTemplate={() => {
+                      setCampaignData(prev => ({ ...prev, message_source: 'template' }));
+                      setShowingTemplates(true);
+                    }}
+                    onCreateCustom={() => {
+                      setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
+                      setCurrentStep(3);
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold font-inter">Select Template</h3>
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowingTemplates(false)}
+                        size="sm"
+                      >
+                        ← Back to Options
+                      </Button>
+                    </div>
+                    
+                    {/* Template Filters */}
+                    <div className="flex flex-col sm:flex-row gap-4 items-end">
+                      {/* Source Toggle */}
+                      <div className="flex bg-gray-100 rounded-lg p-1">
+                        <Button
+                          variant={templateSourceFilter === 'system' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setTemplateSourceFilter('system')}
+                          className="rounded-md"
+                        >
+                          System Generated
+                        </Button>
+                        <Button
+                          variant={templateSourceFilter === 'user' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setTemplateSourceFilter('user')}
+                          className="rounded-md"
+                        >
+                          User Created
+                        </Button>
+                      </div>
+
+                      {/* View Toggle */}
+                      <div className="flex bg-gray-100 rounded-lg p-1">
+                        <Button
+                          variant={templateViewMode === 'list' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setTemplateViewMode('list')}
+                          className="rounded-md"
+                        >
+                          <List className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant={templateViewMode === 'grid' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setTemplateViewMode('grid')}
+                          className="rounded-md"
+                        >
+                          <Grid3X3 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Templates Display */}
+                    <div className={templateViewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'}>
+                      {templates
+                        .filter(template => template.source === templateSourceFilter)
+                        .filter(template => template.type === campaignData.campaign_type || template.type === 'both' || campaignData.campaign_type === 'both')
+                        .map((template) => (
+                          <Card 
+                            key={template.id} 
+                            className={`cursor-pointer border-2 transition-colors ${
+                              campaignData.template_id === template.id
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => {
+                              setCampaignData({...campaignData, template_id: template.id});
+                              setCurrentStep(3);
+                            }}
+                          >
+                            {templateViewMode === 'grid' ? (
+                              <div className="p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                  <Badge 
+                                    variant={template.source === 'system' ? 'default' : 'secondary'}
+                                    className={template.source === 'system' ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'}
+                                  >
+                                    {template.source === 'system' ? 'System' : 'User'}
+                                  </Badge>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPreviewTemplate(template);
+                                    }}
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                                
+                                <h3 className="font-semibold mb-2 font-inter">{template.name}</h3>
+                                <div className="flex items-center gap-2 mb-2">
+                                  {template.type === 'email' && <Mail className="w-4 h-4 text-blue-500" />}
+                                  {template.type === 'sms' && <MessageSquare className="w-4 h-4 text-green-500" />}
+                                  {template.type === 'both' && (
+                                    <>
+                                      <Mail className="w-4 h-4 text-blue-500" />
+                                      <MessageSquare className="w-4 h-4 text-green-500" />
+                                    </>
+                                  )}
+                                  <span className="text-sm text-gray-600 capitalize font-inter">
+                                    {template.type}
+                                  </span>
+                                </div>
+                                
+                                {template.image_url && (
+                                  <div className="w-full h-24 bg-gray-100 rounded-md mb-3 flex items-center justify-center">
+                                    <img 
+                                      src={template.image_url} 
+                                      alt={template.name}
+                                      className="w-full h-full object-cover rounded-md"
+                                    />
+                                  </div>
+                                )}
+                                
+                                <p className="text-sm text-gray-600 line-clamp-3 font-inter">
+                                  {template.subject || template.content?.substring(0, 100) + '...'}
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="p-4 flex items-center justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="font-semibold font-inter">{template.name}</h3>
+                                    <Badge 
+                                      variant={template.source === 'system' ? 'default' : 'secondary'}
+                                      className={template.source === 'system' ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'}
+                                    >
+                                      {template.source === 'system' ? 'System' : 'User'}
+                                    </Badge>
+                                    <div className="flex items-center gap-1">
+                                      {template.type === 'email' && <Mail className="w-4 h-4 text-blue-500" />}
+                                      {template.type === 'sms' && <MessageSquare className="w-4 h-4 text-green-500" />}
+                                      {template.type === 'both' && (
+                                        <>
+                                          <Mail className="w-4 h-4 text-blue-500" />
+                                          <MessageSquare className="w-4 h-4 text-green-500" />
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-gray-600 font-inter">
+                                    {template.subject || template.content?.substring(0, 150) + '...'}
+                                  </p>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPreviewTemplate(template);
+                                  }}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </Card>
+                        ))}
+                    </div>
+
+                    {/* No Templates Message */}
+                    {templates.filter(template => template.source === templateSourceFilter).length === 0 && (
+                      <div className="text-center py-12">
+                        <p className="text-gray-500 font-inter">
+                          No {templateSourceFilter} templates found for {campaignData.campaign_type} campaigns.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -547,248 +731,46 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         <div className="space-y-6">
           <h2 className="text-xl font-semibold mb-4">Message Content</h2>
 
-            {campaignData.message_source === 'template' && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-semibold font-inter">Select Template</h2>
+          {campaignData.message_source === 'template' && (
+            <div className="space-y-4">
+              {campaignData.template_id ? (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="font-semibold text-green-800 mb-2">Template Selected</h3>
+                  <p className="text-green-700">
+                    {templates.find(t => t.id === campaignData.template_id)?.name || 'Selected template'}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCampaignData(prev => ({ ...prev, template_id: undefined }));
+                      setCurrentStep(2);
+                      setShowingTemplates(true);
+                    }}
+                    className="mt-2"
+                  >
+                    Change Template
+                  </Button>
                 </div>
-                
-                {/* Template Filters */}
-                <div className="flex flex-col sm:flex-row gap-4 items-end">
-                  {/* Source Toggle */}
-                  <div className="flex bg-gray-100 rounded-lg p-1">
-                    <Button
-                      variant={templateSourceFilter === 'system' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setTemplateSourceFilter('system')}
-                      className="rounded-md"
-                    >
-                      System Generated
-                    </Button>
-                    <Button
-                      variant={templateSourceFilter === 'user' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setTemplateSourceFilter('user')}
-                      className="rounded-md"
-                    >
-                      User Created
-                    </Button>
-                  </div>
-
-                  {/* View Toggle */}
-                  <div className="flex bg-gray-100 rounded-lg p-1">
-                    <Button
-                      variant={templateViewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setTemplateViewMode('list')}
-                      className="rounded-md"
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={templateViewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setTemplateViewMode('grid')}
-                      className="rounded-md"
-                    >
-                      <Grid3X3 className="w-4 h-4" />
-                    </Button>
-                  </div>
+              ) : (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800">No template selected. Please go back and select a template.</p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCurrentStep(2);
+                      setShowingTemplates(true);
+                    }}
+                    className="mt-2"
+                  >
+                    Select Template
+                  </Button>
                 </div>
+              )}
+            </div>
+          )}
 
-                {/* Templates Display */}
-                <div className={templateViewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'}>
-                  {templates
-                    .filter(template => template.source === templateSourceFilter)
-                    .filter(template => template.type === campaignData.campaign_type || template.type === 'both' || campaignData.campaign_type === 'both')
-                    .map((template) => (
-                      <Card 
-                        key={template.id} 
-                        className={`cursor-pointer border-2 transition-colors ${
-                          campaignData.template_id === template.id
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => setCampaignData({...campaignData, template_id: template.id})}
-                      >
-                        {templateViewMode === 'grid' ? (
-                          <div className="p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <Badge 
-                                variant={template.source === 'system' ? 'default' : 'secondary'}
-                                className={template.source === 'system' ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'}
-                              >
-                                {template.source === 'system' ? 'System' : 'User'}
-                              </Badge>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setPreviewTemplate(template);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                            </div>
-                            
-                            <h3 className="font-semibold mb-2 font-inter">{template.name}</h3>
-                            <div className="flex items-center gap-2 mb-2">
-                              {template.type === 'email' && <Mail className="w-4 h-4 text-blue-500" />}
-                              {template.type === 'sms' && <MessageSquare className="w-4 h-4 text-green-500" />}
-                              {template.type === 'both' && (
-                                <>
-                                  <Mail className="w-4 h-4 text-blue-500" />
-                                  <MessageSquare className="w-4 h-4 text-green-500" />
-                                </>
-                              )}
-                              <span className="text-sm text-gray-600 capitalize font-inter">
-                                {template.type}
-                              </span>
-                            </div>
-                            
-                            {template.image_url && (
-                              <div className="w-full h-24 bg-gray-100 rounded-md mb-3 flex items-center justify-center">
-                                <img 
-                                  src={template.image_url} 
-                                  alt={template.name}
-                                  className="w-full h-full object-cover rounded-md"
-                                />
-                              </div>
-                            )}
-                            
-                            <p className="text-sm text-gray-600 line-clamp-3 font-inter">
-                              {template.subject || template.content?.substring(0, 100) + '...'}
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="p-4 flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-semibold font-inter">{template.name}</h3>
-                                <Badge 
-                                  variant={template.source === 'system' ? 'default' : 'secondary'}
-                                  className={template.source === 'system' ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'}
-                                >
-                                  {template.source === 'system' ? 'System' : 'User'}
-                                </Badge>
-                                <div className="flex items-center gap-1">
-                                  {template.type === 'email' && <Mail className="w-4 h-4 text-blue-500" />}
-                                  {template.type === 'sms' && <MessageSquare className="w-4 h-4 text-green-500" />}
-                                  {template.type === 'both' && (
-                                    <>
-                                      <Mail className="w-4 h-4 text-blue-500" />
-                                      <MessageSquare className="w-4 h-4 text-green-500" />
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                              <p className="text-sm text-gray-600 font-inter">
-                                {template.subject || template.content?.substring(0, 150) + '...'}
-                              </p>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewTemplate(template);
-                              }}
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </Card>
-                    ))}
-                </div>
-
-                {/* No Templates Message */}
-                {templates.filter(template => template.source === templateSourceFilter).length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 font-inter">
-                      No {templateSourceFilter} templates found for {campaignData.campaign_type} campaigns.
-                    </p>
-                  </div>
-                )}
-
-                {/* Template Preview Modal */}
-                <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
-                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Eye className="w-5 h-5" />
-                        Template Preview
-                      </DialogTitle>
-                    </DialogHeader>
-                    
-                    {previewTemplate && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold font-inter">{previewTemplate.name}</h3>
-                          <div className="flex items-center gap-2">
-                            <Badge 
-                              variant={previewTemplate.source === 'system' ? 'default' : 'secondary'}
-                              className={previewTemplate.source === 'system' ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'}
-                            >
-                              {previewTemplate.source === 'system' ? 'System' : 'User'}
-                            </Badge>
-                            <Badge variant="outline" className="capitalize">
-                              {previewTemplate.type}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        {previewTemplate.image_url && (
-                          <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                            <img 
-                              src={previewTemplate.image_url} 
-                              alt={previewTemplate.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-
-                        {previewTemplate.subject && (
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700">Subject</Label>
-                            <p className="mt-1 p-3 bg-gray-50 rounded-md font-inter">{previewTemplate.subject}</p>
-                          </div>
-                        )}
-
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700">Content</Label>
-                          <div className="mt-1 p-4 bg-gray-50 rounded-md">
-                            <p className="whitespace-pre-wrap font-inter">{previewTemplate.content}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-3 pt-4">
-                          <Button 
-                            onClick={() => {
-                              setCampaignData({...campaignData, template_id: previewTemplate.id});
-                              setPreviewTemplate(null);
-                              toast({ title: 'Template selected!' });
-                            }}
-                            className="flex-1"
-                          >
-                            Use This Template
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => setPreviewTemplate(null)}
-                          >
-                            Close
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </DialogContent>
-                </Dialog>
-              </div>
-            )}
-
-            {campaignData.message_source === 'custom' && (
+          {campaignData.message_source === 'custom' && (
               <MessageComposer
                 campaignType={campaignData.campaign_type}
                 onSave={(messageData) => {
