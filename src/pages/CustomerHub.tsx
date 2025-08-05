@@ -352,7 +352,7 @@ const CustomerHub: React.FC = () => {
                          <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-pointer" />
                        </Button>
                      </DialogTrigger>
-                     <DialogContent className="max-w-lg">
+                     <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full mx-auto">
                        <DialogHeader>
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
