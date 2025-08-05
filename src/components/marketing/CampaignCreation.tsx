@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight } from 'lucide-react';
+import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight, X } from 'lucide-react';
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
@@ -68,6 +68,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     ...initialData,
   });
   const [hasMessageContent, setHasMessageContent] = useState(false);
+  const [hasSubjectContent, setHasSubjectContent] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date>(initialData?.scheduled_at);
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
@@ -230,6 +231,19 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   return (
     <>
       <div className="space-y-6">
+      {/* Header with Close Button */}
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-semibold font-inter">Create New Campaign</h1>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClose}
+          className="h-8 w-8 p-0"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      
       {/* Progress Steps */}
       <div className="flex items-center justify-center mb-6">
         {[1, 2, 3, 4].map((step) => (
@@ -817,19 +831,13 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   setShowingTemplates(false);
                 }}
                 onContentChange={setHasMessageContent}
+                onSubjectChange={setHasSubjectContent}
                 initialData={campaignData.custom_message}
               />
             )}
-          </div>
-        )}
 
-        {/* Step 4: Schedule & Review */}
-        {currentStep === 4 && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4">Schedule & Review</h2>
-            
-            {/* Campaign Name Field */}
-            <div>
+            {/* Campaign Name Field - Moved from Step 4 */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
               <Label htmlFor="campaign-name">Campaign Name *</Label>
               <Input
                 id="campaign-name"
@@ -839,6 +847,13 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 className="mt-1"
               />
             </div>
+          </div>
+        )}
+
+        {/* Step 4: Schedule & Review */}
+        {currentStep === 4 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold mb-4">Schedule & Review</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -934,7 +949,12 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   });
                 }
               }}
-              disabled={isSaving}
+              disabled={
+                isSaving ||
+                !campaignData.name.trim() ||
+                (campaignData.message_source === 'custom' && campaignData.campaign_type !== 'sms' && !hasSubjectContent) ||
+                (campaignData.message_source === 'custom' && !hasMessageContent)
+              }
               className="text-blue-600 border-blue-600 hover:bg-blue-50"
             >
               <Save className="w-4 h-4 mr-2" />
@@ -948,8 +968,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               disabled={
                 (currentStep === 1 && !campaignData.campaign_type) ||
                 (currentStep === 3 && (
+                  !campaignData.name.trim() ||
                   (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                  (campaignData.message_source === 'custom' && !hasMessageContent)
+                  (campaignData.message_source === 'custom' && !hasMessageContent) ||
+                  (campaignData.message_source === 'custom' && campaignData.campaign_type !== 'sms' && !hasSubjectContent)
                 ))
               }
               data-next-button
