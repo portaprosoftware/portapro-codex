@@ -78,8 +78,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [currentDraftId, setCurrentDraftId] = useState(initialDraftId);
   
   const queryClient = useQueryClient();
-  const { saveDraft, scheduleAutoSave, isSaving } = useCampaignDrafts();
-  const autoSaveTimeoutRef = useRef<(() => void) | null>(null);
+  const { saveDraft, isSaving } = useCampaignDrafts();
 
   // Fetch templates
   const { data: templates = [] } = useQuery({
@@ -169,30 +168,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     }
   });
 
-  // Auto-save effect
-  useEffect(() => {
-    if (currentStep >= 3 && hasUnsavedChanges) {
-      // Clear existing timeout
-      if (autoSaveTimeoutRef.current) {
-        autoSaveTimeoutRef.current();
-      }
-      
-      // Schedule auto-save
-      autoSaveTimeoutRef.current = scheduleAutoSave(
-        campaignData.name || 'Untitled Campaign',
-        { campaignData, scheduledDate },
-        currentDraftId
-      );
-    }
-    
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        autoSaveTimeoutRef.current();
-      }
-    };
-  }, [campaignData, scheduledDate, currentStep, hasUnsavedChanges, currentDraftId, scheduleAutoSave]);
-
-  // Track changes
+  // Track changes for exit confirmation
   useEffect(() => {
     setHasUnsavedChanges(true);
   }, [campaignData, scheduledDate]);
@@ -237,7 +213,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   };
 
   const handleClose = () => {
-    if (currentStep >= 3 && hasUnsavedChanges) {
+    if (hasUnsavedChanges && (currentStep >= 3 || (campaignData.name && campaignData.name.trim() !== ''))) {
       setShowExitConfirmation(true);
     } else {
       onClose?.();

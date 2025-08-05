@@ -114,16 +114,6 @@ export const useCampaignDrafts = () => {
     [deleteDraftMutation]
   );
 
-  const scheduleAutoSave = useCallback(
-    (name: string, data: any, draftId?: string, delay = 30000) => {
-      const timeoutId = setTimeout(() => {
-        saveDraft(name, data, draftId).catch(console.error);
-      }, delay);
-      
-      return () => clearTimeout(timeoutId);
-    },
-    [saveDraft]
-  );
 
   return {
     drafts: drafts || [],
@@ -131,7 +121,6 @@ export const useCampaignDrafts = () => {
     error,
     saveDraft,
     deleteDraft,
-    scheduleAutoSave,
     isSaving: saveDraftMutation.isPending || false,
     isDeleting: deleteDraftMutation.isPending || false,
   };
