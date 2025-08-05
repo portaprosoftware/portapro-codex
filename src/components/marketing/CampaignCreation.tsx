@@ -852,7 +852,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             </Button>
           )}
           
-          {currentStep < 4 && currentStep !== 2 ? (
+          {currentStep < 4 ? (
             <Button 
               onClick={handleNext}
               disabled={
