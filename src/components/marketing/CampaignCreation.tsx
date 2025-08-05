@@ -231,16 +231,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   return (
     <>
       <div className="space-y-6">
-      {/* Header with Close Button */}
-      <div className="flex items-center justify-between mb-2">
+      {/* Header */}
+      <div className="mb-2">
         <h1 className="text-2xl font-semibold font-inter">Create New Campaign</h1>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onClose}
-        >
-          Close
-        </Button>
       </div>
       
       {/* Progress Steps */}

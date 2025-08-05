@@ -58,7 +58,6 @@ export const CampaignManagement: React.FC = () => {
             title="Create New Campaign"
             description="Create and configure your marketing campaign with targeted messaging."
             className="max-w-4xl max-h-[90vh] overflow-y-auto"
-            preventClose={true}
           >
             <div data-campaign-creation>
               <CampaignCreation onClose={() => setIsCreateOpen(false)} />
