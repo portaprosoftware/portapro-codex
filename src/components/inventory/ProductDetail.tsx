@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash } from "lucide-react";
+import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Tags } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -132,8 +132,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
             )}
           </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            Attributes
+            <Tags className="w-4 h-4" />
+            Attributes & Variations
           </TabsTrigger>
         </TabsList>
 
