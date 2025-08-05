@@ -56,12 +56,15 @@ const TONE_OPTIONS = [
   { value: 'casual', label: 'Casual' },
 ];
 
-export const MessageComposer: React.FC<MessageComposerProps> = ({
+export const MessageComposer = React.forwardRef<{
+  saveMessage: () => void;
+  hasContent: () => boolean;
+}, MessageComposerProps>(({
   campaignType,
   onSave,
   onBack,
   initialData
-}) => {
+}, ref) => {
   const [messageData, setMessageData] = useState<MessageData>(
     initialData || {
       subject: '',
@@ -174,28 +177,25 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }));
   };
 
-  const handleSave = () => {
-    if (!messageData.content.trim()) {
-      toast({ title: 'Please add message content', variant: 'destructive' });
-      return;
+  const saveMessage = () => {
+    if (messageData.content.trim()) {
+      onSave(messageData);
     }
-
-    if (campaignType !== 'sms' && !messageData.subject?.trim()) {
-      toast({ title: 'Please add a subject line', variant: 'destructive' });
-      return;
-    }
-
-    onSave(messageData);
-    toast({ title: 'Message saved successfully!' });
-    
-    // Auto-trigger next step after successful save
-    setTimeout(() => {
-      const nextButton = document.querySelector('[data-next-button]');
-      if (nextButton) {
-        (nextButton as HTMLButtonElement).click();
-      }
-    }, 100);
   };
+
+  const hasContent = () => {
+    if (campaignType === 'sms') {
+      return messageData.content.trim().length > 0;
+    } else {
+      return messageData.content.trim().length > 0 && !!messageData.subject?.trim();
+    }
+  };
+
+  // Expose methods to parent via ref
+  React.useImperativeHandle(ref, () => ({
+    saveMessage,
+    hasContent
+  }));
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -713,16 +713,6 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         {/* Saved Buttons */}
         <SavedButtons onSelectButton={addButton} />
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleSave}
-            data-save-button
-            className="bg-primary text-white"
-          >
-            Save & Continue
-          </Button>
-        </div>
       </div>
 
       {/* Full Preview Modal */}
@@ -842,4 +832,4 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
     </div>
   );
-};
+});

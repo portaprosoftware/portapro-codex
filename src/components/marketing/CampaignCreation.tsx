@@ -168,7 +168,15 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   });
 
 
+  const messageComposerRef = useRef<{
+    saveMessage: () => void;
+    hasContent: () => boolean;
+  }>(null);
+
   const handleNext = () => {
+    if (currentStep === 3 && messageComposerRef.current) {
+      messageComposerRef.current.saveMessage();
+    }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
 
@@ -793,6 +801,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
           {campaignData.message_source === 'custom' && (
               <MessageComposer
+                ref={messageComposerRef}
                 campaignType={campaignData.campaign_type}
                 onSave={(messageData) => {
                   setCampaignData(prev => ({ 
@@ -933,24 +942,12 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           
           {currentStep < 4 && currentStep !== 2 ? (
             <Button 
-              onClick={() => {
-                // For step 3 custom messages, trigger save before proceeding
-                if (currentStep === 3 && campaignData.message_source === 'custom') {
-                  // The MessageComposer will handle validation and save
-                  const messageComposerElement = document.querySelector('[data-message-composer]');
-                  if (messageComposerElement) {
-                    const saveButton = messageComposerElement.querySelector('[data-save-button]');
-                    if (saveButton) {
-                      (saveButton as HTMLButtonElement).click();
-                      return;
-                    }
-                  }
-                }
-                handleNext();
-              }}
+              onClick={handleNext}
               disabled={
+                (currentStep === 1 && (!campaignData.name.trim() || !campaignData.campaign_type)) ||
                 (currentStep === 3 && (
-                  (campaignData.message_source === 'template' && !campaignData.template_id)
+                  (campaignData.message_source === 'template' && !campaignData.template_id) ||
+                  (campaignData.message_source === 'custom' && !messageComposerRef.current?.hasContent())
                 ))
               }
               data-next-button
