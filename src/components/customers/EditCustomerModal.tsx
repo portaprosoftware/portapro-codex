@@ -112,7 +112,7 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 interface Customer {
   id: string;
   name: string;
-  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected";
+  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "restaurants" | "retail" | "other" | "not_selected";
   email?: string;
   phone?: string;
   service_street: string;
@@ -150,6 +150,9 @@ const CUSTOMER_TYPES = [
   { value: 'private_events_weddings', label: 'Private Events & Weddings' },
   { value: 'sports_recreation', label: 'Sports & Recreation' },
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
+  { value: 'restaurants', label: 'Restaurants' },
+  { value: 'retail', label: 'Retail' },
+  { value: 'other', label: 'Other' },
 ];
 
 export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerModalProps) {
@@ -207,7 +210,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
       const updateData = {
         name: data.name,
-        customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected",
+        customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "restaurants" | "retail" | "other" | "not_selected",
         email: data.email || null,
         phone: data.phone || null,
         service_street: data.service_street,

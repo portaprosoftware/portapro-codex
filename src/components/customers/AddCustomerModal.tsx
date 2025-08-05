@@ -122,6 +122,9 @@ const CUSTOMER_TYPES = [
   { value: 'private_events_weddings', label: 'Private Events & Weddings' },
   { value: 'sports_recreation', label: 'Sports & Recreation' },
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
+  { value: 'restaurants', label: 'Restaurants' },
+  { value: 'retail', label: 'Retail' },
+  { value: 'other', label: 'Other' },
 ];
 
 export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {

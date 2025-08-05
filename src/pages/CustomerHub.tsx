@@ -22,7 +22,10 @@ const CUSTOMER_TYPES = {
   "private_events_weddings": { label: "Private Events & Weddings", color: "#CC3366" },
   "construction": { label: "Construction", color: "#FF6600" },
   "commercial": { label: "Commercial", color: "#4A4A4A" },
-  "emergency_disaster_relief": { label: "Emergency & Disaster Relief", color: "#CC3333" }
+  "emergency_disaster_relief": { label: "Emergency & Disaster Relief", color: "#CC3333" },
+  "restaurants": { label: "Restaurants", color: "#EAB308" },
+  "retail": { label: "Retail", color: "#14B8A6" },
+  "other": { label: "Other", color: "#6B7280" }
 };
 
 const getCustomerTypeGradient = (type: string) => {
@@ -34,6 +37,9 @@ const getCustomerTypeGradient = (type: string) => {
     case 'private_events_weddings': return 'from-pink-500 to-pink-600';
     case 'construction': return 'from-orange-500 to-orange-600';
     case 'emergency_disaster_relief': return 'from-red-500 to-red-600';
+    case 'restaurants': return 'from-yellow-500 to-yellow-600';
+    case 'retail': return 'from-teal-500 to-teal-600';
+    case 'other': return 'from-gray-500 to-gray-600';
     default: return 'from-gray-500 to-gray-600';
   }
 };

@@ -13,7 +13,7 @@ import { CustomerServiceReportsTab } from './CustomerServiceReportsTab';
 interface Customer {
   id: string;
   name: string;
-  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "not_selected";
+  customer_type: "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "restaurants" | "retail" | "other" | "not_selected";
   email?: string;
   phone?: string;
   service_street: string;

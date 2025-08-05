@@ -28,7 +28,10 @@ export const CustomerTypeCard: React.FC<CustomerTypeCardProps> = ({
       'commercial': 'bg-gradient-to-r from-gray-600 to-gray-700',
       'construction': 'bg-gradient-to-r from-orange-500 to-orange-600',
       'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600',
-      'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600'
+      'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600',
+      'restaurants': 'bg-gradient-to-r from-yellow-500 to-yellow-600',
+      'retail': 'bg-gradient-to-r from-teal-500 to-teal-600',
+      'other': 'bg-gradient-to-r from-gray-500 to-gray-600'
     };
     return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600';
   };

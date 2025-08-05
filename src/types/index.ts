@@ -23,4 +23,7 @@ export type CustomerType =
   | "municipal_government" 
   | "private_events_weddings" 
   | "sports_recreation" 
-  | "emergency_disaster_relief";
+  | "emergency_disaster_relief"
+  | "restaurants"
+  | "retail" 
+  | "other";
