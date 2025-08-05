@@ -73,6 +73,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       logoSize: 'medium'
     }
   );
+  
+  const [hasGeneratedWithAI, setHasGeneratedWithAI] = useState(false);
 
   const [logoDimensions, setLogoDimensions] = useState<{width: number, height: number} | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -121,7 +123,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         subject: data.subject || prev.subject,
         content: data.content
       }));
-
+      
+      setHasGeneratedWithAI(true);
       toast({ title: 'Content generated successfully!' });
     } catch (error) {
       console.error('AI generation error:', error);
@@ -299,14 +302,14 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          Back to Templates
         </Button>
         <h2 className="text-xl font-semibold font-inter">Create Your Message</h2>
       </div>
 
-      <div className="grid xl:grid-cols-3 gap-4 lg:gap-6">
+      <div className="space-y-4 lg:space-y-6">
         {/* Message Composer */}
-        <div className="xl:col-span-2 space-y-4 lg:space-y-6">
+        <div className="space-y-4 lg:space-y-6">
           <Card className="p-4 lg:p-6">
             <h3 className="text-lg font-semibold mb-4 font-inter">AI Assistant</h3>
             
@@ -622,88 +625,86 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </div>
 
         {/* Preview */}
-        <div className="xl:col-span-1 space-y-4 lg:space-y-6">
-          <Card className="p-4 lg:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold font-inter">Preview</h3>
-              <Button onClick={() => setShowPreview(true)} variant="outline" size="sm">
-                <Eye className="w-4 h-4 mr-2" />
-                Full Preview
-              </Button>
-            </div>
+        <Card className="p-4 lg:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold font-inter">Preview</h3>
+            <Button onClick={() => setShowPreview(true)} variant="outline" size="sm">
+              <Eye className="w-4 h-4 mr-2" />
+              Full Preview
+            </Button>
+          </div>
 
-            <div className="space-y-3 lg:space-y-4">
-              {/* Company Logo Preview */}
-              {messageData.showCompanyLogo && companySettings?.company_logo && (() => {
-                const getLogoHeight = (size?: string) => {
-                  switch (size) {
-                    case 'small': return 'h-8';
-                    case 'large': return 'h-16';
-                    default: return 'h-12';
-                  }
-                };
+          <div className="space-y-3 lg:space-y-4">
+            {/* Company Logo Preview */}
+            {messageData.showCompanyLogo && companySettings?.company_logo && (() => {
+              const getLogoHeight = (size?: string) => {
+                switch (size) {
+                  case 'small': return 'h-8';
+                  case 'large': return 'h-16';
+                  default: return 'h-12';
+                }
+              };
 
-                return (
-                  <div>
-                    <Label className="text-sm text-gray-500">Company Logo</Label>
-                    <div className="mt-1">
-                      <img 
-                        src={companySettings.company_logo} 
-                        alt={companySettings.company_name || 'Company logo'} 
-                        className={`${getLogoHeight(messageData.logoSize)} w-auto object-contain`}
-                        onLoad={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          setLogoDimensions({ width: img.naturalWidth, height: img.naturalHeight });
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {campaignType !== 'sms' && messageData.subject && (
+              return (
                 <div>
-                  <Label className="text-sm text-gray-500">Subject</Label>
-                  <p className="font-medium">{messageData.subject}</p>
-                </div>
-              )}
-
-              {messageData.content && (
-                <div>
-                  <Label className="text-sm text-gray-500">Content</Label>
-                  <div className="p-3 bg-gray-50 rounded-md">
-                    {renderContentWithImage(messageData.content, messageData.customImageUrl, messageData.imagePosition)}
+                  <Label className="text-sm text-gray-500">Company Logo</Label>
+                  <div className="mt-1">
+                    <img 
+                      src={companySettings.company_logo} 
+                      alt={companySettings.company_name || 'Company logo'} 
+                      className={`${getLogoHeight(messageData.logoSize)} w-auto object-contain`}
+                      onLoad={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        setLogoDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+                      }}
+                    />
                   </div>
                 </div>
-              )}
+              );
+            })()}
 
-              {messageData.buttons.length > 0 && (
-                <div>
-                  <Label className="text-sm text-gray-500">Action Buttons</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {messageData.buttons.map((button) => (
-                      <Badge key={button.id} variant="secondary" className="flex items-center gap-1">
-                        {button.includeEmoji !== false && <span>{getButtonIcon(button.type)}</span>}
-                        {button.text || 'Untitled Button'}
-                      </Badge>
-                    ))}
-                  </div>
+            {campaignType !== 'sms' && messageData.subject && (
+              <div>
+                <Label className="text-sm text-gray-500">Subject</Label>
+                <p className="font-medium">{messageData.subject}</p>
+              </div>
+            )}
+
+            {messageData.content && (
+              <div>
+                <Label className="text-sm text-gray-500">Content</Label>
+                <div className="p-3 bg-gray-50 rounded-md">
+                  {renderContentWithImage(messageData.content, messageData.customImageUrl, messageData.imagePosition)}
                 </div>
-              )}
-            </div>
-          </Card>
+              </div>
+            )}
 
-          {/* Saved Buttons */}
-          <SavedButtons onSelectButton={addButton} />
+            {messageData.buttons.length > 0 && (
+              <div>
+                <Label className="text-sm text-gray-500">Action Buttons</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {messageData.buttons.map((button) => (
+                    <Badge key={button.id} variant="secondary" className="flex items-center gap-1">
+                      {button.includeEmoji !== false && <span>{getButtonIcon(button.type)}</span>}
+                      {button.text || 'Untitled Button'}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
 
-          <div className="flex gap-3">
+        {/* Saved Buttons */}
+        <SavedButtons onSelectButton={addButton} />
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 pt-4">
+          {hasGeneratedWithAI && (
             <Button onClick={handleSave} className="flex-1">
               Use This Message
             </Button>
-            <Button onClick={onBack} variant="outline">
-              Back to Templates
-            </Button>
-          </div>
+          )}
         </div>
       </div>
 
