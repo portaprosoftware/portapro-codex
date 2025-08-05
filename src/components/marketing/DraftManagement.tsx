@@ -176,7 +176,7 @@ export const DraftManagement: React.FC = () => {
         }}
         title="Resume Campaign Draft"
         className="max-w-4xl max-h-[90vh] overflow-y-auto"
-        preventClose={true}
+        preventClose={false}
       >
         {selectedDraft && (
           <CampaignCreation 
