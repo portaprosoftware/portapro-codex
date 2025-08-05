@@ -118,19 +118,16 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScan, onClose })
   }, []);
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Scan className="w-5 h-5" />
-            QR Code Scanner
-          </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          <Scan className="w-5 h-5" />
+          QR Code Scanner
+        </h2>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
         <div className="flex gap-2">
           <Button
             variant={scanMode === "camera" ? "default" : "outline"}
@@ -239,7 +236,6 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScan, onClose })
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+    </div>
   );
 };
