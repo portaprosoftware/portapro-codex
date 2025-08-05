@@ -28,7 +28,7 @@ const Inventory: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [viewType, setViewType] = useState<ViewType>("grid");
+  const [viewType, setViewType] = useState<ViewType>("list");
   const [hideInactive, setHideInactive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
