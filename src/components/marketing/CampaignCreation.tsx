@@ -528,8 +528,14 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               {/* Message Source Selection */}
               <div className="mt-6 pt-6 border-t">
                 <TemplateOrCustomSelector
-                  onSelectTemplate={() => setCampaignData(prev => ({ ...prev, message_source: 'template' }))}
-                  onCreateCustom={() => setCampaignData(prev => ({ ...prev, message_source: 'custom' }))}
+                  onSelectTemplate={() => {
+                    setCampaignData(prev => ({ ...prev, message_source: 'template' }));
+                    setCurrentStep(3);
+                  }}
+                  onCreateCustom={() => {
+                    setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
+                    setCurrentStep(3);
+                  }}
                 />
               </div>
             </div>
@@ -887,7 +893,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         </Button>
         
         <div className="flex gap-3">
-          {/* Save as Draft button - Show on steps 3 and 4 */}
+          {/* Save as Draft button - Show on steps 3 and 4 only */}
           {(currentStep === 3 || currentStep === 4) && (
             <Button
               variant="outline"
@@ -919,16 +925,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             </Button>
           )}
           
-          {currentStep < 4 ? (
+          {currentStep < 4 && currentStep !== 2 ? (
             <Button 
               onClick={handleNext}
               disabled={
-                (currentStep === 2 && (
-                  (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
-                  (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
-                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0) ||
-                  !campaignData.message_source
-                )) ||
                 (currentStep === 3 && (
                   (campaignData.message_source === 'template' && !campaignData.template_id) ||
                   (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
