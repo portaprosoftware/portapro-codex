@@ -37,13 +37,13 @@ interface Template {
 
 export const TemplateManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sourceFilter, setSourceFilter] = useState<'system' | 'user'>('system');
+  const [sourceFilter, setSourceFilter] = useState<'system' | 'user'>('user');
   const [typeFilter, setTypeFilter] = useState('all');
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
-  const [emailSystemExpanded, setEmailSystemExpanded] = useState(false);
-  const [emailUserExpanded, setEmailUserExpanded] = useState(false);
-  const [smsSystemExpanded, setSmsSystemExpanded] = useState(false);
-  const [smsUserExpanded, setSmsUserExpanded] = useState(false);
+  const [emailSystemExpanded, setEmailSystemExpanded] = useState(true);
+  const [emailUserExpanded, setEmailUserExpanded] = useState(true);
+  const [smsSystemExpanded, setSmsSystemExpanded] = useState(true);
+  const [smsUserExpanded, setSmsUserExpanded] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
@@ -237,20 +237,20 @@ export const TemplateManagement: React.FC = () => {
         {/* Source Toggle */}
         <div className="flex bg-gray-100 rounded-lg p-1">
           <Button
-            variant={sourceFilter === 'system' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setSourceFilter('system')}
-            className="px-3"
-          >
-            System Generated
-          </Button>
-          <Button
             variant={sourceFilter === 'user' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setSourceFilter('user')}
             className="px-3"
           >
             User Created
+          </Button>
+          <Button
+            variant={sourceFilter === 'system' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setSourceFilter('system')}
+            className="px-3"
+          >
+            System Generated
           </Button>
         </div>
         
@@ -307,17 +307,8 @@ export const TemplateManagement: React.FC = () => {
               <Mail className="w-5 h-5 text-blue-500" />
               Email Templates
             </h2>
-            <span className="text-sm text-gray-500 italic">select dropdown to expand</span>
+            <span className="text-sm text-gray-500">select dropdown to expand</span>
           </div>
-          
-          {/* Email System Templates */}
-          {sourceFilter === 'system' && renderCollapsibleSection(
-            "System Generated",
-            <Badge variant="default" className="text-xs">system</Badge>,
-            emailSystem,
-            emailSystemExpanded,
-            setEmailSystemExpanded
-          )}
           
           {/* Email User Templates */}
           {sourceFilter === 'user' && renderCollapsibleSection(
@@ -326,6 +317,22 @@ export const TemplateManagement: React.FC = () => {
             emailUser,
             emailUserExpanded,
             setEmailUserExpanded
+          )}
+          
+          {/* Email System Templates */}
+          {sourceFilter === 'system' && (
+            <>
+              {renderCollapsibleSection(
+                "System Generated",
+                <Badge variant="default" className="text-xs">system</Badge>,
+                emailSystem,
+                emailSystemExpanded,
+                setEmailSystemExpanded
+              )}
+              <p className="text-xs text-muted-foreground mt-2 px-4">
+                System generated templates cannot be edited or deleted.
+              </p>
+            </>
           )}
         </div>
 
@@ -336,17 +343,8 @@ export const TemplateManagement: React.FC = () => {
               <MessageSquare className="w-5 h-5 text-green-500" />
               SMS Templates
             </h2>
-            <span className="text-sm text-gray-500 italic">select dropdown to expand</span>
+            <span className="text-sm text-gray-500">select dropdown to expand</span>
           </div>
-          
-          {/* SMS System Templates */}
-          {sourceFilter === 'system' && renderCollapsibleSection(
-            "System Generated", 
-            <Badge variant="default" className="text-xs">system</Badge>,
-            smsSystem,
-            smsSystemExpanded,
-            setSmsSystemExpanded
-          )}
           
           {/* SMS User Templates */}
           {sourceFilter === 'user' && renderCollapsibleSection(
@@ -355,6 +353,22 @@ export const TemplateManagement: React.FC = () => {
             smsUser,
             smsUserExpanded,
             setSmsUserExpanded
+          )}
+          
+          {/* SMS System Templates */}
+          {sourceFilter === 'system' && (
+            <>
+              {renderCollapsibleSection(
+                "System Generated", 
+                <Badge variant="default" className="text-xs">system</Badge>,
+                smsSystem,
+                smsSystemExpanded,
+                setSmsSystemExpanded
+              )}
+              <p className="text-xs text-muted-foreground mt-2 px-4">
+                System generated templates cannot be edited or deleted.
+              </p>
+            </>
           )}
         </div>
       </div>
