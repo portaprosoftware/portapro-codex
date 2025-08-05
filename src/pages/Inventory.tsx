@@ -371,14 +371,6 @@ const Inventory: React.FC = () => {
               <BarChart3 className="w-4 h-4 mr-2" />
               OCR Quality
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-600 hover:bg-white rounded-md"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Offline Sync
-            </Button>
           </div>
 
           {/* Search Action Buttons - Right Side */}
