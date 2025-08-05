@@ -6175,7 +6175,7 @@ export type Database = {
         Returns: number
       }
       calculate_smart_segment_size: {
-        Args: { segment_type: string }
+        Args: { rules_json: Json } | { segment_type: string }
         Returns: number
       }
       can_delete_user: {

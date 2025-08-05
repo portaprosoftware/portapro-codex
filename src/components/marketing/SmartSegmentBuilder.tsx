@@ -168,9 +168,33 @@ export const SmartSegmentBuilder: React.FC = () => {
   };
 
   const estimateSegmentSize = async () => {
-    // This would implement actual segment counting logic
-    // For now, we'll use a mock estimate
-    setEstimatedCount(Math.floor(Math.random() * 500) + 50);
+    try {
+      // Convert rules to the expected format for the database function
+      const rulesJson = {
+        rules: segmentData.rules.map(rule => ({
+          field: rule.field,
+          operator: rule.operator,
+          value: rule.value,
+          logic: rule.logic || 'AND'
+        }))
+      };
+
+      const { data, error } = await supabase
+        .rpc('calculate_smart_segment_size', { 
+          rules_json: rulesJson
+        });
+      
+      if (error) {
+        console.error('Error calculating segment size:', error);
+        setEstimatedCount(0);
+        return;
+      }
+      
+      setEstimatedCount(data || 0);
+    } catch (error) {
+      console.error('Error calling segment calculation function:', error);
+      setEstimatedCount(0);
+    }
   };
 
   const renderValueInput = (rule: SegmentRule) => {
