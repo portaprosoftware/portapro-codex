@@ -39,6 +39,7 @@ const Inventory: React.FC = () => {
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
   const [matchingItemId, setMatchingItemId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"products" | "location-map" | "ocr-quality">("products");
 
   // Auto-search with debouncing
   useEffect(() => {
@@ -350,7 +351,13 @@ const Inventory: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="bg-blue-600 text-white hover:bg-blue-700 rounded-md"
+              onClick={() => setActiveTab("products")}
+              className={cn(
+                "rounded-md",
+                activeTab === "products" 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  : "text-gray-600 hover:bg-white"
+              )}
             >
               <LayoutGrid className="w-4 h-4 mr-2" />
               Products
@@ -358,7 +365,13 @@ const Inventory: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-600 hover:bg-white rounded-md"
+              onClick={() => setActiveTab("location-map")}
+              className={cn(
+                "rounded-md",
+                activeTab === "location-map" 
+                  ? "bg-purple-600 text-white hover:bg-purple-700" 
+                  : "text-gray-600 hover:bg-white"
+              )}
             >
               <MapPin className="w-4 h-4 mr-2" />
               Location Map
@@ -366,7 +379,13 @@ const Inventory: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-600 hover:bg-white rounded-md"
+              onClick={() => setActiveTab("ocr-quality")}
+              className={cn(
+                "rounded-md",
+                activeTab === "ocr-quality" 
+                  ? "bg-orange-600 text-white hover:bg-orange-700" 
+                  : "text-gray-600 hover:bg-white"
+              )}
             >
               <BarChart3 className="w-4 h-4 mr-2" />
               OCR Quality
@@ -397,23 +416,37 @@ const Inventory: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content - Products Only (Tabs moved up) */}
+      {/* Tab Content */}
       <div className="space-y-4">
-        <ProductGrid 
-          filter={activeFilter}
-          viewType={viewType}
-          hideInactive={hideInactive}
-          searchQuery={searchQuery}
-          selectedLocationId={selectedLocationId}
-          onProductSelect={(productId) => {
-            // If we have a matching individual item, go directly to that page
-            if (matchingItemId) {
-              navigate(`/inventory/items/${matchingItemId}`);
-            } else {
-              setSelectedProduct(productId);
-            }
-          }}
-        />
+        {activeTab === "products" && (
+          <ProductGrid 
+            filter={activeFilter}
+            viewType={viewType}
+            hideInactive={hideInactive}
+            searchQuery={searchQuery}
+            selectedLocationId={selectedLocationId}
+            onProductSelect={(productId) => {
+              // If we have a matching individual item, go directly to that page
+              if (matchingItemId) {
+                navigate(`/inventory/items/${matchingItemId}`);
+              } else {
+                setSelectedProduct(productId);
+              }
+            }}
+          />
+        )}
+
+        {activeTab === "location-map" && (
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <InventoryMapView />
+          </div>
+        )}
+
+        {activeTab === "ocr-quality" && (
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <OCRQualityDashboard />
+          </div>
+        )}
       </div>
 
       {/* Location-Aware Available Now Slider */}
