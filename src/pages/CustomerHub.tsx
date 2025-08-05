@@ -330,49 +330,49 @@ const CustomerHub: React.FC = () => {
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
                        <div className="space-y-4">
-                         <div className="bg-blue-50 p-4 rounded-lg">
-                           <p className="font-medium text-blue-900 mb-2">90-Day Time Window</p>
-                           <p className="text-sm text-blue-700">
-                             Engagement scores are calculated based only on activities from the last 90 days. 
-                             This ensures we're measuring current customer engagement, not historical activity.
-                           </p>
-                         </div>
-                         
-                         <div className="space-y-3">
-                           <h4 className="font-medium">Scoring System:</h4>
-                           <div className="grid gap-2 text-sm">
-                             <div className="flex justify-between">
-                               <span>• Jobs completed:</span>
-                               <span className="font-medium">10 points each</span>
-                             </div>
-                             <div className="flex justify-between">
-                               <span>• Customer interactions:</span>
-                               <span className="font-medium">15 points each</span>
-                             </div>
-                             <div className="flex justify-between">
-                               <span>• Communications sent:</span>
-                               <span className="font-medium">5 points each</span>
-                             </div>
-                           </div>
-                         </div>
+                          <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
+                            <p className="text-sm text-gray-700">
+                              Engagement scores are calculated based only on activities from the last 90 days. 
+                              This ensures we're measuring current customer engagement, not historical activity.
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <h4 className="font-medium">Scoring System:</h4>
+                            <div className="grid gap-2 text-sm">
+                              <div className="flex justify-between">
+                                <span>• Jobs completed:</span>
+                                <span className="font-medium">10 points each</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>• Customer interactions:</span>
+                                <span className="font-medium">15 points each</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>• Communications sent:</span>
+                                <span className="font-medium">5 points each</span>
+                              </div>
+                            </div>
+                          </div>
 
-                         <div className="space-y-3">
-                           <h4 className="font-medium">Engagement Levels:</h4>
-                           <div className="space-y-2">
-                             <div className="flex items-center justify-between p-2 bg-red-50 rounded">
-                               <span className="text-red-800 font-medium">Low Engagement</span>
-                               <span className="text-sm text-red-600">0-30 points</span>
-                             </div>
-                             <div className="flex items-center justify-between p-2 bg-yellow-50 rounded">
-                               <span className="text-yellow-800 font-medium">Medium Engagement</span>
-                               <span className="text-sm text-yellow-600">31-70 points</span>
-                             </div>
-                             <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                               <span className="text-green-800 font-medium">High Engagement</span>
-                               <span className="text-sm text-green-600">71+ points</span>
-                             </div>
-                           </div>
-                         </div>
+                          <div className="space-y-3">
+                            <h4 className="font-medium">Engagement Levels:</h4>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg">
+                                <span className="text-white font-bold">Low Engagement</span>
+                                <span className="text-white">0-30 points</span>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg">
+                                <span className="text-white font-bold">Medium Engagement</span>
+                                <span className="text-white">31-70 points</span>
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+                                <span className="text-white font-bold">High Engagement</span>
+                                <span className="text-white">71+ points</span>
+                              </div>
+                            </div>
+                          </div>
 
                          <div className="bg-gray-50 p-4 rounded-lg">
                            <h4 className="font-medium mb-2">Example:</h4>
