@@ -304,13 +304,13 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         <h2 className="text-xl font-semibold font-inter">Create Your Message</h2>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid xl:grid-cols-2 gap-4 lg:gap-6">
         {/* Message Composer */}
-        <div className="space-y-6">
-          <Card className="p-6">
+        <div className="space-y-4 lg:space-y-6">
+          <Card className="p-4 lg:p-6">
             <h3 className="text-lg font-semibold mb-4 font-inter">AI Assistant</h3>
             
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               {campaignType !== 'sms' && (
                 <div>
                   <Label>Email Type</Label>
@@ -375,7 +375,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 lg:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold font-inter">Message Content</h3>
               {/* Company Logo Toggle */}
@@ -438,7 +438,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               </div>
             )}
             
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               {campaignType !== 'sms' && (
                 <div>
                   <Label htmlFor="subject">Subject Line</Label>
@@ -622,8 +622,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </div>
 
         {/* Preview */}
-        <div className="space-y-6">
-          <Card className="p-6">
+        <div className="space-y-4 lg:space-y-6">
+          <Card className="p-4 lg:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold font-inter">Preview</h3>
               <Button onClick={() => setShowPreview(true)} variant="outline" size="sm">
@@ -632,7 +632,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               {/* Company Logo Preview */}
               {messageData.showCompanyLogo && companySettings?.company_logo && (() => {
                 const getLogoHeight = (size?: string) => {
