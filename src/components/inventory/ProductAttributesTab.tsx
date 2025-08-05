@@ -6,6 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ProductAttributesTabProps {
   productId: string;
@@ -14,34 +18,62 @@ interface ProductAttributesTabProps {
 export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ productId }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [attributeFilter, setAttributeFilter] = useState("all");
+  const queryClient = useQueryClient();
 
-  // Mock data for attributes - in real app this would come from Supabase
-  const attributes = [
-    {
-      id: "1",
-      name: "Color",
-      values: ["Blue", "Green", "Tan", "Gray"],
-      required: true
-    },
-    {
-      id: "2", 
-      name: "Size",
-      values: ["Standard", "Large", "ADA"],
-      required: false
-    },
-    {
-      id: "3",
-      name: "Material", 
-      values: ["Plastic", "Fiberglass"],
-      required: false
-    },
-    {
-      id: "4",
-      name: "Power Source",
-      values: ["None", "Solar", "Electric"],
-      required: false
+  // Fetch real product attributes from Supabase
+  const { data: rawAttributes = [], isLoading } = useQuery({
+    queryKey: ['product-attributes', productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('*')
+        .eq('product_id', productId);
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
+
+  // Group attributes by name to show them in table format
+  const attributes = React.useMemo(() => {
+    const grouped = rawAttributes.reduce((acc, attr) => {
+      if (!acc[attr.attribute_name]) {
+        acc[attr.attribute_name] = {
+          id: attr.attribute_name,
+          name: attr.attribute_name,
+          values: [],
+          required: false
+        };
+      }
+      acc[attr.attribute_name].values.push(attr.attribute_value);
+      if (attr.is_required) {
+        acc[attr.attribute_name].required = true;
+      }
+      return acc;
+    }, {} as Record<string, { id: string; name: string; values: string[]; required: boolean }>);
+
+    return Object.values(grouped);
+  }, [rawAttributes]);
+
+  // Update required status mutation
+  const updateRequiredMutation = useMutation({
+    mutationFn: async ({ attributeName, isRequired }: { attributeName: string, isRequired: boolean }) => {
+      const { error } = await supabase
+        .from('product_properties')
+        .update({ is_required: isRequired })
+        .eq('product_id', productId)
+        .eq('attribute_name', attributeName);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-attributes', productId] });
+      toast.success("Attribute requirement updated");
+    },
+    onError: () => {
+      toast.error("Failed to update attribute requirement");
+    }
+  });
 
   const filteredAttributes = attributes.filter(attr => {
     if (searchQuery) {
@@ -56,6 +88,10 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
     }
     return true;
   });
+
+  if (isLoading) {
+    return <div className="p-6">Loading attributes...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -121,11 +157,23 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
                   </div>
                 </TableCell>
                 <TableCell>
-                  {attribute.required ? (
-                    <Badge className="bg-red-100 text-red-700 border-red-200">Required</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-gray-600 border-gray-300">Optional</Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={attribute.required}
+                      onCheckedChange={(checked) => 
+                        updateRequiredMutation.mutate({ 
+                          attributeName: attribute.name, 
+                          isRequired: checked 
+                        })
+                      }
+                      disabled={updateRequiredMutation.isPending}
+                    />
+                    {attribute.required ? (
+                      <Badge className="bg-red-100 text-red-700 border-red-200">Required</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-gray-600 border-gray-300">Optional</Badge>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">

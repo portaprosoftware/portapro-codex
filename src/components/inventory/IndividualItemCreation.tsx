@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
+import { RequiredAttributesFields } from "./RequiredAttributesFields";
 import { toast } from "sonner";
 import { Package, ArrowRight, QrCode } from "lucide-react";
 
@@ -33,6 +34,22 @@ export function IndividualItemCreation({
   const [quantity, setQuantity] = useState(1);
   const [storageLocationId, setStorageLocationId] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
+  const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
+
+  // Fetch product attributes
+  const { data: productAttributes = [] } = useQuery({
+    queryKey: ['product-attributes', productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('*')
+        .eq('product_id', productId);
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const createIndividualItemsMutation = useMutation({
     mutationFn: async () => {
@@ -43,6 +60,24 @@ export function IndividualItemCreation({
       if (!selectedCategory) {
         throw new Error("Please select an item code category");
       }
+
+      // Validate required attributes
+      const requiredAttributes = productAttributes.filter(attr => attr.is_required);
+      const validationErrors: Record<string, string> = {};
+      
+      requiredAttributes.forEach(attr => {
+        const fieldKey = attr.attribute_name.toLowerCase();
+        if (!attributeValues[fieldKey]) {
+          validationErrors[fieldKey] = `${attr.attribute_name} is required`;
+        }
+      });
+
+      if (Object.keys(validationErrors).length > 0) {
+        setAttributeErrors(validationErrors);
+        throw new Error("Please fill in all required attributes");
+      }
+
+      setAttributeErrors({});
 
       const itemCodes = [];
       
@@ -65,11 +100,48 @@ export function IndividualItemCreation({
         current_storage_location_id: storageLocationId
       }));
 
-      const { error } = await supabase
+      const { data: createdItems, error } = await supabase
         .from('product_items')
-        .insert(individualItems);
+        .insert(individualItems)
+        .select('id');
 
       if (error) throw error;
+
+      // Save attribute values for each created item
+      if (createdItems && Object.keys(attributeValues).length > 0) {
+        const attributeRecords = [];
+        
+        for (const item of createdItems) {
+          for (const [attrName, attrValue] of Object.entries(attributeValues)) {
+            if (attrValue) {
+              // Find the property ID for this attribute name and value
+              const property = productAttributes.find(attr => 
+                attr.attribute_name.toLowerCase() === attrName && 
+                attr.attribute_value === attrValue
+              );
+              
+              if (property) {
+                attributeRecords.push({
+                  item_id: item.id,
+                  property_id: property.id,
+                  property_value: attrValue
+                });
+              }
+            }
+          }
+        }
+
+        if (attributeRecords.length > 0) {
+          const { error: attrError } = await supabase
+            .from('product_item_attributes')
+            .insert(attributeRecords);
+          
+          if (attrError) {
+            console.error('Error saving attributes:', attrError);
+            // Don't fail the entire operation for attribute errors
+          }
+        }
+      }
 
       // Update product location stock
       const { data: existingStock } = await supabase
@@ -115,7 +187,21 @@ export function IndividualItemCreation({
     setQuantity(1);
     setStorageLocationId("");
     setSelectedCategory("");
+    setAttributeValues({});
+    setAttributeErrors({});
     onClose();
+  };
+
+  const handleAttributeChange = (attributeId: string, value: string) => {
+    setAttributeValues(prev => ({ ...prev, [attributeId]: value }));
+    // Clear error when user selects a value
+    if (attributeErrors[attributeId]) {
+      setAttributeErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[attributeId];
+        return newErrors;
+      });
+    }
   };
 
   return (
@@ -167,6 +253,15 @@ export function IndividualItemCreation({
                 Items will be coded with 4-digit numbers (e.g., 1001, 2045, 3012)
               </p>
             </div>
+
+            {/* Required Attributes */}
+            <RequiredAttributesFields
+              productId={productId}
+              attributes={productAttributes}
+              values={attributeValues}
+              onChange={handleAttributeChange}
+              errors={attributeErrors}
+            />
           </div>
 
           <div className="flex items-center gap-2 p-4 bg-muted/50 rounded-lg">
@@ -187,7 +282,7 @@ export function IndividualItemCreation({
             </Button>
             <Button 
               type="submit" 
-              disabled={createIndividualItemsMutation.isPending || !selectedCategory || !storageLocationId}
+              disabled={createIndividualItemsMutation.isPending || !selectedCategory || !storageLocationId || Object.keys(attributeErrors).length > 0}
             >
               {createIndividualItemsMutation.isPending ? "Creating..." : `Create ${quantity} Items`}
             </Button>

@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
+import { RequiredAttributesFields } from "./RequiredAttributesFields";
 
 interface EditItemModalProps {
   itemId: string;
@@ -21,6 +22,8 @@ interface EditItemModalProps {
 export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose }) => {
   const queryClient = useQueryClient();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
+  const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     status: "",
     condition: "",
@@ -42,12 +45,62 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id")
         .eq("id", itemId)
         .single();
       
       if (error) throw error;
       return data;
+    }
+  });
+
+  // Fetch product attributes
+  const { data: productAttributes = [] } = useQuery({
+    queryKey: ['product-attributes', item?.product_id],
+    queryFn: async () => {
+      if (!item?.product_id) return [];
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('*')
+        .eq('product_id', item.product_id);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!item?.product_id
+  });
+
+  // Fetch current item attributes
+  const { data: itemAttributes = [] } = useQuery({
+    queryKey: ['item-attributes', itemId],
+    queryFn: async () => {
+      // First get the item attributes
+      const { data: attributes, error: attrError } = await supabase
+        .from('product_item_attributes')
+        .select('property_id, property_value')
+        .eq('item_id', itemId);
+      
+      if (attrError) throw attrError;
+      
+      if (!attributes || attributes.length === 0) return [];
+
+      // Then get the property details for each attribute
+      const propertyIds = attributes.map(attr => attr.property_id);
+      const { data: properties, error: propError } = await supabase
+        .from('product_properties')
+        .select('id, attribute_name, attribute_value')
+        .in('id', propertyIds);
+      
+      if (propError) throw propError;
+
+      // Combine the data
+      return attributes.map(attr => {
+        const property = properties?.find(p => p.id === attr.property_id);
+        return {
+          ...attr,
+          product_properties: property
+        };
+      });
     }
   });
 
@@ -71,14 +124,83 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     }
   }, [item]);
 
+  React.useEffect(() => {
+    if (itemAttributes.length > 0) {
+      const attributes: Record<string, string> = {};
+      itemAttributes.forEach(attr => {
+        if (attr.product_properties) {
+          const attrName = attr.product_properties.attribute_name.toLowerCase();
+          attributes[attrName] = attr.property_value;
+        }
+      });
+      setAttributeValues(attributes);
+    }
+  }, [itemAttributes]);
+
   const updateMutation = useMutation({
     mutationFn: async (updateData: typeof formData) => {
+      // Validate required attributes
+      const requiredAttributes = productAttributes.filter(attr => attr.is_required);
+      const validationErrors: Record<string, string> = {};
+      
+      requiredAttributes.forEach(attr => {
+        const fieldKey = attr.attribute_name.toLowerCase();
+        if (!attributeValues[fieldKey]) {
+          validationErrors[fieldKey] = `${attr.attribute_name} is required`;
+        }
+      });
+
+      if (Object.keys(validationErrors).length > 0) {
+        setAttributeErrors(validationErrors);
+        throw new Error("Please fill in all required attributes");
+      }
+
+      setAttributeErrors({});
+
       const { error } = await supabase
         .from("product_items")
         .update(updateData)
         .eq("id", itemId);
       
       if (error) throw error;
+
+      // Update item attributes
+      if (Object.keys(attributeValues).length > 0) {
+        // First, delete existing attributes
+        await supabase
+          .from('product_item_attributes')
+          .delete()
+          .eq('item_id', itemId);
+
+        // Then insert new attributes
+        const attributeRecords = [];
+        for (const [attrName, attrValue] of Object.entries(attributeValues)) {
+          if (attrValue) {
+            const property = productAttributes.find(attr => 
+              attr.attribute_name.toLowerCase() === attrName && 
+              attr.attribute_value === attrValue
+            );
+            
+            if (property) {
+              attributeRecords.push({
+                item_id: itemId,
+                property_id: property.id,
+                property_value: attrValue
+              });
+            }
+          }
+        }
+
+        if (attributeRecords.length > 0) {
+          const { error: attrError } = await supabase
+            .from('product_item_attributes')
+            .insert(attributeRecords);
+          
+          if (attrError) {
+            console.error('Error saving attributes:', attrError);
+          }
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
@@ -98,6 +220,18 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAttributeChange = (attributeId: string, value: string) => {
+    setAttributeValues(prev => ({ ...prev, [attributeId]: value }));
+    // Clear error when user selects a value
+    if (attributeErrors[attributeId]) {
+      setAttributeErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[attributeId];
+        return newErrors;
+      });
+    }
   };
 
   const handleOCRComplete = (ocrData: any) => {
@@ -204,70 +338,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             </Button>
           </div>
 
-          {/* Item Attributes */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">Item Attributes</h3>
-              <Button
-                type="button"
-                variant="link"
-                className="text-blue-600 hover:text-blue-700 p-0 h-auto font-normal text-sm"
-                onClick={() => {
-                  // TODO: Navigate to product attributes
-                  console.log("Navigate to product attributes");
-                }}
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                To add additional attributes to the list - click here
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="color">Color</Label>
-                <Select value={formData.color} onValueChange={(value) => handleInputChange("color", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select color" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="blue">Blue</SelectItem>
-                    <SelectItem value="green">Green</SelectItem>
-                    <SelectItem value="tan">Tan</SelectItem>
-                    <SelectItem value="gray">Gray</SelectItem>
-                    <SelectItem value="white">White</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="size">Size</Label>
-                <Select value={formData.size} onValueChange={(value) => handleInputChange("size", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="standard">Standard</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
-                    <SelectItem value="ada">ADA Compliant</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="material">Material</Label>
-                <Select value={formData.material} onValueChange={(value) => handleInputChange("material", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select material" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="plastic">Plastic</SelectItem>
-                    <SelectItem value="fiberglass">Fiberglass</SelectItem>
-                    <SelectItem value="metal">Metal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+          {/* Required Attributes */}
+          <RequiredAttributesFields
+            productId={item?.product_id || ""}
+            attributes={productAttributes}
+            values={attributeValues}
+            onChange={handleAttributeChange}
+            errors={attributeErrors}
+          />
 
           {/* OCR Tool Tracking Section */}
           <div className="space-y-4 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -375,7 +453,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             <Button 
               type="submit" 
               className="bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={updateMutation.isPending}
+              disabled={updateMutation.isPending || Object.keys(attributeErrors).length > 0}
             >
               {updateMutation.isPending ? "Updating..." : "Update Item"}
             </Button>
