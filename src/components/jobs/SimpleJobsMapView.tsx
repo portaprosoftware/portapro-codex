@@ -39,6 +39,7 @@ export function SimpleJobsMapView({
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [radarEnabled, setRadarEnabled] = useState(false);
+  const [radarResetKey, setRadarResetKey] = useState(0);
   
   // Check if selected date is today
   const isToday = (date: Date) => {
@@ -136,12 +137,16 @@ export function SimpleJobsMapView({
 
   // Update map style when changed
   useEffect(() => {
-    if (map.current) {
-      map.current.setStyle(mapStyle === 'satellite' 
-        ? 'mapbox://styles/mapbox/satellite-v9'
-        : 'mapbox://styles/mapbox/streets-v12');
+    if (map.current && mapboxToken) {
+      const styleUrl = mapStyle === 'streets' 
+        ? 'mapbox://styles/mapbox/streets-v12' 
+        : 'mapbox://styles/mapbox/satellite-streets-v12';
+      map.current.setStyle(styleUrl);
+      
+      // Reset radar when map style changes to force reload
+      setRadarResetKey(prev => prev + 1);
     }
-  }, [mapStyle]);
+  }, [mapStyle, mapboxToken]);
 
   // Create static pins - simple approach
   useEffect(() => {
@@ -428,6 +433,7 @@ export function SimpleJobsMapView({
       {/* Weather Radar */}
       {map.current && radarEnabled && selectedDateIsToday && (
         <SimpleWeatherRadar 
+          key={radarResetKey}
           map={map.current} 
           isActive={radarEnabled} 
         />
