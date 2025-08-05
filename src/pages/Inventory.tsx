@@ -392,12 +392,7 @@ const Inventory: React.FC = () => {
                   <span className="text-sm text-gray-700">Hide Inactive</span>
                   {inactiveProductsCount > 0 && (
                     <Badge 
-                      className={cn(
-                        "ml-1 text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500",
-                        hideInactive 
-                          ? "text-blue-600" 
-                          : "text-white"
-                      )}
+                      className="ml-1 text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
                     >
                       {inactiveProductsCount}
                     </Badge>
