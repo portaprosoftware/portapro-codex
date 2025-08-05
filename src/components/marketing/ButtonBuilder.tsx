@@ -24,11 +24,17 @@ interface ButtonBuilderProps {
 }
 
 export const ButtonBuilder: React.FC<ButtonBuilderProps> = ({ onAddButton }) => {
-  const [buttonData, setButtonData] = useState({
+  const [buttonData, setButtonData] = useState<{
+    text: string;
+    type: 'url' | 'phone' | 'email';
+    value: string;
+    style: 'primary' | 'secondary';
+    includeEmoji: boolean;
+  }>({
     text: '',
-    type: 'url' as const,
+    type: 'url',
     value: '',
-    style: 'primary' as const,
+    style: 'primary',
     includeEmoji: true
   });
 
@@ -164,6 +170,32 @@ export const ButtonBuilder: React.FC<ButtonBuilderProps> = ({ onAddButton }) => 
             onChange={(e) => setButtonData(prev => ({ ...prev, value: e.target.value }))}
             placeholder={getPlaceholder()}
           />
+        </div>
+
+        <div>
+          <Label>Style</Label>
+          <Select 
+            value={buttonData.style} 
+            onValueChange={(value: 'primary' | 'secondary') => setButtonData(prev => ({ ...prev, style: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="primary">
+                <div>
+                  <div>Primary</div>
+                  <div className="text-xs text-muted-foreground">Blue button with white text (ex: save button)</div>
+                </div>
+              </SelectItem>
+              <SelectItem value="secondary">
+                <div>
+                  <div>Secondary</div>
+                  <div className="text-xs text-muted-foreground">Grey button with black text (ex: cancel button)</div>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex items-center space-x-2">
