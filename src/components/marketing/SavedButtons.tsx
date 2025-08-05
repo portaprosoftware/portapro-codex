@@ -122,9 +122,22 @@ export const SavedButtons: React.FC<SavedButtonsProps> = ({ onSelectButton }) =>
     }
   };
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    // Remove all non-digit characters
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX if we have 10 digits
+    if (digits.length === 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    
+    // Return original if not 10 digits
+    return phoneNumber;
+  };
+
   const formatButtonValue = (type: string, value: string) => {
     if (type === 'phone') {
-      return value;
+      return formatPhoneNumber(value);
     } else if (type === 'email') {
       return value;
     } else {

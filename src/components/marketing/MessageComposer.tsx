@@ -276,6 +276,35 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
   };
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    // Remove all non-digit characters
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX if we have 10 digits
+    if (digits.length === 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    
+    // Return original if not 10 digits
+    return phoneNumber;
+  };
+
+  const formatButtonValue = (type: string, value: string) => {
+    if (type === 'phone') {
+      return formatPhoneNumber(value);
+    } else if (type === 'email') {
+      return value;
+    } else {
+      // For URLs, show a shortened version
+      try {
+        const url = new URL(value);
+        return url.hostname;
+      } catch {
+        return value.length > 30 ? value.substring(0, 30) + '...' : value;
+      }
+    }
+  };
+
   const renderContentWithImage = (content: string, imageUrl?: string, position?: string) => {
     if (!imageUrl) return content;
     
@@ -580,71 +609,33 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               {/* Button Builder */}
               <ButtonBuilder onAddButton={addButton} />
 
-              {/* Existing Buttons */}
+              {/* Added Buttons - View Only */}
               {messageData.buttons.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="font-medium font-inter">Added Buttons</h4>
                   {messageData.buttons.map((button) => (
-                    <div key={button.id} className="p-4 border rounded-lg space-y-3">
+                    <div key={button.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Button {messageData.buttons.indexOf(button) + 1}</span>
+                        <div className="flex items-center gap-3 flex-1">
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <span>{getButtonIcon(button.type)}</span>
+                            {button.text}
+                          </Badge>
+                          <div className="text-sm text-gray-500">
+                            <div className="capitalize">{button.type}</div>
+                            <div className="text-xs text-gray-600">
+                              {formatButtonValue(button.type, button.value)}
+                            </div>
+                          </div>
+                        </div>
                         <Button
                           onClick={() => removeButton(button.id)}
                           size="sm"
                           variant="ghost"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <Label>Button Text</Label>
-                          <Input
-                            value={button.text}
-                            onChange={(e) => updateButton(button.id, { text: e.target.value })}
-                            placeholder="e.g., Call Now"
-                          />
-                        </div>
-                        <div>
-                          <Label>Type</Label>
-                          <Select value={button.type} onValueChange={(value: any) => updateButton(button.id, { type: value })}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="url">Website URL</SelectItem>
-                              <SelectItem value="phone">Phone Number</SelectItem>
-                              <SelectItem value="email">Email Address</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label>
-                          {button.type === 'url' ? 'URL' : 
-                           button.type === 'phone' ? 'Phone Number' : 'Email Address'}
-                        </Label>
-                        <Input
-                          value={button.value}
-                          onChange={(e) => updateButton(button.id, { value: e.target.value })}
-                          placeholder={
-                            button.type === 'url' ? 'https://example.com' :
-                            button.type === 'phone' ? '(555) 123-4567' : 'contact@example.com'
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`emoji-${button.id}`}
-                          checked={button.includeEmoji !== false}
-                          onCheckedChange={(checked) => updateButton(button.id, { includeEmoji: !!checked })}
-                        />
-                        <Label htmlFor={`emoji-${button.id}`} className="text-sm">
-                          Include emoji {getButtonIcon(button.type)}
-                        </Label>
                       </div>
                     </div>
                   ))}
