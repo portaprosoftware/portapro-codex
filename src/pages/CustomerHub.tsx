@@ -16,30 +16,30 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const CUSTOMER_TYPES = {
-  "events_festivals": { label: "Events & Festivals", color: "#8A2BE2" },
-  "sports_recreation": { label: "Sports & Recreation", color: "#33CC66" },
-  "municipal_government": { label: "Municipal & Government", color: "#3366FF" },
-  "private_events_weddings": { label: "Private Events & Weddings", color: "#CC3366" },
+  "bars_restaurants": { label: "Bars & Restaurants", color: "#EAB308" },
   "construction": { label: "Construction", color: "#FF6600" },
-  "commercial": { label: "Commercial", color: "#4A4A4A" },
   "emergency_disaster_relief": { label: "Emergency & Disaster Relief", color: "#CC3333" },
-  "restaurants": { label: "Restaurants", color: "#EAB308" },
+  "events_festivals": { label: "Events & Festivals", color: "#8A2BE2" },
+  "municipal_government": { label: "Municipal & Government", color: "#3366FF" },
+  "other": { label: "Other", color: "#6B7280" },
+  "private_events_weddings": { label: "Private Events & Weddings", color: "#CC3366" },
   "retail": { label: "Retail", color: "#14B8A6" },
-  "other": { label: "Other", color: "#6B7280" }
+  "sports_recreation": { label: "Sports & Recreation", color: "#33CC66" },
+  "commercial": { label: "Commercial", color: "#4A4A4A" }
 };
 
 const getCustomerTypeGradient = (type: string) => {
   switch (type) {
-    case 'commercial': return 'from-blue-500 to-blue-600';
-    case 'events_festivals': return 'from-purple-500 to-purple-600';
-    case 'sports_recreation': return 'from-green-500 to-green-600';
-    case 'municipal_government': return 'from-blue-500 to-blue-600';
-    case 'private_events_weddings': return 'from-pink-500 to-pink-600';
+    case 'bars_restaurants': return 'from-yellow-500 to-yellow-600';
     case 'construction': return 'from-orange-500 to-orange-600';
     case 'emergency_disaster_relief': return 'from-red-500 to-red-600';
-    case 'restaurants': return 'from-yellow-500 to-yellow-600';
-    case 'retail': return 'from-teal-500 to-teal-600';
+    case 'events_festivals': return 'from-purple-500 to-purple-600';
+    case 'municipal_government': return 'from-blue-500 to-blue-600';
     case 'other': return 'from-gray-500 to-gray-600';
+    case 'private_events_weddings': return 'from-pink-500 to-pink-600';
+    case 'retail': return 'from-teal-500 to-teal-600';
+    case 'sports_recreation': return 'from-green-500 to-green-600';
+    case 'commercial': return 'from-blue-500 to-blue-600';
     default: return 'from-gray-500 to-gray-600';
   }
 };

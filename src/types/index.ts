@@ -18,12 +18,12 @@ export type InventoryStatus = "in_stock" | "low_stock" | "out_of_stock";
 
 // Customer types
 export type CustomerType = 
-  | "events_festivals" 
+  | "bars_restaurants" 
   | "construction" 
-  | "municipal_government" 
-  | "private_events_weddings" 
-  | "sports_recreation" 
   | "emergency_disaster_relief"
-  | "restaurants"
+  | "events_festivals" 
+  | "municipal_government" 
+  | "other"
+  | "private_events_weddings" 
   | "retail" 
-  | "other";
+  | "sports_recreation";

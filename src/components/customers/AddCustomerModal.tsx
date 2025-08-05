@@ -116,15 +116,15 @@ interface AddCustomerModalProps {
 }
 
 const CUSTOMER_TYPES = [
-  { value: 'events_festivals', label: 'Events & Festivals' },
+  { value: 'bars_restaurants', label: 'Bars & Restaurants' },
   { value: 'construction', label: 'Construction' },
-  { value: 'municipal_government', label: 'Municipal & Government' },
-  { value: 'private_events_weddings', label: 'Private Events & Weddings' },
-  { value: 'sports_recreation', label: 'Sports & Recreation' },
   { value: 'emergency_disaster_relief', label: 'Emergency & Disaster Relief' },
-  { value: 'restaurants', label: 'Restaurants' },
-  { value: 'retail', label: 'Retail' },
+  { value: 'events_festivals', label: 'Events & Festivals' },
+  { value: 'municipal_government', label: 'Municipal & Government' },
   { value: 'other', label: 'Other' },
+  { value: 'private_events_weddings', label: 'Private Events & Weddings' },
+  { value: 'retail', label: 'Retail' },
+  { value: 'sports_recreation', label: 'Sports & Recreation' },
 ];
 
 export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {

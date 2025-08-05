@@ -86,16 +86,16 @@ export const SmartSegmentBuilder: React.FC = () => {
   };
 
   const customerTypes = [
+    'bars_restaurants',
     'construction',
-    'events_festivals',
-    'sports_recreation',
-    'municipal_government',
-    'private_events_weddings',
     'emergency_disaster_relief',
-    'commercial',
-    'restaurants',
+    'events_festivals',
+    'municipal_government',
+    'other',
+    'private_events_weddings',
     'retail',
-    'other'
+    'sports_recreation',
+    'commercial'
   ];
 
   // Create segment mutation
