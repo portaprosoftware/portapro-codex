@@ -67,6 +67,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     recipient_type: 'all',
     ...initialData,
   });
+  const [hasMessageContent, setHasMessageContent] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date>(initialData?.scheduled_at);
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
@@ -815,6 +816,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   setCurrentStep(2);
                   setShowingTemplates(false);
                 }}
+                onContentChange={setHasMessageContent}
                 initialData={campaignData.custom_message}
               />
             )}
@@ -947,7 +949,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 (currentStep === 1 && !campaignData.campaign_type) ||
                 (currentStep === 3 && (
                   (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                  (campaignData.message_source === 'custom' && !messageComposerRef.current?.hasContent())
+                  (campaignData.message_source === 'custom' && !hasMessageContent)
                 ))
               }
               data-next-button

@@ -38,6 +38,7 @@ interface MessageComposerProps {
   campaignType: 'email' | 'sms' | 'both';
   onSave: (messageData: MessageData) => void;
   onBack: () => void;
+  onContentChange?: (hasContent: boolean) => void;
   initialData?: MessageData;
 }
 
@@ -63,6 +64,7 @@ export const MessageComposer = React.forwardRef<{
   campaignType,
   onSave,
   onBack,
+  onContentChange,
   initialData
 }, ref) => {
   const [messageData, setMessageData] = useState<MessageData>(
@@ -190,6 +192,13 @@ export const MessageComposer = React.forwardRef<{
       return messageData.content.trim().length > 0 && !!messageData.subject?.trim();
     }
   };
+
+  // Notify parent when content changes
+  React.useEffect(() => {
+    if (onContentChange) {
+      onContentChange(hasContent());
+    }
+  }, [messageData.content, messageData.subject, campaignType, onContentChange]);
 
   // Expose methods to parent via ref
   React.useImperativeHandle(ref, () => ({
