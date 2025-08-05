@@ -356,47 +356,64 @@ const CustomerHub: React.FC = () => {
                        <DialogHeader>
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
-                       <div className="space-y-4">
-                           <div className="bg-gray-50 p-4 rounded-lg">
-                             <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
-                             <p className="text-sm text-gray-700">
-                               Engagement scores are calculated based only on activities from the last 90 days. 
-                               This ensures we're measuring current customer engagement, not historical activity.
-                               <br /><br />
-                               <strong>Note:</strong> Scores are capped at a maximum of 999 per 90-day calculation period.
-                             </p>
-                           </div>
-                          
-                           <div className="space-y-3">
-                             <h4 className="font-medium">Scoring System:</h4>
-                             <div className="grid gap-2 text-sm">
-                               <div className="flex justify-between">
-                                 <span>• Jobs completed:</span>
-                                 <span className="font-medium">10 points each</span>
-                               </div>
-                               <div className="flex justify-between">
-                                 <span>• Customer interactions:</span>
-                                 <span className="font-medium">15 points each</span>
-                               </div>
-                               <div className="space-y-1">
-                                 <div className="font-medium text-gray-900">Communications:</div>
-                                 <div className="ml-2 space-y-1 text-sm">
-                                   <div className="flex justify-between">
-                                     <span>• Sent:</span>
-                                     <span>2 points each</span>
-                                   </div>
-                                   <div className="flex justify-between">
-                                     <span>• Opened:</span>
-                                     <span>8 points each</span>
-                                   </div>
-                                   <div className="flex justify-between">
-                                     <span>• Clicked:</span>
-                                     <span>15 points each</span>
-                                   </div>
-                                 </div>
-                               </div>
-                             </div>
-                           </div>
+                        <div className="space-y-4">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                              <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
+                              <p className="text-sm text-gray-700">
+                                Engagement scores are calculated based only on activities from the last 90 days. 
+                                This ensures we're measuring current customer engagement, not historical activity.
+                                <br /><br />
+                                <strong>Note:</strong> Scores are capped at a maximum of 999 per 90-day calculation period.
+                              </p>
+                            </div>
+                           
+                            <div className="space-y-3">
+                              <h4 className="font-medium">Scoring System:</h4>
+                              <div className="grid gap-2 text-sm">
+                                <div className="flex justify-between">
+                                  <span>• Jobs completed:</span>
+                                  <span className="font-medium">10 points each</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>• Customer interactions:</span>
+                                  <span className="font-medium">15 points each</span>
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="font-medium text-gray-900">Communications (ALL system messages):</div>
+                                  <div className="ml-2 space-y-1 text-sm">
+                                    <div className="flex justify-between">
+                                      <span>• Sent:</span>
+                                      <span>2 points each</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>• Opened:</span>
+                                      <span>8 points each</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>• Clicked:</span>
+                                      <span>15 points each</span>
+                                    </div>
+                                  </div>
+                                  <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+                                    <strong>Note:</strong> Communications include job notifications, marketing campaigns, 
+                                    and all system messages. Active customers with many jobs may see exponential score growth.
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                                <h5 className="font-medium text-blue-900 mb-2">Example Calculation:</h5>
+                                <div className="text-sm text-blue-800 space-y-1">
+                                  <div>Customer with 5 jobs, 3 interactions, and 8 communications (2 clicked, 3 opened, 3 sent only):</div>
+                                  <div className="ml-4 space-y-1">
+                                    <div>• Jobs: 5 × 10 = 50 points</div>
+                                    <div>• Interactions: 3 × 15 = 45 points</div>
+                                    <div>• Communications: (2 × 15) + (3 × 8) + (3 × 2) = 60 points</div>
+                                    <div className="font-medium border-t border-blue-300 pt-1">Total: 155 points = High Engagement</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
 
                           <div className="space-y-3">
                             <h4 className="font-medium">Engagement Levels:</h4>
@@ -429,7 +446,12 @@ const CustomerHub: React.FC = () => {
                    </Dialog>
                  </div>
                </SortableHeader>
-              <SortableHeader column="jobs">Jobs</SortableHeader>
+              <SortableHeader column="jobs">
+                <div className="flex items-center gap-1">
+                  Jobs (90d)
+                  <span className="text-xs text-gray-400">[90-day count]</span>
+                </div>
+              </SortableHeader>
               <SortableHeader column="balance">Balance</SortableHeader>
               <TableHead className="font-medium text-gray-900">View</TableHead>
             </TableRow>
