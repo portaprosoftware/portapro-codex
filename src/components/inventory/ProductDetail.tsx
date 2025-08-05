@@ -125,12 +125,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
             <span className="break-words">Individual Units</span>
             {individualUnitsCount !== undefined && (
               <Badge 
-                className={cn(
-                  "ml-1 flex-shrink-0 border-0 font-bold bg-gray-500",
-                  activeTab === "units" 
-                    ? "text-blue-600" 
-                    : "text-white"
-                )}
+                className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-500 text-white"
               >
                 {individualUnitsCount}
               </Badge>
