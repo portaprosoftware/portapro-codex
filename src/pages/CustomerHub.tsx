@@ -130,12 +130,39 @@ const CustomerHub: React.FC = () => {
             .eq('customer_id', customer.id)
             .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
 
-          // Get communications count from last 90 days
-          const { count: communicationsCount } = await supabase
+          // Get communications and their tracking events from last 90 days
+          const { data: communications } = await supabase
             .from('customer_communications')
-            .select('*', { count: 'exact', head: true })
+            .select('id, sent_at')
             .eq('customer_id', customer.id)
             .gte('sent_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+          // Calculate communication engagement score based on tracking events
+          let communicationScore = 0;
+          if (communications) {
+            for (const comm of communications) {
+              // Base points for sending
+              communicationScore += 2;
+              
+              // Check for email tracking events
+              const { data: trackingEvents } = await supabase
+                .from('email_tracking_events')
+                .select('event_type')
+                .eq('communication_id', comm.id)
+                .gte('occurred_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+              
+              if (trackingEvents) {
+                const hasOpened = trackingEvents.some(event => event.event_type === 'opened');
+                const hasClicked = trackingEvents.some(event => event.event_type === 'clicked');
+                
+                if (hasClicked) {
+                  communicationScore += 13; // 15 total for clicked (2 base + 13 bonus)
+                } else if (hasOpened) {
+                  communicationScore += 6; // 8 total for opened (2 base + 6 bonus)
+                }
+              }
+            }
+          }
 
           // Get total balance from unpaid invoices
           const { data: invoices } = await supabase
@@ -150,7 +177,7 @@ const CustomerHub: React.FC = () => {
           const engagementScore = 
             (jobsCount || 0) * 10 + 
             (interactionsCount || 0) * 15 + 
-            (communicationsCount || 0) * 5;
+            communicationScore;
           
           const engagementLevel = calculateEngagementLevel(engagementScore);
           
@@ -338,23 +365,36 @@ const CustomerHub: React.FC = () => {
                             </p>
                           </div>
                           
-                          <div className="space-y-3">
-                            <h4 className="font-medium">Scoring System:</h4>
-                            <div className="grid gap-2 text-sm">
-                              <div className="flex justify-between">
-                                <span>• Jobs completed:</span>
-                                <span className="font-medium">10 points each</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>• Customer interactions:</span>
-                                <span className="font-medium">15 points each</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>• Communications sent:</span>
-                                <span className="font-medium">5 points each</span>
-                              </div>
-                            </div>
-                          </div>
+                           <div className="space-y-3">
+                             <h4 className="font-medium">Scoring System:</h4>
+                             <div className="grid gap-2 text-sm">
+                               <div className="flex justify-between">
+                                 <span>• Jobs completed:</span>
+                                 <span className="font-medium">10 points each</span>
+                               </div>
+                               <div className="flex justify-between">
+                                 <span>• Customer interactions:</span>
+                                 <span className="font-medium">15 points each</span>
+                               </div>
+                               <div className="space-y-1">
+                                 <div className="font-medium text-gray-900">Communications:</div>
+                                 <div className="ml-2 space-y-1 text-sm">
+                                   <div className="flex justify-between">
+                                     <span>• Sent:</span>
+                                     <span>2 points each</span>
+                                   </div>
+                                   <div className="flex justify-between">
+                                     <span>• Opened:</span>
+                                     <span>8 points each</span>
+                                   </div>
+                                   <div className="flex justify-between">
+                                     <span>• Clicked:</span>
+                                     <span>15 points each</span>
+                                   </div>
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
 
                           <div className="space-y-3">
                             <h4 className="font-medium">Engagement Levels:</h4>
