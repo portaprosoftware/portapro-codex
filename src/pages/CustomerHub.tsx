@@ -1,12 +1,13 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
 import { formatCategoryDisplay } from "@/lib/categoryUtils";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -94,11 +95,11 @@ const CustomerHub: React.FC = () => {
     }
   };
 
-  // Fetch customers data with engagement calculations
+  // Fetch customers data with engagement calculations (90-day window)
   const { data: customersData = [], isLoading, error } = useQuery({
     queryKey: ['customers-with-engagement'],
     queryFn: async () => {
-      console.log('Fetching customers with engagement data...');
+      console.log('Fetching customers with engagement data (90-day window)...');
       
       // Get customers basic data first
       const { data: customers, error: customerError } = await supabase
@@ -111,28 +112,58 @@ const CustomerHub: React.FC = () => {
         throw customerError;
       }
 
-      // For now, calculate engagement with mock data since we need to establish the structure
-      // In production, this would be calculated from actual job/interaction data
-      const customersWithEngagement: CustomerWithEngagement[] = customers?.map(customer => {
-        // Mock engagement calculation - replace with real data later
-        const mockJobsCount = Math.floor(Math.random() * 20);
-        const mockInteractionsCount = Math.floor(Math.random() * 10);
-        const mockCommunicationsCount = Math.floor(Math.random() * 15);
+      // Calculate engagement based on real data from the last 90 days
+      const customersWithEngagement: CustomerWithEngagement[] = await Promise.all(
+        customers?.map(async (customer) => {
+          // Get jobs count from last 90 days
+          const { count: jobsCount } = await supabase
+            .from('jobs')
+            .select('*', { count: 'exact', head: true })
+            .eq('customer_id', customer.id)
+            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+          // Get interactions count from last 90 days
+          const { count: interactionsCount } = await supabase
+            .from('customer_interaction_logs')
+            .select('*', { count: 'exact', head: true })
+            .eq('customer_id', customer.id)
+            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+          // Get communications count from last 90 days
+          const { count: communicationsCount } = await supabase
+            .from('customer_communications')
+            .select('*', { count: 'exact', head: true })
+            .eq('customer_id', customer.id)
+            .gte('sent_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+          // Get total balance from unpaid invoices
+          const { data: invoices } = await supabase
+            .from('invoices')
+            .select('amount')
+            .eq('customer_id', customer.id)
+            .eq('status', 'unpaid');
+
+          const totalBalance = invoices?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
         
-        // Calculate engagement score
-        const engagementScore = (mockJobsCount * 10) + (mockInteractionsCount * 15) + (mockCommunicationsCount * 5);
-        const engagementLevel = calculateEngagementLevel(engagementScore);
-        
-        return {
-          ...customer,
-          engagement_score: engagementScore,
-          engagement_level: engagementLevel,
-          jobs_count: mockJobsCount,
-          total_balance: Math.floor(Math.random() * 5000) // Mock balance
-        };
-      }) || [];
+          // Calculate engagement score (90-day activities only)
+          const engagementScore = 
+            (jobsCount || 0) * 10 + 
+            (interactionsCount || 0) * 15 + 
+            (communicationsCount || 0) * 5;
+          
+          const engagementLevel = calculateEngagementLevel(engagementScore);
+          
+          return {
+            ...customer,
+            engagement_score: engagementScore,
+            engagement_level: engagementLevel,
+            jobs_count: jobsCount || 0,
+            total_balance: totalBalance
+          };
+        }) || []
+      );
       
-      console.log('Customers with engagement fetched successfully:', customersWithEngagement.length);
+      console.log('Customers with 90-day engagement fetched successfully:', customersWithEngagement.length);
       return customersWithEngagement;
     },
     retry: (failureCount, error) => {
@@ -284,7 +315,34 @@ const CustomerHub: React.FC = () => {
               <SortableHeader column="type">Type</SortableHeader>
               <TableHead className="font-medium text-gray-900">Phone</TableHead>
               <TableHead className="font-medium text-gray-900">Email</TableHead>
-              <SortableHeader column="engagement">Engagement</SortableHeader>
+              <SortableHeader column="engagement">
+                <div className="flex items-center gap-1">
+                  Engagement
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-sm">
+                        <div className="space-y-2">
+                          <p className="font-medium">Engagement Score (Last 90 Days)</p>
+                          <div className="text-sm space-y-1">
+                            <p>• Jobs: 10 points each</p>
+                            <p>• Interactions: 15 points each</p>
+                            <p>• Communications: 5 points each</p>
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <p><strong>Low:</strong> 0-30 points</p>
+                            <p><strong>Medium:</strong> 31-70 points</p>
+                            <p><strong>High:</strong> 71+ points</p>
+                          </div>
+                          <p className="text-xs text-gray-500">Only activities from the last 90 days are counted to reflect current engagement levels.</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </SortableHeader>
               <SortableHeader column="jobs">Jobs</SortableHeader>
               <SortableHeader column="balance">Balance</SortableHeader>
               <TableHead className="font-medium text-gray-900">View</TableHead>
