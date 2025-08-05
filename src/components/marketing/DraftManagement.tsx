@@ -147,10 +147,7 @@ export const DraftManagement: React.FC = () => {
                   setSelectedDraft(null);
                 }}
                 draftId={selectedDraft.id}
-                initialData={{
-                  ...selectedDraft.campaign_data?.campaignData,
-                  scheduled_at: selectedDraft.campaign_data?.scheduledDate,
-                }}
+                initialData={selectedDraft.campaign_data?.campaignData}
               />
             )}
           </div>

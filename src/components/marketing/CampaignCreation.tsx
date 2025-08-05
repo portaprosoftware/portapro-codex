@@ -178,11 +178,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       }
       
       // Schedule auto-save
-      autoSaveTimeoutRef.current = scheduleAutoSave({
-        campaign_name: campaignData.name,
-        current_step: currentStep,
-        draft_data: { campaignData, scheduledDate },
-      }, currentDraftId);
+      autoSaveTimeoutRef.current = scheduleAutoSave(
+        campaignData.name || 'Untitled Campaign',
+        { campaignData, scheduledDate },
+        currentDraftId
+      );
     }
     
     return () => {
@@ -231,11 +231,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
   const handleSaveAndExit = async () => {
     try {
-      const draftId = await saveDraft({
-        campaign_name: campaignData.name || 'Untitled Campaign',
-        current_step: currentStep,
-        draft_data: { campaignData, scheduledDate },
-      }, currentDraftId);
+      const draftId = await saveDraft(
+        campaignData.name || 'Untitled Campaign',
+        { campaignData, scheduledDate },
+        currentDraftId
+      );
       
       setCurrentDraftId(draftId);
       toast({ title: 'Campaign saved as draft' });

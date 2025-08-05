@@ -5,16 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface CampaignDraft {
   id: string;
-  name?: string;
+  name: string;
   campaign_data: any;
   created_at: string;
   updated_at: string;
-}
-
-export interface CampaignDraftData {
-  campaign_name?: string;
-  current_step?: number;
-  draft_data?: Record<string, any>;
 }
 
 export const useCampaignDrafts = () => {
@@ -24,7 +18,7 @@ export const useCampaignDrafts = () => {
   // Fetch drafts
   const { data: drafts = [], isLoading, error } = useQuery({
     queryKey: ['campaign-drafts', user?.id],
-    queryFn: async (): Promise<CampaignDraft[]> => {
+    queryFn: async () => {
       if (!user?.id) return [];
       
       const { data, error } = await supabase
@@ -34,14 +28,14 @@ export const useCampaignDrafts = () => {
         .order('updated_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return data;
     },
     enabled: !!user?.id,
   });
 
   // Save draft mutation
   const saveDraftMutation = useMutation({
-    mutationFn: async ({ data, draftId }: { data: CampaignDraftData; draftId?: string }) => {
+    mutationFn: async ({ name, data, draftId }: { name: string; data: any; draftId?: string }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
       if (draftId) {
@@ -49,8 +43,8 @@ export const useCampaignDrafts = () => {
         const { error } = await supabase
           .from('campaign_drafts')
           .update({
-            name: data.campaign_name,
-            campaign_data: data.draft_data || {},
+            name,
+            campaign_data: data,
           })
           .eq('id', draftId)
           .eq('user_id', user.id);
@@ -63,8 +57,8 @@ export const useCampaignDrafts = () => {
           .from('campaign_drafts')
           .insert({
             user_id: user.id,
-            name: data.campaign_name,
-            campaign_data: data.draft_data || {},
+            name,
+            campaign_data: data,
           })
           .select()
           .single();
@@ -97,8 +91,8 @@ export const useCampaignDrafts = () => {
   });
 
   const saveDraft = useCallback(
-    async (draftData: CampaignDraftData, draftId?: string) => {
-      return saveDraftMutation.mutateAsync({ data: draftData, draftId });
+    async (name: string, data: any, draftId?: string) => {
+      return saveDraftMutation.mutateAsync({ name, data, draftId });
     },
     [saveDraftMutation]
   );
@@ -111,12 +105,9 @@ export const useCampaignDrafts = () => {
   );
 
   const scheduleAutoSave = useCallback(
-    (draftData: CampaignDraftData, draftId?: string, delay = 30000) => {
-      // Auto-save implementation
+    (name: string, data: any, draftId?: string, delay = 30000) => {
       const timeoutId = setTimeout(() => {
-        if (draftData.current_step && draftData.current_step >= 3) {
-          saveDraft(draftData, draftId).catch(console.error);
-        }
+        saveDraft(name, data, draftId).catch(console.error);
       }, delay);
       
       return () => clearTimeout(timeoutId);
@@ -125,7 +116,7 @@ export const useCampaignDrafts = () => {
   );
 
   return {
-    drafts,
+    drafts: drafts || [],
     isLoading,
     error,
     saveDraft,
