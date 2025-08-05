@@ -832,10 +832,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
                 (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
                 (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
               )) ||
-              (currentStep === 3 && (
+              (currentStep === 3 && step3Mode !== 'selector' && (
                 (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                (campaignData.message_source === 'custom' && !campaignData.custom_message?.content) ||
-                (!campaignData.message_source && step3Mode === 'selector')
+                (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
               ))
             }
           >
