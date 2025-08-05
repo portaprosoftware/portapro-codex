@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save } from 'lucide-react';
+import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight } from 'lucide-react';
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
@@ -71,6 +71,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
+  const [segmentSearch, setSegmentSearch] = useState('');
+  const [segmentViewMode, setSegmentViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
   
   const [currentDraftId, setCurrentDraftId] = useState(initialDraftId);
@@ -310,34 +312,119 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               {/* Smart Segments Option */}
               {campaignData.recipient_type === 'segments' && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {segments.map((segment) => (
-                      <Card 
-                        key={segment.id} 
-                        className={`p-4 cursor-pointer border-2 ${
-                          campaignData.target_segments.includes(segment.id)
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => {
-                          const isSelected = campaignData.target_segments.includes(segment.id);
-                          setCampaignData({
-                            ...campaignData,
-                            target_segments: isSelected
-                              ? campaignData.target_segments.filter(id => id !== segment.id)
-                              : [...campaignData.target_segments, segment.id]
-                          });
-                        }}
+                  {/* Search and View Controls */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        placeholder="Search segments..."
+                        value={segmentSearch}
+                        onChange={(e) => setSegmentSearch(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 border rounded-lg p-1">
+                      <Button
+                        variant={segmentViewMode === 'list' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSegmentViewMode('list')}
+                        className="px-3"
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="secondary">Smart</Badge>
-                          <span className="font-bold text-lg">{segment.customer_count}</span>
-                        </div>
-                        <h3 className="font-semibold mb-1 font-inter">{segment.name}</h3>
-                        <p className="text-sm text-gray-600 font-inter">{segment.description}</p>
-                      </Card>
-                    ))}
+                        <List className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={segmentViewMode === 'grid' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSegmentViewMode('grid')}
+                        className="px-3"
+                      >
+                        <Grid3X3 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
+
+                  {/* Segments Display */}
+                  {segmentViewMode === 'list' ? (
+                    <div className="space-y-2">
+                      {segments
+                        .filter(segment => 
+                          segment.name.toLowerCase().includes(segmentSearch.toLowerCase()) ||
+                          segment.description.toLowerCase().includes(segmentSearch.toLowerCase())
+                        )
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((segment) => (
+                          <div 
+                            key={segment.id} 
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                              campaignData.target_segments.includes(segment.id)
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => {
+                              const isSelected = campaignData.target_segments.includes(segment.id);
+                              setCampaignData({
+                                ...campaignData,
+                                target_segments: isSelected
+                                  ? campaignData.target_segments.filter(id => id !== segment.id)
+                                  : [...campaignData.target_segments, segment.id]
+                              });
+                            }}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <Checkbox
+                                  checked={campaignData.target_segments.includes(segment.id)}
+                                  className="h-5 w-5 pointer-events-none"
+                                />
+                                <div>
+                                  <h3 className="font-semibold font-inter">{segment.name}</h3>
+                                  <p className="text-sm text-gray-600 font-inter">{segment.description}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Badge variant="secondary">Smart</Badge>
+                                <span className="font-bold text-lg">{segment.customer_count}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {segments
+                        .filter(segment => 
+                          segment.name.toLowerCase().includes(segmentSearch.toLowerCase()) ||
+                          segment.description.toLowerCase().includes(segmentSearch.toLowerCase())
+                        )
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((segment) => (
+                          <Card 
+                            key={segment.id} 
+                            className={`p-4 cursor-pointer border-2 ${
+                              campaignData.target_segments.includes(segment.id)
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => {
+                              const isSelected = campaignData.target_segments.includes(segment.id);
+                              setCampaignData({
+                                ...campaignData,
+                                target_segments: isSelected
+                                  ? campaignData.target_segments.filter(id => id !== segment.id)
+                                  : [...campaignData.target_segments, segment.id]
+                              });
+                            }}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <Badge variant="secondary">Smart</Badge>
+                              <span className="font-bold text-lg">{segment.customer_count}</span>
+                            </div>
+                            <h3 className="font-semibold mb-1 font-inter">{segment.name}</h3>
+                            <p className="text-sm text-gray-600 font-inter">{segment.description}</p>
+                          </Card>
+                        ))}
+                    </div>
+                  )}
                 </div>
               )}
 
