@@ -738,8 +738,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
                 onSave={(messageData) => {
                   setCampaignData(prev => ({ 
                     ...prev, 
-                    custom_message: messageData 
+                    custom_message: messageData,
+                    message_source: 'custom'
                   }));
+                  setStep3Mode('selector');
                   toast({ title: 'Custom message saved!' });
                 }}
                 onBack={() => setStep3Mode('selector')}
@@ -836,7 +838,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
                 !campaignData.name ||
                 (campaignData.message_source === 'template' && !campaignData.template_id) ||
                 (campaignData.message_source === 'custom' && !campaignData.custom_message?.content) ||
-                step3Mode === 'selector'
+                (!campaignData.message_source && step3Mode === 'selector')
               ))
             }
           >
