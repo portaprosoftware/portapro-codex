@@ -186,9 +186,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
   })();
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="space-y-6">
       {/* Progress Steps */}
-      <div className="flex items-center justify-center mb-8">
+      <div className="flex items-center justify-center mb-6">
         {[1, 2, 3, 4].map((step) => (
           <div key={step} className="flex items-center">
             <div
@@ -211,41 +211,30 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
         ))}
       </div>
 
-      <Card className="p-6">
-        {/* Step 1: Campaign Details */}
-        {currentStep === 1 && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Campaign Details</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="campaign-name">Campaign Name</Label>
-                  <Input
-                    id="campaign-name"
-                    value={campaignData.name}
-                    onChange={(e) => setCampaignData({...campaignData, name: e.target.value})}
-                    placeholder="Enter campaign name"
-                  />
-                </div>
-
-                <div>
-                  <Label>Campaign Type</Label>
-                  <Tabs 
-                    value={campaignData.campaign_type} 
-                    onValueChange={(value) => setCampaignData({...campaignData, campaign_type: value as any})}
-                  >
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="email">Email</TabsTrigger>
-                      <TabsTrigger value="sms">SMS</TabsTrigger>
-                      <TabsTrigger value="both">Both</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
+      {/* Step 1: Campaign Type */}
+      {currentStep === 1 && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Campaign Type</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <Label>Campaign Type</Label>
+                <Tabs 
+                  value={campaignData.campaign_type} 
+                  onValueChange={(value) => setCampaignData({...campaignData, campaign_type: value as any})}
+                >
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="email">Email</TabsTrigger>
+                    <TabsTrigger value="sms">SMS</TabsTrigger>
+                    <TabsTrigger value="both">Both</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* Step 2: Select Recipients */}
         {currentStep === 2 && (
@@ -463,21 +452,37 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
           </div>
         )}
 
-        {/* Step 3: Template or Custom Message */}
-        {currentStep === 3 && (
-          <div className="space-y-6">
-            {step3Mode === 'selector' && (
-              <TemplateOrCustomSelector
-                onSelectTemplate={() => {
-                  setStep3Mode('template');
-                  setCampaignData(prev => ({ ...prev, message_source: 'template' }));
-                }}
-                onCreateCustom={() => {
-                  setStep3Mode('custom');
-                  setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
-                }}
-              />
-            )}
+      {/* Step 3: Campaign Name and Message */}
+      {currentStep === 3 && (
+        <div className="space-y-6">
+          {/* Campaign Name Field */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Campaign Details</h2>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="campaign-name">Campaign Name</Label>
+                <Input
+                  id="campaign-name"
+                  value={campaignData.name}
+                  onChange={(e) => setCampaignData({...campaignData, name: e.target.value})}
+                  placeholder="Enter campaign name"
+                />
+              </div>
+            </div>
+          </div>
+
+          {step3Mode === 'selector' && (
+            <TemplateOrCustomSelector
+              onSelectTemplate={() => {
+                setStep3Mode('template');
+                setCampaignData(prev => ({ ...prev, message_source: 'template' }));
+              }}
+              onCreateCustom={() => {
+                setStep3Mode('custom');
+                setCampaignData(prev => ({ ...prev, message_source: 'custom' }));
+              }}
+            />
+          )}
 
             {step3Mode === 'template' && (
               <div className="space-y-6">
@@ -808,56 +813,55 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
           </div>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
+      {/* Navigation Buttons */}
+      <div className="flex justify-between mt-8">
+        <Button 
+          variant="outline" 
+          onClick={handleBack}
+          disabled={currentStep === 1}
+        >
+          Back
+        </Button>
+        
+        {currentStep < 4 ? (
           <Button 
-            variant="outline" 
-            onClick={handleBack}
-            disabled={currentStep === 1}
+            onClick={handleNext}
+            disabled={
+              (currentStep === 2 && (
+                (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
+                (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
+                (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
+              )) ||
+              (currentStep === 3 && (
+                !campaignData.name ||
+                (campaignData.message_source === 'template' && !campaignData.template_id) ||
+                (campaignData.message_source === 'custom' && !campaignData.custom_message?.content) ||
+                step3Mode === 'selector'
+              ))
+            }
           >
-            Back
+            Next
           </Button>
-          
-          {currentStep < 4 ? (
-            <Button 
-              onClick={handleNext}
-              disabled={
-                (currentStep === 1 && !campaignData.name) ||
-                (currentStep === 2 && (
-                  (campaignData.recipient_type === 'segments' && campaignData.target_segments.length === 0) ||
-                  (campaignData.recipient_type === 'types' && campaignData.target_customer_types.length === 0) ||
-                  (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
-                )) ||
-                (currentStep === 3 && (
-                  (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                  (campaignData.message_source === 'custom' && !campaignData.custom_message?.content) ||
-                  step3Mode === 'selector'
-                ))
-              }
-            >
-              Next
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleSubmit}
-              disabled={createCampaignMutation.isPending}
-              className="bg-primary text-white"
-            >
-              {scheduledDate ? (
-                <>
-                  <Clock className="w-4 h-4 mr-2" />
-                  Schedule Campaign
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Campaign
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      </Card>
+        ) : (
+          <Button 
+            onClick={handleSubmit}
+            disabled={createCampaignMutation.isPending}
+            className="bg-primary text-white"
+          >
+            {scheduledDate ? (
+              <>
+                <Clock className="w-4 h-4 mr-2" />
+                Schedule Campaign
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4 mr-2" />
+                Send Campaign
+              </>
+            )}
+          </Button>
+        )}
+      </div>
 
       {/* Template Preview Modal */}
       <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
