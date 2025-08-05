@@ -359,7 +359,11 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={onBack}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onBack}
+        >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Options
         </Button>
