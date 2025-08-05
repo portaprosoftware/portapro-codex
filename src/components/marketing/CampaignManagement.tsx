@@ -12,9 +12,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export const CampaignManagement: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+
+  const handleClose = () => {
+    setShowExitConfirmation(true);
+  };
+
+  const confirmClose = () => {
+    setShowExitConfirmation(false);
+    setIsCreateOpen(false);
+  };
+
+  const cancelClose = () => {
+    setShowExitConfirmation(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -44,17 +68,8 @@ export const CampaignManagement: React.FC = () => {
                 <DialogDescription>
                   Create and configure your marketing campaign with targeted messaging.
                 </DialogDescription>
-                {/* Override the default close button to show exit confirmation */}
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // This will trigger the campaign creation component's exit confirmation
-                    const campaignComponent = document.querySelector('[data-campaign-creation]');
-                    if (campaignComponent) {
-                      const event = new CustomEvent('trigger-exit-confirmation');
-                      campaignComponent.dispatchEvent(event);
-                    }
-                  }}
+                  onClick={handleClose}
                   className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
                 >
                   <X className="h-4 w-4" />
@@ -99,6 +114,22 @@ export const CampaignManagement: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Simple Exit Confirmation */}
+      <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will close the campaign editor. Any unsaved changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelClose}>No</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClose}>Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

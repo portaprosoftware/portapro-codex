@@ -19,7 +19,6 @@ import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CampaignExitConfirmation } from './CampaignExitConfirmation';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 
 interface CampaignData {
@@ -74,8 +73,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
   
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentDraftId, setCurrentDraftId] = useState(initialDraftId);
   
   const queryClient = useQueryClient();
@@ -168,25 +165,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     }
   });
 
-  // Track changes for exit confirmation
-  useEffect(() => {
-    setHasUnsavedChanges(true);
-  }, [campaignData, scheduledDate]);
-
-  // Listen for custom exit confirmation event from dialog close button
-  useEffect(() => {
-    const handleExitConfirmation = () => {
-      handleClose();
-    };
-
-    const element = document.querySelector('[data-campaign-creation]');
-    if (element) {
-      element.addEventListener('trigger-exit-confirmation', handleExitConfirmation);
-      return () => {
-        element.removeEventListener('trigger-exit-confirmation', handleExitConfirmation);
-      };
-    }
-  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
@@ -218,35 +196,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     }
   };
 
-  const handleClose = () => {
-    if (hasUnsavedChanges && (currentStep >= 3 || (campaignData.name && campaignData.name.trim() !== ''))) {
-      setShowExitConfirmation(true);
-    } else {
-      onClose?.();
-    }
-  };
-
-  const handleSaveAndExit = async () => {
-    try {
-      const draftId = await saveDraft(
-        campaignData.name || 'Untitled Campaign',
-        { campaignData, scheduledDate },
-        currentDraftId
-      );
-      
-      setCurrentDraftId(draftId);
-      toast({ title: 'Campaign saved as draft' });
-      setShowExitConfirmation(false);
-      onClose?.();
-    } catch (error) {
-      toast({ title: 'Error saving draft', variant: 'destructive' });
-    }
-  };
-
-  const handleDeleteAndExit = () => {
-    setShowExitConfirmation(false);
-    onClose?.();
-  };
 
   const totalRecipients = (() => {
     if (campaignData.recipient_type === 'all') {
@@ -986,14 +935,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       </Dialog>
       </div>
 
-      {/* Exit Confirmation Dialog */}
-      <CampaignExitConfirmation
-        isOpen={showExitConfirmation}
-        onClose={() => setShowExitConfirmation(false)}
-        onSaveAndExit={handleSaveAndExit}
-        onDeleteAndExit={handleDeleteAndExit}
-        isSaving={isSaving}
-      />
     </>
   );
 };
