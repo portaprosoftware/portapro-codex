@@ -40,6 +40,16 @@ export function SimpleJobsMapView({
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [radarEnabled, setRadarEnabled] = useState(false);
   
+  // Check if selected date is today
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+
+  const selectedDateIsToday = isToday(selectedDate);
+  
 
   // Get jobs data
   const { data: allJobs = [] } = useJobs({
@@ -61,6 +71,13 @@ export function SimpleJobsMapView({
   };
 
   const filteredJobs = filterJobs(allJobs);
+
+  // Auto-disable radar when date is not today
+  useEffect(() => {
+    if (!selectedDateIsToday && radarEnabled) {
+      setRadarEnabled(false);
+    }
+  }, [selectedDate, selectedDateIsToday, radarEnabled]);
 
   // Get Mapbox token
   useEffect(() => {
@@ -392,14 +409,24 @@ export function SimpleJobsMapView({
             <span className="text-sm font-medium text-gray-700">Weather Radar</span>
             <Switch
               checked={radarEnabled}
-              onCheckedChange={setRadarEnabled}
+              onCheckedChange={(checked) => {
+                if (selectedDateIsToday) {
+                  setRadarEnabled(checked);
+                }
+              }}
+              disabled={!selectedDateIsToday}
             />
           </div>
+          {!selectedDateIsToday && (
+            <div className="text-xs text-gray-500 mt-1">
+              Radar only available for today's date
+            </div>
+          )}
         </div>
       </div>
 
       {/* Weather Radar */}
-      {map.current && radarEnabled && (
+      {map.current && radarEnabled && selectedDateIsToday && (
         <SimpleWeatherRadar 
           map={map.current} 
           isActive={radarEnabled} 
