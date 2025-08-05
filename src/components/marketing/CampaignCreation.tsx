@@ -933,13 +933,27 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           
           {currentStep < 4 && currentStep !== 2 ? (
             <Button 
-              onClick={handleNext}
+              onClick={() => {
+                // For step 3 custom messages, trigger save before proceeding
+                if (currentStep === 3 && campaignData.message_source === 'custom') {
+                  // The MessageComposer will handle validation and save
+                  const messageComposerElement = document.querySelector('[data-message-composer]');
+                  if (messageComposerElement) {
+                    const saveButton = messageComposerElement.querySelector('[data-save-button]');
+                    if (saveButton) {
+                      (saveButton as HTMLButtonElement).click();
+                      return;
+                    }
+                  }
+                }
+                handleNext();
+              }}
               disabled={
                 (currentStep === 3 && (
-                  (campaignData.message_source === 'template' && !campaignData.template_id) ||
-                  (campaignData.message_source === 'custom' && !campaignData.custom_message?.content)
+                  (campaignData.message_source === 'template' && !campaignData.template_id)
                 ))
               }
+              data-next-button
             >
               Next
             </Button>

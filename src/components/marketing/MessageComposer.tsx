@@ -75,8 +75,6 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   );
   
   const [hasGeneratedWithAI, setHasGeneratedWithAI] = useState(false);
-  const [aiGeneratedContent, setAiGeneratedContent] = useState<{subject?: string, content: string} | null>(null);
-  const [showAIPreview, setShowAIPreview] = useState(false);
 
   const [logoDimensions, setLogoDimensions] = useState<{width: number, height: number} | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -120,14 +118,26 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
       if (error) throw error;
 
-      // Store generated content for preview instead of directly adding it
-      setAiGeneratedContent({
-        subject: data.subject,
+      // Directly add the generated content to the message
+      setMessageData(prev => ({
+        ...prev,
+        subject: data.subject || prev.subject,
         content: data.content
-      });
+      }));
       
-      // Show preview modal for approval
-      setShowAIPreview(true);
+      setHasGeneratedWithAI(true);
+      
+      // Scroll to content area and add visual feedback
+      const contentElement = document.getElementById('content');
+      if (contentElement) {
+        contentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        contentElement.style.border = '2px solid #10b981';
+        setTimeout(() => {
+          contentElement.style.border = '';
+        }, 2000);
+      }
+      
+      toast({ title: 'AI content generated successfully!' });
     } catch (error) {
       console.error('AI generation error:', error);
       toast({ 
@@ -140,33 +150,6 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
   };
 
-  const handleUseAIContent = () => {
-    if (!aiGeneratedContent) return;
-    
-    setMessageData(prev => ({
-      ...prev,
-      subject: aiGeneratedContent.subject || prev.subject,
-      content: aiGeneratedContent.content
-    }));
-    
-    setHasGeneratedWithAI(true);
-    setShowAIPreview(false);
-    
-    // Scroll to content area and add visual feedback
-    const contentElement = document.getElementById('content');
-    if (contentElement) {
-      contentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      contentElement.style.border = '2px solid #10b981';
-      setTimeout(() => {
-        contentElement.style.border = '';
-      }, 2000);
-    }
-  };
-
-  const handleTryAgain = () => {
-    setShowAIPreview(false);
-    setAiGeneratedContent(null);
-  };
 
   const addButton = (button: CustomButton) => {
     setMessageData(prev => ({
@@ -203,6 +186,15 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
     }
 
     onSave(messageData);
+    toast({ title: 'Message saved successfully!' });
+    
+    // Auto-trigger next step after successful save
+    setTimeout(() => {
+      const nextButton = document.querySelector('[data-next-button]');
+      if (nextButton) {
+        (nextButton as HTMLButtonElement).click();
+      }
+    }, 100);
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,7 +349,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-message-composer>
       <div className="flex items-center gap-4">
         <Button 
           variant="outline" 
@@ -721,7 +713,16 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         {/* Saved Buttons */}
         <SavedButtons onSelectButton={addButton} />
 
-        {/* Removed redundant "Use This Message" button - users proceed via Next button */}
+        {/* Save Button */}
+        <div className="flex justify-end">
+          <Button 
+            onClick={handleSave}
+            data-save-button
+            className="bg-primary text-white"
+          >
+            Save & Continue
+          </Button>
+        </div>
       </div>
 
       {/* Full Preview Modal */}
@@ -839,55 +840,6 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* AI Content Preview Modal */}
-      <Dialog open={showAIPreview} onOpenChange={setShowAIPreview}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>AI Generated Content Preview</DialogTitle>
-          </DialogHeader>
-          
-          {aiGeneratedContent && (
-            <div className="space-y-4 pb-4">
-              {/* Overwrite Warning */}
-              {(messageData.content.trim() || messageData.subject?.trim()) && (
-                <div className="p-3 bg-white border border-amber-200 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <span className="text-amber-600 font-medium text-sm">⚠️ Warning:</span>
-                    <p className="text-sm text-amber-700">
-                      Using this content will replace your current {messageData.content.trim() && messageData.subject?.trim() ? 'subject and message content' : messageData.content.trim() ? 'message content' : 'subject line'}.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {campaignType !== 'sms' && aiGeneratedContent.subject && (
-                <div>
-                  <Label>Generated Subject Line</Label>
-                  <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                    <p className="font-semibold text-gray-900">{aiGeneratedContent.subject}</p>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <Label>Generated Content</Label>
-                <div className="p-4 bg-white border border-gray-200 rounded-lg">
-                  <p className="whitespace-pre-wrap text-gray-900">{aiGeneratedContent.content}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button onClick={handleUseAIContent} className="flex-1">
-                  Use This Content
-                </Button>
-                <Button onClick={handleTryAgain} variant="outline" className="flex-1">
-                  Try Again
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
