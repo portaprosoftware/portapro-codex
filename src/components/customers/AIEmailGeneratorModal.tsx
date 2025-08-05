@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Bot, Send, Sparkles } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface AIEmailGeneratorModalProps {
   isOpen: boolean;
@@ -40,10 +42,40 @@ export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGe
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
+    if (!customPrompt.trim()) {
+      toast.error('Please enter some custom instructions to generate an email.');
+      return;
+    }
+
     setIsGenerating(true);
     
-    // Simulate AI generation - you would replace this with actual AI API call
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-customer-email', {
+        body: {
+          emailType,
+          tone,
+          customPrompt: customPrompt.trim()
+        }
+      });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to generate email');
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setSubject(data.subject || `${EMAIL_TYPES.find(t => t.value === emailType)?.label} - Important Update`);
+      setContent(data.content || 'Email content could not be generated. Please try again.');
+      
+      toast.success('Email generated successfully! Typos have been automatically corrected.');
+    } catch (error) {
+      console.error('Error generating email:', error);
+      toast.error(`Failed to generate email: ${error.message}`);
+      
+      // Fallback to basic template if AI fails
       const generatedSubject = `${EMAIL_TYPES.find(t => t.value === emailType)?.label} - Important Update`;
       const generatedContent = `Dear Valued Customer,
 
@@ -58,8 +90,9 @@ The Team`;
 
       setSubject(generatedSubject);
       setContent(generatedContent);
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   const handleSend = () => {
@@ -86,7 +119,7 @@ The Team`;
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Bot className="w-5 h-5 text-purple-600" />
+            <Sparkles className="w-5 h-5 text-purple-600" />
             AI Email Generator
           </DialogTitle>
         </DialogHeader>
@@ -128,9 +161,9 @@ The Team`;
 
           {/* Custom Prompt */}
           <div className="space-y-2">
-            <Label>Custom Instructions (Optional)</Label>
+            <Label>Custom Instructions *</Label>
             <Textarea
-              placeholder="Add any specific details or instructions for the AI..."
+              placeholder="Tell us what you need help with... (e.g., 'I need to let them know about a schedule change for their service this warehosue insdie')"
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
               rows={3}
@@ -140,7 +173,7 @@ The Team`;
           {/* Generate Button */}
           <Button
             onClick={handleGenerate}
-            disabled={!emailType || !tone || isGenerating}
+            disabled={!emailType || !tone || !customPrompt.trim() || isGenerating}
             className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
           >
             {isGenerating ? (
@@ -150,7 +183,7 @@ The Team`;
               </>
             ) : (
               <>
-                <Bot className="w-4 h-4 mr-2" />
+                <Sparkles className="w-4 h-4 mr-2" />
                 Generate Email
               </>
             )}

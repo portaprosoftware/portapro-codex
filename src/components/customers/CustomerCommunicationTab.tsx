@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mail, MessageSquare, Plus, Bot, ExternalLink } from 'lucide-react';
+import { Mail, MessageSquare, Plus, Sparkles, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AIEmailGeneratorModal } from './AIEmailGeneratorModal';
@@ -63,7 +63,7 @@ export function CustomerCommunicationTab({ customerId }: CustomerCommunicationTa
             onClick={() => setShowAIEmail(true)}
             className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
           >
-            <Bot className="w-4 h-4 mr-2" />
+            <Sparkles className="w-4 h-4 mr-2" />
             AI Email
           </Button>
           <Button
