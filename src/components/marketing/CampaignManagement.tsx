@@ -68,12 +68,25 @@ export const CampaignManagement: React.FC = () => {
               className="max-w-4xl max-h-[90vh] overflow-y-auto"
               onInteractOutside={(e) => e.preventDefault()}
               onOpenAutoFocus={(e) => e.preventDefault()}
+              hideCloseButton={true}
             >
               <DialogHeader>
-                <DialogTitle>Create New Campaign</DialogTitle>
-                <DialogDescription>
-                  Create and configure your marketing campaign with targeted messaging.
-                </DialogDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <DialogTitle>Create New Campaign</DialogTitle>
+                    <DialogDescription>
+                      Create and configure your marketing campaign with targeted messaging.
+                    </DialogDescription>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClose}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </DialogHeader>
               <div className="mt-6" data-campaign-creation>
                 <CampaignCreation onClose={() => setIsCreateOpen(false)} />
