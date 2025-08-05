@@ -944,7 +944,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             <Button 
               onClick={handleNext}
               disabled={
-                (currentStep === 1 && (!campaignData.name.trim() || !campaignData.campaign_type)) ||
+                (currentStep === 1 && !campaignData.campaign_type) ||
                 (currentStep === 3 && (
                   (campaignData.message_source === 'template' && !campaignData.template_id) ||
                   (campaignData.message_source === 'custom' && !messageComposerRef.current?.hasContent())
