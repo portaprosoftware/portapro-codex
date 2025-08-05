@@ -210,7 +210,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
 
       const updateData = {
         name: data.name,
-        customer_type: data.type as "events_festivals" | "construction" | "municipal_government" | "private_events_weddings" | "sports_recreation" | "emergency_disaster_relief" | "commercial" | "restaurants" | "retail" | "other" | "not_selected",
+        customer_type: data.type as any, // Will match our updated enum once types are regenerated
         email: data.email || null,
         phone: data.phone || null,
         service_street: data.service_street,
