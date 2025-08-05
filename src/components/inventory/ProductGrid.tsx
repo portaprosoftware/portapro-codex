@@ -45,10 +45,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           nameQuery = nameQuery.ilike("name", `%${searchQuery}%`);
         }
 
-        // Filter by storage location if specified
-        if (selectedLocationId && selectedLocationId !== "all") {
-          nameQuery = nameQuery.eq("product_location_stock.storage_location_id", selectedLocationId);
-        }
+        // Don't filter by location at query level - do it after retrieval
+        // This allows "All Sites" to work and prevents empty results
 
         const { data: nameResults, error: nameError } = await nameQuery;
         if (nameError) throw nameError;
@@ -84,10 +82,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               toolQuery = toolQuery.eq("track_inventory", true);
             }
 
-            // Filter by storage location if specified
-            if (selectedLocationId && selectedLocationId !== "all") {
-              toolQuery = toolQuery.eq("product_location_stock.storage_location_id", selectedLocationId);
-            }
+            // Don't filter by location at query level - do it after retrieval
+            // This allows "All Sites" to work and prevents empty results
 
             const { data: toolResults, error: toolError } = await toolQuery;
             if (toolError) throw toolError;
@@ -118,10 +114,15 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 const locationData = product.product_location_stock.find(
                   (ls: any) => ls?.storage_location_id === selectedLocationId
                 );
-                availableCount = locationData?.quantity || 0;
+                if (locationData) {
+                  availableCount = locationData.quantity || 0;
+                } else {
+                  // Product exists but no stock at this location - show with 0 count
+                  availableCount = 0;
+                }
               } else {
-                // No location stock data - exclude from location-specific view
-                return false;
+                // No location stock data - show product but with 0 count for location-specific view
+                availableCount = 0;
               }
             }
             

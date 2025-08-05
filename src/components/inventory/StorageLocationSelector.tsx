@@ -100,7 +100,7 @@ export function StorageLocationSelector({
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{display.name}</span>
                     {display.isDefault && (
-                      <span className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded">
+                      <span className="text-xs px-2 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded">
                         Default
                       </span>
                     )}
