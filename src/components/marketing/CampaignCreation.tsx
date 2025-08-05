@@ -17,7 +17,7 @@ import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Gr
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CampaignExitConfirmation } from './CampaignExitConfirmation';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
@@ -899,6 +899,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                     title: "Draft saved",
                     description: "Your campaign progress has been saved.",
                   });
+                  
+                  // Close the dialog after saving
+                  onClose?.();
                 } catch (error) {
                   console.error('Save draft error:', error);
                   toast({
