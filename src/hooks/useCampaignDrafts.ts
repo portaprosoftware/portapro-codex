@@ -1,65 +1,137 @@
 import { useState, useCallback } from 'react';
 import { useUser } from '@clerk/clerk-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CampaignDraft {
   id: string;
-  user_id: string;
-  campaign_name?: string;
-  campaign_description?: string;
-  audience_type?: string;
-  current_step?: number;
-  draft_data: Record<string, any>;
+  name?: string;
+  campaign_data: any;
   created_at: string;
   updated_at: string;
 }
 
 export interface CampaignDraftData {
   campaign_name?: string;
-  campaign_description?: string;
-  audience_type?: string;
   current_step?: number;
   draft_data?: Record<string, any>;
 }
 
 export const useCampaignDrafts = () => {
   const { user } = useUser();
-  const [drafts] = useState<CampaignDraft[]>([]);
-  const [isLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Fetch drafts
+  const { data: drafts = [], isLoading, error } = useQuery({
+    queryKey: ['campaign-drafts', user?.id],
+    queryFn: async (): Promise<CampaignDraft[]> => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('campaign_drafts')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Save draft mutation
+  const saveDraftMutation = useMutation({
+    mutationFn: async ({ data, draftId }: { data: CampaignDraftData; draftId?: string }) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      if (draftId) {
+        // Update existing draft
+        const { error } = await supabase
+          .from('campaign_drafts')
+          .update({
+            name: data.campaign_name,
+            campaign_data: data.draft_data || {},
+          })
+          .eq('id', draftId)
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        return draftId;
+      } else {
+        // Create new draft
+        const { data: newDraft, error } = await supabase
+          .from('campaign_drafts')
+          .insert({
+            user_id: user.id,
+            name: data.campaign_name,
+            campaign_data: data.draft_data || {},
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        return newDraft.id;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaign-drafts'] });
+    },
+  });
+
+  // Delete draft mutation
+  const deleteDraftMutation = useMutation({
+    mutationFn: async (draftId: string) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      const { error } = await supabase
+        .from('campaign_drafts')
+        .delete()
+        .eq('id', draftId)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaign-drafts'] });
+    },
+  });
 
   const saveDraft = useCallback(
     async (draftData: CampaignDraftData, draftId?: string) => {
-      // TODO: Implement with Supabase when campaign_drafts table is created
-      console.log('Saving draft:', draftData, draftId);
-      return Promise.resolve();
+      return saveDraftMutation.mutateAsync({ data: draftData, draftId });
     },
-    []
+    [saveDraftMutation]
   );
 
   const deleteDraft = useCallback(
     async (draftId: string) => {
-      // TODO: Implement with Supabase when campaign_drafts table is created
-      console.log('Deleting draft:', draftId);
-      return Promise.resolve();
+      return deleteDraftMutation.mutateAsync(draftId);
     },
-    []
+    [deleteDraftMutation]
   );
 
   const scheduleAutoSave = useCallback(
     (draftData: CampaignDraftData, draftId?: string, delay = 30000) => {
-      // TODO: Implement auto-save when database is ready
-      console.log('Scheduling auto-save:', draftData, draftId, delay);
+      // Auto-save implementation
+      const timeoutId = setTimeout(() => {
+        if (draftData.current_step && draftData.current_step >= 3) {
+          saveDraft(draftData, draftId).catch(console.error);
+        }
+      }, delay);
+      
+      return () => clearTimeout(timeoutId);
     },
-    []
+    [saveDraft]
   );
 
   return {
     drafts,
     isLoading,
-    error: null,
+    error,
     saveDraft,
     deleteDraft,
     scheduleAutoSave,
-    isSaving: false,
-    isDeleting: false,
+    isSaving: saveDraftMutation.isPending,
+    isDeleting: deleteDraftMutation.isPending,
   };
 };

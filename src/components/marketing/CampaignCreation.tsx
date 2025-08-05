@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -13,12 +13,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye } from 'lucide-react';
+import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save } from 'lucide-react';
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { CampaignExitConfirmation } from './CampaignExitConfirmation';
+import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 
 interface CampaignData {
   name: string;
@@ -45,9 +47,15 @@ interface CampaignData {
 
 interface CampaignCreationProps {
   onClose?: () => void;
+  draftId?: string;
+  initialData?: Partial<CampaignData>;
 }
 
-export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) => {
+export const CampaignCreation: React.FC<CampaignCreationProps> = ({ 
+  onClose, 
+  draftId: initialDraftId, 
+  initialData 
+}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [campaignData, setCampaignData] = useState<CampaignData>({
     name: '',
@@ -57,14 +65,21 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
     target_customer_types: [],
     target_customers: [],
     recipient_type: 'all',
+    ...initialData,
   });
-  const [scheduledDate, setScheduledDate] = useState<Date>();
+  const [scheduledDate, setScheduledDate] = useState<Date>(initialData?.scheduled_at);
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('system');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
   const [step3Mode, setStep3Mode] = useState<'selector' | 'template' | 'custom'>('selector');
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [currentDraftId, setCurrentDraftId] = useState(initialDraftId);
+  
   const queryClient = useQueryClient();
+  const { saveDraft, scheduleAutoSave, isSaving } = useCampaignDrafts();
+  const autoSaveTimeoutRef = useRef<(() => void) | null>(null);
 
   // Fetch templates
   const { data: templates = [] } = useQuery({
@@ -154,6 +169,34 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
     }
   });
 
+  // Auto-save effect
+  useEffect(() => {
+    if (currentStep >= 3 && hasUnsavedChanges) {
+      // Clear existing timeout
+      if (autoSaveTimeoutRef.current) {
+        autoSaveTimeoutRef.current();
+      }
+      
+      // Schedule auto-save
+      autoSaveTimeoutRef.current = scheduleAutoSave({
+        campaign_name: campaignData.name,
+        current_step: currentStep,
+        draft_data: { campaignData, scheduledDate },
+      }, currentDraftId);
+    }
+    
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        autoSaveTimeoutRef.current();
+      }
+    };
+  }, [campaignData, scheduledDate, currentStep, hasUnsavedChanges, currentDraftId, scheduleAutoSave]);
+
+  // Track changes
+  useEffect(() => {
+    setHasUnsavedChanges(true);
+  }, [campaignData, scheduledDate]);
+
   const handleNext = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
@@ -162,8 +205,50 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     createCampaignMutation.mutate(campaignData);
+    
+    // Delete draft after successful campaign creation
+    if (currentDraftId) {
+      try {
+        await supabase
+          .from('campaign_drafts')
+          .delete()
+          .eq('id', currentDraftId);
+      } catch (error) {
+        console.error('Error deleting draft:', error);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    if (currentStep >= 3 && hasUnsavedChanges) {
+      setShowExitConfirmation(true);
+    } else {
+      onClose?.();
+    }
+  };
+
+  const handleSaveAndExit = async () => {
+    try {
+      const draftId = await saveDraft({
+        campaign_name: campaignData.name || 'Untitled Campaign',
+        current_step: currentStep,
+        draft_data: { campaignData, scheduledDate },
+      }, currentDraftId);
+      
+      setCurrentDraftId(draftId);
+      toast({ title: 'Campaign saved as draft' });
+      setShowExitConfirmation(false);
+      onClose?.();
+    } catch (error) {
+      toast({ title: 'Error saving draft', variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteAndExit = () => {
+    setShowExitConfirmation(false);
+    onClose?.();
   };
 
   const totalRecipients = (() => {
@@ -186,7 +271,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
   })();
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       {/* Progress Steps */}
       <div className="flex items-center justify-center mb-6">
         {[1, 2, 3, 4].map((step) => (
@@ -908,6 +994,16 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+
+      {/* Exit Confirmation Dialog */}
+      <CampaignExitConfirmation
+        isOpen={showExitConfirmation}
+        onClose={() => setShowExitConfirmation(false)}
+        onSaveAndExit={handleSaveAndExit}
+        onDeleteAndExit={handleDeleteAndExit}
+        isSaving={isSaving}
+      />
+    </>
   );
 };

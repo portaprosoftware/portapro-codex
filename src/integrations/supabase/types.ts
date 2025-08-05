@@ -149,6 +149,33 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_drafts: {
+        Row: {
+          campaign_data: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_data?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_data?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       communication_templates: {
         Row: {
           category: string | null

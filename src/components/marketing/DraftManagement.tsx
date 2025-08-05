@@ -1,22 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FileText, Calendar, Trash2, Play, Edit } from 'lucide-react';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 import { formatDistanceToNow } from 'date-fns';
+import { CampaignCreation } from './CampaignCreation';
 
 export const DraftManagement: React.FC = () => {
   const { drafts, deleteDraft, isLoading } = useCampaignDrafts();
+  const [selectedDraft, setSelectedDraft] = useState<any>(null);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
 
-  const handleResumeDraft = (draftId: string) => {
-    // Navigate to campaign creation with draft data
-    const draft = drafts.find(d => d.id === draftId);
-    if (draft) {
-      // This would typically navigate to the campaign creation with the draft data
-      console.log('Resuming draft:', draft);
-    }
+  const handleResumeDraft = (draft: any) => {
+    setSelectedDraft(draft);
+    setIsResumeOpen(true);
   };
 
   const handleDeleteDraft = async (draftId: string) => {
@@ -73,30 +73,18 @@ export const DraftManagement: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold font-inter truncate">
-                      {draft.campaign_name || 'Untitled Campaign'}
+                      {draft.name || 'Untitled Campaign'}
                     </h3>
                     <Badge variant="outline" className="font-inter">
-                      Step {draft.current_step || 1}/4
+                      Draft
                     </Badge>
                   </div>
-                  
-                  {draft.campaign_description && (
-                    <p className="text-sm text-gray-600 font-inter mb-3 line-clamp-2">
-                      {draft.campaign_description}
-                    </p>
-                  )}
                   
                   <div className="flex items-center gap-4 text-xs text-gray-500 font-inter">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       Saved {formatDistanceToNow(new Date(draft.updated_at), { addSuffix: true })}
                     </div>
-                    {draft.audience_type && (
-                      <div className="flex items-center gap-1">
-                        <span>•</span>
-                        <span className="capitalize">{draft.audience_type}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
                 
@@ -104,7 +92,7 @@ export const DraftManagement: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleResumeDraft(draft.id)}
+                    onClick={() => handleResumeDraft(draft)}
                     className="font-inter"
                   >
                     <Play className="w-4 h-4 mr-1" />
@@ -141,6 +129,33 @@ export const DraftManagement: React.FC = () => {
           </Card>
         ))}
       </div>
+
+      {/* Resume Draft Dialog */}
+      <Dialog open={isResumeOpen} onOpenChange={setIsResumeOpen}>
+        <DialogContent 
+          className="max-w-4xl max-h-[90vh] overflow-y-auto"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Resume Campaign Draft</DialogTitle>
+          </DialogHeader>
+          <div className="mt-6">
+            {selectedDraft && (
+              <CampaignCreation 
+                onClose={() => {
+                  setIsResumeOpen(false);
+                  setSelectedDraft(null);
+                }}
+                draftId={selectedDraft.id}
+                initialData={{
+                  ...selectedDraft.campaign_data?.campaignData,
+                  scheduled_at: selectedDraft.campaign_data?.scheduledDate,
+                }}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
