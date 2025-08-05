@@ -163,7 +163,7 @@ The Team`;
           <div className="space-y-2">
             <Label>Custom Instructions *</Label>
             <Textarea
-              placeholder="Tell us what you need help with... (e.g., 'I need to let them know about a schedule change for their service this warehosue insdie')"
+              placeholder="Tell us what you need help with... (e.g., 'I need to let them know about a schedule change for their service this weekend.')"
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
               rows={3}

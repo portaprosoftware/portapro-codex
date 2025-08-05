@@ -304,7 +304,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
         <h2 className="text-xl font-semibold font-inter">Create Your Message</h2>
       </div>
 
-      <div className="grid xl:grid-cols-2 gap-4 lg:gap-6">
+      <div className="grid xl:grid-cols-[75%_25%] gap-4 lg:gap-6">
         {/* Message Composer */}
         <div className="space-y-4 lg:space-y-6">
           <Card className="p-4 lg:p-6">
@@ -346,9 +346,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               </div>
 
               <div>
-                <Label>Custom Instructions (Optional)</Label>
+                <Label>Custom Instructions *</Label>
                 <Textarea
-                  placeholder="Add specific details or requirements..."
+                  placeholder="Create a friendly marketing message about our special offer..."
                   value={aiParams.customInstructions}
                   onChange={(e) => setAiParams(prev => ({ ...prev, customInstructions: e.target.value }))}
                   rows={3}
@@ -357,8 +357,8 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
 
               <Button
                 onClick={handleAIGenerate}
-                disabled={!aiParams.tone || isGenerating}
-                className="w-full"
+                disabled={!aiParams.tone || !aiParams.customInstructions.trim() || isGenerating}
+                className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
               >
                 {isGenerating ? (
                   <>
