@@ -23,8 +23,8 @@ export const TemplateOrCustomSelector: React.FC<TemplateOrCustomSelectorProps> =
           onClick={onSelectTemplate}
         >
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-              <FileText className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-700 to-blue-800 rounded-full flex items-center justify-center mx-auto">
+              <FileText className="w-8 h-8 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-semibold font-inter mb-2">Use Template</h3>
@@ -44,8 +44,8 @@ export const TemplateOrCustomSelector: React.FC<TemplateOrCustomSelectorProps> =
           onClick={onCreateCustom}
         >
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <PenTool className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center mx-auto">
+              <PenTool className="w-8 h-8 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-semibold font-inter mb-2">Create Your Own</h3>
