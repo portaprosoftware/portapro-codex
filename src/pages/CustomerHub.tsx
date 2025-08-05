@@ -446,12 +446,12 @@ const CustomerHub: React.FC = () => {
                    </Dialog>
                  </div>
                </SortableHeader>
-              <SortableHeader column="jobs">
-                <div className="flex items-center gap-1">
-                  Jobs (90d)
-                  <span className="text-xs text-gray-400">[90-day count]</span>
-                </div>
-              </SortableHeader>
+               <SortableHeader column="jobs">
+                 <div className="flex items-center gap-1">
+                   Jobs
+                   <span className="text-xs text-gray-400">90-day</span>
+                 </div>
+               </SortableHeader>
               <SortableHeader column="balance">Balance</SortableHeader>
               <TableHead className="font-medium text-gray-900">View</TableHead>
             </TableRow>
