@@ -931,7 +931,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             </Button>
           )}
           
-          {currentStep < 4 ? (
+          {currentStep < 4 && currentStep !== 2 ? (
             <Button 
               onClick={handleNext}
               disabled={
@@ -943,7 +943,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             >
               Next
             </Button>
-          ) : (
+          ) : currentStep === 4 ? (
             <Button 
               onClick={handleSubmit}
               disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
@@ -961,7 +961,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 </>
               )}
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
 
