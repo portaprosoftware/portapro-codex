@@ -126,10 +126,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
             {individualUnitsCount !== undefined && (
               <Badge 
                 className={cn(
-                  "ml-1 flex-shrink-0 text-white border-0 font-bold",
+                  "ml-1 flex-shrink-0 border-0 font-bold bg-gray-500",
                   activeTab === "units" 
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700" 
-                    : "bg-gray-500"
+                    ? "text-blue-600" 
+                    : "text-white"
                 )}
               >
                 {individualUnitsCount}

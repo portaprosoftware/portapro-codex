@@ -382,24 +382,29 @@ const Inventory: React.FC = () => {
 
             {/* Hide Inactive Toggle */}
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-              <Switch
-                checked={hideInactive}
-                onCheckedChange={setHideInactive}
-                className="data-[state=checked]:bg-gray-600"
-              />
-              <span className="text-sm text-gray-700">Hide Inactive</span>
-              {inactiveProductsCount > 0 && (
-                <Badge 
-                  className={cn(
-                    "ml-1 text-xs text-white border-0 font-bold flex items-center justify-center min-w-[20px] h-5",
-                    hideInactive 
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700" 
-                      : "bg-gray-500"
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={hideInactive}
+                    onCheckedChange={setHideInactive}
+                    className="data-[state=checked]:bg-gray-600"
+                  />
+                  <span className="text-sm text-gray-700">Hide Inactive</span>
+                  {inactiveProductsCount > 0 && (
+                    <Badge 
+                      className={cn(
+                        "ml-1 text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500",
+                        hideInactive 
+                          ? "text-blue-600" 
+                          : "text-white"
+                      )}
+                    >
+                      {inactiveProductsCount}
+                    </Badge>
                   )}
-                >
-                  {inactiveProductsCount}
-                </Badge>
-              )}
+                </div>
+                <span className="text-xs text-gray-500 mt-1 ml-8">Products that have inventory tracking disabled</span>
+              </div>
             </div>
           </div>
 
