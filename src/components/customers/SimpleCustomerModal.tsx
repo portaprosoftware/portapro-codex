@@ -144,7 +144,7 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
     },
     onSuccess: (insertedCustomer) => {
       console.log('Customer creation mutation succeeded');
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customers-with-engagement'] });
       
       toast({
         title: "Success",

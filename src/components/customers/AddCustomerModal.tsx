@@ -205,7 +205,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       return customerData_result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customers-with-engagement'] });
       toast({
         title: "Success",
         description: "Customer created successfully.",
