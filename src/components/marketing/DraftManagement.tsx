@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { FileText, Calendar, Trash2, Play, Edit } from 'lucide-react';
+import { FileText, Calendar, Trash2, Play, Edit, AlertTriangle } from 'lucide-react';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 import { formatDistanceToNow } from 'date-fns';
 import { CampaignCreation } from './CampaignCreation';
@@ -21,6 +21,13 @@ export const DraftManagement: React.FC = () => {
 
   const handleDeleteDraft = async (draftId: string) => {
     await deleteDraft(draftId);
+  };
+
+  const handleDeleteAllDrafts = async () => {
+    // Delete all drafts one by one
+    for (const draft of drafts) {
+      await deleteDraft(draft.id);
+    }
   };
 
   if (isLoading) {
@@ -60,9 +67,45 @@ export const DraftManagement: React.FC = () => {
           <h2 className="text-xl font-semibold font-inter">Campaign Drafts</h2>
           <p className="text-gray-600 font-inter">Resume or manage your saved campaign drafts</p>
         </div>
-        <Badge variant="secondary" className="font-inter">
-          {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="secondary" className="font-inter">
+            {drafts.length} draft{drafts.length !== 1 ? 's' : ''}
+          </Badge>
+          {drafts.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="font-inter">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete All
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div>
+                      <AlertDialogTitle className="font-inter">Delete All Drafts</AlertDialogTitle>
+                    </div>
+                  </div>
+                  <AlertDialogDescription className="font-inter mt-2">
+                    Are you sure you want to delete all {drafts.length} campaign drafts? This action cannot be undone and will permanently remove all saved draft campaigns.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="font-inter">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteAllDrafts}
+                    className="bg-red-600 hover:bg-red-700 font-inter"
+                  >
+                    Delete All Drafts
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4">
