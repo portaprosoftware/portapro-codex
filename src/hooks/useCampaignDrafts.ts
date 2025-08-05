@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,56 +15,65 @@ export const useCampaignDrafts = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
 
-  // Fetch drafts
-  const { data: drafts = [], isLoading, error } = useQuery({
+  // Simple fetch with explicit typing to avoid deep type inference
+  const { data: drafts, isLoading, error } = useQuery({
     queryKey: ['campaign-drafts', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) return [] as CampaignDraft[];
       
-      const { data, error } = await supabase
-        .from('campaign_drafts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('campaign_drafts')
+          .select('id, name, campaign_data, created_at, updated_at')
+          .eq('created_by', user.id)
+          .order('updated_at', { ascending: false });
+        
+        if (error) {
+          console.error('Draft fetch error:', error);
+          return [] as CampaignDraft[];
+        }
+        
+        return (data || []) as CampaignDraft[];
+      } catch (err) {
+        console.error('Draft fetch failed:', err);
+        return [] as CampaignDraft[];
+      }
     },
     enabled: !!user?.id,
   });
 
-  // Save draft mutation
+  // Simple save mutation
   const saveDraftMutation = useMutation({
-    mutationFn: async ({ name, data, draftId }: { name: string; data: any; draftId?: string }) => {
+    mutationFn: async (params: { name: string; data: any; draftId?: string }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      if (draftId) {
-        // Update existing draft
+      if (params.draftId) {
+        // Update existing
         const { error } = await supabase
           .from('campaign_drafts')
           .update({
-            name,
-            campaign_data: data,
+            name: params.name,
+            campaign_data: params.data,
           })
-          .eq('id', draftId)
-          .eq('user_id', user.id);
+          .eq('id', params.draftId)
+          .eq('created_by', user.id);
         
         if (error) throw error;
-        return draftId;
+        return params.draftId;
       } else {
-        // Create new draft
+        // Create new
         const { data: newDraft, error } = await supabase
           .from('campaign_drafts')
           .insert({
-            user_id: user.id,
-            name,
-            campaign_data: data,
+            created_by: user.id,
+            name: params.name,
+            campaign_data: params.data,
           })
-          .select()
+          .select('id')
           .single();
         
         if (error) throw error;
-        return newDraft.id;
+        return newDraft?.id;
       }
     },
     onSuccess: () => {
@@ -72,7 +81,7 @@ export const useCampaignDrafts = () => {
     },
   });
 
-  // Delete draft mutation
+  // Simple delete mutation
   const deleteDraftMutation = useMutation({
     mutationFn: async (draftId: string) => {
       if (!user?.id) throw new Error('User not authenticated');
@@ -81,7 +90,7 @@ export const useCampaignDrafts = () => {
         .from('campaign_drafts')
         .delete()
         .eq('id', draftId)
-        .eq('user_id', user.id);
+        .eq('created_by', user.id);
       
       if (error) throw error;
     },
@@ -90,15 +99,16 @@ export const useCampaignDrafts = () => {
     },
   });
 
+  // Simple wrapper functions
   const saveDraft = useCallback(
-    async (name: string, data: any, draftId?: string) => {
+    (name: string, data: any, draftId?: string) => {
       return saveDraftMutation.mutateAsync({ name, data, draftId });
     },
     [saveDraftMutation]
   );
 
   const deleteDraft = useCallback(
-    async (draftId: string) => {
+    (draftId: string) => {
       return deleteDraftMutation.mutateAsync(draftId);
     },
     [deleteDraftMutation]
@@ -117,12 +127,12 @@ export const useCampaignDrafts = () => {
 
   return {
     drafts: drafts || [],
-    isLoading,
+    isLoading: isLoading || false,
     error,
     saveDraft,
     deleteDraft,
     scheduleAutoSave,
-    isSaving: saveDraftMutation.isPending,
-    isDeleting: deleteDraftMutation.isPending,
+    isSaving: saveDraftMutation.isPending || false,
+    isDeleting: deleteDraftMutation.isPending || false,
   };
 };
