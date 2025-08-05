@@ -617,10 +617,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                     <div key={button.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1">
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <span>{getButtonIcon(button.type)}</span>
-                            {button.text}
-                          </Badge>
+                          <Button size="sm" variant={button.style === 'primary' ? 'default' : 'outline'}>
+                            {button.includeEmoji !== false && getButtonIcon(button.type)} {button.text}
+                          </Button>
                           <div className="text-sm text-gray-500">
                             <div className="capitalize">{button.type}</div>
                             <div className="text-xs text-gray-600">
@@ -705,10 +704,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
                 <Label className="text-sm text-gray-500">Action Buttons</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {messageData.buttons.map((button) => (
-                    <Badge key={button.id} variant="secondary" className="flex items-center gap-1">
-                      {button.includeEmoji !== false && <span>{getButtonIcon(button.type)}</span>}
-                      {button.text || 'Untitled Button'}
-                    </Badge>
+                    <Button key={button.id} size="sm" variant={button.style === 'primary' ? 'default' : 'outline'}>
+                      {button.includeEmoji !== false && getButtonIcon(button.type)} {button.text}
+                    </Button>
                   ))}
                 </div>
               </div>

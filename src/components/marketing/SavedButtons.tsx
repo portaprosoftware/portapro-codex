@@ -186,10 +186,9 @@ export const SavedButtons: React.FC<SavedButtonsProps> = ({ onSelectButton }) =>
               className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <Badge variant="outline" className="flex items-center gap-1 shrink-0">
-                  <span>{getButtonIcon(savedButton.button_type)}</span>
-                  {savedButton.button_text}
-                </Badge>
+                <Button size="sm" variant={savedButton.button_style === 'primary' ? 'default' : 'outline'}>
+                  {getButtonIcon(savedButton.button_type)} {savedButton.button_text}
+                </Button>
                 <div className="text-sm text-gray-500 min-w-0">
                   <div className="capitalize">{savedButton.button_type}</div>
                   <div className="truncate text-xs">
