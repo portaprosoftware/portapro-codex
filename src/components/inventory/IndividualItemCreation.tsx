@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StorageLocationSelector } from "./StorageLocationSelector";
+import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { toast } from "sonner";
 import { Package, ArrowRight, QrCode } from "lucide-react";
 
@@ -31,36 +32,35 @@ export function IndividualItemCreation({
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
   const [storageLocationId, setStorageLocationId] = useState("");
-  const [itemPrefix, setItemPrefix] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const createIndividualItemsMutation = useMutation({
     mutationFn: async () => {
       if (!storageLocationId || quantity <= 0) {
         throw new Error("Please select storage location and valid quantity");
       }
-
-      // Get next sequence number for item codes
-      const { data: existingItems } = await supabase
-        .from('product_items')
-        .select('item_code')
-        .eq('product_id', productId)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      let startingNumber = 1;
-      if (existingItems && existingItems.length > 0) {
-        const lastCode = existingItems[0].item_code;
-        const matches = lastCode.match(/-(\d+)$/);
-        if (matches) {
-          startingNumber = parseInt(matches[1]) + 1;
-        }
+      
+      if (!selectedCategory) {
+        throw new Error("Please select an item code category");
       }
 
-      // Generate individual items
-      const prefix = itemPrefix || productId.slice(0, 8).toUpperCase();
-      const individualItems = Array.from({ length: quantity }, (_, index) => ({
+      const itemCodes = [];
+      
+      // Generate item codes using the new database function
+      for (let i = 0; i < quantity; i++) {
+        const { data: generatedCode, error: codeError } = await supabase
+          .rpc('generate_item_code_with_category', {
+            category_prefix: selectedCategory
+          });
+
+        if (codeError) throw codeError;
+        itemCodes.push(generatedCode);
+      }
+
+      // Create individual items
+      const individualItems = itemCodes.map((itemCode) => ({
         product_id: productId,
-        item_code: `${prefix}-${String(startingNumber + index).padStart(3, '0')}`,
+        item_code: itemCode,
         status: 'available',
         current_storage_location_id: storageLocationId
       }));
@@ -114,7 +114,7 @@ export function IndividualItemCreation({
   const handleClose = () => {
     setQuantity(1);
     setStorageLocationId("");
-    setItemPrefix("");
+    setSelectedCategory("");
     onClose();
   };
 
@@ -157,16 +157,14 @@ export function IndividualItemCreation({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="itemPrefix">Item Code Prefix (Optional)</Label>
-              <Input
-                id="itemPrefix"
-                value={itemPrefix}
-                onChange={(e) => setItemPrefix(e.target.value.toUpperCase())}
-                placeholder="AUTO (auto-generated)"
-                maxLength={8}
+              <Label>Item Code Category *</Label>
+              <ItemCodeCategorySelect
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+                placeholder="Select category for 4-digit codes"
               />
               <p className="text-xs text-muted-foreground">
-                Items will be coded as: {itemPrefix || 'AUTO'}-001, {itemPrefix || 'AUTO'}-002, etc.
+                Items will be coded with 4-digit numbers (e.g., 1001, 2045, 3012)
               </p>
             </div>
           </div>
@@ -189,7 +187,7 @@ export function IndividualItemCreation({
             </Button>
             <Button 
               type="submit" 
-              disabled={createIndividualItemsMutation.isPending}
+              disabled={createIndividualItemsMutation.isPending || !selectedCategory || !storageLocationId}
             >
               {createIndividualItemsMutation.isPending ? "Creating..." : `Create ${quantity} Items`}
             </Button>

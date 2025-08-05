@@ -258,9 +258,11 @@ export type Database = {
           delivery_prefix: string | null
           id: string
           invoice_number_prefix: string | null
+          item_code_categories: Json | null
           next_cleaning_number: number | null
           next_delivery_number: number | null
           next_invoice_number: number | null
+          next_item_numbers: Json | null
           next_pickup_number: number | null
           next_quote_number: number | null
           next_return_number: number | null
@@ -297,9 +299,11 @@ export type Database = {
           delivery_prefix?: string | null
           id?: string
           invoice_number_prefix?: string | null
+          item_code_categories?: Json | null
           next_cleaning_number?: number | null
           next_delivery_number?: number | null
           next_invoice_number?: number | null
+          next_item_numbers?: Json | null
           next_pickup_number?: number | null
           next_quote_number?: number | null
           next_return_number?: number | null
@@ -336,9 +340,11 @@ export type Database = {
           delivery_prefix?: string | null
           id?: string
           invoice_number_prefix?: string | null
+          item_code_categories?: Json | null
           next_cleaning_number?: number | null
           next_delivery_number?: number | null
           next_invoice_number?: number | null
+          next_item_numbers?: Json | null
           next_pickup_number?: number | null
           next_quote_number?: number | null
           next_return_number?: number | null
@@ -6249,6 +6255,10 @@ export type Database = {
       }
       generate_item_code: {
         Args: { product_name: string; sequence_number: number }
+        Returns: string
+      }
+      generate_item_code_with_category: {
+        Args: { category_prefix: string }
         Returns: string
       }
       generate_jobs_from_quote: {
