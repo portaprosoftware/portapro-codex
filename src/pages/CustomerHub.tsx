@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
 import { formatCategoryDisplay } from "@/lib/categoryUtils";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -75,6 +75,7 @@ const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEngagementDialogOpen, setIsEngagementDialogOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
 
@@ -315,34 +316,77 @@ const CustomerHub: React.FC = () => {
               <SortableHeader column="type">Type</SortableHeader>
               <TableHead className="font-medium text-gray-900">Phone</TableHead>
               <TableHead className="font-medium text-gray-900">Email</TableHead>
-              <SortableHeader column="engagement">
-                <div className="flex items-center gap-1">
-                  Engagement
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-sm">
-                        <div className="space-y-2">
-                          <p className="font-medium">Engagement Score (Last 90 Days)</p>
-                          <div className="text-sm space-y-1">
-                            <p>• Jobs: 10 points each</p>
-                            <p>• Interactions: 15 points each</p>
-                            <p>• Communications: 5 points each</p>
-                          </div>
-                          <div className="text-sm space-y-1">
-                            <p><strong>Low:</strong> 0-30 points</p>
-                            <p><strong>Medium:</strong> 31-70 points</p>
-                            <p><strong>High:</strong> 71+ points</p>
-                          </div>
-                          <p className="text-xs text-gray-500">Only activities from the last 90 days are counted to reflect current engagement levels.</p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </SortableHeader>
+               <SortableHeader column="engagement">
+                 <div className="flex items-center gap-1">
+                   Engagement
+                   <Dialog open={isEngagementDialogOpen} onOpenChange={setIsEngagementDialogOpen}>
+                     <DialogTrigger asChild>
+                       <Button variant="ghost" size="sm" className="p-0 h-auto">
+                         <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                       </Button>
+                     </DialogTrigger>
+                     <DialogContent className="max-w-lg">
+                       <DialogHeader>
+                         <DialogTitle>Customer Engagement Scoring</DialogTitle>
+                       </DialogHeader>
+                       <div className="space-y-4">
+                         <div className="bg-blue-50 p-4 rounded-lg">
+                           <p className="font-medium text-blue-900 mb-2">90-Day Time Window</p>
+                           <p className="text-sm text-blue-700">
+                             Engagement scores are calculated based only on activities from the last 90 days. 
+                             This ensures we're measuring current customer engagement, not historical activity.
+                           </p>
+                         </div>
+                         
+                         <div className="space-y-3">
+                           <h4 className="font-medium">Scoring System:</h4>
+                           <div className="grid gap-2 text-sm">
+                             <div className="flex justify-between">
+                               <span>• Jobs completed:</span>
+                               <span className="font-medium">10 points each</span>
+                             </div>
+                             <div className="flex justify-between">
+                               <span>• Customer interactions:</span>
+                               <span className="font-medium">15 points each</span>
+                             </div>
+                             <div className="flex justify-between">
+                               <span>• Communications sent:</span>
+                               <span className="font-medium">5 points each</span>
+                             </div>
+                           </div>
+                         </div>
+
+                         <div className="space-y-3">
+                           <h4 className="font-medium">Engagement Levels:</h4>
+                           <div className="space-y-2">
+                             <div className="flex items-center justify-between p-2 bg-red-50 rounded">
+                               <span className="text-red-800 font-medium">Low Engagement</span>
+                               <span className="text-sm text-red-600">0-30 points</span>
+                             </div>
+                             <div className="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                               <span className="text-yellow-800 font-medium">Medium Engagement</span>
+                               <span className="text-sm text-yellow-600">31-70 points</span>
+                             </div>
+                             <div className="flex items-center justify-between p-2 bg-green-50 rounded">
+                               <span className="text-green-800 font-medium">High Engagement</span>
+                               <span className="text-sm text-green-600">71+ points</span>
+                             </div>
+                           </div>
+                         </div>
+
+                         <div className="bg-gray-50 p-4 rounded-lg">
+                           <h4 className="font-medium mb-2">Example:</h4>
+                           <p className="text-sm text-gray-700">
+                             A customer with 5 jobs, 3 interactions, and 2 communications in the last 90 days would have:
+                             <br />
+                             <span className="font-mono">(5 × 10) + (3 × 15) + (2 × 5) = 105 points = High Engagement</span>
+                           </p>
+                         </div>
+                       </div>
+                     </DialogContent>
+                   </Dialog>
+                 </div>
+               </SortableHeader>
               <SortableHeader column="jobs">Jobs</SortableHeader>
               <SortableHeader column="balance">Balance</SortableHeader>
               <TableHead className="font-medium text-gray-900">View</TableHead>
