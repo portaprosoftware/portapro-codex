@@ -185,7 +185,7 @@ export const DraftManagement: React.FC = () => {
               setSelectedDraft(null);
             }}
             draftId={selectedDraft.id}
-            initialData={selectedDraft.campaign_data?.campaignData}
+            initialData={selectedDraft.campaign_data}
           />
         )}
       </CustomModal>

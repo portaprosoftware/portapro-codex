@@ -35,6 +35,10 @@ interface CampaignData {
       value: string;
       style: 'primary' | 'secondary';
     }>;
+    customImageUrl?: string;
+    imagePosition?: 'top' | 'middle' | 'bottom' | 'left';
+    showCompanyLogo?: boolean;
+    logoSize?: 'small' | 'medium' | 'large';
   };
   message_source: 'template' | 'custom';
   target_segments: string[];
@@ -42,6 +46,7 @@ interface CampaignData {
   target_customers: string[];
   recipient_type: 'all' | 'segments' | 'types' | 'individuals';
   scheduled_at?: Date;
+  currentStep?: number;
 }
 
 interface CampaignCreationProps {
@@ -55,17 +60,40 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   draftId: initialDraftId, 
   initialData 
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(() => {
+    // If resuming a draft, start on step 3, otherwise step 1
+    return initialData?.currentStep || (initialData ? 3 : 1);
+  });
   const [showingTemplates, setShowingTemplates] = useState(false);
-  const [campaignData, setCampaignData] = useState<CampaignData>({
-    name: '',
-    campaign_type: 'email',
-    message_source: 'template',
-    target_segments: [],
-    target_customer_types: [],
-    target_customers: [],
-    recipient_type: 'all',
-    ...initialData,
+  const [campaignData, setCampaignData] = useState<CampaignData>(() => {
+    if (initialData) {
+      return {
+        name: '',
+        campaign_type: 'email',
+        message_source: 'template',
+        target_segments: [],
+        target_customer_types: [],
+        target_customers: [],
+        recipient_type: 'all',
+        ...initialData,
+        // Ensure custom message has all required fields
+        custom_message: initialData.custom_message ? {
+          subject: '',
+          content: '',
+          buttons: [],
+          ...initialData.custom_message
+        } : undefined
+      };
+    }
+    return {
+      name: '',
+      campaign_type: 'email',
+      message_source: 'template',
+      target_segments: [],
+      target_customer_types: [],
+      target_customers: [],
+      recipient_type: 'all',
+    };
   });
   const [hasMessageContent, setHasMessageContent] = useState(false);
   const [hasSubjectContent, setHasSubjectContent] = useState(false);
@@ -924,7 +952,14 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               onClick={async () => {
                 try {
                   const draftName = campaignData.name.trim() || `Campaign Draft - ${new Date().toLocaleDateString()}`;
-                  await saveDraft(draftName, campaignData, currentDraftId);
+                  
+                  // Include current step and all form data in the draft
+                  const draftData = {
+                    ...campaignData,
+                    currentStep,
+                  };
+                  
+                  await saveDraft(draftName, draftData, currentDraftId);
                   toast({
                     title: "Draft saved",
                     description: "Your campaign progress has been saved.",

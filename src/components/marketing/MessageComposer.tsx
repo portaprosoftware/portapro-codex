@@ -69,8 +69,19 @@ export const MessageComposer = React.forwardRef<{
   onSubjectChange,
   initialData
 }, ref) => {
-  const [messageData, setMessageData] = useState<MessageData>(
-    initialData || {
+  const [messageData, setMessageData] = useState<MessageData>(() => {
+    if (initialData) {
+      return {
+        subject: initialData.subject || '',
+        content: initialData.content || '',
+        buttons: initialData.buttons || [],
+        customImageUrl: initialData.customImageUrl || '',
+        imagePosition: initialData.imagePosition || 'bottom',
+        showCompanyLogo: initialData.showCompanyLogo !== undefined ? initialData.showCompanyLogo : true,
+        logoSize: initialData.logoSize || 'medium'
+      };
+    }
+    return {
       subject: '',
       content: '',
       buttons: [],
@@ -78,8 +89,8 @@ export const MessageComposer = React.forwardRef<{
       imagePosition: 'bottom',
       showCompanyLogo: true,
       logoSize: 'medium'
-    }
-  );
+    };
+  });
   
   const [hasGeneratedWithAI, setHasGeneratedWithAI] = useState(false);
 
