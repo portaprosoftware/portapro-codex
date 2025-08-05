@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import { ProductOverview } from "./ProductOverview";
 import { IndividualUnitsTab } from "./IndividualUnitsTab";
 import { ProductAttributesTab } from "./ProductAttributesTab";
@@ -21,6 +22,9 @@ interface ProductDetailProps {
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind }) => {
+  const [activeTab, setActiveTab] = useState(toolNumberToFind ? "units" : "overview");
+  const queryClient = useQueryClient();
+  
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
     queryFn: async () => {
@@ -34,6 +38,44 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
       return data;
     }
   });
+
+  // Fetch individual units count for this product
+  const { data: individualUnitsCount } = useQuery({
+    queryKey: ["individual-units-count", productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_items")
+        .select("id", { count: 'exact' })
+        .eq("product_id", productId);
+      
+      if (error) throw error;
+      return data?.length || 0;
+    }
+  });
+
+  // Set up real-time updates for individual units count
+  useEffect(() => {
+    const channel = supabase
+      .channel('individual-units-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items',
+          filter: `product_id=eq.${productId}`
+        },
+        () => {
+          // Invalidate and refetch the count when items are added/removed/updated
+          queryClient.invalidateQueries({ queryKey: ['individual-units-count', productId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [productId, queryClient]);
 
   if (isLoading || !product) {
     return (
@@ -68,7 +110,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={toolNumberToFind ? "units" : "overview"} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -81,7 +123,18 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           <TabsTrigger value="units" className="flex items-center gap-2 flex-wrap">
             <QrCode className="w-4 h-4 flex-shrink-0" />
             <span className="break-words">Individual Units</span>
-            <Badge variant="outline" className="ml-1 flex-shrink-0">5</Badge>
+            {individualUnitsCount !== undefined && (
+              <Badge 
+                className={cn(
+                  "ml-1 flex-shrink-0 text-white border-0 font-bold",
+                  activeTab === "units" 
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700" 
+                    : "bg-gray-500"
+                )}
+              >
+                {individualUnitsCount}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
