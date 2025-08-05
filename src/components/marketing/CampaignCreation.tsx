@@ -68,6 +68,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [campaignData, setCampaignData] = useState<CampaignData>(() => {
     if (initialData) {
       console.log('🔍 Loading draft with initialData:', initialData);
+      console.log('🔍 Raw initialData keys:', Object.keys(initialData));
+      console.log('🔍 Raw initialData.custom_message:', initialData.custom_message);
+      console.log('🔍 Full initialData object:', JSON.stringify(initialData, null, 2));
+      
       const defaults = {
         name: '',
         campaign_type: 'email' as const,
