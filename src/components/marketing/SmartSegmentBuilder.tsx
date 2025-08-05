@@ -368,7 +368,7 @@ export const SmartSegmentBuilder: React.FC = () => {
                         onValueChange={(value) => updateRule(rule.id, { field: value, operator: '', value: '' })}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select field" />
+                          <SelectValue placeholder="Select filter" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableFields.map(field => (
@@ -386,7 +386,7 @@ export const SmartSegmentBuilder: React.FC = () => {
                           onValueChange={(value) => updateRule(rule.id, { operator: value, value: '' })}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select operator" />
+                            <SelectValue placeholder="Select filter" />
                           </SelectTrigger>
                           <SelectContent>
                             {operators[rule.field as keyof typeof operators]?.map(op => (
