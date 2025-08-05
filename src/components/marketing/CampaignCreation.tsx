@@ -774,7 +774,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   }));
                   toast({ title: 'Custom message saved!' });
                 }}
-                onBack={() => {}}
+                onBack={() => {
+                  setCurrentStep(2);
+                  setShowingTemplates(false);
+                }}
                 initialData={campaignData.custom_message}
               />
             )}
