@@ -70,7 +70,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   });
   const [scheduledDate, setScheduledDate] = useState<Date>(initialData?.scheduled_at);
   const [customerSearch, setCustomerSearch] = useState('');
-  const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('system');
+  const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
   
@@ -742,14 +742,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      setCampaignData(prev => ({ ...prev, template_id: undefined }));
-                      setCurrentStep(2);
-                      setShowingTemplates(true);
-                    }}
+                    onClick={handleBack}
                     className="mt-2"
                   >
-                    Change Template
+                    Back
                   </Button>
                 </div>
               ) : (
@@ -757,13 +753,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   <p className="text-yellow-800">No template selected. Please go back and select a template.</p>
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      setCurrentStep(2);
-                      setShowingTemplates(true);
-                    }}
+                    onClick={handleBack}
                     className="mt-2"
                   >
-                    Select Template
+                    Back
                   </Button>
                 </div>
               )}
