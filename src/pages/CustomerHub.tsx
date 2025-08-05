@@ -173,11 +173,11 @@ const CustomerHub: React.FC = () => {
 
           const totalBalance = invoices?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
         
-          // Calculate engagement score (90-day activities only)
-          const engagementScore = 
+          // Calculate engagement score (90-day activities only) - capped at 999
+          const engagementScore = Math.min(999, 
             (jobsCount || 0) * 10 + 
             (interactionsCount || 0) * 15 + 
-            communicationScore;
+            communicationScore);
           
           const engagementLevel = calculateEngagementLevel(engagementScore);
           
@@ -357,13 +357,15 @@ const CustomerHub: React.FC = () => {
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
                        <div className="space-y-4">
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
-                            <p className="text-sm text-gray-700">
-                              Engagement scores are calculated based only on activities from the last 90 days. 
-                              This ensures we're measuring current customer engagement, not historical activity.
-                            </p>
-                          </div>
+                           <div className="bg-gray-50 p-4 rounded-lg">
+                             <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
+                             <p className="text-sm text-gray-700">
+                               Engagement scores are calculated based only on activities from the last 90 days. 
+                               This ensures we're measuring current customer engagement, not historical activity.
+                               <br /><br />
+                               <strong>Note:</strong> Scores are capped at a maximum of 999 per 90-day calculation period.
+                             </p>
+                           </div>
                           
                            <div className="space-y-3">
                              <h4 className="font-medium">Scoring System:</h4>
