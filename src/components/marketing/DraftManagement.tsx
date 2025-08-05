@@ -50,12 +50,6 @@ export const DraftManagement: React.FC = () => {
             Draft campaigns will appear here when you save them during creation.
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center pb-8">
-          <Button>
-            <Edit className="w-4 h-4 mr-2" />
-            Create Campaign
-          </Button>
-        </CardContent>
       </Card>
     );
   }
