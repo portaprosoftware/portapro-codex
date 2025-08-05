@@ -6,9 +6,10 @@ import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Satellite, Map as MapIcon } from 'lucide-react';
+import { X, Satellite, Map as MapIcon, Radar } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
+import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
 
 
 
@@ -36,6 +37,7 @@ export function SimpleJobsMapView({
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
+  const [radarEnabled, setRadarEnabled] = useState(false);
   
 
   // Get jobs data
@@ -349,17 +351,11 @@ export function SimpleJobsMapView({
 
   return (
     <div className="relative w-full h-full">
-      {/* Debug Info */}
-      {filteredJobs.length > 0 && (
-        <div className="absolute top-4 right-4 z-10 bg-white p-2 rounded shadow text-xs flex flex-col gap-2">
-          <div>Jobs: {filteredJobs.length} | Map initialized: {map.current ? 'Yes' : 'No'}</div>
-        </div>
-      )}
-      
       <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Map Style Toggle */}
-      <div className="absolute top-4 left-4 z-10">
+      {/* Control Panel - Top Left */}
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        {/* Map Style Toggle */}
         <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
           <Button
             variant={mapStyle === 'streets' ? "default" : "ghost"}
@@ -380,7 +376,35 @@ export function SimpleJobsMapView({
             Satellite
           </Button>
         </div>
+
+        {/* Map Status */}
+        {filteredJobs.length > 0 && (
+          <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
+            Jobs: {filteredJobs.length} | Map: {map.current ? 'Ready' : 'Loading...'}
+          </div>
+        )}
+
+        {/* Radar Toggle */}
+        <div className="bg-white p-1 rounded-lg shadow-lg border">
+          <Button
+            variant={radarEnabled ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setRadarEnabled(!radarEnabled)}
+            className="h-8 px-3 text-sm font-medium"
+          >
+            <Radar className="w-4 h-4 mr-1.5" />
+            Weather Radar
+          </Button>
+        </div>
       </div>
+
+      {/* Weather Radar */}
+      {map.current && radarEnabled && (
+        <SimpleWeatherRadar 
+          map={map.current} 
+          isActive={radarEnabled} 
+        />
+      )}
 
       {/* Multiple Jobs Dialog */}
       <Dialog open={selectedJobsAtLocation.length > 0} onOpenChange={() => setSelectedJobsAtLocation([])}>
