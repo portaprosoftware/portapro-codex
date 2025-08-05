@@ -46,7 +46,7 @@ export const SmartSegmentBuilder: React.FC = () => {
     { value: 'phone', label: 'Has Phone' },
     { value: 'created_at', label: 'Registration Date' },
     { value: 'last_job_date', label: 'Last Job Date' },
-    { value: 'total_jobs', label: 'Total Jobs' },
+    { value: 'total_delivery_jobs', label: 'Total Delivery Jobs' },
     { value: 'total_spent', label: 'Total Spent' }
   ];
 
@@ -77,7 +77,7 @@ export const SmartSegmentBuilder: React.FC = () => {
       { value: 'within_last_days', label: 'Within Last X Days' },
       { value: 'more_than_days_ago', label: 'More Than X Days Ago' }
     ],
-    total_jobs: [
+    total_delivery_jobs: [
       { value: 'greater_than', label: 'Greater Than' },
       { value: 'less_than', label: 'Less Than' },
       { value: 'equals', label: 'Equals' }
@@ -304,7 +304,7 @@ export const SmartSegmentBuilder: React.FC = () => {
                 <h5 className="font-medium mb-2">Examples</h5>
                 <ul className="space-y-1 text-muted-foreground text-xs">
                   <li>• <strong>New Customers</strong>: Registration Date Within Last 90 Days</li>
-                  <li>• <strong>Frequent Users</strong>: Total Jobs Greater Than 10</li>
+                  <li>• <strong>Frequent Users</strong>: Total Delivery Jobs Greater Than 10</li>
                   <li>• <strong>Lapsed Accounts</strong>: Last Job Date More Than 90 Days Ago</li>
                 </ul>
                 <p className="text-xs text-muted-foreground mt-2">
