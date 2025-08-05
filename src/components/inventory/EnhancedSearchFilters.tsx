@@ -81,7 +81,7 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
           )}
         >
           <Filter className="w-4 h-4 mr-2" />
-          Advanced
+          OCR Data
         </Button>
 
         {hasActiveFilters && (
