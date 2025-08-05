@@ -66,12 +66,16 @@ export const SmartSegmentBuilder: React.FC = () => {
     created_at: [
       { value: 'after', label: 'After' },
       { value: 'before', label: 'Before' },
-      { value: 'between', label: 'Between' }
+      { value: 'between', label: 'Between' },
+      { value: 'within_last_days', label: 'Within Last X Days' },
+      { value: 'more_than_days_ago', label: 'More Than X Days Ago' }
     ],
     last_job_date: [
       { value: 'after', label: 'After' },
       { value: 'before', label: 'Before' },
-      { value: 'between', label: 'Between' }
+      { value: 'between', label: 'Between' },
+      { value: 'within_last_days', label: 'Within Last X Days' },
+      { value: 'more_than_days_ago', label: 'More Than X Days Ago' }
     ],
     total_jobs: [
       { value: 'greater_than', label: 'Greater Than' },
@@ -192,6 +196,21 @@ export const SmartSegmentBuilder: React.FC = () => {
     }
 
     if (rule.field === 'created_at' || rule.field === 'last_job_date') {
+      if (rule.operator === 'within_last_days' || rule.operator === 'more_than_days_ago') {
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={rule.value}
+              onChange={(e) => updateRule(rule.id, { value: e.target.value })}
+              placeholder="Enter days"
+              min="1"
+              className="w-24"
+            />
+            <span className="text-sm text-muted-foreground">days</span>
+          </div>
+        );
+      }
       return (
         <Input
           type="date"
@@ -284,9 +303,9 @@ export const SmartSegmentBuilder: React.FC = () => {
               <div className="border-t pt-3">
                 <h5 className="font-medium mb-2">Examples</h5>
                 <ul className="space-y-1 text-muted-foreground text-xs">
-                  <li>• <strong>New Customers</strong>: Registration Date After [30 days ago]</li>
+                  <li>• <strong>New Customers</strong>: Registration Date Within Last 90 Days</li>
                   <li>• <strong>Frequent Users</strong>: Total Jobs Greater Than 10</li>
-                  <li>• <strong>Lapsed Accounts</strong>: Last Job Date Before [90 days ago]</li>
+                  <li>• <strong>Lapsed Accounts</strong>: Last Job Date More Than 90 Days Ago</li>
                 </ul>
                 <p className="text-xs text-muted-foreground mt-2">
                   Feel free to mix and match rules—this tool will automatically keep your segments up to date as customer data changes.
