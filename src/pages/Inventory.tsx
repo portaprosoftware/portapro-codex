@@ -15,6 +15,7 @@ import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
 import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard";
 import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
+import { QRCodeScanner } from "@/components/inventory/QRCodeScanner";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const Inventory: React.FC = () => {
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
   const [showOCRDashboard, setShowOCRDashboard] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
   const [matchingItemId, setMatchingItemId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"products" | "location-map" | "ocr-quality">("products");
@@ -212,6 +214,55 @@ const Inventory: React.FC = () => {
     }
   };
 
+  const handleQRScanResult = async (result: string) => {
+    console.log("QR Scan: Starting search for:", result);
+    setShowQRScanner(false);
+    
+    // Use the same logic as OCR search for consistency
+    try {
+      const { data: items, error } = await supabase
+        .from("product_items")
+        .select("product_id, tool_number, id")
+        .ilike("tool_number", `%${result}%`)
+        .limit(1);
+        
+      if (error) throw error;
+      
+      console.log("QR Scan: Found items:", items);
+      
+      if (items && items.length > 0) {
+        // Found an individual unit with this tool number - navigate directly to its page
+        const itemId = items[0].id;
+        console.log("QR Scan: Navigating to individual item:", itemId);
+        
+        // Navigate to the individual item detail page
+        navigate(`/inventory/items/${itemId}`);
+        
+        toast({
+          title: "Individual Unit Found",
+          description: `Navigating to unit with tool number: ${result}`,
+        });
+      } else {
+        console.log("QR Scan: No individual units found, falling back to regular search");
+        // No individual units found, fall back to regular product search
+        setSearchQuery(result);
+        toast({
+          title: "No Individual Unit Found",
+          description: `Searching products for: ${result}`,
+        });
+      }
+    } catch (error) {
+      console.error("Error searching for QR code:", error);
+      // Fall back to regular search if there's an error
+      setSearchQuery(result);
+      toast({
+        title: "Search Error",
+        description: "There was an error searching. Falling back to product search.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const filters = [
     { key: "all" as FilterType, label: "All Products" },
     { key: "in_stock" as FilterType, label: "In Stock" },
@@ -290,18 +341,6 @@ const Inventory: React.FC = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setViewType("grid")}
-                className={cn(
-                  "h-8",
-                  viewType === "grid" ? "bg-blue-600 text-white hover:bg-blue-700" : ""
-                )}
-              >
-                <LayoutGrid className="w-4 h-4" />
-                Icons
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
                 onClick={() => setViewType("list")}
                 className={cn(
                   "h-8",
@@ -310,6 +349,18 @@ const Inventory: React.FC = () => {
               >
                 <List className="w-4 h-4" />
                 List
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewType("grid")}
+                className={cn(
+                  "h-8",
+                  viewType === "grid" ? "bg-blue-600 text-white hover:bg-blue-700" : ""
+                )}
+              >
+                <LayoutGrid className="w-4 h-4" />
+                Icons
               </Button>
             </div>
 
@@ -406,7 +457,9 @@ const Inventory: React.FC = () => {
             </Button>
             <Button 
               variant="outline" 
+              onClick={() => setShowQRScanner(true)}
               className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              title="Scan QR code to find product"
               size="sm"
             >
               <QrCode className="w-4 h-4 mr-2" />
@@ -467,6 +520,14 @@ const Inventory: React.FC = () => {
         onClose={() => setShowOCRSearch(false)}
         onSearchResult={handleOCRSearchResult}
       />
+
+      {/* QR Scanner Dialog */}
+      {showQRScanner && (
+        <QRCodeScanner
+          onScan={handleQRScanResult}
+          onClose={() => setShowQRScanner(false)}
+        />
+      )}
     </div>
   );
 };
