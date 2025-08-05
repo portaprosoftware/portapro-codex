@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { EditItemModal } from "./EditItemModal";
 import { CreateItemModal } from "./CreateItemModal";
 import { QRCodeDropdown } from "./QRCodeDropdown";
@@ -19,8 +20,9 @@ import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { OCRSearchCapture } from "./OCRSearchCapture";
 import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
-
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
+import { DeleteItemDialog } from "./DeleteItemDialog";
+import { ItemActionsMenu } from "./ItemActionsMenu";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -28,6 +30,7 @@ interface IndividualUnitsTabProps {
 }
 
 export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId, toolNumberToFind }) => {
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -38,10 +41,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
-  
   const [showMobileOCR, setShowMobileOCR] = useState(false);
   const [ocrItemId, setOcrItemId] = useState<string | null>(null);
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
     size?: string;
@@ -134,6 +138,28 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  // Delete item mutation
+  const deleteItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase
+        .from('product_items')
+        .delete()
+        .eq('id', itemId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Item deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+    },
+    onError: (error) => {
+      console.error('Error deleting item:', error);
+      toast.error('Failed to delete item');
+    }
+  });
+
   // Fetch storage locations for name lookup
   const { data: storageLocations } = useQuery({
     queryKey: ["storage-locations"],
@@ -218,6 +244,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const handleOCRSearchResult = (searchTerm: string, confidence?: number) => {
     setSearchQuery(searchTerm);
     setShowOCRSearch(false);
+  };
+
+  const handleDeleteItem = (itemId: string, itemCode: string) => {
+    setItemToDelete({ id: itemId, code: itemCode });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      deleteItemMutation.mutate(itemToDelete.id);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -391,28 +428,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-6 h-6 p-0"
-                        onClick={() => handleOCRCapture(item.id, item.item_code)}
-                        title="OCR Tool Tracking"
-                      >
-                        <Camera className="w-4 h-4 text-gray-400 hover:text-green-600" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-6 h-6 p-0"
-                        onClick={() => setEditingItem(item.id)}
-                      >
-                        <Edit className="w-4 h-4 text-gray-400 hover:text-blue-600" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="w-6 h-6 p-0">
-                        <Trash className="w-4 h-4 text-gray-400 hover:text-red-600" />
-                      </Button>
-                    </div>
+                    <ItemActionsMenu
+                      itemId={item.id}
+                      itemCode={item.item_code}
+                      onEdit={() => setEditingItem(item.id)}
+                      onDelete={() => handleDeleteItem(item.id, item.item_code)}
+                      onOCRCapture={() => handleOCRCapture(item.id, item.item_code)}
+                      qrCodeData={item.qr_code_data}
+                    />
                   </TableCell>
                 </TableRow>,
                 
@@ -564,6 +587,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         onSearchResult={handleOCRSearchResult}
       />
 
+      {/* Delete Confirmation Dialog */}
+      <DeleteItemDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        itemCode={itemToDelete?.code || ""}
+        isDeleting={deleteItemMutation.isPending}
+      />
 
     </div>
   );
