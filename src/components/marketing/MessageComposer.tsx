@@ -864,7 +864,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             <div className="space-y-4 pb-4">
               {/* Overwrite Warning */}
               {(messageData.content.trim() || messageData.subject?.trim()) && (
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="p-3 bg-white border border-amber-200 rounded-lg">
                   <div className="flex items-start gap-2">
                     <span className="text-amber-600 font-medium text-sm">⚠️ Warning:</span>
                     <p className="text-sm text-amber-700">
@@ -877,16 +877,16 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
               {campaignType !== 'sms' && aiGeneratedContent.subject && (
                 <div>
                   <Label>Generated Subject Line</Label>
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="font-semibold text-blue-900">{aiGeneratedContent.subject}</p>
+                  <div className="p-3 bg-white border border-gray-200 rounded-lg">
+                    <p className="font-semibold text-gray-900">{aiGeneratedContent.subject}</p>
                   </div>
                 </div>
               )}
 
               <div>
                 <Label>Generated Content</Label>
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="whitespace-pre-wrap text-blue-900">{aiGeneratedContent.content}</p>
+                <div className="p-4 bg-white border border-gray-200 rounded-lg">
+                  <p className="whitespace-pre-wrap text-gray-900">{aiGeneratedContent.content}</p>
                 </div>
               </div>
 

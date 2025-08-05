@@ -452,24 +452,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
           </div>
         )}
 
-      {/* Step 3: Campaign Name and Message */}
+      {/* Step 3: Message */}
       {currentStep === 3 && (
         <div className="space-y-6">
-          {/* Campaign Name Field */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Campaign Details</h2>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="campaign-name">Campaign Name</Label>
-                <Input
-                  id="campaign-name"
-                  value={campaignData.name}
-                  onChange={(e) => setCampaignData({...campaignData, name: e.target.value})}
-                  placeholder="Enter campaign name"
-                />
-              </div>
-            </div>
-          </div>
+          <h2 className="text-xl font-semibold mb-4">Message Content</h2>
 
           {step3Mode === 'selector' && (
             <TemplateOrCustomSelector
@@ -756,6 +742,18 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
           <div className="space-y-6">
             <h2 className="text-xl font-semibold mb-4">Schedule & Review</h2>
             
+            {/* Campaign Name Field */}
+            <div>
+              <Label htmlFor="campaign-name">Campaign Name *</Label>
+              <Input
+                id="campaign-name"
+                value={campaignData.name}
+                onChange={(e) => setCampaignData({...campaignData, name: e.target.value})}
+                placeholder="Enter campaign name"
+                className="mt-1"
+              />
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label>Scheduling</Label>
@@ -835,7 +833,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
                 (campaignData.recipient_type === 'individuals' && campaignData.target_customers.length === 0)
               )) ||
               (currentStep === 3 && (
-                !campaignData.name ||
                 (campaignData.message_source === 'template' && !campaignData.template_id) ||
                 (campaignData.message_source === 'custom' && !campaignData.custom_message?.content) ||
                 (!campaignData.message_source && step3Mode === 'selector')
@@ -847,7 +844,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({ onClose }) =
         ) : (
           <Button 
             onClick={handleSubmit}
-            disabled={createCampaignMutation.isPending}
+            disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
             className="bg-primary text-white"
           >
             {scheduledDate ? (
