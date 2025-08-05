@@ -293,10 +293,20 @@ export const SavedButtons: React.FC<SavedButtonsProps> = ({ onSelectButton }) =>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="primary">Primary</SelectItem>
-                    <SelectItem value="secondary">Secondary</SelectItem>
-                  </SelectContent>
+                   <SelectContent>
+                     <SelectItem value="primary">
+                       <div>
+                         <div>Primary</div>
+                         <div className="text-xs text-muted-foreground">Blue button with white text (ex: save button)</div>
+                       </div>
+                     </SelectItem>
+                     <SelectItem value="secondary">
+                       <div>
+                         <div>Secondary</div>
+                         <div className="text-xs text-muted-foreground">Grey button with black text (ex: cancel button)</div>
+                       </div>
+                     </SelectItem>
+                   </SelectContent>
                 </Select>
               </div>
 
