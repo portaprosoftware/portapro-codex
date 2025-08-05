@@ -52,7 +52,7 @@ const Sidebar = () => {
     { icon: Truck, label: "Fleet Management", path: "/fleet-management" },
     { icon: ClipboardCheck, label: "Services Hub", path: "/maintenance-hub" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
-    { icon: Megaphone, label: "Marketing Hub", path: "/marketing-hub" },
+    { icon: Megaphone, label: "Marketing", path: "/marketing" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 

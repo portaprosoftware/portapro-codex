@@ -4,19 +4,17 @@ import { CampaignAnalytics } from './CampaignAnalytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export const CampaignManagement: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const isMobile = useIsMobile();
 
   return (
     <div className="space-y-6">
@@ -29,28 +27,25 @@ export const CampaignManagement: React.FC = () => {
               Emails and texts will go to the company phone number and email address listed in each customer's profile under 'Overview'.
             </p>
           </div>
-          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <SheetTrigger asChild>
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogTrigger asChild>
               <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Campaign
               </Button>
-            </SheetTrigger>
-            <SheetContent 
-              side="right" 
-              className={`${isMobile ? 'w-full' : 'w-3/4'} max-w-none overflow-y-auto`}
-            >
-              <SheetHeader>
-                <SheetTitle>Create New Campaign</SheetTitle>
-                <SheetDescription>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Campaign</DialogTitle>
+                <DialogDescription>
                   Create and configure your marketing campaign with targeted messaging.
-                </SheetDescription>
-              </SheetHeader>
+                </DialogDescription>
+              </DialogHeader>
               <div className="mt-6">
                 <CampaignCreation onClose={() => setIsCreateOpen(false)} />
               </div>
-            </SheetContent>
-          </Sheet>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
