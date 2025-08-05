@@ -361,7 +361,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Templates
+          Back to Options
         </Button>
         <h2 className="text-xl font-semibold font-inter">Create Your Message</h2>
       </div>
