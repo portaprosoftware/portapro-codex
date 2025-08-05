@@ -300,8 +300,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
               {/* All Customers Option */}
               {campaignData.recipient_type === 'all' && (
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-gray-600 font-inter">
+                <div className="p-4 bg-gradient-to-r from-blue-700 to-blue-800 rounded-lg border border-blue-200">
+                  <p className="text-sm text-white font-inter">
                     This campaign will be sent to all customers in your database.
                   </p>
                 </div>
