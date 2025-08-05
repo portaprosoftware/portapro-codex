@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Megaphone, BarChart4, Users2 } from 'lucide-react';
+import { Mail, Megaphone, BarChart4, Users2, FileText } from 'lucide-react';
 import { TabNav } from '@/components/ui/TabNav';
 import { TemplateManagement } from './TemplateManagement';
 import { CampaignManagement } from './CampaignManagement';
 import { MarketingAnalytics } from './MarketingAnalytics';
 import { CustomerSegments } from './CustomerSegments';
+import { DraftManagement } from './DraftManagement';
 
-type MarketingTab = 'templates' | 'campaigns' | 'analytics' | 'segments';
+type MarketingTab = 'templates' | 'campaigns' | 'analytics' | 'segments' | 'drafts';
 
 export const MarketingDashboard: React.FC = () => {
   const location = useLocation();
@@ -25,6 +26,8 @@ export const MarketingDashboard: React.FC = () => {
       setActiveTab('analytics');
     } else if (path.includes('/segments')) {
       setActiveTab('segments');
+    } else if (path.includes('/drafts')) {
+      setActiveTab('drafts');
     } else {
       setActiveTab('campaigns');
     }
@@ -46,6 +49,9 @@ export const MarketingDashboard: React.FC = () => {
       case 'segments':
         navigate(`${basePath}/segments`);
         break;
+      case 'drafts':
+        navigate(`${basePath}/drafts`);
+        break;
     }
   };
 
@@ -59,8 +65,10 @@ export const MarketingDashboard: React.FC = () => {
         return <MarketingAnalytics />;
       case 'segments':
         return <CustomerSegments />;
+      case 'drafts':
+        return <DraftManagement />;
       default:
-        return <TemplateManagement />;
+        return <CampaignManagement />;
     }
   };
 
@@ -109,6 +117,14 @@ export const MarketingDashboard: React.FC = () => {
                 >
                   <Users2 className="w-4 h-4" />
                   Smart Segments
+                </TabNav.Item>
+                <TabNav.Item 
+                  to="/marketing/drafts" 
+                  isActive={activeTab === 'drafts'}
+                  onClick={() => navigateToTab('drafts')}
+                >
+                  <FileText className="w-4 h-4" />
+                  Drafts
                 </TabNav.Item>
               </TabNav>
             </div>

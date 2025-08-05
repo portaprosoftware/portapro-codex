@@ -276,6 +276,12 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/marketing/drafts" element={
+            <>
+              <SignedIn><Layout><Marketing /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/analytics" element={
             <>
               <SignedIn><Layout><Analytics /></Layout></SignedIn>
