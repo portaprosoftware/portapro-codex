@@ -301,21 +301,21 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   }
 
   return (
-    <div className="space-y-6 max-w-full overflow-hidden">
+    <div className="space-y-6">
       {/* Header Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full">
-          <div className="relative w-full sm:flex-1 sm:max-w-md">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div className="relative flex-1 max-w-md min-w-[200px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Search by item code, QR code, tool number, vendor ID"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-full"
+              className="pl-10"
             />
           </div>
           <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger className="w-48 shrink-0">
               <SelectValue placeholder="All Availability" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -326,11 +326,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 shrink-0">
           <Button 
             variant="outline" 
             onClick={() => setShowOCRSearch(true)}
-            className="border-purple-600 text-purple-600 hover:bg-purple-50 flex-1 sm:flex-none"
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
             title="Search by photographing tool number"
           >
             <Camera className="w-4 h-4 mr-2" />
@@ -339,7 +339,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <Button 
             variant="outline" 
             onClick={() => setShowScanner(true)}
-            className="border-blue-600 text-blue-600 hover:bg-blue-50 flex-1 sm:flex-none"
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
           >
             <QrCode className="w-4 h-4 mr-2" />
             Scan QR
@@ -347,7 +347,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <Button 
             variant="outline"
             onClick={() => setShowCategorySettings(true)}
-            className="border-gray-600 text-gray-600 hover:bg-gray-50 flex-1 sm:flex-none"
+            className="border-gray-600 text-gray-600 hover:bg-gray-50"
             title="Manage item code categories"
           >
             <Settings2 className="w-4 h-4 mr-2" />
@@ -355,7 +355,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           </Button>
           <Button 
             onClick={() => setShowCreateModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex-1 sm:flex-none"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Item
