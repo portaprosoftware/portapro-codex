@@ -231,16 +231,16 @@ export default function StorageSites() {
                         <TableCell>
                           <div className="flex gap-1">
                             {site.is_default && (
-                              <Badge variant="secondary" className="text-xs">
+                              <Badge variant="secondary">
                                 Default
                               </Badge>
                             )}
                             {site.is_active ? (
-                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                              <Badge variant="active">
                                 Active
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="inactive">
                                 Inactive
                               </Badge>
                             )}
