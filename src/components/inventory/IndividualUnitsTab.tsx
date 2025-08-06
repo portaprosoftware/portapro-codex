@@ -303,9 +303,9 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   return (
     <div className="space-y-6">
       {/* Header Controls */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className="relative flex-1 max-w-md min-w-[200px]">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
+          <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Search by item code, QR code, tool number, vendor ID"
@@ -315,7 +315,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             />
           </div>
           <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-            <SelectTrigger className="w-48 shrink-0">
+            <SelectTrigger className="w-48">
               <SelectValue placeholder="All Availability" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -326,7 +326,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
             onClick={() => setShowOCRSearch(true)}
@@ -373,8 +373,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       />
 
       {/* Units Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
-        <Table className="min-w-full">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead className="w-12">
