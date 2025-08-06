@@ -217,6 +217,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const messageComposerRef = useRef<{
     saveMessage: () => void;
     hasContent: () => boolean;
+    getCurrentMessageData: () => any;
   }>(null);
 
   const handleNext = () => {
@@ -970,19 +971,32 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             <Button
               variant="outline"
               onClick={async () => {
-                try {
-                  // Save message content first if we're on step 3
-                  if (currentStep === 3 && messageComposerRef.current) {
-                    messageComposerRef.current.saveMessage();
-                  }
-                  
-                  const draftName = campaignData.name.trim() || `Campaign Draft - ${new Date().toLocaleDateString()}`;
-                  
-                  // Include current step and all form data in the draft
-                  const draftData = {
+                 try {
+                  let draftData = {
                     ...campaignData,
                     currentStep,
                   };
+                  
+                  // Save message content first if we're on step 3
+                  if (currentStep === 3 && messageComposerRef.current) {
+                    // Get current message data directly from MessageComposer
+                    const messageComposer = messageComposerRef.current as any;
+                    if (messageComposer && messageComposer.getCurrentMessageData) {
+                      const currentMessageData = messageComposer.getCurrentMessageData();
+                      draftData.custom_message = currentMessageData;
+                      console.log('🔍 Captured current message data for draft:', currentMessageData);
+                    } else {
+                      // Fallback: trigger save and wait for state update
+                      messageComposerRef.current.saveMessage();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      draftData = {
+                        ...campaignData,
+                        currentStep,
+                      };
+                    }
+                  }
+                  
+                  const draftName = draftData.name.trim() || `Campaign Draft - ${new Date().toLocaleDateString()}`;
                   
                   console.log('🔍 Saving draft with data:', draftData);
                   console.log('🔍 Custom message in draft:', draftData.custom_message);

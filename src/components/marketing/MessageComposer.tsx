@@ -226,7 +226,8 @@ export const MessageComposer = React.forwardRef<{
   // Expose methods to parent via ref
   React.useImperativeHandle(ref, () => ({
     saveMessage,
-    hasContent
+    hasContent,
+    getCurrentMessageData: () => messageData
   }));
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
