@@ -1,5 +1,5 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
@@ -22,6 +22,35 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   selectedLocationId = "all",
   onProductSelect
 }) => {
+  const queryClient = useQueryClient();
+
+  // Set up real-time subscription for product_items changes
+  useEffect(() => {
+    console.log("ProductGrid: Setting up real-time subscription for product_items");
+    const channel = supabase
+      .channel('product-items-inventory-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items'
+        },
+        (payload) => {
+          console.log("ProductGrid: Product items change detected:", payload);
+          // Invalidate all product-related queries to refresh counts
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          queryClient.invalidateQueries({ queryKey: ["product-stats"] });
+          queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log("ProductGrid: Cleaning up real-time subscription");
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
   const { data: products, isLoading, error } = useQuery({
     queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId],
     queryFn: async () => {

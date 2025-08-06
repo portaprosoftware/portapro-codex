@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -26,7 +26,35 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
+  const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
+
+  // Set up real-time subscription for this product's items
+  useEffect(() => {
+    console.log(`ProductCard: Setting up real-time subscription for product ${product.id}`);
+    const channel = supabase
+      .channel(`product-${product.id}-stats-changes`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items',
+          filter: `product_id=eq.${product.id}`
+        },
+        (payload) => {
+          console.log(`ProductCard: Product ${product.id} items change detected:`, payload);
+          // Invalidate this product's stats query to refresh the counts
+          queryClient.invalidateQueries({ queryKey: ["product-stats", product.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log(`ProductCard: Cleaning up real-time subscription for product ${product.id}`);
+      supabase.removeChannel(channel);
+    };
+  }, [product.id, queryClient]);
 
   // Fetch location stock for this product
   const { data: locationStocks } = useQuery({
@@ -212,6 +240,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                     Storage Locations
                   </span>
                   <span className="font-medium">{locationCount}</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600 flex items-center gap-1">
+                    <Package className="w-3 h-3" />
+                    Individual Units
+                  </span>
+                  <span className="font-medium">{quickStats?.totalItems || 0}</span>
                 </div>
               </div>
 
