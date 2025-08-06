@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Edit, Trash2, Send, Calendar, Clock, Mail, MessageSquare } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -19,10 +20,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { CampaignCreation } from './CampaignCreation';
 
 export const ScheduledCampaigns: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [editingCampaign, setEditingCampaign] = useState<any>(null);
 
   // Fetch scheduled campaigns
   const { data: scheduledCampaigns, isLoading } = useQuery({
@@ -94,6 +97,72 @@ export const ScheduledCampaigns: React.FC = () => {
       });
     }
   });
+
+  // Update campaign mutation for editing
+  const updateCampaignMutation = useMutation({
+    mutationFn: async ({ campaignId, data }: { campaignId: string; data: any }) => {
+      const { error } = await supabase
+        .from('marketing_campaigns')
+        .update(data)
+        .eq('id', campaignId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-campaigns'] });
+      setEditingCampaign(null);
+      toast({
+        title: "Campaign Updated",
+        description: "The campaign has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update campaign.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleEditCampaign = async (campaign: any) => {
+    // Fetch full campaign data for editing
+    const { data, error } = await supabase
+      .from('marketing_campaigns')
+      .select('*')
+      .eq('id', campaign.id)
+      .single();
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load campaign for editing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Transform the data to match CampaignCreation's expected format
+    const editData = {
+      name: data.name,
+      campaign_type: data.campaign_type,
+      message_source: data.message_source,
+      template_id: data.template_id,
+      custom_message: data.custom_message_data || {
+        subject: data.custom_subject || '',
+        content: data.custom_content || '',
+        buttons: []
+      },
+      target_segments: data.target_segments || [],
+      target_customer_types: data.target_customer_types || [],
+      target_customers: data.target_customers || [],
+      recipient_type: data.recipient_type,
+      scheduled_at: data.scheduled_at ? new Date(data.scheduled_at) : undefined,
+      currentStep: 4 // Jump to final step for editing
+    };
+
+    setEditingCampaign({ id: campaign.id, data: editData });
+  };
 
   const getCampaignTypeIcon = (type: string) => {
     switch (type) {
@@ -225,7 +294,11 @@ export const ScheduledCampaigns: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEditCampaign(campaign)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
                       
@@ -287,7 +360,27 @@ export const ScheduledCampaigns: React.FC = () => {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
-    </div>
-  );
-};
+        </Card>
+        
+        {/* Edit Campaign Modal */}
+        <Dialog open={!!editingCampaign} onOpenChange={() => setEditingCampaign(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle className="font-inter">Edit Campaign</DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 overflow-auto">
+              {editingCampaign && (
+                <CampaignCreation
+                  initialData={editingCampaign.data}
+                  onClose={() => setEditingCampaign(null)}
+                  isEditing={true}
+                  campaignId={editingCampaign.id}
+                  onUpdate={(data) => updateCampaignMutation.mutate({ campaignId: editingCampaign.id, data })}
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  };

@@ -55,12 +55,18 @@ interface CampaignCreationProps {
   onClose?: () => void;
   draftId?: string;
   initialData?: Partial<CampaignData>;
+  isEditing?: boolean;
+  campaignId?: string;
+  onUpdate?: (data: any) => void;
 }
 
 export const CampaignCreation: React.FC<CampaignCreationProps> = ({ 
   onClose, 
   draftId: initialDraftId, 
-  initialData 
+  initialData,
+  isEditing = false,
+  campaignId,
+  onUpdate 
 }) => {
   const [currentStep, setCurrentStep] = useState(() => {
     // If resuming a draft, start on step 3, otherwise step 1
@@ -290,17 +296,47 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   };
 
   const handleSubmit = async () => {
-    createCampaignMutation.mutate(campaignData);
-    
-    // Delete draft after successful campaign creation
-    if (currentDraftId) {
-      try {
-        await supabase
-          .from('campaign_drafts')
-          .delete()
-          .eq('id', currentDraftId);
-      } catch (error) {
-        console.error('Error deleting draft:', error);
+    if (isEditing && onUpdate) {
+      // For editing, prepare update data
+      const updateData: any = {
+        name: campaignData.name,
+        campaign_type: campaignData.campaign_type,
+        message_source: campaignData.message_source,
+        target_segments: campaignData.target_segments,
+        target_customer_types: campaignData.target_customer_types,
+        target_customers: campaignData.target_customers,
+        recipient_type: campaignData.recipient_type,
+        scheduled_at: getScheduledDateTime()?.toISOString(),
+        status: getScheduledDateTime() ? 'scheduled' : 'draft'
+      };
+
+      // Add custom message fields if using custom message
+      if (campaignData.custom_message) {
+        updateData.custom_subject = campaignData.custom_message.subject;
+        updateData.custom_content = campaignData.custom_message.content;
+        updateData.custom_message_data = campaignData.custom_message;
+      }
+
+      // Add template_id if using template
+      if (campaignData.template_id) {
+        updateData.template_id = campaignData.template_id;
+      }
+
+      onUpdate(updateData);
+    } else {
+      // For creating new campaigns
+      createCampaignMutation.mutate(campaignData);
+      
+      // Delete draft after successful campaign creation
+      if (currentDraftId) {
+        try {
+          await supabase
+            .from('campaign_drafts')
+            .delete()
+            .eq('id', currentDraftId);
+        } catch (error) {
+          console.error('Error deleting draft:', error);
+        }
       }
     }
   };
