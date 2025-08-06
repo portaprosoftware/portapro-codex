@@ -15,7 +15,7 @@ import { EditItemModal } from "./EditItemModal";
 import { CreateItemModal } from "./CreateItemModal";
 import { QRCodeDropdown } from "./QRCodeDropdown";
 import { QRCodeScanner } from "./QRCodeScanner";
-import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
+
 import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { OCRSearchCapture } from "./OCRSearchCapture";
@@ -39,7 +39,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const [showStockAdjustment, setShowStockAdjustment] = useState(false);
+  
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showMobileOCR, setShowMobileOCR] = useState(false);
@@ -346,14 +346,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           </Button>
           <Button 
             variant="outline"
-            onClick={() => setShowStockAdjustment(true)}
-            className="border-gray-600 text-gray-600 hover:bg-gray-50"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Adjust Stock
-          </Button>
-          <Button 
-            variant="outline"
             onClick={() => setShowCategorySettings(true)}
             className="border-gray-600 text-gray-600 hover:bg-gray-50"
             title="Manage item code categories"
@@ -559,26 +551,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         />
       )}
 
-      {/* Stock Adjustment Dialog - Compact Version */}
-      <Dialog open={showStockAdjustment} onOpenChange={setShowStockAdjustment}>
-        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Adjust Stock</DialogTitle>
-          </DialogHeader>
-          {product && (
-            <StockAdjustmentWizard
-              productId={productId}
-              productName={product.name}
-              currentStock={product.stock_total}
-              onComplete={() => {
-                setShowStockAdjustment(false);
-                refetch();
-              }}
-              onCancel={() => setShowStockAdjustment(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* OCR Photo Capture Dialog */}
       {showOCRCapture && ocrItemId && (

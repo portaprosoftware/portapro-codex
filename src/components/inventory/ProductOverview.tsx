@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Settings, Wrench, Plus, Minus } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
+import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -40,10 +41,8 @@ interface ProductOverviewProps {
 export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDeleted }) => {
   const queryClient = useQueryClient();
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showAdjustModal, setShowAdjustModal] = useState(false);
+  const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
-  const [adjustQuantity, setAdjustQuantity] = useState(0);
-  const [adjustReason, setAdjustReason] = useState("");
   const [maintenanceQuantity, setMaintenanceQuantity] = useState(1);
   const [maintenanceNotes, setMaintenanceNotes] = useState("");
 
@@ -98,42 +97,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     }
   });
 
-  const adjustStockMutation = useMutation({
-    mutationFn: async ({ quantity, reason }: { quantity: number; reason: string }) => {
-      // Create stock adjustment record
-      const { error: adjustmentError } = await supabase
-        .from("stock_adjustments")
-        .insert({
-          product_id: product.id,
-          quantity_change: quantity,
-          reason,
-          notes: `Stock adjustment: ${quantity > 0 ? 'Added' : 'Removed'} ${Math.abs(quantity)} units`,
-        });
-
-      if (adjustmentError) throw adjustmentError;
-
-      // Update product stock total
-      const newStockTotal = Math.max(0, product.stock_total + quantity);
-      const { error: updateError } = await supabase
-        .from("products")
-        .update({ stock_total: newStockTotal })
-        .eq("id", product.id);
-
-      if (updateError) throw updateError;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Stock adjusted successfully");
-      setShowAdjustModal(false);
-      setAdjustQuantity(0);
-      setAdjustReason("");
-    },
-    onError: (error) => {
-      toast.error("Failed to adjust stock");
-      console.error(error);
-    }
-  });
 
   const moveToMaintenanceMutation = useMutation({
     mutationFn: async ({ quantity, notes }: { quantity: number; notes: string }) => {
@@ -169,16 +132,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     updateIncludesLockMutation.mutate(checked);
   };
 
-  const handleAdjustStock = () => {
-    if (adjustQuantity === 0) {
-      toast.error("Please enter a quantity to adjust");
-      return;
-    }
-    if (!adjustReason.trim()) {
-      toast.error("Please enter a reason for the adjustment");
-      return;
-    }
-    adjustStockMutation.mutate({ quantity: adjustQuantity, reason: adjustReason });
+  const handleStockAdjustmentComplete = () => {
+    setShowStockAdjustment(false);
+    queryClient.invalidateQueries({ queryKey: ["product", product.id] });
+    queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const handleMoveToMaintenance = () => {
@@ -231,7 +188,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             <Button 
               variant="outline" 
               className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              onClick={() => setShowAdjustModal(true)}
+              onClick={() => setShowStockAdjustment(true)}
             >
               <Settings className="w-4 h-4 mr-2" />
               Adjust Stock
@@ -329,67 +286,16 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         />
       )}
 
-      {/* Adjust Stock Modal */}
-      <Dialog open={showAdjustModal} onOpenChange={setShowAdjustModal}>
+      {/* Stock Adjustment Wizard */}
+      <Dialog open={showStockAdjustment} onOpenChange={setShowStockAdjustment}>
         <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Adjust Stock</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="adjust-quantity">Quantity Adjustment</Label>
-              <div className="flex items-center gap-2 mt-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setAdjustQuantity(prev => prev - 1)}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <Input
-                  id="adjust-quantity"
-                  type="number"
-                  value={adjustQuantity}
-                  onChange={(e) => setAdjustQuantity(parseInt(e.target.value) || 0)}
-                  className="text-center"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setAdjustQuantity(prev => prev + 1)}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Use positive numbers to add stock, negative to remove
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="adjust-reason">Reason for Adjustment</Label>
-              <Textarea
-                id="adjust-reason"
-                value={adjustReason}
-                onChange={(e) => setAdjustReason(e.target.value)}
-                placeholder="Enter reason for stock adjustment..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowAdjustModal(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleAdjustStock}
-                disabled={adjustStockMutation.isPending}
-              >
-                {adjustStockMutation.isPending ? "Adjusting..." : "Adjust Stock"}
-              </Button>
-            </div>
-          </div>
+          <StockAdjustmentWizard
+            productId={product.id}
+            productName={product.name}
+            currentStock={product.stock_total}
+            onComplete={handleStockAdjustmentComplete}
+            onCancel={() => setShowStockAdjustment(false)}
+          />
         </DialogContent>
       </Dialog>
 
