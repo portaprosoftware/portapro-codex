@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Download, Plus, Minus, RotateCcw, FileText } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Download, Plus, Minus, RotateCcw, FileText, Calendar as CalendarIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
@@ -31,6 +34,10 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
   const [quickDateFilter, setQuickDateFilter] = useState("");
   const [reasonFilter, setReasonFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
+    from: null,
+    to: null
+  });
 
   // Quick date filter options
   const quickDateOptions = [
@@ -44,10 +51,26 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
   // Apply quick date filter
   const applyQuickDateFilter = (value: string) => {
     setQuickDateFilter(value);
+    const option = quickDateOptions.find(opt => opt.value === value);
+    
+    if (!option || value === "") {
+      setDateRange({ from: null, to: null });
+      return;
+    }
+
+    const now = new Date();
+    if (option.days) {
+      const fromDate = new Date();
+      fromDate.setDate(now.getDate() - option.days);
+      setDateRange({ from: fromDate, to: now });
+    } else if (value === "year") {
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      setDateRange({ from: yearStart, to: now });
+    }
   };
 
   const { data: stockHistory, isLoading } = useQuery({
-    queryKey: ["product-stock-history", productId, quickDateFilter, reasonFilter],
+    queryKey: ["product-stock-history", productId, quickDateFilter, reasonFilter, dateRange],
     queryFn: async () => {
       let query = supabase
         .from("stock_adjustments")
@@ -55,8 +78,18 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
         .eq("product_id", productId)
         .order("created_at", { ascending: false });
 
-      // Apply date filter based on quick filter
-      if (quickDateFilter !== "") {
+      // Apply custom date range filter (takes precedence over quick filter)
+      if (dateRange.from || dateRange.to) {
+        if (dateRange.from) {
+          query = query.gte("created_at", dateRange.from.toISOString());
+        }
+        if (dateRange.to) {
+          const endDate = new Date(dateRange.to);
+          endDate.setHours(23, 59, 59, 999);
+          query = query.lte("created_at", endDate.toISOString());
+        }
+      } else if (quickDateFilter !== "") {
+        // Apply quick date filter only if no custom range is selected
         const option = quickDateOptions.find(opt => opt.value === quickDateFilter);
         if (option && option.days) {
           const startDate = new Date();
@@ -186,6 +219,51 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+          </div>
+
+          {/* Custom Date Range Picker */}
+          <div className="w-80">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dateRange.from && !dateRange.to && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "MMM dd, yyyy")
+                    )
+                  ) : (
+                    <span>Pick date range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange.from || new Date()}
+                  selected={{ from: dateRange.from || undefined, to: dateRange.to || undefined }}
+                  onSelect={(range) => {
+                    setDateRange({ 
+                      from: range?.from || null, 
+                      to: range?.to || null 
+                    });
+                    setQuickDateFilter(""); // Clear quick filter when custom range is selected
+                  }}
+                  numberOfMonths={2}
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <Select value={reasonFilter} onValueChange={setReasonFilter}>
