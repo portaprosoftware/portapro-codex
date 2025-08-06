@@ -213,10 +213,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     >
                       <item.icon className="h-5 w-5" />
                       <span className="text-sm font-medium">{item.title}</span>
-                      {item.badge && (
+                       {item.badge && (
                         <Badge 
                           className={cn(
-                            "ml-auto border-0 font-bold bg-gray-500",
+                            "ml-auto border-0 font-bold bg-gray-400",
                             (activeSection === item.url || location.pathname === item.url) 
                               ? "text-blue-600" 
                               : "text-white"
@@ -255,10 +255,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                       >
                         <item.icon className="h-5 w-5" />
                         <span className="text-sm font-medium">{item.title}</span>
-                        {item.badge && (
+                         {item.badge && (
                           <Badge 
                             className={cn(
-                              "ml-auto border-0 font-bold bg-gray-500",
+                              "ml-auto border-0 font-bold bg-gray-400",
                               (activeSection === item.url || location.pathname === item.url) 
                                 ? "text-blue-600" 
                                 : "text-white"
