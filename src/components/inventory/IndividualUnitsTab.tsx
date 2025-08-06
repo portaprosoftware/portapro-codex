@@ -332,7 +332,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             title="Search by photographing tool number"
           >
             <Camera className="w-4 h-4 mr-2" />
-            Search Photo
+            Scan Panel
           </Button>
           <Button 
             variant="outline" 

@@ -490,7 +490,7 @@ const Inventory: React.FC = () => {
               size="sm"
             >
               <Camera className="w-4 h-4 mr-2" />
-              Search Photo
+              Scan Panel
             </Button>
             <Button 
               variant="outline" 
