@@ -48,7 +48,7 @@ export const RequiredAttributesFields: React.FC<RequiredAttributesFieldsProps> =
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="font-medium text-gray-900">Required Attributes</h3>
+        <h3 className="font-medium text-gray-900">Product Variations</h3>
         <Badge variant="destructive" className="text-xs">
           {requiredAttributes.length} required
         </Badge>

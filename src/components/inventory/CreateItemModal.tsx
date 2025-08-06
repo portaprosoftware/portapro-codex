@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Camera, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
+import { RequiredAttributesFields } from "./RequiredAttributesFields";
 
 interface CreateItemModalProps {
   productId: string;
@@ -22,14 +23,13 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
   const queryClient = useQueryClient();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
+  const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     item_code: "",
     status: "available",
     condition: "excellent",
     location: "",
-    color: "",
-    size: "",
-    material: "",
     notes: "",
     // OCR fields
     tool_number: "",
@@ -57,6 +57,20 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     }
   });
 
+  // Fetch product attributes
+  const { data: productAttributes = [] } = useQuery({
+    queryKey: ['product-attributes', productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('*')
+        .eq('product_id', productId);
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Get existing items count for auto-generating codes
   const { data: itemsCount } = useQuery({
     queryKey: ["product-items-count", productId],
@@ -73,23 +87,74 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
   const createMutation = useMutation({
     mutationFn: async (itemData: typeof formData) => {
-      const { error } = await supabase
+      // Validate required attributes
+      const requiredAttributes = productAttributes?.filter(attr => attr.is_required) || [];
+      const missingAttributes: Record<string, string> = {};
+      
+      requiredAttributes.forEach(attr => {
+        const fieldKey = attr.attribute_name.toLowerCase();
+        if (!attributeValues[fieldKey]?.trim()) {
+          missingAttributes[fieldKey] = `${attr.attribute_name} is required`;
+        }
+      });
+
+      if (Object.keys(missingAttributes).length > 0) {
+        setAttributeErrors(missingAttributes);
+        throw new Error("Please fill in all required attributes");
+      }
+
+      setAttributeErrors({});
+
+      // Insert the item
+      const { data: newItem, error } = await supabase
         .from("product_items")
         .insert({
           product_id: productId,
           ...itemData
-        });
+        })
+        .select('id')
+        .single();
       
       if (error) throw error;
+
+      // Insert attributes if any
+      if (Object.keys(attributeValues).length > 0) {
+        const attributeRecords = [];
+        for (const [key, value] of Object.entries(attributeValues)) {
+          if (value.trim()) {
+            // Find the corresponding property ID
+            const property = productAttributes?.find(
+              attr => attr.attribute_name.toLowerCase() === key
+            );
+            if (property) {
+              attributeRecords.push({
+                item_id: newItem.id,
+                property_id: property.id,
+                property_value: value
+              });
+            }
+          }
+        }
+
+        if (attributeRecords.length > 0) {
+          const { error: attrError } = await supabase
+            .from('product_item_attributes')
+            .insert(attributeRecords);
+          
+          if (attrError) throw attrError;
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
       toast.success("Item created successfully");
       onClose();
     },
-    onError: (error) => {
-      toast.error("Failed to create item");
-      console.error(error);
+    onError: (error: any) => {
+      if (error.message !== "Please fill in all required attributes") {
+        toast.error("Failed to create item");
+        console.error(error);
+      }
     }
   });
 
@@ -106,6 +171,18 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAttributeChange = (attributeId: string, value: string) => {
+    setAttributeValues(prev => ({ ...prev, [attributeId]: value }));
+    // Clear errors when user starts typing
+    if (attributeErrors[attributeId]) {
+      setAttributeErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[attributeId];
+        return newErrors;
+      });
+    }
   };
 
   const generateItemCode = () => {
@@ -226,55 +303,14 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
               />
             </div>
 
-            {/* Item Attributes */}
-            <div className="space-y-4">
-              <h3 className="font-medium text-gray-900">Item Attributes</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="color">Color</Label>
-                  <Select value={formData.color} onValueChange={(value) => handleInputChange("color", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select color" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="blue">Blue</SelectItem>
-                      <SelectItem value="green">Green</SelectItem>
-                      <SelectItem value="tan">Tan</SelectItem>
-                      <SelectItem value="gray">Gray</SelectItem>
-                      <SelectItem value="white">White</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="size">Size</Label>
-                  <Select value={formData.size} onValueChange={(value) => handleInputChange("size", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="standard">Standard</SelectItem>
-                      <SelectItem value="large">Large</SelectItem>
-                      <SelectItem value="ada">ADA Compliant</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="material">Material</Label>
-                  <Select value={formData.material} onValueChange={(value) => handleInputChange("material", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select material" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="plastic">Plastic</SelectItem>
-                      <SelectItem value="fiberglass">Fiberglass</SelectItem>
-                      <SelectItem value="metal">Metal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
+            {/* Product Variations */}
+            <RequiredAttributesFields
+              productId={productId}
+              attributes={productAttributes || []}
+              values={attributeValues}
+              onChange={handleAttributeChange}
+              errors={attributeErrors}
+            />
 
             {/* OCR Tool Tracking Section */}
             <div className="space-y-4 p-4 border rounded-lg">
