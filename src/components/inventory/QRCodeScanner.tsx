@@ -119,14 +119,11 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScan, onClose })
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Scan className="w-5 h-5" />
           QR Code Scanner
         </h2>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="w-4 h-4" />
-        </Button>
       </div>
         <div className="flex gap-2">
           <Button
