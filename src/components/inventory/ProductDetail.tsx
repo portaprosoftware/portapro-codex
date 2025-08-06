@@ -133,7 +133,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
             <Tags className="w-4 h-4" />
-            Attributes & Variations
+            Variations
           </TabsTrigger>
         </TabsList>
 

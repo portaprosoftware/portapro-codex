@@ -99,7 +99,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">Product Attributes & Variations</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Product Variations</h2>
             <p className="text-gray-600">Manage custom properties and variations that can be applied to individual items of this product type.</p>
           </div>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -201,9 +201,9 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-medium text-blue-900 mb-2">About Product Attributes</h4>
-        <p className="text-blue-800 text-sm">
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <h4 className="font-medium text-gray-900 mb-2">About Product Attributes</h4>
+        <p className="text-gray-600 text-sm">
           Attributes allow you to track variations and properties of individual items. 
           For example, you might track color, size, or condition. Required attributes must be set for each individual item, 
           while optional attributes can be left blank.
