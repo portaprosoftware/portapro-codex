@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,6 +41,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -66,6 +68,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { CampaignCreation } from './CampaignCreation';
 import { useScheduledCampaignsFilters } from '@/hooks/useScheduledCampaignsFilters';
+import { TimePicker } from '@/components/ui/time-picker';
 
 export const ScheduledCampaigns: React.FC = () => {
   const { toast } = useToast();
@@ -659,6 +662,9 @@ export const ScheduledCampaigns: React.FC = () => {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle className="font-inter">Edit Campaign</DialogTitle>
+            <DialogDescription>
+              Make changes to your campaign details and settings.
+            </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-auto">
             {editingCampaign && (
@@ -679,8 +685,11 @@ export const ScheduledCampaigns: React.FC = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-inter">Reschedule Campaign</DialogTitle>
+            <DialogDescription>
+              Select a new date and time for your campaign to be sent.
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2 font-inter">New Date</label>
               <Popover>
@@ -703,11 +712,9 @@ export const ScheduledCampaigns: React.FC = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2 font-inter">Time</label>
-              <Input
-                type="time"
+              <TimePicker
                 value={rescheduleTime}
-                onChange={(e) => setRescheduleTime(e.target.value)}
+                onChange={setRescheduleTime}
                 className="w-full"
               />
             </div>
