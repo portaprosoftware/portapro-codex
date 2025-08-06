@@ -15,14 +15,9 @@ interface TimePickerProps {
 
 export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange, className }) => {
   const [inputValue, setInputValue] = useState('');
-  const [useNativeInput, setUseNativeInput] = useState(true);
-
-  // Check if browser supports time input
-  useEffect(() => {
-    const input = document.createElement('input');
-    input.type = 'time';
-    setUseNativeInput(input.type === 'time');
-  }, []);
+  
+  // Always use custom interface for enhanced accessibility
+  const useNativeInput = false;
 
   // Convert 24-hour format to 12-hour format
   const to12Hour = (time24: string) => {
