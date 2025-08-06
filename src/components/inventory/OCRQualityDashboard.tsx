@@ -151,7 +151,7 @@ export const OCRQualityDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">OCR Quality Control</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Panel Scan Monitor</h2>
           <p className="text-gray-600">Monitor and verify tool tracking accuracy</p>
         </div>
         <div className="flex items-center gap-2">
@@ -213,7 +213,6 @@ export const OCRQualityDashboard: React.FC = () => {
         <TabsList>
           <TabsTrigger value="verification">Verification Queue</TabsTrigger>
           <TabsTrigger value="vendor-analytics">Vendor Performance</TabsTrigger>
-          <TabsTrigger value="audit-trail">Audit Trail</TabsTrigger>
         </TabsList>
 
         <TabsContent value="verification" className="space-y-4">
@@ -348,19 +347,6 @@ export const OCRQualityDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="audit-trail" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Verification Audit Trail
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">Comprehensive audit trail coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
     </div>
   );

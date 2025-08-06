@@ -476,7 +476,7 @@ const Inventory: React.FC = () => {
               )}
             >
               <BarChart3 className="w-4 h-4 mr-2" />
-              OCR Quality
+              Panel Scans
             </Button>
           </div>
 
