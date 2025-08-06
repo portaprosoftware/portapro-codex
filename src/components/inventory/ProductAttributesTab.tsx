@@ -104,7 +104,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
           </div>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             <Plus className="w-4 h-4 mr-2" />
-            Add Attribute
+            Add Variation
           </Button>
         </div>
       </div>
@@ -114,7 +114,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search attributes by name or value..."
+            placeholder="Search variations by name or value..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -122,10 +122,10 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         </div>
         <Select value={attributeFilter} onValueChange={setAttributeFilter}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Attributes" />
+            <SelectValue placeholder="All Variations" />
           </SelectTrigger>
           <SelectContent className="bg-white">
-            <SelectItem value="all">All Attributes</SelectItem>
+            <SelectItem value="all">All Variations</SelectItem>
             <SelectItem value="required">Required Only</SelectItem>
             <SelectItem value="optional">Optional Only</SelectItem>
           </SelectContent>
@@ -137,7 +137,7 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="font-medium">Attribute</TableHead>
+              <TableHead className="font-medium">Variation</TableHead>
               <TableHead className="font-medium">Values</TableHead>
               <TableHead className="font-medium">Required</TableHead>
               <TableHead className="w-20">Actions</TableHead>
@@ -193,8 +193,8 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         {filteredAttributes.length === 0 && (
           <div className="p-8 text-center text-gray-500">
             {searchQuery || attributeFilter !== "all" 
-              ? "No attributes found matching your criteria."
-              : "No attributes defined yet. Add your first attribute to get started."
+              ? "No variations found matching your criteria."
+              : "No variations defined yet. Add your first variation to get started."
             }
           </div>
         )}
@@ -202,11 +202,11 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
 
       {/* Info Box */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 mb-2">About Product Attributes</h4>
+        <h4 className="font-medium text-gray-900 mb-2">About Product Variations</h4>
         <p className="text-gray-600 text-sm">
-          Attributes allow you to track variations and properties of individual items. 
-          For example, you might track color, size, or condition. Required attributes must be set for each individual item, 
-          while optional attributes can be left blank.
+          Variations allow you to track variations and properties of individual items. 
+          For example, you might track color, size, or condition. Required variations must be set for each individual item, 
+          while optional variations can be left blank.
         </p>
       </div>
     </div>
