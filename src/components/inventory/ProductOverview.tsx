@@ -6,9 +6,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Settings, Wrench, Plus, Minus } from "lucide-react";
+import { Edit, Settings, Wrench, Plus, Minus, History } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
+import { ProductStockHistory } from "./ProductStockHistory";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -42,6 +43,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const queryClient = useQueryClient();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
+  const [showStockHistory, setShowStockHistory] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [maintenanceQuantity, setMaintenanceQuantity] = useState(1);
   const [maintenanceNotes, setMaintenanceNotes] = useState("");
@@ -241,8 +243,16 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           </div>
         </div>
 
-        <div className="mt-6 text-right">
-          <span className="text-3xl font-bold text-foreground">
+        <div className="mt-6 flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            onClick={() => setShowStockHistory(true)}
+          >
+            <History className="w-4 h-4 mr-2" />
+            View Stock History
+          </Button>
+          <span className="text-xl font-bold text-foreground">
             Total: {product.stock_total}
           </span>
         </div>
@@ -297,6 +307,16 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             currentStock={product.stock_total}
             onComplete={handleStockAdjustmentComplete}
             onCancel={() => setShowStockAdjustment(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Stock History Modal */}
+      <Dialog open={showStockHistory} onOpenChange={setShowStockHistory}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+          <ProductStockHistory
+            productId={product.id}
+            productName={product.name}
           />
         </DialogContent>
       </Dialog>
