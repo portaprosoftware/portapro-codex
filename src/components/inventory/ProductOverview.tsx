@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit, Settings, Wrench, Plus, Minus, History } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
-import { ProductStockHistory } from "./ProductStockHistory";
+import { ProductStockHistoryEnhanced } from "./ProductStockHistoryEnhanced";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -313,8 +313,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
 
       {/* Stock History Modal */}
       <Dialog open={showStockHistory} onOpenChange={setShowStockHistory}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-          <ProductStockHistory
+        <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden">
+          <ProductStockHistoryEnhanced
             productId={product.id}
             productName={product.name}
           />
