@@ -314,10 +314,15 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       {/* Stock History Modal */}
       <Dialog open={showStockHistory} onOpenChange={setShowStockHistory}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-          <ProductStockHistory
-            productId={product.id}
-            productName={product.name}
-          />
+          <DialogHeader>
+            <DialogTitle>Stock Adjustment History - {product.name}</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-auto">
+            <ProductStockHistory
+              productId={product.id}
+              productName={product.name}
+            />
+          </div>
         </DialogContent>
       </Dialog>
 
