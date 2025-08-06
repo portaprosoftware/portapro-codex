@@ -10,6 +10,8 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
+import { useItemCodeCategories } from "@/hooks/useCompanySettings";
+import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 
 interface CreateItemModalProps {
   productId: string;
@@ -19,6 +21,7 @@ interface CreateItemModalProps {
 export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onClose }) => {
   const queryClient = useQueryClient();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [formData, setFormData] = useState({
     item_code: "",
     status: "available",
@@ -35,6 +38,9 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     manufacturing_date: "",
     mold_cavity: ""
   });
+
+  // Get item code categories
+  const { categories, isLoading: categoriesLoading } = useItemCodeCategories();
 
   // Get product info for auto-generating item codes
   const { data: product } = useQuery({
@@ -103,14 +109,28 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
   };
 
   const generateItemCode = () => {
-    if (!product?.name || itemsCount === undefined) return;
-    
-    // Generate a simple item code: first 3 letters of product + sequential number
-    const prefix = product.name.substring(0, 3).toUpperCase();
-    const nextNumber = String(itemsCount + 1).padStart(3, '0');
-    const generatedCode = `${prefix}${nextNumber}`;
-    
-    handleInputChange("item_code", generatedCode);
+    if (categoriesLoading || !categories || categories.length === 0) {
+      toast.error("Item code categories not available");
+      return;
+    }
+    setShowCategorySelect(true);
+  };
+
+  const handleCategorySelect = async (categoryPrefix: string) => {
+    try {
+      const { data, error } = await supabase.rpc('generate_item_code_with_category', {
+        category_prefix: categoryPrefix
+      });
+
+      if (error) throw error;
+      
+      handleInputChange("item_code", data);
+      setShowCategorySelect(false);
+      toast.success("Item code generated successfully");
+    } catch (error) {
+      console.error('Error generating item code:', error);
+      toast.error("Failed to generate item code");
+    }
   };
 
   const handleOCRComplete = (ocrData: any) => {
@@ -140,15 +160,15 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Item Code Section */}
-            <div className="space-y-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="space-y-4 p-4 border rounded-lg">
               <div className="flex items-center justify-between">
-                <Label htmlFor="item_code" className="font-medium">Item Code *</Label>
+                <Label htmlFor="item_code" className="font-medium text-gray-900">Item Code *</Label>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={generateItemCode}
-                  disabled={!product?.name}
+                  disabled={categoriesLoading}
                 >
                   Auto-Generate
                 </Button>
@@ -157,7 +177,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
                 id="item_code"
                 value={formData.item_code}
                 onChange={(e) => handleInputChange("item_code", e.target.value)}
-                placeholder="Enter unique item code (e.g., ADA001)"
+                placeholder="Enter unique item code (e.g., 1001, 2001)"
                 required
               />
             </div>
@@ -257,17 +277,16 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
             </div>
 
             {/* OCR Tool Tracking Section */}
-            <div className="space-y-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="space-y-4 p-4 border rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-green-900">Tool Tracking Information</h3>
-                  <p className="text-sm text-green-700">Use OCR to automatically capture tool information from photos</p>
+                  <h3 className="font-medium text-gray-900">Tool Tracking Information</h3>
+                  <p className="text-sm text-gray-600">Use OCR to automatically capture tool information from photos</p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowOCRCapture(true)}
-                  className="border-green-600 text-green-600 hover:bg-green-50"
                 >
                   <Camera className="w-4 h-4 mr-2" />
                   Scan Tool Info
@@ -357,6 +376,32 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Category Selection Modal */}
+      {showCategorySelect && (
+        <Dialog open={showCategorySelect} onOpenChange={setShowCategorySelect}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select Item Code Category</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Choose a category to generate the item code:
+              </p>
+              <ItemCodeCategorySelect
+                value=""
+                onValueChange={handleCategorySelect}
+                placeholder="Select a category"
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowCategorySelect(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* OCR Photo Capture Modal */}
       {showOCRCapture && (
