@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera, Lock, Unlock, AlertTriangle, Info } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, ScanLine, MapPin, Camera, Lock, Unlock, AlertTriangle, Info, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -446,10 +446,10 @@ const Inventory: React.FC = () => {
                   ? "bg-blue-600 text-white hover:bg-blue-700" 
                   : "text-gray-600 hover:bg-white"
               )}
-            >
-              <LayoutGrid className="w-4 h-4 mr-2" />
-              Products
-            </Button>
+              >
+                <Package className="w-4 h-4 mr-2" />
+                Products
+              </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -457,7 +457,7 @@ const Inventory: React.FC = () => {
               className={cn(
                 "rounded-md",
                 activeTab === "location-map" 
-                  ? "bg-purple-600 text-white hover:bg-purple-700" 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
                   : "text-gray-600 hover:bg-white"
               )}
             >
@@ -471,12 +471,12 @@ const Inventory: React.FC = () => {
               className={cn(
                 "rounded-md",
                 activeTab === "ocr-quality" 
-                  ? "bg-orange-600 text-white hover:bg-orange-700" 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
                   : "text-gray-600 hover:bg-white"
               )}
             >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Panel Scans
+              <ScanLine className="w-4 h-4 mr-2" />
+              Review Panel Scans
             </Button>
           </div>
 
