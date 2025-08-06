@@ -241,8 +241,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           </div>
         </div>
 
-        <div className="mt-6 text-right text-sm text-gray-600">
-          Total: {product.stock_total}
+        <div className="mt-6 text-right">
+          <span className="text-3xl font-bold text-foreground">
+            Total: {product.stock_total}
+          </span>
         </div>
       </div>
 
