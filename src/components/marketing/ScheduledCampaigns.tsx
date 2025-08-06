@@ -41,19 +41,26 @@ export const ScheduledCampaigns: React.FC = () => {
         .from('marketing_campaigns')
         .select('*');
       
-      // Apply filters 
-      const whereClause = filtersHook.buildWhereClause;
-      whereClause.forEach(condition => {
-        if (condition.operator === 'eq') {
-          query = query.eq(condition.column, condition.value);
-        } else if (condition.operator === 'ilike') {
-          query = query.ilike(condition.column, condition.value);
-        } else if (condition.operator === 'gte') {
-          query = query.gte(condition.column, condition.value);
-        } else if (condition.operator === 'lte') {
-          query = query.lte(condition.column, condition.value);
-        }
-      });
+      // Apply filters - build conditions inline to avoid type inference issues
+      query = query.eq('status', 'scheduled');
+      
+      if (filtersHook.filters.searchQuery.trim()) {
+        query = query.ilike('name', `%${filtersHook.filters.searchQuery.trim()}%`);
+      }
+      
+      if (filtersHook.filters.campaignType !== 'all') {
+        query = query.eq('campaign_type', filtersHook.filters.campaignType);
+      }
+      
+      if (filtersHook.filters.dateRange?.from) {
+        query = query.gte('scheduled_at', filtersHook.filters.dateRange.from.toISOString());
+      }
+      
+      if (filtersHook.filters.dateRange?.to) {
+        const endDate = new Date(filtersHook.filters.dateRange.to);
+        endDate.setHours(23, 59, 59, 999);
+        query = query.lte('scheduled_at', endDate.toISOString());
+      }
       
       query = query.order('scheduled_at', { ascending: true });
       
