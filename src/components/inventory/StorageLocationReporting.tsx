@@ -294,7 +294,7 @@ export function StorageLocationReporting() {
               {reportData.location_details.map((location) => (
                 <Card key={location.location_id} className="border-l-4 border-l-primary">
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-center">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <h5 className="font-medium">{location.location_name}</h5>
