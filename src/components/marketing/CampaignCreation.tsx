@@ -16,6 +16,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { CalendarIcon, Users, Mail, MessageSquare, Send, Clock, Search, List, Grid3X3, Eye, Save, ToggleLeft, ToggleRight } from 'lucide-react';
 import { TemplateOrCustomSelector } from './TemplateOrCustomSelector';
 import { MessageComposer } from './MessageComposer';
+import { TimePicker } from '@/components/ui/time-picker';
+import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -114,6 +116,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [hasMessageContent, setHasMessageContent] = useState(false);
   const [hasSubjectContent, setHasSubjectContent] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date>(initialData?.scheduled_at);
+  const [scheduledTime, setScheduledTime] = useState<string | null>(
+    initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), 'HH:mm') : null
+  );
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
@@ -185,8 +190,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         .from('marketing_campaigns')
         .insert({
           ...data,
-          scheduled_at: scheduledDate?.toISOString(),
-          status: scheduledDate ? 'scheduled' : 'draft'
+          scheduled_at: getScheduledDateTime()?.toISOString(),
+          status: getScheduledDateTime() ? 'scheduled' : 'draft'
         });
       
       if (error) throw error;
@@ -206,6 +211,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       });
       setCurrentStep(1);
       setScheduledDate(undefined);
+      setScheduledTime(null);
       onClose?.();
     },
     onError: () => {
@@ -219,6 +225,20 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     hasContent: () => boolean;
     getCurrentMessageData: () => any;
   }>(null);
+
+  // Helper function to combine date and time
+  const getScheduledDateTime = () => {
+    if (!scheduledDate) return null;
+    
+    if (scheduledTime) {
+      const [hours, minutes] = scheduledTime.split(':').map(Number);
+      const dateTime = new Date(scheduledDate);
+      dateTime.setHours(hours, minutes, 0, 0);
+      return dateTime;
+    }
+    
+    return scheduledDate;
+  };
 
   const handleNext = () => {
     if (currentStep === 3 && messageComposerRef.current) {
@@ -905,23 +925,62 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                     <TabsTrigger value="schedule">Schedule</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="schedule" className="mt-4">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {scheduledDate ? format(scheduledDate, "PPP") : "Pick a date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={scheduledDate}
-                          onSelect={setScheduledDate}
-                          initialFocus
+                  <TabsContent value="schedule" className="mt-4 space-y-4">
+                    {/* Date Selection */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Select Date</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {scheduledDate ? format(scheduledDate, "PPP") : "Pick a date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={scheduledDate}
+                            onSelect={setScheduledDate}
+                            initialFocus
+                            disabled={(date) => date < new Date()}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Time Selection */}
+                    {scheduledDate && (
+                      <div className="space-y-3">
+                        <label className="text-sm font-medium block">Select Time</label>
+                        
+                        {/* Time Preset Buttons */}
+                        <TimePresetButtons 
+                          onTimeSelect={setScheduledTime}
+                          selectedTime={scheduledTime}
                         />
-                      </PopoverContent>
-                    </Popover>
+                        
+                        {/* Custom Time Picker */}
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Or choose custom time:</label>
+                          <TimePicker
+                            value={scheduledTime}
+                            onChange={setScheduledTime}
+                          />
+                        </div>
+
+                        {/* Preview */}
+                        {getScheduledDateTime() && (
+                          <div className="bg-muted/50 p-3 rounded-lg">
+                            <p className="text-sm text-muted-foreground">
+                              Campaign will be sent on:
+                            </p>
+                            <p className="font-medium">
+                              {format(getScheduledDateTime()!, "EEEE, MMMM do, yyyy 'at' h:mm a")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </div>
@@ -1053,7 +1112,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
               className="bg-primary text-white"
             >
-              {scheduledDate ? (
+              {getScheduledDateTime() ? (
                 <>
                   <Clock className="w-4 h-4 mr-2" />
                   Schedule Campaign
