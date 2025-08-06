@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  CalendarIcon, 
+  Send, 
+  Edit, 
+  Trash2, 
+  Mail, 
+  MessageSquare, 
+  Search,
+  Filter,
+  X,
+  MoreHorizontal,
+  Clock
+} from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Edit, Trash2, Send, Calendar as CalendarIcon, Clock, Mail, MessageSquare, Search, Filter, X } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
-import { useToast } from '@/hooks/use-toast';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,13 +37,50 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { CampaignCreation } from './CampaignCreation';
 import { useScheduledCampaignsFilters } from '@/hooks/useScheduledCampaignsFilters';
 
 export const ScheduledCampaigns: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [editingCampaign, setEditingCampaign] = useState<any>(null);
+  const [editingCampaign, setEditingCampaign] = useState<{
+    id: string;
+    data: any;
+  } | null>(null);
+  const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState<{
+    campaignId: string;
+    currentDate: Date;
+  } | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState<Date | undefined>();
+  const [rescheduleTime, setRescheduleTime] = useState<string>('');
+
   const filtersHook = useScheduledCampaignsFilters();
 
   // Fetch scheduled campaigns with filters
@@ -126,6 +176,35 @@ export const ScheduledCampaigns: React.FC = () => {
     }
   });
 
+  // Reschedule campaign mutation
+  const rescheduleCampaignMutation = useMutation({
+    mutationFn: async ({ campaignId, newScheduledAt }: { campaignId: string; newScheduledAt: string }) => {
+      const { error } = await supabase
+        .from('marketing_campaigns')
+        .update({ scheduled_at: newScheduledAt })
+        .eq('id', campaignId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-campaigns'] });
+      toast({
+        title: "Campaign Rescheduled",
+        description: "The campaign has been successfully rescheduled.",
+      });
+      setRescheduleDialogOpen(null);
+      setRescheduleDate(undefined);
+      setRescheduleTime('');
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to reschedule campaign. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Update campaign mutation for editing
   const updateCampaignMutation = useMutation({
     mutationFn: async ({ campaignId, data }: { campaignId: string; data: any }) => {
@@ -190,6 +269,29 @@ export const ScheduledCampaigns: React.FC = () => {
     };
 
     setEditingCampaign({ id: campaign.id, data: editData });
+  };
+
+  const handleReschedule = (campaign: any) => {
+    const currentDate = new Date(campaign.scheduled_at);
+    setRescheduleDialogOpen({
+      campaignId: campaign.id,
+      currentDate
+    });
+    setRescheduleDate(currentDate);
+    setRescheduleTime(format(currentDate, 'HH:mm'));
+  };
+
+  const handleRescheduleConfirm = () => {
+    if (!rescheduleDialogOpen || !rescheduleDate || !rescheduleTime) return;
+    
+    const [hours, minutes] = rescheduleTime.split(':').map(Number);
+    const newDateTime = new Date(rescheduleDate);
+    newDateTime.setHours(hours, minutes, 0, 0);
+    
+    rescheduleCampaignMutation.mutate({
+      campaignId: rescheduleDialogOpen.campaignId,
+      newScheduledAt: newDateTime.toISOString()
+    });
   };
 
   const getCampaignTypeIcon = (type: string) => {
@@ -513,67 +615,37 @@ export const ScheduledCampaigns: React.FC = () => {
                     {campaign.scheduled_at && getTimeUntilSend(campaign.scheduled_at)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleEditCampaign(campaign)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Send className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="font-inter">Send Campaign Now?</AlertDialogTitle>
-                            <AlertDialogDescription className="font-inter">
-                              This will send the campaign "{campaign.name}" immediately to all recipients.
-                              This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="font-inter">Cancel</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => sendNowMutation.mutate(campaign.id)}
-                              className="font-inter"
-                            >
-                              Send Now
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="font-inter">Cancel Scheduled Campaign?</AlertDialogTitle>
-                            <AlertDialogDescription className="font-inter">
-                              This will cancel the scheduled campaign "{campaign.name}" and move it back to drafts.
-                              You can reschedule it later if needed.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="font-inter">Keep Scheduled</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => cancelCampaignMutation.mutate(campaign.id)}
-                              className="font-inter"
-                            >
-                              Cancel Campaign
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditCampaign(campaign)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleReschedule(campaign)}>
+                          <Clock className="w-4 h-4 mr-2" />
+                          Reschedule
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => sendNowMutation.mutate(campaign.id)}
+                          className="text-blue-600"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Now
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => cancelCampaignMutation.mutate(campaign.id)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Cancel
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -598,6 +670,59 @@ export const ScheduledCampaigns: React.FC = () => {
                 onUpdate={(data) => updateCampaignMutation.mutate({ campaignId: editingCampaign.id, data })}
               />
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reschedule Dialog */}
+      <Dialog open={!!rescheduleDialogOpen} onOpenChange={() => setRescheduleDialogOpen(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-inter">Reschedule Campaign</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 font-inter">New Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {rescheduleDate ? format(rescheduleDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={rescheduleDate}
+                    onSelect={setRescheduleDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2 font-inter">Time</label>
+              <Input
+                type="time"
+                value={rescheduleTime}
+                onChange={(e) => setRescheduleTime(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setRescheduleDialogOpen(null)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleRescheduleConfirm}
+                disabled={!rescheduleDate || !rescheduleTime || rescheduleCampaignMutation.isPending}
+              >
+                {rescheduleCampaignMutation.isPending ? 'Rescheduling...' : 'Reschedule'}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
