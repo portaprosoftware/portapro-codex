@@ -4,11 +4,11 @@ import { Mail, Megaphone, BarChart4, Users2, FileText } from 'lucide-react';
 import { TabNav } from '@/components/ui/TabNav';
 import { TemplateManagement } from './TemplateManagement';
 import { CampaignManagement } from './CampaignManagement';
-import { MarketingAnalytics } from './MarketingAnalytics';
+import { ScheduledCampaigns } from './ScheduledCampaigns';
 import { CustomerSegments } from './CustomerSegments';
 import { DraftManagement } from './DraftManagement';
 
-type MarketingTab = 'templates' | 'campaigns' | 'analytics' | 'segments' | 'drafts';
+type MarketingTab = 'templates' | 'campaigns' | 'scheduled' | 'segments' | 'drafts';
 
 export const MarketingDashboard: React.FC = () => {
   const location = useLocation();
@@ -22,8 +22,8 @@ export const MarketingDashboard: React.FC = () => {
       setActiveTab('campaigns');
     } else if (path.includes('/templates')) {
       setActiveTab('templates');
-    } else if (path.includes('/analytics')) {
-      setActiveTab('analytics');
+    } else if (path.includes('/scheduled')) {
+      setActiveTab('scheduled');
     } else if (path.includes('/segments')) {
       setActiveTab('segments');
     } else if (path.includes('/drafts')) {
@@ -43,8 +43,8 @@ export const MarketingDashboard: React.FC = () => {
       case 'templates':
         navigate(`${basePath}/templates`);
         break;
-      case 'analytics':
-        navigate(`${basePath}/analytics`);
+      case 'scheduled':
+        navigate(`${basePath}/scheduled`);
         break;
       case 'segments':
         navigate(`${basePath}/segments`);
@@ -61,8 +61,8 @@ export const MarketingDashboard: React.FC = () => {
         return <TemplateManagement />;
       case 'campaigns':
         return <CampaignManagement />;
-      case 'analytics':
-        return <MarketingAnalytics />;
+      case 'scheduled':
+        return <ScheduledCampaigns />;
       case 'segments':
         return <CustomerSegments />;
       case 'drafts':
@@ -103,12 +103,12 @@ export const MarketingDashboard: React.FC = () => {
                   Templates
                 </TabNav.Item>
                 <TabNav.Item 
-                  to="/marketing/analytics" 
-                  isActive={activeTab === 'analytics'}
-                  onClick={() => navigateToTab('analytics')}
+                  to="/marketing/scheduled" 
+                  isActive={activeTab === 'scheduled'}
+                  onClick={() => navigateToTab('scheduled')}
                 >
                   <BarChart4 className="w-4 h-4" />
-                  Analytics
+                  Scheduled
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/marketing/segments" 
