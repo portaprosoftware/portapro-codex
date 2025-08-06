@@ -221,7 +221,7 @@ export function ProductStockHistoryEnhanced({
               <SelectTrigger>
                 <SelectValue placeholder="Filter by reason" />
               </SelectTrigger>
-              <SelectContent className="z-50 bg-background border shadow-lg">
+              <SelectContent className="z-[100] bg-background border shadow-lg max-h-60 overflow-auto">
                 <SelectItem value="all">All Reasons</SelectItem>
                 {adjustmentReasons.map((reason) => (
                   <SelectItem key={reason.value} value={reason.value}>
