@@ -115,20 +115,27 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted with data:', formData);
+    
     if (!formData.name.trim()) {
+      console.log('Validation failed: Product name is required');
       toast.error("Product name is required");
       return;
     }
     
     if (!formData.storageLocationId) {
+      console.log('Validation failed: Please select a storage location');
       toast.error("Please select a storage location");
       return;
     }
 
     if (formData.locationQuantity <= 0) {
+      console.log('Validation failed: Quantity must be greater than 0');
       toast.error("Quantity must be greater than 0");
       return;
     }
+
+    console.log('All validations passed, creating product...');
 
     // Set stock total to match location quantity for new products
     const submitData = {
@@ -136,6 +143,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       stockTotal: formData.locationQuantity
     };
 
+    console.log('Submitting data:', submitData);
     createProductMutation.mutate(submitData);
   };
 
