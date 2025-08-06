@@ -306,7 +306,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
                   <p className="text-sm text-muted-foreground">
                     {formData.locationQuantity} individual items will be created with codes like:{' '}
                     <code className="bg-background px-1 py-0.5 rounded text-xs">
-                      AUTO-001, AUTO-002, etc.
+                      1001, 1002, etc.
                     </code>
                   </p>
                 </div>
