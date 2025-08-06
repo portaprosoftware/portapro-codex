@@ -183,7 +183,7 @@ export const ItemCodeCategorySettings: React.FC = () => {
 
         {/* Industry Standard Examples */}
         <div className="border-t pt-6">
-          <h4 className="font-medium mb-3">Industry Standard Examples</h4>
+          <h4 className="font-medium mb-3">Examples</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="space-y-1">
               <p><Badge variant="outline" className="font-mono mr-2">1</Badge>Standard Portable Toilets (1000-1999)</p>
