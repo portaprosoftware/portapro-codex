@@ -169,7 +169,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
             Add New Inventory Product
           </DialogTitle>
           <DialogDescription>
-            Create a new product and assign it to a storage location. Choose between bulk tracking, individual item tracking, or both.
+            Create a new product and assign it to a storage location. Choose between bulk tracking, individual item tracking.
           </DialogDescription>
         </DialogHeader>
 
