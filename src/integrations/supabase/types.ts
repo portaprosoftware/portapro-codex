@@ -3382,14 +3382,20 @@ export type Database = {
           clicked_count: number | null
           created_at: string | null
           created_by: string | null
+          custom_content: string | null
+          custom_message_data: Json | null
+          custom_subject: string | null
           delivered_count: number | null
           id: string
+          message_source: string | null
           name: string
           opened_count: number | null
+          recipient_type: string | null
           scheduled_at: string | null
           sent_at: string | null
           status: string
           target_customer_types: Json | null
+          target_customers: Json | null
           target_segments: Json | null
           template_id: string | null
           total_recipients: number | null
@@ -3401,14 +3407,20 @@ export type Database = {
           clicked_count?: number | null
           created_at?: string | null
           created_by?: string | null
+          custom_content?: string | null
+          custom_message_data?: Json | null
+          custom_subject?: string | null
           delivered_count?: number | null
           id?: string
+          message_source?: string | null
           name: string
           opened_count?: number | null
+          recipient_type?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
           status?: string
           target_customer_types?: Json | null
+          target_customers?: Json | null
           target_segments?: Json | null
           template_id?: string | null
           total_recipients?: number | null
@@ -3420,14 +3432,20 @@ export type Database = {
           clicked_count?: number | null
           created_at?: string | null
           created_by?: string | null
+          custom_content?: string | null
+          custom_message_data?: Json | null
+          custom_subject?: string | null
           delivered_count?: number | null
           id?: string
+          message_source?: string | null
           name?: string
           opened_count?: number | null
+          recipient_type?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
           status?: string
           target_customer_types?: Json | null
+          target_customers?: Json | null
           target_segments?: Json | null
           template_id?: string | null
           total_recipients?: number | null

@@ -186,13 +186,34 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   // Create campaign mutation
   const createCampaignMutation = useMutation({
     mutationFn: async (data: CampaignData) => {
+      // Prepare the campaign object for the database structure
+      const campaignObject: any = {
+        name: data.name,
+        campaign_type: data.campaign_type,
+        message_source: data.message_source,
+        target_segments: data.target_segments,
+        target_customer_types: data.target_customer_types,
+        target_customers: data.target_customers,
+        recipient_type: data.recipient_type,
+        scheduled_at: getScheduledDateTime()?.toISOString(),
+        status: getScheduledDateTime() ? 'scheduled' : 'draft'
+      };
+
+      // Add custom message fields if using custom message
+      if (data.custom_message) {
+        campaignObject.custom_subject = data.custom_message.subject;
+        campaignObject.custom_content = data.custom_message.content;
+        campaignObject.custom_message_data = data.custom_message;
+      }
+
+      // Add template_id if using template
+      if (data.template_id) {
+        campaignObject.template_id = data.template_id;
+      }
+
       const { error } = await supabase
         .from('marketing_campaigns')
-        .insert({
-          ...data,
-          scheduled_at: getScheduledDateTime()?.toISOString(),
-          status: getScheduledDateTime() ? 'scheduled' : 'draft'
-        });
+        .insert(campaignObject);
       
       if (error) throw error;
     },
