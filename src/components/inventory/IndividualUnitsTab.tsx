@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,6 +23,7 @@ import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { ItemActionsMenu } from "./ItemActionsMenu";
+import { ItemCodeCategorySettings } from "@/components/settings/ItemCodeCategorySettings";
 
 interface IndividualUnitsTabProps {
   productId: string;
@@ -46,6 +47,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
+  const [showCategorySettings, setShowCategorySettings] = useState(false);
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
     size?: string;
@@ -351,6 +353,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             Adjust Stock
           </Button>
           <Button 
+            variant="outline"
+            onClick={() => setShowCategorySettings(true)}
+            className="border-gray-600 text-gray-600 hover:bg-gray-50"
+            title="Manage item code categories"
+          >
+            <Settings2 className="w-4 h-4 mr-2" />
+            Category Settings
+          </Button>
+          <Button 
             onClick={() => setShowCreateModal(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
@@ -595,6 +606,16 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         itemCode={itemToDelete?.code || ""}
         isDeleting={deleteItemMutation.isPending}
       />
+
+      {/* Category Settings Dialog */}
+      <Dialog open={showCategorySettings} onOpenChange={setShowCategorySettings}>
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Item Code Category Settings</DialogTitle>
+          </DialogHeader>
+          <ItemCodeCategorySettings />
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
