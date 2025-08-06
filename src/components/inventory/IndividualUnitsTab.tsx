@@ -519,13 +519,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         />
       )}
 
-      {/* QR Scanner - Direct Component (no outer dialog) */}
-      {showScanner && (
-        <QRCodeScanner
-          onScan={handleScanResult}
-          onClose={() => setShowScanner(false)}
-        />
-      )}
+      {/* QR Scanner Dialog */}
+      <Dialog open={showScanner} onOpenChange={setShowScanner}>
+        <DialogContent className="sm:max-w-md">
+          <QRCodeScanner
+            onScan={handleScanResult}
+            onClose={() => setShowScanner(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
 
       {/* OCR Photo Capture Dialog */}
