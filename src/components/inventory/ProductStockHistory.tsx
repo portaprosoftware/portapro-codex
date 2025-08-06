@@ -28,12 +28,26 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
   productId,
   productName,
 }) => {
-  const [dateFilter, setDateFilter] = useState("30");
+  const [quickDateFilter, setQuickDateFilter] = useState("");
   const [reasonFilter, setReasonFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Quick date filter options
+  const quickDateOptions = [
+    { label: "All Time", value: "", days: null },
+    { label: "Last 7 days", value: "7days", days: 7 },
+    { label: "Last 30 days", value: "30days", days: 30 },
+    { label: "Last 90 days", value: "90days", days: 90 },
+    { label: "This Year", value: "year", days: null },
+  ];
+
+  // Apply quick date filter
+  const applyQuickDateFilter = (value: string) => {
+    setQuickDateFilter(value);
+  };
+
   const { data: stockHistory, isLoading } = useQuery({
-    queryKey: ["product-stock-history", productId, dateFilter, reasonFilter],
+    queryKey: ["product-stock-history", productId, quickDateFilter, reasonFilter],
     queryFn: async () => {
       let query = supabase
         .from("stock_adjustments")
@@ -41,12 +55,17 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
         .eq("product_id", productId)
         .order("created_at", { ascending: false });
 
-      // Apply date filter
-      if (dateFilter !== "all") {
-        const daysBack = parseInt(dateFilter);
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - daysBack);
-        query = query.gte("created_at", startDate.toISOString());
+      // Apply date filter based on quick filter
+      if (quickDateFilter !== "") {
+        const option = quickDateOptions.find(opt => opt.value === quickDateFilter);
+        if (option && option.days) {
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - option.days);
+          query = query.gte("created_at", startDate.toISOString());
+        } else if (quickDateFilter === "year") {
+          const yearStart = new Date(new Date().getFullYear(), 0, 1);
+          query = query.gte("created_at", yearStart.toISOString());
+        }
       }
 
       // Apply reason filter
@@ -128,33 +147,46 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="w-5 h-5" />
-          Stock Adjustment History
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Stock Adjustment History
+          </CardTitle>
+          <Button
+            onClick={exportToCSV}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            disabled={!filteredHistory?.length}
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </Button>
+        </div>
         
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4 mt-4">
-          <div className="flex-1 min-w-48">
+        {/* Quick Date Filters */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {quickDateOptions.map((option) => (
+            <Button
+              key={option.value}
+              variant={quickDateFilter === option.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => applyQuickDateFilter(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+
+        {/* Filter Controls */}
+        <div className="flex gap-4 mt-4">
+          <div className="flex-1">
             <Input
               placeholder="Search by reason or notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="90">Last 90 days</SelectItem>
-              <SelectItem value="365">Last year</SelectItem>
-              <SelectItem value="all">All time</SelectItem>
-            </SelectContent>
-          </Select>
 
           <Select value={reasonFilter} onValueChange={setReasonFilter}>
             <SelectTrigger className="w-40">
@@ -167,15 +199,6 @@ export const ProductStockHistory: React.FC<ProductStockHistoryProps> = ({
               ))}
             </SelectContent>
           </Select>
-
-          <Button 
-            variant="outline" 
-            onClick={exportToCSV}
-            disabled={!filteredHistory?.length}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
         </div>
       </CardHeader>
       
