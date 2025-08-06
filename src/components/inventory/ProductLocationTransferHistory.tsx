@@ -103,8 +103,19 @@ export function ProductLocationTransferHistory({
       transfer.to_location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (transfer.notes && transfer.notes.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesDateRange = (!dateRange.from || transferDate >= dateRange.from) &&
-                            (!dateRange.to || transferDate <= dateRange.to);
+    // Fix date range filtering to include transfers on the end date
+    let matchesDateRange = true;
+    if (dateRange.from && dateRange.to) {
+      const endDate = new Date(dateRange.to);
+      endDate.setHours(23, 59, 59, 999); // Set to end of day
+      matchesDateRange = transferDate >= dateRange.from && transferDate <= endDate;
+    } else if (dateRange.from) {
+      matchesDateRange = transferDate >= dateRange.from;
+    } else if (dateRange.to) {
+      const endDate = new Date(dateRange.to);
+      endDate.setHours(23, 59, 59, 999);
+      matchesDateRange = transferDate <= endDate;
+    }
     
     return matchesSearch && matchesDateRange;
   });
@@ -120,7 +131,7 @@ export function ProductLocationTransferHistory({
       headers.join(","),
       ...filteredHistory.map(transfer => [
         format(new Date(transfer.transferred_at), 'yyyy-MM-dd'),
-        format(new Date(transfer.transferred_at), 'HH:mm:ss'),
+        format(new Date(transfer.transferred_at), 'h:mm:ss a'),
         `"${transfer.from_location.name}"`,
         `"${transfer.to_location.name}"`,
         transfer.quantity,
@@ -194,7 +205,7 @@ export function ProductLocationTransferHistory({
           </div>
           
           {/* Custom Date Range Picker */}
-          <div className="w-64">
+          <div className="w-80">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -274,7 +285,7 @@ export function ProductLocationTransferHistory({
                     <div className="font-medium text-foreground">
                       {format(new Date(transfer.transferred_at), 'MMM dd, yyyy')}
                     </div>
-                    <div>{format(new Date(transfer.transferred_at), 'HH:mm:ss')}</div>
+                    <div>{format(new Date(transfer.transferred_at), 'h:mm:ss a')}</div>
                   </div>
                   
                   <div className="flex items-center space-x-3 flex-1">
