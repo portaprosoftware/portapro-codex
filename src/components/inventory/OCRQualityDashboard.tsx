@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, AlertTriangle, TrendingUp, Camera, Search, Filter, Eye, Shield, Users, Building } from "lucide-react";
+import { CheckCircle, AlertTriangle, TrendingUp, Camera, Search, Filter, Eye, Shield, Users, Building, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const OCRQualityDashboard: React.FC = () => {
@@ -18,6 +18,31 @@ export const OCRQualityDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [confidenceFilter, setConfidenceFilter] = useState("all");
+
+  // Set up real-time subscription for product_items
+  useEffect(() => {
+    const channel = supabase
+      .channel('product-items-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items'
+        },
+        () => {
+          // Invalidate all relevant queries when product_items change
+          queryClient.invalidateQueries({ queryKey: ["ocr-analytics"] });
+          queryClient.invalidateQueries({ queryKey: ["items-needing-review"] });
+          queryClient.invalidateQueries({ queryKey: ["vendor-analytics"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch OCR analytics data
   const { data: analytics } = useQuery({
@@ -48,13 +73,14 @@ export const OCRQualityDashboard: React.FC = () => {
   });
 
   // Fetch items needing verification
-  const { data: itemsNeedingReview } = useQuery({
+  const { data: itemsNeedingReview, isLoading: itemsLoading } = useQuery({
     queryKey: ["items-needing-review", searchQuery, statusFilter, confidenceFilter],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
         .select("*, products(name)")
-        .not("tool_number", "is", null);
+        .not("tool_number", "is", null)
+        .is("deleted_at", null); // Exclude deleted items
 
       if (searchQuery) {
         query = query.or(`item_code.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,vendor_id.ilike.%${searchQuery}%`);
@@ -111,13 +137,13 @@ export const OCRQualityDashboard: React.FC = () => {
     }
   });
 
-  // Bulk verification mutation
-  const bulkVerifyMutation = useMutation({
-    mutationFn: async (itemIds: string[]) => {
+  // Review mutation - marks item as needs_review
+  const reviewMutation = useMutation({
+    mutationFn: async (itemId: string) => {
       const { error } = await supabase
         .from("product_items")
-        .update({ verification_status: "manual_verified" })
-        .in("id", itemIds);
+        .update({ verification_status: "needs_review" })
+        .eq("id", itemId);
 
       if (error) throw error;
     },
@@ -125,8 +151,42 @@ export const OCRQualityDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["ocr-analytics"] });
       queryClient.invalidateQueries({ queryKey: ["items-needing-review"] });
       toast({
-        title: "Verification Complete",
-        description: "Selected items have been marked as verified",
+        title: "Review Status Updated",
+        description: "Item has been marked for review",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update review status",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Verification mutation - marks item as manually verified
+  const verifyMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase
+        .from("product_items")
+        .update({ verification_status: "manual_verified" })
+        .eq("id", itemId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ocr-analytics"] });
+      queryClient.invalidateQueries({ queryKey: ["items-needing-review"] });
+      toast({
+        title: "Item Verified",
+        description: "Item has been successfully verified",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to verify item",
+        variant: "destructive",
       });
     }
   });
@@ -262,37 +322,66 @@ export const OCRQualityDashboard: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itemsNeedingReview?.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.item_code}</TableCell>
-                      <TableCell>{item.products?.name}</TableCell>
-                      <TableCell className="font-mono text-sm">{item.tool_number}</TableCell>
-                      <TableCell className="font-mono text-sm">{item.vendor_id}</TableCell>
-                      <TableCell>
-                        {getConfidenceBadge(item.ocr_confidence_score || 0)}
-                      </TableCell>
-                      <TableCell>
-                        {getVerificationBadge(item.verification_status)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            Review
-                          </Button>
-                          {item.verification_status !== "manual_verified" && (
-                            <Button
-                              size="sm"
-                              onClick={() => bulkVerifyMutation.mutate([item.id])}
-                              disabled={bulkVerifyMutation.isPending}
-                            >
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              Verify
-                            </Button>
-                          )}
-                        </div>
+                  {itemsLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                        <p className="mt-2 text-muted-foreground">Loading items...</p>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : itemsNeedingReview?.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <p className="text-muted-foreground">No items found matching your filters</p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    itemsNeedingReview?.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">{item.item_code}</TableCell>
+                        <TableCell>{item.products?.name}</TableCell>
+                        <TableCell className="font-mono text-sm">{item.tool_number}</TableCell>
+                        <TableCell className="font-mono text-sm">{item.vendor_id}</TableCell>
+                        <TableCell>
+                          {getConfidenceBadge(item.ocr_confidence_score || 0)}
+                        </TableCell>
+                        <TableCell>
+                          {getVerificationBadge(item.verification_status)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => reviewMutation.mutate(item.id)}
+                              disabled={reviewMutation.isPending || item.verification_status === "needs_review"}
+                            >
+                              {reviewMutation.isPending ? (
+                                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                              ) : (
+                                <Eye className="w-3 h-3 mr-1" />
+                              )}
+                              Review
+                            </Button>
+                            {item.verification_status !== "manual_verified" && (
+                              <Button
+                                size="sm"
+                                onClick={() => verifyMutation.mutate(item.id)}
+                                disabled={verifyMutation.isPending}
+                              >
+                                {verifyMutation.isPending ? (
+                                  <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                ) : (
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                )}
+                                Verify
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
