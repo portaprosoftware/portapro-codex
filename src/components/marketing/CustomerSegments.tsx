@@ -162,9 +162,6 @@ export const CustomerSegments: React.FC = () => {
                   <Users className="h-5 w-5" />
                   Customer Segments ({filteredAndSortedSegments.length})
                 </CardTitle>
-                <CardDescription>
-                  Manage your customer segments in alphabetical order
-                </CardDescription>
               </div>
               <div className="relative w-80">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
