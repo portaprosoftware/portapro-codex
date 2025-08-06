@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -43,21 +44,31 @@ export const ItemCodeCategorySettings: React.FC = () => {
       return;
     }
 
-    if (!/^\d{4}$/.test(newCategoryPrefix)) {
-      toast.error('Prefix must be exactly 4 digits (e.g., 1000, 2000)');
-      return;
-    }
+    // Convert single digit to 4-digit format (e.g., "1" -> "1000")
+    const fullPrefix = newCategoryPrefix.padStart(1, '0') + '000';
 
     const currentCategories = companySettings?.item_code_categories || {};
     
-    if (currentCategories[newCategoryPrefix]) {
-      toast.error('This prefix already exists');
-      return;
+    // Allow reuse of prefixes - just add the new category with a unique key
+    const existingEntries = Object.entries(currentCategories);
+    const existingWithSamePrefix = existingEntries.filter(([key]) => key.startsWith(newCategoryPrefix));
+    
+    // Create a unique key by adding a suffix if needed
+    let finalKey = fullPrefix;
+    if (existingWithSamePrefix.length > 0) {
+      // Find the next available suffix
+      const suffixes = existingWithSamePrefix.map(([key]) => {
+        const match = key.match(new RegExp(`^${newCategoryPrefix}000-?(\\d*)$`));
+        return match ? (match[1] ? parseInt(match[1]) : 0) : -1;
+      }).filter(n => n >= 0);
+      
+      const nextSuffix = suffixes.length > 0 ? Math.max(...suffixes) + 1 : 1;
+      finalKey = `${fullPrefix}-${nextSuffix}`;
     }
 
     const newCategories = {
       ...currentCategories,
-      [newCategoryPrefix]: newCategoryName
+      [finalKey]: newCategoryName
     };
 
     updateCategoriesMutation.mutate(newCategories);
@@ -85,7 +96,7 @@ export const ItemCodeCategorySettings: React.FC = () => {
           Item Code Categories
         </CardTitle>
         <CardDescription>
-          Configure 4-digit item code categories for your inventory. Each category uses a different range of numbers.
+          Configure item code categories using prefixes 1-9. Each prefix generates 4-digit codes (1000-9999). Prefixes can be reused for multiple product types.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -93,29 +104,33 @@ export const ItemCodeCategorySettings: React.FC = () => {
         <div>
           <h4 className="font-medium mb-3">Current Categories</h4>
           <div className="space-y-2">
-            {Object.entries(categories).map(([prefix, name]) => (
-              <div key={prefix} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="font-mono">
-                    {prefix}XXX
-                  </Badge>
-                  <div>
-                    <p className="font-medium">{name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Codes: {prefix}001, {prefix}002, {prefix}003...
-                    </p>
+            {Object.entries(categories).map(([prefix, name]) => {
+              const displayPrefix = prefix.substring(0, 1); // Show just the first digit
+              const startCode = prefix.replace(/-\d+$/, ''); // Remove suffix for display
+              return (
+                <div key={prefix} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="font-mono">
+                      {displayPrefix}XXX
+                    </Badge>
+                    <div>
+                      <p className="font-medium">{name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Codes: {startCode}1, {startCode}2, {startCode}3...
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveCategory(prefix)}
+                    disabled={updateCategoriesMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveCategory(prefix)}
-                  disabled={updateCategoriesMutation.isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+              );
+            })}
             
             {Object.keys(categories).length === 0 && (
               <p className="text-muted-foreground text-center py-4">
@@ -130,15 +145,19 @@ export const ItemCodeCategorySettings: React.FC = () => {
           <h4 className="font-medium mb-3">Add New Category</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="prefix">4-Digit Prefix</Label>
-              <Input
-                id="prefix"
-                value={newCategoryPrefix}
-                onChange={(e) => setNewCategoryPrefix(e.target.value)}
-                placeholder="e.g., 5000"
-                maxLength={4}
-                pattern="\d{4}"
-              />
+              <Label htmlFor="prefix">Prefix (1-9)</Label>
+              <Select value={newCategoryPrefix} onValueChange={setNewCategoryPrefix}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select prefix" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 9 }, (_, i) => i + 1).map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num} (generates {num}000-{num}999)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="name">Category Name</Label>
@@ -167,14 +186,14 @@ export const ItemCodeCategorySettings: React.FC = () => {
           <h4 className="font-medium mb-3">Industry Standard Examples</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <div className="space-y-1">
-              <p><Badge variant="outline" className="font-mono mr-2">1000</Badge>Standard Portable Toilets</p>
-              <p><Badge variant="outline" className="font-mono mr-2">2000</Badge>ADA/Handicap Units</p>
-              <p><Badge variant="outline" className="font-mono mr-2">3000</Badge>Luxury/Flushable Units</p>
+              <p><Badge variant="outline" className="font-mono mr-2">1</Badge>Standard Portable Toilets (1000-1999)</p>
+              <p><Badge variant="outline" className="font-mono mr-2">2</Badge>ADA/Handicap Units (2000-2999)</p>
+              <p><Badge variant="outline" className="font-mono mr-2">3</Badge>Luxury/Flushable Units (3000-3999)</p>
             </div>
             <div className="space-y-1">
-              <p><Badge variant="outline" className="font-mono mr-2">4000</Badge>Holding Tanks</p>
-              <p><Badge variant="outline" className="font-mono mr-2">5000</Badge>Mobile Restroom Trailers</p>
-              <p><Badge variant="outline" className="font-mono mr-2">6000</Badge>Sink Stations</p>
+              <p><Badge variant="outline" className="font-mono mr-2">4</Badge>Holding Tanks (4000-4999)</p>
+              <p><Badge variant="outline" className="font-mono mr-2">5</Badge>Mobile Restroom Trailers (5000-5999)</p>
+              <p><Badge variant="outline" className="font-mono mr-2">6</Badge>Sink Stations (6000-6999)</p>
             </div>
           </div>
         </div>
