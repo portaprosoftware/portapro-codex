@@ -27,6 +27,7 @@ export const CustomerSegments: React.FC = () => {
   const [editingSegment, setEditingSegment] = useState<CustomerSegment | null>(null);
   const [viewingSegment, setViewingSegment] = useState<CustomerSegment | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editCounter, setEditCounter] = useState(0);
 
   // Fetch existing customer segments
   const { data: segments = [], isLoading } = useQuery({
@@ -76,6 +77,7 @@ export const CustomerSegments: React.FC = () => {
   const handleEditSegment = (segment: CustomerSegment) => {
     setEditingSegment(segment);
     setIsEditDialogOpen(true);
+    setEditCounter(prev => prev + 1); // Force component remount
   };
 
   const handleViewSegment = (segment: CustomerSegment) => {
@@ -136,17 +138,17 @@ export const CustomerSegments: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {segments.map((segment) => (
             <Card key={segment.id} className="relative group hover:shadow-md transition-shadow">
-              <CardHeader>
+              <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{segment.name}</CardTitle>
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-lg truncate">{segment.name}</CardTitle>
                     {segment.description && (
-                      <CardDescription className="mt-1">
+                      <CardDescription className="mt-1 line-clamp-2">
                         {segment.description}
                       </CardDescription>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -188,18 +190,20 @@ export const CustomerSegments: React.FC = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {segment.customer_count.toLocaleString()} customers
-                    </span>
+              <CardContent className="pt-0">
+                <div className="w-full space-y-4">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {segment.customer_count.toLocaleString()} customers
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-4">
-                  <div className="text-xs text-muted-foreground">
-                    Created {new Date(segment.created_at).toLocaleDateString()}
+                  <div className="w-full">
+                    <div className="text-xs text-muted-foreground">
+                      Created {new Date(segment.created_at).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -215,7 +219,7 @@ export const CustomerSegments: React.FC = () => {
           mode="edit"
           isOpen={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
-          key={`edit-${editingSegment.id}`}
+          key={`edit-${editingSegment.id}-${editCounter}`}
         />
       )}
 

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -57,7 +56,8 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
   const [isInfoExpanded, setIsInfoExpanded] = useState(false);
-  const [segmentData, setSegmentData] = useState<SegmentData>(() => {
+  
+  const getInitialSegmentData = (): SegmentData => {
     if (existingSegment && mode === 'edit') {
       return {
         name: existingSegment.name,
@@ -70,9 +70,24 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
       description: '',
       rules: [{ id: '1', field: '', operator: '', value: '' }]
     };
-  });
+  };
+
+  const [segmentData, setSegmentData] = useState<SegmentData>(getInitialSegmentData);
   const [estimatedCount, setEstimatedCount] = useState(existingSegment?.customer_count || 0);
   const queryClient = useQueryClient();
+
+  // Reset form data when existingSegment changes
+  useEffect(() => {
+    if (existingSegment && mode === 'edit') {
+      const newData = {
+        name: existingSegment.name,
+        description: existingSegment.description || '',
+        rules: existingSegment.rule_set?.rules || [{ id: '1', field: '', operator: '', value: '' }]
+      };
+      setSegmentData(newData);
+      setEstimatedCount(existingSegment.customer_count || 0);
+    }
+  }, [existingSegment, mode]);
 
   const availableFields = [
     { value: 'type', label: 'Customer Type' },
@@ -172,7 +187,9 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
         title: mode === 'edit' ? 'Segment updated successfully!' : 'Smart segment created successfully!' 
       });
       setIsOpen(false);
-      resetForm();
+      if (mode === 'create') {
+        resetForm();
+      }
     },
     onError: () => {
       toast({ 
