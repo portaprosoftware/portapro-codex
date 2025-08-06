@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Eye, Edit, Trash2, Mail, MessageSquare, Grid3X3, List, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Search, Eye, Edit, Trash2, Mail, MessageSquare, Grid3X3, List, ChevronDown, ChevronUp, MoreHorizontal } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/components/ui/use-toast';
 import { CreateTemplateModal } from './CreateTemplateModal';
 import { EditTemplateModal } from './EditTemplateModal';
@@ -156,35 +157,39 @@ export const TemplateManagement: React.FC = () => {
           </span>
         </div>
         
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setPreviewTemplate(template)}
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => {
-              setEditingTemplate(template);
-              setShowEditModal(true);
-            }}
-            disabled={template.source === 'system'}
-          >
-            <Edit className="w-4 h-4" />
-          </Button>
-          {template.source !== 'system' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => deleteTemplateMutation.mutate(template.id)}
-            >
-              <Trash2 className="w-4 h-4" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
-          )}
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-background border z-50">
+            <DropdownMenuItem onClick={() => setPreviewTemplate(template)}>
+              <Eye className="w-4 h-4 mr-2" />
+              Preview Template
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => {
+                setEditingTemplate(template);
+                setShowEditModal(true);
+              }}
+              disabled={template.source === 'system'}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Edit Template
+            </DropdownMenuItem>
+            {template.source !== 'system' && (
+              <DropdownMenuItem 
+                onClick={() => deleteTemplateMutation.mutate(template.id)}
+                className="text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Template
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </Card>
   );
