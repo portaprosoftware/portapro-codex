@@ -231,6 +231,9 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
               <MapPin className="h-4 w-4" />
               Storage & Inventory
             </h3>
+            <p className="text-sm text-muted-foreground">
+              Set initial stock for one location. You can split inventory between multiple locations after creating the product.
+            </p>
             
             <div className="space-y-4">
               <div className="space-y-2">
