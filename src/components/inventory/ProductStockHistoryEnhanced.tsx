@@ -218,15 +218,10 @@ export function ProductStockHistoryEnhanced({
           {/* Reason Filter */}
           <div className="w-48">
             <Select value={reasonFilter} onValueChange={setReasonFilter}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger>
                 <SelectValue placeholder="Filter by reason" />
               </SelectTrigger>
-              <SelectContent 
-                className="z-[999] bg-popover border shadow-lg max-h-60 overflow-auto"
-                position="popper"
-                side="bottom"
-                align="start"
-              >
+              <SelectContent className="z-50 bg-background border shadow-lg">
                 <SelectItem value="all">All Reasons</SelectItem>
                 {adjustmentReasons.map((reason) => (
                   <SelectItem key={reason.value} value={reason.value}>
