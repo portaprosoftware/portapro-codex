@@ -219,7 +219,13 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketing-campaigns'] });
-      toast({ title: 'Campaign created successfully!' });
+      queryClient.invalidateQueries({ queryKey: ['scheduled-campaigns'] });
+      
+      const isScheduled = getScheduledDateTime() !== null;
+      toast({ 
+        title: isScheduled ? 'Campaign scheduled successfully!' : 'Campaign created successfully!' 
+      });
+      
       // Reset form
       setCampaignData({
         name: '',
@@ -234,6 +240,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       setScheduledDate(undefined);
       setScheduledTime(null);
       onClose?.();
+      
+      // Navigate to scheduled tab if campaign was scheduled
+      if (isScheduled && typeof window !== 'undefined') {
+        window.location.href = '/marketing/scheduled';
+      }
     },
     onError: () => {
       toast({ title: 'Error creating campaign', variant: 'destructive' });
