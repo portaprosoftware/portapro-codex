@@ -45,7 +45,7 @@ export function ProductStockHistoryEnhanced({
   const [searchTerm, setSearchTerm] = useState("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [quickDateFilter, setQuickDateFilter] = useState("");
-  const [reasonFilter, setReasonFilter] = useState("");
+  const [reasonFilter, setReasonFilter] = useState("all");
 
   // Quick date filter options
   const quickDateOptions = [
@@ -103,7 +103,7 @@ export function ProductStockHistoryEnhanced({
         adjustment.adjusted_by?.toLowerCase().includes(searchTerm.toLowerCase());
       
       // Reason filter
-      const reasonMatch = !reasonFilter || adjustment.reason === reasonFilter;
+      const reasonMatch = !reasonFilter || reasonFilter === "all" || adjustment.reason === reasonFilter;
       
       // Date range filter - set end date to end of day to include all adjustments on that date
       let dateMatch = true;
@@ -157,7 +157,7 @@ export function ProductStockHistoryEnhanced({
     setSearchTerm("");
     setDateRange(undefined);
     setQuickDateFilter("");
-    setReasonFilter("");
+    setReasonFilter("all");
   };
 
   if (isLoading) {
@@ -222,7 +222,7 @@ export function ProductStockHistoryEnhanced({
                 <SelectValue placeholder="Filter by reason" />
               </SelectTrigger>
               <SelectContent className="z-50 bg-background border shadow-lg">
-                <SelectItem value="">All Reasons</SelectItem>
+                <SelectItem value="all">All Reasons</SelectItem>
                 {adjustmentReasons.map((reason) => (
                   <SelectItem key={reason.value} value={reason.value}>
                     <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export function ProductStockHistoryEnhanced({
             />
           </div>
           
-          {(searchTerm || dateRange?.from || dateRange?.to || quickDateFilter || reasonFilter) && (
+          {(searchTerm || dateRange?.from || dateRange?.to || quickDateFilter || (reasonFilter && reasonFilter !== "all")) && (
             <Button
               variant="outline"
               onClick={clearFilters}
