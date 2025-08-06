@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AddStorageSiteModal } from "@/components/inventory/AddStorageSiteModal";
 import { EditStorageSiteModal } from "@/components/inventory/EditStorageSiteModal";
 import { StorageLocationReporting } from "@/components/inventory/StorageLocationReporting";
@@ -45,12 +46,21 @@ export default function StorageSites() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('storage_locations')
-        .select('*')
-        .order('is_default', { ascending: false })
-        .order('name');
+        .select('*');
       
       if (error) throw error;
-      return data as StorageLocation[];
+      
+      // Sort with default location at top, then alphabetically
+      const sortedData = (data as StorageLocation[]).sort((a, b) => {
+        // Default location always first
+        if (a.is_default && !b.is_default) return -1;
+        if (!a.is_default && b.is_default) return 1;
+        
+        // If both or neither are default, sort alphabetically
+        return a.name.localeCompare(b.name);
+      });
+      
+      return sortedData;
     }
   });
 
@@ -159,84 +169,110 @@ export default function StorageSites() {
           </div>
 
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="h-4 bg-muted rounded mb-2"></div>
-                    <div className="h-3 bg-muted rounded mb-4 w-3/4"></div>
-                    <div className="h-3 bg-muted rounded"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Card>
+              <CardContent className="p-6">
+                <div className="animate-pulse space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4">
+                      <div className="h-4 bg-muted rounded w-1/4"></div>
+                      <div className="h-4 bg-muted rounded w-1/2"></div>
+                      <div className="h-4 bg-muted rounded w-1/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {storageLocations?.map((site) => (
-                <Card key={site.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        <Building className="h-5 w-5 text-primary" />
-                        <CardTitle className="text-lg">{site.name}</CardTitle>
-                      </div>
-                      <div className="flex gap-1">
-                        {site.is_default && (
-                          <Badge variant="secondary" className="text-xs">
-                            Default
-                          </Badge>
-                        )}
-                        {!site.is_active && (
-                          <Badge variant="outline" className="text-xs">
-                            Inactive
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
-                      {site.description}
-                    </div>
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-32">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {storageLocations?.map((site) => {
+                    const addressInfo = formatAddress(site);
                     
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div className="text-sm">
-                        <div className="font-medium text-muted-foreground mb-1">
-                          {formatAddress(site).label}
-                        </div>
-                        <div className="text-muted-foreground">
-                          {formatAddress(site).address}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingSite(site)}
-                        className="gap-1"
-                      >
-                        <Edit className="h-3 w-3" />
-                        Edit
-                      </Button>
-                      {!site.is_default && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDelete(site)}
-                          className="gap-1 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          Delete
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    return (
+                      <TableRow key={site.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <div className="font-medium">{site.name}</div>
+                              {site.description && (
+                                <div className="text-sm text-muted-foreground">
+                                  {site.description}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                            <div className="text-sm">
+                              <div className="font-medium text-muted-foreground">
+                                {addressInfo.label}
+                              </div>
+                              <div className="text-muted-foreground">
+                                {addressInfo.address}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {site.is_default && (
+                              <Badge variant="secondary" className="text-xs">
+                                Default
+                              </Badge>
+                            )}
+                            {site.is_active ? (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                Active
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs">
+                                Inactive
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingSite(site)}
+                              className="gap-1 h-8"
+                            >
+                              <Edit className="h-3 w-3" />
+                              Edit
+                            </Button>
+                            {!site.is_default && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(site)}
+                                className="gap-1 h-8 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                Delete
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
           )}
 
           {storageLocations?.length === 0 && !isLoading && (
