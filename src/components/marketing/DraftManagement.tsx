@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CustomModal } from '@/components/ui/custom-modal';
-import { FileText, Calendar, Trash2, Play, Edit, AlertTriangle, X } from 'lucide-react';
+import { FileText, Calendar, Trash2, Edit, AlertTriangle, X } from 'lucide-react';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 import { formatDistanceToNow } from 'date-fns';
 import { CampaignCreation } from './CampaignCreation';
@@ -132,7 +132,6 @@ export const DraftManagement: React.FC = () => {
                     onClick={() => handleResumeDraft(draft)}
                     className="font-inter"
                   >
-                    <Play className="w-4 h-4 mr-1" />
                     Resume
                   </Button>
                   
