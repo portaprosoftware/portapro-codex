@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/card";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { toast } from "sonner";
-import { MapPin, Plus, Package, Minus } from "lucide-react";
+import { MapPin, Package, ArrowLeftRight, Clock } from "lucide-react";
+import { ProductLocationTransferHistory } from "./ProductLocationTransferHistory";
 
 interface ProductLocationStockProps {
   productId: string;
@@ -41,13 +42,12 @@ interface LocationStock {
 
 export function ProductLocationStock({ productId, productName }: ProductLocationStockProps) {
   const queryClient = useQueryClient();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
-  const [newLocationId, setNewLocationId] = useState("");
-  const [newQuantity, setNewQuantity] = useState(0);
+  const [isTransferHistoryOpen, setIsTransferHistoryOpen] = useState(false);
   const [transferFromId, setTransferFromId] = useState("");
   const [transferToId, setTransferToId] = useState("");
   const [transferQuantity, setTransferQuantity] = useState(0);
+  const [transferNotes, setTransferNotes] = useState("");
 
   // Fetch location stock for this product
   const { data: locationStocks, isLoading } = useQuery({
@@ -67,34 +67,24 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
     }
   });
 
-  // Add stock to new location
-  const addLocationStockMutation = useMutation({
-    mutationFn: async ({ locationId, quantity }: { locationId: string; quantity: number }) => {
-      const { error } = await supabase
-        .from('product_location_stock')
-        .upsert({
-          product_id: productId,
-          storage_location_id: locationId,
-          quantity: quantity
-        }, {
-          onConflict: 'product_id,storage_location_id'
-        });
+  // Log transfer to history
+  const logTransfer = async (fromLocationId: string, toLocationId: string, quantity: number, notes?: string) => {
+    const { error } = await supabase
+      .from('product_location_transfers')
+      .insert({
+        product_id: productId,
+        from_location_id: fromLocationId,
+        to_location_id: toLocationId,
+        quantity: quantity,
+        notes: notes || null,
+        transferred_by: null // Could be set to current user ID if available
+      });
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Stock added to location");
-      queryClient.invalidateQueries({ queryKey: ['product-location-stock', productId] });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      setIsAddModalOpen(false);
-      setNewLocationId("");
-      setNewQuantity(0);
-    },
-    onError: (error) => {
-      console.error('Error adding location stock:', error);
-      toast.error("Failed to add stock to location");
+    if (error) {
+      console.error('Error logging transfer:', error);
+      // Don't throw error here as the main transfer succeeded
     }
-  });
+  };
 
   // Transfer stock between locations
   const transferStockMutation = useMutation({
@@ -129,8 +119,13 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
         });
 
       if (toError) throw toError;
+
+      return { fromId, toId, quantity };
     },
-    onSuccess: () => {
+    onSuccess: async (result) => {
+      // Log the transfer
+      await logTransfer(result.fromId, result.toId, result.quantity, transferNotes);
+      
       toast.success("Stock transferred successfully");
       queryClient.invalidateQueries({ queryKey: ['product-location-stock', productId] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -138,6 +133,7 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
       setTransferFromId("");
       setTransferToId("");
       setTransferQuantity(0);
+      setTransferNotes("");
     },
     onError: (error) => {
       console.error('Error transferring stock:', error);
@@ -145,14 +141,6 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
     }
   });
 
-  const handleAddStock = () => {
-    if (!newLocationId || newQuantity <= 0) {
-      toast.error("Please select a location and enter a valid quantity");
-      return;
-    }
-
-    addLocationStockMutation.mutate({ locationId: newLocationId, quantity: newQuantity });
-  };
 
   const handleTransferStock = () => {
     if (!transferFromId || !transferToId || transferQuantity <= 0) {
@@ -186,60 +174,26 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
           <p className="text-sm text-muted-foreground">
             Total: {totalStock} units across {locationStocks?.length || 0} locations
           </p>
+          <div className="mt-2 p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              💡 To add new stock, use the main inventory creation process from other tabs, then transfer items here as needed.
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
-          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add to Location
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Stock to Location</DialogTitle>
-                <DialogDescription>
-                  Add {productName} inventory to a storage location
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Storage Location</Label>
-                  <StorageLocationSelector
-                    value={newLocationId}
-                    onValueChange={setNewLocationId}
-                    placeholder="Select storage location"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Quantity</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={newQuantity}
-                    onChange={(e) => setNewQuantity(parseInt(e.target.value) || 0)}
-                    placeholder="Enter quantity"
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleAddStock}
-                    disabled={addLocationStockMutation.isPending}
-                  >
-                    {addLocationStockMutation.isPending ? "Adding..." : "Add Stock"}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setIsTransferHistoryOpen(true)}
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            View Transfer History
+          </Button>
 
           <Dialog open={isTransferModalOpen} onOpenChange={setIsTransferModalOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" variant="outline">
-                <MapPin className="h-4 w-4 mr-2" />
+              <Button size="sm" disabled={!locationStocks || locationStocks.length < 2}>
+                <ArrowLeftRight className="h-4 w-4 mr-2" />
                 Transfer
               </Button>
             </DialogTrigger>
@@ -284,6 +238,14 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
                     </p>
                   )}
                 </div>
+                <div className="space-y-2">
+                  <Label>Notes (Optional)</Label>
+                  <Input
+                    value={transferNotes}
+                    onChange={(e) => setTransferNotes(e.target.value)}
+                    placeholder="Optional transfer notes"
+                  />
+                </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsTransferModalOpen(false)}>
                     Cancel
@@ -327,16 +289,30 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Package className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-sm text-muted-foreground mb-4">
-                No location stock assigned for this product
+                No location stock assigned for this product. Add stock through the main inventory process and then transfer it between locations as needed.
               </p>
-              <Button onClick={() => setIsAddModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add to Location
-              </Button>
             </CardContent>
           </Card>
         )}
       </div>
+
+      {/* Transfer History Dialog */}
+      <Dialog open={isTransferHistoryOpen} onOpenChange={setIsTransferHistoryOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Location Transfer History - {productName}</DialogTitle>
+            <DialogDescription>
+              View all location-to-location transfers for this product
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-auto">
+            <ProductLocationTransferHistory 
+              productId={productId} 
+              productName={productName} 
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

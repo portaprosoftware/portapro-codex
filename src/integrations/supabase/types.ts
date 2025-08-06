@@ -3941,6 +3941,64 @@ export type Database = {
           },
         ]
       }
+      product_location_transfers: {
+        Row: {
+          created_at: string
+          from_location_id: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          to_location_id: string
+          transferred_at: string
+          transferred_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_location_id: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity: number
+          to_location_id: string
+          transferred_at?: string
+          transferred_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_location_id?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          to_location_id?: string
+          transferred_at?: string
+          transferred_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_location_transfers_from_location_id_fkey"
+            columns: ["from_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_location_transfers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_location_transfers_to_location_id_fkey"
+            columns: ["to_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_properties: {
         Row: {
           attribute_name: string
