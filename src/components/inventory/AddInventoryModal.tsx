@@ -69,14 +69,16 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
       if (productError) throw productError;
 
-      // 2. Create location stock entry
+      // 2. Create or update location stock entry
       if (data.storageLocationId && data.locationQuantity > 0) {
         const { error: stockError } = await supabase
           .from('product_location_stock')
-          .insert({
+          .upsert({
             product_id: product.id,
             storage_location_id: data.storageLocationId,
             quantity: data.locationQuantity
+          }, {
+            onConflict: 'product_id,storage_location_id'
           });
 
         if (stockError) throw stockError;
@@ -115,27 +117,20 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submitted with data:', formData);
-    
     if (!formData.name.trim()) {
-      console.log('Validation failed: Product name is required');
       toast.error("Product name is required");
       return;
     }
     
     if (!formData.storageLocationId) {
-      console.log('Validation failed: Please select a storage location');
       toast.error("Please select a storage location");
       return;
     }
 
     if (formData.locationQuantity <= 0) {
-      console.log('Validation failed: Quantity must be greater than 0');
       toast.error("Quantity must be greater than 0");
       return;
     }
-
-    console.log('All validations passed, creating product...');
 
     // Set stock total to match location quantity for new products
     const submitData = {
@@ -143,7 +138,6 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       stockTotal: formData.locationQuantity
     };
 
-    console.log('Submitting data:', submitData);
     createProductMutation.mutate(submitData);
   };
 
