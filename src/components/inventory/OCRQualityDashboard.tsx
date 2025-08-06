@@ -51,8 +51,7 @@ export const OCRQualityDashboard: React.FC = () => {
       const { data, error } = await supabase
         .from("product_items")
         .select("verification_status, ocr_confidence_score")
-        .not("tool_number", "is", null)
-        .is("deleted_at", null);
+        .not("tool_number", "is", null);
 
       if (error) throw error;
 
@@ -92,8 +91,7 @@ export const OCRQualityDashboard: React.FC = () => {
       let query = supabase
         .from("product_items")
         .select("id, item_code, tool_number, vendor_id, verification_status, ocr_confidence_score, products!inner(name)")
-        .not("tool_number", "is", null)
-        .is("deleted_at", null);
+        .not("tool_number", "is", null);
 
       // Apply filters only if they're set to avoid unnecessary complexity
       if (searchQuery?.trim()) {
@@ -133,8 +131,7 @@ export const OCRQualityDashboard: React.FC = () => {
         .from("product_items")
         .select("vendor_id, verification_status, ocr_confidence_score")
         .not("vendor_id", "is", null)
-        .not("tool_number", "is", null)
-        .is("deleted_at", null);
+        .not("tool_number", "is", null);
 
       if (error) throw error;
 
