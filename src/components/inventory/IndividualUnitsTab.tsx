@@ -303,64 +303,51 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   return (
     <div className="space-y-6">
       {/* Header Controls */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-1">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search by item code, QR code, tool number, vendor ID"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="All Availability" />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="all">All Availability</SelectItem>
-              <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="assigned">Assigned</SelectItem>
-              <SelectItem value="maintenance">In Maintenance</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowOCRSearch(true)}
-            className="border-purple-600 text-purple-600 hover:bg-purple-50"
-            title="Search by photographing tool number"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Scan Panel
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowScanner(true)}
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            Scan QR
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={() => setShowCategorySettings(true)}
-            className="border-gray-600 text-gray-600 hover:bg-gray-50"
-            title="Manage item code categories"
-          >
-            <Settings2 className="w-4 h-4 mr-2" />
-            Category Settings
-          </Button>
-          <Button 
-            onClick={() => setShowCreateModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Item
-          </Button>
-        </div>
+      <div className="flex items-center gap-4">
+        <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="All Availability" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="all">All Availability</SelectItem>
+            <SelectItem value="available">Available</SelectItem>
+            <SelectItem value="assigned">Assigned</SelectItem>
+            <SelectItem value="maintenance">In Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button 
+          variant="outline" 
+          onClick={() => setShowOCRSearch(true)}
+          className="border-purple-600 text-purple-600 hover:bg-purple-50"
+          title="Search by photographing tool number"
+        >
+          <Camera className="w-4 h-4 mr-2" />
+          Scan Panel
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => setShowScanner(true)}
+          className="border-blue-600 text-blue-600 hover:bg-blue-50"
+        >
+          <QrCode className="w-4 h-4 mr-2" />
+          Scan QR
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={() => setShowCategorySettings(true)}
+          className="border-gray-600 text-gray-600 hover:bg-gray-50"
+          title="Manage item code categories"
+        >
+          <Settings2 className="w-4 h-4 mr-2" />
+          Category Settings
+        </Button>
+        <Button 
+          onClick={() => setShowCreateModal(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create Item
+        </Button>
       </div>
 
       {/* Enhanced Search Filters */}
