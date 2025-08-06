@@ -103,7 +103,14 @@ export function StorageLocationReporting() {
           total_consumable_types: totalConsumableTypes,
           total_stock_value: totalStockValue
         },
-        location_details: locationDetails
+        location_details: locationDetails.sort((a, b) => {
+          // Default location always first
+          if (a.is_default && !b.is_default) return -1;
+          if (!a.is_default && b.is_default) return 1;
+          
+          // If both or neither are default, sort alphabetically
+          return a.location_name.localeCompare(b.location_name);
+        })
       };
     }
   });
