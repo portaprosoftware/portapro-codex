@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera, Lock, Unlock, AlertTriangle } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, BarChart3, MapPin, Camera, Lock, Unlock, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ProductGrid } from "@/components/inventory/ProductGrid";
 import { ProductDetail } from "@/components/inventory/ProductDetail";
 import { InventoryMapView } from "@/components/inventory/InventoryMapView";
@@ -398,7 +399,16 @@ const Inventory: React.FC = () => {
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-gray-500 mt-1">Inventory tracking disabled</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 mt-1 hover:text-gray-700">
+                      <Info className="w-3 h-3" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 text-sm">
+                    Hide products from view that have inventory tracking disabled.
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>
