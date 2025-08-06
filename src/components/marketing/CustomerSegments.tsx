@@ -137,18 +137,13 @@ export const CustomerSegments: React.FC = () => {
       </div>
 
       {/* Segments List */}
-      {filteredAndSortedSegments.length === 0 ? (
+      {segments.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              {searchQuery ? 'No segments found' : 'No segments yet'}
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">No segments yet</h3>
             <p className="text-muted-foreground text-center mb-6">
-              {searchQuery 
-                ? 'Try adjusting your search criteria or create a new segment.'
-                : 'Get started by creating your first customer segment.'
-              }
+              Get started by creating your first customer segment.
             </p>
             <SmartSegmentBuilder />
           </CardContent>
@@ -160,7 +155,7 @@ export const CustomerSegments: React.FC = () => {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  Customer Segments ({filteredAndSortedSegments.length})
+                  Customer Segments ({segments.length})
                 </CardTitle>
               </div>
               <div className="relative w-80">
@@ -171,21 +166,46 @@ export const CustomerSegments: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 bg-background border-input z-10"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Customers</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {filteredAndSortedSegments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No segments found</h3>
+                <p className="text-muted-foreground text-center mb-6">
+                  No segments match "{searchQuery}". Try adjusting your search criteria.
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchQuery('')}
+                  className="mb-4"
+                >
+                  Clear Search
+                </Button>
+                <SmartSegmentBuilder />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Customers</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                 {filteredAndSortedSegments.map((segment) => (
                   <TableRow key={segment.id}>
                     <TableCell className="font-medium">
@@ -260,8 +280,9 @@ export const CustomerSegments: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-            </Table>
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       )}
