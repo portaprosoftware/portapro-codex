@@ -128,6 +128,7 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
       
       toast.success("Stock transferred successfully");
       queryClient.invalidateQueries({ queryKey: ['product-location-stock', productId] });
+      queryClient.invalidateQueries({ queryKey: ['product-location-transfers', productId] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       setIsTransferModalOpen(false);
       setTransferFromId("");

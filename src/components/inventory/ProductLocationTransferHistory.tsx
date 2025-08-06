@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Download, Search, Calendar } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { ArrowRight, Download, Search, Calendar as CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -38,7 +41,20 @@ export function ProductLocationTransferHistory({
   productName 
 }: ProductLocationTransferHistoryProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
+    from: null,
+    to: null
+  });
+  const [quickDateFilter, setQuickDateFilter] = useState("");
+
+  // Quick date filter options
+  const quickDateOptions = [
+    { label: "All Time", value: "", days: null },
+    { label: "Last 7 days", value: "7days", days: 7 },
+    { label: "Last 30 days", value: "30days", days: 30 },
+    { label: "Last 90 days", value: "90days", days: 90 },
+    { label: "This Year", value: "year", days: null },
+  ];
 
   const { data: transferHistory = [], isLoading } = useQuery({
     queryKey: ['product-location-transfers', productId],
@@ -58,16 +74,39 @@ export function ProductLocationTransferHistory({
     }
   });
 
+  // Apply quick date filter
+  const applyQuickDateFilter = (value: string) => {
+    setQuickDateFilter(value);
+    const option = quickDateOptions.find(opt => opt.value === value);
+    
+    if (!option || value === "") {
+      setDateRange({ from: null, to: null });
+      return;
+    }
+
+    const now = new Date();
+    if (option.days) {
+      const fromDate = new Date();
+      fromDate.setDate(now.getDate() - option.days);
+      setDateRange({ from: fromDate, to: now });
+    } else if (value === "year") {
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      setDateRange({ from: yearStart, to: now });
+    }
+  };
+
   const filteredHistory = transferHistory.filter(transfer => {
+    const transferDate = new Date(transfer.transferred_at);
+    
     const matchesSearch = searchTerm === "" || 
       transfer.from_location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       transfer.to_location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (transfer.notes && transfer.notes.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesDate = selectedDate === "" || 
-      format(new Date(transfer.transferred_at), 'yyyy-MM-dd') === selectedDate;
+    const matchesDateRange = (!dateRange.from || transferDate >= dateRange.from) &&
+                            (!dateRange.to || transferDate <= dateRange.to);
     
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDateRange;
   });
 
   const exportToCSV = () => {
@@ -126,6 +165,20 @@ export function ProductLocationTransferHistory({
           </Button>
         </div>
         
+        {/* Quick Date Filters */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {quickDateOptions.map((option) => (
+            <Button
+              key={option.value}
+              variant={quickDateFilter === option.value ? "default" : "outline"}
+              size="sm"
+              onClick={() => applyQuickDateFilter(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+
         {/* Filter Controls */}
         <div className="flex gap-4 mt-4">
           <div className="flex-1">
@@ -139,25 +192,62 @@ export function ProductLocationTransferHistory({
               />
             </div>
           </div>
-          <div className="w-48">
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          
+          {/* Custom Date Range Picker */}
+          <div className="w-64">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dateRange.from && !dateRange.to && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "MMM dd, yyyy")
+                    )
+                  ) : (
+                    <span>Pick date range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange.from || new Date()}
+                  selected={{ from: dateRange.from || undefined, to: dateRange.to || undefined }}
+                  onSelect={(range) => {
+                    setDateRange({ 
+                      from: range?.from || null, 
+                      to: range?.to || null 
+                    });
+                    setQuickDateFilter(""); // Clear quick filter when custom range is selected
+                  }}
+                  numberOfMonths={2}
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-          {(searchTerm || selectedDate) && (
+          
+          {(searchTerm || dateRange.from || dateRange.to || quickDateFilter) && (
             <Button
               variant="outline"
               onClick={() => {
                 setSearchTerm("");
-                setSelectedDate("");
+                setDateRange({ from: null, to: null });
+                setQuickDateFilter("");
               }}
             >
+              <X className="h-4 w-4 mr-1" />
               Clear
             </Button>
           )}
