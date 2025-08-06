@@ -383,32 +383,32 @@ const Inventory: React.FC = () => {
 
             {/* Hide Inactive Toggle */}
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-              <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={hideInactive}
+                  onCheckedChange={setHideInactive}
+                  className="data-[state=checked]:bg-blue-600"
+                />
                 <div className="flex items-center gap-2">
-                  <Switch
-                    checked={hideInactive}
-                    onCheckedChange={setHideInactive}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
                   <span className="text-sm text-gray-700">Hide Inactive</span>
-                  {inactiveProductsCount > 0 && (
-                    <Badge 
-                      className="ml-1 text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
-                    >
-                      {inactiveProductsCount}
-                    </Badge>
-                  )}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
+                        <Info className="w-3 h-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 text-sm">
+                      Hide products from view that have inventory tracking disabled.
+                    </PopoverContent>
+                  </Popover>
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 mt-1 hover:text-gray-700">
-                      <Info className="w-3 h-3" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 text-sm">
-                    Hide products from view that have inventory tracking disabled.
-                  </PopoverContent>
-                </Popover>
+                {inactiveProductsCount > 0 && (
+                  <Badge 
+                    className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+                  >
+                    {inactiveProductsCount}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
