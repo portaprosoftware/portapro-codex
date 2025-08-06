@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Megaphone, BarChart4, Users2, FileText } from 'lucide-react';
+import { Mail, Megaphone, Clock, Users2, FileText } from 'lucide-react';
 import { TabNav } from '@/components/ui/TabNav';
 import { TemplateManagement } from './TemplateManagement';
 import { CampaignManagement } from './CampaignManagement';
@@ -107,7 +107,7 @@ export const MarketingDashboard: React.FC = () => {
                   isActive={activeTab === 'scheduled'}
                   onClick={() => navigateToTab('scheduled')}
                 >
-                  <BarChart4 className="w-4 h-4" />
+                  <Clock className="w-4 h-4" />
                   Scheduled
                 </TabNav.Item>
                 <TabNav.Item 
