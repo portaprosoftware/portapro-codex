@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Edit, Trash2, Send, Calendar, Clock, Mail, MessageSquare } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Edit, Trash2, Send, Calendar as CalendarIcon, Clock, Mail, MessageSquare, Search, Filter, X } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -21,22 +25,39 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { CampaignCreation } from './CampaignCreation';
+import { useScheduledCampaignsFilters } from '@/hooks/useScheduledCampaignsFilters';
 
 export const ScheduledCampaigns: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
+  const filtersHook = useScheduledCampaignsFilters();
 
-  // Fetch scheduled campaigns
+  // Fetch scheduled campaigns with filters
   const { data: scheduledCampaigns, isLoading } = useQuery({
-    queryKey: ['scheduled-campaigns'],
+    queryKey: ['scheduled-campaigns', filtersHook.filters.searchQuery, filtersHook.filters.campaignType, filtersHook.filters.dateRange?.from?.toISOString(), filtersHook.filters.dateRange?.to?.toISOString()],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('marketing_campaigns')
-        .select('*')
-        .eq('status', 'scheduled')
-        .order('scheduled_at', { ascending: true });
+        .select('*');
       
+      // Apply filters 
+      const whereClause = filtersHook.buildWhereClause;
+      whereClause.forEach(condition => {
+        if (condition.operator === 'eq') {
+          query = query.eq(condition.column, condition.value);
+        } else if (condition.operator === 'ilike') {
+          query = query.ilike(condition.column, condition.value);
+        } else if (condition.operator === 'gte') {
+          query = query.gte(condition.column, condition.value);
+        } else if (condition.operator === 'lte') {
+          query = query.lte(condition.column, condition.value);
+        }
+      });
+      
+      query = query.order('scheduled_at', { ascending: true });
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -216,12 +237,119 @@ export const ScheduledCampaigns: React.FC = () => {
   }
 
   if (!scheduledCampaigns || scheduledCampaigns.length === 0) {
+    if (filtersHook.hasActiveFilters) {
+      return (
+        <div className="space-y-6">
+          {/* Filter Bar */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold font-inter flex items-center gap-2">
+                    <Filter className="w-5 h-5" />
+                    Filter Campaigns
+                  </h3>
+                  {filtersHook.hasActiveFilters && (
+                    <Button variant="outline" size="sm" onClick={filtersHook.clearFilters}>
+                      <X className="w-4 h-4 mr-2" />
+                      Clear Filters
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search campaigns..."
+                      value={filtersHook.filters.searchQuery}
+                      onChange={(e) => filtersHook.updateFilter('searchQuery', e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  
+                  {/* Campaign Type */}
+                  <Select 
+                    value={filtersHook.filters.campaignType} 
+                    onValueChange={(value) => filtersHook.updateFilter('campaignType', value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Campaign Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="sms">SMS</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* Date Range */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {filtersHook.filters.dateRange?.from ? (
+                          filtersHook.filters.dateRange?.to ? (
+                            <>
+                              {format(filtersHook.filters.dateRange.from, "LLL dd, y")} -{" "}
+                              {format(filtersHook.filters.dateRange.to, "LLL dd, y")}
+                            </>
+                          ) : (
+                            format(filtersHook.filters.dateRange.from, "LLL dd, y")
+                          )
+                        ) : (
+                          <span>Pick a date range</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={filtersHook.filters.dateRange?.from}
+                        selected={filtersHook.filters.dateRange}
+                        onSelect={(range) => filtersHook.updateFilter('dateRange', range)}
+                        numberOfMonths={2}
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-inter flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5" />
+                No Campaigns Found
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 font-inter mb-2">No Campaigns Match Your Filters</h3>
+                <p className="text-gray-600 font-inter mb-4">
+                  Try adjusting your filters or clear them to see all scheduled campaigns.
+                </p>
+                <Button variant="outline" onClick={filtersHook.clearFilters}>
+                  Clear All Filters
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    
     return (
       <div className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="font-inter flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <CalendarIcon className="w-5 h-5" />
               Scheduled Campaigns
             </CardTitle>
           </CardHeader>
@@ -241,11 +369,96 @@ export const ScheduledCampaigns: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Filter Bar */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold font-inter flex items-center gap-2">
+                <Filter className="w-5 h-5" />
+                Filter Campaigns
+              </h3>
+              {filtersHook.hasActiveFilters && (
+                <Button variant="outline" size="sm" onClick={filtersHook.clearFilters}>
+                  <X className="w-4 h-4 mr-2" />
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search campaigns..."
+                  value={filtersHook.filters.searchQuery}
+                  onChange={(e) => filtersHook.updateFilter('searchQuery', e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              {/* Campaign Type */}
+              <Select 
+                value={filtersHook.filters.campaignType} 
+                onValueChange={(value) => filtersHook.updateFilter('campaignType', value as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Campaign Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="sms">SMS</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {/* Date Range */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filtersHook.filters.dateRange?.from ? (
+                      filtersHook.filters.dateRange?.to ? (
+                        <>
+                          {format(filtersHook.filters.dateRange.from, "LLL dd, y")} -{" "}
+                          {format(filtersHook.filters.dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        format(filtersHook.filters.dateRange.from, "LLL dd, y")
+                      )
+                    ) : (
+                      <span>Pick a date range</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={filtersHook.filters.dateRange?.from}
+                    selected={filtersHook.filters.dateRange}
+                    onSelect={(range) => filtersHook.updateFilter('dateRange', range)}
+                    numberOfMonths={2}
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
       <Card>
         <CardHeader>
           <CardTitle className="font-inter flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
+            <CalendarIcon className="w-5 h-5" />
             Scheduled Campaigns ({scheduledCampaigns.length})
+            {filtersHook.hasActiveFilters && (
+              <Badge variant="secondary" className="ml-2">
+                Filtered
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -360,27 +573,27 @@ export const ScheduledCampaigns: React.FC = () => {
             </TableBody>
           </Table>
         </CardContent>
-        </Card>
+      </Card>
         
-        {/* Edit Campaign Modal */}
-        <Dialog open={!!editingCampaign} onOpenChange={() => setEditingCampaign(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-            <DialogHeader>
-              <DialogTitle className="font-inter">Edit Campaign</DialogTitle>
-            </DialogHeader>
-            <div className="flex-1 overflow-auto">
-              {editingCampaign && (
-                <CampaignCreation
-                  initialData={editingCampaign.data}
-                  onClose={() => setEditingCampaign(null)}
-                  isEditing={true}
-                  campaignId={editingCampaign.id}
-                  onUpdate={(data) => updateCampaignMutation.mutate({ campaignId: editingCampaign.id, data })}
-                />
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  };
+      {/* Edit Campaign Modal */}
+      <Dialog open={!!editingCampaign} onOpenChange={() => setEditingCampaign(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="font-inter">Edit Campaign</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto">
+            {editingCampaign && (
+              <CampaignCreation
+                initialData={editingCampaign.data}
+                onClose={() => setEditingCampaign(null)}
+                isEditing={true}
+                campaignId={editingCampaign.id}
+                onUpdate={(data) => updateCampaignMutation.mutate({ campaignId: editingCampaign.id, data })}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
