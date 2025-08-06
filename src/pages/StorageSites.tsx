@@ -43,7 +43,7 @@ export default function StorageSites() {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const { data: storageLocations, isLoading } = useQuery({
+  const { data: storageLocations, isLoading: locationsLoading } = useQuery({
     queryKey: ['storage-locations'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -66,19 +66,22 @@ export default function StorageSites() {
     }
   });
 
-  const { data: companySettings } = useQuery({
+  const { data: companySettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['company-settings'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')
         .select('*')
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
     }
   });
+
+  // Combined loading state - wait for both queries
+  const isLoading = locationsLoading || settingsLoading;
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -108,7 +111,7 @@ export default function StorageSites() {
           companySettings.company_city,
           companySettings.company_state,
           companySettings.company_zipcode
-        ].filter(Boolean).join(', ') : 'Company address not set'
+        ].filter(Boolean).join(', ') : 'Loading address...'
       };
     } else if (site.address_type === 'gps') {
       return {
