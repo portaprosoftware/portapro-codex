@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { StorageLocationSelector } from "./StorageLocationSelector";
+import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { toast } from "sonner";
 import { Package, MapPin, Hash, DollarSign } from "lucide-react";
 
@@ -33,6 +34,7 @@ interface ProductFormData {
   locationQuantity: number;
   createIndividualItems: boolean;
   trackingMethod: 'bulk' | 'individual' | 'both';
+  selectedCategory: string;
 }
 
 export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
@@ -47,7 +49,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
     storageLocationId: '',
     locationQuantity: 0,
     createIndividualItems: false,
-    trackingMethod: 'bulk'
+    trackingMethod: 'bulk',
+    selectedCategory: ''
   });
 
   const createProductMutation = useMutation({
@@ -86,12 +89,27 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
       // 3. Optionally create individual items
       if (data.createIndividualItems && data.locationQuantity > 0) {
-        const individualItems = Array.from({ length: data.locationQuantity }, (_, index) => ({
-          product_id: product.id,
-          item_code: `${product.id.slice(0, 8).toUpperCase()}-${String(index + 1).padStart(3, '0')}`,
-          status: 'available',
-          current_storage_location_id: data.storageLocationId
-        }));
+        if (!data.selectedCategory) {
+          throw new Error('Item code category is required when creating individual items');
+        }
+
+        const individualItems = [];
+        for (let i = 0; i < data.locationQuantity; i++) {
+          // Generate item code using the category
+          const { data: itemCode, error: codeError } = await supabase
+            .rpc('generate_item_code_with_category', {
+              category_prefix: data.selectedCategory
+            });
+
+          if (codeError) throw codeError;
+
+          individualItems.push({
+            product_id: product.id,
+            item_code: itemCode,
+            status: 'available',
+            current_storage_location_id: data.storageLocationId
+          });
+        }
 
         const { error: itemsError } = await supabase
           .from('product_items')
@@ -132,6 +150,11 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       return;
     }
 
+    if (formData.createIndividualItems && !formData.selectedCategory) {
+      toast.error("Please select an item code category when creating individual items");
+      return;
+    }
+
     // Set stock total to match location quantity for new products
     const submitData = {
       ...formData,
@@ -151,7 +174,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       storageLocationId: '',
       locationQuantity: 0,
       createIndividualItems: false,
-      trackingMethod: 'bulk'
+      trackingMethod: 'bulk',
+      selectedCategory: ''
     });
     onClose();
   };
@@ -301,14 +325,27 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
               </div>
 
               {formData.createIndividualItems && (
-                <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-                  <p className="text-sm font-medium">Individual Item Codes</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formData.locationQuantity} individual items will be created with codes like:{' '}
-                    <code className="bg-background px-1 py-0.5 rounded text-xs">
-                      1001, 1002, etc.
-                    </code>
-                  </p>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Item Code Category *</Label>
+                    <ItemCodeCategorySelect
+                      value={formData.selectedCategory}
+                      onValueChange={(value) => updateFormData('selectedCategory', value)}
+                      placeholder="Select item code category"
+                    />
+                  </div>
+
+                  {formData.selectedCategory && (
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+                      <p className="text-sm font-medium">Individual Item Codes</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formData.locationQuantity} individual items will be created with codes starting from:{' '}
+                        <code className="bg-background px-1 py-0.5 rounded text-xs">
+                          {formData.selectedCategory}1, {formData.selectedCategory}2, etc.
+                        </code>
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
