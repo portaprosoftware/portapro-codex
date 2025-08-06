@@ -10,12 +10,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 
 export const ItemCodeCategorySettings: React.FC = () => {
   const { data: companySettings, isLoading } = useCompanySettings();
   const queryClient = useQueryClient();
   const [newCategoryPrefix, setNewCategoryPrefix] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ prefix: string; name: string } | null>(null);
+  const [itemsUsingCategory, setItemsUsingCategory] = useState<any[]>([]);
 
   const updateCategoriesMutation = useMutation({
     mutationFn: async (newCategories: { [key: string]: string }) => {
@@ -76,10 +80,42 @@ export const ItemCodeCategorySettings: React.FC = () => {
     setNewCategoryName('');
   };
 
-  const handleRemoveCategory = (prefix: string) => {
+  const checkItemsUsingCategory = async (prefix: string) => {
+    // Get the base prefix (remove suffix if any) for searching
+    const basePrefix = prefix.replace(/-\d+$/, '');
+    
+    const { data: items, error } = await supabase
+      .from('product_items')
+      .select('id, item_code, status')
+      .like('item_code', `${basePrefix}%`);
+    
+    if (error) {
+      console.error('Error checking items:', error);
+      return [];
+    }
+    
+    return items || [];
+  };
+
+  const handleRemoveCategory = async (prefix: string, name: string) => {
+    // Check if any items are using this category
+    const items = await checkItemsUsingCategory(prefix);
+    
+    setCategoryToDelete({ prefix, name });
+    setItemsUsingCategory(items);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteCategory = () => {
+    if (!categoryToDelete) return;
+    
     const currentCategories = companySettings?.item_code_categories || {};
-    const { [prefix]: removed, ...newCategories } = currentCategories;
+    const { [categoryToDelete.prefix]: removed, ...newCategories } = currentCategories;
     updateCategoriesMutation.mutate(newCategories);
+    
+    setDeleteDialogOpen(false);
+    setCategoryToDelete(null);
+    setItemsUsingCategory([]);
   };
 
   if (isLoading) {
@@ -123,7 +159,7 @@ export const ItemCodeCategorySettings: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleRemoveCategory(prefix)}
+                    onClick={() => handleRemoveCategory(prefix, name)}
                     disabled={updateCategoriesMutation.isPending}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -198,6 +234,20 @@ export const ItemCodeCategorySettings: React.FC = () => {
           </div>
         </div>
       </CardContent>
+
+      <DeleteConfirmationDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={confirmDeleteCategory}
+        title="Delete Item Code Category"
+        itemName={categoryToDelete?.name || ''}
+        description={
+          itemsUsingCategory.length > 0
+            ? `This category is currently being used by ${itemsUsingCategory.length} inventory item(s). Deleting it will prevent new items from being created with this prefix, but existing items will remain unchanged.`
+            : "Are you sure you want to delete this category? This will prevent new items from being created with this prefix."
+        }
+        isLoading={updateCategoriesMutation.isPending}
+      />
     </Card>
   );
 };
