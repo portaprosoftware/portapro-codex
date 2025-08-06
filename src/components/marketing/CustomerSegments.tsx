@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Users, Edit, Trash2, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Plus, Users, Edit, Trash2, Eye, Search } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface CustomerSegment {
@@ -30,6 +31,7 @@ export const CustomerSegments: React.FC = () => {
   const [viewingSegment, setViewingSegment] = useState<CustomerSegment | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editCounter, setEditCounter] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch existing customer segments
   const { data: segments = [], isLoading } = useQuery({
@@ -46,8 +48,15 @@ export const CustomerSegments: React.FC = () => {
     }
   });
 
-  // Sort segments alphabetically by name
-  const sortedSegments = [...segments].sort((a, b) => a.name.localeCompare(b.name));
+  // Sort segments alphabetically by name and filter by search query
+  const filteredAndSortedSegments = useMemo(() => {
+    return [...segments]
+      .filter(segment => 
+        segment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (segment.description && segment.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [segments, searchQuery]);
 
   // Delete segment mutation
   const deleteSegmentMutation = useMutation({
@@ -128,13 +137,18 @@ export const CustomerSegments: React.FC = () => {
       </div>
 
       {/* Segments List */}
-      {sortedSegments.length === 0 ? (
+      {filteredAndSortedSegments.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No segments yet</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {searchQuery ? 'No segments found' : 'No segments yet'}
+            </h3>
             <p className="text-muted-foreground text-center mb-6">
-              Get started by creating your first customer segment.
+              {searchQuery 
+                ? 'Try adjusting your search criteria or create a new segment.'
+                : 'Get started by creating your first customer segment.'
+              }
             </p>
             <SmartSegmentBuilder />
           </CardContent>
@@ -142,13 +156,26 @@ export const CustomerSegments: React.FC = () => {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Customer Segments ({sortedSegments.length})
-            </CardTitle>
-            <CardDescription>
-              Manage your customer segments in alphabetical order
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Customer Segments ({filteredAndSortedSegments.length})
+                </CardTitle>
+                <CardDescription>
+                  Manage your customer segments in alphabetical order
+                </CardDescription>
+              </div>
+              <div className="relative w-80">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search segments..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-background border-input z-10"
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -162,7 +189,7 @@ export const CustomerSegments: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedSegments.map((segment) => (
+                {filteredAndSortedSegments.map((segment) => (
                   <TableRow key={segment.id}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
