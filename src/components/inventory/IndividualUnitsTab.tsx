@@ -304,17 +304,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     <div className="space-y-6">
       {/* Header Controls */}
       <div className="flex items-center gap-4">
-        <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Availability" />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            <SelectItem value="all">All Availability</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="assigned">Assigned</SelectItem>
-            <SelectItem value="maintenance">In Maintenance</SelectItem>
-          </SelectContent>
-        </Select>
         <Button 
           variant="outline" 
           onClick={() => setShowOCRSearch(true)}
