@@ -45,17 +45,29 @@ export const OCRQualityDashboard: React.FC = () => {
   }, [queryClient]);
 
   // Fetch OCR analytics data
-  const { data: analytics } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ["ocr-analytics"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_items")
-        .select("*")
-        .not("tool_number", "is", null);
+        .select("verification_status, ocr_confidence_score")
+        .not("tool_number", "is", null)
+        .is("deleted_at", null);
 
       if (error) throw error;
 
       const total = data.length;
+      if (total === 0) {
+        return {
+          total: 0,
+          verified: 0,
+          autoDetected: 0,
+          needsReview: 0,
+          avgConfidence: 0,
+          accuracyRate: 0
+        };
+      }
+
       const verified = data.filter(item => item.verification_status === "manual_verified").length;
       const autoDetected = data.filter(item => item.verification_status === "auto_detected").length;
       const needsReview = data.filter(item => item.verification_status === "needs_review").length;
@@ -69,20 +81,22 @@ export const OCRQualityDashboard: React.FC = () => {
         avgConfidence,
         accuracyRate: verified / total * 100
       };
-    }
+    },
+    staleTime: 30000 // Cache for 30 seconds
   });
 
-  // Fetch items needing verification
+  // Fetch items needing verification with better performance
   const { data: itemsNeedingReview, isLoading: itemsLoading } = useQuery({
     queryKey: ["items-needing-review", searchQuery, statusFilter, confidenceFilter],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
-        .select("*, products(name)")
+        .select("id, item_code, tool_number, vendor_id, verification_status, ocr_confidence_score, products!inner(name)")
         .not("tool_number", "is", null)
-        .is("deleted_at", null); // Exclude deleted items
+        .is("deleted_at", null);
 
-      if (searchQuery) {
+      // Apply filters only if they're set to avoid unnecessary complexity
+      if (searchQuery?.trim()) {
         query = query.or(`item_code.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,vendor_id.ilike.%${searchQuery}%`);
       }
 
@@ -90,30 +104,41 @@ export const OCRQualityDashboard: React.FC = () => {
         query = query.eq("verification_status", statusFilter);
       }
 
-      if (confidenceFilter === "low") {
-        query = query.lt("ocr_confidence_score", 0.6);
-      } else if (confidenceFilter === "medium") {
-        query = query.gte("ocr_confidence_score", 0.6).lt("ocr_confidence_score", 0.8);
-      } else if (confidenceFilter === "high") {
-        query = query.gte("ocr_confidence_score", 0.8);
+      if (confidenceFilter !== "all") {
+        if (confidenceFilter === "low") {
+          query = query.lt("ocr_confidence_score", 0.6);
+        } else if (confidenceFilter === "medium") {
+          query = query.gte("ocr_confidence_score", 0.6).lt("ocr_confidence_score", 0.8);
+        } else if (confidenceFilter === "high") {
+          query = query.gte("ocr_confidence_score", 0.8);
+        }
       }
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      const { data, error } = await query
+        .order("created_at", { ascending: false })
+        .limit(100); // Limit results for performance
+
       if (error) throw error;
       return data || [];
-    }
+    },
+    staleTime: 10000, // Cache for 10 seconds
+    enabled: true // Always enabled, but with optimizations
   });
 
   // Fetch vendor analytics
-  const { data: vendorAnalytics } = useQuery({
+  const { data: vendorAnalytics, isLoading: vendorLoading } = useQuery({
     queryKey: ["vendor-analytics"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_items")
         .select("vendor_id, verification_status, ocr_confidence_score")
-        .not("vendor_id", "is", null);
+        .not("vendor_id", "is", null)
+        .not("tool_number", "is", null)
+        .is("deleted_at", null);
 
       if (error) throw error;
+
+      if (data.length === 0) return [];
 
       const vendorStats = data.reduce((acc, item) => {
         const vendorId = item.vendor_id;
@@ -134,7 +159,8 @@ export const OCRQualityDashboard: React.FC = () => {
         ...stats,
         qualityScore: (stats.verified / stats.total) * 100
       }));
-    }
+    },
+    staleTime: 30000 // Cache for 30 seconds
   });
 
   // Review mutation - marks item as needs_review
@@ -222,7 +248,13 @@ export const OCRQualityDashboard: React.FC = () => {
             <Camera className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.total || 0}</div>
+            <div className="text-2xl font-bold">
+              {analyticsLoading ? (
+                <div className="h-8 w-12 bg-gray-200 animate-pulse rounded"></div>
+              ) : (
+                analytics?.total || 0
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">Items with tool data</p>
           </CardContent>
         </Card>
@@ -233,7 +265,13 @@ export const OCRQualityDashboard: React.FC = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.round(analytics?.accuracyRate || 0)}%</div>
+            <div className="text-2xl font-bold">
+              {analyticsLoading ? (
+                <div className="h-8 w-12 bg-gray-200 animate-pulse rounded"></div>
+              ) : (
+                `${Math.round(analytics?.accuracyRate || 0)}%`
+              )}
+            </div>
             <Progress value={analytics?.accuracyRate || 0} className="mt-2" />
           </CardContent>
         </Card>
@@ -244,7 +282,13 @@ export const OCRQualityDashboard: React.FC = () => {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.round((analytics?.avgConfidence || 0) * 100)}%</div>
+            <div className="text-2xl font-bold">
+              {analyticsLoading ? (
+                <div className="h-8 w-12 bg-gray-200 animate-pulse rounded"></div>
+              ) : (
+                `${Math.round((analytics?.avgConfidence || 0) * 100)}%`
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">OCR detection confidence</p>
           </CardContent>
         </Card>
@@ -255,7 +299,13 @@ export const OCRQualityDashboard: React.FC = () => {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{analytics?.needsReview || 0}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {analyticsLoading ? (
+                <div className="h-8 w-12 bg-gray-200 animate-pulse rounded"></div>
+              ) : (
+                analytics?.needsReview || 0
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">Items requiring verification</p>
           </CardContent>
         </Card>
@@ -397,33 +447,44 @@ export const OCRQualityDashboard: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Vendor ID</TableHead>
-                    <TableHead>Total Items</TableHead>
-                    <TableHead>Verified</TableHead>
-                    <TableHead>Quality Score</TableHead>
-                    <TableHead>Avg Confidence</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {vendorAnalytics?.map((vendor) => (
-                    <TableRow key={vendor.vendorId}>
-                      <TableCell className="font-mono">{vendor.vendorId}</TableCell>
-                      <TableCell>{vendor.total}</TableCell>
-                      <TableCell>{vendor.verified}/{vendor.total}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={vendor.qualityScore} className="w-16" />
-                          {Math.round(vendor.qualityScore)}%
-                        </div>
-                      </TableCell>
-                      <TableCell>{Math.round(vendor.avgConfidence * 100)}%</TableCell>
+              {vendorLoading ? (
+                <div className="text-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                  <p className="mt-2 text-muted-foreground">Loading vendor data...</p>
+                </div>
+              ) : vendorAnalytics?.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No vendor performance data available</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Vendor ID</TableHead>
+                      <TableHead>Total Items</TableHead>
+                      <TableHead>Verified</TableHead>
+                      <TableHead>Quality Score</TableHead>
+                      <TableHead>Avg Confidence</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {vendorAnalytics?.map((vendor) => (
+                      <TableRow key={vendor.vendorId}>
+                        <TableCell className="font-mono">{vendor.vendorId}</TableCell>
+                        <TableCell>{vendor.total}</TableCell>
+                        <TableCell>{vendor.verified}/{vendor.total}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Progress value={vendor.qualityScore} className="w-16" />
+                            {Math.round(vendor.qualityScore)}%
+                          </div>
+                        </TableCell>
+                        <TableCell>{Math.round(vendor.avgConfidence * 100)}%</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
