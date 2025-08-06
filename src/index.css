@@ -262,6 +262,12 @@
     color: #fff !important;
     font-weight: 700 !important;
   }
+
+  /* Override for badges within active nav items */
+  .nav-item-active .bg-gray-200 {
+    background-color: rgb(229 231 235) !important;
+    color: rgb(31 41 55) !important;
+  }
   
   /* Enterprise Buttons */
   .btn-enterprise {
