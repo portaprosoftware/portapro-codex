@@ -201,10 +201,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-              <Badge className="bg-blue-600 text-white">
+              <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
                 ${product.charge_for_product ? (product.daily_rate || product.default_price_per_day) : product.default_price_per_day}/day
               </Badge>
-              <Badge variant="outline" className="text-green-700 border-green-300">
+              <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
                 (Available)
               </Badge>
             </div>
