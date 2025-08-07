@@ -1,6 +1,8 @@
-import React from 'react';
-import { CONSUMABLE_CATEGORIES, getCategoryByValue } from '@/lib/consumableCategories';
+
+import React, { useMemo } from 'react';
+import { CONSUMABLE_CATEGORIES, type ConsumableCategory, getCategoryByValue } from '@/lib/consumableCategories';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useConsumableCategories } from '@/hooks/useCompanySettings';
 
 interface CategorySelectProps {
   value: string;
@@ -13,12 +15,23 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
   onValueChange,
   placeholder = "Select category"
 }) => {
+  const { categories: dynamicCategories } = useConsumableCategories();
+
+  // Prefer dynamic categories; fallback to static if not available
+  const sourceCategories: ConsumableCategory[] = (dynamicCategories && dynamicCategories.length > 0)
+    ? dynamicCategories
+    : CONSUMABLE_CATEGORIES;
+
   // Sort categories alphabetically by label
-  const sortedCategories = [...CONSUMABLE_CATEGORIES].sort((a, b) => 
-    a.label.localeCompare(b.label)
+  const sortedCategories = useMemo(
+    () => [...sourceCategories].sort((a, b) => a.label.localeCompare(b.label)),
+    [sourceCategories]
   );
 
-  const selectedCategory = getCategoryByValue(value);
+  const selectedCategory = useMemo(() => {
+    // Try dynamic/static search by value
+    return sortedCategories.find(c => c.value === value) || getCategoryByValue(value);
+  }, [sortedCategories, value]);
 
   return (
     <Select value={value} onValueChange={onValueChange}>
@@ -44,10 +57,12 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
               <span className="text-xs text-muted-foreground mt-1">
                 {category.description}
               </span>
-              <div className="text-xs text-muted-foreground mt-1 opacity-75">
-                Examples: {category.examples.slice(0, 3).join(', ')}
-                {category.examples.length > 3 && '...'}
-              </div>
+              {category.examples?.length ? (
+                <div className="text-xs text-muted-foreground mt-1 opacity-75">
+                  Examples: {category.examples.slice(0, 3).join(', ')}
+                  {category.examples.length > 3 && '...'}
+                </div>
+              ) : null}
             </div>
           </SelectItem>
         ))}

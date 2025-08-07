@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
 import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
+import { CategorySelect } from '@/components/ui/category-select';
+import { ConsumableCategoryManager } from './ConsumableCategoryManager';
 
 interface Consumable {
   id: string;
@@ -39,6 +41,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const queryClient = useQueryClient();
 
   // Fetch consumables
@@ -132,23 +135,54 @@ export const SimpleConsumablesInventory: React.FC = () => {
     setSelectedConsumable(null);
   };
 
+  // Derive filtered list
+  const filteredConsumables = useMemo(() => {
+    if (!consumables) return [];
+    if (!categoryFilter) return consumables;
+    return consumables.filter(c => c.category === categoryFilter);
+  }, [consumables, categoryFilter]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-none px-6 py-6 space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-lg border shadow-sm p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 font-inter">Consumables Management</h1>
               <p className="text-base text-gray-600 font-inter mt-1">Manage your consumable inventory with simplified location tracking</p>
             </div>
-            <Button 
-              onClick={() => setShowAddModal(true)}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Consumable
-            </Button>
+            <div className="flex items-center gap-2">
+              <ConsumableCategoryManager />
+              <Button 
+                onClick={() => setShowAddModal(true)}
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Consumable
+              </Button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Category</label>
+              <div className="flex items-center gap-2">
+                <div className="w-full">
+                  <CategorySelect
+                    value={categoryFilter}
+                    onValueChange={setCategoryFilter}
+                    placeholder="All categories"
+                  />
+                </div>
+                {categoryFilter && (
+                  <Button variant="outline" size="sm" onClick={() => setCategoryFilter('')}>
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -161,9 +195,11 @@ export const SimpleConsumablesInventory: React.FC = () => {
               <div className="flex items-center justify-center h-32">
                 <div className="text-gray-500">Loading consumables...</div>
               </div>
-            ) : !consumables || consumables.length === 0 ? (
+            ) : !filteredConsumables || filteredConsumables.length === 0 ? (
               <div className="flex items-center justify-center h-32">
-                <div className="text-gray-500">No consumables found. Add your first consumable to get started.</div>
+                <div className="text-gray-500">
+                  {categoryFilter ? 'No consumables match this category.' : 'No consumables found. Add your first consumable to get started.'}
+                </div>
               </div>
             ) : (
               <Table>
@@ -181,7 +217,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {consumables.map((consumable) => (
+                  {filteredConsumables.map((consumable) => (
                     <TableRow key={consumable.id}>
                       <TableCell className="font-medium">{consumable.name}</TableCell>
                       <TableCell>{formatCategoryDisplay(consumable.category)}</TableCell>
