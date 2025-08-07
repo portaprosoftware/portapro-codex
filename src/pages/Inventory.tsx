@@ -271,14 +271,14 @@ const Inventory: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-muted">
-      <PageHeader 
-        title="Inventory Management" 
-        subtitle="Manage your portable toilet inventory and assets"
-      />
-      
       <div className="p-6 space-y-6">
-        {/* Card 1: Tab Navigation */}
+        {/* Card 1: Header + Tab Navigation */}
         <div className="bg-background rounded-2xl shadow-md p-6">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
+            <p className="text-muted-foreground">Manage your portable toilet inventory and assets</p>
+          </div>
+          
           <TabNav ariaLabel="Inventory navigation">
             <TabNav.Item
               to="/inventory/products"
@@ -445,9 +445,20 @@ const Inventory: React.FC = () => {
         )}
 
         {activeTab === 'location-map' && (
-          <div className="bg-background rounded-2xl shadow-md p-6">
-            <LocationMapView />
-          </div>
+          <>
+            {/* Card 2: Search and Filters for Location Map */}
+            <InventoryFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedLocationId={selectedLocationId}
+              onLocationChange={setSelectedLocationId}
+            />
+            
+            {/* Card 3: Location Map */}
+            <div className="bg-background rounded-2xl shadow-md p-6">
+              <LocationMapView />
+            </div>
+          </>
         )}
 
         {activeTab === 'panel-scans' && (
