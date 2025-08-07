@@ -63,7 +63,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto">
+      <SheetContent className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto antialiased" style={{ WebkitFontSmoothing: 'antialiased', textRendering: 'optimizeLegibility' }}>
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
