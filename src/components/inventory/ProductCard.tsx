@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle } from "lucide-react";
+import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle, Settings } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
 interface Product {
   id: string;
@@ -28,6 +29,10 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
   const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
+  const [showEquipmentBreakdown, setShowEquipmentBreakdown] = useState(false);
+
+  // Use unified stock management for accurate calculations
+  const { stockData, calculations, isLoading: isStockLoading } = useUnifiedStockManagement(product.id);
 
   // Set up real-time subscription for this product's items
   useEffect(() => {
@@ -115,7 +120,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
   const totalLocationStock = locationStocks?.reduce((sum, ls) => sum + ls.quantity, 0) || 0;
   const locationCount = locationStocks?.length || 0;
-  const availableCount = Math.max(totalLocationStock, product.stock_total) - product.stock_in_service;
+  
+  // Use unified stock management for accurate calculations
+  const availableCount = stockData?.totals?.physically_available || 0;
+  const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
+  const onJobCount = stockData?.individual_items?.assigned || 0;
+  const reservedCount = stockData?.bulk_stock?.reserved || 0;
+  
   const isLowStock = availableCount <= product.low_stock_threshold;
   const isOutOfStock = availableCount <= 0;
 
@@ -294,7 +305,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
               {locationCount > 1 && `Across ${locationCount} sites`}
             </div>
             
-            {/* Always show View breakdown button for consistent card sizing */}
+            {/* Location breakdown button */}
             <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
               <CollapsibleTrigger asChild>
                 <Button 
@@ -304,7 +315,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 >
                   <span className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
-                    View breakdown
+                    View by location
                   </span>
                   {showLocationBreakdown ? 
                     <ChevronUp className="h-3 w-3" /> : 
@@ -328,6 +339,71 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                     No site assignments
                   </div>
                 )}
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Equipment status breakdown */}
+            <Collapsible open={showEquipmentBreakdown} onOpenChange={setShowEquipmentBreakdown}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 text-xs w-full justify-between"
+                >
+                  <span className="flex items-center gap-1">
+                    <Settings className="h-3 w-3" />
+                    View by status
+                  </span>
+                  {showEquipmentBreakdown ? 
+                    <ChevronUp className="h-3 w-3" /> : 
+                    <ChevronDown className="h-3 w-3" />
+                  }
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-1 mt-2">
+                <div className="space-y-1">
+                  {availableCount > 0 && (
+                    <div className="flex items-center justify-between text-xs bg-green-50 rounded px-2 py-1">
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        Available
+                      </span>
+                      <span className="font-medium">{availableCount}</span>
+                    </div>
+                  )}
+                  {onJobCount > 0 && (
+                    <div className="flex items-center justify-between text-xs bg-blue-50 rounded px-2 py-1">
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        On Job
+                      </span>
+                      <span className="font-medium">{onJobCount}</span>
+                    </div>
+                  )}
+                  {inMaintenanceCount > 0 && (
+                    <div className="flex items-center justify-between text-xs bg-orange-50 rounded px-2 py-1">
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        Maintenance
+                      </span>
+                      <span className="font-medium">{inMaintenanceCount}</span>
+                    </div>
+                  )}
+                  {reservedCount > 0 && (
+                    <div className="flex items-center justify-between text-xs bg-purple-50 rounded px-2 py-1">
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        Reserved
+                      </span>
+                      <span className="font-medium">{reservedCount}</span>
+                    </div>
+                  )}
+                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && reservedCount === 0 && (
+                    <div className="text-xs text-gray-500 text-center py-2">
+                      No equipment data
+                    </div>
+                  )}
+                </div>
               </CollapsibleContent>
             </Collapsible>
           </div>

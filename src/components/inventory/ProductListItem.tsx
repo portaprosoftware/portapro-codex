@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Eye, ChevronDown, ChevronUp, BarChart3, MapPin } from "lucide-react";
+import { Eye, ChevronDown, ChevronUp, BarChart3, MapPin, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
 interface Product {
   id: string;
@@ -44,10 +45,19 @@ interface QuickStats {
 
 export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSelect }) => {
   const queryClient = useQueryClient();
-  const availableCount = product.stock_total - product.stock_in_service;
+  const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
+  const [showEquipmentBreakdown, setShowEquipmentBreakdown] = useState(false);
+
+  // Use unified stock management for accurate calculations
+  const { stockData, calculations, isLoading: isStockLoading } = useUnifiedStockManagement(product.id);
+  
+  const availableCount = stockData?.totals?.physically_available || 0;
+  const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
+  const onJobCount = stockData?.individual_items?.assigned || 0;
+  const reservedCount = stockData?.bulk_stock?.reserved || 0;
+  
   const isLowStock = availableCount <= product.low_stock_threshold;
   const isOutOfStock = availableCount <= 0;
-  const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
 
   // Real-time subscription for inventory updates
   useEffect(() => {
@@ -247,14 +257,14 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
           </div>
         )}
 
-        {/* Location breakdown trigger */}
-        {hasLocations && (
-          <div className="mr-2">
+        {/* Breakdown triggers */}
+        <div className="mr-2 flex gap-1">
+          {hasLocations && (
             <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
                   <MapPin className="w-3 h-3 mr-1" />
-                  View breakdown
+                  Location
                   {showLocationBreakdown ? (
                     <ChevronUp className="w-3 h-3 ml-1" />
                   ) : (
@@ -263,8 +273,22 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                 </Button>
               </CollapsibleTrigger>
             </Collapsible>
-          </div>
-        )}
+          )}
+          
+          <Collapsible open={showEquipmentBreakdown} onOpenChange={setShowEquipmentBreakdown}>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+                <Settings className="w-3 h-3 mr-1" />
+                Status
+                {showEquipmentBreakdown ? (
+                  <ChevronUp className="w-3 h-3 ml-1" />
+                ) : (
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+        </div>
 
         {/* Action */}
         <Button
@@ -278,11 +302,13 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
         </Button>
       </div>
 
-      {/* Location breakdown */}
-      {hasLocations && (
-        <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
-          <CollapsibleContent>
-            <div className="px-4 pb-4 border-t border-gray-100">
+      {/* Breakdown sections */}
+      <Collapsible open={showLocationBreakdown || showEquipmentBreakdown} onOpenChange={() => {}}>
+        <CollapsibleContent>
+          <div className="px-4 pb-4 border-t border-gray-100">
+            
+            {/* Location breakdown */}
+            {showLocationBreakdown && hasLocations && (
               <div className="bg-gray-50 rounded-lg p-3 mt-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
                   <MapPin className="w-4 h-4 mr-1" />
@@ -307,10 +333,63 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                   </div>
                 )}
               </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
+            )}
+
+            {/* Equipment status breakdown */}
+            {showEquipmentBreakdown && (
+              <div className="bg-gray-50 rounded-lg p-3 mt-3">
+                <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Settings className="w-4 h-4 mr-1" />
+                  Equipment Status
+                </h4>
+                <div className="space-y-2">
+                  {availableCount > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        Available
+                      </span>
+                      <span className="font-medium">{availableCount}</span>
+                    </div>
+                  )}
+                  {onJobCount > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        On Job
+                      </span>
+                      <span className="font-medium">{onJobCount}</span>
+                    </div>
+                  )}
+                  {inMaintenanceCount > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        Maintenance
+                      </span>
+                      <span className="font-medium">{inMaintenanceCount}</span>
+                    </div>
+                  )}
+                  {reservedCount > 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        Reserved
+                      </span>
+                      <span className="font-medium">{reservedCount}</span>
+                    </div>
+                  )}
+                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && reservedCount === 0 && (
+                    <div className="text-sm text-gray-500 text-center py-2">
+                      No equipment data
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 };
