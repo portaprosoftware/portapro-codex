@@ -3,8 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
 import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
@@ -43,6 +44,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const queryClient = useQueryClient();
 
   // Fetch consumables
@@ -139,9 +141,28 @@ export const SimpleConsumablesInventory: React.FC = () => {
   // Derive filtered list
   const filteredConsumables = useMemo(() => {
     if (!consumables) return [];
-    if (!categoryFilter) return consumables;
-    return consumables.filter(c => c.category === categoryFilter);
-  }, [consumables, categoryFilter]);
+    
+    let filtered = consumables;
+    
+    // Apply category filter
+    if (categoryFilter) {
+      filtered = filtered.filter(c => c.category === categoryFilter);
+    }
+    
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const search = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(c => 
+        c.name.toLowerCase().includes(search) ||
+        c.description?.toLowerCase().includes(search) ||
+        c.sku?.toLowerCase().includes(search) ||
+        formatCategoryDisplay(c.category).toLowerCase().includes(search) ||
+        c.notes?.toLowerCase().includes(search)
+      );
+    }
+    
+    return filtered;
+  }, [consumables, categoryFilter, searchTerm]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -168,6 +189,18 @@ export const SimpleConsumablesInventory: React.FC = () => {
           {/* Filters */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
+              <label className="block text-sm text-gray-600 mb-1">Search</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search by name, SKU, category..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div>
               <label className="block text-sm text-gray-600 mb-1">Category</label>
               <div className="flex items-center gap-2">
                 <div className="w-full">
@@ -184,6 +217,20 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 )}
               </div>
             </div>
+            {(searchTerm.trim() || categoryFilter) && (
+              <div className="flex items-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCategoryFilter('');
+                  }}
+                  className="mb-0"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
