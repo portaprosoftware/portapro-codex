@@ -237,7 +237,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600 flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
-                    Storage Locations
+                    Storage Sites
                   </span>
                   <span className="font-medium">{locationCount}</span>
                 </div>
@@ -289,31 +289,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
         {product.track_inventory && (
           <div className="space-y-2">
             <div className="text-xs text-gray-600">
-              {locationCount === 0 && "No location assigned"}
-              {locationCount === 1 && `At 1 location`}
-              {locationCount > 1 && `Across ${locationCount} locations`}
+              {locationCount === 0 && "No site assigned"}
+              {locationCount === 1 && `At 1 site`}
+              {locationCount > 1 && `Across ${locationCount} sites`}
             </div>
             
-            {locationCount > 1 && (
-              <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
-                <CollapsibleTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 text-xs w-full justify-between"
-                  >
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      View breakdown
-                    </span>
-                    {showLocationBreakdown ? 
-                      <ChevronUp className="h-3 w-3" /> : 
-                      <ChevronDown className="h-3 w-3" />
-                    }
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-1 mt-2">
-                  {locationStocks?.map((ls) => (
+            {/* Always show View breakdown button for consistent card sizing */}
+            <Collapsible open={showLocationBreakdown} onOpenChange={setShowLocationBreakdown}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 text-xs w-full justify-between"
+                >
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    View breakdown
+                  </span>
+                  {showLocationBreakdown ? 
+                    <ChevronUp className="h-3 w-3" /> : 
+                    <ChevronDown className="h-3 w-3" />
+                  }
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-1 mt-2">
+                {locationStocks && locationStocks.length > 0 ? (
+                  locationStocks.map((ls) => (
                     <div key={ls.id} className="flex items-center justify-between text-xs bg-gray-50 rounded px-2 py-1">
                       <span className="flex items-center gap-1">
                         <Package className="h-3 w-3" />
@@ -321,10 +322,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                       </span>
                       <span className="font-medium">{ls.quantity}</span>
                     </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            )}
+                  ))
+                ) : (
+                  <div className="text-xs text-gray-500 text-center py-2">
+                    No site assignments
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         )}
       </div>
