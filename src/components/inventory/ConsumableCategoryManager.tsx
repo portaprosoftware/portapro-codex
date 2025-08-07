@@ -210,6 +210,7 @@ export const ConsumableCategoryManager: React.FC = () => {
             <Settings2 className="w-5 h-5" />
             Consumable Categories
           </DialogTitle>
+          <DialogDescription> Add, rename, and safely delete categories. </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
