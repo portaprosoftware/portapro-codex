@@ -77,9 +77,9 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
 
   const statusData = [
     { label: "Available", count: availableCount, color: "bg-gradient-to-r from-green-500 to-green-600", textColor: "text-green-700 font-bold" },
-    { label: "On Job", count: product.stock_in_service, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
-    { label: "Maintenance", count: maintenanceCount, color: "bg-gradient-to-r from-orange-500 to-orange-600", textColor: "text-orange-700 font-bold" },
-    { label: "Reserved", count: reservedCount, color: "bg-gradient-to-r from-yellow-500 to-yellow-600", textColor: "text-yellow-700 font-bold" },
+    { label: "On Job", count: product.stock_in_service, color: "bg-gradient-to-r from-blue-500 to-blue-600", textColor: "text-blue-700 font-bold" },
+    { label: "Maintenance", count: maintenanceCount, color: "bg-gradient-to-r from-amber-500 to-amber-600", textColor: "text-amber-700 font-bold" },
+    { label: "Reserved", count: reservedCount, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
   ];
 
   const isLowStock = availableCount <= product.low_stock_threshold;

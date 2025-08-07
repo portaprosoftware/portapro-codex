@@ -194,7 +194,7 @@ export const MaintenanceCalendarTab: React.FC = () => {
                   <p className="text-sm text-green-600">Senior Technician</p>
                 </div>
                 <div className="text-right">
-                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">Available</Badge>
+                  <Badge className="bg-green-100 text-green-800 mb-1">Available</Badge>
                   <p className="text-sm text-gray-600">3 jobs this week</p>
                 </div>
               </div>

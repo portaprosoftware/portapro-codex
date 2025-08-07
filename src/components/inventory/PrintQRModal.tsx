@@ -9,7 +9,6 @@ import { toast } from "sonner";
 interface PrintQRModalProps {
   open: boolean;
   onClose: () => void;
-  productName?: string;
   items: Array<{
     id: string;
     item_code: string;
@@ -21,7 +20,6 @@ interface PrintQRModalProps {
 export const PrintQRModal: React.FC<PrintQRModalProps> = ({
   open,
   onClose,
-  productName,
   items
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -61,7 +59,6 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
   };
 
   const printQRCodes = () => {
-    console.log('Print button clicked');
     window.print();
   };
 
@@ -74,167 +71,121 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       pages.push(selectedItemsData.slice(i, i + 9));
     }
 
-    console.log('Print Preview - Selected items:', selectedItemsData.length);
-    console.log('Print Preview - Pages:', pages.length);
-    console.log('Selected items data:', selectedItemsData);
-
     return (
-      <>
-        <Dialog open={open} onOpenChange={() => {
-          setShowPrintPreview(false);
-          onClose();
-        }}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            {/* Screen-only UI elements */}
-            <div className="screen-only">
-              <DialogHeader>
-                <DialogTitle>
-                  Print Preview - {selectedItemsData.length} QR Codes
-                  {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
-                  <div className="text-xs text-gray-500 mt-1">
-                    Select Print QR Codes to view size on 8.5 x 11 sheet
-                  </div>
-                </DialogTitle>
-              </DialogHeader>
+      <Dialog open={open} onOpenChange={() => {
+        setShowPrintPreview(false);
+        onClose();
+      }}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Print Preview - {selectedItemsData.length} QR Codes</DialogTitle>
+          </DialogHeader>
 
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
-                    <Printer className="w-4 h-4 mr-2" />
-                    Print QR Codes
-                  </Button>
-                  <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
-                    Back to Selection
-                  </Button>
-                </div>
-
-                {/* Preview Layout for screen */}
-                {pages.map((pageItems, pageIndex) => (
-                  <div key={pageIndex} className="preview-page">
-                    {pageItems.map((item) => (
-                      <div key={item.id} className="preview-item">
-                        <QRCodeSVG
-                          value={item.qr_code_data || item.item_code}
-                          size={140}
-                          level="M"
-                          includeMargin
-                        />
-                        <div className="text-base font-bold mt-1 text-center">
-                          {item.item_code}
-                        </div>
-                      </div>
-                    ))}
-                    {/* Fill empty cells if less than 9 items on last page */}
-                    {pageItems.length < 9 && Array.from({ length: 9 - pageItems.length }).map((_, index) => (
-                      <div key={`empty-${index}`} className="preview-item border-dashed opacity-30" />
-                    ))}
-                  </div>
-                ))}
-              </div>
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
+                <Printer className="w-4 h-4 mr-2" />
+                Print QR Codes
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
+                Back to Selection
+              </Button>
             </div>
 
-            {/* Print-only layout inside the dialog */}
-            <div className="print-only" style={{ display: 'none' }}>
+            {/* Print Layout */}
+            <div className="print-container">
+              <style dangerouslySetInnerHTML={{__html: `
+                @media print {
+                  .print-container {
+                    width: 8.5in;
+                    margin: 0;
+                    padding: 0;
+                  }
+                  .print-page {
+                    width: 8.5in;
+                    height: 11in;
+                    padding: 0.5in;
+                    page-break-after: always;
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    grid-template-rows: repeat(3, 1fr);
+                    gap: 0.2in;
+                  }
+                  .print-page:last-child {
+                    page-break-after: avoid;
+                  }
+                  .qr-print-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid #ddd;
+                    padding: 0.1in;
+                  }
+                  .qr-print-code {
+                    width: 1.8in;
+                    height: 1.8in;
+                  }
+                  .qr-print-text {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-top: 0.1in;
+                  }
+                  @page {
+                    margin: 0;
+                    size: letter portrait;
+                  }
+                }
+                .preview-page {
+                  border: 2px solid #e5e7eb;
+                  margin: 1rem 0;
+                  background: white;
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  grid-template-rows: repeat(3, 1fr);
+                  gap: 0.5rem;
+                  padding: 1rem;
+                  aspect-ratio: 8.5/11;
+                }
+                .preview-item {
+                  border: 1px solid #d1d5db;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 0.5rem;
+                  background: #f9fafb;
+                }
+              `}} />
+
               {pages.map((pageItems, pageIndex) => (
-                <div key={`print-page-${pageIndex}`} className="print-page">
+                <div key={pageIndex} className="print-page preview-page">
                   {pageItems.map((item) => (
-                    <div key={`print-item-${item.id}`} className="qr-print-item">
+                    <div key={item.id} className="qr-print-item preview-item">
                       <QRCodeSVG
                         value={item.qr_code_data || item.item_code}
-                        size={200}
+                        size={100}
                         level="M"
-                        includeMargin={true}
+                        includeMargin
+                        className="qr-print-code"
                       />
-                      <div className="qr-print-text">
+                      <div className="qr-print-text text-sm font-bold mt-2">
                         {item.item_code}
                       </div>
                     </div>
                   ))}
+                  {/* Fill empty cells if less than 9 items on last page */}
+                  {pageItems.length < 9 && Array.from({ length: 9 - pageItems.length }).map((_, index) => (
+                    <div key={`empty-${index}`} className="preview-item border-dashed opacity-30" />
+                  ))}
                 </div>
               ))}
             </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Print Styles */}
-        <style dangerouslySetInnerHTML={{__html: `
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .print-only, .print-only * {
-              visibility: visible;
-            }
-            .print-only {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: 100%;
-              display: block !important;
-            }
-            .print-page {
-              width: 8.5in;
-              height: 11in;
-              padding: 0.1in;
-              page-break-after: always;
-              display: grid !important;
-              grid-template-columns: repeat(3, 1fr);
-              grid-template-rows: repeat(3, 3.6in);
-              gap: 0.05in;
-              margin: 0;
-              margin-top: -0.1in;
-              box-sizing: border-box;
-            }
-            .print-page:last-child {
-              page-break-after: avoid;
-            }
-            .qr-print-item {
-              display: flex !important;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              border: 1px solid #333;
-              padding: 0.05in;
-              box-sizing: border-box;
-            }
-            .qr-print-text {
-              font-family: Arial, sans-serif !important;
-              font-size: 16px !important;
-              font-weight: bold !important;
-              text-align: center !important;
-              margin-top: 0.05in !important;
-              color: #000 !important;
-            }
-            @page {
-              margin: 0;
-              size: letter portrait;
-            }
-          }
-          
-          .preview-page {
-            border: 2px solid #e5e7eb;
-            margin: 1rem 0;
-            background: white;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 0.5rem;
-            padding: 1rem;
-            aspect-ratio: 8.5/11;
-            max-width: 600px;
-          }
-          .preview-item {
-            border: 1px solid #d1d5db;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem;
-            background: #f9fafb;
-          }
-        `}} />
-      </>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -278,10 +229,10 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                   <div className="flex-1">
                     <span className="font-medium">{item.item_code}</span>
                   </div>
-                  <div className="w-16 h-16 border rounded p-1">
+                  <div className="w-8 h-8 border rounded">
                     <QRCodeSVG
                       value={item.qr_code_data || item.item_code}
-                      size={56}
+                      size={32}
                       level="M"
                     />
                   </div>
