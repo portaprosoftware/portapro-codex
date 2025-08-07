@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
+import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 
 export interface ItemCodeCategory {
   [key: string]: string; // e.g., {"1000": "Standard Units", "2000": "ADA Units"}
@@ -54,6 +55,12 @@ export const useItemCodeCategories = () => {
 // New: Dynamic consumable categories hook
 export const useConsumableCategories = () => {
   const { data: companySettings, ...rest } = useCompanySettings();
-  const categories = (companySettings?.consumable_categories as ConsumableCategory[]) || [];
-  return { categories, ...rest };
+  const customCategories = (companySettings?.consumable_categories as ConsumableCategory[]) || [];
+  
+  // If user has custom categories, use only those
+  // If no custom categories, show static categories as if they were user-created (editable)
+  const categories = customCategories.length > 0 ? customCategories : CONSUMABLE_CATEGORIES;
+  const hasCustomCategories = customCategories.length > 0;
+  
+  return { categories, hasCustomCategories, customCategories, ...rest };
 };

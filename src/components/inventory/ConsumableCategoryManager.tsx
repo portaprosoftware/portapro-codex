@@ -17,7 +17,7 @@ import type { ConsumableCategory } from '@/lib/consumableCategories';
 
 export const ConsumableCategoryManager: React.FC = () => {
   const queryClient = useQueryClient();
-  const { categories, isLoading: categoriesLoading } = useConsumableCategories();
+  const { categories, hasCustomCategories, isLoading: categoriesLoading } = useConsumableCategories();
   const { data: companySettings } = useCompanySettings();
   const [open, setOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -225,9 +225,29 @@ export const ConsumableCategoryManager: React.FC = () => {
               Consumable Categories Management
             </DialogTitle>
             <DialogDescription>
-              Organize your consumables with custom categories. Add, edit, and manage categories to keep your inventory organized.
+              {!hasCustomCategories 
+                ? "We've provided some default categories to get you started. You can edit them or add your own. Once you add a custom category, you'll have full control over your category list."
+                : "Organize your consumables with custom categories. Add, edit, and manage categories to keep your inventory organized."
+              }
             </DialogDescription>
           </DialogHeader>
+
+          {!hasCustomCategories && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mt-0.5">
+                  <span className="text-white text-xs">i</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-blue-900 mb-1">Default Categories Loaded</h4>
+                  <p className="text-sm text-blue-800">
+                    We've loaded some common categories to help you get started. You can edit or delete any of these, 
+                    and they'll become your custom categories. Once you add your first new category, you'll have full control.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Add New Category Section */}
@@ -313,7 +333,14 @@ export const ConsumableCategoryManager: React.FC = () => {
                       return (
                         <div key={cat.value} className="flex items-center justify-between p-3 border rounded-lg bg-background">
                           <div className="flex items-center gap-3 flex-1">
-                            <Badge variant="outline" className="font-mono text-xs shrink-0">{cat.value}</Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="font-mono text-xs shrink-0">{cat.value}</Badge>
+                              {!hasCustomCategories && (
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
+                                  default
+                                </Badge>
+                              )}
+                            </div>
                             {isEditing ? (
                               <div className="flex items-center gap-2 flex-1">
                                 <Input
