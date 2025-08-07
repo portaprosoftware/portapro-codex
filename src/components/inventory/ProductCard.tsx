@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle, QrCode } from "lucide-react";
+import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Lock, Unlock, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { PrintQRModal } from "@/components/inventory/PrintQRModal";
 
 interface Product {
   id: string;
@@ -29,7 +28,6 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
   const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
-  const [showPrintQRModal, setShowPrintQRModal] = useState(false);
 
   // Set up real-time subscription for this product's items
   useEffect(() => {
@@ -336,36 +334,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-4 space-y-2">
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setShowPrintQRModal(true)}
-            variant="outline"
-            size="sm"
-            className="flex-1 border-purple-600 text-purple-600 hover:bg-purple-50"
-          >
-            <QrCode className="w-4 h-4 mr-1" />
-            Print QR
-          </Button>
-          <Button
-            onClick={onSelect}
-            variant="outline"
-            size="sm"
-            className="flex-1 border-blue-600 text-blue-600 hover:bg-blue-50"
-          >
-            <Eye className="w-4 h-4 mr-1" />
-            View
-          </Button>
-        </div>
+      {/* View Button */}
+      <div className="mt-4">
+        <Button
+          onClick={onSelect}
+          variant="outline"
+          className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+        >
+          <Eye className="w-4 h-4 mr-2" />
+          View
+        </Button>
       </div>
-
-      {/* Print QR Modal */}
-      <PrintQRModal
-        isOpen={showPrintQRModal}
-        onClose={() => setShowPrintQRModal(false)}
-        productId={product.id}
-      />
     </div>
   );
 };

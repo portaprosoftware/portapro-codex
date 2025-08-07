@@ -15,6 +15,7 @@ import { EditItemModal } from "./EditItemModal";
 import { CreateItemModal } from "./CreateItemModal";
 import { SimpleQRCode } from "./SimpleQRCode";
 import { QRCodeScanner } from "./QRCodeScanner";
+import { PrintQRModal } from "./PrintQRModal";
 
 import { AttributeFilters } from "./AttributeFilters";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
@@ -39,6 +40,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showPrintQRModal, setShowPrintQRModal] = useState(false);
   
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
@@ -349,6 +351,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           Scan QR
         </Button>
         <Button 
+          variant="outline"
+          onClick={() => setShowPrintQRModal(true)}
+          className="border-green-600 text-green-600 hover:bg-green-50"
+        >
+          <QrCode className="w-4 h-4 mr-2" />
+          Print QR Codes
+        </Button>
+        <Button 
           onClick={() => setShowCreateModal(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
@@ -569,7 +579,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         isDeleting={deleteItemMutation.isPending}
       />
 
-
+      {/* Print QR Modal */}
+      <PrintQRModal
+        isOpen={showPrintQRModal}
+        onClose={() => setShowPrintQRModal(false)}
+        productId={productId}
+      />
     </div>
   );
 };
