@@ -202,27 +202,46 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
   };
 
   const generateItemCode = async () => {
+    console.log('Generate button clicked - categories loading:', categoriesLoading);
+    console.log('Generate button clicked - categories:', categories);
+    console.log('Generate button clicked - product:', product);
+    
     // Check if product has a default category
     if (product?.default_item_code_category) {
+      console.log('Using default category:', product.default_item_code_category);
       try {
         const { data: itemCode, error } = await supabase.rpc('generate_item_code_with_category', {
           category_prefix: product.default_item_code_category
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('RPC error:', error);
+          throw error;
+        }
         
+        console.log('Generated item code:', itemCode);
         handleInputChange("item_code", itemCode);
         toast.success('Item code generated successfully');
       } catch (error) {
         console.error('Error generating item code:', error);
-        toast.error('Failed to generate item code');
+        toast.error(`Failed to generate item code: ${error.message}`);
       }
     } else {
+      console.log('No default category, checking categories availability');
       // No default category, show selection modal
-      if (categoriesLoading || !categories || categories.length === 0) {
+      if (categoriesLoading) {
+        console.log('Categories still loading');
+        toast.error("Categories are still loading, please try again");
+        return;
+      }
+      
+      if (!categories || categories.length === 0) {
+        console.log('No categories available');
         toast.error("Item code categories not available");
         return;
       }
+      
+      console.log('Showing category selection modal');
       setShowCategorySelect(true);
     }
   };
