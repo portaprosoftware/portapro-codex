@@ -19,12 +19,17 @@ interface StockAdjustmentWizardProps {
   onCancel: () => void;
 }
 
-const adjustmentReasons = [
-  { value: "damaged", label: "Damaged/Broken", icon: AlertTriangle },
-  { value: "lost", label: "Lost/Missing", icon: Package },
+const increaseReasons = [
   { value: "found", label: "Found/Recovered", icon: Package },
   { value: "maintenance", label: "Maintenance Return", icon: RotateCcw },
   { value: "purchase", label: "New Purchase", icon: Plus },
+  { value: "correction", label: "Inventory Correction", icon: RotateCcw },
+  { value: "other", label: "Other", icon: Package },
+];
+
+const decreaseReasons = [
+  { value: "damaged", label: "Damaged/Broken", icon: AlertTriangle },
+  { value: "lost", label: "Lost/Missing", icon: Package },
   { value: "correction", label: "Inventory Correction", icon: RotateCcw },
   { value: "other", label: "Other", icon: Package },
 ];
@@ -110,7 +115,18 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
     }
   };
 
-  const selectedReason = adjustmentReasons.find(r => r.value === reason);
+  // Get the current reasons based on adjustment type
+  const currentReasons = adjustmentType === "increase" ? increaseReasons : 
+                        adjustmentType === "decrease" ? decreaseReasons : 
+                        [...increaseReasons, ...decreaseReasons];
+  
+  const selectedReason = currentReasons.find(r => r.value === reason);
+  
+  // Reset reason when changing adjustment type
+  const handleAdjustmentTypeChange = (type: "increase" | "decrease" | "set") => {
+    setAdjustmentType(type);
+    setReason(""); // Clear reason when switching types
+  };
 
   return (
     <Card className="w-full max-w-md">
@@ -135,7 +151,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
             <Button
               variant={adjustmentType === "increase" ? "default" : "outline"}
               size="sm"
-              onClick={() => setAdjustmentType("increase")}
+              onClick={() => handleAdjustmentTypeChange("increase")}
               className="flex-1"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -144,7 +160,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
             <Button
               variant={adjustmentType === "decrease" ? "default" : "outline"}
               size="sm"
-              onClick={() => setAdjustmentType("decrease")}
+              onClick={() => handleAdjustmentTypeChange("decrease")}
               className="flex-1"
             >
               <Minus className="w-4 h-4 mr-2" />
@@ -153,7 +169,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
             <Button
               variant={adjustmentType === "set" ? "default" : "outline"}
               size="sm"
-              onClick={() => setAdjustmentType("set")}
+              onClick={() => handleAdjustmentTypeChange("set")}
               className="flex-1"
             >
               Set To
@@ -181,7 +197,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
               <SelectValue placeholder="Select reason for adjustment" />
             </SelectTrigger>
             <SelectContent>
-              {adjustmentReasons.map((reasonOption) => (
+              {currentReasons.map((reasonOption) => (
                 <SelectItem key={reasonOption.value} value={reasonOption.value}>
                   <div className="flex items-center gap-2">
                     <reasonOption.icon className="w-4 h-4" />
