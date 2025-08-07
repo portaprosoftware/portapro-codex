@@ -49,6 +49,9 @@ serve(async (req) => {
       };
       avgConfidence = 0;
     } else {
+      // Preprocess image for better OCR results
+      const processedImageBase64 = await preprocessImage(imageBase64);
+      
       // Real Google Cloud Vision API processing with retry logic
       let visionResponse;
       let retryCount = 0;
@@ -66,12 +69,24 @@ serve(async (req) => {
             body: JSON.stringify({
               requests: [{
                 image: {
-                  content: imageBase64.replace(/^data:image\/[a-z]+;base64,/, '')
+                  content: processedImageBase64.replace(/^data:image\/[a-z]+;base64,/, '')
                 },
-                features: [{
-                  type: 'TEXT_DETECTION',
-                  maxResults: 50
-                }]
+                features: [
+                  {
+                    type: 'TEXT_DETECTION',
+                    maxResults: 50
+                  },
+                  {
+                    type: 'DOCUMENT_TEXT_DETECTION',
+                    maxResults: 50
+                  }
+                ],
+                imageContext: {
+                  textDetectionParams: {
+                    enableTextDetectionConfidenceScore: true
+                  },
+                  languageHints: ['en']
+                }
               }]
             })
           });
@@ -140,24 +155,54 @@ serve(async (req) => {
           avgConfidence = 0;
         } else {
           const textAnnotations = visionData.responses[0]?.textAnnotations || [];
-          console.log('Detected text annotations:', textAnnotations.length);
+          const documentText = visionData.responses[0]?.fullTextAnnotation?.text || '';
+          
+          console.log('=== OCR DEBUGGING ===');
+          console.log('Raw Vision API response structure:');
+          console.log('- Text annotations count:', textAnnotations.length);
+          console.log('- Document text available:', !!documentText);
+          console.log('- Full response keys:', Object.keys(visionData.responses[0] || {}));
+          
+          if (textAnnotations.length > 0) {
+            console.log('First 5 text annotations:');
+            textAnnotations.slice(0, 5).forEach((annotation, i) => {
+              console.log(`  ${i + 1}:`, {
+                text: annotation.description?.substring(0, 50),
+                confidence: annotation.score,
+                boundingPoly: !!annotation.boundingPoly
+              });
+            });
+          }
 
-          // Extract all detected text
-          const detectedTexts = textAnnotations.map(annotation => annotation.description);
-          const fullText = detectedTexts.join(' ');
+          // Extract all detected text with preference for document text
+          const fullText = documentText || textAnnotations.map(annotation => annotation.description).join(' ');
 
-          console.log('Full detected text:', fullText);
+          console.log('=== TEXT EXTRACTION ===');
+          console.log('Full detected text length:', fullText.length);
+          console.log('Full detected text preview:', fullText.substring(0, 200));
+          console.log('Text contains numbers:', /\d/.test(fullText));
+          console.log('Text contains letters:', /[a-zA-Z]/.test(fullText));
 
-          // Parse OCR results with regex patterns
-          ocrResults = {
+          // Parse OCR results with enhanced regex patterns
+          console.log('=== PATTERN MATCHING ===');
+          const extractedData = {
             toolNumber: extractToolNumber(fullText),
             vendorId: extractVendorId(fullText),
             plasticCode: extractPlasticCode(fullText),
             manufacturingDate: extractManufacturingDate(fullText),
-            moldCavity: extractMoldCavity(fullText),
+            moldCavity: extractMoldCavity(fullText)
+          };
+          
+          console.log('Extraction results:', extractedData);
+          
+          ocrResults = {
+            ...extractedData,
             rawData: {
               fullText,
-              annotations: textAnnotations.slice(0, 10) // Limit raw data size
+              documentText,
+              annotations: textAnnotations.slice(0, 10), // Limit raw data size
+              totalAnnotations: textAnnotations.length,
+              hasDocumentText: !!documentText
             }
           };
 
@@ -168,9 +213,12 @@ serve(async (req) => {
           
           avgConfidence = confidenceScores.length > 0 
             ? confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length
-            : 0;
+            : (fullText.length > 0 ? 0.5 : 0); // Assign medium confidence if text found but no scores
             
-          console.log(`OCR successful: Found ${Object.values(ocrResults).filter(v => v && v !== null).length - 1} fields with ${avgConfidence.toFixed(2)} confidence`);
+          console.log(`=== FINAL RESULTS ===`);
+          console.log(`Found ${Object.values(extractedData).filter(v => v && v !== null).length} fields`);
+          console.log(`Confidence: ${avgConfidence.toFixed(2)}`);
+          console.log(`Text quality: ${fullText.length > 10 ? 'Good' : 'Poor'} (${fullText.length} chars)`);
         }
       }
     }
@@ -238,92 +286,142 @@ serve(async (req) => {
   }
 });
 
-// Helper functions for text extraction
+// Image preprocessing function
+async function preprocessImage(imageBase64: string): Promise<string> {
+  try {
+    // For now, return the original image
+    // In future, could implement contrast/brightness enhancement here
+    console.log('Image preprocessing: Using original image (enhancement not implemented)');
+    return imageBase64;
+  } catch (error) {
+    console.log('Image preprocessing failed, using original:', error.message);
+    return imageBase64;
+  }
+}
+
+// Helper functions for text extraction with enhanced patterns
 function extractToolNumber(text: string): string | null {
-  // Look for patterns like "T-20788-1A", "TOOL 12345", etc.
+  console.log('Searching for tool number in:', text.substring(0, 100));
+  
+  // Enhanced patterns for tool numbers
   const patterns = [
     /T-\d{5}-\w+/gi,
-    /TOOL[\s#]*(\d{5,})/gi,
-    /TL[\s#]*(\d{4,})/gi
+    /TOOL[\s#:]*(\d{4,})/gi,
+    /TL[\s#:]*(\d{4,})/gi,
+    /\bT\d{4,}/gi,
+    /\b\d{5,}-\w+/gi, // Generic number-letter combos
+    /\b[A-Z]{1,3}[-\s]*\d{4,}/gi // Letter prefix with numbers
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      console.log('Tool number found:', match[0]);
-      return match[0].trim().toUpperCase();
+    const matches = text.match(pattern);
+    if (matches) {
+      console.log('Tool number pattern matched:', pattern, 'Result:', matches[0]);
+      return matches[0].trim().toUpperCase();
     }
   }
+  
+  console.log('No tool number patterns matched');
   return null;
 }
 
 function extractVendorId(text: string): string | null {
-  // Look for vendor ID patterns
+  console.log('Searching for vendor ID in:', text.substring(0, 100));
+  
+  // Enhanced patterns for vendor IDs
   const patterns = [
-    /VENDOR\s*ID[\s#]*(\d+)/gi,
-    /VID[\s#]*(\d+)/gi,
-    /(?:^|\s)(\d{5,})(?:\s|$)/g // Standalone 5+ digit numbers
+    /VENDOR\s*ID[\s#:]*(\d+)/gi,
+    /VID[\s#:]*(\d+)/gi,
+    /V[\s#:]*(\d{4,})/gi,
+    /ID[\s#:]*(\d{4,})/gi,
+    /\b\d{5,}\b/g // Standalone 5+ digit numbers
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      console.log('Vendor ID found:', match[0]);
-      return match[0].replace(/\D/g, ''); // Extract just numbers
+    const matches = text.match(pattern);
+    if (matches) {
+      const result = matches[0].replace(/\D/g, ''); // Extract just numbers
+      if (result.length >= 4) {
+        console.log('Vendor ID pattern matched:', pattern, 'Result:', result);
+        return result;
+      }
     }
   }
+  
+  console.log('No vendor ID patterns matched');
   return null;
 }
 
 function extractPlasticCode(text: string): string | null {
-  // Look for recycling codes like "2 HDPE", "♺ 2 HDPE"
+  console.log('Searching for plastic code in:', text.substring(0, 100));
+  
+  // Enhanced patterns for plastic/recycling codes
   const patterns = [
-    /♺?\s*(\d+)\s*(HDPE|PP|PE|PVC|PS|PC)/gi,
-    /(\d+)\s*(HDPE|PP|PE|PVC|PS|PC)/gi
+    /♺?\s*(\d+)\s*(HDPE|PP|PE|PVC|PS|PC|ABS|PET)/gi,
+    /(\d+)\s*(HDPE|PP|PE|PVC|PS|PC|ABS|PET)/gi,
+    /♺\s*(\d+)/gi, // Just recycling symbol with number
+    /RESIN\s*(\d+)/gi,
+    /PLASTIC\s*(\d+)/gi
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      console.log('Plastic code found:', match[0]);
-      return match[0].trim().toUpperCase();
+    const matches = text.match(pattern);
+    if (matches) {
+      console.log('Plastic code pattern matched:', pattern, 'Result:', matches[0]);
+      return matches[0].trim().toUpperCase();
     }
   }
+  
+  console.log('No plastic code patterns matched');
   return null;
 }
 
 function extractManufacturingDate(text: string): string | null {
-  // Look for date patterns - this is complex for circular dials
-  // For now, look for simple date patterns
+  console.log('Searching for manufacturing date in:', text.substring(0, 100));
+  
+  // Enhanced patterns for dates including circular dial patterns
   const patterns = [
-    /\b(0?[1-9]|1[0-2])[\/\-](20)?\d{2}\b/g, // MM/YY or MM/YYYY
-    /\b(20)?\d{2}[\/\-](0?[1-9]|1[0-2])\b/g  // YY/MM or YYYY/MM
+    /\b(0?[1-9]|1[0-2])[\/\-\.](20)?\d{2}\b/g, // MM/YY, MM/YYYY, MM.YY
+    /\b(20)?\d{2}[\/\-\.](0?[1-9]|1[0-2])\b/g,  // YY/MM, YYYY/MM, YY.MM
+    /\b\d{2}\/\d{2}\b/g, // Any XX/XX pattern
+    /\b\d{4}\b/g, // 4-digit years
+    /MFG[\s:]*(\d{1,2}[\/-]\d{2,4})/gi,
+    /DATE[\s:]*(\d{1,2}[\/-]\d{2,4})/gi
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      console.log('Date found:', match[0]);
-      return match[0];
+    const matches = text.match(pattern);
+    if (matches) {
+      console.log('Date pattern matched:', pattern, 'Result:', matches[0]);
+      return matches[0];
     }
   }
+  
+  console.log('No date patterns matched');
   return null;
 }
 
 function extractMoldCavity(text: string): string | null {
-  // Look for cavity or shift information
+  console.log('Searching for mold cavity in:', text.substring(0, 100));
+  
+  // Enhanced patterns for cavity or shift information
   const patterns = [
-    /CAVITY[\s#]*(\d+)/gi,
-    /CAV[\s#]*(\d+)/gi,
-    /SHIFT[\s#]*(\d+)/gi
+    /CAVITY[\s#:]*(\d+)/gi,
+    /CAV[\s#:]*(\d+)/gi,
+    /SHIFT[\s#:]*(\d+)/gi,
+    /MOLD[\s#:]*(\d+)/gi,
+    /\bC[\s#:]*(\d+)/gi, // Just "C" followed by number
+    /\bS[\s#:]*(\d+)/gi  // Just "S" followed by number
   ];
   
   for (const pattern of patterns) {
-    const match = text.match(pattern);
-    if (match) {
-      console.log('Mold cavity found:', match[0]);
-      return match[0].trim().toUpperCase();
+    const matches = text.match(pattern);
+    if (matches) {
+      console.log('Mold cavity pattern matched:', pattern, 'Result:', matches[0]);
+      return matches[0].trim().toUpperCase();
     }
   }
+  
+  console.log('No mold cavity patterns matched');
   return null;
 }
