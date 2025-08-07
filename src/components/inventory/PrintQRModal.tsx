@@ -83,6 +83,9 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
             <DialogTitle>
               Print Preview - {selectedItemsData.length} QR Codes
               {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
+              <div className="text-xs text-gray-500 mt-1">
+                Select Print QR Codes to view size on 8.5 x 11 sheet
+              </div>
             </DialogTitle>
           </DialogHeader>
 
@@ -95,9 +98,6 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
                 Back to Selection
               </Button>
-              <span className="text-xs text-gray-500 ml-2">
-                Select Print QR Codes to view size on 8.5 x 11 sheet
-              </span>
             </div>
 
             {/* Print Layout */}
