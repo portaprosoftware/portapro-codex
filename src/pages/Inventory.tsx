@@ -9,8 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings } from 'lucide-react';
+import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
@@ -384,6 +385,23 @@ const Inventory: React.FC = () => {
                   onCheckedChange={setHideInactive}
                 />
                 <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
+                      <Info className="w-3 h-3" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 text-sm">
+                    Hide products from view that have inventory tracking disabled.
+                  </PopoverContent>
+                </Popover>
+                {inactiveProductsCount > 0 && (
+                  <Badge 
+                    className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+                  >
+                    {inactiveProductsCount}
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -404,6 +422,22 @@ const Inventory: React.FC = () => {
                 />
               </div>
               <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowOCRSearch(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  Scan Panel
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowQRScanner(true)}
+                  className="flex items-center gap-2"
+                >
+                  <QrCode className="h-4 w-4" />
+                  Scan QR
+                </Button>
                 <Button 
                   onClick={() => setAddInventoryModalOpen(true)}
                   className="flex items-center gap-2"
