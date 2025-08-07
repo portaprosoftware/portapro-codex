@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 
 interface UnifiedStockData {
   product_id: string;
@@ -72,6 +72,71 @@ export const useUnifiedStockManagement = (productId: string) => {
     refetchOnWindowFocus: true,
     enabled: !!productId,
   });
+
+  // Real-time subscriptions for stock-related changes
+  useEffect(() => {
+    if (!productId) return;
+
+    const channel = supabase
+      .channel(`unified-stock-${productId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'products',
+          filter: `id=eq.${productId}`
+        },
+        () => {
+          console.log('Products table changed for:', productId);
+          queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items',
+          filter: `product_id=eq.${productId}`
+        },
+        () => {
+          console.log('Product items changed for:', productId);
+          queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'equipment_assignments',
+          filter: `product_id=eq.${productId}`
+        },
+        () => {
+          console.log('Equipment assignments changed for product:', productId);
+          queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'stock_adjustments',
+          filter: `product_id=eq.${productId}`
+        },
+        () => {
+          console.log('Stock adjustments changed for:', productId);
+          queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [productId, queryClient]);
 
   // Memoized hash for change detection
   const stockHash = useMemo(() => {

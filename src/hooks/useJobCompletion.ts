@@ -13,6 +13,7 @@ interface CompleteJobData {
   status: 'completed';
   consumableAllocations?: Record<string, JobConsumableAllocation[]>; // consumableId -> location allocations
   notes?: string;
+  returnEquipment?: boolean; // Whether to automatically return assigned equipment
 }
 
 export function useJobCompletion() {
@@ -32,6 +33,54 @@ export function useJobCompletion() {
         .eq('id', data.jobId);
 
       if (jobError) throw jobError;
+
+      // Handle equipment assignments - return equipment if requested
+      if (data.returnEquipment !== false) { // Default to true if not specified
+        // Get all equipment assignments for this job
+        const { data: equipmentAssignments, error: equipmentError } = await supabase
+          .from('equipment_assignments')
+          .select('*')
+          .eq('job_id', data.jobId)
+          .in('status', ['assigned', 'delivered', 'in_service']);
+
+        if (equipmentError) {
+          console.error('Failed to fetch equipment assignments:', equipmentError);
+        } else if (equipmentAssignments && equipmentAssignments.length > 0) {
+          // Handle specific item assignments (product_item_id is set)
+          const specificAssignments = equipmentAssignments.filter(ea => ea.product_item_id);
+          if (specificAssignments.length > 0) {
+            const itemIds = specificAssignments.map(ea => ea.product_item_id);
+            
+            // Update product items status back to available
+            const { error: itemUpdateError } = await supabase
+              .from('product_items')
+              .update({ 
+                status: 'available',
+                updated_at: new Date().toISOString()
+              })
+              .in('id', itemIds);
+
+            if (itemUpdateError) {
+              console.error('Failed to update product item status:', itemUpdateError);
+            }
+          }
+
+          // Update all equipment assignments to returned status
+          const { error: assignmentUpdateError } = await supabase
+            .from('equipment_assignments')
+            .update({ 
+              status: 'returned',
+              return_date: new Date().toISOString().split('T')[0], // Set return date to today
+              updated_at: new Date().toISOString()
+            })
+            .eq('job_id', data.jobId)
+            .in('status', ['assigned', 'delivered', 'in_service']);
+
+          if (assignmentUpdateError) {
+            console.error('Failed to update equipment assignments:', assignmentUpdateError);
+          }
+        }
+      }
 
       // If consumable allocations provided, update location stock
       if (data.consumableAllocations) {
@@ -83,6 +132,10 @@ export function useJobCompletion() {
       queryClient.invalidateQueries({ queryKey: ['job-consumables'] });
       queryClient.invalidateQueries({ queryKey: ['consumable-location-stock'] });
       queryClient.invalidateQueries({ queryKey: ['consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['equipment-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['product-items'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-stock'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
     },
     onError: (error) => {
       toast({
