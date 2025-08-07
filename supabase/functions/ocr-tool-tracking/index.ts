@@ -49,30 +49,57 @@ serve(async (req) => {
       };
       avgConfidence = 0;
     } else {
-      // Real Google Cloud Vision API processing
-      const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleCloudVisionKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          requests: [{
-            image: {
-              content: imageBase64.replace(/^data:image\/[a-z]+;base64,/, '')
+      // Real Google Cloud Vision API processing with retry logic
+      let visionResponse;
+      let retryCount = 0;
+      const maxRetries = 3;
+      
+      while (retryCount < maxRetries) {
+        try {
+          console.log(`Attempting Vision API call (attempt ${retryCount + 1}/${maxRetries})`);
+          
+          visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleCloudVisionKey}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-            features: [{
-              type: 'TEXT_DETECTION',
-              maxResults: 50
-            }]
-          }]
-        })
-      });
+            body: JSON.stringify({
+              requests: [{
+                image: {
+                  content: imageBase64.replace(/^data:image\/[a-z]+;base64,/, '')
+                },
+                features: [{
+                  type: 'TEXT_DETECTION',
+                  maxResults: 50
+                }]
+              }]
+            })
+          });
+          
+          if (visionResponse.ok) {
+            break; // Success, exit retry loop
+          } else {
+            throw new Error(`API returned ${visionResponse.status}: ${visionResponse.statusText}`);
+          }
+        } catch (error) {
+          console.log(`Vision API attempt ${retryCount + 1} failed:`, error.message);
+          retryCount++;
+          
+          if (retryCount < maxRetries) {
+            // Wait before retrying (exponential backoff)
+            const delay = Math.pow(2, retryCount) * 1000;
+            console.log(`Waiting ${delay}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
 
-      if (!visionResponse.ok) {
-        const responseText = await visionResponse.text();
-        console.log(`Vision API error: ${visionResponse.status} ${visionResponse.statusText} - ${responseText}`);
+      if (!visionResponse || !visionResponse.ok) {
+        const responseText = visionResponse ? await visionResponse.text() : 'No response received';
+        const statusInfo = visionResponse ? `${visionResponse.status} ${visionResponse.statusText}` : 'Connection failed';
+        console.log(`Vision API failed after ${maxRetries} attempts: ${statusInfo} - ${responseText}`);
         
-        // Return empty results instead of hardcoded mock data when API fails
+        // Return empty results with detailed error info
         ocrResults = {
           toolNumber: null,
           vendorId: null,
@@ -80,47 +107,71 @@ serve(async (req) => {
           manufacturingDate: null,
           moldCavity: null,
           rawData: {
-            fullText: `OCR processing failed: ${visionResponse.status} ${visionResponse.statusText}`,
+            fullText: `OCR processing failed after ${maxRetries} attempts: ${statusInfo}`,
             annotations: [],
-            error: responseText
+            error: responseText,
+            retriesAttempted: maxRetries
           }
         };
         avgConfidence = 0;
         
-        console.log('OCR API failed, returning empty results');
+        console.log('OCR API failed after retries, returning empty results');
       } else {
+        console.log('Vision API successful, processing response...');
         const visionData = await visionResponse.json();
-        const textAnnotations = visionData.responses[0]?.textAnnotations || [];
-
-        console.log('Detected text annotations:', textAnnotations.length);
-
-        // Extract all detected text
-        const detectedTexts = textAnnotations.map(annotation => annotation.description);
-        const fullText = detectedTexts.join(' ');
-
-        console.log('Full detected text:', fullText);
-
-        // Parse OCR results with regex patterns
-        ocrResults = {
-          toolNumber: extractToolNumber(fullText),
-          vendorId: extractVendorId(fullText),
-          plasticCode: extractPlasticCode(fullText),
-          manufacturingDate: extractManufacturingDate(fullText),
-          moldCavity: extractMoldCavity(fullText),
-          rawData: {
-            fullText,
-            annotations: textAnnotations.slice(0, 10) // Limit raw data size
-          }
-        };
-
-        // Calculate confidence score (average of all text confidences)
-        const confidenceScores = textAnnotations
-          .filter(t => t.score !== undefined)
-          .map(t => t.score || 0);
         
-        avgConfidence = confidenceScores.length > 0 
-          ? confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length
-          : 0;
+        // Check for API errors in the response
+        if (visionData.responses?.[0]?.error) {
+          const apiError = visionData.responses[0].error;
+          console.log('Vision API returned error in response:', apiError);
+          
+          ocrResults = {
+            toolNumber: null,
+            vendorId: null,
+            plasticCode: null,
+            manufacturingDate: null,
+            moldCavity: null,
+            rawData: {
+              fullText: `OCR API error: ${apiError.message || 'Unknown error'}`,
+              annotations: [],
+              error: apiError
+            }
+          };
+          avgConfidence = 0;
+        } else {
+          const textAnnotations = visionData.responses[0]?.textAnnotations || [];
+          console.log('Detected text annotations:', textAnnotations.length);
+
+          // Extract all detected text
+          const detectedTexts = textAnnotations.map(annotation => annotation.description);
+          const fullText = detectedTexts.join(' ');
+
+          console.log('Full detected text:', fullText);
+
+          // Parse OCR results with regex patterns
+          ocrResults = {
+            toolNumber: extractToolNumber(fullText),
+            vendorId: extractVendorId(fullText),
+            plasticCode: extractPlasticCode(fullText),
+            manufacturingDate: extractManufacturingDate(fullText),
+            moldCavity: extractMoldCavity(fullText),
+            rawData: {
+              fullText,
+              annotations: textAnnotations.slice(0, 10) // Limit raw data size
+            }
+          };
+
+          // Calculate confidence score (average of all text confidences)
+          const confidenceScores = textAnnotations
+            .filter(t => t.score !== undefined)
+            .map(t => t.score || 0);
+          
+          avgConfidence = confidenceScores.length > 0 
+            ? confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length
+            : 0;
+            
+          console.log(`OCR successful: Found ${Object.values(ocrResults).filter(v => v && v !== null).length - 1} fields with ${avgConfidence.toFixed(2)} confidence`);
+        }
       }
     }
 
