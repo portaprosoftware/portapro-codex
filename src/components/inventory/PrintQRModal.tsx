@@ -157,11 +157,13 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                   aspect-ratio: 8.5/11;
                 }
                 .preview-item {
+                  border: 1px solid #d1d5db;
                   display: flex;
                   flex-direction: column;
                   align-items: center;
                   justify-content: center;
                   padding: 0.5rem;
+                  background: #f9fafb;
                 }
               `}} />
 
