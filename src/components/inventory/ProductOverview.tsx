@@ -215,14 +215,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               <Edit className="w-4 h-4 mr-2" />
               Edit Product Info
             </Button>
-            <Button 
-              variant="outline" 
-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              onClick={() => setShowMaintenanceModal(true)}
-            >
-              <Wrench className="w-4 h-4 mr-2" />
-              Maintenance Hub
-            </Button>
           </div>
         </div>
       </div>

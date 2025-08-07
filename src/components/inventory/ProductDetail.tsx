@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building } from "lucide-react";
+import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { IndividualUnitsTab } from "./IndividualUnitsTab";
 import { ProductAttributesTab } from "./ProductAttributesTab";
 import { ProductLocationStock } from "./ProductLocationStock";
 import { IndividualItemCreation } from "./IndividualItemCreation";
+import { MaintenanceTrackerTab } from "./MaintenanceTrackerTab";
 
 interface ProductDetailProps {
   productId: string;
@@ -111,7 +112,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Overview
@@ -131,6 +132,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="maintenance" className="flex items-center gap-2">
+            <Wrench className="w-4 h-4" />
+            Maintenance Tracker
+          </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
             Variations
@@ -147,6 +152,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
         <TabsContent value="units" className="mt-6">
           <IndividualUnitsTab productId={productId} toolNumberToFind={toolNumberToFind} />
+        </TabsContent>
+
+        <TabsContent value="maintenance" className="mt-6">
+          <MaintenanceTrackerTab productId={productId} />
         </TabsContent>
 
         <TabsContent value="attributes" className="mt-6">
