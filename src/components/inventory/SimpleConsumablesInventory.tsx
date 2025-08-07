@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
 import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
@@ -211,9 +212,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
                     <TableHead>Unit Cost</TableHead>
                     <TableHead>Unit Price</TableHead>
                     <TableHead>On Hand</TableHead>
-                    <TableHead>Locations</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="w-80">Locations</TableHead>
+                    <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -225,42 +225,57 @@ export const SimpleConsumablesInventory: React.FC = () => {
                       <TableCell>${consumable.unit_cost.toFixed(2)}</TableCell>
                       <TableCell>${consumable.unit_price.toFixed(2)}</TableCell>
                       <TableCell>{consumable.on_hand_qty}</TableCell>
-                      <TableCell>
+                      <TableCell className="w-80">
                         {consumable.location_stock?.length > 0 ? (
-                          <div className="text-sm">
+                          <div className="space-y-2">
                             {consumable.location_stock.map((loc, index) => (
-                              <div key={index} className="text-gray-600">
-                                {loc.locationName}: {loc.quantity}
+                              <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border">
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-sm text-gray-900">{loc.locationName}</span>
+                                  <span className="text-xs text-gray-500">Location</span>
+                                </div>
+                                <div className="flex flex-col items-end">
+                                  <span className="font-semibold text-sm text-gray-900">{loc.quantity}</span>
+                                  <span className="text-xs text-gray-500">qty</span>
+                                </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-gray-400">No locations</span>
+                          <div className="text-center py-4">
+                            <span className="text-gray-400 text-sm">No locations assigned</span>
+                          </div>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Badge variant={consumable.is_active ? 'success' : 'secondary'}>
-                          {consumable.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(consumable)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteClick(consumable)}
-                            disabled={deleteConsumableMutation.isPending}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                      <TableCell className="w-16">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-white z-50">
+                            <DropdownMenuItem
+                              onClick={() => handleEdit(consumable)}
+                              className="cursor-pointer"
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteClick(consumable)}
+                              disabled={deleteConsumableMutation.isPending}
+                              className="cursor-pointer text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
