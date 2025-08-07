@@ -263,9 +263,9 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
   const getStatusBadge = (status: string) => {
     const gradients = {
-      available: "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold",
+      available: "bg-gradient-to-r from-green-600 to-green-700 text-white font-bold",
       assigned: "bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold",
-      maintenance: "bg-gradient-to-r from-red-600 to-red-700 text-white font-bold",
+      maintenance: "bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold",
       out_of_service: "bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold"
     };
 
