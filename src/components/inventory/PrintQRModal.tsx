@@ -74,116 +74,46 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
     }
 
     return (
-      <Dialog open={open} onOpenChange={() => {
-        setShowPrintPreview(false);
-        onClose();
-      }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto no-print">
-          <DialogHeader>
-            <DialogTitle>
-              Print Preview - {selectedItemsData.length} QR Codes
-              {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
-              <div className="text-xs text-gray-500 mt-1">
-                Select Print QR Codes to view size on 8.5 x 11 sheet
+      <>
+        {/* Screen Preview UI */}
+        <Dialog open={open} onOpenChange={() => {
+          setShowPrintPreview(false);
+          onClose();
+        }}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto screen-only">
+            <DialogHeader>
+              <DialogTitle>
+                Print Preview - {selectedItemsData.length} QR Codes
+                {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
+                <div className="text-xs text-gray-500 mt-1">
+                  Select Print QR Codes to view size on 8.5 x 11 sheet
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print QR Codes
+                </Button>
+                <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
+                  Back to Selection
+                </Button>
               </div>
-            </DialogTitle>
-          </DialogHeader>
 
-          <div className="space-y-4 no-print">
-            <div className="flex gap-2">
-              <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
-                <Printer className="w-4 h-4 mr-2" />
-                Print QR Codes
-              </Button>
-              <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
-                Back to Selection
-              </Button>
-            </div>
-
-            {/* Print Layout */}
-            <div className="print-container">
-              <style dangerouslySetInnerHTML={{__html: `
-                @media print {
-                  .no-print {
-                    display: none !important;
-                  }
-                  .print-container {
-                    width: 8.5in;
-                    margin: 0;
-                    padding: 0.25in;
-                  }
-                  .print-page {
-                    width: 8.5in;
-                    height: 11in;
-                    padding: 0;
-                    page-break-after: always;
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    grid-template-rows: repeat(3, 1fr);
-                    gap: 0.1in;
-                  }
-                  .print-page:last-child {
-                    page-break-after: avoid;
-                  }
-                  .qr-print-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    border: 1px solid #ddd;
-                    padding: 0.05in;
-                  }
-                  .qr-print-code {
-                    width: 2.4in;
-                    height: 2.4in;
-                  }
-                  .qr-print-text {
-                    font-family: Arial, sans-serif;
-                    font-size: 16px;
-                    font-weight: bold;
-                    text-align: center;
-                    margin-top: 0.05in;
-                  }
-                  @page {
-                    margin: 0;
-                    size: letter portrait;
-                  }
-                }
-                .preview-page {
-                  border: 2px solid #e5e7eb;
-                  margin: 1rem 0;
-                  background: white;
-                  display: grid;
-                  grid-template-columns: repeat(3, 1fr);
-                  grid-template-rows: repeat(3, 1fr);
-                  gap: 0.5rem;
-                  padding: 1rem;
-                  aspect-ratio: 8.5/11;
-                  max-width: 600px;
-                }
-                .preview-item {
-                  border: 1px solid #d1d5db;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  padding: 0.5rem;
-                  background: #f9fafb;
-                }
-              `}} />
-
+              {/* Preview Layout */}
               {pages.map((pageItems, pageIndex) => (
-                <div key={pageIndex} className="print-page preview-page">
+                <div key={pageIndex} className="preview-page">
                   {pageItems.map((item) => (
-                    <div key={item.id} className="qr-print-item preview-item">
+                    <div key={item.id} className="preview-item">
                       <QRCodeSVG
                         value={item.qr_code_data || item.item_code}
                         size={140}
                         level="M"
                         includeMargin
-                        className="qr-print-code"
                       />
-                      <div className="qr-print-text text-base font-bold mt-1">
+                      <div className="text-base font-bold mt-1 text-center">
                         {item.item_code}
                       </div>
                     </div>
@@ -195,9 +125,103 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                 </div>
               ))}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+
+        {/* Print-Only Content */}
+        <div className="print-only" style={{ display: 'none' }}>
+          {pages.map((pageItems, pageIndex) => (
+            <div key={`print-${pageIndex}`} className="print-page">
+              {pageItems.map((item) => (
+                <div key={`print-${item.id}`} className="qr-print-item">
+                  <QRCodeSVG
+                    value={item.qr_code_data || item.item_code}
+                    size={200}
+                    level="M"
+                    includeMargin
+                  />
+                  <div className="qr-print-text">
+                    {item.item_code}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Print Styles */}
+        <style dangerouslySetInnerHTML={{__html: `
+          @media print {
+            .screen-only {
+              display: none !important;
+            }
+            .print-only {
+              display: block !important;
+            }
+            .print-page {
+              width: 8.5in;
+              height: 11in;
+              padding: 0.25in;
+              page-break-after: always;
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              grid-template-rows: repeat(3, 1fr);
+              gap: 0.1in;
+              margin: 0;
+            }
+            .print-page:last-child {
+              page-break-after: avoid;
+            }
+            .qr-print-item {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              border: 1px solid #333;
+              padding: 0.05in;
+              box-sizing: border-box;
+            }
+            .qr-print-text {
+              font-family: Arial, sans-serif;
+              font-size: 16px;
+              font-weight: bold;
+              text-align: center;
+              margin-top: 0.05in;
+              color: #000;
+            }
+            @page {
+              margin: 0;
+              size: letter portrait;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
+          }
+          
+          .preview-page {
+            border: 2px solid #e5e7eb;
+            margin: 1rem 0;
+            background: white;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 0.5rem;
+            padding: 1rem;
+            aspect-ratio: 8.5/11;
+            max-width: 600px;
+          }
+          .preview-item {
+            border: 1px solid #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            background: #f9fafb;
+          }
+        `}} />
+      </>
     );
   }
 
