@@ -100,7 +100,7 @@ export const CodeCategoriesView: React.FC = () => {
 
   return (
     <div className="p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl">
         <div className="mb-6">
           <div className="flex justify-between items-start">
             <div>
