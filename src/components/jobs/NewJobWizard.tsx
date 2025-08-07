@@ -40,6 +40,20 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     try {
       const job = await createJobMutation.mutateAsync(state.data);
 
+      // Insert job items if any
+      if (state.data.items && state.data.items.length > 0) {
+        const jobItems = state.data.items.map(it => ({
+          job_id: job.id,
+          product_id: it.product_id,
+          quantity: it.quantity,
+          unit_price: 0,
+          total_price: 0,
+          line_item_type: 'inventory',
+        }));
+        const { error: itemsError } = await supabase.from('job_items').insert(jobItems);
+        if (itemsError) throw itemsError;
+      }
+
       // After job is created, reserve equipment if any items were selected
       if (state.data.items && state.data.items.length > 0 && state.data.scheduled_date) {
         const assignmentDate = state.data.scheduled_date;
