@@ -153,7 +153,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
             Maintenance Tracker
             {maintenanceCount !== undefined && maintenanceCount > 0 && (
               <Badge 
-                className="ml-1 flex-shrink-0 border-0 font-bold bg-gradient-to-r from-orange-600 to-orange-700 text-white"
+                className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800"
               >
                 {maintenanceCount}
               </Badge>
