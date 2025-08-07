@@ -270,53 +270,55 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted">
       <PageHeader 
         title="Inventory Management" 
         subtitle="Manage your portable toilet inventory and assets"
       />
       
       <div className="p-6 space-y-6">
-        {/* Tab Navigation */}
-        <TabNav ariaLabel="Inventory navigation">
-          <TabNav.Item
-            to="/inventory/products"
-            isActive={activeTab === 'products'}
-            onClick={() => navigateToTab('products')}
-          >
-            <Grid3X3 className="h-4 w-4" />
-            Products
-          </TabNav.Item>
-          <TabNav.Item
-            to="/inventory/location-map"
-            isActive={activeTab === 'location-map'}
-            onClick={() => navigateToTab('location-map')}
-          >
-            <MapPin className="h-4 w-4" />
-            Location Map
-          </TabNav.Item>
-          <TabNav.Item
-            to="/inventory/panel-scans"
-            isActive={activeTab === 'panel-scans'}
-            onClick={() => navigateToTab('panel-scans')}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Panel Scans
-          </TabNav.Item>
-          <TabNav.Item
-            to="/inventory/code-categories"
-            isActive={activeTab === 'code-categories'}
-            onClick={() => navigateToTab('code-categories')}
-          >
-            <Settings className="h-4 w-4" />
-            Code Categories
-          </TabNav.Item>
-        </TabNav>
+        {/* Card 1: Tab Navigation */}
+        <div className="bg-background rounded-2xl shadow-md p-6">
+          <TabNav ariaLabel="Inventory navigation">
+            <TabNav.Item
+              to="/inventory/products"
+              isActive={activeTab === 'products'}
+              onClick={() => navigateToTab('products')}
+            >
+              <Grid3X3 className="h-4 w-4" />
+              Products
+            </TabNav.Item>
+            <TabNav.Item
+              to="/inventory/location-map"
+              isActive={activeTab === 'location-map'}
+              onClick={() => navigateToTab('location-map')}
+            >
+              <MapPin className="h-4 w-4" />
+              Location Map
+            </TabNav.Item>
+            <TabNav.Item
+              to="/inventory/panel-scans"
+              isActive={activeTab === 'panel-scans'}
+              onClick={() => navigateToTab('panel-scans')}
+            >
+              <BarChart3 className="h-4 w-4" />
+              Panel Scans
+            </TabNav.Item>
+            <TabNav.Item
+              to="/inventory/code-categories"
+              isActive={activeTab === 'code-categories'}
+              onClick={() => navigateToTab('code-categories')}
+            >
+              <Settings className="h-4 w-4" />
+              Code Categories
+            </TabNav.Item>
+          </TabNav>
+        </div>
 
         {/* Content based on active tab */}
         {activeTab === 'products' && (
           <>
-            {/* Search and Filters Card */}
+            {/* Card 2: Search and Filters */}
             <InventoryFilters
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -324,126 +326,141 @@ const Inventory: React.FC = () => {
               onLocationChange={setSelectedLocationId}
             />
 
-            {/* Status Filter Buttons */}
-            <div className="flex flex-wrap gap-3 mb-6">
-              {filters.map((filter) => (
-                <button
-                  key={filter.key}
-                  onClick={() => handleFilterClick(filter.key)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
-                    getFilterStyle(filter.key)
-                  )}
-                >
-                  {filter.label}
-                  {filter.count !== null && (
-                    <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
-                      {filter.count}
-                    </Badge>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* View Controls and Hide Inactive */}
-            <div className="flex flex-col sm:flex-row justify-between items-end gap-4 mb-6">
-              {/* View Toggle */}
-              <div>
-                <Label className="text-sm font-medium mb-2 block">View</Label>
-                <div className="flex bg-muted rounded-lg p-1">
-                  <Button
-                    variant={viewType === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewType('list')}
-                    className="h-8 px-3"
+            {/* Card 3: Main Content */}
+            <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
+              {/* Status Filter Buttons */}
+              <div className="flex flex-wrap gap-3">
+                {filters.map((filter) => (
+                  <button
+                    key={filter.key}
+                    onClick={() => handleFilterClick(filter.key)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+                      getFilterStyle(filter.key)
+                    )}
                   >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewType === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewType('grid')}
-                    className="h-8 px-3"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                </div>
+                    {filter.label}
+                    {filter.count !== null && (
+                      <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
+                        {filter.count}
+                      </Badge>
+                    )}
+                  </button>
+                ))}
               </div>
 
-              {/* Hide Inactive Switch and Action Buttons */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="hide-inactive"
-                    checked={hideInactive}
-                    onCheckedChange={setHideInactive}
-                  />
-                  <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
-                        <Info className="w-3 h-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-64 text-sm">
-                      Hide products from view that have inventory tracking disabled.
-                    </PopoverContent>
-                  </Popover>
-                  {inactiveProductsCount > 0 && (
-                    <Badge 
-                      className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+              {/* View Controls and Hide Inactive */}
+              <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
+                {/* View Toggle */}
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">View</Label>
+                  <div className="flex bg-muted rounded-lg p-1">
+                    <Button
+                      variant={viewType === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('list')}
+                      className="h-8 px-3"
                     >
-                      {inactiveProductsCount}
-                    </Badge>
-                  )}
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewType === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('grid')}
+                      className="h-8 px-3"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowOCRSearch(true)}
-                    className="flex items-center gap-2"
-                  >
-                    <Camera className="h-4 w-4" />
-                    Scan Panel
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowQRScanner(true)}
-                    className="flex items-center gap-2"
-                  >
-                    <QrCode className="h-4 w-4" />
-                    Scan QR
-                  </Button>
-                  <Button 
-                    onClick={() => setAddInventoryModalOpen(true)}
-                    className="flex items-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Inventory
-                  </Button>
+                {/* Hide Inactive Switch and Action Buttons */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="hide-inactive"
+                      checked={hideInactive}
+                      onCheckedChange={setHideInactive}
+                    />
+                    <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
+                          <Info className="w-3 h-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 text-sm">
+                        Hide products from view that have inventory tracking disabled.
+                      </PopoverContent>
+                    </Popover>
+                    {inactiveProductsCount > 0 && (
+                      <Badge 
+                        className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+                      >
+                        {inactiveProductsCount}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowOCRSearch(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Camera className="h-4 w-4" />
+                      Scan Panel
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowQRScanner(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <QrCode className="h-4 w-4" />
+                      Scan QR
+                    </Button>
+                    <Button 
+                      onClick={() => setAddInventoryModalOpen(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Inventory
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Product Grid */}
-            <ProductsView
-              filter={activeFilter}
-              viewType={viewType}
-              hideInactive={hideInactive}
-              searchQuery={searchQuery}
-              selectedLocationId={selectedLocationId}
-              onProductSelect={(productId) => setSelectedProduct(productId)}
-            />
+              {/* Product Grid */}
+              <ProductsView
+                filter={activeFilter}
+                viewType={viewType}
+                hideInactive={hideInactive}
+                searchQuery={searchQuery}
+                selectedLocationId={selectedLocationId}
+                onProductSelect={(productId) => setSelectedProduct(productId)}
+              />
+            </div>
           </>
         )}
 
-        {activeTab === 'location-map' && <LocationMapView />}
+        {activeTab === 'location-map' && (
+          <div className="bg-background rounded-2xl shadow-md p-6">
+            <LocationMapView />
+          </div>
+        )}
 
-        {activeTab === 'panel-scans' && <PanelScansView />}
+        {activeTab === 'panel-scans' && (
+          <div className="bg-background rounded-2xl shadow-md p-6">
+            <PanelScansView />
+          </div>
+        )}
 
-        {activeTab === 'code-categories' && <CodeCategoriesView />}
+        {activeTab === 'code-categories' && (
+          <div className="bg-background rounded-2xl shadow-md p-6">
+            <CodeCategoriesView />
+          </div>
+        )}
 
         {/* Modals */}
         <AddInventoryModal 
