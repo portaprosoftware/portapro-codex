@@ -20,6 +20,7 @@ interface ProductItem {
   id: string;
   tool_number: string;
   item_code: string;
+  qr_code_data: string | null;
   created_at: string;
   products: {
     name: string;
@@ -39,10 +40,11 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
           id,
           tool_number,
           item_code,
+          qr_code_data,
           created_at,
           products!inner(name)
         `)
-        .not('tool_number', 'is', null);
+        .not('item_code', 'is', null);
 
       // If productId is provided, filter by that specific product
       if (productId) {
@@ -103,7 +105,8 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
       
       try {
         // Create QR code using React component temporarily
-        const qrSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">${generateQRCodeSVG(item.tool_number)}</svg>`;
+        const qrData = item.qr_code_data || item.item_code;
+        const qrSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">${generateQRCodeSVG(qrData)}</svg>`;
         qrCodeDataUrls[item.id] = qrSvg;
       } finally {
         document.body.removeChild(tempDiv);
@@ -232,7 +235,8 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
               ${selectedItemsData.map(item => `
                 try {
                   var qr = qrcode(0, 'M');
-                  qr.addData('${item.tool_number}');
+                  var qrData = '${item.qr_code_data || item.item_code}';
+                  qr.addData(qrData);
                   qr.make();
                   
                   var canvas = document.getElementById('qr-${item.id}');
@@ -416,7 +420,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
                   
                   <div className="flex-shrink-0">
                     <QRCodeSVG
-                      value={item.tool_number}
+                      value={item.qr_code_data || item.item_code}
                       size={48}
                       level="M"
                       includeMargin={false}
