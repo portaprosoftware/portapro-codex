@@ -233,7 +233,7 @@ export const OCRQualityDashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-lg font-medium text-gray-900">Panel Scan Monitor</h2>
+        <h2 className="text-lg font-medium text-gray-900">Panel Capture Monitor</h2>
         <p className="text-gray-600">Monitor and verify tool tracking accuracy</p>
       </div>
 

@@ -258,7 +258,7 @@ const Inventory: React.FC = () => {
   };
 
   const filters = [
-    { key: "all" as FilterType, label: "All Items", count: null },
+    { key: "all" as FilterType, label: "All Bulk Products", count: null },
     { key: "in_stock" as FilterType, label: "In Stock", count: null },
     { key: "low_stock" as FilterType, label: "Low Stock", count: null },
     { key: "out_of_stock" as FilterType, label: "Out of Stock", count: null },
@@ -306,7 +306,7 @@ const Inventory: React.FC = () => {
               onClick={() => navigateToTab('panel-scans')}
             >
               <Camera className="h-4 w-4" />
-              Panel Scans
+              Panel Review
             </TabNav.Item>
             <TabNav.Item
               to="/inventory/code-categories"
@@ -414,7 +414,7 @@ const Inventory: React.FC = () => {
                       className="flex items-center gap-2"
                     >
                       <Camera className="h-4 w-4" />
-                      Scan Panel
+                      Capture Panel
                     </Button>
                     <Button 
                       variant="outline" 
@@ -429,8 +429,8 @@ const Inventory: React.FC = () => {
                       onClick={() => setShowIndividualUnitsSlider(true)}
                       className="flex items-center gap-2"
                     >
-                      <Package className="h-4 w-4" />
-                      Individual Units
+                      <Settings className="h-4 w-4" />
+                      All Units
                     </Button>
                     <Button 
                       onClick={() => setAddInventoryModalOpen(true)}

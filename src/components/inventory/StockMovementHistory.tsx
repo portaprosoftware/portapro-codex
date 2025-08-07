@@ -146,7 +146,7 @@ export const StockMovementHistory: React.FC = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Items</SelectItem>
+                  <SelectItem value="all">All Bulk Products</SelectItem>
                   {(consumables as any)?.map((consumable: any) => (
                     <SelectItem key={consumable.id} value={consumable.id}>
                       {consumable.name}
