@@ -6,7 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -279,15 +288,31 @@ export const CodeCategoriesView: React.FC = () => {
           )}
         </div>
 
-        <DeleteConfirmationDialog
-          isOpen={deleteDialogOpen}
-          onClose={handleCloseDeleteDialog}
-          onConfirm={handleConfirmDelete}
-          title="Delete Category"
-          description={`Deleting the "${categoryToDelete?.name}" category will remove it from the system. This does not affect any existing ID numbers for individual units that have already been assigned, but this category will no longer be available for newly created individual units.`}
-          itemName={categoryToDelete?.name}
-          isLoading={updateCategoriesMutation.isPending}
-        />
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Category</AlertDialogTitle>
+              <AlertDialogDescription>
+                Deleting the "{categoryToDelete?.name}" category will remove it from the system. This does not affect any existing ID numbers for individual units that have already been assigned, but this category will no longer be available for newly created individual units.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel 
+                onClick={handleCloseDeleteDialog}
+                className="bg-gray-100 text-black hover:bg-gray-200"
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleConfirmDelete}
+                disabled={updateCategoriesMutation.isPending}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800"
+              >
+                {updateCategoriesMutation.isPending ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
