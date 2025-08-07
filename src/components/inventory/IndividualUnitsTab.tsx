@@ -576,6 +576,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         <PrintQRModal
           open={showPrintModal}
           onClose={() => setShowPrintModal(false)}
+          productName={product?.name}
           items={items}
         />
       )}

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 interface PrintQRModalProps {
   open: boolean;
   onClose: () => void;
+  productName?: string;
   items: Array<{
     id: string;
     item_code: string;
@@ -20,6 +21,7 @@ interface PrintQRModalProps {
 export const PrintQRModal: React.FC<PrintQRModalProps> = ({
   open,
   onClose,
+  productName,
   items
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -78,7 +80,10 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Print Preview - {selectedItemsData.length} QR Codes</DialogTitle>
+            <DialogTitle>
+              Print Preview - {selectedItemsData.length} QR Codes
+              {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -90,6 +95,9 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
                 Back to Selection
               </Button>
+              <span className="text-xs text-gray-500 ml-2">
+                Preview shows actual print size
+              </span>
             </div>
 
             {/* Print Layout */}
@@ -229,10 +237,10 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                   <div className="flex-1">
                     <span className="font-medium">{item.item_code}</span>
                   </div>
-                  <div className="w-8 h-8 border rounded">
+                  <div className="w-16 h-16 border rounded p-1">
                     <QRCodeSVG
                       value={item.qr_code_data || item.item_code}
-                      size={32}
+                      size={56}
                       level="M"
                     />
                   </div>
