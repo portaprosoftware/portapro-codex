@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, ScanLine, MapPin, Camera, Lock, Unlock, AlertTriangle, Info, Package } from "lucide-react";
+import { Plus, LayoutGrid, List, QrCode, Search, SlidersHorizontal, ScanLine, MapPin, Camera, Lock, Unlock, AlertTriangle, Info, Package, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -18,7 +18,7 @@ import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard"
 import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
 import { QRCodeScanner } from "@/components/inventory/QRCodeScanner";
-import { ItemCodeCategoryManagement } from "@/components/inventory/ItemCodeCategoryManagement";
+import { ItemCodeCategoryPopup } from "@/components/inventory/ItemCodeCategoryPopup";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ const Inventory: React.FC = () => {
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [toolNumberToFind, setToolNumberToFind] = useState<string | null>(null);
   const [matchingItemId, setMatchingItemId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"products" | "location-map" | "ocr-quality">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "location-map" | "ocr-quality" | "code-categories">("products");
 
   // Fetch count of inactive products (those with track_inventory = false)
   const { data: inactiveProductsCount = 0 } = useQuery({
@@ -479,6 +479,20 @@ const Inventory: React.FC = () => {
               <ScanLine className="w-4 h-4 mr-2" />
               Review Panel Scans
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setActiveTab("code-categories")}
+              className={cn(
+                "rounded-md",
+                activeTab === "code-categories" 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  : "text-gray-600 hover:bg-white"
+              )}
+            >
+              <Settings2 className="w-4 h-4 mr-2" />
+              Code Categories
+            </Button>
           </div>
 
           {/* Search Action Buttons - Right Side */}
@@ -510,26 +524,21 @@ const Inventory: React.FC = () => {
       {/* Tab Content */}
       <div className="space-y-4">
         {activeTab === "products" && (
-          <>
-            {/* Item Code Category Management */}
-            <ItemCodeCategoryManagement />
-            
-            <ProductGrid 
-              filter={activeFilter}
-              viewType={viewType}
-              hideInactive={hideInactive}
-              searchQuery={searchQuery}
-              selectedLocationId={selectedLocationId}
-              onProductSelect={(productId) => {
-                // If we have a matching individual item, go directly to that page
-                if (matchingItemId) {
-                  navigate(`/inventory/items/${matchingItemId}`);
-                } else {
-                  setSelectedProduct(productId);
-                }
-              }}
-            />
-          </>
+          <ProductGrid 
+            filter={activeFilter}
+            viewType={viewType}
+            hideInactive={hideInactive}
+            searchQuery={searchQuery}
+            selectedLocationId={selectedLocationId}
+            onProductSelect={(productId) => {
+              // If we have a matching individual item, go directly to that page
+              if (matchingItemId) {
+                navigate(`/inventory/items/${matchingItemId}`);
+              } else {
+                setSelectedProduct(productId);
+              }
+            }}
+          />
         )}
 
         {activeTab === "location-map" && (
@@ -541,6 +550,22 @@ const Inventory: React.FC = () => {
         {activeTab === "ocr-quality" && (
           <div className="bg-white rounded-lg border shadow-sm p-6">
             <OCRQualityDashboard />
+          </div>
+        )}
+
+        {activeTab === "code-categories" && (
+          <div className="bg-white rounded-lg border shadow-sm p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Item Code Categories</h2>
+                <p className="text-gray-600 mt-1">Manage the item code categories used across all products</p>
+              </div>
+              <ItemCodeCategoryPopup />
+            </div>
+            <div className="text-center py-12 text-gray-500">
+              <Settings2 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <p>Click "Category Settings" to manage your item code categories</p>
+            </div>
           </div>
         )}
       </div>
