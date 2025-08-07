@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Settings, Wrench, Plus, Minus, History } from "lucide-react";
+import { Edit, Settings, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { ProductStockHistory } from "./ProductStockHistory";
@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
+import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
 interface Product {
   id: string;
@@ -44,6 +45,24 @@ interface ProductOverviewProps {
 
 export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDeleted }) => {
   const queryClient = useQueryClient();
+  
+  // Use unified stock management system
+  const {
+    stockData,
+    calculations,
+    isLoading: stockLoading,
+    masterStock,
+    physicallyAvailable,
+    totalReserved,
+    inMaintenance,
+    trackingMethod,
+    isConsistent,
+    needsAttention,
+    adjustMasterStock,
+    syncStockTotals,
+    isAdjusting,
+    isSyncing
+  } = useUnifiedStockManagement(product.id);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showStockAdjustment, setShowStockAdjustment] = useState(false);
   const [showStockHistory, setShowStockHistory] = useState(false);
@@ -55,34 +74,41 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
 
   const { categories } = useItemCodeCategories();
 
-  const availableCount = product.stock_total - product.stock_in_service;
-  
-  // Get maintenance count from query
-  const { data: maintenanceData } = useQuery({
-    queryKey: ["maintenance-count", product.id],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("product_items")
-        .select("*", { count: "exact", head: true })
-        .eq("product_id", product.id)
-        .eq("status", "maintenance");
-      
-      if (error) throw error;
-      return count || 0;
-    }
-  });
-  
-  const maintenanceCount = maintenanceData || 0;
-  const reservedCount = 0; // This would come from reservations
+  // Use unified stock data or fallback to legacy data
+  const displayData = stockData ? {
+    availableCount: physicallyAvailable,
+    onJobCount: totalReserved,
+    maintenanceCount: inMaintenance,
+    reservedCount: stockData.individual_items.reserved,
+    totalStock: masterStock,
+    statusData: calculations?.statusBreakdown || []
+  } : {
+    availableCount: product.stock_total - product.stock_in_service,
+    onJobCount: product.stock_in_service,
+    maintenanceCount: 0,
+    reservedCount: 0,
+    totalStock: product.stock_total,
+    statusData: []
+  };
 
-  const statusData = [
-    { label: "Available", count: availableCount, color: "bg-gradient-to-r from-green-500 to-green-600", textColor: "text-green-700 font-bold" },
-    { label: "On Job", count: product.stock_in_service, color: "bg-gradient-to-r from-blue-500 to-blue-600", textColor: "text-blue-700 font-bold" },
-    { label: "Maintenance", count: maintenanceCount, color: "bg-gradient-to-r from-amber-500 to-amber-600", textColor: "text-amber-700 font-bold" },
-    { label: "Reserved", count: reservedCount, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
+  const legacyStatusData = [
+    { label: "Available", count: displayData.availableCount, color: "bg-gradient-to-r from-green-500 to-green-600", textColor: "text-green-700 font-bold" },
+    { label: "On Job", count: displayData.onJobCount, color: "bg-gradient-to-r from-blue-500 to-blue-600", textColor: "text-blue-700 font-bold" },
+    { label: "Maintenance", count: displayData.maintenanceCount, color: "bg-gradient-to-r from-amber-500 to-amber-600", textColor: "text-amber-700 font-bold" },
+    { label: "Reserved", count: displayData.reservedCount, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
   ];
 
-  const isLowStock = availableCount <= product.low_stock_threshold;
+  const statusData = stockData && calculations?.statusBreakdown.length ? 
+    calculations.statusBreakdown.map(item => ({
+      label: item.label,
+      count: item.count,
+      color: item.color,
+      textColor: `text-${item.color.split('-')[1]}-700 font-bold`,
+      description: item.description
+    })) : 
+    legacyStatusData;
+
+  const isLowStock = displayData.availableCount <= product.low_stock_threshold;
 
   const updateTrackingMutation = useMutation({
     mutationFn: async (trackInventory: boolean) => {
@@ -195,7 +221,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       toast.error("Please enter a valid quantity");
       return;
     }
-    if (maintenanceQuantity > availableCount) {
+    if (maintenanceQuantity > displayData.availableCount) {
       toast.error("Cannot move more units than available");
       return;
     }
@@ -246,17 +272,40 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       {/* Inventory Status */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-gray-900">Inventory Status</h2>
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              onClick={() => setShowStockAdjustment(true)}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Adjust Stock
-            </Button>
-          </div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-gray-900">Inventory Status</h2>
+              {stockData && (
+                <Badge variant="outline" className="text-xs">
+                  {trackingMethod} tracking
+                </Badge>
+              )}
+              {needsAttention && (
+                <Badge variant="destructive" className="text-xs">
+                  Needs Attention
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                onClick={() => setShowStockAdjustment(true)}
+                disabled={!product.track_inventory}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Adjust Stock
+              </Button>
+              {!isConsistent && (
+                <Button 
+                  variant="outline" 
+                  className="text-yellow-600 border-yellow-600 hover:bg-yellow-50"
+                  onClick={() => syncStockTotals()}
+                  disabled={isSyncing}
+                >
+                  {isSyncing ? "Syncing..." : "Fix Data"}
+                </Button>
+              )}
+            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -282,7 +331,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div 
                     className={`h-full ${status.color} transition-all duration-300`}
-                    style={{ width: `${(status.count / product.stock_total) * 100}%` }}
+                    style={{ width: `${(status.count / displayData.totalStock) * 100}%` }}
                   />
                 </div>
               </div>
@@ -303,7 +352,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
               <span className="text-sm font-medium text-gray-600">Total Stock</span>
               <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-base px-3 py-1">
-                {product.stock_total}
+                {displayData.totalStock}
               </Badge>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
@@ -451,12 +500,12 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 id="maintenance-quantity"
                 type="number"
                 min="1"
-                max={availableCount}
+                max={displayData.availableCount}
                 value={maintenanceQuantity}
                 onChange={(e) => setMaintenanceQuantity(parseInt(e.target.value) || 1)}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Available units: {availableCount}
+                Available units: {displayData.availableCount}
               </p>
             </div>
 

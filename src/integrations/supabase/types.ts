@@ -6816,6 +6816,10 @@ export type Database = {
         Args: { consumable_uuid: string }
         Returns: undefined
       }
+      sync_product_stock_totals: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       track_template_usage: {
         Args:
           | { template_uuid: string }
