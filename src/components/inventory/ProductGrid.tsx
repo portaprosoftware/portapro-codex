@@ -134,8 +134,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         // Filter based on stock status and location with improved error handling
         return data.filter(product => {
           try {
-            // Default to master stock, with fallback safety
-            let availableCount = product.stock_total || 0;
+            // Calculate available stock: total - in_service
+            let totalStock = product.stock_total || 0;
+            let inService = product.stock_in_service || 0;
+            let availableCount = Math.max(0, totalStock - inService);
             
             // Handle location-specific filtering
             if (selectedLocationId && selectedLocationId !== "all") {
@@ -144,6 +146,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                   (ls: any) => ls?.storage_location_id === selectedLocationId
                 );
                 if (locationData) {
+                  // For location-specific view, use the location quantity directly
                   availableCount = locationData.quantity || 0;
                 } else {
                   // Product exists but no stock at this location - show with 0 count
@@ -156,7 +159,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             }
             
             const lowStockThreshold = product.low_stock_threshold || 5;
-            const isLowStock = availableCount <= lowStockThreshold;
+            const isLowStock = availableCount <= lowStockThreshold && availableCount > 0;
             const isOutOfStock = availableCount <= 0;
 
             // Get padlock status from product items
