@@ -23,7 +23,6 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
   items
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   // Sort items chronologically
   const sortedItems = [...items].sort((a, b) => 
@@ -51,19 +50,9 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       toast.error("Please select at least one item to print");
       return;
     }
-    setShowPrintPreview(true);
-  };
-
-  const getSelectedItemsData = () => {
-    return sortedItems.filter(item => selectedItems.includes(item.id));
-  };
-
-  const printQRCodes = () => {
-    window.print();
-  };
-
-  if (showPrintPreview) {
-    const selectedItemsData = getSelectedItemsData();
+    
+    // Create the print content and trigger browser print directly
+    const selectedItemsData = sortedItems.filter(item => selectedItems.includes(item.id));
     const pages = [];
     
     // Group items into pages of 9
@@ -71,123 +60,130 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       pages.push(selectedItemsData.slice(i, i + 9));
     }
 
-    return (
-      <Dialog open={open} onOpenChange={() => {
-        setShowPrintPreview(false);
-        onClose();
-      }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Print Preview - {selectedItemsData.length} QR Codes</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
-                <Printer className="w-4 h-4 mr-2" />
-                Print QR Codes
-              </Button>
-              <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
-                Back to Selection
-              </Button>
-            </div>
-
-            {/* Print Layout */}
-            <div className="print-container">
-              <style dangerouslySetInnerHTML={{__html: `
-                @media print {
-                  .print-container {
-                    width: 8.5in;
-                    margin: 0;
-                    padding: 0;
-                  }
-                  .print-page {
-                    width: 8.5in;
-                    height: 11in;
-                    padding: 0.5in;
-                    page-break-after: always;
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    grid-template-rows: repeat(3, 1fr);
-                    gap: 0.2in;
-                  }
-                  .print-page:last-child {
-                    page-break-after: avoid;
-                  }
-                  .qr-print-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    border: 1px solid #ddd;
-                    padding: 0.1in;
-                  }
-                  .qr-print-code {
-                    width: 1.8in;
-                    height: 1.8in;
-                  }
-                  .qr-print-text {
-                    font-family: Arial, sans-serif;
-                    font-size: 14px;
-                    font-weight: bold;
-                    text-align: center;
-                    margin-top: 0.1in;
-                  }
-                  @page {
-                    margin: 0;
-                    size: letter portrait;
-                  }
-                }
-                .preview-page {
-                  border: 2px solid #e5e7eb;
-                  margin: 1rem 0;
-                  background: white;
-                  display: grid;
-                  grid-template-columns: repeat(3, 1fr);
-                  grid-template-rows: repeat(3, 1fr);
-                  gap: 0.5rem;
-                  padding: 1rem;
-                  aspect-ratio: 8.5/11;
-                }
-                .preview-item {
-                  border: 1px solid #d1d5db;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  padding: 0.5rem;
-                  background: #f9fafb;
-                }
-              `}} />
-
-              {pages.map((pageItems, pageIndex) => (
-                <div key={pageIndex} className="print-page preview-page">
-                  {pageItems.map((item) => (
-                    <div key={item.id} className="qr-print-item preview-item">
-                      <QRCodeSVG
-                        value={item.qr_code_data || item.item_code}
-                        size={100}
-                        level="M"
-                        includeMargin
-                        className="qr-print-code"
-                      />
-                      <div className="qr-print-text text-sm font-bold mt-2">
-                        {item.item_code}
-                      </div>
-                    </div>
-                  ))}
-                  {/* Fill empty cells if less than 9 items on last page */}
-                  {pageItems.length < 9 && Array.from({ length: 9 - pageItems.length }).map((_, index) => (
-                    <div key={`empty-${index}`} className="preview-item border-dashed opacity-30" />
-                  ))}
+    // Create hidden print content
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>QR Codes Print</title>
+          <style>
+            @media print {
+              body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+              }
+              .print-page {
+                width: 8.5in;
+                height: 11in;
+                padding: 0.5in;
+                page-break-after: always;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 0.2in;
+              }
+              .print-page:last-child {
+                page-break-after: avoid;
+              }
+              .qr-print-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #ddd;
+                padding: 0.1in;
+              }
+              .qr-print-text {
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                font-weight: bold;
+                text-align: center;
+                margin-top: 0.1in;
+              }
+              @page {
+                margin: 0;
+                size: letter portrait;
+              }
+            }
+            @media screen {
+              body {
+                padding: 20px;
+                font-family: Arial, sans-serif;
+              }
+              .print-page {
+                border: 2px solid #e5e7eb;
+                margin: 1rem 0;
+                background: white;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 0.5rem;
+                padding: 1rem;
+                width: 8.5in;
+                height: 11in;
+              }
+              .qr-print-item {
+                border: 1px solid #d1d5db;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem;
+                background: #f9fafb;
+              }
+              .qr-print-text {
+                font-size: 14px;
+                font-weight: bold;
+                text-align: center;
+                margin-top: 8px;
+              }
+            }
+          </style>
+          <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+        </head>
+        <body>
+          ${pages.map((pageItems, pageIndex) => `
+            <div class="print-page">
+              ${pageItems.map((item) => `
+                <div class="qr-print-item">
+                  <canvas id="qr-${item.id}" width="150" height="150"></canvas>
+                  <div class="qr-print-text">${item.item_code}</div>
                 </div>
-              ))}
+              `).join('')}
+              ${pageItems.length < 9 ? Array.from({ length: 9 - pageItems.length }).map((_, index) => `
+                <div class="qr-print-item" style="border-style: dashed; opacity: 0.3;"></div>
+              `).join('') : ''}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+          `).join('')}
+          
+          <script>
+            // Generate QR codes after page loads
+            window.onload = function() {
+              ${selectedItemsData.map((item) => `
+                QRCode.toCanvas(document.getElementById('qr-${item.id}'), '${item.qr_code_data || item.item_code}', {
+                  width: 150,
+                  margin: 2
+                });
+              `).join('')}
+              
+              // Auto-print after QR codes are generated
+              setTimeout(() => {
+                window.print();
+                window.close();
+              }, 500);
+            };
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+    
+    onClose();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -251,7 +247,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Printer className="w-4 h-4 mr-2" />
-              Preview & Print ({selectedItems.length})
+              Print ({selectedItems.length})
             </Button>
           </div>
         </div>
