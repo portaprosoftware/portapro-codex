@@ -6740,6 +6740,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      preview_next_item_code: {
+        Args: { category_prefix: string }
+        Returns: string
+      }
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>
         Returns: undefined

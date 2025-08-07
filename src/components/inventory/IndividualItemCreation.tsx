@@ -99,7 +99,7 @@ export function IndividualItemCreation({
       const itemCodes = [];
       
 
-      // Generate item codes using the new database function
+      // Generate item codes using the actual generation function (increments counter)
       for (let i = 0; i < quantity; i++) {
         const { data: generatedCode, error: codeError } = await supabase
           .rpc('generate_item_code_with_category', {

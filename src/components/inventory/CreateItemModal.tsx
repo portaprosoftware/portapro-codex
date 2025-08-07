@@ -24,6 +24,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
   const queryClient = useQueryClient();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
   const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
@@ -108,8 +109,26 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
       setAttributeErrors({});
 
+      // Generate final item code (this increments the counter)
+      let finalItemCode = itemData.item_code;
+      
+      // If item code was previewed, we need to generate the actual code now
+      if (finalItemCode && (product?.default_item_code_category || selectedCategory)) {
+        const categoryToUse = product?.default_item_code_category || selectedCategory;
+        
+        if (categoryToUse) {
+          const { data: generatedCode, error: codeError } = await supabase
+            .rpc('generate_item_code_with_category', {
+              category_prefix: categoryToUse
+            });
+          
+          if (codeError) throw codeError;
+          finalItemCode = generatedCode;
+        }
+      }
+
       // Clean the data - convert empty strings to null for date fields
-      const cleanedData = { ...itemData };
+      const cleanedData = { ...itemData, item_code: finalItemCode };
       if (cleanedData.manufacturing_date === '') {
         cleanedData.manufacturing_date = null;
       }
@@ -210,7 +229,8 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     if (product?.default_item_code_category) {
       console.log('Using default category:', product.default_item_code_category);
       try {
-        const { data: itemCode, error } = await supabase.rpc('generate_item_code_with_category', {
+        // Use preview function - doesn't increment counter
+        const { data: itemCode, error } = await supabase.rpc('preview_next_item_code', {
           category_prefix: product.default_item_code_category
         });
         
@@ -219,12 +239,12 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
           throw error;
         }
         
-        console.log('Generated item code:', itemCode);
+        console.log('Preview item code:', itemCode);
         handleInputChange("item_code", itemCode);
-        toast.success('Item code generated successfully');
+        toast.success('Item code preview generated (will be confirmed when saved)');
       } catch (error) {
-        console.error('Error generating item code:', error);
-        toast.error(`Failed to generate item code: ${error.message}`);
+        console.error('Error generating item code preview:', error);
+        toast.error(`Failed to generate item code preview: ${error.message}`);
       }
     } else {
       console.log('No default category, checking categories availability');
@@ -248,7 +268,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
   const handleCategorySelect = async (categoryPrefix: string) => {
     try {
-      const { data, error } = await supabase.rpc('generate_item_code_with_category', {
+      // Store the selected category for final generation
+      setSelectedCategory(categoryPrefix);
+      
+      // Use preview function - doesn't increment counter
+      const { data, error } = await supabase.rpc('preview_next_item_code', {
         category_prefix: categoryPrefix
       });
 
@@ -256,10 +280,10 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
       
       handleInputChange("item_code", data);
       setShowCategorySelect(false);
-      toast.success("Item code generated successfully");
+      toast.success("Item code preview generated (will be confirmed when saved)");
     } catch (error) {
-      console.error('Error generating item code:', error);
-      toast.error("Failed to generate item code");
+      console.error('Error generating item code preview:', error);
+      toast.error("Failed to generate item code preview");
     }
   };
 
