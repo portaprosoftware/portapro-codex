@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info } from 'lucide-react';
+import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Package, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
@@ -288,7 +288,7 @@ const Inventory: React.FC = () => {
               isActive={activeTab === 'products'}
               onClick={() => navigateToTab('products')}
             >
-              <Grid3X3 className="h-4 w-4" />
+              <Package className="h-4 w-4" />
               Products
             </TabNav.Item>
             <TabNav.Item
@@ -304,7 +304,7 @@ const Inventory: React.FC = () => {
               isActive={activeTab === 'panel-scans'}
               onClick={() => navigateToTab('panel-scans')}
             >
-              <BarChart3 className="h-4 w-4" />
+              <Camera className="h-4 w-4" />
               Panel Scans
             </TabNav.Item>
             <TabNav.Item
@@ -312,7 +312,7 @@ const Inventory: React.FC = () => {
               isActive={activeTab === 'code-categories'}
               onClick={() => navigateToTab('code-categories')}
             >
-              <Settings className="h-4 w-4" />
+              <Hash className="h-4 w-4" />
               Code Categories
             </TabNav.Item>
           </TabNav>
