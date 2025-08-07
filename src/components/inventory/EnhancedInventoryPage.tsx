@@ -8,6 +8,7 @@ import { InventoryDashboard } from "./InventoryDashboard";
 import { ProductGrid } from "./ProductGrid";
 import { QRCodeScanner } from "./QRCodeScanner";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
+import { ItemCodeCategoryManagement } from "./ItemCodeCategoryManagement";
 
 interface EnhancedInventoryPageProps {
   onProductSelect: (productId: string) => void;
@@ -106,6 +107,9 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
 
         <TabsContent value="products" className="mt-6">
           <div className="space-y-6">
+            {/* Item Code Category Management */}
+            <ItemCodeCategoryManagement />
+
             {/* Filter Controls */}
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
