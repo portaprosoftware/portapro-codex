@@ -57,10 +57,10 @@ export const useConsumableCategories = () => {
   const { data: companySettings, ...rest } = useCompanySettings();
   const customCategories = (companySettings?.consumable_categories as ConsumableCategory[]) || [];
   
-  // If user has custom categories, use only those
-  // If no custom categories, show static categories as if they were user-created (editable)
-  const categories = customCategories.length > 0 ? customCategories : CONSUMABLE_CATEGORIES;
+  // Always use custom categories if they exist, otherwise show empty (will be initialized on first use)
+  const categories = customCategories;
   const hasCustomCategories = customCategories.length > 0;
+  const needsInitialization = !hasCustomCategories;
   
-  return { categories, hasCustomCategories, customCategories, ...rest };
+  return { categories, hasCustomCategories, needsInitialization, customCategories, ...rest };
 };

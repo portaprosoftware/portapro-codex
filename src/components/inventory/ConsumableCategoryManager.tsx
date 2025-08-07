@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Plus, Edit, Save, Trash, X, Settings2, AlertCircle, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,17 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { useConsumableCategories, useCompanySettings } from '@/hooks/useCompanySettings';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { SuccessMessage } from '@/components/ui/SuccessMessage';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
+import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 
 export const ConsumableCategoryManager: React.FC = () => {
   const queryClient = useQueryClient();
-  const { categories, hasCustomCategories, isLoading: categoriesLoading } = useConsumableCategories();
+  const { categories, needsInitialization, isLoading: categoriesLoading } = useConsumableCategories();
   const { data: companySettings } = useCompanySettings();
   const [open, setOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -37,6 +37,37 @@ export const ConsumableCategoryManager: React.FC = () => {
   const [confirmText, setConfirmText] = useState('');
   const [loadingUsage, setLoadingUsage] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
+
+  // Initialize with default categories on first open if needed
+  const initializeMutation = useMutation({
+    mutationFn: async () => {
+      const settingsId =
+        companySettings?.id ||
+        (await supabase.from('company_settings').select('id').single()).data?.id;
+
+      const { error } = await supabase
+        .from('company_settings' as any)
+        .update({ consumable_categories: CONSUMABLE_CATEGORIES } as any)
+        .eq('id', settingsId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['simple-consumables'] });
+    },
+    onError: (err: any) => {
+      console.error(err);
+      toast.error(err?.message || 'Failed to initialize categories');
+    }
+  });
+
+  // Initialize categories when dialog opens if needed
+  useEffect(() => {
+    if (open && needsInitialization && !initializeMutation.isPending) {
+      initializeMutation.mutate();
+    }
+  }, [open, needsInitialization, initializeMutation]);
 
   // Helpers
   const slugify = (str: string) =>
@@ -208,6 +239,7 @@ export const ConsumableCategoryManager: React.FC = () => {
   };
 
   const isFormValid = newLabel.trim().length > 0;
+  const showingCategories = categories?.length > 0 || initializeMutation.isSuccess;
 
   return (
     <>
@@ -218,38 +250,18 @@ export const ConsumableCategoryManager: React.FC = () => {
             Manage Categories
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings2 className="w-5 h-5" />
               Consumable Categories Management
             </DialogTitle>
             <DialogDescription>
-              {!hasCustomCategories 
-                ? "We've provided some default categories to get you started. You can edit them or add your own. Once you add a custom category, you'll have full control over your category list."
-                : "Organize your consumables with custom categories. Add, edit, and manage categories to keep your inventory organized."
-              }
+              Organize your consumables with custom categories. Add, edit, and manage categories to keep your inventory organized.
             </DialogDescription>
           </DialogHeader>
 
-          {!hasCustomCategories && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mt-0.5">
-                  <span className="text-white text-xs">i</span>
-                </div>
-                <div>
-                  <h4 className="font-medium text-blue-900 mb-1">Default Categories Loaded</h4>
-                  <p className="text-sm text-blue-800">
-                    We've loaded some common categories to help you get started. You can edit or delete any of these, 
-                    and they'll become your custom categories. Once you add your first new category, you'll have full control.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
             {/* Add New Category Section */}
             <Card>
               <CardHeader>
@@ -259,37 +271,39 @@ export const ConsumableCategoryManager: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="category-name">Category Name *</Label>
-                  <Input 
-                    id="category-name"
-                    placeholder="e.g., Hand Soap, Paper Towels" 
-                    value={newLabel} 
-                    onChange={(e) => setNewLabel(e.target.value)}
-                    className="mt-1"
-                  />
-                  {derivedValue && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Internal ID: <span className="font-mono bg-muted px-1 rounded">{derivedValue}</span>
-                    </p>
-                  )}
-                </div>
-                
-                <div>
-                  <Label htmlFor="category-description">Description (Optional)</Label>
-                  <Input 
-                    id="category-description"
-                    placeholder="Brief description of this category" 
-                    value={newDescription} 
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    className="mt-1"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="category-name">Category Name *</Label>
+                    <Input 
+                      id="category-name"
+                      placeholder="e.g., Hand Soap, Paper Towels" 
+                      value={newLabel} 
+                      onChange={(e) => setNewLabel(e.target.value)}
+                      className="mt-1"
+                    />
+                    {derivedValue && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Internal ID: <span className="font-mono bg-muted px-1 rounded">{derivedValue}</span>
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="category-description">Description (Optional)</Label>
+                    <Input 
+                      id="category-description"
+                      placeholder="Brief description of this category" 
+                      value={newDescription} 
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
                 
                 <Button 
                   onClick={handleAdd} 
                   disabled={!isFormValid || updateMutation.isPending}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
                 >
                   {updateMutation.isPending ? (
                     <>
@@ -315,16 +329,18 @@ export const ConsumableCategoryManager: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {categoriesLoading ? (
+                {(categoriesLoading || initializeMutation.isPending) ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader className="w-6 h-6 animate-spin mr-2" />
-                    <span className="text-muted-foreground">Loading categories...</span>
+                    <span className="text-muted-foreground">
+                      {initializeMutation.isPending ? 'Setting up default categories...' : 'Loading categories...'}
+                    </span>
                   </div>
-                ) : sorted.length === 0 ? (
+                ) : !showingCategories ? (
                   <div className="text-center py-8">
                     <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No custom categories yet</p>
-                    <p className="text-sm text-muted-foreground mt-1">Add your first category to get started</p>
+                    <p className="text-muted-foreground">No categories yet</p>
+                    <p className="text-sm text-muted-foreground mt-1">Default categories will be loaded when you open this dialog</p>
                   </div>
                 ) : (
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -333,14 +349,7 @@ export const ConsumableCategoryManager: React.FC = () => {
                       return (
                         <div key={cat.value} className="flex items-center justify-between p-3 border rounded-lg bg-background">
                           <div className="flex items-center gap-3 flex-1">
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="font-mono text-xs shrink-0">{cat.value}</Badge>
-                              {!hasCustomCategories && (
-                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
-                                  default
-                                </Badge>
-                              )}
-                            </div>
+                            <Badge variant="outline" className="font-mono text-xs shrink-0">{cat.value}</Badge>
                             {isEditing ? (
                               <div className="flex items-center gap-2 flex-1">
                                 <Input
