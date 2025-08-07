@@ -37,7 +37,7 @@ export const AddMaintenanceUpdateModal: React.FC<AddMaintenanceUpdateModalProps>
 
   const addUpdateMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("maintenance_updates")
         .insert({
           item_id: itemId,

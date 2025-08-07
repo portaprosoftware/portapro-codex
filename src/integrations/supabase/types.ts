@@ -3330,6 +3330,68 @@ export type Database = {
         }
         Relationships: []
       }
+      maintenance_updates: {
+        Row: {
+          attachments: Json | null
+          cost_amount: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          item_id: string
+          labor_hours: number | null
+          parts_used: Json | null
+          status_change_from: string | null
+          status_change_to: string | null
+          technician_name: string | null
+          title: string
+          update_type: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          cost_amount?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          item_id: string
+          labor_hours?: number | null
+          parts_used?: Json | null
+          status_change_from?: string | null
+          status_change_to?: string | null
+          technician_name?: string | null
+          title: string
+          update_type?: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          cost_amount?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          item_id?: string
+          labor_hours?: number | null
+          parts_used?: Json | null
+          status_change_from?: string | null
+          status_change_to?: string | null
+          technician_name?: string | null
+          title?: string
+          update_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_updates_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_vendors: {
         Row: {
           address: string | null
@@ -3800,10 +3862,13 @@ export type Database = {
           item_code: string
           last_known_location: unknown | null
           last_location_update: string | null
+          last_maintenance_update: string | null
           location: string | null
           maintenance_notes: string | null
+          maintenance_priority: string | null
           maintenance_reason: string | null
           maintenance_start_date: string | null
+          maintenance_technician: string | null
           manufacturing_date: string | null
           material: string | null
           mold_cavity: string | null
@@ -3818,6 +3883,7 @@ export type Database = {
           size: string | null
           status: string
           tool_number: string | null
+          total_maintenance_cost: number | null
           tracking_photo_url: string | null
           updated_at: string
           use_case: string | null
@@ -3838,10 +3904,13 @@ export type Database = {
           item_code: string
           last_known_location?: unknown | null
           last_location_update?: string | null
+          last_maintenance_update?: string | null
           location?: string | null
           maintenance_notes?: string | null
+          maintenance_priority?: string | null
           maintenance_reason?: string | null
           maintenance_start_date?: string | null
+          maintenance_technician?: string | null
           manufacturing_date?: string | null
           material?: string | null
           mold_cavity?: string | null
@@ -3856,6 +3925,7 @@ export type Database = {
           size?: string | null
           status?: string
           tool_number?: string | null
+          total_maintenance_cost?: number | null
           tracking_photo_url?: string | null
           updated_at?: string
           use_case?: string | null
@@ -3876,10 +3946,13 @@ export type Database = {
           item_code?: string
           last_known_location?: unknown | null
           last_location_update?: string | null
+          last_maintenance_update?: string | null
           location?: string | null
           maintenance_notes?: string | null
+          maintenance_priority?: string | null
           maintenance_reason?: string | null
           maintenance_start_date?: string | null
+          maintenance_technician?: string | null
           manufacturing_date?: string | null
           material?: string | null
           mold_cavity?: string | null
@@ -3894,6 +3967,7 @@ export type Database = {
           size?: string | null
           status?: string
           tool_number?: string | null
+          total_maintenance_cost?: number | null
           tracking_photo_url?: string | null
           updated_at?: string
           use_case?: string | null

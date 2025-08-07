@@ -6,6 +6,19 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, User, DollarSign, Package } from "lucide-react";
 
+interface MaintenanceUpdate {
+  id: string;
+  item_id: string;
+  update_type: string;
+  description: string;
+  technician: string | null;
+  labor_hours: number | null;
+  labor_cost: number | null;
+  parts_cost: number | null;
+  parts_used: string | null;
+  created_at: string;
+}
+
 interface MaintenanceHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,17 +32,17 @@ export const MaintenanceHistoryModal: React.FC<MaintenanceHistoryModalProps> = (
   itemId,
   itemCode,
 }) => {
-  const { data: updates, isLoading } = useQuery({
+  const { data: updates, isLoading } = useQuery<MaintenanceUpdate[]>({
     queryKey: ["maintenance-updates", itemId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("maintenance_updates")
         .select("*")
         .eq("item_id", itemId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data as MaintenanceUpdate[]) || [];
     },
     enabled: isOpen,
   });
