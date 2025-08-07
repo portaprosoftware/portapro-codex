@@ -304,13 +304,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     <div className="space-y-6">
       {/* Category Info Banner */}
       {product?.default_item_code_category && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-blue-900">
+              <p className="font-medium text-gray-900">
                 {product.name} items use: <span className="font-bold">{product.default_item_code_category}s</span> category
               </p>
-              <p className="text-sm text-blue-600 mt-1">
+              <p className="text-sm text-gray-600 mt-1">
                 New individual items will automatically use this category for item codes.
               </p>
             </div>
@@ -435,15 +435,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                       <div className="py-4 space-y-4 text-sm">
                         {/* OCR Tracking Information */}
                         {(item.tool_number || item.vendor_id || item.plastic_code) && (
-                          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                               <Camera className="w-4 h-4 mr-2" />
                               Tool Tracking Information
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                               <div>
-                                <span className="font-medium text-blue-700">Tool Number:</span>
-                                <p className="text-blue-600 mt-1 font-mono">{item.tool_number || "—"}</p>
+                                <span className="font-medium text-gray-700">Tool Number:</span>
+                                <p className="text-gray-600 mt-1 font-mono">{item.tool_number || "—"}</p>
                               </div>
                               <div>
                                 <span className="font-medium text-blue-700">Vendor ID:</span>
