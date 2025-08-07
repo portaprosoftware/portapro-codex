@@ -206,14 +206,24 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               {product.description || "A portable toilet designed to meet the accessibility standards of the Americans with Disabilities Act (ADA). These units are designed to be accessible to individuals with disabilities, particularly those using wheelchairs, and feature wider doorways, spacious interiors, and reinforced grab bars, among other features"}
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-            onClick={() => setShowEditModal(true)}
-          >
-            <Edit className="w-4 h-4 mr-2" />
-            Edit Product Info
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              onClick={() => setShowEditModal(true)}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Edit Product Info
+            </Button>
+            <Button 
+              variant="outline" 
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              onClick={() => setShowMaintenanceModal(true)}
+            >
+              <Wrench className="w-4 h-4 mr-2" />
+              Maintenance Hub
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -229,14 +239,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             >
               <Settings className="w-4 h-4 mr-2" />
               Adjust Stock
-            </Button>
-            <Button 
-              variant="outline" 
-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              onClick={() => setShowMaintenanceModal(true)}
-            >
-              <Wrench className="w-4 h-4 mr-2" />
-              Move to Maintenance
             </Button>
             {isLowStock && (
               <Button className="bg-amber-500 text-white hover:bg-amber-600">
