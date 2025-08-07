@@ -101,136 +101,135 @@ export const CodeCategoriesView: React.FC = () => {
   return (
     <div className="p-6">
       <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader className="text-left">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle>ID Number Categories</CardTitle>
-                <CardDescription>
-                  Manage global item ID categories used across all products
-                </CardDescription>
-              </div>
-              <Button variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Category
-              </Button>
+        <div className="mb-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">ID Number Categories</h2>
+              <p className="text-muted-foreground mt-2">
+                Manage global item ID categories used across all products
+              </p>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  {categories.map((category) => {
-                    const prefix = category.value;
-                    const name = category.label.split(' - ')[1];
-                    const isEditing = editingCategory?.prefix === prefix;
+            <Button variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Category
+            </Button>
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading categories...</div>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {categories.map((category) => {
+                  const prefix = category.value;
+                  const name = category.label.split(' - ')[1];
+                  const isEditing = editingCategory?.prefix === prefix;
 
-                    return (
-                      <div key={prefix} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700 font-mono">
-                            {prefix}
-                          </Badge>
-                          {isEditing ? (
-                            <Input
-                              value={editingCategory.name}
-                              onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                              className="h-8 max-w-48"
-                              autoFocus
-                            />
-                          ) : (
-                            <span className="font-medium">{name}</span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {isEditing ? (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  handleEditCategory(prefix, editingCategory.name);
-                                }}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Save className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingCategory(null)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingCategory({ prefix, name })}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteCategory(prefix)}
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                              >
-                                <Trash className="w-4 h-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                  return (
+                    <div key={prefix} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700 font-mono">
+                          {prefix}
+                        </Badge>
+                        {isEditing ? (
+                          <Input
+                            value={editingCategory.name}
+                            onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
+                            className="h-8 max-w-48"
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="font-medium">{name}</span>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
-
-                {showAddForm && (
-                  <div className="border-t pt-4 space-y-3">
-                    <h4 className="font-medium">Add New Category</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label htmlFor="prefix">Category Prefix (4 digits)</Label>
-                        <Input
-                          id="prefix"
-                          value={newPrefix}
-                          onChange={(e) => setNewPrefix(e.target.value)}
-                          placeholder="5000"
-                          maxLength={4}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="name">Category Name</Label>
-                        <Input
-                          id="name"
-                          value={newName}
-                          onChange={(e) => setNewName(e.target.value)}
-                          placeholder="Custom Units"
-                        />
+                      <div className="flex items-center gap-2">
+                        {isEditing ? (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                handleEditCategory(prefix, editingCategory.name);
+                              }}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Save className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingCategory(null)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingCategory({ prefix, name })}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteCategory(prefix)}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button onClick={handleAddCategory} size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Category
-                      </Button>
-                      <Button variant="outline" onClick={() => setShowAddForm(false)} size="sm">
-                        Cancel
-                      </Button>
+                  );
+                })}
+              </div>
+
+              {showAddForm && (
+                <div className="border-t pt-4 space-y-3">
+                  <h4 className="font-medium">Add New Category</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="prefix">Category Prefix (4 digits)</Label>
+                      <Input
+                        id="prefix"
+                        value={newPrefix}
+                        onChange={(e) => setNewPrefix(e.target.value)}
+                        placeholder="5000"
+                        maxLength={4}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="name">Category Name</Label>
+                      <Input
+                        id="name"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        placeholder="Custom Units"
+                      />
                     </div>
                   </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+                  <div className="flex gap-2">
+                    <Button onClick={handleAddCategory} size="sm">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Category
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowAddForm(false)} size="sm">
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
