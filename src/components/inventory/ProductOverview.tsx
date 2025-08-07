@@ -107,7 +107,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   });
 
   const updateCategoryMutation = useMutation({
-    mutationFn: async (category: string) => {
+    mutationFn: async (category: string | null) => {
       const { error } = await supabase
         .from("products")
         .update({ default_item_code_category: category })
@@ -117,14 +117,22 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     },
     onSuccess: (_, category) => {
       queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-      toast.success(`Default item code category updated`);
+      if (category === null) {
+        toast.success("Default category cleared");
+      } else {
+        toast.success("Default item code category updated");
+      }
       setShowCategoryModal(false);
     },
     onError: (error) => {
-      toast.error("Failed to update category");
+      toast.error("Failed to update default category");
       console.error(error);
     }
   });
+
+  const clearDefaultCategory = () => {
+    updateCategoryMutation.mutate(null);
+  };
 
   const moveToMaintenanceMutation = useMutation({
     mutationFn: async ({ quantity, notes }: { quantity: number; notes: string }) => {
@@ -296,14 +304,27 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900">Item Code Category</h2>
-          <Button 
-            variant="outline" 
-            className="text-blue-600 border-blue-600 hover:bg-blue-50"
-            onClick={() => setShowCategoryModal(true)}
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Set Default Category
-          </Button>
+          <div className="flex gap-2">
+            {product.default_item_code_category && (
+              <Button 
+                variant="outline" 
+                className="text-red-600 border-red-600 hover:bg-red-50"
+                onClick={clearDefaultCategory}
+                disabled={updateCategoryMutation.isPending}
+              >
+                <Minus className="w-4 h-4 mr-2" />
+                Clear Default
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              onClick={() => setShowCategoryModal(true)}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Set Default Category
+            </Button>
+          </div>
         </div>
         
         {product.default_item_code_category ? (
