@@ -6192,10 +6192,10 @@ export type Database = {
         Args: {
           product_uuid: string
           quantity_change: number
-          reason: string
-          notes?: string
+          reason_text: string
+          notes_text?: string
         }
-        Returns: boolean
+        Returns: Json
       }
       adjust_stock_for_job_completion: {
         Args: { job_uuid: string; job_type_param: string }
