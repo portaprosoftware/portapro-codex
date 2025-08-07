@@ -15,6 +15,7 @@ import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info 
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
+import { InventoryFilters } from '@/components/inventory/InventoryFilters';
 import { PanelScansView } from '@/components/inventory/PanelScansView';
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
 import { ProductDetail } from '@/components/inventory/ProductDetail';
@@ -315,8 +316,18 @@ const Inventory: React.FC = () => {
         {/* Content based on active tab */}
         {activeTab === 'products' && (
           <>
-            {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-2 mb-6">
+            {/* Search and Filters Card */}
+            <InventoryFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedLocationId={selectedLocationId}
+              onLocationChange={setSelectedLocationId}
+              selectedFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+
+            {/* Status Filter Buttons */}
+            <div className="flex flex-wrap gap-3 mb-6">
               {filters.map((filter) => (
                 <button
                   key={filter.key}
@@ -336,117 +347,85 @@ const Inventory: React.FC = () => {
               ))}
             </div>
 
-            {/* Location, View Controls, and Hide Inactive */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              {/* Location Selector and View Label */}
-              <div className="flex items-end gap-4">
-                <div className="flex-1 max-w-xs">
-                  <Label htmlFor="location-select" className="text-sm font-medium mb-2 block">Filter by Location</Label>
-                  <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
-                    <SelectTrigger id="location-select" className="w-full">
-                      <SelectValue placeholder="All Locations" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Locations</SelectItem>
-                      <SelectItem value="yard">Yard</SelectItem>
-                      <SelectItem value="field">Field</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* View Toggle */}
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">View</Label>
-                  <div className="flex bg-muted rounded-lg p-1">
-                    <Button
-                      variant={viewType === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewType('list')}
-                      className="h-8 px-3"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewType === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewType('grid')}
-                      className="h-8 px-3"
-                    >
-                      <Grid3X3 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Hide Inactive Switch */}
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="hide-inactive"
-                  checked={hideInactive}
-                  onCheckedChange={setHideInactive}
-                />
-                <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
-                      <Info className="w-3 h-3" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 text-sm">
-                    Hide products from view that have inventory tracking disabled.
-                  </PopoverContent>
-                </Popover>
-                {inactiveProductsCount > 0 && (
-                  <Badge 
-                    className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+            {/* View Controls and Hide Inactive */}
+            <div className="flex flex-col sm:flex-row justify-between items-end gap-4 mb-6">
+              {/* View Toggle */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">View</Label>
+                <div className="flex bg-muted rounded-lg p-1">
+                  <Button
+                    variant={viewType === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewType('list')}
+                    className="h-8 px-3"
                   >
-                    {inactiveProductsCount}
-                  </Badge>
-                )}
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewType === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewType('grid')}
+                    className="h-8 px-3"
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Search Bar and Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="flex-1">
-                <Input
-                  type="text"
-                  placeholder="Search by product name, item code, or location..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearchSubmit();
-                    }
-                  }}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowOCRSearch(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Camera className="h-4 w-4" />
-                  Scan Panel
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowQRScanner(true)}
-                  className="flex items-center gap-2"
-                >
-                  <QrCode className="h-4 w-4" />
-                  Scan QR
-                </Button>
-                <Button 
-                  onClick={() => setAddInventoryModalOpen(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Inventory
-                </Button>
+              {/* Hide Inactive Switch and Action Buttons */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="hide-inactive"
+                    checked={hideInactive}
+                    onCheckedChange={setHideInactive}
+                  />
+                  <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
+                        <Info className="w-3 h-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 text-sm">
+                      Hide products from view that have inventory tracking disabled.
+                    </PopoverContent>
+                  </Popover>
+                  {inactiveProductsCount > 0 && (
+                    <Badge 
+                      className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+                    >
+                      {inactiveProductsCount}
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowOCRSearch(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Camera className="h-4 w-4" />
+                    Scan Panel
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQRScanner(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <QrCode className="h-4 w-4" />
+                    Scan QR
+                  </Button>
+                  <Button 
+                    onClick={() => setAddInventoryModalOpen(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Inventory
+                  </Button>
+                </div>
               </div>
             </div>
 
