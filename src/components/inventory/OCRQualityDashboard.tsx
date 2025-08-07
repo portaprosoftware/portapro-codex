@@ -270,6 +270,7 @@ export const OCRQualityDashboard: React.FC = () => {
               )}
             </div>
             <Progress value={analytics?.accuracyRate || 0} className="mt-2" />
+            <p className="text-xs text-muted-foreground">Correctly identified scans</p>
           </CardContent>
         </Card>
 
