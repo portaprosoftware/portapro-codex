@@ -33,10 +33,14 @@ export const ConsumableCategoryManager: React.FC = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (next: ConsumableCategory[]) => {
-      const settingsId = companySettings?.id || (await supabase.from('company_settings').select('id').single()).data?.id;
+      const settingsId =
+        companySettings?.id ||
+        (await supabase.from('company_settings').select('id').single()).data?.id;
+
+      // Cast to any to bypass generated types until Supabase types include `consumable_categories`
       const { error } = await supabase
-        .from('company_settings')
-        .update({ consumable_categories: next })
+        .from('company_settings' as any)
+        .update({ consumable_categories: next } as any)
         .eq('id', settingsId);
 
       if (error) throw error;
@@ -83,11 +87,15 @@ export const ConsumableCategoryManager: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (!editing) return;
-    const next = (categories || []).map(c => c.value === editing.value ? {
-      ...c,
-      label: editing.label,
-      description: editing.description || ''
-    } : c);
+    const next = (categories || []).map(c =>
+      c.value === editing.value
+        ? {
+            ...c,
+            label: editing.label,
+            description: editing.description || ''
+          }
+        : c
+    );
     updateMutation.mutate(next);
   };
 
