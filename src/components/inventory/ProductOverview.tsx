@@ -79,14 +79,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     availableCount: physicallyAvailable,
     onJobCount: totalReserved,
     maintenanceCount: inMaintenance,
-    reservedCount: stockData.individual_items.reserved,
+    
     totalStock: masterStock,
     statusData: calculations?.statusBreakdown || []
   } : {
     availableCount: product.stock_total - product.stock_in_service,
     onJobCount: product.stock_in_service,
     maintenanceCount: 0,
-    reservedCount: 0,
+    
     totalStock: product.stock_total,
     statusData: []
   };
@@ -95,7 +95,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     { label: "Available", count: displayData.availableCount, color: "bg-gradient-to-r from-green-500 to-green-600", textColor: "text-green-700 font-bold" },
     { label: "On Job", count: displayData.onJobCount, color: "bg-gradient-to-r from-blue-500 to-blue-600", textColor: "text-blue-700 font-bold" },
     { label: "Maintenance", count: displayData.maintenanceCount, color: "bg-gradient-to-r from-amber-500 to-amber-600", textColor: "text-amber-700 font-bold" },
-    { label: "Reserved", count: displayData.reservedCount, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
+    
   ];
 
   const statusData = stockData && calculations?.statusBreakdown.length ? 

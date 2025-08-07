@@ -54,7 +54,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
   const availableCount = stockData?.totals?.physically_available || 0;
   const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
   const onJobCount = stockData?.individual_items?.assigned || 0;
-  const reservedCount = stockData?.bulk_stock?.reserved || 0;
+  
   
   const isLowStock = availableCount <= product.low_stock_threshold;
   const isOutOfStock = availableCount <= 0;
@@ -370,16 +370,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                       <span className="font-medium">{inMaintenanceCount}</span>
                     </div>
                   )}
-                  {reservedCount > 0 && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        Reserved
-                      </span>
-                      <span className="font-medium">{reservedCount}</span>
-                    </div>
-                  )}
-                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && reservedCount === 0 && (
+                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && (
                     <div className="text-sm text-gray-500 text-center py-2">
                       No equipment data
                     </div>
