@@ -278,7 +278,7 @@ const Inventory: React.FC = () => {
         {/* Card 1: Header + Tab Navigation */}
         <div className="bg-background rounded-2xl shadow-md p-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
+            <h1 className="text-2xl font-semibold text-foreground">Inventory Management</h1>
             <p className="text-muted-foreground">Manage your portable toilet inventory and assets</p>
           </div>
           
