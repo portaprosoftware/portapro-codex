@@ -19,6 +19,7 @@ interface PrintQRModalProps {
 interface ProductItem {
   id: string;
   tool_number: string;
+  item_code: string;
   created_at: string;
   products: {
     name: string;
@@ -37,6 +38,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
         .select(`
           id,
           tool_number,
+          item_code,
           created_at,
           products!inner(name)
         `)
@@ -89,7 +91,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
     selectedItemsData.forEach(item => {
       // Create a temporary canvas to generate QR code as data URL
       const canvas = document.createElement('canvas');
-      const size = 120;
+      const size = 180; // Increased from 120 to 180 (1.5x larger)
       canvas.width = size;
       canvas.height = size;
       
@@ -101,7 +103,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
       
       try {
         // Create QR code using React component temporarily
-        const qrSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">${generateQRCodeSVG(item.tool_number)}</svg>`;
+        const qrSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">${generateQRCodeSVG(item.tool_number)}</svg>`;
         qrCodeDataUrls[item.id] = qrSvg;
       } finally {
         document.body.removeChild(tempDiv);
@@ -176,6 +178,14 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
               word-break: break-all;
             }
             
+            .item-code {
+              font-size: 14px;
+              font-weight: 500;
+              color: #374151;
+              margin-bottom: 4px;
+              word-break: break-all;
+            }
+            
             .product-name {
               font-size: 12px;
               color: #6b7280;
@@ -203,10 +213,11 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
                 ${batch.map(item => `
                   <div class="qr-item">
                     <div class="qr-code">
-                      <canvas id="qr-${item.id}" width="120" height="120"></canvas>
+                      <canvas id="qr-${item.id}" width="180" height="180"></canvas>
                     </div>
                     <div class="qr-info">
                       <div class="tool-number">${item.tool_number}</div>
+                      <div class="item-code">${item.item_code}</div>
                       <div class="product-name">${item.products.name}</div>
                     </div>
                   </div>
@@ -228,10 +239,10 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, pro
                   if (canvas) {
                     var ctx = canvas.getContext('2d');
                     var moduleCount = qr.getModuleCount();
-                    var cellSize = 120 / moduleCount;
+                    var cellSize = 180 / moduleCount; // Updated to use 180 instead of 120
                     
                     ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, 120, 120);
+                    ctx.fillRect(0, 0, 180, 180); // Updated to use 180 instead of 120
                     
                     ctx.fillStyle = '#000000';
                     for (var row = 0; row < moduleCount; row++) {
