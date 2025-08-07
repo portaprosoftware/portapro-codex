@@ -25,7 +25,10 @@ export const useCompanySettings = () => {
         .single();
 
       if (error) throw error;
-      return data as CompanySettings;
+      return {
+        ...data,
+        consumable_categories: Array.isArray(data.consumable_categories) ? data.consumable_categories as unknown as ConsumableCategory[] : []
+      } as CompanySettings;
     },
   });
 };
