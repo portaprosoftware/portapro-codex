@@ -233,7 +233,7 @@ export const OCRQualityDashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-semibold text-gray-900">Panel Scan Monitor</h2>
+        <h2 className="text-lg font-medium text-gray-900">Panel Scan Monitor</h2>
         <p className="text-gray-600">Monitor and verify tool tracking accuracy</p>
       </div>
 
@@ -353,7 +353,7 @@ export const OCRQualityDashboard: React.FC = () => {
           {/* Verification Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Items for Review</CardTitle>
+              <CardTitle className="text-lg font-medium">Items for Review</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>

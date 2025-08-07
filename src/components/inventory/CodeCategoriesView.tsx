@@ -102,7 +102,7 @@ export const CodeCategoriesView: React.FC = () => {
     <div className="p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-foreground">ID Number Categories</h2>
+          <h2 className="text-lg font-medium text-foreground">ID Number Categories</h2>
           <p className="text-muted-foreground mt-2">
             Manage all your item ID number categories and prefixes in one place
           </p>
