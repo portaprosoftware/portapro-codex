@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Plus, Edit, Save, Trash, X, Settings2, AlertCircle, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
@@ -25,9 +26,10 @@ export const ConsumableCategoryManager: React.FC = () => {
   // Add form state
   const [newLabel, setNewLabel] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [newExamples, setNewExamples] = useState('');
 
   // Inline edit state
-  const [editing, setEditing] = useState<{ value: string; label: string; description?: string } | null>(null);
+  const [editing, setEditing] = useState<{ value: string; label: string; description?: string; examples?: string } | null>(null);
 
   // Delete dialog state
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -117,6 +119,7 @@ export const ConsumableCategoryManager: React.FC = () => {
       setEditing(null);
       setNewLabel('');
       setNewDescription('');
+      setNewExamples('');
     },
     onError: (err: any) => {
       console.error(err);
@@ -134,13 +137,17 @@ export const ConsumableCategoryManager: React.FC = () => {
       toast.error('Could not generate an ID from the name');
       return;
     }
+    const examplesArray = newExamples.trim() 
+      ? newExamples.split(',').map(ex => ex.trim()).filter(ex => ex.length > 0)
+      : [];
+    
     const next: ConsumableCategory[] = [
       ...(categories || []),
       {
         value,
         label: newLabel.trim(),
         description: newDescription.trim() || '',
-        examples: []
+        examples: examplesArray
       }
     ];
     updateMutation.mutate(next);
@@ -148,12 +155,17 @@ export const ConsumableCategoryManager: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (!editing) return;
+    const examplesArray = editing.examples?.trim() 
+      ? editing.examples.split(',').map(ex => ex.trim()).filter(ex => ex.length > 0)
+      : [];
+    
     const next = (categories || []).map(c =>
       c.value === editing.value
         ? {
             ...c,
             label: editing.label.trim(),
-            description: editing.description?.trim() || ''
+            description: editing.description?.trim() || '',
+            examples: examplesArray
           }
         : c
     );
@@ -236,6 +248,7 @@ export const ConsumableCategoryManager: React.FC = () => {
     setEditing(null);
     setNewLabel('');
     setNewDescription('');
+    setNewExamples('');
   };
 
   const isFormValid = newLabel.trim().length > 0;
@@ -290,14 +303,29 @@ export const ConsumableCategoryManager: React.FC = () => {
                   
                   <div>
                     <Label htmlFor="category-description">Description (Optional)</Label>
-                    <Input 
+                    <Textarea 
                       id="category-description"
-                      placeholder="Brief description of this category" 
+                      placeholder="Provide a detailed description of this category" 
                       value={newDescription} 
                       onChange={(e) => setNewDescription(e.target.value)}
                       className="mt-1"
+                      rows={3}
                     />
                   </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="category-examples">Examples (Optional)</Label>
+                  <Input 
+                    id="category-examples"
+                    placeholder="e.g., Hand sanitizer, Toilet paper, Soap dispensers" 
+                    value={newExamples} 
+                    onChange={(e) => setNewExamples(e.target.value)}
+                    className="mt-1"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Separate multiple examples with commas
+                  </p>
                 </div>
                 
                 <Button 
@@ -351,19 +379,27 @@ export const ConsumableCategoryManager: React.FC = () => {
                           <div className="flex items-center gap-3 flex-1">
                             <Badge variant="outline" className="font-mono text-xs shrink-0">{cat.value}</Badge>
                             {isEditing ? (
-                              <div className="flex items-center gap-2 flex-1">
+                              <div className="flex flex-col gap-2 flex-1">
+                                <div className="flex gap-2">
+                                  <Input
+                                    value={editing?.label || ''}
+                                    onChange={(e) => setEditing({ ...(editing as any), label: e.target.value })}
+                                    className="h-8"
+                                    autoFocus
+                                    placeholder="Category name"
+                                  />
+                                  <Input
+                                    value={editing?.description || ''}
+                                    onChange={(e) => setEditing({ ...(editing as any), description: e.target.value })}
+                                    className="h-8"
+                                    placeholder="Description"
+                                  />
+                                </div>
                                 <Input
-                                  value={editing?.label || ''}
-                                  onChange={(e) => setEditing({ ...(editing as any), label: e.target.value })}
+                                  value={editing?.examples || ''}
+                                  onChange={(e) => setEditing({ ...(editing as any), examples: e.target.value })}
                                   className="h-8"
-                                  autoFocus
-                                  placeholder="Category name"
-                                />
-                                <Input
-                                  value={editing?.description || ''}
-                                  onChange={(e) => setEditing({ ...(editing as any), description: e.target.value })}
-                                  className="h-8"
-                                  placeholder="Description"
+                                  placeholder="Examples (comma separated)"
                                 />
                               </div>
                             ) : (
@@ -399,7 +435,12 @@ export const ConsumableCategoryManager: React.FC = () => {
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  onClick={() => setEditing({ value: cat.value, label: cat.label, description: cat.description })} 
+                                  onClick={() => setEditing({ 
+                                    value: cat.value, 
+                                    label: cat.label, 
+                                    description: cat.description,
+                                    examples: cat.examples?.join(', ') || ''
+                                  })}
                                   className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                 >
                                   <Edit className="w-4 h-4" />
