@@ -23,6 +23,7 @@ import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
 import { OCRSearchCapture } from '@/components/inventory/OCRSearchCapture';
 import { AvailableNowSlider } from '@/components/inventory/AvailableNowSlider';
+import { PrintQRModal } from '@/components/inventory/PrintQRModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -46,6 +47,7 @@ const Inventory: React.FC = () => {
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showIndividualUnitsSlider, setShowIndividualUnitsSlider] = useState(false);
+  const [showPrintQRModal, setShowPrintQRModal] = useState(false);
 
   // Set active tab based on URL path
   useEffect(() => {
@@ -433,6 +435,14 @@ const Inventory: React.FC = () => {
                       All Units
                     </Button>
                     <Button 
+                      variant="outline"
+                      onClick={() => setShowPrintQRModal(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <QrCode className="h-4 w-4" />
+                      Print QR Codes
+                    </Button>
+                    <Button 
                       onClick={() => setAddInventoryModalOpen(true)}
                       className="flex items-center gap-2"
                     >
@@ -517,6 +527,12 @@ const Inventory: React.FC = () => {
         <AvailableNowSlider
           isOpen={showIndividualUnitsSlider}
           onClose={() => setShowIndividualUnitsSlider(false)}
+        />
+
+        {/* Print QR Modal */}
+        <PrintQRModal
+          isOpen={showPrintQRModal}
+          onClose={() => setShowPrintQRModal(false)}
         />
       </div>
     </div>
