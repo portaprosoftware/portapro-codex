@@ -167,7 +167,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg">
+            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-orange-600 to-orange-700 rounded-lg">
               <Wrench className="w-6 h-6 text-white" />
             </div>
             <div>

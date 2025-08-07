@@ -54,6 +54,21 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
     }
   });
 
+  // Fetch maintenance items count for this product
+  const { data: maintenanceCount } = useQuery({
+    queryKey: ["maintenance-count", productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_items")
+        .select("id", { count: 'exact' })
+        .eq("product_id", productId)
+        .eq("status", "maintenance");
+      
+      if (error) throw error;
+      return data?.length || 0;
+    }
+  });
+
   // Set up real-time updates for individual units count
   useEffect(() => {
     const channel = supabase
@@ -69,6 +84,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         () => {
           // Invalidate and refetch the count when items are added/removed/updated
           queryClient.invalidateQueries({ queryKey: ['individual-units-count', productId] });
+          queryClient.invalidateQueries({ queryKey: ['maintenance-count', productId] });
         }
       )
       .subscribe();
@@ -135,6 +151,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           <TabsTrigger value="maintenance" className="flex items-center gap-2">
             <Wrench className="w-4 h-4" />
             Maintenance Tracker
+            {maintenanceCount !== undefined && maintenanceCount > 0 && (
+              <Badge 
+                className="ml-1 flex-shrink-0 border-0 font-bold bg-gradient-to-r from-orange-600 to-orange-700 text-white"
+              >
+                {maintenanceCount}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="attributes" className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
