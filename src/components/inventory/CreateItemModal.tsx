@@ -13,6 +13,7 @@ import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { RequiredAttributesFields } from "./RequiredAttributesFields";
+import { StorageLocationSelector } from "./StorageLocationSelector";
 
 interface CreateItemModalProps {
   productId: string;
@@ -330,12 +331,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
+              <Label htmlFor="location">Storage Location</Label>
+              <StorageLocationSelector
                 value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Enter current location"
+                onValueChange={(value) => handleInputChange("location", value)}
+                placeholder="Select storage location"
               />
             </div>
 
