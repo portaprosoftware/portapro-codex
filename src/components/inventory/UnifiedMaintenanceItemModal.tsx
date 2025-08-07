@@ -311,11 +311,23 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                     <div className="md:col-span-2">
                       <Label>Condition</Label>
-                      <Input
+                      <Select
                         value={formData.condition || ""}
-                        onChange={(e) => setFormData((p) => ({ ...p, condition: e.target.value }))}
-                        placeholder="e.g. Needs valve replacement"
-                      />
+                        onValueChange={(v) => setFormData((p) => ({ ...p, condition: v }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select condition" />
+                        </SelectTrigger>
+                        <SelectContent className="z-50">
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="excellent">Excellent</SelectItem>
+                          <SelectItem value="good">Good</SelectItem>
+                          <SelectItem value="fair">Fair</SelectItem>
+                          <SelectItem value="poor">Poor</SelectItem>
+                          <SelectItem value="needs_repair">Needs Repair</SelectItem>
+                          <SelectItem value="damaged">Damaged</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
