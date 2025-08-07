@@ -33,6 +33,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     size: "",
     material: "",
     notes: "",
+    // Maintenance fields
+    maintenance_reason: "",
+    expected_return_date: "",
+    maintenance_notes: "",
     // OCR fields
     tool_number: "",
     vendor_id: "",
@@ -46,7 +50,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id, maintenance_reason, expected_return_date, maintenance_notes, maintenance_start_date")
         .eq("id", itemId)
         .single();
       
@@ -115,6 +119,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         size: item.size || "",
         material: item.material || "",
         notes: item.notes || "",
+        // Maintenance fields
+        maintenance_reason: item.maintenance_reason || "",
+        expected_return_date: item.expected_return_date ? item.expected_return_date.split('T')[0] : "",
+        maintenance_notes: item.maintenance_notes || "",
         // OCR fields
         tool_number: item.tool_number || "",
         vendor_id: item.vendor_id || "",
@@ -158,9 +166,17 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
       setAttributeErrors({});
 
+      // Prepare update data, handling empty date strings properly
+      const cleanUpdateData = { ...updateData };
+      
+      // Convert empty date strings to null for PostgreSQL
+      if (cleanUpdateData.expected_return_date === "") {
+        cleanUpdateData.expected_return_date = null;
+      }
+
       const { error } = await supabase
         .from("product_items")
-        .update(updateData)
+        .update(cleanUpdateData)
         .eq("id", itemId);
       
       if (error) throw error;
@@ -324,6 +340,49 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
               placeholder="Enter current location"
             />
           </div>
+
+          {/* Maintenance Fields - only show if status is maintenance */}
+          {formData.status === "maintenance" && (
+            <div className="space-y-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <Label className="font-medium text-amber-900">Maintenance Information</Label>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="maintenance_reason">Maintenance Reason</Label>
+                  <Input
+                    id="maintenance_reason"
+                    value={formData.maintenance_reason}
+                    onChange={(e) => handleInputChange("maintenance_reason", e.target.value)}
+                    placeholder="Reason for maintenance"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="expected_return_date">Expected Return Date</Label>
+                  <Input
+                    id="expected_return_date"
+                    type="date"
+                    value={formData.expected_return_date}
+                    onChange={(e) => handleInputChange("expected_return_date", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="maintenance_notes">Maintenance Notes</Label>
+                <Textarea
+                  id="maintenance_notes"
+                  value={formData.maintenance_notes}
+                  onChange={(e) => handleInputChange("maintenance_notes", e.target.value)}
+                  placeholder="Additional maintenance details..."
+                  rows={2}
+                />
+              </div>
+            </div>
+          )}
 
           {/* QR Code Section */}
           <div className="space-y-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
