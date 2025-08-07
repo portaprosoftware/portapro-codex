@@ -302,30 +302,30 @@ export const ConsumableCategoryManager: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="category-description">Description (Optional)</Label>
-                    <Textarea 
-                      id="category-description"
-                      placeholder="Provide a detailed description of this category" 
-                      value={newDescription} 
-                      onChange={(e) => setNewDescription(e.target.value)}
+                    <Label htmlFor="category-examples">Examples (Optional)</Label>
+                    <Input 
+                      id="category-examples"
+                      placeholder="e.g., Hand sanitizer, Toilet paper, Soap dispensers" 
+                      value={newExamples} 
+                      onChange={(e) => setNewExamples(e.target.value)}
                       className="mt-1"
-                      rows={3}
                     />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Separate multiple examples with commas
+                    </p>
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="category-examples">Examples (Optional)</Label>
-                  <Input 
-                    id="category-examples"
-                    placeholder="e.g., Hand sanitizer, Toilet paper, Soap dispensers" 
-                    value={newExamples} 
-                    onChange={(e) => setNewExamples(e.target.value)}
+                  <Label htmlFor="category-description">Description (Optional)</Label>
+                  <Textarea 
+                    id="category-description"
+                    placeholder="Provide a detailed description of this category" 
+                    value={newDescription} 
+                    onChange={(e) => setNewDescription(e.target.value)}
                     className="mt-1"
+                    rows={3}
                   />
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Separate multiple examples with commas
-                  </p>
                 </div>
                 
                 <Button 
@@ -388,17 +388,17 @@ export const ConsumableCategoryManager: React.FC = () => {
                                     placeholder="Category name"
                                   />
                                   <Input
-                                    value={editing?.description || ''}
-                                    onChange={(e) => setEditing({ ...(editing as any), description: e.target.value })}
+                                    value={editing?.examples || ''}
+                                    onChange={(e) => setEditing({ ...(editing as any), examples: e.target.value })}
                                     className="h-8"
-                                    placeholder="Description"
+                                    placeholder="Examples (comma separated)"
                                   />
                                 </div>
                                 <Input
-                                  value={editing?.examples || ''}
-                                  onChange={(e) => setEditing({ ...(editing as any), examples: e.target.value })}
+                                  value={editing?.description || ''}
+                                  onChange={(e) => setEditing({ ...(editing as any), description: e.target.value })}
                                   className="h-8"
-                                  placeholder="Examples (comma separated)"
+                                  placeholder="Description"
                                 />
                               </div>
                             ) : (
