@@ -60,10 +60,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const reservedCount = 0; // This would come from reservations
 
   const statusData = [
-    { label: "Available", count: availableCount, color: "bg-green-500", textColor: "text-green-700" },
-    { label: "On Job", count: product.stock_in_service, color: "bg-blue-500", textColor: "text-blue-700" },
-    { label: "Maintenance", count: maintenanceCount, color: "bg-amber-500", textColor: "text-amber-700" },
-    { label: "Reserved", count: reservedCount, color: "bg-red-500", textColor: "text-red-700" },
+    { label: "Available", count: availableCount, color: "bg-gradient-to-r from-green-500 to-green-600", textColor: "text-green-700 font-bold" },
+    { label: "On Job", count: product.stock_in_service, color: "bg-gradient-to-r from-blue-500 to-blue-600", textColor: "text-blue-700 font-bold" },
+    { label: "Maintenance", count: maintenanceCount, color: "bg-gradient-to-r from-amber-500 to-amber-600", textColor: "text-amber-700 font-bold" },
+    { label: "Reserved", count: reservedCount, color: "bg-gradient-to-r from-red-500 to-red-600", textColor: "text-red-700 font-bold" },
   ];
 
   const isLowStock = availableCount <= product.low_stock_threshold;
@@ -253,8 +253,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             {statusData.map((status) => (
               <div key={status.label} className="flex items-center gap-3">
                 <span className={`w-3 h-3 rounded-full ${status.color}`}></span>
-                <span className="font-medium text-gray-900">{status.count}</span>
-                <span className={`font-medium ${status.textColor}`}>{status.label}</span>
+                <span className="font-bold text-gray-900">{status.count}</span>
+                <span className={`font-bold ${status.textColor}`}>{status.label}</span>
               </div>
             ))}
           </div>
