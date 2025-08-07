@@ -21,7 +21,6 @@ interface StockAdjustmentWizardProps {
 
 const increaseReasons = [
   { value: "found", label: "Found/Recovered", icon: Package },
-  { value: "maintenance", label: "Maintenance Return", icon: RotateCcw },
   { value: "purchase", label: "New Purchase", icon: Plus },
   { value: "correction", label: "Inventory Correction", icon: PenTool },
   { value: "other", label: "Other", icon: Package },
