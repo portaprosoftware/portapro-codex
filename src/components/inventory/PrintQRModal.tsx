@@ -100,24 +100,33 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               </span>
             </div>
 
-            {/* Print Layout */}
+            {/* Print Layout - Separate from UI */}
             <div className="print-container">
-            <style dangerouslySetInnerHTML={{__html: `
+              <style dangerouslySetInnerHTML={{__html: `
                 @media print {
-                  .print-container {
-                    width: 8.5in;
-                    margin: 0;
-                    padding: 0;
+                  body * {
+                    visibility: hidden;
                   }
-                  .print-page {
+                  .print-container, .print-container * {
+                    visibility: visible;
+                  }
+                  .print-container {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
                     width: 8.5in;
                     height: 11in;
+                    margin: 0;
                     padding: 0.25in;
-                    page-break-after: always;
+                  }
+                  .print-page {
+                    width: 100%;
+                    height: 100%;
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
                     grid-template-rows: repeat(3, 1fr);
                     gap: 0.1in;
+                    page-break-after: always;
                   }
                   .print-page:last-child {
                     page-break-after: avoid;
@@ -156,6 +165,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                   gap: 0.5rem;
                   padding: 1rem;
                   aspect-ratio: 8.5/11;
+                  max-width: 600px;
                 }
                 .preview-item {
                   border: 1px solid #d1d5db;
