@@ -96,7 +96,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                 Back to Selection
               </Button>
               <span className="text-xs text-gray-500 ml-2">
-                Preview shows actual print size
+                Select Print QR Codes to view size on 8.5 x 11 sheet
               </span>
             </div>
 
