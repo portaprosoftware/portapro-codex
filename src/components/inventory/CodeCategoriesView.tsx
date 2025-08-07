@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash, Save, X } from "lucide-react";
+import { Plus, Edit, Trash, Save, X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -116,6 +116,24 @@ export const CodeCategoriesView: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        {/* Information Card */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-muted-foreground">
+                <p className="mb-2">
+                  <strong>How ID Categories Work:</strong> Each prefix range (1000-1999, 2000-2999, etc.) can have multiple category names. 
+                  New items automatically get sequential numbers within their category (e.g., 1001, 1002, 1003...).
+                </p>
+                <p>
+                  Categories created here can be assigned to product types in each product's overview tab for organized inventory management.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
         
         <div className="space-y-4">
           {isLoading ? (
