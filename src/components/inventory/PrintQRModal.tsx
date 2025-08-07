@@ -61,6 +61,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
   };
 
   const printQRCodes = () => {
+    console.log('Print button clicked');
     window.print();
   };
 
@@ -73,54 +74,81 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       pages.push(selectedItemsData.slice(i, i + 9));
     }
 
+    console.log('Print Preview - Selected items:', selectedItemsData.length);
+    console.log('Print Preview - Pages:', pages.length);
+    console.log('Selected items data:', selectedItemsData);
+
     return (
       <>
-        {/* Screen Preview UI */}
         <Dialog open={open} onOpenChange={() => {
           setShowPrintPreview(false);
           onClose();
         }}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto screen-only">
-            <DialogHeader>
-              <DialogTitle>
-                Print Preview - {selectedItemsData.length} QR Codes
-                {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
-                <div className="text-xs text-gray-500 mt-1">
-                  Select Print QR Codes to view size on 8.5 x 11 sheet
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            {/* Screen-only UI elements */}
+            <div className="screen-only">
+              <DialogHeader>
+                <DialogTitle>
+                  Print Preview - {selectedItemsData.length} QR Codes
+                  {productName && <div className="text-sm font-normal text-gray-600 mt-1">QR codes for {productName}</div>}
+                  <div className="text-xs text-gray-500 mt-1">
+                    Select Print QR Codes to view size on 8.5 x 11 sheet
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
+                    <Printer className="w-4 h-4 mr-2" />
+                    Print QR Codes
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
+                    Back to Selection
+                  </Button>
                 </div>
-              </DialogTitle>
-            </DialogHeader>
 
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
-                  <Printer className="w-4 h-4 mr-2" />
-                  Print QR Codes
-                </Button>
-                <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
-                  Back to Selection
-                </Button>
+                {/* Preview Layout for screen */}
+                {pages.map((pageItems, pageIndex) => (
+                  <div key={pageIndex} className="preview-page">
+                    {pageItems.map((item) => (
+                      <div key={item.id} className="preview-item">
+                        <QRCodeSVG
+                          value={item.qr_code_data || item.item_code}
+                          size={140}
+                          level="M"
+                          includeMargin
+                        />
+                        <div className="text-base font-bold mt-1 text-center">
+                          {item.item_code}
+                        </div>
+                      </div>
+                    ))}
+                    {/* Fill empty cells if less than 9 items on last page */}
+                    {pageItems.length < 9 && Array.from({ length: 9 - pageItems.length }).map((_, index) => (
+                      <div key={`empty-${index}`} className="preview-item border-dashed opacity-30" />
+                    ))}
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* Preview Layout */}
+            {/* Print-only layout inside the dialog */}
+            <div className="print-only" style={{ display: 'none' }}>
               {pages.map((pageItems, pageIndex) => (
-                <div key={pageIndex} className="preview-page">
+                <div key={`print-page-${pageIndex}`} className="print-page">
                   {pageItems.map((item) => (
-                    <div key={item.id} className="preview-item">
+                    <div key={`print-item-${item.id}`} className="qr-print-item">
                       <QRCodeSVG
                         value={item.qr_code_data || item.item_code}
-                        size={140}
+                        size={200}
                         level="M"
-                        includeMargin
+                        includeMargin={true}
                       />
-                      <div className="text-base font-bold mt-1 text-center">
+                      <div className="qr-print-text">
                         {item.item_code}
                       </div>
                     </div>
-                  ))}
-                  {/* Fill empty cells if less than 9 items on last page */}
-                  {pageItems.length < 9 && Array.from({ length: 9 - pageItems.length }).map((_, index) => (
-                    <div key={`empty-${index}`} className="preview-item border-dashed opacity-30" />
                   ))}
                 </div>
               ))}
@@ -128,34 +156,21 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
           </DialogContent>
         </Dialog>
 
-        {/* Print-Only Content */}
-        <div className="print-only" style={{ display: 'none' }}>
-          {pages.map((pageItems, pageIndex) => (
-            <div key={`print-${pageIndex}`} className="print-page">
-              {pageItems.map((item) => (
-                <div key={`print-${item.id}`} className="qr-print-item">
-                  <QRCodeSVG
-                    value={item.qr_code_data || item.item_code}
-                    size={200}
-                    level="M"
-                    includeMargin
-                  />
-                  <div className="qr-print-text">
-                    {item.item_code}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
         {/* Print Styles */}
         <style dangerouslySetInnerHTML={{__html: `
           @media print {
-            .screen-only {
-              display: none !important;
+            body * {
+              visibility: hidden;
+            }
+            .print-only, .print-only * {
+              visibility: visible;
             }
             .print-only {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              height: 100%;
               display: block !important;
             }
             .print-page {
@@ -163,17 +178,18 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               height: 11in;
               padding: 0.25in;
               page-break-after: always;
-              display: grid;
+              display: grid !important;
               grid-template-columns: repeat(3, 1fr);
               grid-template-rows: repeat(3, 1fr);
               gap: 0.1in;
               margin: 0;
+              box-sizing: border-box;
             }
             .print-page:last-child {
               page-break-after: avoid;
             }
             .qr-print-item {
-              display: flex;
+              display: flex !important;
               flex-direction: column;
               align-items: center;
               justify-content: center;
@@ -182,20 +198,16 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               box-sizing: border-box;
             }
             .qr-print-text {
-              font-family: Arial, sans-serif;
-              font-size: 16px;
-              font-weight: bold;
-              text-align: center;
-              margin-top: 0.05in;
-              color: #000;
+              font-family: Arial, sans-serif !important;
+              font-size: 16px !important;
+              font-weight: bold !important;
+              text-align: center !important;
+              margin-top: 0.05in !important;
+              color: #000 !important;
             }
             @page {
               margin: 0;
               size: letter portrait;
-            }
-            body {
-              margin: 0;
-              padding: 0;
             }
           }
           
