@@ -152,7 +152,7 @@ export const CodeCategoriesView: React.FC = () => {
                   return (
                     <div key={prefix} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700 font-mono">
+                        <Badge variant="outline" className="bg-gradient-to-r from-blue-600 to-blue-700 border-blue-600 text-white font-bold font-mono">
                           {prefix}
                         </Badge>
                         {isEditing ? (
