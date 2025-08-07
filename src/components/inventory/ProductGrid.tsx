@@ -6,7 +6,7 @@ import { ProductListItem } from "./ProductListItem";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductGridProps {
-  filter: "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now" | "padlocked" | "unlocked" | "overdue_padlocked";
+  filter: "all" | "in_stock" | "low_stock" | "out_of_stock" | "padlocked" | "unlocked" | "overdue_padlocked";
   viewType: "grid" | "list";
   hideInactive: boolean;
   searchQuery: string;
@@ -180,8 +180,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 return isLowStock && !isOutOfStock;
               case "out_of_stock":
                 return isOutOfStock;
-              case "available_now":
-                return availableCount > 0 && !isLowStock;
               case "padlocked":
                 return padlockedItems.length > 0;
               case "unlocked":

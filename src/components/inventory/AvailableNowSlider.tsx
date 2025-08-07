@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,58 +16,43 @@ interface AvailableNowSliderProps {
 export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, onClose }) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-  // Mock data for now - this will be replaced with actual data fetching
-  const mockProductsWithItems = [
-    {
-      id: "1",
-      name: "Portable Toilets - Standard",
-      stock_total: 50,
-      available_count: 12,
-      items: [
-        {
-          id: "item1",
-          item_code: "PT001",
-          status: "available",
-          condition: "Good",
-          location: "Warehouse A",
-          color: "Blue",
-          size: "Standard",
-          material: "Plastic",
-          winterized: false
-        },
-        {
-          id: "item2", 
-          item_code: "PT002",
-          status: "available",
-          condition: "Excellent",
-          location: "Warehouse A",
-          color: "Blue",
-          size: "Standard", 
-          material: "Plastic",
-          winterized: true
-        }
-      ]
+  // Fetch all products with their inventory data
+  const { data: productsWithItems = [], isLoading } = useQuery({
+    queryKey: ['products-with-items'],
+    queryFn: async () => {
+      const { data: products, error } = await supabase
+        .from('products')
+        .select(`
+          id,
+          name,
+          stock_total,
+          track_inventory,
+          product_items (
+            id,
+            item_code,
+            status,
+            condition,
+            location,
+            color,
+            size,
+            material,
+            winterized
+          )
+        `)
+        .eq('track_inventory', true)
+        .order('name');
+      
+      if (error) throw error;
+
+      return products?.map(product => ({
+        ...product,
+        available_count: product.product_items?.filter(item => item.status === 'available').length || 0,
+        items: product.product_items || []
+      })) || [];
     },
-    {
-      id: "2",
-      name: "Hand Wash Stations",
-      stock_total: 25,
-      available_count: 8,
-      items: [
-        {
-          id: "item3",
-          item_code: "HW001",
-          status: "available",
-          condition: "Good",
-          location: "Warehouse B",
-          color: "White",
-          size: "Standard",
-          material: "Plastic",
-          winterized: false
-        }
-      ]
-    }
-  ];
+    enabled: isOpen
+  });
+
 
   const toggleSection = (productId: string) => {
     setOpenSections(prev => ({
@@ -80,15 +67,19 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
-            Available Inventory Breakdown
+            Individual Units Overview
           </SheetTitle>
           <SheetDescription>
-            View all available products and their individual units currently in stock
+            View all products and their individual tracked units with detailed information
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-4">
-          {mockProductsWithItems.map((product) => (
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500">
+              Loading inventory data...
+            </div>
+          ) : productsWithItems.map((product) => (
             <Collapsible
               key={product.id}
               open={openSections[product.id]}
@@ -105,13 +96,13 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">
-                          Total Stock: {product.stock_total} | Available Units: {product.available_count}
+                          Total Stock: {product.stock_total} | Individual Units: {product.items.length}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                        {product.available_count} Available
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {product.items.length} Units
                       </Badge>
                       <ChevronDown 
                         className={cn(
@@ -179,10 +170,10 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
             </Collapsible>
           ))}
           
-          {mockProductsWithItems.length === 0 && (
+          {!isLoading && productsWithItems.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>No available inventory found</p>
+              <p>No individual units found</p>
             </div>
           )}
         </div>

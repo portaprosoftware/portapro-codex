@@ -23,7 +23,7 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
     stock: number;
   } | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [filter, setFilter] = useState<"all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now">("all");
+  const [filter, setFilter] = useState<"all" | "in_stock" | "low_stock" | "out_of_stock">("all");
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [hideInactive, setHideInactive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,7 +129,6 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
                   <option value="in_stock">In Stock</option>
                   <option value="low_stock">Low Stock</option>
                   <option value="out_of_stock">Out of Stock</option>
-                  <option value="available_now">Available Now</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">

@@ -22,10 +22,11 @@ import { ProductDetail } from '@/components/inventory/ProductDetail';
 import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
 import { OCRSearchCapture } from '@/components/inventory/OCRSearchCapture';
+import { AvailableNowSlider } from '@/components/inventory/AvailableNowSlider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
-type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
+type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock";
 type ViewType = "grid" | "list";
 
 const Inventory: React.FC = () => {
@@ -44,6 +45,7 @@ const Inventory: React.FC = () => {
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [showIndividualUnitsSlider, setShowIndividualUnitsSlider] = useState(false);
 
   // Set active tab based on URL path
   useEffect(() => {
@@ -257,7 +259,6 @@ const Inventory: React.FC = () => {
 
   const filters = [
     { key: "all" as FilterType, label: "All Items", count: null },
-    { key: "available_now" as FilterType, label: "Available Now", count: null },
     { key: "in_stock" as FilterType, label: "In Stock", count: null },
     { key: "low_stock" as FilterType, label: "Low Stock", count: null },
     { key: "out_of_stock" as FilterType, label: "Out of Stock", count: null },
@@ -424,6 +425,14 @@ const Inventory: React.FC = () => {
                       Scan QR
                     </Button>
                     <Button 
+                      variant="outline" 
+                      onClick={() => setShowIndividualUnitsSlider(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Package className="h-4 w-4" />
+                      Individual Units
+                    </Button>
+                    <Button 
                       onClick={() => setAddInventoryModalOpen(true)}
                       className="flex items-center gap-2"
                     >
@@ -502,6 +511,12 @@ const Inventory: React.FC = () => {
           open={showOCRSearch}
           onClose={() => setShowOCRSearch(false)}
           onSearchResult={handleOCRSearchResult}
+        />
+
+        {/* Individual Units Slider */}
+        <AvailableNowSlider
+          isOpen={showIndividualUnitsSlider}
+          onClose={() => setShowIndividualUnitsSlider(false)}
         />
       </div>
     </div>

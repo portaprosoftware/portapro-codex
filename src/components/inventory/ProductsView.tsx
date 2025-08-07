@@ -2,7 +2,7 @@ import React from 'react';
 import { ProductGrid } from './ProductGrid';
 
 interface ProductsViewProps {
-  filter: "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
+  filter: "all" | "in_stock" | "low_stock" | "out_of_stock";
   viewType: "grid" | "list";
   hideInactive: boolean;
   searchQuery: string;
