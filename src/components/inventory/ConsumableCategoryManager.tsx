@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { useConsumableCategories, useCompanySettings } from '@/hooks/useCompanySettings';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -19,13 +20,44 @@ export const ConsumableCategoryManager: React.FC = () => {
   const { data: companySettings } = useCompanySettings();
   const [open, setOpen] = useState(false);
 
-  // Add form
-  const [newSlug, setNewSlug] = useState('');
+  // Add form (no slug shown to users)
   const [newLabel, setNewLabel] = useState('');
   const [newDescription, setNewDescription] = useState('');
 
   // Inline edit state
   const [editing, setEditing] = useState<{ value: string; label: string; description?: string } | null>(null);
+
+  // Delete dialog state
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ConsumableCategory | null>(null);
+  const [usageCount, setUsageCount] = useState<number | null>(null);
+  const [reassignValue, setReassignValue] = useState<string>('');
+  const [confirmText, setConfirmText] = useState('');
+  const [loadingUsage, setLoadingUsage] = useState(false);
+  const [processingDelete, setProcessingDelete] = useState(false);
+
+  // Helpers
+  const slugify = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '');
+
+  const generateUniqueValue = (base: string) => {
+    if (!base) return '';
+    const existing = new Set((categories || []).map(c => c.value));
+    if (!existing.has(base)) return base;
+    let i = 2;
+    let candidate = `${base}_${i}`;
+    while (existing.has(candidate)) {
+      i += 1;
+      candidate = `${base}_${i}`;
+    }
+    return candidate;
+  };
+
+  const derivedValue = useMemo(() => generateUniqueValue(slugify(newLabel)), [newLabel, categories]);
 
   const sorted = useMemo(() => {
     return [...(categories || [])].sort((a, b) => a.label.localeCompare(b.label));
@@ -49,7 +81,6 @@ export const ConsumableCategoryManager: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['company-settings'] });
       toast.success('Categories updated');
       setEditing(null);
-      setNewSlug('');
       setNewLabel('');
       setNewDescription('');
     },
@@ -60,24 +91,20 @@ export const ConsumableCategoryManager: React.FC = () => {
   });
 
   const handleAdd = () => {
-    if (!newSlug || !newLabel) {
-      toast.error('Please provide both a slug and a name');
+    if (!newLabel.trim()) {
+      toast.error('Please enter a category name');
       return;
     }
-    if (!/^[a-z0-9_]+$/.test(newSlug)) {
-      toast.error('Slug can only contain lowercase letters, numbers, and underscores');
-      return;
-    }
-    const exists = (categories || []).some(c => c.value === newSlug);
-    if (exists) {
-      toast.error('A category with this slug already exists');
+    const value = derivedValue;
+    if (!value) {
+      toast.error('Could not generate an ID from the name');
       return;
     }
     const next: ConsumableCategory[] = [
       ...(categories || []),
       {
-        value: newSlug,
-        label: newLabel,
+        value,
+        label: newLabel.trim(),
         description: newDescription || '',
         examples: []
       }
@@ -99,11 +126,76 @@ export const ConsumableCategoryManager: React.FC = () => {
     updateMutation.mutate(next);
   };
 
-  const handleDelete = (value: string) => {
-    const next = (categories || []).filter(c => c.value !== value);
-    updateMutation.mutate(next);
+  const openDeleteDialog = async (cat: ConsumableCategory) => {
+    setDeleteTarget(cat);
+    setDeleteOpen(true);
+    setReassignValue('');
+    setConfirmText('');
+    setUsageCount(null);
+    setLoadingUsage(true);
+    const { count, error } = await supabase
+      .from('consumables')
+      .select('*', { count: 'exact', head: true })
+      .eq('category', cat.value);
+    if (error) {
+      console.error(error);
+      toast.error('Failed to check category usage');
+    } else {
+      setUsageCount(count || 0);
+    }
+    setLoadingUsage(false);
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    if (confirmText.toLowerCase() !== 'delete') {
+      toast.error('Type "delete" to confirm');
+      return;
+    }
+    try {
+      setProcessingDelete(true);
+      if ((usageCount || 0) > 0) {
+        if (!reassignValue) {
+          toast.error('Please choose a category to move existing items to');
+          setProcessingDelete(false);
+          return;
+        }
+        const { error: updateErr } = await supabase
+          .from('consumables')
+          .update({ category: reassignValue })
+          .eq('category', deleteTarget.value);
+        if (updateErr) throw updateErr;
+      }
+
+      const next = (categories || []).filter(c => c.value !== deleteTarget.value);
+      updateMutation.mutate(next, {
+        onSuccess: () => {
+          toast.success('Category deleted');
+          setDeleteOpen(false);
+          setDeleteTarget(null);
+          setReassignValue('');
+          setConfirmText('');
+          setUsageCount(null);
+          setProcessingDelete(false);
+        },
+        onError: () => {
+          setProcessingDelete(false);
+        }
+      });
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e?.message || 'Failed to delete category');
+      setProcessingDelete(false);
+    }
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteOpen(false);
+    setDeleteTarget(null);
+    setReassignValue('');
+    setConfirmText('');
+    setUsageCount(null);
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -125,14 +217,11 @@ export const ConsumableCategoryManager: React.FC = () => {
             <CardContent className="p-4">
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <Label htmlFor="slug">Slug</Label>
-                  <Input id="slug" placeholder="e.g. hand_soap" value={newSlug} onChange={(e) => setNewSlug(e.target.value)} />
-                </div>
-                <div className="col-span-1">
                   <Label htmlFor="label">Name</Label>
                   <Input id="label" placeholder="Hand Soap" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} />
+                  <p className="mt-1 text-xs text-gray-500">Internal ID: <span className="font-mono">{derivedValue || '—'}</span></p>
                 </div>
-                <div className="col-span-1">
+                <div className="col-span-2">
                   <Label htmlFor="desc">Description (optional)</Label>
                   <Input id="desc" placeholder="Short description" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
                 </div>
@@ -190,7 +279,7 @@ export const ConsumableCategoryManager: React.FC = () => {
                         <Button variant="ghost" size="sm" onClick={() => setEditing({ value: cat.value, label: cat.label, description: cat.description })} className="h-8 w-8 p-0">
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDelete(cat.value)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
+                        <Button variant="ghost" size="sm" onClick={() => openDeleteDialog(cat)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
                           <Trash className="w-4 h-4" />
                         </Button>
                       </>
@@ -200,6 +289,74 @@ export const ConsumableCategoryManager: React.FC = () => {
               )
             })}
           </div>
+
+          {/* Delete category dialog */}
+          <Dialog open={deleteOpen} onOpenChange={(v) => { if (!v) handleCloseDelete(); }}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Delete Category</DialogTitle>
+                <DialogDescription>
+                  {deleteTarget ? `You are deleting "${deleteTarget.label}". This action cannot be undone.` : ''}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {loadingUsage ? (
+                  <div className="text-sm text-gray-600">Checking usage...</div>
+                ) : (
+                  <>
+                    {usageCount !== null && usageCount > 0 ? (
+                      <div className="text-sm text-gray-700">
+                        This category is used by <span className="font-medium">{usageCount}</span> item{usageCount === 1 ? '' : 's'}. Please choose a category to move them to.
+                        <div className="mt-2">
+                          <Label>Move items to</Label>
+                          <Select value={reassignValue} onValueChange={setReassignValue}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Select new category" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50 bg-white">
+                              {(categories || [])
+                                .filter(c => c.value !== deleteTarget?.value)
+                                .sort((a, b) => a.label.localeCompare(b.label))
+                                .map(c => (
+                                  <SelectItem key={c.value} value={c.value}>
+                                    {c.label}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-700">
+                        No items are using this category. It is safe to delete.
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <div>
+                  <Label>Type delete to confirm</Label>
+                  <Input value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="delete" />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={handleCloseDelete}>Cancel</Button>
+                <Button
+                  onClick={handleConfirmDelete}
+                  disabled={
+                    processingDelete ||
+                    confirmText.toLowerCase() !== 'delete' ||
+                    (usageCount !== null && usageCount > 0 && !reassignValue)
+                  }
+                  className="bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800"
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </DialogContent>
     </Dialog>
