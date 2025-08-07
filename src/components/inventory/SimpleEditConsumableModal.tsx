@@ -31,6 +31,7 @@ interface Consumable {
   on_hand_qty: number;
   reorder_threshold: number;
   is_active: boolean;
+  examples?: string;
   notes?: string;
   location_stock: LocationStockItem[];
 }
@@ -50,6 +51,7 @@ interface ConsumableFormData {
   unit_price: string;
   location_stock: LocationStockItem[];
   is_active: boolean;
+  examples?: string;
   notes?: string;
 }
 
@@ -75,6 +77,7 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
         unit_price: consumable.unit_price?.toString() || '',
         location_stock: consumable.location_stock || [],
         is_active: consumable.is_active,
+        examples: consumable.examples || '',
         notes: consumable.notes || ''
       });
     }
@@ -103,8 +106,9 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
           unit_cost: unitCost,
           unit_price: unitPrice,
           location_stock: JSON.stringify(data.location_stock || []) as any,
-          is_active: data.is_active,
-          notes: data.notes,
+           is_active: data.is_active,
+           examples: data.examples,
+           notes: data.notes,
           updated_at: new Date().toISOString()
         })
         .eq('id', consumable.id);
@@ -190,6 +194,20 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
                         onCameraScan={() => setShowScannerModal(true)}
                         showTestButton={true}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="examples"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Examples</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Hand Soap, Paper Towels" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -299,8 +317,8 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
                   <FormControl>
                     <Textarea 
                       {...field} 
-                      placeholder="Enter description"
-                      rows={3}
+                      placeholder="Provide a detailed description of this consumable"
+                      rows={5}
                     />
                   </FormControl>
                   <FormMessage />

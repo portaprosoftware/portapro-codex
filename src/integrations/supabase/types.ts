@@ -623,6 +623,7 @@ export type Database = {
           created_by: string | null
           default_storage_location_id: string | null
           description: string | null
+          examples: string | null
           id: string
           is_active: boolean
           location_stock: Json | null
@@ -642,6 +643,7 @@ export type Database = {
           created_by?: string | null
           default_storage_location_id?: string | null
           description?: string | null
+          examples?: string | null
           id?: string
           is_active?: boolean
           location_stock?: Json | null
@@ -661,6 +663,7 @@ export type Database = {
           created_by?: string | null
           default_storage_location_id?: string | null
           description?: string | null
+          examples?: string | null
           id?: string
           is_active?: boolean
           location_stock?: Json | null

@@ -34,6 +34,7 @@ interface ConsumableFormData {
   unit_price: string;
   location_stock: LocationStockItem[];
   is_active: boolean;
+  examples?: string;
   notes?: string;
 }
 
@@ -54,6 +55,7 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
       unit_price: '',
       location_stock: [],
       is_active: true,
+      examples: '',
       notes: ''
     }
   });
@@ -81,6 +83,7 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
           location_stock: JSON.stringify(data.location_stock || []) as any,
           reorder_threshold: 0,
           is_active: data.is_active,
+          examples: data.examples,
           notes: data.notes
         })
         .select()
@@ -101,6 +104,7 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
         unit_price: '',
         location_stock: [],
         is_active: true,
+        examples: '',
         notes: ''
       });
       onClose();
@@ -183,6 +187,19 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="examples"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Examples</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., Hand Soap, Paper Towels" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="unit_cost"
@@ -286,8 +303,8 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
                   <FormControl>
                     <Textarea 
                       {...field} 
-                      placeholder="Enter description"
-                      rows={3}
+                      placeholder="Provide a detailed description of this consumable"
+                      rows={5}
                     />
                   </FormControl>
                   <FormMessage />
