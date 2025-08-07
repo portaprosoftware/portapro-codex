@@ -15,6 +15,13 @@ interface RealTimeInventorySelectorProps {
   onChange?: (items: JobItemSelection[]) => void;
 }
 
+interface AvailableUnit {
+  item_id: string;
+  item_code: string;
+  status: string;
+  location?: any;
+}
+
 export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps> = ({
   startDate,
   endDate,
@@ -23,6 +30,8 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
 }) => {
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [qty, setQty] = useState<number>(1);
+  const [mode, setMode] = useState<'bulk' | 'specific'>('bulk');
+  const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
 
   const { data: products = [] } = useQuery({
     queryKey: ['products', 'for-availability'],
@@ -38,9 +47,29 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
 
   const availability = useAvailabilityEngine(selectedProduct, startDate, endDate || undefined);
 
+  const { data: availableUnits = [], isLoading: loadingUnits } = useQuery<AvailableUnit[]>({
+    queryKey: ['available-units', selectedProduct, startDate, endDate || startDate],
+    queryFn: async () => {
+      if (!selectedProduct) return [];
+      const { data, error } = await supabase.rpc('get_available_units', {
+        product_type_id: selectedProduct,
+        start_date: startDate,
+        end_date: endDate || startDate,
+      });
+      if (error) throw error;
+      return (data as any[])?.map((u) => ({
+        item_id: u.item_id,
+        item_code: u.item_code,
+        status: u.status,
+        location: u.location,
+      })) || [];
+    },
+    enabled: !!selectedProduct && mode === 'specific',
+  });
+
   const selected = useMemo(() => value, [value]);
 
-  const addItem = () => {
+  const upsertBulk = () => {
     if (!selectedProduct || qty <= 0) return;
     const next: JobItemSelection[] = [...selected];
     const idx = next.findIndex((i) => i.product_id === selectedProduct && i.strategy === 'bulk');
@@ -49,9 +78,29 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
     onChange?.(next);
   };
 
-  const removeItem = (product_id: string) => {
-    const next = selected.filter((i) => i.product_id !== product_id);
+  const upsertSpecific = () => {
+    const clean = selectedUnitIds.filter(Boolean);
+    if (!selectedProduct || clean.length === 0) return;
+
+    const next: JobItemSelection[] = [...selected];
+    const idx = next.findIndex((i) => i.product_id === selectedProduct && i.strategy === 'specific');
+    const payload: JobItemSelection = {
+      product_id: selectedProduct,
+      quantity: clean.length,
+      strategy: 'specific',
+      specific_item_ids: clean,
+    };
+    if (idx >= 0) next[idx] = payload; else next.push(payload);
     onChange?.(next);
+  };
+
+  const removeItem = (product_id: string, strategy: 'bulk' | 'specific') => {
+    const next = selected.filter((i) => !(i.product_id === product_id && i.strategy === strategy));
+    onChange?.(next);
+  };
+
+  const toggleUnit = (id: string) => {
+    setSelectedUnitIds((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
   return (
@@ -62,7 +111,10 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
           <select
             className="h-10 w-full rounded-md border bg-background px-3"
             value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
+            onChange={(e) => {
+              setSelectedProduct(e.target.value);
+              setSelectedUnitIds([]);
+            }}
           >
             <option value="">Select a product…</option>
             {products.map((p) => (
@@ -71,31 +123,97 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
           </select>
         </div>
         <div className="space-y-2">
-          <Label>Quantity</Label>
-          <Input
-            type="number"
-            min={1}
-            max={availability.data?.available || undefined}
-            value={qty}
-            onChange={(e) => setQty(parseInt(e.target.value || '1', 10))}
-          />
+          <Label>Mode</Label>
+          <select
+            className="h-10 w-full rounded-md border bg-background px-3"
+            value={mode}
+            onChange={(e) => {
+              setMode(e.target.value as 'bulk' | 'specific');
+              setSelectedUnitIds([]);
+            }}
+          >
+            <option value="bulk">Bulk (quantity)</option>
+            <option value="specific">Specific items</option>
+          </select>
         </div>
       </div>
 
-      {selectedProduct && (
+      {/* Bulk Mode */}
+      {mode === 'bulk' && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Quantity</Label>
+              <Input
+                type="number"
+                min={1}
+                max={availability.data?.available || undefined}
+                value={qty}
+                onChange={(e) => setQty(parseInt(e.target.value || '1', 10))}
+              />
+            </div>
+
+            {selectedProduct && (
+              <div className="md:col-span-2">
+                <Card>
+                  <CardContent className="py-4 text-sm">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div>
+                        <span className="font-medium">Availability:</span>{' '}
+                        {availability.isLoading ? 'Loading…' : `${availability.data?.available ?? 0} of ${availability.data?.total ?? 0}`}
+                      </div>
+                      <div className="text-muted-foreground">Method: {availability.data?.method || '—'}</div>
+                      <div className="ml-auto">
+                        <Button onClick={upsertBulk} disabled={!availability.data || qty <= 0 || qty > (availability.data?.available ?? 0)}>
+                          Add/Update
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Specific Mode */}
+      {mode === 'specific' && selectedProduct && (
         <Card>
-          <CardContent className="py-4 text-sm">
-            <div className="flex flex-wrap items-center gap-4">
-              <div>
-                <span className="font-medium">Availability:</span>{' '}
-                {availability.isLoading ? 'Loading…' : `${availability.data?.available ?? 0} of ${availability.data?.total ?? 0}`}
-              </div>
-              <div className="text-muted-foreground">Method: {availability.data?.method || '—'}</div>
-              <div className="ml-auto">
-                <Button onClick={addItem} disabled={!availability.data || qty <= 0 || qty > (availability.data?.available ?? 0)}>
-                  Add to Selection
-                </Button>
-              </div>
+          <CardContent className="py-4 text-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="font-medium">Available units for selected date range</div>
+              <div className="text-xs text-muted-foreground">{loadingUnits ? 'Loading…' : `${availableUnits.length} available`}</div>
+            </div>
+
+            <div className="max-h-64 overflow-auto border rounded-md">
+              {loadingUnits ? (
+                <div className="p-4">Loading…</div>
+              ) : availableUnits.length === 0 ? (
+                <div className="p-4 text-muted-foreground">No specific units available for these dates.</div>
+              ) : (
+                <ul className="divide-y">
+                  {availableUnits.map((u) => (
+                    <li key={u.item_id} className="flex items-center gap-3 p-2">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={selectedUnitIds.includes(u.item_id)}
+                        onChange={() => toggleUnit(u.item_id)}
+                      />
+                      <div className="flex-1">
+                        <div className="font-mono text-xs">{u.item_code}</div>
+                        <div className="text-xs text-muted-foreground">{u.status}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button variant="outline" onClick={() => setSelectedUnitIds([])} disabled={selectedUnitIds.length === 0}>Clear</Button>
+              <Button onClick={upsertSpecific} disabled={selectedUnitIds.length === 0}>Add Selected</Button>
             </div>
           </CardContent>
         </Card>
@@ -112,8 +230,11 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
                 <div className="flex-1">
                   <div className="font-mono text-xs">{it.product_id}</div>
                   <div>qty {it.quantity} · {it.strategy}</div>
+                  {it.specific_item_ids && it.specific_item_ids.length > 0 && (
+                    <div className="text-xs text-muted-foreground">items: {it.specific_item_ids.join(', ')}</div>
+                  )}
                 </div>
-                <Button variant="outline" size="sm" onClick={() => removeItem(it.product_id)}>Remove</Button>
+                <Button variant="outline" size="sm" onClick={() => removeItem(it.product_id, it.strategy)}>Remove</Button>
               </div>
             ))}
           </div>
@@ -121,7 +242,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       </section>
 
       <aside className="text-xs text-muted-foreground">
-        Selecting specific units by attributes will be added next. This selector prevents overbooking by enforcing current availability.
+        This selector uses live availability to prevent overbooking. You can mix bulk quantities with specific unit reservations.
       </aside>
     </div>
   );
