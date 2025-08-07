@@ -132,6 +132,30 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/inventory/products" element={
+            <>
+              <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/inventory/location-map" element={
+            <>
+              <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/inventory/panel-scans" element={
+            <>
+              <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/inventory/code-categories" element={
+            <>
+              <SignedIn><Layout><Inventory /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/inventory/items/:itemId" element={
             <>
               <SignedIn><Layout><ProductItemDetail /></Layout></SignedIn>
