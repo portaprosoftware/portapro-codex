@@ -268,19 +268,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     toast.success("OCR data captured and applied");
   };
 
-  const getVerificationBadge = (status: string | null, confidence: number | null) => {
-    if (!status) return null;
-    
-    const badges = {
-      manual_verified: <Badge className="bg-green-100 text-green-700"><Shield className="w-3 h-3 mr-1" />Verified</Badge>,
-      auto_detected: confidence && confidence > 0.8 
-        ? <Badge className="bg-blue-100 text-blue-700">Auto-detected</Badge>
-        : <Badge className="bg-yellow-100 text-yellow-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>,
-      needs_review: <Badge className="bg-red-100 text-red-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>
-    };
-
-    return badges[status as keyof typeof badges] || null;
-  };
 
   if (isLoading || !item) {
     return (
@@ -422,7 +409,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 <h3 className="font-medium text-foreground flex items-center gap-2">
                   <Camera className="w-4 h-4" />
                   Tool Tracking Information
-                  {item?.verification_status && getVerificationBadge(item.verification_status, item.ocr_confidence_score)}
                 </h3>
                 <p className="text-sm text-muted-foreground">Capture or update tool information using OCR</p>
               </div>

@@ -260,15 +260,23 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   };
 
   const getStatusBadge = (status: string) => {
-    const colors = {
-      available: "bg-blue-100 text-blue-700 border-blue-200",
-      assigned: "bg-amber-100 text-amber-700 border-amber-200",
-      maintenance: "bg-red-100 text-red-700 border-red-200"
+    const gradients = {
+      available: "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold",
+      assigned: "bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold",
+      maintenance: "bg-gradient-to-r from-red-600 to-red-700 text-white font-bold",
+      out_of_service: "bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold"
+    };
+
+    const statusLabels = {
+      available: "Available",
+      assigned: "Assigned", 
+      maintenance: "Maintenance",
+      out_of_service: "Permanently Retired"
     };
 
     return (
-      <Badge className={colors[status as keyof typeof colors] || colors.available}>
-        {status}
+      <Badge className={gradients[status as keyof typeof gradients] || gradients.available}>
+        {statusLabels[status as keyof typeof statusLabels] || status}
       </Badge>
     );
   };
@@ -371,7 +379,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
               <TableHead className="font-medium">Status</TableHead>
               <TableHead className="font-medium">Variations</TableHead>
               <TableHead className="font-medium">Tool Number</TableHead>
-              <TableHead className="font-medium">Verification</TableHead>
               <TableHead className="w-12">QR</TableHead>
               <TableHead className="w-32">Actions</TableHead>
             </TableRow>
@@ -406,9 +413,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                     {item.tool_number || "—"}
                   </TableCell>
                   <TableCell>
-                    {getVerificationBadge(item.verification_status, item.ocr_confidence_score)}
-                  </TableCell>
-                  <TableCell>
                     <SimpleQRCode 
                       itemCode={item.item_code} 
                       qrCodeData={item.qr_code_data}
@@ -430,7 +434,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 // Expanded Row Details
                 expandedRows.includes(item.id) ? (
                 <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={9} className="border-t">
+                    <TableCell colSpan={8} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         {/* OCR Tracking Information */}
                         {(item.tool_number || item.vendor_id || item.plastic_code) && (
