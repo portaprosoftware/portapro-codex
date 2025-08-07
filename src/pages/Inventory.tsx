@@ -338,42 +338,44 @@ const Inventory: React.FC = () => {
 
             {/* Location, View Controls, and Hide Inactive */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              {/* Location Selector */}
-              <div className="flex-1 max-w-xs">
-                <Label htmlFor="location-select" className="text-sm font-medium mb-2 block">Filter by Location</Label>
-                <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
-                  <SelectTrigger id="location-select" className="w-full">
-                    <SelectValue placeholder="All Locations" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    <SelectItem value="yard">Yard</SelectItem>
-                    <SelectItem value="field">Field</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Location Selector and View Label */}
+              <div className="flex items-end gap-4">
+                <div className="flex-1 max-w-xs">
+                  <Label htmlFor="location-select" className="text-sm font-medium mb-2 block">Filter by Location</Label>
+                  <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+                    <SelectTrigger id="location-select" className="w-full">
+                      <SelectValue placeholder="All Locations" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Locations</SelectItem>
+                      <SelectItem value="yard">Yard</SelectItem>
+                      <SelectItem value="field">Field</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* View Toggle */}
-              <div className="flex items-end gap-2">
-                <Label className="text-sm font-medium">View</Label>
-                <div className="flex bg-muted rounded-lg p-1">
-                  <Button
-                    variant={viewType === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewType('grid')}
-                    className="h-8 px-3"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewType === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewType('list')}
-                    className="h-8 px-3"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
+                {/* View Toggle */}
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">View</Label>
+                  <div className="flex bg-muted rounded-lg p-1">
+                    <Button
+                      variant={viewType === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('list')}
+                      className="h-8 px-3"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewType === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('grid')}
+                      className="h-8 px-3"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
