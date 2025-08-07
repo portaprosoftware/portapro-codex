@@ -41,9 +41,9 @@ export const ItemCodeCategorySelect: React.FC<ItemCodeCategorySelectProps> = ({
       <SelectContent className="max-h-[300px]">
         {categories.map((category) => (
           <SelectItem key={category.value} value={category.value} className="py-3">
-            <div className="flex flex-col items-start w-full">
+            <div className="flex items-center justify-between w-full">
               <span className="font-medium">{category.label}</span>
-              <span className="text-xs text-muted-foreground mt-1">
+              <span className="text-xs text-muted-foreground">
                 {category.description}
               </span>
             </div>
