@@ -32,18 +32,10 @@ export const MaintenanceItemActions: React.FC<MaintenanceItemActionsProps> = ({
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-56 z-50">
         <DropdownMenuItem onClick={onEditMaintenance}>
           <Edit3 className="mr-2 h-4 w-4" />
-          Edit Maintenance Details
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onAddUpdate}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Progress Update
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onViewHistory}>
-          <History className="mr-2 h-4 w-4" />
-          View Maintenance History
+          Manage Item
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onReturnToService}>
           <CheckCircle className="mr-2 h-4 w-4" />

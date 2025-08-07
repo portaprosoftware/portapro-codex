@@ -10,9 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { MaintenanceItemActions } from "./MaintenanceItemActions";
-import { EditMaintenanceModal } from "./EditMaintenanceModal";
-import { AddMaintenanceUpdateModal } from "./AddMaintenanceUpdateModal";
-import { MaintenanceHistoryModal } from "./MaintenanceHistoryModal";
+import { UnifiedMaintenanceItemModal } from "./UnifiedMaintenanceItemModal";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -26,8 +24,6 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   
   // Modal states
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   // Fetch items in maintenance for this product
@@ -144,16 +140,6 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const handleEditMaintenance = (item: any) => {
     setSelectedItem(item);
     setEditModalOpen(true);
-  };
-
-  const handleAddUpdate = (item: any) => {
-    setSelectedItem(item);
-    setUpdateModalOpen(true);
-  };
-
-  const handleViewHistory = (item: any) => {
-    setSelectedItem(item);
-    setHistoryModalOpen(true);
   };
 
   const handleReturnSingleItem = (itemId: string) => {
@@ -292,8 +278,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                       itemId={item.id}
                       itemCode={item.item_code}
                       onEditMaintenance={() => handleEditMaintenance(item)}
-                      onAddUpdate={() => handleAddUpdate(item)}
-                      onViewHistory={() => handleViewHistory(item)}
+                      onAddUpdate={() => { /* unified modal handles updates */ }}
+                      onViewHistory={() => { /* unified modal shows history */ }}
                       onReturnToService={() => handleReturnSingleItem(item.id)}
                     />
                   </TableCell>
@@ -405,40 +391,18 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         )}
       </div>
 
-      {/* Modals */}
+      {/* Modal */}
       {selectedItem && (
-        <>
-          <EditMaintenanceModal
-            isOpen={editModalOpen}
-            onClose={() => {
-              setEditModalOpen(false);
-              setSelectedItem(null);
-            }}
-            item={selectedItem}
-            productId={productId}
-          />
-          
-          <AddMaintenanceUpdateModal
-            isOpen={updateModalOpen}
-            onClose={() => {
-              setUpdateModalOpen(false);
-              setSelectedItem(null);
-            }}
-            itemId={selectedItem.id}
-            itemCode={selectedItem.item_code}
-            productId={productId}
-          />
-          
-          <MaintenanceHistoryModal
-            isOpen={historyModalOpen}
-            onClose={() => {
-              setHistoryModalOpen(false);
-              setSelectedItem(null);
-            }}
-            itemId={selectedItem.id}
-            itemCode={selectedItem.item_code}
-          />
-        </>
+        <UnifiedMaintenanceItemModal
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          productId={productId}
+          storageLocations={storageLocations}
+        />
       )}
     </div>
   );
