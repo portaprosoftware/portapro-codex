@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AddVariationModal } from "./AddVariationModal";
 
 interface ProductAttributesTabProps {
   productId: string;
@@ -18,6 +19,7 @@ interface ProductAttributesTabProps {
 export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ productId }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [attributeFilter, setAttributeFilter] = useState("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch real product attributes from Supabase
@@ -102,7 +104,10 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
             <h2 className="text-lg font-bold text-gray-900 mb-2">Product Variations</h2>
             <p className="text-gray-600">Manage custom properties and variations that can be applied to individual items of this product type.</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => setIsAddModalOpen(true)}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Variation
           </Button>
@@ -209,6 +214,13 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
           while optional variations can be left blank.
         </p>
       </div>
+
+      {/* Add Variation Modal */}
+      <AddVariationModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        productId={productId}
+      />
     </div>
   );
 };
