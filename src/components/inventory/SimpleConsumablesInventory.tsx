@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -45,6 +45,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortField, setSortField] = useState<string>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const queryClient = useQueryClient();
 
   // Fetch consumables
@@ -138,7 +140,25 @@ export const SimpleConsumablesInventory: React.FC = () => {
     setSelectedConsumable(null);
   };
 
-  // Derive filtered list
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="w-4 h-4 ml-1 text-gray-600" />
+      : <ArrowDown className="w-4 h-4 ml-1 text-gray-600" />;
+  };
+
+  // Derive filtered and sorted list
   const filteredConsumables = useMemo(() => {
     if (!consumables) return [];
     
@@ -161,8 +181,50 @@ export const SimpleConsumablesInventory: React.FC = () => {
       );
     }
     
-    return filtered;
-  }, [consumables, categoryFilter, searchTerm]);
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (sortField) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'category':
+          aValue = formatCategoryDisplay(a.category).toLowerCase();
+          bValue = formatCategoryDisplay(b.category).toLowerCase();
+          break;
+        case 'sku':
+          aValue = a.sku?.toLowerCase() || '';
+          bValue = b.sku?.toLowerCase() || '';
+          break;
+        case 'unit_cost':
+          aValue = a.unit_cost;
+          bValue = b.unit_cost;
+          break;
+        case 'unit_price':
+          aValue = a.unit_price;
+          bValue = b.unit_price;
+          break;
+        case 'on_hand_qty':
+          aValue = a.on_hand_qty;
+          bValue = b.on_hand_qty;
+          break;
+        default:
+          return 0;
+      }
+      
+      if (typeof aValue === 'string') {
+        const comparison = aValue.localeCompare(bValue);
+        return sortDirection === 'asc' ? comparison : -comparison;
+      } else {
+        const comparison = aValue - bValue;
+        return sortDirection === 'asc' ? comparison : -comparison;
+      }
+    });
+    
+    return sorted;
+  }, [consumables, categoryFilter, searchTerm, sortField, sortDirection]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -253,12 +315,60 @@ export const SimpleConsumablesInventory: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Unit Cost</TableHead>
-                    <TableHead>Unit Price</TableHead>
-                    <TableHead>On Hand</TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('name')}
+                    >
+                      <div className="flex items-center">
+                        Name
+                        {getSortIcon('name')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('category')}
+                    >
+                      <div className="flex items-center">
+                        Category
+                        {getSortIcon('category')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('sku')}
+                    >
+                      <div className="flex items-center">
+                        SKU
+                        {getSortIcon('sku')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('unit_cost')}
+                    >
+                      <div className="flex items-center">
+                        Unit Cost
+                        {getSortIcon('unit_cost')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('unit_price')}
+                    >
+                      <div className="flex items-center">
+                        Unit Price
+                        {getSortIcon('unit_price')}
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer select-none hover:bg-gray-50"
+                      onClick={() => handleSort('on_hand_qty')}
+                    >
+                      <div className="flex items-center">
+                        On Hand
+                        {getSortIcon('on_hand_qty')}
+                      </div>
+                    </TableHead>
                     <TableHead className="w-80">Locations</TableHead>
                     <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
