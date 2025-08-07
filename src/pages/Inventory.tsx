@@ -20,6 +20,9 @@ import { PanelScansView } from '@/components/inventory/PanelScansView';
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
 import { ProductDetail } from '@/components/inventory/ProductDetail';
 import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
+import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
+import { OCRSearchCapture } from '@/components/inventory/OCRSearchCapture';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
 type FilterType = "all" | "in_stock" | "low_stock" | "out_of_stock" | "available_now";
@@ -479,6 +482,26 @@ const Inventory: React.FC = () => {
         <AddInventoryModal 
           isOpen={addInventoryModalOpen}
           onClose={() => setAddInventoryModalOpen(false)}
+        />
+
+        {/* QR Scanner Dialog */}
+        <Dialog open={showQRScanner} onOpenChange={setShowQRScanner}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Scan QR Code</DialogTitle>
+            </DialogHeader>
+            <QRCodeScanner
+              onScan={handleQRScanResult}
+              onClose={() => setShowQRScanner(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* OCR Search Dialog */}
+        <OCRSearchCapture
+          open={showOCRSearch}
+          onClose={() => setShowOCRSearch(false)}
+          onSearchResult={handleOCRSearchResult}
         />
       </div>
     </div>
