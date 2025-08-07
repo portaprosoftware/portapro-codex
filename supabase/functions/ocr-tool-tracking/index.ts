@@ -33,31 +33,21 @@ serve(async (req) => {
     let avgConfidence;
 
     if (!googleCloudVisionKey) {
-      console.log('Google Cloud Vision API key not configured, using mock data');
+      console.log('Google Cloud Vision API key not configured, returning empty results');
       
-      // Generate realistic mock OCR data for testing
-      const mockData = {
-        toolNumber: `T-${Math.floor(Math.random() * 90000) + 10000}-${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 10)}`,
-        vendorId: String(Math.floor(Math.random() * 90000) + 10000),
-        plasticCode: Math.random() > 0.5 ? '2 HDPE' : '5 PP',
-        manufacturingDate: `${Math.floor(Math.random() * 12) + 1}/24`,
-        moldCavity: `CAV ${Math.floor(Math.random() * 8) + 1}`
-      };
-      
+      // Return empty results instead of mock data when API key is not configured
       ocrResults = {
-        ...mockData,
+        toolNumber: null,
+        vendorId: null,
+        plasticCode: null,
+        manufacturingDate: null,
+        moldCavity: null,
         rawData: {
-          fullText: `Mock detected: ${mockData.toolNumber} ${mockData.vendorId} ${mockData.plasticCode} ${mockData.manufacturingDate} ${mockData.moldCavity}`,
-          annotations: [{
-            description: mockData.toolNumber,
-            confidence: 0.95
-          }, {
-            description: mockData.vendorId,
-            confidence: 0.88
-          }]
+          fullText: 'No OCR processing - Google Cloud Vision API key not configured',
+          annotations: []
         }
       };
-      avgConfidence = 0.85 + Math.random() * 0.1;
+      avgConfidence = 0;
     } else {
       // Real Google Cloud Vision API processing
       const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleCloudVisionKey}`, {
@@ -79,35 +69,25 @@ serve(async (req) => {
       });
 
       if (!visionResponse.ok) {
-        console.log(`Vision API error: ${visionResponse.status} ${visionResponse.statusText}`);
-        // Fall back to mock data if API fails
-        const mockData = {
-          toolNumber: 'T-20788-V',
-          vendorId: '32933',
-          plasticCode: '2 HDPE',
-          manufacturingDate: '01/24',
-          moldCavity: 'CAV 1'
-        };
+        const responseText = await visionResponse.text();
+        console.log(`Vision API error: ${visionResponse.status} ${visionResponse.statusText} - ${responseText}`);
         
+        // Return empty results instead of hardcoded mock data when API fails
         ocrResults = {
-          ...mockData,
+          toolNumber: null,
+          vendorId: null,
+          plasticCode: null,
+          manufacturingDate: null,
+          moldCavity: null,
           rawData: {
-            fullText: `API Fallback: Satellite Industries Inc Minneapolis MN USA Patent Pending Tool # ${mockData.toolNumber} Vendor ID # ${mockData.vendorId} ${mockData.plasticCode} ${mockData.manufacturingDate} ${mockData.moldCavity}`,
-            annotations: [{
-              description: `Tool # ${mockData.toolNumber}`,
-              confidence: 0.92
-            }, {
-              description: `Vendor ID # ${mockData.vendorId}`,
-              confidence: 0.89
-            }, {
-              description: mockData.plasticCode,
-              confidence: 0.95
-            }]
+            fullText: `OCR processing failed: ${visionResponse.status} ${visionResponse.statusText}`,
+            annotations: [],
+            error: responseText
           }
         };
-        avgConfidence = 0.88;
+        avgConfidence = 0;
         
-        console.log('Using fallback mock data due to API error');
+        console.log('OCR API failed, returning empty results');
       } else {
         const visionData = await visionResponse.json();
         const textAnnotations = visionData.responses[0]?.textAnnotations || [];
@@ -147,8 +127,8 @@ serve(async (req) => {
     console.log('Parsed OCR results:', ocrResults);
     console.log('Average confidence:', avgConfidence);
 
-    // Update the product item in the database if itemId is provided
-    if (itemId) {
+    // Update the product item in the database if itemId is provided and valid
+    if (itemId && itemId !== 'new' && itemId !== 'undefined' && itemId !== 'null') {
       const updateData: any = {
         ocr_confidence_score: avgConfidence,
         verification_status: 'auto_detected',
@@ -176,9 +156,12 @@ serve(async (req) => {
 
       if (updateError) {
         console.error('Error updating product item:', updateError);
+        // Don't fail the entire request if DB update fails - still return OCR results
       } else {
         console.log('Product item updated successfully');
       }
+    } else if (itemId) {
+      console.log(`Skipping database update for itemId: ${itemId} (new item or invalid UUID)`);
     }
 
     return new Response(JSON.stringify({
@@ -186,7 +169,8 @@ serve(async (req) => {
       results: ocrResults,
       confidence: avgConfidence,
       detectedTextCount: ocrResults.rawData.annotations?.length || 0,
-      mock: !googleCloudVisionKey
+      apiConfigured: !!googleCloudVisionKey,
+      apiError: ocrResults.rawData.error || null
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
