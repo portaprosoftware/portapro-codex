@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Package, Hash } from 'lucide-react';
+import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Package, Hash, Sliders } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
@@ -429,7 +429,7 @@ const Inventory: React.FC = () => {
                       onClick={() => setShowIndividualUnitsSlider(true)}
                       className="flex items-center gap-2"
                     >
-                      <Settings className="h-4 w-4" />
+                      <Sliders className="h-4 w-4" />
                       All Units
                     </Button>
                     <Button 

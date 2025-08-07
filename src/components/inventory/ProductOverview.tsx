@@ -199,7 +199,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 ${product.charge_for_product ? (product.daily_rate || product.default_price_per_day) : product.default_price_per_day}/day
               </Badge>
               <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
-                (Available)
+                Available
               </Badge>
             </div>
             <p className="text-gray-600 leading-relaxed">
