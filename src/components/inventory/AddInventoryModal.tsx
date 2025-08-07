@@ -339,12 +339,12 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
                   {formData.selectedCategory && (
                     <div className="p-4 bg-muted/50 rounded-lg space-y-2">
                       <p className="text-sm font-medium">Individual Item Codes</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formData.locationQuantity} individual items will be created with codes starting from:{' '}
-                        <code className="bg-background px-1 py-0.5 rounded text-xs">
-                          {formData.selectedCategory}1, {formData.selectedCategory}2, etc.
-                        </code>
-                      </p>
+                       <p className="text-sm text-muted-foreground">
+                         {formData.locationQuantity} individual items will be created with sequential 4-digit codes starting from:{' '}
+                         <code className="bg-background px-1 py-0.5 rounded text-xs">
+                           {formData.selectedCategory}, {(parseInt(formData.selectedCategory) + 1).toString()}, etc.
+                         </code>
+                       </p>
                     </div>
                   )}
                 </div>

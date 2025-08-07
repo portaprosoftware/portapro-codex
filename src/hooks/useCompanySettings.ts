@@ -36,7 +36,7 @@ export const useItemCodeCategories = () => {
   const categoryOptions = Object.entries(categories).map(([prefix, name]) => ({
     value: prefix,
     label: `${prefix}s - ${name}`,
-    description: `Starting from ${prefix}001`,
+    description: `Starting from ${prefix}`,
   }));
 
   return {
