@@ -190,6 +190,8 @@ export function useCreateJob() {
           timezone: serializedJobData.timezone || 'America/New_York',
           notes: serializedJobData.notes || '',
           special_instructions: serializedJobData.special_instructions || '',
+          driver_id: (jobData as any).driver_id || null,
+          vehicle_id: (jobData as any).vehicle_id || null,
         })
         .select()
         .single();

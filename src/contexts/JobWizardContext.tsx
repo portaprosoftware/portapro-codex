@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
+export interface JobItemSelection {
+  product_id: string;
+  quantity: number;
+  strategy: 'bulk' | 'specific';
+  specific_item_ids?: string[];
+  attributes?: Record<string, string | boolean>;
+}
+
 export interface JobWizardData {
   // Step 1: Customer Selection
   customer_id?: string;
@@ -9,12 +17,18 @@ export interface JobWizardData {
   scheduled_date?: string;
   scheduled_time?: string | null;
   timezone: string;
+  return_date?: string | null;
   notes?: string;
   is_priority?: boolean;
   
   // Step 3: Location Selection
   special_instructions?: string;
   selected_coordinate_ids: string[];
+
+  // Step 4-5: Assignment & Items
+  driver_id?: string | null;
+  vehicle_id?: string | null;
+  items?: JobItemSelection[];
 }
 
 interface JobWizardState {
@@ -37,7 +51,9 @@ const initialState: JobWizardState = {
     timezone: 'America/New_York',
     selected_coordinate_ids: [],
     scheduled_time: null,
+    return_date: null,
     is_priority: false,
+    items: [],
   },
   errors: {},
   isLoading: false,
@@ -126,7 +142,23 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         break;
       case 3:
-        // Location validation can be added here if needed
+        // Optional: validate location/coordinates here
+        break;
+      case 4:
+        // Require at least a driver or a vehicle selection
+        if (!state.data.driver_id && !state.data.vehicle_id) {
+          errors.assignment = 'Please select a driver or a vehicle';
+        }
+        break;
+      case 5:
+        // Products & services optional (service-only jobs allowed)
+        // If provided, ensure quantities are positive
+        if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
+          errors.items = 'All selected quantities must be greater than 0';
+        }
+        break;
+      case 6:
+        // Review step: no additional validation
         break;
     }
 

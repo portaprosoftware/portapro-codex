@@ -10,6 +10,10 @@ import { JobTypeSchedulingStep } from './steps/JobTypeSchedulingStep';
 import { LocationSelectionStep } from './steps/LocationSelectionStep';
 import { useCreateJob } from '@/hooks/useJobs';
 import { toast } from 'sonner';
+import { DriverVehicleStep } from './steps/DriverVehicleStep';
+import { ProductsServicesStep } from './steps/ProductsServicesStep';
+import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
+import { supabase } from '@/integrations/supabase/client';
 
 interface NewJobWizardProps {
   open: boolean;
@@ -34,7 +38,42 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     if (!validateCurrentStep()) return;
 
     try {
-      await createJobMutation.mutateAsync(state.data);
+      const job = await createJobMutation.mutateAsync(state.data);
+
+      // After job is created, reserve equipment if any items were selected
+      if (state.data.items && state.data.items.length > 0 && state.data.scheduled_date) {
+        const assignmentDate = state.data.scheduled_date;
+        const returnDate = state.data.return_date || null;
+
+        for (const item of state.data.items) {
+          if (item.strategy === 'bulk') {
+            const { data, error } = await supabase.rpc('reserve_equipment_for_job', {
+              job_uuid: job.id,
+              product_uuid: item.product_id,
+              reserve_quantity: item.quantity,
+              assignment_date: assignmentDate,
+              return_date: returnDate
+            });
+            if (error) {
+              throw new Error(error.message || 'Failed to reserve equipment');
+            }
+
+          } else if (item.strategy === 'specific' && item.specific_item_ids?.length) {
+            for (const itemId of item.specific_item_ids) {
+              const { data, error } = await supabase.rpc('reserve_specific_item_for_job', {
+                job_uuid: job.id,
+                item_uuid: itemId,
+                assignment_date: assignmentDate,
+                return_date: returnDate
+              });
+              if (error) {
+                throw new Error(error.message || 'Failed to reserve specific item');
+              }
+            }
+          }
+        }
+      }
+
       toast.success('Job created successfully!');
       reset();
       onClose();
@@ -52,12 +91,18 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         return <JobTypeSchedulingStep />;
       case 3:
         return <LocationSelectionStep />;
+      case 4:
+        return <DriverVehicleStep />;
+      case 5:
+        return <ProductsServicesStep />;
+      case 6:
+        return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
       default:
         return <CustomerSelectionStep />;
     }
   };
 
-  const isLastStep = state.currentStep === 3;
+  const isLastStep = state.currentStep === 6;
   const isFirstStep = state.currentStep === 1;
 
   return (

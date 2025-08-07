@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Users, Calendar, MapPin } from 'lucide-react';
+import { Check, Users, Calendar, MapPin, Truck, Boxes, ListChecks } from 'lucide-react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +21,24 @@ const steps = [
     title: 'Location',
     description: 'Service location',
     icon: MapPin,
+  },
+  {
+    number: 4,
+    title: 'Assignment',
+    description: 'Driver & vehicle',
+    icon: Truck,
+  },
+  {
+    number: 5,
+    title: 'Products',
+    description: 'Units & services',
+    icon: Boxes,
+  },
+  {
+    number: 6,
+    title: 'Review',
+    description: 'Confirm & create',
+    icon: ListChecks,
   },
 ];
 
