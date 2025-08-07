@@ -322,8 +322,6 @@ const Inventory: React.FC = () => {
               onSearchChange={setSearchQuery}
               selectedLocationId={selectedLocationId}
               onLocationChange={setSelectedLocationId}
-              selectedFilter={activeFilter}
-              onFilterChange={setActiveFilter}
             />
 
             {/* Status Filter Buttons */}
