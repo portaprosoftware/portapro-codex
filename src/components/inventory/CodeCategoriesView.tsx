@@ -125,10 +125,13 @@ export const CodeCategoriesView: React.FC = () => {
               <div className="text-sm text-muted-foreground">
                 <p className="mb-2">
                   <strong>How ID Categories Work:</strong> Each prefix range (1000-1999, 2000-2999, etc.) can have multiple category names. 
-                  New items automatically get sequential numbers within their category (e.g., 1001, 1002, 1003...).
+                  New individual units automatically get sequential numbers within their category (e.g., 1001, 1002, 1003...).
+                </p>
+                <p className="mb-2">
+                  Categories created here can be assigned to product types in each product's overview tab for organized inventory management.
                 </p>
                 <p>
-                  Categories created here can be assigned to product types in each product's overview tab for organized inventory management.
+                  <strong>Existing Systems:</strong> If you already have a numbering system in place, you can add custom numbers while setting this up to maintain your current organization.
                 </p>
               </div>
             </div>
