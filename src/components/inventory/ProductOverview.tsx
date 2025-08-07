@@ -287,9 +287,12 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             <History className="w-4 h-4 mr-2" />
             View Stock History
           </Button>
-          <span className="text-xl font-bold text-foreground">
-            Total: {product.stock_total}
-          </span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+            <span className="text-sm font-medium text-gray-600">Total Stock</span>
+            <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-base px-3 py-1">
+              {product.stock_total}
+            </Badge>
+          </div>
         </div>
       </div>
 
