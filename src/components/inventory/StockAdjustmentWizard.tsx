@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Package, Plus, Minus, RotateCcw, AlertTriangle } from "lucide-react";
+import { Package, Plus, Minus, RotateCcw, AlertTriangle, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,14 +23,14 @@ const increaseReasons = [
   { value: "found", label: "Found/Recovered", icon: Package },
   { value: "maintenance", label: "Maintenance Return", icon: RotateCcw },
   { value: "purchase", label: "New Purchase", icon: Plus },
-  { value: "correction", label: "Inventory Correction", icon: RotateCcw },
+  { value: "correction", label: "Inventory Correction", icon: PenTool },
   { value: "other", label: "Other", icon: Package },
 ];
 
 const decreaseReasons = [
   { value: "damaged", label: "Damaged/Broken", icon: AlertTriangle },
   { value: "lost", label: "Lost/Missing", icon: Package },
-  { value: "correction", label: "Inventory Correction", icon: RotateCcw },
+  { value: "correction", label: "Inventory Correction", icon: PenTool },
   { value: "other", label: "Other", icon: Package },
 ];
 
@@ -41,7 +41,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
   onComplete,
   onCancel
 }) => {
-  const [adjustmentType, setAdjustmentType] = useState<"increase" | "decrease" | "set">("increase");
+  const [adjustmentType, setAdjustmentType] = useState<"increase" | "decrease">("increase");
   const [quantity, setQuantity] = useState<number>(1);
   const [reason, setReason] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -54,8 +54,6 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
         return currentStock + quantity;
       case "decrease":
         return Math.max(0, currentStock - quantity);
-      case "set":
-        return quantity;
       default:
         return currentStock;
     }
@@ -116,14 +114,12 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
   };
 
   // Get the current reasons based on adjustment type
-  const currentReasons = adjustmentType === "increase" ? increaseReasons : 
-                        adjustmentType === "decrease" ? decreaseReasons : 
-                        [...increaseReasons, ...decreaseReasons];
+  const currentReasons = adjustmentType === "increase" ? increaseReasons : decreaseReasons;
   
   const selectedReason = currentReasons.find(r => r.value === reason);
   
   // Reset reason when changing adjustment type
-  const handleAdjustmentTypeChange = (type: "increase" | "decrease" | "set") => {
+  const handleAdjustmentTypeChange = (type: "increase" | "decrease") => {
     setAdjustmentType(type);
     setReason(""); // Clear reason when switching types
   };
@@ -166,21 +162,11 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
               <Minus className="w-4 h-4 mr-2" />
               Decrease
             </Button>
-            <Button
-              variant={adjustmentType === "set" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleAdjustmentTypeChange("set")}
-              className="flex-1"
-            >
-              Set To
-            </Button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="quantity">
-            {adjustmentType === "set" ? "Set Stock To" : "Quantity"}
-          </Label>
+          <Label htmlFor="quantity">Quantity</Label>
           <Input
             id="quantity"
             type="number"
