@@ -18,6 +18,7 @@ import { OCRQualityDashboard } from "@/components/inventory/OCRQualityDashboard"
 import { OfflineOCRCapture } from "@/components/inventory/OfflineOCRCapture";
 import { OCRSearchCapture } from "@/components/inventory/OCRSearchCapture";
 import { QRCodeScanner } from "@/components/inventory/QRCodeScanner";
+import { ItemCodeCategoryManagement } from "@/components/inventory/ItemCodeCategoryManagement";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -509,21 +510,26 @@ const Inventory: React.FC = () => {
       {/* Tab Content */}
       <div className="space-y-4">
         {activeTab === "products" && (
-          <ProductGrid 
-            filter={activeFilter}
-            viewType={viewType}
-            hideInactive={hideInactive}
-            searchQuery={searchQuery}
-            selectedLocationId={selectedLocationId}
-            onProductSelect={(productId) => {
-              // If we have a matching individual item, go directly to that page
-              if (matchingItemId) {
-                navigate(`/inventory/items/${matchingItemId}`);
-              } else {
-                setSelectedProduct(productId);
-              }
-            }}
-          />
+          <>
+            {/* Item Code Category Management */}
+            <ItemCodeCategoryManagement />
+            
+            <ProductGrid 
+              filter={activeFilter}
+              viewType={viewType}
+              hideInactive={hideInactive}
+              searchQuery={searchQuery}
+              selectedLocationId={selectedLocationId}
+              onProductSelect={(productId) => {
+                // If we have a matching individual item, go directly to that page
+                if (matchingItemId) {
+                  navigate(`/inventory/items/${matchingItemId}`);
+                } else {
+                  setSelectedProduct(productId);
+                }
+              }}
+            />
+          </>
         )}
 
         {activeTab === "location-map" && (
