@@ -65,7 +65,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           stock_total: data.stockTotal,
           low_stock_threshold: data.lowStockThreshold,
           track_inventory: true,
-          default_storage_location_id: data.storageLocationId
+          default_storage_location_id: data.storageLocationId,
+          default_item_code_category: data.selectedCategory || null
         })
         .select()
         .single();

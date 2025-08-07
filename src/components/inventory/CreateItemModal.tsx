@@ -48,7 +48,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("name")
+        .select("name, default_item_code_category")
         .eq("id", productId)
         .single();
       
@@ -200,12 +200,30 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     }
   };
 
-  const generateItemCode = () => {
-    if (categoriesLoading || !categories || categories.length === 0) {
-      toast.error("Item code categories not available");
-      return;
+  const generateItemCode = async () => {
+    // Check if product has a default category
+    if (product?.default_item_code_category) {
+      try {
+        const { data: itemCode, error } = await supabase.rpc('generate_item_code_with_category', {
+          category_prefix: product.default_item_code_category
+        });
+        
+        if (error) throw error;
+        
+        handleInputChange("item_code", itemCode);
+        toast.success('Item code generated successfully');
+      } catch (error) {
+        console.error('Error generating item code:', error);
+        toast.error('Failed to generate item code');
+      }
+    } else {
+      // No default category, show selection modal
+      if (categoriesLoading || !categories || categories.length === 0) {
+        toast.error("Item code categories not available");
+        return;
+      }
+      setShowCategorySelect(true);
     }
-    setShowCategorySelect(true);
   };
 
   const handleCategorySelect = async (categoryPrefix: string) => {
@@ -262,14 +280,17 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
                   onClick={generateItemCode}
                   disabled={categoriesLoading}
                 >
-                  Auto-Generate
+                  {product?.default_item_code_category ? 'Auto-Generate' : 'Select Category'}
                 </Button>
               </div>
               <Input
                 id="item_code"
                 value={formData.item_code}
                 onChange={(e) => handleInputChange("item_code", e.target.value)}
-                placeholder="Enter unique item code (e.g., 1001, 2001)"
+                placeholder={product?.default_item_code_category 
+                  ? `Auto-generates using ${product.default_item_code_category}s category` 
+                  : 'Enter unique item code (e.g., 1001, 2001)'
+                }
                 required
               />
             </div>

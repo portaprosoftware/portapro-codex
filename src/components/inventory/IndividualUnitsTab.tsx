@@ -131,7 +131,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("name, stock_total")
+        .select("name, stock_total, default_item_code_category")
         .eq("id", productId)
         .single();
       
@@ -302,6 +302,25 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
   return (
     <div className="space-y-6">
+      {/* Category Info Banner */}
+      {product?.default_item_code_category && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-blue-900">
+                {product.name} items use: <span className="font-bold">{product.default_item_code_category}s</span> category
+              </p>
+              <p className="text-sm text-blue-600 mt-1">
+                New individual items will automatically use this category for item codes.
+              </p>
+            </div>
+            <Badge className="bg-blue-600 text-white font-medium">
+              {product.default_item_code_category}s
+            </Badge>
+          </div>
+        </div>
+      )}
+
       {/* Header Controls */}
       <div className="flex items-center gap-4">
         <Button 

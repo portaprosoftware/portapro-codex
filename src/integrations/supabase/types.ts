@@ -4087,6 +4087,7 @@ export type Database = {
           charge_for_product: boolean | null
           created_at: string
           daily_rate: number | null
+          default_item_code_category: string | null
           default_price_per_day: number
           default_storage_location_id: string | null
           description: string | null
@@ -4113,6 +4114,7 @@ export type Database = {
           charge_for_product?: boolean | null
           created_at?: string
           daily_rate?: number | null
+          default_item_code_category?: string | null
           default_price_per_day: number
           default_storage_location_id?: string | null
           description?: string | null
@@ -4139,6 +4141,7 @@ export type Database = {
           charge_for_product?: boolean | null
           created_at?: string
           daily_rate?: number | null
+          default_item_code_category?: string | null
           default_price_per_day?: number
           default_storage_location_id?: string | null
           description?: string | null

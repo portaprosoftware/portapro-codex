@@ -37,7 +37,21 @@ export function IndividualItemCreation({
   const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
   const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
 
-  // Fetch product attributes
+  // Fetch product info and attributes
+  const { data: product } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("name, default_item_code_category")
+        .eq("id", productId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const { data: productAttributes = [] } = useQuery({
     queryKey: ['product-attributes', productId],
     queryFn: async () => {
@@ -57,8 +71,11 @@ export function IndividualItemCreation({
         throw new Error("Please select storage location and valid quantity");
       }
       
-      if (!selectedCategory) {
-        throw new Error("Please select an item code category");
+      // Check for category - either default or selected
+      const categoryToUse = product?.default_item_code_category || selectedCategory;
+      
+      if (!categoryToUse) {
+        throw new Error("Please select an item code category or set a default for this product");
       }
 
       // Validate required attributes
@@ -81,11 +98,12 @@ export function IndividualItemCreation({
 
       const itemCodes = [];
       
+
       // Generate item codes using the new database function
       for (let i = 0; i < quantity; i++) {
         const { data: generatedCode, error: codeError } = await supabase
           .rpc('generate_item_code_with_category', {
-            category_prefix: selectedCategory
+            category_prefix: categoryToUse
           });
 
         if (codeError) throw codeError;
@@ -242,7 +260,29 @@ export function IndividualItemCreation({
               />
             </div>
 
-            <div className="space-y-2">
+            {!product?.default_item_code_category && (
+              <div className="space-y-2">
+                <Label>Item Code Category *</Label>
+                <ItemCodeCategorySelect
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                  placeholder="Select category for 4-digit codes"
+                />
+              </div>
+            )}
+
+            {product?.default_item_code_category && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="font-medium text-blue-900">
+                  Using default category: {product.default_item_code_category}s
+                </p>
+                <p className="text-sm text-blue-600 mt-1">
+                  Item codes will be generated automatically using this category.
+                </p>
+              </div>
+            )}
+            
+            <div className="space-y-2 hidden">
               <Label>Item Code Category *</Label>
               <ItemCodeCategorySelect
                 value={selectedCategory}
@@ -282,7 +322,7 @@ export function IndividualItemCreation({
             </Button>
             <Button 
               type="submit" 
-              disabled={createIndividualItemsMutation.isPending || !selectedCategory || !storageLocationId || Object.keys(attributeErrors).length > 0}
+              disabled={createIndividualItemsMutation.isPending || (!product?.default_item_code_category && !selectedCategory) || !storageLocationId || Object.keys(attributeErrors).length > 0}
             >
               {createIndividualItemsMutation.isPending ? "Creating..." : `Create ${quantity} Items`}
             </Button>

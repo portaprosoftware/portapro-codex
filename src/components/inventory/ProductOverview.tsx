@@ -13,6 +13,8 @@ import { ProductStockHistory } from "./ProductStockHistory";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
+import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 
 interface Product {
   id: string;
@@ -32,6 +34,7 @@ interface Product {
   monthly_rate?: number;
   fixed_price?: number;
   image_url?: string;
+  default_item_code_category?: string;
 }
 
 interface ProductOverviewProps {
@@ -47,6 +50,10 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [maintenanceQuantity, setMaintenanceQuantity] = useState(1);
   const [maintenanceNotes, setMaintenanceNotes] = useState("");
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(product.default_item_code_category || "");
+
+  const { categories } = useItemCodeCategories();
 
   const availableCount = product.stock_total - product.stock_in_service;
   const maintenanceCount = 0; // This would come from maintenance records
@@ -99,6 +106,25 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     }
   });
 
+  const updateCategoryMutation = useMutation({
+    mutationFn: async (category: string) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ default_item_code_category: category })
+        .eq("id", product.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, category) => {
+      queryClient.invalidateQueries({ queryKey: ["product", product.id] });
+      toast.success(`Default item code category updated`);
+      setShowCategoryModal(false);
+    },
+    onError: (error) => {
+      toast.error("Failed to update category");
+      console.error(error);
+    }
+  });
 
   const moveToMaintenanceMutation = useMutation({
     mutationFn: async ({ quantity, notes }: { quantity: number; notes: string }) => {
@@ -150,6 +176,15 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       return;
     }
     moveToMaintenanceMutation.mutate({ quantity: maintenanceQuantity, notes: maintenanceNotes });
+  };
+
+  const handleCategoryUpdate = () => {
+    updateCategoryMutation.mutate(selectedCategory);
+  };
+
+  const getCategoryName = (categoryValue: string) => {
+    const category = categories?.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
   };
 
   return (
@@ -256,6 +291,46 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             Total: {product.stock_total}
           </span>
         </div>
+      </div>
+
+      {/* Item Code Category Settings */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-gray-900">Item Code Category</h2>
+          <Button 
+            variant="outline" 
+            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            onClick={() => setShowCategoryModal(true)}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Set Default Category
+          </Button>
+        </div>
+        
+        {product.default_item_code_category ? (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-blue-900">
+                  Default Category: {getCategoryName(product.default_item_code_category)}
+                </p>
+                <p className="text-sm text-blue-600 mt-1">
+                  New individual items will automatically use this category for item codes.
+                </p>
+              </div>
+              <Badge className="bg-blue-600 text-white">
+                {product.default_item_code_category}s
+              </Badge>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-amber-800 font-medium">No default category set</p>
+            <p className="text-sm text-amber-600 mt-1">
+              Set a default item code category to streamline individual item creation.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Product Settings */}
@@ -369,6 +444,41 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 disabled={moveToMaintenanceMutation.isPending}
               >
                 {moveToMaintenanceMutation.isPending ? "Moving..." : "Move to Maintenance"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Category Settings Modal */}
+      <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set Default Item Code Category</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="category-select">Item Code Category</Label>
+              <ItemCodeCategorySelect
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+                placeholder="Select default category"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This category will be used automatically when creating new individual items.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCategoryUpdate}
+                disabled={updateCategoryMutation.isPending || !selectedCategory}
+              >
+                {updateCategoryMutation.isPending ? "Updating..." : "Set Category"}
               </Button>
             </div>
           </div>
