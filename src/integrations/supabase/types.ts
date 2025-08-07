@@ -3793,6 +3793,7 @@ export type Database = {
           condition: string | null
           created_at: string
           current_storage_location_id: string | null
+          expected_return_date: string | null
           gps_enabled: boolean | null
           id: string
           interior_features: string[] | null
@@ -3800,6 +3801,9 @@ export type Database = {
           last_known_location: unknown | null
           last_location_update: string | null
           location: string | null
+          maintenance_notes: string | null
+          maintenance_reason: string | null
+          maintenance_start_date: string | null
           manufacturing_date: string | null
           material: string | null
           mold_cavity: string | null
@@ -3827,6 +3831,7 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
+          expected_return_date?: string | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
@@ -3834,6 +3839,9 @@ export type Database = {
           last_known_location?: unknown | null
           last_location_update?: string | null
           location?: string | null
+          maintenance_notes?: string | null
+          maintenance_reason?: string | null
+          maintenance_start_date?: string | null
           manufacturing_date?: string | null
           material?: string | null
           mold_cavity?: string | null
@@ -3861,6 +3869,7 @@ export type Database = {
           condition?: string | null
           created_at?: string
           current_storage_location_id?: string | null
+          expected_return_date?: string | null
           gps_enabled?: boolean | null
           id?: string
           interior_features?: string[] | null
@@ -3868,6 +3877,9 @@ export type Database = {
           last_known_location?: unknown | null
           last_location_update?: string | null
           location?: string | null
+          maintenance_notes?: string | null
+          maintenance_reason?: string | null
+          maintenance_start_date?: string | null
           manufacturing_date?: string | null
           material?: string | null
           mold_cavity?: string | null

@@ -26,12 +26,12 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     queryFn: async () => {
       let query = supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id")
+        .select("*, tool_number, vendor_id, maintenance_start_date, maintenance_reason, expected_return_date, maintenance_notes")
         .eq("product_id", productId)
         .eq("status", "maintenance");
 
       if (searchQuery) {
-        query = query.or(`item_code.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,notes.ilike.%${searchQuery}%`);
+        query = query.or(`item_code.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,maintenance_notes.ilike.%${searchQuery}%,maintenance_reason.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query.order("item_code");
@@ -76,7 +76,10 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         .from("product_items")
         .update({ 
           status: "available",
-          notes: null // Clear maintenance notes
+          maintenance_start_date: null,
+          maintenance_reason: null,
+          expected_return_date: null,
+          maintenance_notes: null
         })
         .in("id", itemIds);
       
@@ -182,7 +185,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         <div className="flex-1 relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search by item code, tool number, or maintenance notes..."
+            placeholder="Search by item code, tool number, maintenance reason, or notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -206,7 +209,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 <TableHead className="font-medium">Item Code</TableHead>
                 <TableHead className="font-medium">Tool Number</TableHead>
                 <TableHead className="font-medium">Location</TableHead>
-                <TableHead className="font-medium">Maintenance Date</TableHead>
+                <TableHead className="font-medium">Maintenance Reason</TableHead>
+                <TableHead className="font-medium">Expected Return</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -241,7 +245,10 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                     {getStorageLocationName(item.current_storage_location_id)}
                   </TableCell>
                   <TableCell className="text-gray-600">
-                    {formatDate(item.updated_at)}
+                    {item.maintenance_reason || "No reason specified"}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {formatDate(item.expected_return_date)}
                   </TableCell>
                   <TableCell>
                     <Badge className="bg-amber-100 text-amber-700 border-amber-200">
@@ -254,7 +261,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 // Expanded Row Details
                 expandedRows.includes(item.id) ? (
                   <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={7} className="border-t">
+                    <TableCell colSpan={8} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Maintenance Details */}
@@ -265,14 +272,25 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                             </h4>
                             <div className="space-y-2">
                               <div>
-                                <span className="font-medium text-gray-700">Notes:</span>
-                                <p className="text-gray-600 mt-1">{item.notes || "No notes provided"}</p>
+                                <span className="font-medium text-gray-700">Reason:</span>
+                                <p className="text-gray-600 mt-1">{item.maintenance_reason || "No reason specified"}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-gray-700">Since:</span>
+                                <span className="font-medium text-gray-700">Notes:</span>
+                                <p className="text-gray-600 mt-1">{item.maintenance_notes || "No notes provided"}</p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-700">Started:</span>
                                 <p className="text-gray-600 mt-1 flex items-center">
                                   <Clock className="w-3 h-3 mr-1" />
-                                  {formatDate(item.updated_at)}
+                                  {formatDate(item.maintenance_start_date)}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="font-medium text-gray-700">Expected Return:</span>
+                                <p className="text-gray-600 mt-1 flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1" />
+                                  {formatDate(item.expected_return_date)}
                                 </p>
                               </div>
                             </div>
