@@ -326,7 +326,7 @@ const Inventory: React.FC = () => {
               onLocationChange={setSelectedLocationId}
             />
 
-            {/* Card 3: Main Content */}
+            {/* Card 3: Status Filters and Controls */}
             <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
               {/* Status Filter Buttons */}
               <div className="flex flex-wrap gap-3">
@@ -430,8 +430,10 @@ const Inventory: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Product Grid */}
+            {/* Card 4: Product Grid */}
+            <div className="bg-background rounded-2xl shadow-md p-6">
               <ProductsView
                 filter={activeFilter}
                 viewType={viewType}
