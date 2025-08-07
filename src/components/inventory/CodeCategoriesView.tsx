@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,6 +19,8 @@ export const CodeCategoriesView: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<{ prefix: string; name: string } | null>(null);
   const [newPrefix, setNewPrefix] = useState("");
   const [newName, setNewName] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ prefix: string; name: string } | null>(null);
 
   const updateCategoriesMutation = useMutation({
     mutationFn: async (newCategories: Record<string, string>) => {
@@ -89,14 +92,28 @@ export const CodeCategoriesView: React.FC = () => {
     updateCategoriesMutation.mutate(updatedCategories);
   };
 
-  const handleDeleteCategory = (prefix: string) => {
+  const handleDeleteClick = (prefix: string, name: string) => {
+    setCategoryToDelete({ prefix, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!categoryToDelete) return;
+
     const currentCategories: Record<string, string> = {};
     categories.forEach(cat => {
       currentCategories[cat.value] = cat.label.split(' - ')[1];
     });
 
-    delete currentCategories[prefix];
+    delete currentCategories[categoryToDelete.prefix];
     updateCategoriesMutation.mutate(currentCategories);
+    setDeleteDialogOpen(false);
+    setCategoryToDelete(null);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setCategoryToDelete(null);
   };
 
   return (
@@ -201,7 +218,7 @@ export const CodeCategoriesView: React.FC = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleDeleteCategory(prefix)}
+                              onClick={() => handleDeleteClick(prefix, name)}
                               className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                             >
                               <Trash className="w-4 h-4" />
@@ -261,6 +278,16 @@ export const CodeCategoriesView: React.FC = () => {
             </>
           )}
         </div>
+
+        <DeleteConfirmationDialog
+          isOpen={deleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          onConfirm={handleConfirmDelete}
+          title="Delete Category"
+          description={`Deleting the "${categoryToDelete?.name}" category will remove it from the system. This does not affect any existing ID numbers for individual units that have already been assigned, but this category will no longer be available for newly created individual units.`}
+          itemName={categoryToDelete?.name}
+          isLoading={updateCategoriesMutation.isPending}
+        />
       </div>
     </div>
   );
