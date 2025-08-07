@@ -49,6 +49,12 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
     mutationFn: async (data: any) => {
       console.log('Saving OCR data:', data);
       
+      // If itemId is "new", we're in create mode, just return the data
+      if (itemId === "new") {
+        console.log('In create mode, returning OCR data without saving');
+        return data;
+      }
+      
       const { error } = await supabase
         .from('product_items')
         .update({
@@ -75,13 +81,19 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
     onSuccess: (data) => {
       console.log('Save mutation successful, invalidating queries');
       
-      // Invalidate multiple query keys to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: ['product-items'] });
-      queryClient.invalidateQueries({ queryKey: ['product-items', itemId] });
+      // Only invalidate queries if we're updating an existing item
+      if (itemId !== "new") {
+        queryClient.invalidateQueries({ queryKey: ['product-items'] });
+        queryClient.invalidateQueries({ queryKey: ['product-items', itemId] });
+      }
+      
+      const message = itemId === "new" 
+        ? "OCR data captured successfully" 
+        : `Tool tracking information updated for ${itemCode}`;
       
       toast({
         title: "✅ OCR Data Saved Successfully",
-        description: `Tool tracking information updated for ${itemCode}`,
+        description: message,
         duration: 4000,
       });
       

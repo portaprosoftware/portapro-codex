@@ -87,6 +87,8 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
   const createMutation = useMutation({
     mutationFn: async (itemData: typeof formData) => {
+      console.log('Creating item with data:', itemData);
+      
       // Validate required attributes
       const requiredAttributes = productAttributes?.filter(attr => attr.is_required) || [];
       const missingAttributes: Record<string, string> = {};
@@ -115,7 +117,12 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
         .select('id')
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Database insert error:', error);
+        throw error;
+      }
+      
+      console.log('Item created successfully:', newItem);
 
       // Insert attributes if any
       if (Object.keys(attributeValues).length > 0) {
@@ -146,14 +153,16 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
       }
     },
     onSuccess: () => {
+      console.log('Item creation successful');
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
+      queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
       toast.success("Item created successfully");
       onClose();
     },
     onError: (error: any) => {
+      console.error('Item creation failed:', error);
       if (error.message !== "Please fill in all required attributes") {
-        toast.error("Failed to create item");
-        console.error(error);
+        toast.error(`Failed to create item: ${error.message}`);
       }
     }
   });
