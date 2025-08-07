@@ -33,6 +33,15 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
   const [mode, setMode] = useState<'bulk' | 'specific'>('bulk');
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
 
+  // Attribute filters
+  const [color, setColor] = useState('');
+  const [size, setSize] = useState('');
+
+  const hasFilters = useMemo(() => !!(color || size), [color, size]);
+  const filterAttributes = useMemo(() => (
+    hasFilters ? { color: color || undefined, size: size || undefined } : null
+  ), [hasFilters, color, size]);
+
   const { data: products = [] } = useQuery({
     queryKey: ['products', 'for-availability'],
     queryFn: async () => {
@@ -45,7 +54,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
     },
   });
 
-  const availability = useAvailabilityEngine(selectedProduct, startDate, endDate || undefined);
+  const availability = useAvailabilityEngine(selectedProduct, startDate, endDate || undefined, filterAttributes);
 
   const { data: availableUnits = [], isLoading: loadingUnits } = useQuery<AvailableUnit[]>({
     queryKey: ['available-units', selectedProduct, startDate, endDate || startDate],
@@ -64,8 +73,20 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         location: u.location,
       })) || [];
     },
-    enabled: !!selectedProduct && mode === 'specific',
+    enabled: !!selectedProduct && mode === 'specific' && !hasFilters,
   });
+
+  const filteredUnits = useMemo(() => {
+    if (!hasFilters) return [];
+    return availability.data?.individual_items?.map((u: any) => ({
+      item_id: u.item_id,
+      item_code: u.item_code,
+      status: u.status,
+    })) || [];
+  }, [hasFilters, availability.data]);
+
+  const unitsList = hasFilters ? filteredUnits : availableUnits;
+  const unitsLoading = hasFilters ? availability.isLoading : loadingUnits;
 
   const selected = useMemo(() => value, [value]);
 
@@ -74,7 +95,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
     const next: JobItemSelection[] = [...selected];
     const idx = next.findIndex((i) => i.product_id === selectedProduct && i.strategy === 'bulk');
     if (idx >= 0) next[idx] = { ...next[idx], quantity: qty };
-    else next.push({ product_id: selectedProduct, quantity: qty, strategy: 'bulk' });
+    else next.push({ product_id: selectedProduct, quantity: qty, strategy: 'bulk', attributes: hasFilters ? { color, size } : undefined });
     onChange?.(next);
   };
 
@@ -89,6 +110,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       quantity: clean.length,
       strategy: 'specific',
       specific_item_ids: clean,
+      attributes: hasFilters ? { color, size } : undefined,
     };
     if (idx >= 0) next[idx] = payload; else next.push(payload);
     onChange?.(next);
@@ -101,6 +123,11 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
 
   const toggleUnit = (id: string) => {
     setSelectedUnitIds((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const clearFilters = () => {
+    setColor('');
+    setSize('');
   };
 
   return (
@@ -137,6 +164,26 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
           </select>
         </div>
       </div>
+
+      {/* Attribute Filters */}
+      <Card>
+        <CardContent className="py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-2">
+              <Label htmlFor="color">Color</Label>
+              <Input id="color" placeholder="e.g., blue" value={color} onChange={(e) => setColor(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="size">Size</Label>
+              <Input id="size" placeholder="e.g., standard" value={size} onChange={(e) => setSize(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Button variant="outline" onClick={clearFilters} disabled={!hasFilters}>Clear Filters</Button>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">Filters apply to availability and specific item lists when set.</p>
+        </CardContent>
+      </Card>
 
       {/* Bulk Mode */}
       {mode === 'bulk' && (
@@ -183,17 +230,17 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
           <CardContent className="py-4 text-sm space-y-3">
             <div className="flex items-center justify-between">
               <div className="font-medium">Available units for selected date range</div>
-              <div className="text-xs text-muted-foreground">{loadingUnits ? 'Loading…' : `${availableUnits.length} available`}</div>
+              <div className="text-xs text-muted-foreground">{unitsLoading ? 'Loading…' : `${unitsList.length} available`}</div>
             </div>
 
             <div className="max-h-64 overflow-auto border rounded-md">
-              {loadingUnits ? (
+              {unitsLoading ? (
                 <div className="p-4">Loading…</div>
-              ) : availableUnits.length === 0 ? (
+              ) : unitsList.length === 0 ? (
                 <div className="p-4 text-muted-foreground">No specific units available for these dates.</div>
               ) : (
                 <ul className="divide-y">
-                  {availableUnits.map((u) => (
+                  {unitsList.map((u) => (
                     <li key={u.item_id} className="flex items-center gap-3 p-2">
                       <input
                         type="checkbox"
@@ -233,6 +280,9 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
                   {it.specific_item_ids && it.specific_item_ids.length > 0 && (
                     <div className="text-xs text-muted-foreground">items: {it.specific_item_ids.join(', ')}</div>
                   )}
+                  {it.attributes && (
+                    <div className="text-xs text-muted-foreground">filters: {it.attributes.color || '—'} {it.attributes.size ? `· ${it.attributes.size}` : ''}</div>
+                  )}
                 </div>
                 <Button variant="outline" size="sm" onClick={() => removeItem(it.product_id, it.strategy)}>Remove</Button>
               </div>
@@ -242,7 +292,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       </section>
 
       <aside className="text-xs text-muted-foreground">
-        This selector uses live availability to prevent overbooking. You can mix bulk quantities with specific unit reservations.
+        Attribute filters are optional and apply to both counts and specific units when set.
       </aside>
     </div>
   );
