@@ -11,6 +11,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AddVariationModal } from "./AddVariationModal";
+import { EditVariationModal } from "./EditVariationModal";
+import { DeleteVariationDialog } from "./DeleteVariationDialog";
 
 interface ProductAttributesTabProps {
   productId: string;
@@ -20,6 +22,10 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
   const [searchQuery, setSearchQuery] = useState("");
   const [attributeFilter, setAttributeFilter] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedVariation, setSelectedVariation] = useState<{ id: string; name: string; values: string[]; required: boolean } | null>(null);
+  const [variationToDelete, setVariationToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch real product attributes from Supabase
@@ -90,6 +96,16 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
     }
     return true;
   });
+
+  const handleEditVariation = (attribute: { id: string; name: string; values: string[]; required: boolean }) => {
+    setSelectedVariation(attribute);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteVariation = (attributeName: string) => {
+    setVariationToDelete(attributeName);
+    setIsDeleteDialogOpen(true);
+  };
 
   if (isLoading) {
     return <div className="p-6">Loading attributes...</div>;
@@ -182,10 +198,20 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" className="w-6 h-6 p-0">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-6 h-6 p-0"
+                      onClick={() => handleEditVariation(attribute)}
+                    >
                       <Edit className="w-4 h-4 text-gray-400 hover:text-blue-600" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="w-6 h-6 p-0">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-6 h-6 p-0"
+                      onClick={() => handleDeleteVariation(attribute.name)}
+                    >
                       <Trash className="w-4 h-4 text-gray-400 hover:text-red-600" />
                     </Button>
                   </div>
@@ -220,6 +246,28 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         productId={productId}
+      />
+
+      {/* Edit Variation Modal */}
+      <EditVariationModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedVariation(null);
+        }}
+        productId={productId}
+        variation={selectedVariation}
+      />
+
+      {/* Delete Variation Dialog */}
+      <DeleteVariationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setVariationToDelete(null);
+        }}
+        productId={productId}
+        variationName={variationToDelete}
       />
     </div>
   );
