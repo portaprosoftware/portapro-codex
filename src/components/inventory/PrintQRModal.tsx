@@ -78,27 +78,20 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
       }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle>Print Preview - {selectedItemsData.length} QR Codes</DialogTitle>
-              <div className="flex items-center gap-4 text-sm">
-                <button 
-                  onClick={printQRCodes}
-                  className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer flex items-center gap-1"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print QR Codes
-                </button>
-                <button 
-                  onClick={() => setShowPrintPreview(false)}
-                  className="text-gray-600 hover:text-gray-700 font-medium cursor-pointer"
-                >
-                  Back to Selection
-                </button>
-              </div>
-            </div>
+            <DialogTitle>Print Preview - {selectedItemsData.length} QR Codes</DialogTitle>
           </DialogHeader>
 
-          <div>
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
+                <Printer className="w-4 h-4 mr-2" />
+                Print QR Codes
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrintPreview(false)}>
+                Back to Selection
+              </Button>
+            </div>
+
             {/* Print Layout */}
             <div className="print-container">
               <style dangerouslySetInnerHTML={{__html: `
