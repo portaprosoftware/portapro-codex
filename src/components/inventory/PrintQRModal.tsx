@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 interface PrintQRModalProps {
   isOpen: boolean;
   onClose: () => void;
+  productId?: string; // Optional productId to filter QR codes for a specific product
 }
 
 interface ProductItem {
@@ -24,30 +25,37 @@ interface ProductItem {
   };
 }
 
-export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose }) => {
+export const PrintQRModal: React.FC<PrintQRModalProps> = ({ isOpen, onClose, productId }) => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-  // Fetch all product items with QR codes
-  const { data: items = [], isLoading } = useQuery({
-    queryKey: ['product-items-qr'],
+  // Fetch product items with QR code data, optionally filtered by productId
+  const { data: productItems, isLoading } = useQuery({
+    queryKey: ['product-items-qr', productId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('product_items')
         .select(`
           id,
           tool_number,
           created_at,
-          products!inner (
-            name
-          )
+          products!inner(name)
         `)
-        .order('created_at', { ascending: true });
+        .not('tool_number', 'is', null);
+
+      // If productId is provided, filter by that specific product
+      if (productId) {
+        query = query.eq('product_id', productId);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: true });
 
       if (error) throw error;
       return data as ProductItem[];
     },
     enabled: isOpen,
   });
+
+  const items = productItems || [];
 
   const handleSelectAll = () => {
     if (selectedItems.size === items.length) {

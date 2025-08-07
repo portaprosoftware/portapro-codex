@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Eye, ChevronDown, ChevronUp, BarChart3, MapPin } from "lucide-react";
+import { Eye, ChevronDown, ChevronUp, BarChart3, MapPin, QrCode } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PrintQRModal } from "@/components/inventory/PrintQRModal";
 
 interface Product {
   id: string;
@@ -48,6 +49,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
   const isLowStock = availableCount <= product.low_stock_threshold;
   const isOutOfStock = availableCount <= 0;
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
+  const [showPrintQRModal, setShowPrintQRModal] = useState(false);
 
   // Real-time subscription for inventory updates
   useEffect(() => {
@@ -266,16 +268,27 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
           </div>
         )}
 
-        {/* Action */}
-        <Button
-          onClick={onSelect}
-          variant="outline"
-          size="sm"
-          className="border-blue-600 text-blue-600 hover:bg-blue-50"
-        >
-          <Eye className="w-4 h-4 mr-1" />
-          View
-        </Button>
+        {/* Actions */}
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setShowPrintQRModal(true)}
+            variant="outline"
+            size="sm"
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+          >
+            <QrCode className="w-4 h-4 mr-1" />
+            Print QR
+          </Button>
+          <Button
+            onClick={onSelect}
+            variant="outline"
+            size="sm"
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+          >
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
+        </div>
       </div>
 
       {/* Location breakdown */}
@@ -311,6 +324,13 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
           </CollapsibleContent>
         </Collapsible>
       )}
+
+      {/* Print QR Modal */}
+      <PrintQRModal
+        isOpen={showPrintQRModal}
+        onClose={() => setShowPrintQRModal(false)}
+        productId={product.id}
+      />
     </div>
   );
 };
