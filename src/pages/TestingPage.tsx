@@ -84,9 +84,9 @@ export default function TestingPage() {
                     <Badge variant="destructive">Destructive</Badge>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-green-100 text-green-800">Available</Badge>
+                    <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">Available</Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">Scheduled</Badge>
-                    <Badge className="bg-red-100 text-red-800">Maintenance</Badge>
+                    <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0">Maintenance</Badge>
                   </div>
                 </div>
               </Card>
