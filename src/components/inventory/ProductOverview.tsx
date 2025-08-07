@@ -327,9 +327,9 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             </div>
           </div>
         ) : (
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-amber-800 font-medium">No default category set</p>
-            <p className="text-sm text-amber-600 mt-1">
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-gray-900 font-medium">No default category set</p>
+            <p className="text-sm text-gray-600 mt-1">
               Set a default item code category to streamline individual item creation.
             </p>
           </div>
