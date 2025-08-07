@@ -425,7 +425,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                       itemCode={item.item_code}
                       onEdit={() => setEditingItem(item.id)}
                       onDelete={() => handleDeleteItem(item.id, item.item_code)}
-                      onOCRCapture={() => handleOCRCapture(item.id, item.item_code)}
                       qrCodeData={item.qr_code_data}
                     />
                   </TableCell>

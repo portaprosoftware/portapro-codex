@@ -14,7 +14,6 @@ interface ItemActionsMenuProps {
   itemCode: string;
   onEdit: () => void;
   onDelete: () => void;
-  onOCRCapture: () => void;
   qrCodeData?: string | null;
 }
 
@@ -23,7 +22,6 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
   itemCode,
   onEdit,
   onDelete,
-  onOCRCapture,
   qrCodeData
 }) => {
   return (
@@ -39,12 +37,6 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
           <Edit className="mr-2 h-4 w-4" />
           <span>Edit Item</span>
         </DropdownMenuItem>
-        
-        <DropdownMenuItem onClick={onOCRCapture} className="cursor-pointer">
-          <Camera className="mr-2 h-4 w-4" />
-          <span>OCR Tool Tracking</span>
-        </DropdownMenuItem>
-        
         
         <DropdownMenuSeparator />
         
