@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -176,6 +176,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Manage Item • {item?.item_code}</DialogTitle>
+          <DialogDescription className="sr-only">Manage maintenance item details, location, and updates</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -232,7 +233,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-50">
+                      <SelectContent>
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="normal">Normal</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -277,7 +278,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         <SelectTrigger>
                           <SelectValue placeholder="Select a storage location" />
                         </SelectTrigger>
-                        <SelectContent className="z-50">
+                        <SelectContent>
                           {(storageLocations || []).map((loc) => (
                             <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
                           ))}
@@ -318,7 +319,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         <SelectTrigger>
                           <SelectValue placeholder="Select condition" />
                         </SelectTrigger>
-                        <SelectContent className="z-50">
+                        <SelectContent>
                           <SelectItem value="new">New</SelectItem>
                           <SelectItem value="excellent">Excellent</SelectItem>
                           <SelectItem value="good">Good</SelectItem>
@@ -359,7 +360,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="z-50">
+                    <SelectContent>
                       <SelectItem value="progress">Progress Update</SelectItem>
                       <SelectItem value="repair">Repair Work</SelectItem>
                       <SelectItem value="parts">Parts Replacement</SelectItem>
