@@ -94,7 +94,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
 
             {/* Print Layout */}
             <div className="print-container">
-              <style dangerouslySetInnerHTML={{__html: `
+            <style dangerouslySetInnerHTML={{__html: `
                 @media print {
                   .print-container {
                     width: 8.5in;
@@ -104,12 +104,12 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                   .print-page {
                     width: 8.5in;
                     height: 11in;
-                    padding: 0.5in;
+                    padding: 0.25in;
                     page-break-after: always;
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
                     grid-template-rows: repeat(3, 1fr);
-                    gap: 0.2in;
+                    gap: 0.1in;
                   }
                   .print-page:last-child {
                     page-break-after: avoid;
@@ -120,18 +120,18 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                     align-items: center;
                     justify-content: center;
                     border: 1px solid #ddd;
-                    padding: 0.1in;
+                    padding: 0.05in;
                   }
                   .qr-print-code {
-                    width: 1.8in;
-                    height: 1.8in;
+                    width: 2.4in;
+                    height: 2.4in;
                   }
                   .qr-print-text {
                     font-family: Arial, sans-serif;
-                    font-size: 14px;
+                    font-size: 16px;
                     font-weight: bold;
                     text-align: center;
-                    margin-top: 0.1in;
+                    margin-top: 0.05in;
                   }
                   @page {
                     margin: 0;
@@ -166,12 +166,12 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
                     <div key={item.id} className="qr-print-item preview-item">
                       <QRCodeSVG
                         value={item.qr_code_data || item.item_code}
-                        size={100}
+                        size={140}
                         level="M"
                         includeMargin
                         className="qr-print-code"
                       />
-                      <div className="qr-print-text text-sm font-bold mt-2">
+                      <div className="qr-print-text text-base font-bold mt-1">
                         {item.item_code}
                       </div>
                     </div>
