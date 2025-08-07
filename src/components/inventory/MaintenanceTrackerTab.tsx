@@ -9,6 +9,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { MaintenanceItemActions } from "./MaintenanceItemActions";
+import { EditMaintenanceModal } from "./EditMaintenanceModal";
+import { AddMaintenanceUpdateModal } from "./AddMaintenanceUpdateModal";
+import { MaintenanceHistoryModal } from "./MaintenanceHistoryModal";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -19,6 +23,12 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
+  
+  // Modal states
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
 
   // Fetch items in maintenance for this product
   const { data: maintenanceItems, isLoading } = useQuery({
@@ -130,6 +140,26 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     returnToServiceMutation.mutate(selectedItems);
   };
 
+  // Individual item actions
+  const handleEditMaintenance = (item: any) => {
+    setSelectedItem(item);
+    setEditModalOpen(true);
+  };
+
+  const handleAddUpdate = (item: any) => {
+    setSelectedItem(item);
+    setUpdateModalOpen(true);
+  };
+
+  const handleViewHistory = (item: any) => {
+    setSelectedItem(item);
+    setHistoryModalOpen(true);
+  };
+
+  const handleReturnSingleItem = (itemId: string) => {
+    returnToServiceMutation.mutate([itemId]);
+  };
+
   const getStorageLocationName = (locationId: string | null) => {
     if (!locationId || !storageLocations) return "Not set";
     const location = storageLocations.find(loc => loc.id === locationId);
@@ -212,6 +242,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 <TableHead className="font-medium">Maintenance Reason</TableHead>
                 <TableHead className="font-medium">Expected Return</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
+                <TableHead className="w-16">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -256,12 +287,22 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                       Maintenance
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <MaintenanceItemActions
+                      itemId={item.id}
+                      itemCode={item.item_code}
+                      onEditMaintenance={() => handleEditMaintenance(item)}
+                      onAddUpdate={() => handleAddUpdate(item)}
+                      onViewHistory={() => handleViewHistory(item)}
+                      onReturnToService={() => handleReturnSingleItem(item.id)}
+                    />
+                  </TableCell>
                 </TableRow>,
                 
                 // Expanded Row Details
                 expandedRows.includes(item.id) ? (
                   <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={8} className="border-t">
+                    <TableCell colSpan={9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Maintenance Details */}
@@ -363,6 +404,42 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {selectedItem && (
+        <>
+          <EditMaintenanceModal
+            isOpen={editModalOpen}
+            onClose={() => {
+              setEditModalOpen(false);
+              setSelectedItem(null);
+            }}
+            item={selectedItem}
+            productId={productId}
+          />
+          
+          <AddMaintenanceUpdateModal
+            isOpen={updateModalOpen}
+            onClose={() => {
+              setUpdateModalOpen(false);
+              setSelectedItem(null);
+            }}
+            itemId={selectedItem.id}
+            itemCode={selectedItem.item_code}
+            productId={productId}
+          />
+          
+          <MaintenanceHistoryModal
+            isOpen={historyModalOpen}
+            onClose={() => {
+              setHistoryModalOpen(false);
+              setSelectedItem(null);
+            }}
+            itemId={selectedItem.id}
+            itemCode={selectedItem.item_code}
+          />
+        </>
+      )}
     </div>
   );
 };
