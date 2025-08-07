@@ -251,7 +251,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                     {formatDate(item.expected_return_date)}
                   </TableCell>
                   <TableCell>
-                    <Badge className="bg-amber-100 text-amber-700 border-amber-200">
+                    <Badge className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold">
                       <Wrench className="w-3 h-3 mr-1" />
                       Maintenance
                     </Badge>
@@ -265,8 +265,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                       <div className="py-4 space-y-4 text-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Maintenance Details */}
-                          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                            <h4 className="font-medium text-amber-900 mb-2 flex items-center">
+                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                               <AlertTriangle className="w-4 h-4 mr-2" />
                               Maintenance Details
                             </h4>
@@ -297,8 +297,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                           </div>
 
                           {/* Location Information */}
-                          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                               <MapPin className="w-4 h-4 mr-2" />
                               Location Info
                             </h4>
@@ -315,7 +315,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                           </div>
 
                           {/* Item Details */}
-                          <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
                             <h4 className="font-medium text-gray-900 mb-2 flex items-center">
                               <Settings className="w-4 h-4 mr-2" />
                               Item Details
