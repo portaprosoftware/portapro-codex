@@ -107,12 +107,18 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
 
       setAttributeErrors({});
 
+      // Clean the data - convert empty strings to null for date fields
+      const cleanedData = { ...itemData };
+      if (cleanedData.manufacturing_date === '') {
+        cleanedData.manufacturing_date = null;
+      }
+      
       // Insert the item
       const { data: newItem, error } = await supabase
         .from("product_items")
         .insert({
           product_id: productId,
-          ...itemData
+          ...cleanedData
         })
         .select('id')
         .single();
