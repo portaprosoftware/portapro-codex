@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2, Printer } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,7 +23,6 @@ import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { ItemActionsMenu } from "./ItemActionsMenu";
-import { PrintQRModal } from "./PrintQRModal";
 
 
 interface IndividualUnitsTabProps {
@@ -39,7 +38,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showPrintModal, setShowPrintModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   
   const [showOCRCapture, setShowOCRCapture] = useState(false);
@@ -351,15 +349,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           Scan QR
         </Button>
         <Button 
-          variant="outline" 
-          onClick={() => setShowPrintModal(true)}
-          className="border-green-600 text-green-600 hover:bg-green-50"
-          disabled={!items || items.length === 0}
-        >
-          <Printer className="w-4 h-4 mr-2" />
-          Print QR Codes
-        </Button>
-        <Button 
           onClick={() => setShowCreateModal(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
@@ -571,15 +560,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         onSearchResult={handleOCRSearchResult}
       />
 
-      {/* Print QR Modal */}
-      {showPrintModal && items && (
-        <PrintQRModal
-          open={showPrintModal}
-          onClose={() => setShowPrintModal(false)}
-          items={items}
-        />
-      )}
-
       {/* Delete Confirmation Dialog */}
       <DeleteItemDialog
         open={deleteDialogOpen}
@@ -588,6 +568,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         itemCode={itemToDelete?.code || ""}
         isDeleting={deleteItemMutation.isPending}
       />
+
 
     </div>
   );
