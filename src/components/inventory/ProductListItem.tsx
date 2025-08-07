@@ -191,7 +191,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
         </div>
 
         {/* Status */}
-        <div className="mr-4 flex justify-center">
+        <div className="mr-4 flex items-center justify-center min-w-[120px]">
           {getStatusBadge()}
         </div>
 
