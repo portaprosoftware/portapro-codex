@@ -186,57 +186,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
 
         {/* Product Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-gray-900">{product.name}</h3>
-            {quickStats && (
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <BarChart3 className="w-3 h-3 text-gray-400" />
-                  </Button>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-64" side="top">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Quick Statistics</h4>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-gray-500">Total Stock:</span>
-                        <span className="ml-1 font-medium">{product.stock_total}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Available:</span>
-                        <span className="ml-1 font-medium">{availableCount}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">In Service:</span>
-                        <span className="ml-1 font-medium">{product.stock_in_service}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Utilization:</span>
-                        <span className="ml-1 font-medium text-purple-600">{quickStats.utilizationRate}%</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Active Assignments:</span>
-                        <span className="ml-1 font-medium">{quickStats.activeAssignments}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Recent Activity (30d):</span>
-                        <span className="ml-1 font-medium">{quickStats.recentActivity}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Storage Locations:</span>
-                        <span className="ml-1 font-medium">{locationStocks?.length || 0}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Individual Units:</span>
-                        <span className="ml-1 font-medium">{quickStats.totalItems}</span>
-                      </div>
-                    </div>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
-            )}
-          </div>
+          <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
           <p className="text-blue-600 font-medium">${product.default_price_per_day}/day</p>
         </div>
 
@@ -244,6 +194,58 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
         <div className="mr-4">
           {getStatusBadge()}
         </div>
+
+        {/* Quick Stats */}
+        {quickStats && (
+          <div className="mr-2">
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <BarChart3 className="w-4 h-4 text-gray-400" />
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-64" side="top">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Quick Statistics</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-gray-500">Total Stock:</span>
+                      <span className="ml-1 font-medium">{product.stock_total}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Available:</span>
+                      <span className="ml-1 font-medium">{availableCount}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">In Service:</span>
+                      <span className="ml-1 font-medium">{product.stock_in_service}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Utilization:</span>
+                      <span className="ml-1 font-medium text-purple-600">{quickStats.utilizationRate}%</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Active Assignments:</span>
+                      <span className="ml-1 font-medium">{quickStats.activeAssignments}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Recent Activity (30d):</span>
+                      <span className="ml-1 font-medium">{quickStats.recentActivity}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Storage Locations:</span>
+                      <span className="ml-1 font-medium">{locationStocks?.length || 0}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Individual Units:</span>
+                      <span className="ml-1 font-medium">{quickStats.totalItems}</span>
+                    </div>
+                  </div>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          </div>
+        )}
 
         {/* Location breakdown trigger */}
         {hasLocations && (
