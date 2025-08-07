@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Plus, Edit, Trash2, MoreVertical, Search } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -46,7 +45,6 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const queryClient = useQueryClient();
 
   // Fetch consumables
@@ -163,15 +161,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
       );
     }
     
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(c => 
-        statusFilter === 'active' ? c.is_active : !c.is_active
-      );
-    }
-    
     return filtered;
-  }, [consumables, categoryFilter, searchTerm, statusFilter]);
+  }, [consumables, categoryFilter, searchTerm]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -226,57 +217,27 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 )}
               </div>
             </div>
-                {(searchTerm.trim() || categoryFilter || statusFilter !== 'all') && (
-                  <div className="flex items-end">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setSearchTerm('');
-                        setCategoryFilter('');
-                        setStatusFilter('all');
-                      }}
-                      className="mb-0"
-                    >
-                      Clear All Filters
-                    </Button>
-                  </div>
-                )}
+            {(searchTerm.trim() || categoryFilter) && (
+              <div className="flex items-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCategoryFilter('');
+                  }}
+                  className="mb-0"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Consumables Table */}
         <div className="bg-white rounded-lg border shadow-sm">
           <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Inventory</h2>
-              
-              {/* 3-Way Status Toggle */}
-              <ToggleGroup 
-                type="single" 
-                value={statusFilter} 
-                onValueChange={(value) => setStatusFilter((value as 'all' | 'active' | 'inactive') || 'all')}
-                className="border rounded-lg"
-              >
-                <ToggleGroupItem 
-                  value="all" 
-                  className="data-[state=on]:bg-blue-600 data-[state=on]:text-white"
-                >
-                  All
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="active" 
-                  className="data-[state=on]:bg-green-600 data-[state=on]:text-white"
-                >
-                  Active
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="inactive" 
-                  className="data-[state=on]:bg-gray-600 data-[state=on]:text-white"
-                >
-                  Inactive
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Inventory</h2>
             
             {isLoading ? (
               <div className="flex items-center justify-center h-32">
