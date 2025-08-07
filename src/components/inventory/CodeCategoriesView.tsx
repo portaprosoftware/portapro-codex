@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Edit, Trash, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -197,14 +198,23 @@ export const CodeCategoriesView: React.FC = () => {
                   <h4 className="font-medium">Add New Category</h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="prefix">Category Prefix (4 digits)</Label>
-                      <Input
-                        id="prefix"
-                        value={newPrefix}
-                        onChange={(e) => setNewPrefix(e.target.value)}
-                        placeholder="5000"
-                        maxLength={4}
-                      />
+                      <Label htmlFor="prefix">Category Prefix</Label>
+                      <Select value={newPrefix} onValueChange={setNewPrefix}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1000">1 - 1000-1999 Range</SelectItem>
+                          <SelectItem value="2000">2 - 2000-2999 Range</SelectItem>
+                          <SelectItem value="3000">3 - 3000-3999 Range</SelectItem>
+                          <SelectItem value="4000">4 - 4000-4999 Range</SelectItem>
+                          <SelectItem value="5000">5 - 5000-5999 Range</SelectItem>
+                          <SelectItem value="6000">6 - 6000-6999 Range</SelectItem>
+                          <SelectItem value="7000">7 - 7000-7999 Range</SelectItem>
+                          <SelectItem value="8000">8 - 8000-8999 Range</SelectItem>
+                          <SelectItem value="9000">9 - 9000-9999 Range</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <Label htmlFor="name">Category Name</Label>
