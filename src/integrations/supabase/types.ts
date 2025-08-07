@@ -277,6 +277,7 @@ export type Database = {
           company_street2: string | null
           company_timezone: string | null
           company_zipcode: string | null
+          consumable_categories: Json
           created_at: string | null
           default_logo_in_marketing: boolean | null
           default_payment_terms_days: number | null
@@ -318,6 +319,7 @@ export type Database = {
           company_street2?: string | null
           company_timezone?: string | null
           company_zipcode?: string | null
+          consumable_categories?: Json
           created_at?: string | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
@@ -359,6 +361,7 @@ export type Database = {
           company_street2?: string | null
           company_timezone?: string | null
           company_zipcode?: string | null
+          consumable_categories?: Json
           created_at?: string | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
