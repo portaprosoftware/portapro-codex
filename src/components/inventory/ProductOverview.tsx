@@ -10,7 +10,7 @@ import { Edit, Settings, Wrench, Plus, Minus, History } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { ProductStockHistory } from "./ProductStockHistory";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
@@ -56,7 +56,23 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const { categories } = useItemCodeCategories();
 
   const availableCount = product.stock_total - product.stock_in_service;
-  const maintenanceCount = 0; // This would come from maintenance records
+  
+  // Get maintenance count from query
+  const { data: maintenanceData } = useQuery({
+    queryKey: ["maintenance-count", product.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("product_items")
+        .select("*", { count: "exact", head: true })
+        .eq("product_id", product.id)
+        .eq("status", "maintenance");
+      
+      if (error) throw error;
+      return count || 0;
+    }
+  });
+  
+  const maintenanceCount = maintenanceData || 0;
   const reservedCount = 0; // This would come from reservations
 
   const statusData = [

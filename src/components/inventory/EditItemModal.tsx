@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { RequiredAttributesFields } from "./RequiredAttributesFields";
+import { SimpleQRCode } from "./SimpleQRCode";
 
 interface EditItemModalProps {
   itemId: string;
@@ -325,17 +326,23 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           </div>
 
           {/* QR Code Section */}
-          <div className="space-y-3">
-            <Label>QR Code</Label>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full justify-start"
-              disabled
-            >
-              <QrCode className="w-4 h-4 mr-2" />
-              Edit System Generated QR Code
-            </Button>
+          <div className="space-y-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-4 h-4 text-blue-600" />
+                <Label className="font-medium text-blue-900">QR Code</Label>
+              </div>
+            </div>
+            <p className="text-sm text-blue-700 mb-3">
+              QR code contains: {item.qr_code_data || item.item_code}
+            </p>
+            {item.qr_code_data && (
+              <SimpleQRCode 
+                itemCode={item.item_code} 
+                qrCodeData={item.qr_code_data}
+                showAsButton={false}
+              />
+            )}
           </div>
 
           {/* Required Attributes */}

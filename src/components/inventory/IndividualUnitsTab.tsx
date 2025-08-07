@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EditItemModal } from "./EditItemModal";
 import { CreateItemModal } from "./CreateItemModal";
-import { QRCodeDropdown } from "./QRCodeDropdown";
+import { SimpleQRCode } from "./SimpleQRCode";
 import { QRCodeScanner } from "./QRCodeScanner";
 
 import { AttributeFilters } from "./AttributeFilters";
@@ -409,11 +409,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                     {getVerificationBadge(item.verification_status, item.ocr_confidence_score)}
                   </TableCell>
                   <TableCell>
-                    <QRCodeDropdown 
+                    <SimpleQRCode 
                       itemCode={item.item_code} 
-                      itemId={item.id}
                       qrCodeData={item.qr_code_data}
-                      onQRUpdate={(qrData) => handleQRUpdate(item.id, qrData)}
+                      showAsButton={true}
                     />
                   </TableCell>
                   <TableCell>

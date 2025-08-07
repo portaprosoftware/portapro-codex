@@ -5,7 +5,7 @@ import { ConsumablesDashboard } from './ConsumablesDashboard';
 import { AddConsumableModal } from './AddConsumableModal';
 import { EditConsumableModal } from './EditConsumableModal';
 
-import { ConsumableQRGenerator } from './ConsumableQRGenerator';
+
 import { ConsumableRequestsManager } from './ConsumableRequestsManager';
 import { JobConsumablesTracker } from './JobConsumablesTracker';
 import { ConsumableNotificationsPanel } from './ConsumableNotificationsPanel';
@@ -275,7 +275,12 @@ export const ConsumablesInventory: React.FC = () => {
           {activeTab === 'reports' && <ConsumablesReportsTab />}
           {activeTab === 'transfers' && <StockTransferReporting />}
           {activeTab === 'alerts' && <ConsumableNotificationsPanel />}
-          {activeTab === 'qr-codes' && <ConsumableQRGenerator />}
+          {activeTab === 'qr-codes' && (
+            <div className="bg-white rounded-lg border p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">QR Code Generation</h3>
+              <p className="text-gray-600">QR codes are now automatically generated for inventory items when they are created. No separate generation is needed.</p>
+            </div>
+          )}
           {activeTab === 'mobile-pwa' && <ConsumablePWAManager />}
         </div>
 

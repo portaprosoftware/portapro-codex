@@ -45,10 +45,6 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
           <span>OCR Tool Tracking</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem className="cursor-pointer">
-          <QrCode className="mr-2 h-4 w-4" />
-          <span>QR Code Actions</span>
-        </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         
