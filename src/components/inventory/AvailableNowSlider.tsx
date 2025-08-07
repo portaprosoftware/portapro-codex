@@ -101,9 +101,9 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs">
                         {product.items.length} Units
-                      </Badge>
+                      </div>
                       <ChevronDown 
                         className={cn(
                           "w-4 h-4 transition-transform duration-200",
