@@ -311,8 +311,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 <SelectContent className="bg-white">
                   <SelectItem value="available">Available</SelectItem>
                   <SelectItem value="assigned">Assigned</SelectItem>
-                  <SelectItem value="maintenance">In Maintenance</SelectItem>
-                  <SelectItem value="out_of_service">Out of Service</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="out_of_service">Permanently Retired</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -334,33 +334,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="location">Current Location</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Enter current location"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="storage_location">Storage Location</Label>
-              <StorageLocationSelector
-                value={formData.current_storage_location_id}
-                onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
-                placeholder="Select storage location"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="storage_location">Storage Location</Label>
+            <StorageLocationSelector
+              value={formData.current_storage_location_id}
+              onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
+              placeholder="Select storage location"
+            />
           </div>
 
           {/* Maintenance Fields - only show if status is maintenance */}
           {formData.status === "maintenance" && (
-            <div className="space-y-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="space-y-4 p-4 bg-card border border-border rounded-lg">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <Label className="font-medium text-amber-900">Maintenance Information</Label>
+                <AlertTriangle className="w-4 h-4 text-foreground" />
+                <Label className="font-medium text-foreground">Maintenance Information</Label>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -428,21 +416,20 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           />
 
           {/* OCR Tool Tracking Section */}
-          <div className="space-y-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="space-y-4 p-4 bg-card border border-border rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-medium text-green-900 flex items-center gap-2">
+                <h3 className="font-medium text-foreground flex items-center gap-2">
                   <Camera className="w-4 h-4" />
                   Tool Tracking Information
                   {item?.verification_status && getVerificationBadge(item.verification_status, item.ocr_confidence_score)}
                 </h3>
-                <p className="text-sm text-green-700">Capture or update tool information using OCR</p>
+                <p className="text-sm text-muted-foreground">Capture or update tool information using OCR</p>
               </div>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowOCRCapture(true)}
-                className="border-green-600 text-green-600 hover:bg-green-50"
               >
                 <Camera className="w-4 h-4 mr-2" />
                 {formData.tool_number ? "Update OCR" : "Scan Tool Info"}
