@@ -297,7 +297,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 </SelectTrigger>
                 <SelectContent className="bg-white">
                   <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="assigned">Assigned</SelectItem>
+                  <SelectItem value="assigned">On Job</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="out_of_service">Permanently Retired</SelectItem>
                 </SelectContent>

@@ -349,7 +349,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="assigned">Assigned</SelectItem>
+                    <SelectItem value="assigned">On Job</SelectItem>
                     <SelectItem value="maintenance">In Maintenance</SelectItem>
                     <SelectItem value="out_of_service">Out of Service</SelectItem>
                   </SelectContent>

@@ -271,7 +271,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
     const statusLabels = {
       available: "Available",
-      assigned: "Assigned", 
+      assigned: "On Job", 
       maintenance: "Maintenance",
       out_of_service: "Permanently Retired"
     };
