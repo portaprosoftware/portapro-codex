@@ -464,12 +464,12 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
             </div>
 
             {/* QR Code - Auto-generated */}
-            <div className="space-y-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
               <div className="flex items-center gap-2">
-                <QrCode className="w-4 h-4 text-blue-600" />
-                <Label className="font-medium text-blue-900">QR Code (Auto-generated)</Label>
+                <QrCode className="w-4 h-4 text-gray-600" />
+                <Label className="font-medium text-gray-900">QR Code (Auto-generated)</Label>
               </div>
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-gray-600">
                 A QR code will be automatically generated when the item is created. The QR code will contain the item code for easy scanning and identification.
               </p>
             </div>

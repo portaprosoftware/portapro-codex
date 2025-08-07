@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { RequiredAttributesFields } from "./RequiredAttributesFields";
 import { SimpleQRCode } from "./SimpleQRCode";
+import { StorageLocationSelector } from "./StorageLocationSelector";
 
 interface EditItemModalProps {
   itemId: string;
@@ -29,6 +30,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     status: "",
     condition: "",
     location: "",
+    current_storage_location_id: "",
     color: "",
     size: "",
     material: "",
@@ -50,7 +52,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id, maintenance_reason, expected_return_date, maintenance_notes, maintenance_start_date")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id, maintenance_reason, expected_return_date, maintenance_notes, maintenance_start_date, current_storage_location_id")
         .eq("id", itemId)
         .single();
       
@@ -115,6 +117,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         status: item.status || "",
         condition: item.condition || "",
         location: item.location || "",
+        current_storage_location_id: item.current_storage_location_id || "",
         color: item.color || "",
         size: item.size || "",
         material: item.material || "",
@@ -331,14 +334,25 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              placeholder="Enter current location"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="location">Current Location</Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => handleInputChange("location", e.target.value)}
+                placeholder="Enter current location"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="storage_location">Storage Location</Label>
+              <StorageLocationSelector
+                value={formData.current_storage_location_id}
+                onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
+                placeholder="Select storage location"
+              />
+            </div>
           </div>
 
           {/* Maintenance Fields - only show if status is maintenance */}
@@ -385,14 +399,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           )}
 
           {/* QR Code Section */}
-          <div className="space-y-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <QrCode className="w-4 h-4 text-blue-600" />
-                <Label className="font-medium text-blue-900">QR Code</Label>
+                <QrCode className="w-4 h-4 text-gray-600" />
+                <Label className="font-medium text-gray-900">QR Code</Label>
               </div>
             </div>
-            <p className="text-sm text-blue-700 mb-3">
+            <p className="text-sm text-gray-600 mb-3">
               QR code contains: {item.qr_code_data || item.item_code}
             </p>
             {item.qr_code_data && (
