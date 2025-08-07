@@ -176,13 +176,14 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
             .print-page {
               width: 8.5in;
               height: 11in;
-              padding: 0.25in;
+              padding: 0.1in;
               page-break-after: always;
               display: grid !important;
               grid-template-columns: repeat(3, 1fr);
-              grid-template-rows: repeat(3, 1fr);
-              gap: 0.1in;
+              grid-template-rows: repeat(3, 3.6in);
+              gap: 0.05in;
               margin: 0;
+              margin-top: -0.1in;
               box-sizing: border-box;
             }
             .print-page:last-child {
