@@ -233,7 +233,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                       <span className="ml-1 font-medium">{quickStats.recentActivity}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Storage Locations:</span>
+                      <span className="text-gray-500">Storage Sites:</span>
                       <span className="ml-1 font-medium">{locationStocks?.length || 0}</span>
                     </div>
                     <div>
@@ -254,7 +254,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
                   <MapPin className="w-3 h-3 mr-1" />
-                  {locationStocks.length} locations
+                  View breakdown
                   {showLocationBreakdown ? (
                     <ChevronUp className="w-3 h-3 ml-1" />
                   ) : (
@@ -286,7 +286,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
               <div className="bg-gray-50 rounded-lg p-3 mt-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
                   <MapPin className="w-4 h-4 mr-1" />
-                  Stock by Location
+                  Stock by Site
                 </h4>
                 {isLoadingStocks ? (
                   <div className="space-y-2">
