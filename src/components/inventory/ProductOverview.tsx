@@ -308,13 +308,13 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         </div>
         
         {product.default_item_code_category ? (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-blue-900">
+                <p className="font-medium text-gray-900">
                   Default Category: {getCategoryName(product.default_item_code_category)}
                 </p>
-                <p className="text-sm text-blue-600 mt-1">
+                <p className="text-sm text-gray-600 mt-1">
                   New individual items will automatically use this category for item codes.
                 </p>
               </div>
