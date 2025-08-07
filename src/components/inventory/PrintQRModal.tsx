@@ -78,7 +78,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
         setShowPrintPreview(false);
         onClose();
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto no-print">
           <DialogHeader>
             <DialogTitle>
               Print Preview - {selectedItemsData.length} QR Codes
@@ -86,7 +86,7 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-4 no-print">
             <div className="flex gap-2">
               <Button onClick={printQRCodes} className="bg-blue-600 hover:bg-blue-700">
                 <Printer className="w-4 h-4 mr-2" />
@@ -100,33 +100,27 @@ export const PrintQRModal: React.FC<PrintQRModalProps> = ({
               </span>
             </div>
 
-            {/* Print Layout - Separate from UI */}
+            {/* Print Layout */}
             <div className="print-container">
               <style dangerouslySetInnerHTML={{__html: `
                 @media print {
-                  body * {
-                    visibility: hidden;
-                  }
-                  .print-container, .print-container * {
-                    visibility: visible;
+                  .no-print {
+                    display: none !important;
                   }
                   .print-container {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
                     width: 8.5in;
-                    height: 11in;
                     margin: 0;
                     padding: 0.25in;
                   }
                   .print-page {
-                    width: 100%;
-                    height: 100%;
+                    width: 8.5in;
+                    height: 11in;
+                    padding: 0;
+                    page-break-after: always;
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
                     grid-template-rows: repeat(3, 1fr);
                     gap: 0.1in;
-                    page-break-after: always;
                   }
                   .print-page:last-child {
                     page-break-after: avoid;
