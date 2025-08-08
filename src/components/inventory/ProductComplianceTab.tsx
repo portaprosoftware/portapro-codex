@@ -6,9 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { formatDateSafe, addDaysToDate } from "@/lib/dateUtils";
 import { ShieldCheck, Clock, AlertTriangle, CheckCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import jsPDF from "jspdf";
 
 interface ProductComplianceTabProps {
   productId: string;
+  productName?: string;
 }
 
 interface ProductItem {
@@ -22,13 +25,16 @@ interface SanitationLog {
   created_at: string;
   product_item_id: string | null;
   notes: string | null;
+  photos?: any;
 }
 
 type UnitStatus = "good" | "due_soon" | "overdue" | "no_record";
 
-export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ productId }) => {
+export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ productId, productName }) => {
   const queryClient = useQueryClient();
   const DAYS_FREQUENCY = 7; // Default weekly cleaning
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{ id: string; item_code: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["product-compliance", productId],
@@ -62,6 +68,20 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
       const logs: SanitationLog[] = logsData || [];
 
       return { items, logs };
+    },
+  });
+
+  const { data: historyLogs, isLoading: isHistoryLoading } = useQuery({
+    queryKey: ["sanitation-history", selectedItem?.id],
+    enabled: historyOpen && !!selectedItem?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("sanitation_logs")
+        .select("id, created_at, notes, photos")
+        .eq("product_item_id", selectedItem!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as SanitationLog[];
     },
   });
 
