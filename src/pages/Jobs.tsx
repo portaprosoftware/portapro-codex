@@ -18,6 +18,7 @@ import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentModal';
 import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
+import { DispatchJobCardList } from '@/components/jobs/DispatchJobCardList';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
@@ -606,15 +607,15 @@ const JobsPage: React.FC = () => {
                           ref={provided.innerRef}
                           {...provided.droppableProps}
                           className={cn(
-                            "flex gap-3 min-h-[120px] border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
+                            "flex gap-3 min-h-[90px] border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
                             snapshot.isDraggingOver 
                               ? "border-orange-400 bg-orange-50" 
                               : "border-gray-300 bg-white"
                           )}
                         >
                           {filterJobs(unassignedJobs).length === 0 ? (
-                            <div className="flex-1 text-center py-8 text-gray-500">
-                              <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                            <div className="flex-1 text-center py-6 text-gray-500">
+                              <ClipboardList className="h-6 w-6 mx-auto mb-2 text-gray-300" />
                               <p className="text-sm">No unassigned jobs</p>
                               <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
                             </div>
@@ -626,9 +627,9 @@ const JobsPage: React.FC = () => {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`flex-shrink-0 w-64 ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                    className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                   >
-                                     <DispatchJobCard
+                                     <DispatchJobCardList
                                         job={job}
                                         onView={handleJobView}
                                         isDragging={snapshot.isDragging}
@@ -648,7 +649,7 @@ const JobsPage: React.FC = () => {
                   <div className="border-r border-gray-200 bg-gray-50">
                     <div className="p-4 border-b border-gray-200">
                       <h3 className="font-medium text-sm text-gray-900">Drivers</h3>
-                      <div className="flex items-center gap-6 text-xs mt-2">
+                      <div className="flex items-center gap-4 text-xs mt-2 flex-wrap">
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-blue-500 rounded"></div>
                           <span>Assigned</span>
@@ -667,8 +668,8 @@ const JobsPage: React.FC = () => {
                       {drivers.map(driver => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
                         return (
-                          <div key={driver.id} className="p-4 border-b border-gray-200 last:border-b-0">
-                            <div className="flex items-center gap-3">
+                          <div key={driver.id} className="p-4 border-b border-gray-200 last:border-b-0 h-24 flex items-center">
+                            <div className="flex items-center gap-3 w-full">
                               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
                                 <User className="w-4 h-4 text-gray-600" />
                               </div>
@@ -706,22 +707,21 @@ const JobsPage: React.FC = () => {
                       {drivers.map(driver => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
                         return (
-                          <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
+                          <div key={driver.id} className="border-b border-gray-200 last:border-b-0 h-24">
                             <Droppable droppableId={driver.id} direction="horizontal">
                               {(provided, snapshot) => (
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.droppableProps}
                                   className={cn(
-                                    "flex gap-3 min-h-[120px] p-4 overflow-x-auto transition-all duration-200",
+                                    "flex gap-3 h-full p-4 overflow-x-auto items-center transition-all duration-200",
                                     snapshot.isDraggingOver 
                                       ? 'bg-blue-50 border-l-4 border-l-blue-500' 
                                       : 'hover:bg-gray-50'
                                   )}
                                 >
                                   {driverJobs.length === 0 ? (
-                                    <div className="flex-1 text-center py-8 text-gray-400">
-                                      <ClipboardList className="w-6 h-6 mx-auto mb-2" />
+                                    <div className="flex-1 text-center text-gray-400">
                                       <p className="text-sm">
                                         Drop jobs here to assign to {driver.first_name}
                                       </p>
@@ -734,9 +734,9 @@ const JobsPage: React.FC = () => {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            className={`flex-shrink-0 w-64 ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                            className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                           >
-                                             <DispatchJobCard
+                                             <DispatchJobCardList
                                                 job={job}
                                                 onView={handleJobView}
                                                 isDragging={snapshot.isDragging}
