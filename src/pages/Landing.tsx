@@ -232,34 +232,34 @@ export const Landing: React.FC = () => {
 
       {/* Hero Section - Blue */}
       <section className="min-h-screen flex items-center py-12 md:py-20 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-10 lg:pr-8">
+        <div className="container mx-auto max-w-full px-12 lg:px-20">
+          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-8xl mx-auto">
+            <div className="space-y-10">
               <div className="space-y-8">
-                <h1 className="text-4xl lg:text-7xl font-bold text-white leading-tight">
+                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed">
+                <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
                   Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-white/90">
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
                     <div className="text-3xl lg:text-4xl font-bold">3+ hrs</div>
-                    <div className="text-sm font-medium truncate">saved per week</div>
+                    <div className="text-sm font-medium">saved per week</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
                     <div className="text-3xl lg:text-4xl font-bold">99.9%</div>
-                    <div className="text-sm font-medium truncate">platform uptime</div>
+                    <div className="text-sm font-medium">platform uptime</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
                     <div className="text-3xl lg:text-4xl font-bold">60 sec</div>
-                    <div className="text-sm font-medium truncate">quote-to-job flow</div>
+                    <div className="text-sm font-medium">quote-to-job flow</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
                     <div className="text-3xl lg:text-4xl font-bold">AI</div>
-                    <div className="text-sm font-medium truncate">panel scanning</div>
+                    <div className="text-sm font-medium">panel scanning</div>
                   </div>
                 </div>
               </div>
@@ -284,12 +284,6 @@ export const Landing: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-6 flex-wrap opacity-90">
                   <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                  <div className="flex gap-4">
-                    <span className="text-white/70 text-xs font-semibold tracking-wide">BlueSky Rentals</span>
-                    <span className="text-white/70 text-xs font-semibold tracking-wide">CleanStream</span>
-                    <span className="text-white/70 text-xs font-semibold tracking-wide">RapidRest</span>
-                    <span className="text-white/70 text-xs font-semibold tracking-wide">MetroSan</span>
-                  </div>
                 </div>
                 <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
                   <span className="font-bold text-base">• Full Support Included</span>
