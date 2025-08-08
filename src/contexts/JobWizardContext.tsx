@@ -30,6 +30,11 @@ export interface JobWizardData {
   vehicle_id?: string | null;
   items?: JobItemSelection[];
   create_daily_assignment?: boolean;
+  // Services selection (from Service Hub)
+  servicesData?: {
+    selectedServices: any[];
+    servicesSubtotal: number;
+  };
 }
 
 interface JobWizardState {
@@ -56,6 +61,7 @@ const initialState: JobWizardState = {
     is_priority: false,
     items: [],
     create_daily_assignment: true,
+    servicesData: { selectedServices: [], servicesSubtotal: 0 },
   },
   errors: {},
   isLoading: false,
@@ -157,6 +163,10 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         // If provided, ensure quantities are positive
         if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
           errors.items = 'All selected quantities must be greater than 0';
+        }
+        // Require at least one service when job type is 'service'
+        if (state.data.job_type === 'service' && (!state.data.servicesData || state.data.servicesData.selectedServices.length === 0)) {
+          errors.services = 'Please select at least one service for a service job';
         }
         break;
       case 6:
