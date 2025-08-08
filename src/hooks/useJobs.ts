@@ -177,6 +177,10 @@ export function useCreateJob() {
           break;
       }
 
+      // Calculate service metadata
+      const hasServices = jobData.servicesData && jobData.servicesData.selectedServices?.length > 0;
+      const totalPrice = hasServices ? jobData.servicesData.servicesSubtotal || 0 : null;
+      
       // Create main job record - direct database insertion with minimal processing
       const { data: newJob, error } = await supabase
         .from('jobs')
@@ -192,6 +196,19 @@ export function useCreateJob() {
           special_instructions: serializedJobData.special_instructions || '',
           driver_id: (jobData as any).driver_id || null,
           vehicle_id: (jobData as any).vehicle_id || null,
+          is_service_job: hasServices,
+          service_schedule_info: hasServices ? JSON.stringify({
+            services: jobData.servicesData?.selectedServices?.map(s => ({
+              id: s.id,
+              name: s.name,
+              frequency: s.frequency,
+              custom_type: s.custom_type,
+              custom_frequency_days: s.custom_frequency_days,
+              custom_days_of_week: s.custom_days_of_week,
+              custom_specific_dates: s.custom_specific_dates
+            }))
+          }) : null,
+          total_price: totalPrice,
         })
         .select()
         .single();

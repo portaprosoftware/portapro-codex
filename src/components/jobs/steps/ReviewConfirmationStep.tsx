@@ -29,6 +29,8 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
   const servicesSubtotal = Number(servicesData?.servicesSubtotal || 0);
 
   const items = useMemo(() => d.items || [], [d.items]);
+  const itemsTotal = 0; // Items don't have pricing in the wizard, just services
+  const jobTotal = itemsTotal + servicesSubtotal;
 
   useEffect(() => {
     const runChecks = async () => {
@@ -196,18 +198,35 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
             <div className="text-xs font-medium">Subtotal: ${servicesSubtotal.toFixed(2)}</div>
           </div>
           {services.length > 0 ? (
-            <ul className="list-disc list-inside space-y-1">
-              {services.map((s: any, i: number) => (
-                <li key={s.id || i}>
-                  <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · ${Number(s.calculated_cost || 0).toFixed(2)}
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-3">
+              <ul className="list-disc list-inside space-y-1">
+                {services.map((s: any, i: number) => (
+                  <li key={s.id || i}>
+                    <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · ${Number(s.calculated_cost || 0).toFixed(2)}
+                  </li>
+                ))}
+              </ul>
+              {services.some((s: any) => s.frequency !== 'one-time') && (
+                <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                  <strong>Schedule Preview:</strong> Recurring services will be automatically scheduled based on their frequency after initial job completion.
+                </div>
+              )}
+            </div>
           ) : (
             <p className="text-muted-foreground">No services selected</p>
           )}
         </div>
       </div>
+
+      {/* Job Total */}
+      {jobTotal > 0 && (
+        <div className="border-t pt-4">
+          <div className="flex justify-between items-center text-lg font-semibold">
+            <span>Job Total:</span>
+            <span>${jobTotal.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center justify-end gap-2">
         <Button variant="outline" disabled={checking} onClick={() => {

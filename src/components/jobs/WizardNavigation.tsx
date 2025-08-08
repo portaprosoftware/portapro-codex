@@ -30,7 +30,7 @@ const steps = [
   },
   {
     number: 5,
-    title: 'Products',
+    title: 'Products & Services',
     description: 'Units & services',
     icon: Boxes,
   },
