@@ -695,33 +695,15 @@ export const Landing: React.FC = () => {
       </section>
 
 
-      {/* In action: 60-second tour - Blue */}
-      <section id="tour" className="py-20 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">See PortaPro in Action</h2>
-              <p className="text-lg text-white/90">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
-            </div>
-            <div className="rounded-2xl overflow-hidden shadow-md border bg-card">
-              <video className="w-full aspect-video" muted loop playsInline preload="metadata" poster="/placeholder.svg">
-                {/* You can replace the source below with your real tour video */}
-                <source src="" type="video/mp4" />
-              </video>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing - White */}
-      <section id="pricing" className="py-20 bg-white">
+      {/* Pricing - Blue */}
+      <section id="pricing" className="py-20 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 Simple, Transparent Pricing
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-white/90">
                 One complete package with everything included
               </p>
             </div>
@@ -780,19 +762,37 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Questions Section - Blue */}
-      <section id="questions-section" className="py-20 bg-gradient-blue text-white">
+      {/* Questions Section - White */}
+      <section id="questions-section" className="py-20 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               Have Questions?
             </h2>
-            <p className="text-lg text-white/90 mb-8">
+            <p className="text-lg text-muted-foreground mb-8">
               Tell us about your needs and we'll get in touch within 24 hours
             </p>
             <Button className="bg-primary hover:bg-primary/90 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
               Ask us and we'll be in touch
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* In action: 60-second tour - Blue */}
+      <section id="tour" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">See PortaPro in Action</h2>
+              <p className="text-lg text-white/90">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
+            </div>
+            <div className="rounded-2xl overflow-hidden shadow-md border bg-card">
+              <video className="w-full aspect-video" muted loop playsInline preload="metadata" poster="/placeholder.svg">
+                {/* You can replace the source below with your real tour video */}
+                <source src="" type="video/mp4" />
+              </video>
+            </div>
           </div>
         </div>
       </section>
