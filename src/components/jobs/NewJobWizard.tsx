@@ -87,6 +87,33 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           }
         }
       }
+      
+      // Optionally create daily driver+vehicle assignment
+      try {
+        if (state.data.create_daily_assignment && state.data.driver_id && state.data.vehicle_id && state.data.scheduled_date) {
+          const date = state.data.scheduled_date;
+          const { data: existing, error: checkError } = await supabase
+            .from('daily_vehicle_assignments')
+            .select('id')
+            .eq('assignment_date', date)
+            .or(`driver_id.eq.${state.data.driver_id},vehicle_id.eq.${state.data.vehicle_id}`)
+            .maybeSingle();
+          if (!checkError && !existing) {
+            const { error: insertError } = await supabase.from('daily_vehicle_assignments').insert({
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              assignment_date: date,
+              notes: `Auto-assigned for job ${job.id}`,
+            });
+            if (insertError) {
+              console.warn('Daily assignment insert failed:', insertError);
+              toast.warning('Job created, but daily assignment could not be created.');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Daily assignment step skipped due to error:', e);
+      }
 
       toast.success('Job created successfully!');
       reset();

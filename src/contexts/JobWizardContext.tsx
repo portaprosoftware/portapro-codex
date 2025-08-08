@@ -29,6 +29,7 @@ export interface JobWizardData {
   driver_id?: string | null;
   vehicle_id?: string | null;
   items?: JobItemSelection[];
+  create_daily_assignment?: boolean;
 }
 
 interface JobWizardState {
@@ -54,6 +55,7 @@ const initialState: JobWizardState = {
     return_date: null,
     is_priority: false,
     items: [],
+    create_daily_assignment: true,
   },
   errors: {},
   isLoading: false,

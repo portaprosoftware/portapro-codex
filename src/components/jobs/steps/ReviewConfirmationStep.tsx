@@ -15,7 +15,7 @@ interface ItemConflict {
 }
 
 export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ onCreateJob, creating }) => {
-  const { state } = useJobWizard();
+  const { state, updateData } = useJobWizard();
   const d = state.data;
   const [checking, setChecking] = useState(false);
   const [itemConflicts, setItemConflicts] = useState<ItemConflict[]>([]);
@@ -127,6 +127,19 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           {driverConflict && <div className="text-xs text-red-600">{driverConflict}</div>}
           <div>Vehicle: <span className="font-mono text-xs">{d.vehicle_id || '—'}</span></div>
           {vehicleConflict && <div className="text-xs text-red-600">{vehicleConflict}</div>}
+        </div>
+        <div className="rounded-lg border p-3 space-y-1 md:col-span-2">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4"
+              checked={!!d.create_daily_assignment}
+              onChange={(e) => updateData({ create_daily_assignment: e.currentTarget.checked })}
+              disabled={!d.driver_id || !d.vehicle_id || !!driverConflict || !!vehicleConflict}
+            />
+            <span>Create daily driver + vehicle assignment for {startDate || 'selected date'}</span>
+          </label>
+          <p className="text-xs text-muted-foreground">Prevents double-booking and helps track mileage.</p>
         </div>
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
