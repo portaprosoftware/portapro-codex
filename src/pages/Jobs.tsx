@@ -19,6 +19,7 @@ import { EquipmentAssignmentModal } from '@/components/jobs/EquipmentAssignmentM
 import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
 import { DispatchJobCardList } from '@/components/jobs/DispatchJobCardList';
+import { DispatchJobCardCompact } from '@/components/jobs/DispatchJobCardCompact';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
@@ -629,7 +630,7 @@ const JobsPage: React.FC = () => {
                                     {...provided.dragHandleProps}
                                     className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                   >
-                                     <DispatchJobCardList
+                                     <DispatchJobCardCompact
                                         job={job}
                                         onView={handleJobView}
                                         isDragging={snapshot.isDragging}
@@ -738,7 +739,7 @@ const JobsPage: React.FC = () => {
                                             {...provided.dragHandleProps}
                                             className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
                                           >
-                                             <DispatchJobCardList
+                                             <DispatchJobCardCompact
                                                 job={job}
                                                 onView={handleJobView}
                                                 isDragging={snapshot.isDragging}

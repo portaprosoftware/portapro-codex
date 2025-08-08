@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import { MapPin, Clock, User, Truck, Eye, ChevronDown, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
+
+interface DispatchJobCardCompactProps {
+  job: {
+    id: string;
+    job_number: string;
+    job_type: string;
+    status: string;
+    scheduled_date: string;
+    scheduled_time?: string;
+    actual_completion_time?: string;
+    notes?: string;
+    customers: {
+      id: string;
+      name: string;
+      service_street?: string;
+      service_city?: string;
+      service_state?: string;
+    };
+    profiles?: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+    vehicles?: {
+      id: string;
+      license_plate: string;
+      vehicle_type: string;
+    };
+  };
+  onView?: (jobId: string) => void;
+  isDragging?: boolean;
+}
+
+const jobTypeConfig = {
+  delivery: { 
+    color: 'bg-[hsl(var(--status-delivery))]', 
+    borderColor: 'border-l-[hsl(var(--status-delivery))]', 
+    label: 'Delivery',
+    icon: '📦'
+  },
+  pickup: { 
+    color: 'bg-[hsl(var(--status-pickup))]', 
+    borderColor: 'border-l-[hsl(var(--status-pickup))]', 
+    label: 'Pickup',
+    icon: '🚚'
+  },
+  'partial-pickup': { 
+    color: 'bg-[hsl(var(--status-partial-pickup))]', 
+    borderColor: 'border-l-[hsl(var(--status-partial-pickup))]', 
+    label: 'Partial Pickup',
+    icon: '📦'
+  },
+  service: { 
+    color: 'bg-[hsl(var(--status-service))]', 
+    borderColor: 'border-l-[hsl(var(--status-service))]', 
+    label: 'Service',
+    icon: '🔧'
+  },
+  'on-site-survey': { 
+    color: 'bg-[hsl(var(--status-survey))]', 
+    borderColor: 'border-l-[hsl(var(--status-survey))]', 
+    label: 'Survey/Estimate',
+    icon: '📋'
+  },
+  return: { 
+    color: 'bg-[hsl(var(--status-cancelled))]', 
+    borderColor: 'border-l-[hsl(var(--status-cancelled))]', 
+    label: 'Return',
+    icon: '↩️'
+  }
+};
+
+export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
+  job,
+  onView,
+  isDragging = false
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const jobTypeInfo = jobTypeConfig[job.job_type as keyof typeof jobTypeConfig] || jobTypeConfig.delivery;
+  const statusInfo = getDualJobStatusInfo(job);
+
+  const handleViewJob = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onView?.(job.id);
+  };
+
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
+  if (isExpanded) {
+    // Expanded view - same as the current DispatchJobCardList but with collapse button
+    return (
+      <div 
+        className={cn(
+          "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex items-center px-3 gap-3 min-w-[280px]",
+          isDragging && "shadow-lg border-blue-300 bg-blue-50",
+          jobTypeInfo.borderColor
+        )}
+      >
+        {/* Collapse Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleToggleExpand}
+          className="h-6 w-6 p-0 flex-shrink-0 hover:bg-gray-100"
+        >
+          <ChevronDown className="w-3 h-3" />
+        </Button>
+
+        {/* Job Type Indicator */}
+        <div className={cn("w-3 h-3 rounded-full flex-shrink-0", jobTypeInfo.color)} />
+        
+        {/* Main Content */}
+        <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto] gap-3 h-full py-2">
+          {/* Left Column - Job Info */}
+          <div className="min-w-0 space-y-1">
+            {/* Job Number & Customer */}
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm text-gray-900 truncate">
+                {job.job_number}
+              </span>
+              <span className="text-xs text-gray-500">•</span>
+              <span className="font-semibold text-xs text-gray-700 truncate">
+                {job.customers.name}
+              </span>
+            </div>
+
+            {/* Location & Time Row */}
+            <div className="flex items-center gap-3 text-xs text-gray-600">
+              {job.customers.service_street && (
+                <div className="flex items-center gap-1 min-w-0">
+                  <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                  <span className="truncate">
+                    {job.customers.service_street}
+                    {job.customers.service_city && `, ${job.customers.service_city}`}
+                  </span>
+                </div>
+              )}
+              {job.scheduled_time && (
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Clock className="w-3 h-3 text-gray-400" />
+                  <span>
+                    {(() => {
+                      const [hours, minutes] = job.scheduled_time.split(':').map(Number);
+                      const period = hours >= 12 ? 'PM' : 'AM';
+                      const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                      return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+                    })()}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Driver & Vehicle Row */}
+            <div className="flex items-center gap-3 text-xs text-gray-600">
+              {job.profiles && (
+                <div className="flex items-center gap-1">
+                  <User className="w-3 h-3 text-gray-400" />
+                  <span className="truncate">
+                    {job.profiles.first_name} {job.profiles.last_name}
+                  </span>
+                </div>
+              )}
+              {job.vehicles && (
+                <div className="flex items-center gap-1">
+                  <Truck className="w-3 h-3 text-gray-400" />
+                  <span className="truncate">
+                    {job.vehicles.license_plate}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column - Status & Actions */}
+          <div className="flex flex-col items-end gap-1 justify-center">
+            <div className="flex flex-col gap-1">
+              <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
+                {statusInfo.primary.label}
+              </Badge>
+              {statusInfo.secondary && (
+                <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.secondary.gradient)}>
+                  {statusInfo.secondary.label}
+                </Badge>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleViewJob}
+              className="h-6 px-2 text-xs border-gray-300 hover:bg-gray-50"
+              aria-label={`View job ${job.job_number}`}
+            >
+              <Eye className="w-3 h-3 mr-1" />
+              View
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Compact view - icon only
+  return (
+    <div 
+      className={cn(
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex flex-col items-center justify-center px-2 gap-1 min-w-[80px] cursor-pointer",
+        isDragging && "shadow-lg border-blue-300 bg-blue-50",
+        jobTypeInfo.borderColor
+      )}
+      onClick={handleToggleExpand}
+    >
+      {/* Expand Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 w-6 p-0 flex-shrink-0 hover:bg-gray-100 mb-1"
+      >
+        <ChevronRight className="w-3 h-3" />
+      </Button>
+
+      {/* Job Type Icon */}
+      <div className="text-lg mb-1">
+        {jobTypeInfo.icon}
+      </div>
+
+      {/* Job Number */}
+      <div className="text-xs font-medium text-gray-900 truncate w-full text-center">
+        {job.job_number}
+      </div>
+
+      {/* Status Badge */}
+      <Badge className={cn("text-xs px-1 py-0 font-bold text-center", statusInfo.primary.gradient)}>
+        {statusInfo.primary.label.slice(0, 3)}
+      </Badge>
+
+      {/* Time indicator if available */}
+      {job.scheduled_time && (
+        <div className="text-xs text-gray-500">
+          {(() => {
+            const [hours, minutes] = job.scheduled_time.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+            return `${hours12}:${minutes.toString().padStart(2, '0')}`;
+          })()}
+        </div>
+      )}
+    </div>
+  );
+};
