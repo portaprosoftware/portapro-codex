@@ -279,7 +279,7 @@ export const Landing: React.FC = () => {
                 src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
                 alt="PortaPro Dashboard Preview" 
                 loading="lazy" decoding="async"
-                className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.125]" 
+                className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" 
               />
             </div>
           </div>
