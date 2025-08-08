@@ -24,6 +24,9 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
 
   const startDate = d.scheduled_date || '';
   const endDate = d.return_date || d.scheduled_date || '';
+  const servicesData = d.servicesData as any | undefined;
+  const services = servicesData?.selectedServices || [];
+  const servicesSubtotal = Number(servicesData?.servicesSubtotal || 0);
 
   const items = useMemo(() => d.items || [], [d.items]);
 
@@ -106,6 +109,25 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
 
   const hasConflicts = itemConflicts.length > 0 || !!driverConflict || !!vehicleConflict;
 
+  const getFrequencyLabel = (s: any) => {
+    switch (s?.frequency) {
+      case 'one-time':
+        return 'One-Time';
+      case 'daily':
+        return 'Daily';
+      case 'weekly':
+        return 'Weekly';
+      case 'monthly':
+        return 'Monthly';
+      case 'custom':
+        if (s?.custom_type === 'days_interval') return `Every ${s?.custom_frequency_days || 1} days`;
+        if (s?.custom_type === 'days_of_week') return (s?.custom_days_of_week?.join(', ') || 'Custom days');
+        if (s?.custom_type === 'specific_dates') return `${s?.custom_specific_dates?.length || 0} dates`;
+        return 'Custom';
+      default:
+        return 'One-Time';
+    }
+  };
   return (
     <div className="space-y-6">
       <section className="space-y-1">
@@ -165,6 +187,24 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
             </ul>
           ) : (
             <p className="text-muted-foreground">No items selected</p>
+          )}
+        </div>
+
+        <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">Services</h3>
+            <div className="text-xs font-medium">Subtotal: ${servicesSubtotal.toFixed(2)}</div>
+          </div>
+          {services.length > 0 ? (
+            <ul className="list-disc list-inside space-y-1">
+              {services.map((s: any, i: number) => (
+                <li key={s.id || i}>
+                  <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · ${Number(s.calculated_cost || 0).toFixed(2)}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-muted-foreground">No services selected</p>
           )}
         </div>
       </div>

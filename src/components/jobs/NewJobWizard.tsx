@@ -54,6 +54,36 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         if (itemsError) throw itemsError;
       }
 
+      // Insert service job items if any services were selected
+      if (state.data.servicesData && state.data.servicesData.selectedServices?.length) {
+        const serviceItems = state.data.servicesData.selectedServices.map((s: any) => ({
+          job_id: job.id,
+          line_item_type: 'service',
+          service_id: s.id,
+          service_frequency: s.frequency,
+          service_hours: s.estimated_duration_hours ?? null,
+          service_config: {
+            pricing_method: s.pricing_method,
+            custom_type: s.custom_type,
+            custom_frequency_days: s.custom_frequency_days,
+            custom_days_of_week: s.custom_days_of_week,
+            calculated_cost: s.calculated_cost,
+          },
+          service_custom_dates: Array.isArray(s.custom_specific_dates)
+            ? s.custom_specific_dates.map((d: any) => ({
+                date: d?.date instanceof Date ? d.date.toISOString() : d?.date,
+                time: d?.time || null,
+                notes: d?.notes || null,
+              }))
+            : null,
+          unit_price: Number(s.calculated_cost || 0),
+          total_price: Number(s.calculated_cost || 0),
+          quantity: 1,
+        }));
+        const { error: svcError } = await supabase.from('job_items').insert(serviceItems);
+        if (svcError) throw svcError;
+      }
+
       // After job is created, reserve equipment if any items were selected
       if (state.data.items && state.data.items.length > 0 && state.data.scheduled_date) {
         const assignmentDate = state.data.scheduled_date;
