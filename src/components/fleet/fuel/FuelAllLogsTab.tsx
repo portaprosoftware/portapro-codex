@@ -155,12 +155,20 @@ export const FuelAllLogsTab: React.FC = () => {
 
   const deleteFuelLogMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('fuel_logs')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      // Try Edge Function first, then fallback to direct delete
+      try {
+        const { error: fnError } = await supabase.functions.invoke('fleet-writes', {
+          body: { action: 'delete_fuel_log', payload: { id } }
+        });
+        if (fnError) throw fnError;
+        return;
+      } catch (_) {
+        const { error } = await supabase
+          .from('fuel_logs')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast({

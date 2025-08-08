@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.process-scheduled-campaigns]
 verify_jwt = false
+
+[functions.fleet-writes]
+verify_jwt = false
+
+[functions.fleet-docs]
+verify_jwt = false

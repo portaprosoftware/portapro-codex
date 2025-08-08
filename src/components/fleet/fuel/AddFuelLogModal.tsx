@@ -104,23 +104,44 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   const addFuelLogMutation = useMutation({
     mutationFn: async (data: any) => {
       const totalCost = parseFloat(data.gallons_purchased) * parseFloat(data.cost_per_gallon);
-      
-      const { error } = await supabase
-        .from('fuel_logs')
-        .insert({
-          vehicle_id: data.vehicle_id,
-          driver_id: data.driver_id,
-          log_date: format(data.log_date, 'yyyy-MM-dd'),
-          odometer_reading: parseInt(data.odometer_reading),
-          gallons_purchased: parseFloat(data.gallons_purchased),
-          cost_per_gallon: parseFloat(data.cost_per_gallon),
-          total_cost: totalCost,
-          fuel_station: data.fuel_station,
-          receipt_image: data.receipt_image,
-          notes: data.notes
+      // Try secure Edge Function first (Clerk-verified), then gracefully fallback
+      try {
+        const { data: result, error: fnError } = await supabase.functions.invoke('fleet-writes', {
+          body: {
+            action: 'create_fuel_log',
+            payload: {
+              vehicle_id: data.vehicle_id,
+              driver_id: data.driver_id,
+              log_date: format(data.log_date, 'yyyy-MM-dd'),
+              odometer_reading: parseInt(data.odometer_reading),
+              gallons_purchased: parseFloat(data.gallons_purchased),
+              cost_per_gallon: parseFloat(data.cost_per_gallon),
+              total_cost: totalCost,
+              fuel_station: data.fuel_station,
+              receipt_image: data.receipt_image,
+              notes: data.notes
+            }
+          }
         });
-      
-      if (error) throw error;
+        if (fnError) throw fnError;
+        return result;
+      } catch (_) {
+        const { error } = await supabase
+          .from('fuel_logs')
+          .insert({
+            vehicle_id: data.vehicle_id,
+            driver_id: data.driver_id,
+            log_date: format(data.log_date, 'yyyy-MM-dd'),
+            odometer_reading: parseInt(data.odometer_reading),
+            gallons_purchased: parseFloat(data.gallons_purchased),
+            cost_per_gallon: parseFloat(data.cost_per_gallon),
+            total_cost: totalCost,
+            fuel_station: data.fuel_station,
+            receipt_image: data.receipt_image,
+            notes: data.notes
+          });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast({

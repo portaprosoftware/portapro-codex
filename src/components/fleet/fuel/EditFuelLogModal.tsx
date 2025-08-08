@@ -105,24 +105,46 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
   const updateFuelLogMutation = useMutation({
     mutationFn: async (data: any) => {
       const totalCost = parseFloat(data.gallons_purchased) * parseFloat(data.cost_per_gallon);
-      
-      const { error } = await supabase
-        .from('fuel_logs')
-        .update({
-          vehicle_id: data.vehicle_id,
-          driver_id: data.driver_id,
-          log_date: format(data.log_date, 'yyyy-MM-dd'),
-          odometer_reading: parseInt(data.odometer_reading),
-          gallons_purchased: parseFloat(data.gallons_purchased),
-          cost_per_gallon: parseFloat(data.cost_per_gallon),
-          total_cost: totalCost,
-          fuel_station: data.fuel_station,
-          receipt_image: data.receipt_image,
-          notes: data.notes
-        })
-        .eq('id', fuelLog.id);
-      
-      if (error) throw error;
+      // Try secure Edge Function first (Clerk-verified), then fallback
+      try {
+        const { error: fnError } = await supabase.functions.invoke('fleet-writes', {
+          body: {
+            action: 'update_fuel_log',
+            payload: {
+              id: fuelLog.id,
+              vehicle_id: data.vehicle_id,
+              driver_id: data.driver_id,
+              log_date: format(data.log_date, 'yyyy-MM-dd'),
+              odometer_reading: parseInt(data.odometer_reading),
+              gallons_purchased: parseFloat(data.gallons_purchased),
+              cost_per_gallon: parseFloat(data.cost_per_gallon),
+              total_cost: totalCost,
+              fuel_station: data.fuel_station,
+              receipt_image: data.receipt_image,
+              notes: data.notes
+            }
+          }
+        });
+        if (fnError) throw fnError;
+        return;
+      } catch (_) {
+        const { error } = await supabase
+          .from('fuel_logs')
+          .update({
+            vehicle_id: data.vehicle_id,
+            driver_id: data.driver_id,
+            log_date: format(data.log_date, 'yyyy-MM-dd'),
+            odometer_reading: parseInt(data.odometer_reading),
+            gallons_purchased: parseFloat(data.gallons_purchased),
+            cost_per_gallon: parseFloat(data.cost_per_gallon),
+            total_cost: totalCost,
+            fuel_station: data.fuel_station,
+            receipt_image: data.receipt_image,
+            notes: data.notes
+          })
+          .eq('id', fuelLog.id);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast({
