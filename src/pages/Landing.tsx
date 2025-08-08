@@ -176,7 +176,7 @@ export const Landing: React.FC = () => {
           <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
-            <a href="#questions-section" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</a>
+            <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
             <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
           </nav>
           
@@ -204,7 +204,7 @@ export const Landing: React.FC = () => {
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
                 <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
-                <a href="#questions-section" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</a>
+                <button onClick={() => setQuestionsFormOpen(true)} className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
                 <a href="#tour" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
@@ -761,22 +761,6 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Questions Section - Blue */}
-      <section id="questions-section" className="py-4 bg-gradient-blue">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Have Questions?
-            </h2>
-            <p className="text-lg text-white/90 mb-8">
-              Tell us about your needs and we'll get in touch within 24 hours
-            </p>
-            <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 text-black border-white/30 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
-              Ask us and we'll be in touch
-            </Button>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer id="resources" className="py-16 px-6 bg-gradient-blue text-white border-t">
