@@ -169,6 +169,48 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
     }
   };
 
+  const handleExportPdf = () => {
+    try {
+      const doc = new jsPDF();
+      const title = productName ? `Compliance - ${productName}` : "Compliance Report";
+      doc.setFontSize(16);
+      doc.text(title, 14, 16);
+      doc.setFontSize(12);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 24);
+      doc.text(
+        `Totals: Overdue ${computed.counts.overdue} • Due soon ${computed.counts.due_soon} • Good ${computed.counts.good}`,
+        14,
+        32
+      );
+      let y = 44;
+      doc.text("Unit", 14, y);
+      doc.text("Last Cleaned", 70, y);
+      doc.text("Next Due", 120, y);
+      doc.text("Status", 170, y);
+      y += 6;
+      const rows = computed.list || [];
+      rows.slice(0, 60).forEach((u) => {
+        doc.text(u.item_code || "-", 14, y);
+        const lc = u.lastCleaned ? formatDateSafe(u.lastCleaned.toISOString(), "short") : "—";
+        const nd = u.nextDue ? formatDateSafe(u.nextDue.toISOString(), "short") : "—";
+        const st =
+          u.status === "overdue" ? "Overdue" : u.status === "due_soon" ? "Due soon" : u.status === "good" ? "Good" : "No record";
+        doc.text(lc, 70, y);
+        doc.text(nd, 120, y);
+        doc.text(st, 170, y);
+        y += 6;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+      const fileName = `${(productName || "compliance").replace(/\s+/g, "_").toLowerCase()}_report.pdf`;
+      doc.save(fileName);
+    } catch (e) {
+      toast.error("Failed to export PDF");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -177,6 +219,7 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
           <ShieldCheck className="w-5 h-5 text-foreground" />
           <h2 className="text-xl font-semibold text-foreground">Compliance</h2>
         </div>
+        <Button variant="secondary" onClick={handleExportPdf} disabled={isLoading}>Export PDF</Button>
       </div>
 
       {/* Summary cards */}
@@ -228,6 +271,16 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
                 <div className="col-span-3 flex items-center justify-end gap-2">
                   <Button
                     size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedItem({ id: u.id, item_code: u.item_code });
+                      setHistoryOpen(true);
+                    }}
+                  >
+                    View history
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="secondary"
                     disabled={markCleaned.isPending}
                     onClick={() => markCleaned.mutate(u.id)}
@@ -240,6 +293,42 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
           </div>
         )}
       </div>
+      <Dialog open={historyOpen} onOpenChange={(o) => { if (!o) setHistoryOpen(false); }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              History — {selectedItem?.item_code}{productName ? ` (${productName})` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {isHistoryLoading ? (
+            <div className="p-4 text-muted-foreground">Loading history…</div>
+          ) : !historyLogs || historyLogs.length === 0 ? (
+            <div className="p-4 text-muted-foreground">No history found for this unit.</div>
+          ) : (
+            <div className="space-y-4 max-h-[60vh] overflow-auto">
+              {historyLogs.map((log) => (
+                <div key={log.id} className="rounded-xl border border-border p-3">
+                  <div className="text-sm text-muted-foreground">{new Date(log.created_at).toLocaleString()}</div>
+                  {log.notes && <div className="mt-1 text-foreground">{log.notes}</div>}
+                  {Array.isArray(log.photos) && (log.photos as any[]).length > 0 && (
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {(log.photos as any[]).map((src: any, idx: number) => (
+                        <img
+                          key={idx}
+                          src={typeof src === "string" ? src : (src?.url || "")}
+                          alt={`Sanitation photo ${idx + 1}`}
+                          className="rounded-md border border-border object-cover w-full h-24"
+                          loading="lazy"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

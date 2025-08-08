@@ -187,7 +187,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         </TabsContent>
 
         <TabsContent value="compliance" className="mt-6">
-          <ProductComplianceTab productId={productId} />
+          <ProductComplianceTab productId={productId} productName={product.name} />
         </TabsContent>
 
         <TabsContent value="attributes" className="mt-6">
