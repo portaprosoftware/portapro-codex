@@ -488,21 +488,21 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Transport & Spill Compliance Suite - Blue */}
-      <section id="compliance" className="py-4 bg-gradient-blue text-white">
+      {/* Transport & Spill Compliance Suite - White */}
+      <section id="compliance" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">Transport & Spill Compliance Suite</h2>
-              <p className="text-lg text-white/90">Stay audit-ready with structured logs and document tracking.</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Transport & Spill Compliance Suite</h2>
+              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Transport manifests & chain-of-custody</span>
+                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Spill incidents with photos, notes, and follow-ups</span>
+                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -546,12 +546,12 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Quote-to-Job Flow - Blue */}
-      <section id="quotes" className="py-4 bg-gradient-blue text-white">
+      {/* Quote-to-Job Flow - White */}
+      <section id="quotes" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                 One Click from Quote to Job
               </h2>
             </div>
@@ -608,13 +608,13 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Reporting & Templates - Blue */}
-      <section id="reports" className="py-4 bg-gradient-blue text-white">
+      {/* Reporting & Templates - White */}
+      <section id="reports" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-white">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                   Custom Service Reports
                 </h2>
               </div>
@@ -760,13 +760,13 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* In action: 60-second tour - Blue */}
-      <section id="tour" className="py-4 bg-gradient-blue text-white">
+      {/* In action: 60-second tour - White */}
+      <section id="tour" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">See PortaPro in Action</h2>
-              <p className="text-lg text-white/90">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">See PortaPro in Action</h2>
+              <p className="text-lg text-muted-foreground">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
             </div>
             <div className="rounded-2xl overflow-hidden shadow-md border bg-card">
               <video className="w-full aspect-video" muted loop playsInline preload="metadata" poster="/placeholder.svg">
