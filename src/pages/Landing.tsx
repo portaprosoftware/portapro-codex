@@ -232,34 +232,34 @@ export const Landing: React.FC = () => {
 
       {/* Hero Section - Blue */}
       <section className="min-h-screen flex items-center py-12 md:py-20 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-6xl px-6">
+        <div className="container mx-auto max-w-7xl px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-10">
+            <div className="space-y-10 lg:pr-8">
               <div className="space-y-8">
-                <h1 className="text-3xl lg:text-6xl font-bold text-white leading-tight">
+                <h1 className="text-4xl lg:text-7xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
-                <p className="text-2xl text-white/90 leading-relaxed">
+                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed">
                   Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-white/90">
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
-                    <div className="text-2xl font-bold">3+ hrs</div>
-                    <div className="text-xs">saved per week per dispatcher</div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-white/90">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                    <div className="text-3xl lg:text-4xl font-bold">3+ hrs</div>
+                    <div className="text-sm font-medium truncate">saved per week</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
-                    <div className="text-2xl font-bold">99.9%</div>
-                    <div className="text-xs">platform uptime</div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                    <div className="text-3xl lg:text-4xl font-bold">99.9%</div>
+                    <div className="text-sm font-medium truncate">platform uptime</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
-                    <div className="text-2xl font-bold">60 sec</div>
-                    <div className="text-xs">quote-to-job flow</div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                    <div className="text-3xl lg:text-4xl font-bold">60 sec</div>
+                    <div className="text-sm font-medium truncate">quote-to-job flow</div>
                   </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
-                    <div className="text-2xl font-bold">AI</div>
-                    <div className="text-xs">panel scanning built-in</div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-4 text-center">
+                    <div className="text-3xl lg:text-4xl font-bold">AI</div>
+                    <div className="text-sm font-medium truncate">panel scanning</div>
                   </div>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export const Landing: React.FC = () => {
                 src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
                 alt="PortaPro Dashboard Preview" 
                 loading="lazy" decoding="async"
-                className="w-full max-w-2xl mx-auto lg:max-w-none transform scale-110" 
+                className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-150" 
               />
             </div>
           </div>
