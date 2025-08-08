@@ -14,6 +14,7 @@ import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useUser } from '@clerk/clerk-react';
 
 interface FormField {
   id: string;
@@ -44,6 +45,7 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   templates,
   onComplete
 }) => {
+  const { user } = useUser();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [sections, setSections] = useState<FormSection[]>([]);
@@ -57,6 +59,10 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   const [showSignatureCapture, setShowSignatureCapture] = useState(false);
   const [currentFieldId, setCurrentFieldId] = useState<string>('');
   const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Sanitation feature gating
+  const [sanitationEnabled, setSanitationEnabled] = useState(false);
+  const [sanitationChecklistId, setSanitationChecklistId] = useState<string | null>(null);
 
   useEffect(() => {
     // Initialize form based on templates
@@ -94,6 +100,54 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
       setAutoSaveTimer(timer);
     }
   }, [formData, isDirty]);
+
+  // Fetch sanitation settings and default checklist
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const [{ data: settingsRow }, { data: checklistRow }] = await Promise.all([
+        supabase.from('company_settings').select('enable_sanitation_compliance').limit(1).maybeSingle(),
+        supabase.from('sanitation_checklists').select('id').eq('is_active', true).order('created_at', { ascending: true }).limit(1).maybeSingle()
+      ]);
+      if (!active) return;
+      setSanitationEnabled(!!settingsRow?.enable_sanitation_compliance);
+      if (checklistRow?.id) setSanitationChecklistId(checklistRow.id);
+    };
+    load();
+    return () => { active = false; };
+  }, [open]);
+
+  // Inject sanitation section dynamically when enabled
+  useEffect(() => {
+    if (!sanitationEnabled) return;
+    if (sections.length === 0) return;
+    if (sections.some((s) => s.name === 'Sanitation Compliance')) return;
+
+    const sanitationSection: FormSection = {
+      name: 'Sanitation Compliance',
+      fields: [
+        { id: 'sanitation_sanitized', type: 'checkbox', label: 'Unit sanitized with approved chemicals', required: true },
+        { id: 'sanitation_tp_stocked', type: 'checkbox', label: 'Toilet paper stocked (min. 2 rolls)', required: true },
+        { id: 'sanitation_hs_refilled', type: 'checkbox', label: 'Hand sanitizer refilled (if applicable)', required: false },
+        { id: 'sanitation_vent_clear', type: 'checkbox', label: 'Ventilation clear', required: true },
+        { id: 'sanitation_no_biohazards', type: 'checkbox', label: 'No visible biohazards', required: true },
+        { id: 'sanitation_photo', type: 'photo', label: 'Sanitation Photo (optional)' },
+        { id: 'sanitation_notes', type: 'textarea', label: 'Sanitation Notes' },
+      ],
+    };
+
+    setSections((prev) => [...prev, sanitationSection]);
+    setFormData((prev) => ({
+      ...prev,
+      sanitation_sanitized: false,
+      sanitation_tp_stocked: false,
+      sanitation_hs_refilled: false,
+      sanitation_vent_clear: false,
+      sanitation_no_biohazards: false,
+      sanitation_photo: '',
+      sanitation_notes: '',
+    }));
+  }, [sanitationEnabled, sections]);
 
   const initializeForm = () => {
     if (!templates || templates.length === 0) return;
@@ -211,11 +265,37 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
     try {
       // Generate report number
       const reportNumber = `RPT-${Date.now()}`;
-      
-      // Simplified completion for demo
       console.log('Report completed:', reportNumber, formData);
 
-      // Update job status
+      // 1) Save sanitation log if enabled
+      if (sanitationEnabled) {
+        const responses = {
+          sanitized_with_approved_chemicals: !!formData.sanitation_sanitized,
+          toilet_paper_stocked: !!formData.sanitation_tp_stocked,
+          hand_sanitizer_refilled: !!formData.sanitation_hs_refilled,
+          ventilation_clear: !!formData.sanitation_vent_clear,
+          no_visible_biohazards: !!formData.sanitation_no_biohazards,
+          notes: formData.sanitation_notes || ''
+        } as Record<string, any>;
+        const photos = formData.sanitation_photo ? [formData.sanitation_photo] : [];
+
+        const { error: sanitationError } = await supabase.from('sanitation_logs').insert({
+          job_id: jobId,
+          product_item_id: null,
+          checklist_id: sanitationChecklistId,
+          responses,
+          photos,
+          technician_id: user?.id ?? null,
+          signed_at: null,
+          notes: formData.sanitation_notes || null
+        });
+
+        if (sanitationError) {
+          console.error('Sanitation log insert failed:', sanitationError);
+        }
+      }
+
+      // 2) Update job status
       const { error: jobError } = await supabase
         .from('jobs')
         .update({ status: 'completed' })
@@ -237,7 +317,6 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
       setIsSubmitting(false);
     }
   };
-
   const renderField = (field: FormField) => {
     const value = formData[field.id] || '';
 
