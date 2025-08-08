@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/logo';
 import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
-
+import { FloatingActionButton } from '@/components/ui/floating-action-button';
 // Core Features Data
 const coreFeatures = [{
   title: "Google Vision AI",
@@ -166,7 +166,7 @@ export const Landing: React.FC = () => {
       });
     }
   };
-  return <div className="min-h-screen bg-background">
+  return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-20 hover:h-14">
         <div className="container mx-auto px-6 h-full flex items-center justify-between max-w-6xl">
@@ -176,6 +176,8 @@ export const Landing: React.FC = () => {
           <nav className="hidden md:flex items-center gap-8 ml-auto">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
+            <a href="#questions-section" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</a>
+            <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
           </nav>
           
           {/* Desktop Auth Buttons */}
@@ -202,6 +204,8 @@ export const Landing: React.FC = () => {
               <nav className="space-y-2">
                 <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
                 <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
+                <a href="#questions-section" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</a>
+                <a href="#tour" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
@@ -214,6 +218,13 @@ export const Landing: React.FC = () => {
             </div>
           </div>}
       </header>
+
+      <FloatingActionButton
+        icon={ArrowRight}
+        label="Start Free Trial"
+        tooltip="Start your 14-day trial"
+        onClick={() => window.open('https://accounts.portaprosoftware.com/sign-up', '_blank')}
+      />
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-blue text-white">
@@ -230,6 +241,25 @@ export const Landing: React.FC = () => {
                 <p className="text-2xl text-white/90 leading-relaxed">
                   Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-white/90">
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold">3+ hrs</div>
+                    <div className="text-xs">saved per week per dispatcher</div>
+                  </div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold">99.9%</div>
+                    <div className="text-xs">platform uptime</div>
+                  </div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold">60 sec</div>
+                    <div className="text-xs">quote-to-job flow</div>
+                  </div>
+                  <div className="backdrop-blur bg-white/10 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold">AI</div>
+                    <div className="text-xs">panel scanning built-in</div>
+                  </div>
+                </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
@@ -244,23 +274,35 @@ export const Landing: React.FC = () => {
                   <Calendar className="w-4 h-4 ml-2" />
                 </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white">
-                  Watch Preview
+                  Watch 60-second tour
                   <Play className="w-4 h-4 ml-2" />
                 </Button>
               </div>
               
-              <div className="flex flex-wrap gap-6 pt-4 text-sm text-white/80">
-                <span className="font-bold text-base">• Full Support Included</span>
-                <span className="font-bold text-base">• Cancel Anytime</span>
-                <span className="font-bold text-base">• 14 Day Free Trial</span>
-              </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-6 flex-wrap opacity-90">
+                    <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                    <div className="flex gap-4">
+                      <span className="text-white/70 text-xs font-semibold tracking-wide">BlueSky Rentals</span>
+                      <span className="text-white/70 text-xs font-semibold tracking-wide">CleanStream</span>
+                      <span className="text-white/70 text-xs font-semibold tracking-wide">RapidRest</span>
+                      <span className="text-white/70 text-xs font-semibold tracking-wide">MetroSan</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
+                    <span className="font-bold text-base">• Full Support Included</span>
+                    <span className="font-bold text-base">• Cancel Anytime</span>
+                    <span className="font-bold text-base">• 14 Day Free Trial</span>
+                  </div>
+                </div>
             </div>
             
             <div className="order-2 lg:order-2">
               <img 
                 src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
                 alt="PortaPro Dashboard Preview" 
-                className="max-w-2xl w-full mx-auto lg:max-w-5xl transform scale-125" 
+                loading="lazy" decoding="async"
+                className="max-w-2xl w/full mx-auto lg:max-w-5xl transform scale-125" 
               />
             </div>
           </div>
@@ -471,6 +513,64 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Transport & Spill Compliance Suite */}
+      <section id="compliance" className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Transport & Spill Compliance Suite</h2>
+              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Transport manifests & chain-of-custody</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto reminders for expiring documents</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              {/* Placeholder slideshow preserved */}
+              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DVIRs & Maintenance */}
+      <section id="dvir" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold">DVIRs & Fleet Maintenance</h2>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Pre/Post-trip DVIR checklists</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Maintenance logs and alerts</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Driver photos and signatures</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-6">
+              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quote-to-Job Flow */}
       <section id="quotes" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
@@ -601,6 +701,24 @@ export const Landing: React.FC = () => {
       </section>
 
 
+      {/* In action: 60-second tour */}
+      <section id="tour" className="py-20 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">See PortaPro in Action</h2>
+              <p className="text-lg text-muted-foreground">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
+            </div>
+            <div className="rounded-2xl overflow-hidden shadow-md border bg-card">
+              <video className="w-full aspect-video" muted loop playsInline preload="metadata" poster="/placeholder.svg">
+                {/* You can replace the source below with your real tour video */}
+                <source src="" type="video/mp4" />
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section id="pricing" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
         <div className="container mx-auto max-w-6xl">
@@ -644,6 +762,10 @@ export const Landing: React.FC = () => {
                   </div>
                   <CardDescription className="text-white/90 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
+                <div className="mt-0 mb-4 flex items-center justify-center gap-3">
+                  <Badge className="bg-white/20 text-white">14-day, no card</Badge>
+                  <Badge className="bg-white/20 text-white">Full support included</Badge>
+                </div>
                 <CardContent className="space-y-4">
                   <ul className="grid grid-cols-2 gap-3">
                     {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
@@ -732,6 +854,9 @@ export const Landing: React.FC = () => {
               <button onClick={() => setContactFormOpen(true)} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
                 <Mail className="w-4 h-4" />
                 <span>Contact Us</span>
+              </button>
+              <button onClick={() => scrollToSection('top')} className="text-white/80 hover:text-white transition-colors">
+                ↑ Back to top
               </button>
             </div>
           </div>

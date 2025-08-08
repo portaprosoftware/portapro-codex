@@ -49,12 +49,15 @@ export const AutoCarousel: React.FC<AutoCarouselProps> = ({
                       loop
                       muted
                       playsInline
+                      preload="metadata"
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   ) : (
                     <img
                       src={mediaItem.startsWith('/') ? mediaItem : `https://images.unsplash.com/${mediaItem}?auto=format&fit=crop&w=800&q=80`}
                       alt={`Feature showcase ${index + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   )}
