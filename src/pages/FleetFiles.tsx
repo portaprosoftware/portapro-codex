@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Search, Upload, FolderOpen, Filter, Grid3X3, List, Settings } from "lucide-react";
+import { Search, Upload, FolderOpen, Grid3X3, List, Settings } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function FleetFiles() {
   const [selectedVehicle, setSelectedVehicle] = useState<string>("all");
@@ -20,6 +21,7 @@ export default function FleetFiles() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
   const { toast } = useToast();
+  const { getToken } = useAuth();
   
   useEffect(() => {
     document.title = "Fleet Documents & Photos | PortaPro";
@@ -54,48 +56,49 @@ export default function FleetFiles() {
     },
   });
 
-  // Fetch documents with vehicle info
+  // Fetch documents only (no join) and enrich locally
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-documents"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicle_documents")
-        .select(`
-          *,
-          vehicles!inner (
-            license_plate,
-            make,
-            model
-          )
-        `)
+        .select("*")
         .order("upload_date", { ascending: false });
-      
       if (error) throw error;
-      
-      return (data || []).map(doc => ({
-        ...doc,
-        vehicle_name: `${(doc as any)?.vehicles?.make || ''} ${(doc as any)?.vehicles?.model || ''}`.trim() || 'Unknown Vehicle',
-        vehicle_plate: (doc as any)?.vehicles?.license_plate || 'Unknown'
-      }));
+      return data || [];
     },
   });
 
+  // Enrich with vehicle info client-side to avoid brittle joins
+  const enrichedDocuments = useMemo(() => {
+    const vmap = new Map((vehicles || []).map((v: any) => [v.id, v]));
+    return (documents || []).map((doc: any) => {
+      const v = vmap.get(doc.vehicle_id);
+      return {
+        ...doc,
+        vehicle_name: v ? `${v.make || ''} ${v.model || ''}`.trim() || 'Unknown Vehicle' : 'Unknown Vehicle',
+        vehicle_plate: v?.license_plate || 'Unknown',
+      };
+    });
+  }, [documents, vehicles]);
+
   // Filter documents based on current filters
   const filteredDocuments = useMemo(() => {
-    if (!documents) return [];
-    
-    return documents.filter(doc => {
+    if (!enrichedDocuments) return [] as any[];
+
+    return enrichedDocuments.filter((doc: any) => {
       const vehicleMatch = selectedVehicle === "all" || doc.vehicle_id === selectedVehicle;
       const categoryMatch = selectedCategory === "all" || doc.category === selectedCategory;
-      const searchMatch = searchQuery === "" || 
-        doc.document_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.file_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const searchMatch =
+        searchQuery === "" ||
+        doc.document_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.file_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         doc.document_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.vehicle_plate.toLowerCase().includes(searchQuery.toLowerCase());
-      
+        doc.vehicle_plate?.toLowerCase().includes(searchQuery.toLowerCase());
+
       return vehicleMatch && categoryMatch && searchMatch;
     });
-  }, [documents, selectedVehicle, selectedCategory, searchQuery]);
+  }, [enrichedDocuments, selectedVehicle, selectedCategory, searchQuery]);
 
   // Group documents by category for tabs
   const documentsByCategory = useMemo(() => {
@@ -121,14 +124,20 @@ export default function FleetFiles() {
 
   const handleView = async (document: any) => {
     try {
-      const { data, error } = await supabase.storage
-        .from('vehicle-documents')
-        .createSignedUrl(document.file_path, 60); // 1 hour expiry
-      
-      if (error) throw error;
-      
-      // Open in new tab
-      window.open(data.signedUrl, '_blank');
+      const token = await getToken();
+      const { data, error } = await supabase.functions.invoke('fleet-docs', {
+        body: {
+          action: 'create_signed_url',
+          payload: { path: document.file_path, expiresIn: 600 },
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (error || !data?.success) throw new Error((data as any)?.error || (error as any)?.message || 'Failed to create signed URL');
+
+      window.open((data as any).data.signedUrl, '_blank');
     } catch (error) {
       toast({
         title: "View Failed",
@@ -140,22 +149,27 @@ export default function FleetFiles() {
 
   const handleDownload = async (document: any) => {
     try {
-      const { data, error } = await supabase.storage
-        .from('vehicle-documents')
-        .download(document.file_path);
-      
-      if (error) throw error;
-      
-      // Create download link
-      const url = URL.createObjectURL(data);
+      const token = await getToken();
+      const { data, error } = await supabase.functions.invoke('fleet-docs', {
+        body: {
+          action: 'create_signed_url',
+          payload: { path: document.file_path, expiresIn: 600 },
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (error || !data?.success) throw new Error((data as any)?.error || (error as any)?.message || 'Failed to create signed URL');
+
+      const signedUrl = (data as any).data.signedUrl as string;
       const a = window.document.createElement('a');
-      a.href = url;
+      a.href = signedUrl;
       a.download = document.file_name;
       window.document.body.appendChild(a);
       a.click();
       window.document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
+
       toast({
         title: "Download Complete",
         description: `${document.file_name} has been downloaded.`,
@@ -180,7 +194,7 @@ export default function FleetFiles() {
       // Delete from storage
       if (documentToDelete.file_path) {
         await supabase.storage
-          .from('vehicle-documents')
+          .from('fleet-files')
           .remove([documentToDelete.file_path]);
       }
       

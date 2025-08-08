@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/clerk-react";
 
 interface DocumentUploadModalProps {
   vehicles: Array<{ id: string; license_plate: string; make: string; model: string }>;
@@ -25,6 +26,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const [notes, setNotes] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { getToken } = useAuth();
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
