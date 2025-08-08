@@ -5,7 +5,7 @@ import { FleetCompliance } from "@/components/fleet/FleetCompliance";
 
 export default function FleetCompliancePage() {
   useEffect(() => {
-    document.title = "Fleet Compliance | PortaPro";
+    document.title = "Transport & Spill Compliance | PortaPro";
   }, []);
   return (
     <FleetLayout>

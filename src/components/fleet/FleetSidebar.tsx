@@ -48,10 +48,10 @@ export const FleetSidebar: React.FC = () => {
       end: true
     },
     {
-      title: "Compliance",
+      title: "Transport & Spill Compliance",
       href: "/fleet/compliance",
       icon: AlertTriangle,
-      description: "Insurance & Registration...",
+      description: "DOT, septage permits, spill readiness",
       badge: (complianceCounts?.total && complianceCounts.total > 0) ? complianceCounts.total.toString() : undefined
     },
     {
