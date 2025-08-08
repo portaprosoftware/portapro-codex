@@ -219,21 +219,23 @@ export const Landing: React.FC = () => {
           </div>}
       </header>
 
-      <FloatingActionButton
-        icon={ArrowRight}
-        label="Start Free Trial"
-        tooltip="Start your 14-day trial"
-        onClick={() => window.open('https://accounts.portaprosoftware.com/sign-up', '_blank')}
-      />
+      {/* Sticky CTA Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button 
+          onClick={() => window.open('https://accounts.portaprosoftware.com/sign-up', '_blank')}
+          className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
+        >
+          Start Free Trial
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
 
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center py-12 md:py-20 px-6 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-7xl">
+      {/* Hero Section - Blue */}
+      <section className="min-h-screen flex items-center py-12 md:py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-10 order-1 lg:order-1">
+            <div className="space-y-10">
               <div className="space-y-8">
-                
-                
                 <h1 className="text-3xl lg:text-6xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
@@ -264,57 +266,55 @@ export const Landing: React.FC = () => {
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white">
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10" onClick={openCalendlyPopup}>
                   Schedule Demo
                   <Calendar className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white">
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/10">
                   Watch 60-second tour
                   <Play className="w-4 h-4 ml-2" />
                 </Button>
               </div>
               
-                <div className="space-y-4">
-                  <div className="flex items-center gap-6 flex-wrap opacity-90">
-                    <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                    <div className="flex gap-4">
-                      <span className="text-white/70 text-xs font-semibold tracking-wide">BlueSky Rentals</span>
-                      <span className="text-white/70 text-xs font-semibold tracking-wide">CleanStream</span>
-                      <span className="text-white/70 text-xs font-semibold tracking-wide">RapidRest</span>
-                      <span className="text-white/70 text-xs font-semibold tracking-wide">MetroSan</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
-                    <span className="font-bold text-base">• Full Support Included</span>
-                    <span className="font-bold text-base">• Cancel Anytime</span>
-                    <span className="font-bold text-base">• 14 Day Free Trial</span>
+              <div className="space-y-4">
+                <div className="flex items-center gap-6 flex-wrap opacity-90">
+                  <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                  <div className="flex gap-4">
+                    <span className="text-white/70 text-xs font-semibold tracking-wide">BlueSky Rentals</span>
+                    <span className="text-white/70 text-xs font-semibold tracking-wide">CleanStream</span>
+                    <span className="text-white/70 text-xs font-semibold tracking-wide">RapidRest</span>
+                    <span className="text-white/70 text-xs font-semibold tracking-wide">MetroSan</span>
                   </div>
                 </div>
+                <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
+                  <span className="font-bold text-base">• Full Support Included</span>
+                  <span className="font-bold text-base">• Cancel Anytime</span>
+                  <span className="font-bold text-base">• 14 Day Free Trial</span>
+                </div>
+              </div>
             </div>
             
-            <div className="order-2 lg:order-2">
+            <div>
               <img 
                 src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
                 alt="PortaPro Dashboard Preview" 
                 loading="lazy" decoding="async"
-                className="max-w-2xl w/full mx-auto lg:max-w-5xl transform scale-125" 
+                className="w-full max-w-2xl mx-auto lg:max-w-none transform scale-110" 
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why PortaPro */}
-      <section id="about" className="bg-white px-0 my-[10px] py-[10px]">
-        <div className="container mx-auto max-w-4xl">
+      {/* Why PortaPro - White */}
+      <section id="about" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-12">
-            
-            
             <div className="grid sm:grid-cols-3 gap-8">
               {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
@@ -328,9 +328,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Core Features Grid */}
-      <section id="features" className="py-20 px-6 bg-gradient-blue">
-        <div className="container mx-auto max-w-6xl">
+      {/* Core Features Grid - Blue */}
+      <section id="features" className="py-20 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
                 <CardContent className="p-6 text-center">
@@ -348,9 +348,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Smart AI Panel Scanning Section */}
-      <section id="ai-scanning" className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Smart AI Panel Scanning Section - White */}
+      <section id="ai-scanning" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-6">
@@ -446,9 +446,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Job Wizard Deep Dive */}
-      <section id="job-wizard" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Job Wizard Deep Dive - Blue */}
+      <section id="job-wizard" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -484,9 +484,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Inventory & Consumables */}
-      <section id="inventory" className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl">
+      {/* Inventory & Consumables - White */}
+      <section id="inventory" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -513,9 +513,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Transport & Spill Compliance Suite */}
-      <section id="compliance" className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Transport & Spill Compliance Suite - White */}
+      <section id="compliance" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Transport & Spill Compliance Suite</h2>
@@ -543,9 +543,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* DVIRs & Maintenance */}
-      <section id="dvir" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* DVIRs & Maintenance - Blue */}
+      <section id="dvir" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold">DVIRs & Fleet Maintenance</h2>
@@ -571,12 +571,12 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Quote-to-Job Flow */}
-      <section id="quotes" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Quote-to-Job Flow - White */}
+      <section id="quotes" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                 One Click from Quote to Job
               </h2>
             </div>
@@ -593,7 +593,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex items-center justify-center gap-4 pt-8">
-              <div className="flex items-center gap-2 text-white/80">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <span>Quote</span>
                 <ArrowRight className="w-4 h-4" />
                 <span>Customer Accepts</span>
@@ -607,21 +607,21 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Team & Scheduling */}
-      <section id="team" className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl">
+      {/* Team & Scheduling - Blue */}
+      <section id="team" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                <h2 className="text-3xl lg:text-4xl font-bold text-white">
                   Team Management Made Easy
                 </h2>
               </div>
               
               <div className="grid gap-4">
                 {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className="font-medium">{feature}</span>
+                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="font-medium text-white/90">{feature}</span>
                   </div>)}
               </div>
             </div>
@@ -633,9 +633,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Reporting & Templates */}
-      <section id="reports" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Reporting & Templates - Blue */}
+      <section id="reports" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -659,9 +659,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Mobile App */}
-      <section id="mobile-app" className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl">
+      {/* Mobile App - White */}
+      <section id="mobile-app" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -701,9 +701,9 @@ export const Landing: React.FC = () => {
       </section>
 
 
-      {/* In action: 60-second tour */}
-      <section id="tour" className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* In action: 60-second tour - White */}
+      <section id="tour" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">See PortaPro in Action</h2>
@@ -719,9 +719,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white">
-        <div className="container mx-auto max-w-6xl">
+      {/* Pricing - Blue */}
+      <section id="pricing" className="py-20 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
               <h2 className="text-3xl lg:text-4xl font-bold text-white">
@@ -786,9 +786,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Questions Section */}
-      <section id="questions-section" className="py-20 px-6 bg-white">
-        <div className="container mx-auto max-w-4xl">
+      {/* Questions Section - White */}
+      <section id="questions-section" className="py-20 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               Have Questions?
