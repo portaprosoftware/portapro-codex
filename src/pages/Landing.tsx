@@ -743,23 +743,6 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Questions Section - White */}
-      <section id="questions-section" className="py-4 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Have Questions?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Tell us about your needs and we'll get in touch within 24 hours
-            </p>
-            <Button className="bg-primary hover:bg-primary/90 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
-              Ask us and we'll be in touch
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* In action: 60-second tour - White */}
       <section id="tour" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
@@ -774,6 +757,23 @@ export const Landing: React.FC = () => {
                 <source src="" type="video/mp4" />
               </video>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Questions Section - Blue */}
+      <section id="questions-section" className="py-4 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              Have Questions?
+            </h2>
+            <p className="text-lg text-white/90 mb-8">
+              Tell us about your needs and we'll get in touch within 24 hours
+            </p>
+            <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 text-black border-white/30 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
+              Ask us and we'll be in touch
+            </Button>
           </div>
         </div>
       </section>
