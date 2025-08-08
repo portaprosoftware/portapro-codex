@@ -169,11 +169,11 @@ export const Landing: React.FC = () => {
   return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
-        <div className="container mx-auto px-6 h-full flex items-center justify-between max-w-6xl">
+        <div className="container mx-auto px-12 h-full flex items-center justify-between max-w-full">
           <Logo />
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 ml-auto">
+          <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
             <a href="#questions-section" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</a>
@@ -779,7 +779,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer id="resources" className="py-16 px-6 bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white border-t">
+      <footer id="resources" className="py-16 px-6 bg-gradient-blue text-white border-t">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
