@@ -513,21 +513,21 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Transport & Spill Compliance Suite - White */}
-      <section id="compliance" className="py-20 bg-white">
+      {/* Transport & Spill Compliance Suite - Blue */}
+      <section id="compliance" className="py-20 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Transport & Spill Compliance Suite</h2>
-              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">Transport & Spill Compliance Suite</h2>
+              <p className="text-lg text-white/90">Stay audit-ready with structured logs and document tracking.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Transport manifests & chain-of-custody</span>
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Transport manifests & chain-of-custody</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Spill incidents with photos, notes, and follow-ups</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -543,20 +543,20 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* DVIRs & Maintenance - Blue */}
-      <section id="dvir" className="py-20 bg-gradient-blue text-white">
+      {/* DVIRs & Maintenance - White */}
+      <section id="dvir" className="py-20 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold">DVIRs & Fleet Maintenance</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">DVIRs & Fleet Maintenance</h2>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Pre/Post-trip DVIR checklists</span>
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Maintenance logs and alerts</span>
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Maintenance logs and alerts</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
@@ -571,12 +571,12 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Quote-to-Job Flow - White */}
-      <section id="quotes" className="py-20 bg-white">
+      {/* Quote-to-Job Flow - Blue */}
+      <section id="quotes" className="py-20 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 One Click from Quote to Job
               </h2>
             </div>
@@ -607,21 +607,21 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Team & Scheduling - Blue */}
-      <section id="team" className="py-20 bg-gradient-blue text-white">
+      {/* Team & Scheduling - White */}
+      <section id="team" className="py-20 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-white">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                   Team Management Made Easy
                 </h2>
               </div>
               
               <div className="grid gap-4">
                 {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                    <span className="font-medium text-white/90">{feature}</span>
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="font-medium text-foreground">{feature}</span>
                   </div>)}
               </div>
             </div>
@@ -701,13 +701,13 @@ export const Landing: React.FC = () => {
       </section>
 
 
-      {/* In action: 60-second tour - White */}
-      <section id="tour" className="py-20 bg-white">
+      {/* In action: 60-second tour - Blue */}
+      <section id="tour" className="py-20 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">See PortaPro in Action</h2>
-              <p className="text-lg text-muted-foreground">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">See PortaPro in Action</h2>
+              <p className="text-lg text-white/90">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
             </div>
             <div className="rounded-2xl overflow-hidden shadow-md border bg-card">
               <video className="w-full aspect-video" muted loop playsInline preload="metadata" poster="/placeholder.svg">
@@ -719,15 +719,15 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Pricing - Blue */}
-      <section id="pricing" className="py-20 bg-gradient-blue text-white">
+      {/* Pricing - White */}
+      <section id="pricing" className="py-20 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                 Simple, Transparent Pricing
               </h2>
-              <p className="text-lg text-white/90">
+              <p className="text-lg text-muted-foreground">
                 One complete package with everything included
               </p>
             </div>
@@ -786,14 +786,14 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Questions Section - White */}
-      <section id="questions-section" className="py-20 bg-white">
+      {/* Questions Section - Blue */}
+      <section id="questions-section" className="py-20 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
               Have Questions?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-white/90 mb-8">
               Tell us about your needs and we'll get in touch within 24 hours
             </p>
             <Button className="bg-primary hover:bg-primary/90 text-lg px-8 py-3" onClick={() => setQuestionsFormOpen(true)}>
