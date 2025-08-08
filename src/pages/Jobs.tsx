@@ -649,20 +649,6 @@ const JobsPage: React.FC = () => {
                   <div className="border-r border-gray-200 bg-gray-50">
                     <div className="p-4 border-b border-gray-200">
                       <h3 className="font-medium text-sm text-gray-900">Drivers</h3>
-                      <div className="flex items-center gap-4 text-xs mt-2 flex-wrap">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-blue-500 rounded"></div>
-                          <span>Assigned</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-yellow-500 rounded"></div>
-                          <span>In Progress</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-green-500 rounded"></div>
-                          <span>Completed</span>
-                        </div>
-                      </div>
                     </div>
                     <div className="overflow-y-auto h-full">
                       {drivers.map(driver => {
@@ -694,12 +680,28 @@ const JobsPage: React.FC = () => {
                   {/* Right Column - Driver Job Assignments */}
                   <div className="overflow-y-auto">
                     <div className="p-4 border-b border-gray-200 bg-gray-50">
-                      <div className="flex items-center gap-2">
-                        <CalendarIcon className="h-4 w-4 text-gray-600" />
-                        <span className="font-medium text-gray-900">
-                          {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                        </span>
-                        <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CalendarIcon className="h-4 w-4 text-gray-600" />
+                          <span className="font-medium text-gray-900">
+                            {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                          </span>
+                          <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs">
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 bg-blue-500 rounded"></div>
+                            <span>Assigned</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 bg-yellow-500 rounded"></div>
+                            <span>In Progress</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-500 rounded"></div>
+                            <span>Completed</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
