@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench } from "lucide-react";
+import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import { ProductAttributesTab } from "./ProductAttributesTab";
 import { ProductLocationStock } from "./ProductLocationStock";
 import { IndividualItemCreation } from "./IndividualItemCreation";
 import { MaintenanceTrackerTab } from "./MaintenanceTrackerTab";
+import { ProductComplianceTab } from "./ProductComplianceTab";
 
 interface ProductDetailProps {
   productId: string;
@@ -128,7 +129,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Overview
@@ -147,6 +148,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
                 {individualUnitsCount}
               </Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="compliance" className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            Compliance
           </TabsTrigger>
           <TabsTrigger value="maintenance" className="flex items-center gap-2">
             <Wrench className="w-4 h-4" />
@@ -179,6 +184,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
         <TabsContent value="maintenance" className="mt-6">
           <MaintenanceTrackerTab productId={productId} />
+        </TabsContent>
+
+        <TabsContent value="compliance" className="mt-6">
+          <ProductComplianceTab productId={productId} />
         </TabsContent>
 
         <TabsContent value="attributes" className="mt-6">
