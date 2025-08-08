@@ -168,7 +168,7 @@ export const Landing: React.FC = () => {
   };
   return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-20 hover:h-14">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
         <div className="container mx-auto px-6 h-full flex items-center justify-between max-w-6xl">
           <Logo />
           
@@ -231,11 +231,11 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Hero Section - Blue */}
-      <section className="min-h-screen flex items-center py-12 md:py-20 bg-gradient-blue text-white">
+      <section className="py-8 md:py-12 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-full px-12 lg:px-20">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-8xl mx-auto">
-            <div className="space-y-10">
-              <div className="space-y-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
+            <div className="space-y-6">
+              <div className="space-y-6">
                 <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
@@ -243,25 +243,6 @@ export const Landing: React.FC = () => {
                 <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
                   Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
                 </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-white/90">
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
-                    <div className="text-3xl lg:text-4xl font-bold">3+ hrs</div>
-                    <div className="text-sm font-medium">saved per week</div>
-                  </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
-                    <div className="text-3xl lg:text-4xl font-bold">99.9%</div>
-                    <div className="text-sm font-medium">platform uptime</div>
-                  </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
-                    <div className="text-3xl lg:text-4xl font-bold">60 sec</div>
-                    <div className="text-sm font-medium">quote-to-job flow</div>
-                  </div>
-                  <div className="backdrop-blur bg-white/10 rounded-xl p-6 text-center">
-                    <div className="text-3xl lg:text-4xl font-bold">AI</div>
-                    <div className="text-sm font-medium">panel scanning</div>
-                  </div>
-                </div>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
@@ -306,7 +287,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Why PortaPro - White */}
-      <section id="about" className="py-20 bg-white">
+      <section id="about" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-12">
             <div className="grid sm:grid-cols-3 gap-8">
@@ -323,7 +304,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Core Features Grid - Blue */}
-      <section id="features" className="py-20 bg-gradient-blue">
+      <section id="features" className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
@@ -343,7 +324,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Smart AI Panel Scanning Section - White */}
-      <section id="ai-scanning" className="py-20 bg-white">
+      <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -441,7 +422,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Job Wizard Deep Dive - Blue */}
-      <section id="job-wizard" className="py-20 bg-gradient-blue text-white">
+      <section id="job-wizard" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -479,7 +460,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Inventory & Consumables - White */}
-      <section id="inventory" className="py-20 bg-white">
+      <section id="inventory" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -508,7 +489,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Transport & Spill Compliance Suite - Blue */}
-      <section id="compliance" className="py-20 bg-gradient-blue text-white">
+      <section id="compliance" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -538,7 +519,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* DVIRs & Maintenance - White */}
-      <section id="dvir" className="py-20 bg-white">
+      <section id="dvir" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -566,7 +547,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Quote-to-Job Flow - Blue */}
-      <section id="quotes" className="py-20 bg-gradient-blue text-white">
+      <section id="quotes" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
@@ -602,7 +583,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Team & Scheduling - White */}
-      <section id="team" className="py-20 bg-white">
+      <section id="team" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -628,7 +609,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Reporting & Templates - Blue */}
-      <section id="reports" className="py-20 bg-gradient-blue text-white">
+      <section id="reports" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -654,7 +635,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Mobile App - White */}
-      <section id="mobile-app" className="py-20 bg-white">
+      <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -696,7 +677,7 @@ export const Landing: React.FC = () => {
 
 
       {/* Pricing - Blue */}
-      <section id="pricing" className="py-20 bg-gradient-blue text-white">
+      <section id="pricing" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center space-y-8">
             <div className="space-y-4">
@@ -763,7 +744,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Questions Section - White */}
-      <section id="questions-section" className="py-20 bg-white">
+      <section id="questions-section" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -780,7 +761,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* In action: 60-second tour - Blue */}
-      <section id="tour" className="py-20 bg-gradient-blue text-white">
+      <section id="tour" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
