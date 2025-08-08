@@ -1401,6 +1401,89 @@ export type Database = {
         }
         Relationships: []
       }
+      disposal_manifests: {
+        Row: {
+          created_at: string
+          disposal_date: string
+          disposal_fee: number | null
+          driver_id: string
+          facility_address: string
+          facility_contact_person: string | null
+          facility_name: string
+          facility_permit_number: string | null
+          facility_phone: string | null
+          id: string
+          manifest_document_url: string | null
+          manifest_number: string
+          receipt_document_url: string | null
+          receipt_number: string | null
+          special_handling_notes: string | null
+          unit_of_measure: string
+          updated_at: string
+          vehicle_id: string
+          vehicle_odometer: number | null
+          volume_disposed: number
+          waste_source_description: string | null
+          waste_type: string
+        }
+        Insert: {
+          created_at?: string
+          disposal_date: string
+          disposal_fee?: number | null
+          driver_id: string
+          facility_address: string
+          facility_contact_person?: string | null
+          facility_name: string
+          facility_permit_number?: string | null
+          facility_phone?: string | null
+          id?: string
+          manifest_document_url?: string | null
+          manifest_number: string
+          receipt_document_url?: string | null
+          receipt_number?: string | null
+          special_handling_notes?: string | null
+          unit_of_measure?: string
+          updated_at?: string
+          vehicle_id: string
+          vehicle_odometer?: number | null
+          volume_disposed: number
+          waste_source_description?: string | null
+          waste_type?: string
+        }
+        Update: {
+          created_at?: string
+          disposal_date?: string
+          disposal_fee?: number | null
+          driver_id?: string
+          facility_address?: string
+          facility_contact_person?: string | null
+          facility_name?: string
+          facility_permit_number?: string | null
+          facility_phone?: string | null
+          id?: string
+          manifest_document_url?: string | null
+          manifest_number?: string
+          receipt_document_url?: string | null
+          receipt_number?: string | null
+          special_handling_notes?: string | null
+          unit_of_measure?: string
+          updated_at?: string
+          vehicle_id?: string
+          vehicle_odometer?: number | null
+          volume_disposed?: number
+          waste_source_description?: string | null
+          waste_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disposal_manifests_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_categories: {
         Row: {
           color: string
@@ -3782,6 +3865,74 @@ export type Database = {
           },
         ]
       }
+      ppe_compliance_records: {
+        Row: {
+          boot_covers_available: boolean
+          compliance_score: number | null
+          created_at: string
+          driver_id: string
+          first_aid_kit_available: boolean
+          gloves_available: boolean
+          hand_sanitizer_available: boolean
+          hard_hat_available: boolean
+          high_vis_vest_available: boolean
+          id: string
+          inspection_date: string
+          ppe_condition_notes: string | null
+          respirator_available: boolean
+          safety_glasses_available: boolean
+          spill_kit_available: boolean
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          boot_covers_available?: boolean
+          compliance_score?: number | null
+          created_at?: string
+          driver_id: string
+          first_aid_kit_available?: boolean
+          gloves_available?: boolean
+          hand_sanitizer_available?: boolean
+          hard_hat_available?: boolean
+          high_vis_vest_available?: boolean
+          id?: string
+          inspection_date?: string
+          ppe_condition_notes?: string | null
+          respirator_available?: boolean
+          safety_glasses_available?: boolean
+          spill_kit_available?: boolean
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          boot_covers_available?: boolean
+          compliance_score?: number | null
+          created_at?: string
+          driver_id?: string
+          first_aid_kit_available?: boolean
+          gloves_available?: boolean
+          hand_sanitizer_available?: boolean
+          hard_hat_available?: boolean
+          high_vis_vest_available?: boolean
+          id?: string
+          inspection_date?: string
+          ppe_condition_notes?: string | null
+          respirator_available?: boolean
+          safety_glasses_available?: boolean
+          spill_kit_available?: boolean
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ppe_compliance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pricing_rules: {
         Row: {
           adjustment_type: string
@@ -5518,6 +5669,83 @@ export type Database = {
         }
         Relationships: []
       }
+      spill_incident_reports: {
+        Row: {
+          authorities_notified: boolean | null
+          authority_contact_info: string | null
+          cause_description: string
+          cleanup_method: string | null
+          cleanup_photos: Json | null
+          created_at: string
+          disposal_method: string | null
+          driver_id: string
+          environmental_impact: string | null
+          estimated_volume: number | null
+          gps_coordinates: unknown | null
+          id: string
+          immediate_action_taken: string | null
+          incident_date: string
+          incident_photos: Json | null
+          location_description: string
+          spill_type: string
+          status: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          authorities_notified?: boolean | null
+          authority_contact_info?: string | null
+          cause_description: string
+          cleanup_method?: string | null
+          cleanup_photos?: Json | null
+          created_at?: string
+          disposal_method?: string | null
+          driver_id: string
+          environmental_impact?: string | null
+          estimated_volume?: number | null
+          gps_coordinates?: unknown | null
+          id?: string
+          immediate_action_taken?: string | null
+          incident_date: string
+          incident_photos?: Json | null
+          location_description: string
+          spill_type: string
+          status?: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          authorities_notified?: boolean | null
+          authority_contact_info?: string | null
+          cause_description?: string
+          cleanup_method?: string | null
+          cleanup_photos?: Json | null
+          created_at?: string
+          disposal_method?: string | null
+          driver_id?: string
+          environmental_impact?: string | null
+          estimated_volume?: number | null
+          gps_coordinates?: unknown | null
+          id?: string
+          immediate_action_taken?: string | null
+          incident_date?: string
+          incident_photos?: Json | null
+          location_description?: string
+          spill_type?: string
+          status?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spill_incident_reports_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_adjustments: {
         Row: {
           adjusted_by: string | null
@@ -5640,6 +5868,86 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      tank_hose_inspections: {
+        Row: {
+          certification_number: string | null
+          created_at: string
+          defects_found: string | null
+          fittings_condition: string
+          hose_condition: string
+          id: string
+          inspection_date: string
+          inspection_photos: Json | null
+          inspector_id: string
+          inspector_signature: string | null
+          leak_test_passed: boolean
+          next_inspection_due: string | null
+          overall_status: string
+          pressure_test_passed: boolean | null
+          pressure_test_psi: number | null
+          repair_recommendations: string | null
+          tank_exterior_condition: string
+          tank_interior_condition: string
+          updated_at: string
+          valve_operation: string
+          vehicle_id: string
+        }
+        Insert: {
+          certification_number?: string | null
+          created_at?: string
+          defects_found?: string | null
+          fittings_condition: string
+          hose_condition: string
+          id?: string
+          inspection_date?: string
+          inspection_photos?: Json | null
+          inspector_id: string
+          inspector_signature?: string | null
+          leak_test_passed: boolean
+          next_inspection_due?: string | null
+          overall_status?: string
+          pressure_test_passed?: boolean | null
+          pressure_test_psi?: number | null
+          repair_recommendations?: string | null
+          tank_exterior_condition: string
+          tank_interior_condition: string
+          updated_at?: string
+          valve_operation: string
+          vehicle_id: string
+        }
+        Update: {
+          certification_number?: string | null
+          created_at?: string
+          defects_found?: string | null
+          fittings_condition?: string
+          hose_condition?: string
+          id?: string
+          inspection_date?: string
+          inspection_photos?: Json | null
+          inspector_id?: string
+          inspector_signature?: string | null
+          leak_test_passed?: boolean
+          next_inspection_due?: string | null
+          overall_status?: string
+          pressure_test_passed?: boolean | null
+          pressure_test_psi?: number | null
+          repair_recommendations?: string | null
+          tank_exterior_condition?: string
+          tank_interior_condition?: string
+          updated_at?: string
+          valve_operation?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tank_hose_inspections_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       template_categories: {
         Row: {
@@ -6195,6 +6503,68 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_dvir_logs: {
+        Row: {
+          corrective_action: string | null
+          created_at: string
+          defects_description: string | null
+          defects_found: boolean
+          driver_id: string
+          id: string
+          inspection_date: string
+          inspection_type: string
+          inspector_signature: string | null
+          next_inspection_due: string | null
+          odometer_reading: number | null
+          photos: Json | null
+          status: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          corrective_action?: string | null
+          created_at?: string
+          defects_description?: string | null
+          defects_found?: boolean
+          driver_id: string
+          id?: string
+          inspection_date?: string
+          inspection_type: string
+          inspector_signature?: string | null
+          next_inspection_due?: string | null
+          odometer_reading?: number | null
+          photos?: Json | null
+          status?: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          corrective_action?: string | null
+          created_at?: string
+          defects_description?: string | null
+          defects_found?: boolean
+          driver_id?: string
+          id?: string
+          inspection_date?: string
+          inspection_type?: string
+          inspector_signature?: string | null
+          next_inspection_due?: string | null
+          odometer_reading?: number | null
+          photos?: Json | null
+          status?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_dvir_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vehicle_inspections: {
         Row: {
           checklist_data: Json
@@ -6266,6 +6636,71 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: []
+      }
+      vehicle_sds_tracking: {
+        Row: {
+          chemical_name: string
+          created_at: string
+          emergency_contact_info: string | null
+          expiration_date: string | null
+          hazard_classification: string | null
+          id: string
+          is_active: boolean
+          last_verified_date: string | null
+          notes: string | null
+          quantity_on_board: number | null
+          sds_document_url: string | null
+          storage_location_in_vehicle: string | null
+          unit_of_measure: string | null
+          updated_at: string
+          vehicle_id: string
+          verified_by: string | null
+        }
+        Insert: {
+          chemical_name: string
+          created_at?: string
+          emergency_contact_info?: string | null
+          expiration_date?: string | null
+          hazard_classification?: string | null
+          id?: string
+          is_active?: boolean
+          last_verified_date?: string | null
+          notes?: string | null
+          quantity_on_board?: number | null
+          sds_document_url?: string | null
+          storage_location_in_vehicle?: string | null
+          unit_of_measure?: string | null
+          updated_at?: string
+          vehicle_id: string
+          verified_by?: string | null
+        }
+        Update: {
+          chemical_name?: string
+          created_at?: string
+          emergency_contact_info?: string | null
+          expiration_date?: string | null
+          hazard_classification?: string | null
+          id?: string
+          is_active?: boolean
+          last_verified_date?: string | null
+          notes?: string | null
+          quantity_on_board?: number | null
+          sds_document_url?: string | null
+          storage_location_in_vehicle?: string | null
+          unit_of_measure?: string | null
+          updated_at?: string
+          vehicle_id?: string
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_sds_tracking_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicles: {
         Row: {
