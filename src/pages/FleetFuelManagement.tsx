@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FleetSidebar } from '@/components/fleet/FleetSidebar';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -9,6 +9,9 @@ import { FuelSettingsTab } from '@/components/fleet/fuel/FuelSettingsTab';
 
 export const FleetFuelManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  useEffect(() => {
+    document.title = 'Fuel Management | PortaPro';
+  }, []);
 
   return (
     <div className="flex h-screen bg-background">

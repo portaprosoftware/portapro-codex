@@ -1,12 +1,15 @@
 
-import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import React, { useEffect } from "react";
+import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { FleetAnalytics } from "@/components/fleet/FleetAnalytics";
 
 export default function FleetAnalyticsPage() {
+  useEffect(() => {
+    document.title = "Fleet Analytics | PortaPro";
+  }, []);
   return (
-    <Layout>
+    <FleetLayout>
       <FleetAnalytics />
-    </Layout>
+    </FleetLayout>
   );
 }

@@ -1,12 +1,15 @@
 
-import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import React, { useEffect } from "react";
+import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { ComplianceReporting } from "@/components/fleet/ComplianceReporting";
 
 export default function FleetComplianceReportsPage() {
+  useEffect(() => {
+    document.title = "Compliance Reports | PortaPro";
+  }, []);
   return (
-    <Layout>
+    <FleetLayout>
       <ComplianceReporting />
-    </Layout>
+    </FleetLayout>
   );
 }
