@@ -284,6 +284,7 @@ export type Database = {
           default_quote_expiration_days: number | null
           default_rental_period_days: number | null
           delivery_prefix: string | null
+          enable_sanitation_compliance: boolean
           id: string
           invoice_number_prefix: string | null
           item_code_categories: Json | null
@@ -326,6 +327,7 @@ export type Database = {
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
           delivery_prefix?: string | null
+          enable_sanitation_compliance?: boolean
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -368,6 +370,7 @@ export type Database = {
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
           delivery_prefix?: string | null
+          enable_sanitation_compliance?: boolean
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -4957,6 +4960,191 @@ export type Database = {
             columns: ["default_template_id"]
             isOneToOne: false
             referencedRelation: "maintenance_report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanitation_checklist_items: {
+        Row: {
+          checklist_id: string
+          created_at: string
+          id: string
+          item_key: string
+          label: string
+          required: boolean
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          checklist_id: string
+          created_at?: string
+          id?: string
+          item_key: string
+          label: string
+          required?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          checklist_id?: string
+          created_at?: string
+          id?: string
+          item_key?: string
+          label?: string
+          required?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanitation_checklist_items_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "sanitation_checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanitation_checklists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sanitation_logs: {
+        Row: {
+          checklist_id: string | null
+          created_at: string
+          gps: unknown | null
+          id: string
+          job_id: string | null
+          notes: string | null
+          photos: Json
+          product_item_id: string | null
+          responses: Json
+          signed_at: string | null
+          technician_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          checklist_id?: string | null
+          created_at?: string
+          gps?: unknown | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          photos?: Json
+          product_item_id?: string | null
+          responses?: Json
+          signed_at?: string | null
+          technician_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checklist_id?: string | null
+          created_at?: string
+          gps?: unknown | null
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          photos?: Json
+          product_item_id?: string | null
+          responses?: Json
+          signed_at?: string | null
+          technician_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanitation_logs_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "sanitation_checklists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanitation_logs_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanitation_logs_product_item_id_fkey"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanitation_schedules: {
+        Row: {
+          checklist_id: string | null
+          created_at: string
+          double_per_week: boolean
+          frequency_days: number
+          id: string
+          is_active: boolean
+          next_run_date: string | null
+          scope: string
+          target_id: string
+          updated_at: string
+        }
+        Insert: {
+          checklist_id?: string | null
+          created_at?: string
+          double_per_week?: boolean
+          frequency_days?: number
+          id?: string
+          is_active?: boolean
+          next_run_date?: string | null
+          scope?: string
+          target_id: string
+          updated_at?: string
+        }
+        Update: {
+          checklist_id?: string | null
+          created_at?: string
+          double_per_week?: boolean
+          frequency_days?: number
+          id?: string
+          is_active?: boolean
+          next_run_date?: string | null
+          scope?: string
+          target_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanitation_schedules_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "sanitation_checklists"
             referencedColumns: ["id"]
           },
         ]

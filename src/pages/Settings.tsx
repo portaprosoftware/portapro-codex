@@ -16,7 +16,8 @@ import {
   DollarSign,
   QrCode,
   ChevronDown,
-  Building2
+  Building2,
+  ShieldCheck
 } from "lucide-react";
 import { CompanySettingsSection } from "@/components/settings/CompanySettingsSection";
 import { LogoManagementSection } from "@/components/settings/LogoManagementSection";
@@ -25,6 +26,7 @@ import { UserManagementSection } from "@/components/settings/UserManagementSecti
 import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
 import { PricingRulesSection } from "@/components/settings/PricingRulesSection";
 import { QRFeedbackSection } from "@/components/settings/QRFeedbackSection";
+import { SanitationComplianceSettings } from "@/components/settings/SanitationComplianceSettings";
 import { useUserRole } from "@/hooks/useUserRole";
 
 type SettingsSection = 
@@ -32,7 +34,8 @@ type SettingsSection =
   | 'business-hours' 
   | 'notifications' 
   | 'pricing-rules'
-  | 'qr-feedback';
+  | 'qr-feedback'
+  | 'sanitation-compliance';
 
 export default function Settings() {
   const { hasAdminAccess } = useUserRole();
@@ -55,6 +58,7 @@ export default function Settings() {
     { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
     { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
     { key: 'qr-feedback' as const, label: 'QR Feedback', icon: QrCode },
+    { key: 'sanitation-compliance' as const, label: 'Sanitation & Compliance', icon: ShieldCheck },
   ];
 
   const currentSection = settingsSections.find(section => section.key === activeSection);
@@ -76,6 +80,8 @@ export default function Settings() {
         return <PricingRulesSection />;
       case 'qr-feedback':
         return <QRFeedbackSection />;
+      case 'sanitation-compliance':
+        return <SanitationComplianceSettings />;
       default:
         return null;
     }
