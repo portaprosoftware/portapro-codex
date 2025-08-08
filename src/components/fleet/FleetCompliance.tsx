@@ -10,7 +10,7 @@ import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload } from "lucid
 import { cn } from "@/lib/utils";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
 import { AddDocumentModal } from "./AddDocumentModal";
-
+import { UnitComplianceTab } from "./UnitComplianceTab";
 interface ComplianceDocument {
   id: string;
   vehicle_id: string;
@@ -27,6 +27,20 @@ interface ComplianceDocument {
 
 export const FleetCompliance: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
+
+  const { data: companySettings } = useQuery({
+    queryKey: ["company-settings-sanit"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_settings")
+        .select("enable_sanitation_compliance")
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const sanitationEnabled = !!companySettings?.enable_sanitation_compliance;
 
   return (
     <div className="p-6 space-y-6">
@@ -49,12 +63,21 @@ export const FleetCompliance: React.FC = () => {
       <Tabs defaultValue="documents" className="space-y-6">
         <TabsList>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          {sanitationEnabled && (
+            <TabsTrigger value="unit">Unit Compliance</TabsTrigger>
+          )}
           <TabsTrigger value="types">Document Types</TabsTrigger>
         </TabsList>
         
         <TabsContent value="documents">
           <FleetComplianceContent />
         </TabsContent>
+
+        {sanitationEnabled && (
+          <TabsContent value="unit">
+            <UnitComplianceTab />
+          </TabsContent>
+        )}
         
         <TabsContent value="types">
           <DocumentTypeManagement />
