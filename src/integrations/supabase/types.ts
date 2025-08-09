@@ -176,6 +176,39 @@ export type Database = {
         }
         Relationships: []
       }
+      certification_types: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_mandatory: boolean
+          name: string
+          updated_at: string
+          valid_months: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean
+          name: string
+          updated_at?: string
+          valid_months?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean
+          name?: string
+          updated_at?: string
+          valid_months?: number | null
+        }
+        Relationships: []
+      }
       communication_templates: {
         Row: {
           category: string | null
@@ -1704,6 +1737,53 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_shifts: {
+        Row: {
+          created_at: string
+          driver_clerk_id: string
+          end_time: string
+          id: string
+          notes: string | null
+          shift_date: string
+          start_time: string
+          status: string
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_clerk_id: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          shift_date: string
+          start_time: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_clerk_id?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          shift_date?: string
+          start_time?: string
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_shifts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "shift_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_time_off_requests: {
         Row: {
           attachment_url: string | null
@@ -2064,6 +2144,50 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      employee_certifications: {
+        Row: {
+          certificate_url: string | null
+          certification_type_id: string
+          completed_on: string
+          created_at: string
+          driver_clerk_id: string
+          expires_on: string | null
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          certification_type_id: string
+          completed_on: string
+          created_at?: string
+          driver_clerk_id: string
+          expires_on?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          certificate_url?: string | null
+          certification_type_id?: string
+          completed_on?: string
+          created_at?: string
+          driver_clerk_id?: string
+          expires_on?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_certifications_certification_type_id_fkey"
+            columns: ["certification_type_id"]
+            isOneToOne: false
+            referencedRelation: "certification_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       equipment_assignments: {
         Row: {
@@ -6193,6 +6317,42 @@ export type Database = {
         }
         Relationships: []
       }
+      shift_templates: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          end_time: string
+          id: string
+          name: string
+          shift_type: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_time: string
+          id?: string
+          name: string
+          shift_type?: string
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_time?: string
+          id?: string
+          name?: string
+          shift_type?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sms_logs: {
         Row: {
           cost_amount: number | null
@@ -6901,6 +7061,44 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      training_requirements: {
+        Row: {
+          certification_type_id: string
+          created_at: string
+          frequency_months: number | null
+          id: string
+          is_required: boolean
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          certification_type_id: string
+          created_at?: string
+          frequency_months?: number | null
+          id?: string
+          is_required?: boolean
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          certification_type_id?: string
+          created_at?: string
+          frequency_months?: number | null
+          id?: string
+          is_required?: boolean
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_requirements_certification_type_id_fkey"
+            columns: ["certification_type_id"]
+            isOneToOne: false
+            referencedRelation: "certification_types"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_invitations: {
         Row: {
