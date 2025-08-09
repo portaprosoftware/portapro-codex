@@ -10,6 +10,10 @@ import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload } from "lucid
 import { cn } from "@/lib/utils";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
 import { AddDocumentModal } from "./AddDocumentModal";
+import { SpillKitsTab } from "./compliance/SpillKitsTab";
+import { IncidentsTab } from "./compliance/IncidentsTab";
+import { DeconLogsTab } from "./compliance/DeconLogsTab";
+import { ComplianceReporting } from "./ComplianceReporting";
 
 interface ComplianceDocument {
   id: string;
@@ -51,15 +55,34 @@ export const FleetCompliance: React.FC = () => {
         <TabsList>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="types">Document Types</TabsTrigger>
+          <TabsTrigger value="spill-kits">Spill Kits</TabsTrigger>
+          <TabsTrigger value="incidents">Incidents</TabsTrigger>
+          <TabsTrigger value="decon">Decon Logs</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
         
         <TabsContent value="documents">
           <FleetComplianceContent />
         </TabsContent>
 
-        
         <TabsContent value="types">
           <DocumentTypeManagement />
+        </TabsContent>
+
+        <TabsContent value="spill-kits">
+          <SpillKitsTab />
+        </TabsContent>
+
+        <TabsContent value="incidents">
+          <IncidentsTab />
+        </TabsContent>
+
+        <TabsContent value="decon">
+          <DeconLogsTab />
+        </TabsContent>
+
+        <TabsContent value="reports">
+          <ComplianceReporting />
         </TabsContent>
       </Tabs>
 
