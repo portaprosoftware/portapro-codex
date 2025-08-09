@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,18 +29,25 @@ interface ComplianceReport {
 
 export const ComplianceReporting: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [hasLoaded, setHasLoaded] = useState(false);
 
-  const { data: complianceReport, isLoading, refetch } = useQuery({
+  const { data: complianceReport, isFetching, refetch, error } = useQuery({
     queryKey: ['compliance-report', selectedDate],
     queryFn: async (): Promise<ComplianceReport> => {
       const { data, error } = await supabase.rpc('generate_daily_compliance_report', {
         target_date: format(selectedDate, 'yyyy-MM-dd')
       });
-      
       if (error) throw error;
       return data as unknown as ComplianceReport;
-    }
+    },
+    enabled: false, // fetch on demand to prevent initial blink
+    placeholderData: (prev) => prev, // keep previous to avoid UI flicker
   });
+
+  const handleGenerate = async () => {
+    setHasLoaded(true);
+    await refetch();
+  };
 
   const getComplianceColor = (score: number) => {
     if (score >= 90) return "text-green-600";
@@ -52,22 +60,6 @@ export const ComplianceReporting: React.FC = () => {
     if (score >= 70) return { variant: "secondary" as const, text: "Good" };
     return { variant: "destructive" as const, text: "Needs Attention" };
   };
-
-  if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-16 bg-muted rounded"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 space-y-6">
@@ -91,12 +83,30 @@ export const ComplianceReporting: React.FC = () => {
             </PopoverContent>
           </Popover>
           
-          <Button onClick={() => refetch()}>
+          <Button onClick={handleGenerate} disabled={isFetching}>
             <FileText className="h-4 w-4 mr-2" />
-            Generate Report
+            {isFetching ? "Generating..." : "Generate Report"}
           </Button>
         </div>
       </div>
+
+      {!hasLoaded && (
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-muted-foreground">
+              Select a date and click “Generate Report” to view compliance details.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {error && (
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-red-600">There was a problem generating the report. Please try another date.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Summary Cards */}
       {complianceReport && (

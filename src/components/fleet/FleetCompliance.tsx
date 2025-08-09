@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +13,7 @@ import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { IncidentsTab } from "./compliance/IncidentsTab";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
 import { ComplianceReporting } from "./ComplianceReporting";
+import { ComplianceHelpPanel } from "./ComplianceHelpPanel";
 
 interface ComplianceDocument {
   id: string;
@@ -32,7 +32,6 @@ interface ComplianceDocument {
 export const FleetCompliance: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
 
-
   return (
     <div className="p-6 space-y-6">
       <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
@@ -50,6 +49,8 @@ export const FleetCompliance: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      <ComplianceHelpPanel />
 
       <Tabs defaultValue="documents" className="space-y-6">
         <TabsList>
@@ -155,9 +156,9 @@ const FleetComplianceContent: React.FC = () => {
     return `${diffDays} days remaining`;
   };
 
-  const overdueCount = documents?.filter(doc => getUrgencyLevel(doc.expiration_date) === "overdue").length || 0;
-  const criticalCount = documents?.filter(doc => getUrgencyLevel(doc.expiration_date) === "critical").length || 0;
-  const warningCount = documents?.filter(doc => getUrgencyLevel(doc.expiration_date) === "warning").length || 0;
+  const overdueCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "overdue").length || 0;
+  const criticalCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "critical").length || 0;
+  const warningCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "warning").length || 0;
 
   if (isLoading) {
     return (

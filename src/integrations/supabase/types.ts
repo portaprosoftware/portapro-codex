@@ -1578,7 +1578,15 @@ export type Database = {
           vehicle_area?: string | null
           verification_by_clerk?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "decon_logs_incident_fk"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       disposal_manifests: {
         Row: {
@@ -7493,6 +7501,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "vehicle_sds_tracking_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_spill_kit_checks: {
+        Row: {
+          checked_at: string
+          checked_by_clerk: string | null
+          contents: Json
+          created_at: string
+          has_kit: boolean
+          id: string
+          notes: string | null
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          checked_at?: string
+          checked_by_clerk?: string | null
+          contents?: Json
+          created_at?: string
+          has_kit: boolean
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          checked_at?: string
+          checked_by_clerk?: string | null
+          contents?: Json
+          created_at?: string
+          has_kit?: boolean
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_spill_kit_checks_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
             referencedRelation: "vehicles"

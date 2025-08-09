@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,11 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Shield } from "lucide-react";
 
-// Local fallback type since supabase types are not generated for this table here
+// Local fallback type
 type DeconLog = {
   id: string;
   performed_at: string;
-  vehicle_id?: string | null;
+  incident_id?: string | null;
   vehicle_area?: string | null;
   ppe_used?: string | null;
   notes?: string | null;
@@ -19,10 +20,12 @@ export const DeconLogsTab: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      // Select only columns that exist on public.decon_logs and limit for perf
+      const { data, error } = await supabase
         .from("decon_logs")
-        .select("id, performed_at, vehicle_id, vehicle_area, ppe_used, notes")
-        .order("performed_at", { ascending: false });
+        .select("id, performed_at, incident_id, vehicle_area, ppe_used, notes")
+        .order("performed_at", { ascending: false })
+        .limit(50);
       if (error) throw error;
       return (data as DeconLog[]) ?? [];
     }
@@ -42,7 +45,7 @@ export const DeconLogsTab: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      {data.map((log: DeconLog) => (
+      {data.map((log) => (
         <Card key={log.id} className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -51,7 +54,7 @@ export const DeconLogsTab: React.FC = () => {
                 {new Date(log.performed_at).toLocaleString()}
               </div>
               <div className="mt-1 font-medium">
-                Vehicle: {log.vehicle_id?.slice(0,8)} • Area: {log.vehicle_area || "—"}
+                Incident: {log.incident_id ? log.incident_id.slice(0, 8) : "—"} • Area: {log.vehicle_area || "—"}
               </div>
               {log.notes && <div className="text-sm text-muted-foreground mt-1">{log.notes}</div>}
             </div>
