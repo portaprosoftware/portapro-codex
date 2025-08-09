@@ -19,13 +19,21 @@ export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved 
   const [vehicleId, setVehicleId] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [action, setAction] = useState<string>("");
+  const [spillType, setSpillType] = useState<string>("");
+  const [cause, setCause] = useState<string>("");
 
   useEffect(() => {
     if (!isOpen) return;
     supabase
       .from("vehicles")
       .select("id, license_plate")
-      .then(({ data }) => setVehicles((data as Vehicle[]) ?? []));
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Failed to load vehicles", error);
+          return;
+        }
+        setVehicles((data as Vehicle[]) ?? []);
+      });
   }, [isOpen]);
 
   useEffect(() => {
@@ -33,18 +41,38 @@ export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved 
       setVehicleId("");
       setLocation("");
       setAction("");
+      setSpillType("");
+      setCause("");
     }
   }, [isOpen]);
 
-  const canSave = useMemo(() => location.trim().length > 0, [location]);
+  // Require key fields so the insert matches the table's required properties
+  const canSave = useMemo(() => {
+    return (
+      vehicleId.trim().length > 0 &&
+      location.trim().length > 0 &&
+      spillType.trim().length > 0 &&
+      cause.trim().length > 0
+    );
+  }, [vehicleId, location, spillType, cause]);
 
   const handleSave = async () => {
-    const { error } = await supabase.from("spill_incident_reports").insert({
-      incident_date: new Date().toISOString(),
-      vehicle_id: vehicleId || null,
+    // NOTE: spill_incident_reports requires cause_description, spill_type, driver_id, vehicle_id, etc.
+    const payload = {
+      created_at: new Date().toISOString(),
+      vehicle_id: vehicleId,
       location_description: location,
       immediate_action_taken: action || null,
-    });
+      cause_description: cause,
+      spill_type: spillType,
+      driver_id: "dispatch", // placeholder; can be wired to Clerk later
+      authorities_notified: false,
+    } as any; // Keep payload flexible if Supabase types evolve
+
+    const { error } = await supabase
+      .from("spill_incident_reports" as any)
+      .insert(payload);
+
     if (error) {
       console.error("Failed to save incident", error);
       return;
@@ -62,13 +90,13 @@ export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved 
 
         <div className="space-y-4">
           <div>
-            <Label className="mb-2 block">Vehicle (optional)</Label>
+            <Label className="mb-2 block">Vehicle</Label>
             <select
               value={vehicleId}
               onChange={(e) => setVehicleId(e.target.value)}
               className="w-full border rounded-md px-3 py-2 bg-white"
             >
-              <option value="">No vehicle</option>
+              <option value="">Select vehicle...</option>
               {vehicles.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.license_plate}
@@ -78,13 +106,46 @@ export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved 
           </div>
 
           <div>
+            <Label className="mb-2 block">Spill Type</Label>
+            <select
+              value={spillType}
+              onChange={(e) => setSpillType(e.target.value)}
+              className="w-full border rounded-md px-3 py-2 bg-white"
+            >
+              <option value="">Select spill type...</option>
+              <option value="fuel">Fuel</option>
+              <option value="septage">Septage</option>
+              <option value="chemical">Chemical</option>
+              <option value="water">Water</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Cause Description</Label>
+            <Textarea
+              value={cause}
+              onChange={(e) => setCause(e.target.value)}
+              placeholder="Describe what caused the spill"
+            />
+          </div>
+
+          <div>
             <Label className="mb-2 block">Location</Label>
-            <Textarea value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Describe where it happened" />
+            <Textarea
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Describe where it happened"
+            />
           </div>
 
           <div>
             <Label className="mb-2 block">Immediate Action (optional)</Label>
-            <Textarea value={action} onChange={(e) => setAction(e.target.value)} placeholder="What was done right away?" />
+            <Textarea
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+              placeholder="What was done right away?"
+            />
           </div>
         </div>
 
