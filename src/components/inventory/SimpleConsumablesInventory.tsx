@@ -72,6 +72,27 @@ export const SimpleConsumablesInventory: React.FC = () => {
     }
   });
 
+  // Fetch velocity stats (ADU 7/30/90 and Days of Supply)
+  const { data: velocityStats } = useQuery({
+    queryKey: ['consumable-velocity-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('consumable_velocity_stats')
+        .select('*');
+      if (error) throw error;
+      return data as any[];
+    }
+  });
+
+  // Map for quick lookup by consumable_id
+  const velocityById = useMemo(() => {
+    const map = new Map<string, any>();
+    (velocityStats || []).forEach((row: any) => {
+      map.set(row.consumable_id, row);
+    });
+    return map;
+  }, [velocityStats]);
+
   // Delete mutation
   const deleteConsumableMutation = useMutation({
     mutationFn: async (consumableId: string) => {
@@ -157,6 +178,9 @@ export const SimpleConsumablesInventory: React.FC = () => {
       ? <ArrowUp className="w-4 h-4 ml-1 text-gray-600" />
       : <ArrowDown className="w-4 h-4 ml-1 text-gray-600" />;
   };
+
+  // Simple number formatter
+  const fmt = (n: any, d = 1) => (n === null || n === undefined ? '-' : Number(n).toFixed(d));
 
   // Derive filtered and sorted list
   const filteredConsumables = useMemo(() => {
@@ -369,6 +393,10 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         {getSortIcon('on_hand_qty')}
                       </div>
                     </TableHead>
+                    <TableHead>ADU 7</TableHead>
+                    <TableHead>ADU 30</TableHead>
+                    <TableHead>ADU 90</TableHead>
+                    <TableHead>Days of Supply</TableHead>
                     <TableHead className="w-80">Locations</TableHead>
                     <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
@@ -382,6 +410,10 @@ export const SimpleConsumablesInventory: React.FC = () => {
                       <TableCell>${consumable.unit_cost.toFixed(2)}</TableCell>
                       <TableCell>${consumable.unit_price.toFixed(2)}</TableCell>
                       <TableCell>{consumable.on_hand_qty}</TableCell>
+                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
+                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
+                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
+                      <TableCell>{fmt(velocityById.get(consumable.id)?.days_of_supply)}</TableCell>
                       <TableCell className="w-80">
                         {consumable.location_stock?.length > 0 ? (
                           <div className="space-y-2">

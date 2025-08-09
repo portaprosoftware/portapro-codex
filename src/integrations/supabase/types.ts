@@ -509,6 +509,20 @@ export type Database = {
             foreignKeyName: "consumable_location_stock_consumable_id_fkey"
             columns: ["consumable_id"]
             isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_location_stock_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_location_stock_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
             referencedRelation: "consumables"
             referencedColumns: ["id"]
           },
@@ -614,13 +628,113 @@ export type Database = {
             foreignKeyName: "fk_consumable_stock_adjustments_consumable_id"
             columns: ["consumable_id"]
             isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "fk_consumable_stock_adjustments_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "fk_consumable_stock_adjustments_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
             referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consumable_stock_ledger: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          id: string
+          job_id: string | null
+          notes: string | null
+          occurred_at: string
+          qty: number
+          storage_location_id: string | null
+          type: string
+          unit_cost: number | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          occurred_at?: string
+          qty: number
+          storage_location_id?: string | null
+          type: string
+          unit_cost?: number | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          notes?: string | null
+          occurred_at?: string
+          qty?: number
+          storage_location_id?: string | null
+          type?: string
+          unit_cost?: number | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_storage_location_id_fkey"
+            columns: ["storage_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
       }
       consumables: {
         Row: {
+          base_unit: string
           category: string
           created_at: string
           created_by: string | null
@@ -629,6 +743,7 @@ export type Database = {
           examples: string | null
           id: string
           is_active: boolean
+          lead_time_days: number
           location_stock: Json | null
           name: string
           notes: string | null
@@ -636,11 +751,13 @@ export type Database = {
           reorder_threshold: number
           sku: string | null
           supplier_info: Json | null
+          target_days_supply: number
           unit_cost: number
           unit_price: number
           updated_at: string
         }
         Insert: {
+          base_unit?: string
           category: string
           created_at?: string
           created_by?: string | null
@@ -649,6 +766,7 @@ export type Database = {
           examples?: string | null
           id?: string
           is_active?: boolean
+          lead_time_days?: number
           location_stock?: Json | null
           name: string
           notes?: string | null
@@ -656,11 +774,13 @@ export type Database = {
           reorder_threshold?: number
           sku?: string | null
           supplier_info?: Json | null
+          target_days_supply?: number
           unit_cost?: number
           unit_price?: number
           updated_at?: string
         }
         Update: {
+          base_unit?: string
           category?: string
           created_at?: string
           created_by?: string | null
@@ -669,6 +789,7 @@ export type Database = {
           examples?: string | null
           id?: string
           is_active?: boolean
+          lead_time_days?: number
           location_stock?: Json | null
           name?: string
           notes?: string | null
@@ -676,6 +797,7 @@ export type Database = {
           reorder_threshold?: number
           sku?: string | null
           supplier_info?: Json | null
+          target_days_supply?: number
           unit_cost?: number
           unit_price?: number
           updated_at?: string
@@ -2351,6 +2473,20 @@ export type Database = {
           used_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_job_consumables_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "fk_job_consumables_consumable_id"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
           {
             foreignKeyName: "fk_job_consumables_consumable_id"
             columns: ["consumable_id"]
@@ -6870,6 +7006,31 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      consumable_daily_usage_90: {
+        Row: {
+          consumable_id: string | null
+          consumed_qty: number | null
+          usage_date: string | null
+        }
+        Relationships: []
+      }
+      consumable_velocity_stats: {
+        Row: {
+          adu_30: number | null
+          adu_365: number | null
+          adu_7: number | null
+          adu_90: number | null
+          consumable_id: string | null
+          days_of_supply: number | null
+          lead_time_days: number | null
+          on_hand_qty: number | null
+          recommended_order_qty: number | null
+          reorder_point: number | null
+          sigma_30: number | null
+          target_days_supply: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
