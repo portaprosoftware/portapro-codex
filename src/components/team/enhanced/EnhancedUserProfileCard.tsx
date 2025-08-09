@@ -18,10 +18,10 @@ interface User {
   email: string;
   is_active: boolean;
   current_role: string;
-  team_assignment?: string;
-  work_location?: string;
-  phone?: string;
-  hire_date?: string;
+  team_assignment?: string | null;
+  work_location_id?: string | null;
+  phone?: string | null;
+  hire_date?: string | null;
 }
 
 interface EnhancedUserProfileCardProps {
@@ -30,7 +30,9 @@ interface EnhancedUserProfileCardProps {
   onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
   onTeamAssignmentChange: (userId: string, team: string) => void;
-  onLocationChange: (userId: string, location: string) => void;
+  onLocationChange: (userId: string, locationId: string) => void;
+  teamOptions?: { value: string; label: string }[];
+  locationOptions?: { value: string; label: string }[];
 }
 
 const roleIcons = {
@@ -49,14 +51,14 @@ const roleLabels = {
   admin: "Admin",
 };
 
-const teamOptions = [
+const defaultTeamOptions = [
   { value: 'drivers', label: 'Drivers' },
   { value: 'warehouse', label: 'Warehouse' },
   { value: 'office', label: 'Office' },
   { value: 'maintenance', label: 'Maintenance' },
 ];
 
-const locationOptions = [
+const defaultLocationOptions = [
   { value: 'main-yard', label: 'Main Yard' },
   { value: 'north-depot', label: 'North Depot' },
   { value: 'south-depot', label: 'South Depot' },
@@ -69,10 +71,15 @@ export function EnhancedUserProfileCard({
   onDelete, 
   onToggleStatus,
   onTeamAssignmentChange,
-  onLocationChange
+  onLocationChange,
+  teamOptions,
+  locationOptions
 }: EnhancedUserProfileCardProps) {
   const [isEditingTeam, setIsEditingTeam] = useState(false);
   const [isEditingLocation, setIsEditingLocation] = useState(false);
+
+  const tOptions = teamOptions ?? defaultTeamOptions;
+  const lOptions = locationOptions ?? defaultLocationOptions;
 
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
@@ -200,7 +207,7 @@ export function EnhancedUserProfileCard({
                   <SelectValue placeholder="Select team" />
                 </SelectTrigger>
                 <SelectContent>
-                  {teamOptions.map(option => (
+                  {tOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -214,8 +221,8 @@ export function EnhancedUserProfileCard({
                 onClick={() => setIsEditingTeam(true)}
                 className="h-8 px-2 text-xs"
               >
-                {user.team_assignment ? 
-                  teamOptions.find(t => t.value === user.team_assignment)?.label : 
+{user.team_assignment ? 
+                  tOptions.find(t => t.value === user.team_assignment)?.label : 
                   "Assign Team"
                 }
               </Button>
@@ -227,7 +234,7 @@ export function EnhancedUserProfileCard({
             <span className="text-sm font-medium">Work Location:</span>
             {isEditingLocation ? (
               <Select 
-                value={user.work_location || ''} 
+                value={user.work_location_id || ''} 
                 onValueChange={handleLocationChange}
                 onOpenChange={(open) => !open && setIsEditingLocation(false)}
               >
@@ -235,7 +242,7 @@ export function EnhancedUserProfileCard({
                   <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locationOptions.map(option => (
+                  {lOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -250,8 +257,8 @@ export function EnhancedUserProfileCard({
                 className="h-8 px-2 text-xs flex items-center"
               >
                 <MapPin className="w-3 h-3 mr-1" />
-                {user.work_location ? 
-                  locationOptions.find(l => l.value === user.work_location)?.label : 
+                {user.work_location_id ? 
+                  lOptions.find(l => l.value === user.work_location_id)?.label : 
                   "Set Location"
                 }
               </Button>

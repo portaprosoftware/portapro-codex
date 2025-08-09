@@ -88,6 +88,20 @@ export function UserManagementSection() {
     },
   });
 
+  // Fetch active storage locations for work location options
+  const { data: locations = [] } = useQuery({
+    queryKey: ["storage-locations-active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("storage_locations")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -191,6 +205,36 @@ export function UserManagementSection() {
       toast.error("Failed to update user status");
       console.error("Error updating user status:", error);
     },
+  });
+
+  const updateTeamAssignment = useMutation({
+    mutationFn: async ({ userId, team }: { userId: string; team: string }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ team_assignment: team })
+        .eq("id", userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles" ]});
+      toast.success("Team assignment updated");
+    },
+    onError: () => toast.error("Failed to update team assignment"),
+  });
+
+  const updateWorkLocation = useMutation({
+    mutationFn: async ({ userId, locationId }: { userId: string; locationId: string }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ work_location_id: locationId })
+        .eq("id", userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles" ]});
+      toast.success("Work location updated");
+    },
+    onError: () => toast.error("Failed to update work location"),
   });
 
   const onSubmit = (data: UserFormData) => {
@@ -389,13 +433,12 @@ export function UserManagementSection() {
                   toggleUserStatus.mutate({ userId, isActive })
                 }
                 onTeamAssignmentChange={(userId, team) => {
-                  // TODO: Implement team assignment update
-                  console.log('Team assignment:', userId, team);
+                  updateTeamAssignment.mutate({ userId, team });
                 }}
-                onLocationChange={(userId, location) => {
-                  // TODO: Implement location assignment update
-                  console.log('Location assignment:', userId, location);
+                onLocationChange={(userId, locationId) => {
+                  updateWorkLocation.mutate({ userId, locationId });
                 }}
+                locationOptions={locations.map((l: any) => ({ value: l.id, label: l.name }))}
               />
             ))}
           </div>

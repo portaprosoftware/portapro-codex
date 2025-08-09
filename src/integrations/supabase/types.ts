@@ -283,8 +283,11 @@ export type Database = {
           default_payment_terms_days: number | null
           default_quote_expiration_days: number | null
           default_rental_period_days: number | null
+          default_spill_kit_contents: Json
           delivery_prefix: string | null
+          due_soon_window_days: number
           enable_sanitation_compliance: boolean
+          enable_transport_spill_compliance: boolean
           id: string
           invoice_number_prefix: string | null
           item_code_categories: Json | null
@@ -326,8 +329,11 @@ export type Database = {
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
+          default_spill_kit_contents?: Json
           delivery_prefix?: string | null
+          due_soon_window_days?: number
           enable_sanitation_compliance?: boolean
+          enable_transport_spill_compliance?: boolean
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -369,8 +375,11 @@ export type Database = {
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
           default_rental_period_days?: number | null
+          default_spill_kit_contents?: Json
           delivery_prefix?: string | null
+          due_soon_window_days?: number
           enable_sanitation_compliance?: boolean
+          enable_transport_spill_compliance?: boolean
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -1523,6 +1532,54 @@ export type Database = {
         }
         Relationships: []
       }
+      decon_logs: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          decon_method: string | null
+          id: string
+          incident_id: string
+          notes: string | null
+          performed_at: string
+          performed_by_clerk: string | null
+          photos: string[]
+          ppe_used: string | null
+          updated_at: string
+          vehicle_area: string | null
+          verification_by_clerk: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          decon_method?: string | null
+          id?: string
+          incident_id: string
+          notes?: string | null
+          performed_at?: string
+          performed_by_clerk?: string | null
+          photos?: string[]
+          ppe_used?: string | null
+          updated_at?: string
+          vehicle_area?: string | null
+          verification_by_clerk?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          decon_method?: string | null
+          id?: string
+          incident_id?: string
+          notes?: string | null
+          performed_at?: string
+          performed_by_clerk?: string | null
+          photos?: string[]
+          ppe_used?: string | null
+          updated_at?: string
+          vehicle_area?: string | null
+          verification_by_clerk?: string | null
+        }
+        Relationships: []
+      }
       disposal_manifests: {
         Row: {
           created_at: string
@@ -1697,6 +1754,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      driver_training_records: {
+        Row: {
+          certificate_url: string | null
+          company_id: string | null
+          completed_on: string
+          course_type: string
+          created_at: string
+          created_by_clerk: string | null
+          driver_clerk_id: string
+          expires_on: string | null
+          id: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          company_id?: string | null
+          completed_on: string
+          course_type: string
+          created_at?: string
+          created_by_clerk?: string | null
+          driver_clerk_id: string
+          expires_on?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          certificate_url?: string | null
+          company_id?: string | null
+          completed_on?: string
+          course_type?: string
+          created_at?: string
+          created_by_clerk?: string | null
+          driver_clerk_id?: string
+          expires_on?: string | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       driver_working_hours: {
         Row: {
@@ -6229,6 +6328,132 @@ export type Database = {
           },
         ]
       }
+      spill_incidents: {
+        Row: {
+          authority_details: string | null
+          authority_notified: boolean | null
+          cause: string | null
+          cleanup_summary: string | null
+          company_id: string | null
+          corrective_actions: string | null
+          cost_estimate: number | null
+          created_at: string
+          driver_clerk_id: string | null
+          estimated_volume_liters: number | null
+          id: string
+          immediate_actions: string | null
+          job_id: string | null
+          linked_work_order_id: string | null
+          location_gps: unknown | null
+          location_text: string | null
+          material_type: string | null
+          occurred_at: string
+          photos: string[]
+          root_cause: string | null
+          status: string
+          updated_at: string
+          vehicle_id: string | null
+          waste_disposition: string | null
+          weather_conditions: string | null
+        }
+        Insert: {
+          authority_details?: string | null
+          authority_notified?: boolean | null
+          cause?: string | null
+          cleanup_summary?: string | null
+          company_id?: string | null
+          corrective_actions?: string | null
+          cost_estimate?: number | null
+          created_at?: string
+          driver_clerk_id?: string | null
+          estimated_volume_liters?: number | null
+          id?: string
+          immediate_actions?: string | null
+          job_id?: string | null
+          linked_work_order_id?: string | null
+          location_gps?: unknown | null
+          location_text?: string | null
+          material_type?: string | null
+          occurred_at?: string
+          photos?: string[]
+          root_cause?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_id?: string | null
+          waste_disposition?: string | null
+          weather_conditions?: string | null
+        }
+        Update: {
+          authority_details?: string | null
+          authority_notified?: boolean | null
+          cause?: string | null
+          cleanup_summary?: string | null
+          company_id?: string | null
+          corrective_actions?: string | null
+          cost_estimate?: number | null
+          created_at?: string
+          driver_clerk_id?: string | null
+          estimated_volume_liters?: number | null
+          id?: string
+          immediate_actions?: string | null
+          job_id?: string | null
+          linked_work_order_id?: string | null
+          location_gps?: unknown | null
+          location_text?: string | null
+          material_type?: string | null
+          occurred_at?: string
+          photos?: string[]
+          root_cause?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_id?: string | null
+          waste_disposition?: string | null
+          weather_conditions?: string | null
+        }
+        Relationships: []
+      }
+      spill_kit_inspections: {
+        Row: {
+          company_id: string | null
+          contents_ok: boolean
+          created_at: string
+          followup_work_order_id: string | null
+          id: string
+          inspected_at: string
+          inspected_by_clerk: string | null
+          missing_items: Json
+          notes: string | null
+          photos: string[]
+          vehicle_id: string
+        }
+        Insert: {
+          company_id?: string | null
+          contents_ok?: boolean
+          created_at?: string
+          followup_work_order_id?: string | null
+          id?: string
+          inspected_at?: string
+          inspected_by_clerk?: string | null
+          missing_items?: Json
+          notes?: string | null
+          photos?: string[]
+          vehicle_id: string
+        }
+        Update: {
+          company_id?: string | null
+          contents_ok?: boolean
+          created_at?: string
+          followup_work_order_id?: string | null
+          id?: string
+          inspected_at?: string
+          inspected_by_clerk?: string | null
+          missing_items?: Json
+          notes?: string | null
+          photos?: string[]
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       stock_adjustments: {
         Row: {
           adjusted_by: string | null
@@ -6734,6 +6959,48 @@ export type Database = {
           },
         ]
       }
+      vehicle_annual_inspections: {
+        Row: {
+          certificate_url: string | null
+          company_id: string | null
+          created_at: string
+          created_by_clerk: string | null
+          expires_on: string | null
+          id: string
+          inspection_date: string
+          inspector_name: string | null
+          notes: string | null
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          expires_on?: string | null
+          id?: string
+          inspection_date: string
+          inspector_name?: string | null
+          notes?: string | null
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          certificate_url?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          expires_on?: string | null
+          id?: string
+          inspection_date?: string
+          inspector_name?: string | null
+          notes?: string | null
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicle_assignments: {
         Row: {
           assignment_date: string
@@ -7120,6 +7387,54 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_permits: {
+        Row: {
+          authority_name: string | null
+          company_id: string | null
+          created_at: string
+          created_by_clerk: string | null
+          document_url: string | null
+          expires_on: string | null
+          id: string
+          issued_on: string | null
+          notes: string | null
+          permit_number: string | null
+          permit_type: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          authority_name?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          document_url?: string | null
+          expires_on?: string | null
+          id?: string
+          issued_on?: string | null
+          notes?: string | null
+          permit_number?: string | null
+          permit_type: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          authority_name?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          document_url?: string | null
+          expires_on?: string | null
+          id?: string
+          issued_on?: string | null
+          notes?: string | null
+          permit_number?: string | null
+          permit_type?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicle_sds_tracking: {
         Row: {
           chemical_name: string
@@ -7184,6 +7499,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vehicle_spill_kits: {
+        Row: {
+          active: boolean
+          company_id: string | null
+          created_at: string
+          created_by_clerk: string | null
+          id: string
+          kit_identifier: string | null
+          required_contents: Json
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          active?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          id?: string
+          kit_identifier?: string | null
+          required_contents?: Json
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          active?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by_clerk?: string | null
+          id?: string
+          kit_identifier?: string | null
+          required_contents?: Json
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
       }
       vehicles: {
         Row: {

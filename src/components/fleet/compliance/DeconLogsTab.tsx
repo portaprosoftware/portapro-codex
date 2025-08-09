@@ -5,16 +5,26 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Shield } from "lucide-react";
 
+// Local fallback type since supabase types are not generated for this table here
+type DeconLog = {
+  id: string;
+  performed_at: string;
+  vehicle_id?: string | null;
+  vehicle_area?: string | null;
+  ppe_used?: string | null;
+  notes?: string | null;
+};
+
 export const DeconLogsTab: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("decon_logs")
         .select("id, performed_at, vehicle_id, vehicle_area, ppe_used, notes")
         .order("performed_at", { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      return (data as DeconLog[]) ?? [];
     }
   });
 
@@ -32,7 +42,7 @@ export const DeconLogsTab: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      {data.map((log: any) => (
+      {data.map((log: DeconLog) => (
         <Card key={log.id} className="p-4">
           <div className="flex items-center justify-between">
             <div>
