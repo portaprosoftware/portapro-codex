@@ -67,9 +67,9 @@ export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }
     try {
       const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
         vehicle_id: vehicleId,
-        driver_id: "dispatch", // placeholder
-        all_items_present: hasKit,
-        items: selectedContents,
+        checked_by_clerk: "dispatch", // placeholder
+        has_kit: hasKit,
+        contents: selectedContents,
         notes,
       });
       
