@@ -1,10 +1,12 @@
 
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CalendarDays, Shield, Plus } from "lucide-react";
+import { DeconCreateModal } from "./DeconCreateModal";
 
 // Local fallback type
 type DeconLog = {
@@ -17,6 +19,9 @@ type DeconLog = {
 };
 
 export const DeconLogsTab: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [modalOpen, setModalOpen] = useState(false);
+
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
     queryFn: async () => {
@@ -28,8 +33,15 @@ export const DeconLogsTab: React.FC = () => {
         .limit(50);
       if (error) throw error;
       return (data as DeconLog[]) ?? [];
-    }
+    },
+    retry: 0,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
   });
+
+  const handleSaved = () => {
+    queryClient.invalidateQueries({ queryKey: ["decon-logs"] });
+  };
 
   if (isLoading) return <div className="py-10 text-center">Loading...</div>;
 
@@ -38,30 +50,45 @@ export const DeconLogsTab: React.FC = () => {
       <Card className="p-8 text-center">
         <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium">No decontamination logs</h3>
-        <p className="text-muted-foreground">Record decon activities after a spill or exposure.</p>
+        <p className="text-muted-foreground mb-4">Record decon activities after a spill or exposure.</p>
+        <Button onClick={() => setModalOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" /> Record Decon
+        </Button>
+        <DeconCreateModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSaved={handleSaved} />
       </Card>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {data.map((log) => (
-        <Card key={log.id} className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-muted-foreground flex items-center gap-2">
-                <CalendarDays className="w-4 h-4" />
-                {new Date(log.performed_at).toLocaleString()}
+    <>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-base font-semibold">Decontamination Logs</h3>
+        <Button onClick={() => setModalOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" /> Record Decon
+        </Button>
+      </div>
+
+      <div className="space-y-3">
+        {data.map((log) => (
+          <Card key={log.id} className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-muted-foreground flex items-center gap-2">
+                  <CalendarDays className="w-4 h-4" />
+                  {new Date(log.performed_at).toLocaleString()}
+                </div>
+                <div className="mt-1 font-medium">
+                  Incident: {log.incident_id ? log.incident_id.slice(0, 8) : "—"} • Area: {log.vehicle_area || "—"}
+                </div>
+                {log.notes && <div className="text-sm text-muted-foreground mt-1">{log.notes}</div>}
               </div>
-              <div className="mt-1 font-medium">
-                Incident: {log.incident_id ? log.incident_id.slice(0, 8) : "—"} • Area: {log.vehicle_area || "—"}
-              </div>
-              {log.notes && <div className="text-sm text-muted-foreground mt-1">{log.notes}</div>}
+              <Badge variant="secondary">{log.ppe_used ? "PPE used" : "No PPE noted"}</Badge>
             </div>
-            <Badge variant="secondary">{log.ppe_used ? "PPE used" : "No PPE noted"}</Badge>
-          </div>
-        </Card>
-      ))}
-    </div>
+          </Card>
+        ))}
+      </div>
+
+      <DeconCreateModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSaved={handleSaved} />
+    </>
   );
 };

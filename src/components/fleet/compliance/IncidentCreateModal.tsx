@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   isOpen: boolean;
@@ -15,6 +16,7 @@ type Props = {
 type Vehicle = { id: string; license_plate: string };
 
 export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved }) => {
+  const { toast } = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string>("");
   const [location, setLocation] = useState<string>("");
@@ -57,28 +59,48 @@ export const IncidentCreateModal: React.FC<Props> = ({ isOpen, onClose, onSaved 
   }, [vehicleId, location, spillType, cause]);
 
   const handleSave = async () => {
-    // NOTE: spill_incident_reports requires cause_description, spill_type, driver_id, vehicle_id, etc.
-    const payload = {
-      created_at: new Date().toISOString(),
-      vehicle_id: vehicleId,
-      location_description: location,
-      immediate_action_taken: action || null,
-      cause_description: cause,
-      spill_type: spillType,
-      driver_id: "dispatch", // placeholder; can be wired to Clerk later
-      authorities_notified: false,
-    } as any; // Keep payload flexible if Supabase types evolve
+    try {
+      // NOTE: spill_incident_reports requires cause_description, spill_type, driver_id, vehicle_id, etc.
+      const payload = {
+        created_at: new Date().toISOString(),
+        vehicle_id: vehicleId,
+        location_description: location,
+        immediate_action_taken: action || null,
+        cause_description: cause,
+        spill_type: spillType,
+        driver_id: "dispatch", // placeholder; can be wired to Clerk later
+        authorities_notified: false,
+      } as any; // Keep payload flexible if Supabase types evolve
 
-    const { error } = await supabase
-      .from("spill_incident_reports" as any)
-      .insert(payload);
+      const { error } = await supabase
+        .from("spill_incident_reports" as any)
+        .insert(payload);
 
-    if (error) {
-      console.error("Failed to save incident", error);
-      return;
+      if (error) {
+        console.error("Failed to save incident", error);
+        toast({
+          title: "Error",
+          description: "Failed to record spill incident",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Spill incident recorded successfully",
+      });
+
+      onSaved?.();
+      onClose();
+    } catch (error) {
+      console.error("Error saving incident:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
-    onSaved?.();
-    onClose();
   };
 
   if (!isOpen) return null;

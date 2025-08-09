@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   isOpen: boolean;
@@ -17,6 +18,7 @@ type Props = {
 type Vehicle = { id: string; license_plate: string };
 
 export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }) => {
+  const { toast } = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string>("");
   const [hasKit, setHasKit] = useState<boolean>(true);
@@ -62,19 +64,40 @@ export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }
   };
 
   const handleSave = async () => {
-    const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
-      vehicle_id: vehicleId,
-      has_kit: hasKit,
-      contents: selectedContents,
-      notes,
-      checked_by_clerk: null,
-    });
-    if (error) {
-      console.error("Failed to save spill kit check", error);
-      return;
+    try {
+      const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
+        vehicle_id: vehicleId,
+        driver_id: "dispatch", // placeholder
+        all_items_present: hasKit,
+        items: selectedContents,
+        notes,
+      });
+      
+      if (error) {
+        console.error("Failed to save spill kit check", error);
+        toast({
+          title: "Error",
+          description: "Failed to record spill kit check",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Spill kit check recorded successfully",
+      });
+
+      onSaved?.();
+      onClose();
+    } catch (error) {
+      console.error("Error saving spill kit check:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
-    onSaved?.();
-    onClose();
   };
 
   if (!isOpen) return null;

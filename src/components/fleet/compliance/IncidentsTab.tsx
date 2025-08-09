@@ -17,12 +17,15 @@ export const IncidentsTab: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("spill_incident_reports")
-        .select("id, incident_date, vehicle_id, location_description, immediate_action_taken")
-        .order("incident_date", { ascending: false })
+        .select("id, created_at, vehicle_id, location_description, immediate_action_taken, spill_type")
+        .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
       return data ?? [];
-    }
+    },
+    retry: 0,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
   });
 
   const handleSaved = () => {
@@ -60,7 +63,7 @@ export const IncidentsTab: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-muted-foreground">
-                  {new Date(inc.incident_date).toLocaleString()}
+                  {new Date(inc.created_at).toLocaleString()}
                 </div>
                 <div className="mt-1 font-medium flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
