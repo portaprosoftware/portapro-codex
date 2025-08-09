@@ -183,6 +183,22 @@ export const JobConsumablesTab: React.FC<JobConsumablesTabProps> = ({ jobId }) =
   const totalValue = jobConsumables?.reduce((sum, item) => sum + item.line_total, 0) || 0;
   const totalQuantity = jobConsumables?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
+  // Moving-average materials cost for this job
+  const { data: materialsCostData } = useQuery({
+    queryKey: ['job-materials-cost', jobId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('job_materials_cost' as any)
+        .select('total_material_cost')
+        .eq('job_id', jobId)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as unknown as { total_material_cost: number } | null);
+    }
+  });
+  const materialsCost = materialsCostData?.total_material_cost || 0;
+
+
   if (!hasStaffAccess) {
     return (
       <div className="text-center py-8">
@@ -194,7 +210,7 @@ export const JobConsumablesTab: React.FC<JobConsumablesTabProps> = ({ jobId }) =
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center space-x-2">
@@ -224,10 +240,20 @@ export const JobConsumablesTab: React.FC<JobConsumablesTabProps> = ({ jobId }) =
             <div className="flex items-center space-x-2">
               <DollarSign className="w-8 h-8 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">
-                  ${totalValue.toFixed(2)}
-                </p>
+                <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
                 <p className="text-sm text-muted-foreground">Total Value</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-2">
+              <DollarSign className="w-8 h-8 text-primary" />
+              <div>
+                <p className="text-2xl font-bold">${materialsCost.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">Materials Cost (MAUC)</p>
               </div>
             </div>
           </CardContent>

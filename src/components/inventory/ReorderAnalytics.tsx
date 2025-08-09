@@ -11,10 +11,31 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { AlertTriangle, TrendingUp, Calendar, Package, Brain, Target } from 'lucide-react';
-
+import { RouteStockCheck } from '@/components/fleet/RouteStockCheck';
 export const ReorderAnalytics: React.FC = () => {
   const [analysisType, setAnalysisType] = useState('usage');
   const [timeframe, setTimeframe] = useState('30');
+
+  const addDays = (date: Date, days: number) => {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+  const formatDate = (date: Date) => date.toISOString().slice(0, 10);
+  const startDateStr = formatDate(new Date());
+  const endDateStr = formatDate(addDays(new Date(), parseInt(timeframe)));
+
+  const { data: forecast, isLoading: forecastLoading } = useQuery({
+    queryKey: ['consumable-forecast', startDateStr, endDateStr],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_consumable_forecast', {
+        start_date: startDateStr,
+        end_date: endDateStr,
+      });
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   const { data: consumables } = useQuery({
     queryKey: ['consumables-reorder-analytics'],
