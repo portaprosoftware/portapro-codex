@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { UserRole } from "@/types";
 
 export const useUserRole = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   
   const role = (user?.publicMetadata?.role as UserRole) || null;
   
@@ -25,6 +25,7 @@ export const useUserRole = () => {
     isCustomer,
     hasAdminAccess,
     hasStaffAccess,
-    user
+    user,
+    isLoaded
   };
 };
