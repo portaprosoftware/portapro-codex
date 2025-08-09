@@ -16,6 +16,9 @@ import { MaintenanceNotificationsTab } from "./MaintenanceNotificationsTab";
 import { MaintenanceSettingsTab } from "./MaintenanceSettingsTab";
 import { MaintenancePartsInventoryTab } from "./MaintenancePartsInventoryTab";
 import { MaintenanceCalendarTab } from "./MaintenanceCalendarTab";
+import { DVIRList } from "./DVIRList";
+import { WorkOrdersBoard } from "./WorkOrdersBoard";
+import { PMSchedulesTab } from "./PMSchedulesTab";
 
 interface MaintenanceKPIs {
   past_due: number;
@@ -204,6 +207,15 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           <TabsTrigger value="records" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-3 py-2 text-sm whitespace-nowrap">
             All Records
           </TabsTrigger>
+          <TabsTrigger value="dvir" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-3 py-2 text-sm whitespace-nowrap">
+            DVIR
+          </TabsTrigger>
+          <TabsTrigger value="workorders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-3 py-2 text-sm whitespace-nowrap">
+            Work Orders
+          </TabsTrigger>
+          <TabsTrigger value="pm" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-3 py-2 text-sm whitespace-nowrap">
+            PM Schedules
+          </TabsTrigger>
           <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-700 data-[state=active]:to-blue-800 data-[state=active]:text-white rounded-full px-3 py-2 text-sm whitespace-nowrap">
             Notifications
           </TabsTrigger>
@@ -360,6 +372,27 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
         <TabsContent value="notifications">
           <div className="max-w-6xl">
             <MaintenanceNotificationsTab />
+          </div>
+        </TabsContent>
+
+        {/* DVIR Tab */}
+        <TabsContent value="dvir">
+          <div className="max-w-6xl">
+            <DVIRList />
+          </div>
+        </TabsContent>
+
+        {/* Work Orders Tab */}
+        <TabsContent value="workorders">
+          <div className="max-w-6xl">
+            <WorkOrdersBoard />
+          </div>
+        </TabsContent>
+
+        {/* PM Schedules Tab */}
+        <TabsContent value="pm">
+          <div className="max-w-6xl">
+            <PMSchedulesTab />
           </div>
         </TabsContent>
 

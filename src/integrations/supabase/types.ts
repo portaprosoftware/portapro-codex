@@ -1731,6 +1731,140 @@ export type Database = {
         }
         Relationships: []
       }
+      dvir_defects: {
+        Row: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          closed_at: string | null
+          closed_by: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          dvir_id: string
+          id: string
+          item_key: string
+          notes: string | null
+          photos: string[] | null
+          severity: Database["public"]["Enums"]["defect_severity"]
+          status: Database["public"]["Enums"]["defect_status"]
+          work_order_id: string | null
+        }
+        Insert: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          dvir_id: string
+          id?: string
+          item_key: string
+          notes?: string | null
+          photos?: string[] | null
+          severity: Database["public"]["Enums"]["defect_severity"]
+          status?: Database["public"]["Enums"]["defect_status"]
+          work_order_id?: string | null
+        }
+        Update: {
+          asset_id?: string
+          asset_type?: Database["public"]["Enums"]["dvir_asset_type"]
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          dvir_id?: string
+          id?: string
+          item_key?: string
+          notes?: string | null
+          photos?: string[] | null
+          severity?: Database["public"]["Enums"]["defect_severity"]
+          status?: Database["public"]["Enums"]["defect_status"]
+          work_order_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dvir_defects_dvir_id_fkey"
+            columns: ["dvir_id"]
+            isOneToOne: false
+            referencedRelation: "dvir_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dvir_reports: {
+        Row: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          defects_count: number
+          driver_id: string | null
+          engine_hours: number | null
+          id: string
+          items: Json
+          location_gps: unknown | null
+          major_defect_present: boolean
+          odometer_miles: number | null
+          out_of_service_flag: boolean
+          rejected_reason: string | null
+          status: Database["public"]["Enums"]["dvir_status"]
+          submitted_at: string | null
+          type: Database["public"]["Enums"]["dvir_report_type"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          defects_count?: number
+          driver_id?: string | null
+          engine_hours?: number | null
+          id?: string
+          items?: Json
+          location_gps?: unknown | null
+          major_defect_present?: boolean
+          odometer_miles?: number | null
+          out_of_service_flag?: boolean
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["dvir_status"]
+          submitted_at?: string | null
+          type: Database["public"]["Enums"]["dvir_report_type"]
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          asset_id?: string
+          asset_type?: Database["public"]["Enums"]["dvir_asset_type"]
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          defects_count?: number
+          driver_id?: string | null
+          engine_hours?: number | null
+          id?: string
+          items?: Json
+          location_gps?: unknown | null
+          major_defect_present?: boolean
+          odometer_miles?: number | null
+          out_of_service_flag?: boolean
+          rejected_reason?: string | null
+          status?: Database["public"]["Enums"]["dvir_status"]
+          submitted_at?: string | null
+          type?: Database["public"]["Enums"]["dvir_report_type"]
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       email_campaigns: {
         Row: {
           campaign_name: string
@@ -4049,6 +4183,167 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pm_history: {
+        Row: {
+          asset_id: string
+          completed_at: string
+          id: string
+          meter_hours: number | null
+          meter_miles: number | null
+          notes: string | null
+          pm_schedule_id: string
+          work_order_id: string | null
+        }
+        Insert: {
+          asset_id: string
+          completed_at?: string
+          id?: string
+          meter_hours?: number | null
+          meter_miles?: number | null
+          notes?: string | null
+          pm_schedule_id: string
+          work_order_id?: string | null
+        }
+        Update: {
+          asset_id?: string
+          completed_at?: string
+          id?: string
+          meter_hours?: number | null
+          meter_miles?: number | null
+          notes?: string | null
+          pm_schedule_id?: string
+          work_order_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pm_history_pm_schedule_id_fkey"
+            columns: ["pm_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "pm_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pm_history_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pm_schedules: {
+        Row: {
+          active: boolean
+          auto_create_work_order: boolean
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          default_priority: Database["public"]["Enums"]["work_order_priority"]
+          description: string | null
+          grace_days: number
+          grace_hours: number
+          grace_miles: number
+          id: string
+          instructions: Json
+          name: string
+          trigger_days_every: number | null
+          trigger_hours_every: number | null
+          trigger_miles_every: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          auto_create_work_order?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_priority?: Database["public"]["Enums"]["work_order_priority"]
+          description?: string | null
+          grace_days?: number
+          grace_hours?: number
+          grace_miles?: number
+          id?: string
+          instructions?: Json
+          name: string
+          trigger_days_every?: number | null
+          trigger_hours_every?: number | null
+          trigger_miles_every?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          auto_create_work_order?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_priority?: Database["public"]["Enums"]["work_order_priority"]
+          description?: string | null
+          grace_days?: number
+          grace_hours?: number
+          grace_miles?: number
+          id?: string
+          instructions?: Json
+          name?: string
+          trigger_days_every?: number | null
+          trigger_hours_every?: number | null
+          trigger_miles_every?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pm_targets: {
+        Row: {
+          created_at: string
+          id: string
+          last_done_date: string | null
+          last_done_hours: number | null
+          last_done_miles: number | null
+          next_due_date: string | null
+          next_due_hours: number | null
+          next_due_miles: number | null
+          pm_schedule_id: string
+          target_id: string
+          target_type: Database["public"]["Enums"]["pm_target_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_done_date?: string | null
+          last_done_hours?: number | null
+          last_done_miles?: number | null
+          next_due_date?: string | null
+          next_due_hours?: number | null
+          next_due_miles?: number | null
+          pm_schedule_id: string
+          target_id: string
+          target_type: Database["public"]["Enums"]["pm_target_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_done_date?: string | null
+          last_done_hours?: number | null
+          last_done_miles?: number | null
+          next_due_date?: string | null
+          next_due_hours?: number | null
+          next_due_miles?: number | null
+          pm_schedule_id?: string
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["pm_target_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pm_targets_pm_schedule_id_fkey"
+            columns: ["pm_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "pm_schedules"
             referencedColumns: ["id"]
           },
         ]
@@ -6906,11 +7201,15 @@ export type Database = {
           license_plate: string
           maintenance_interval_miles: number | null
           make: string
+          meter_hours: number | null
+          meter_miles: number | null
           model: string
           next_maintenance_due_date: string | null
           next_maintenance_due_miles: number | null
           nickname: string | null
           notes: string | null
+          out_of_service: boolean | null
+          pending_driver_verification: boolean | null
           purchase_cost: number | null
           purchase_date: string | null
           registration_expiry: string | null
@@ -6936,11 +7235,15 @@ export type Database = {
           license_plate: string
           maintenance_interval_miles?: number | null
           make: string
+          meter_hours?: number | null
+          meter_miles?: number | null
           model: string
           next_maintenance_due_date?: string | null
           next_maintenance_due_miles?: number | null
           nickname?: string | null
           notes?: string | null
+          out_of_service?: boolean | null
+          pending_driver_verification?: boolean | null
           purchase_cost?: number | null
           purchase_date?: string | null
           registration_expiry?: string | null
@@ -6966,11 +7269,15 @@ export type Database = {
           license_plate?: string
           maintenance_interval_miles?: number | null
           make?: string
+          meter_hours?: number | null
+          meter_miles?: number | null
           model?: string
           next_maintenance_due_date?: string | null
           next_maintenance_due_miles?: number | null
           nickname?: string | null
           notes?: string | null
+          out_of_service?: boolean | null
+          pending_driver_verification?: boolean | null
           purchase_cost?: number | null
           purchase_date?: string | null
           registration_expiry?: string | null
@@ -6980,6 +7287,175 @@ export type Database = {
           vehicle_type?: string | null
           vin?: string | null
           year?: number | null
+        }
+        Relationships: []
+      }
+      work_order_lines: {
+        Row: {
+          description: string
+          hours: number | null
+          id: string
+          line_type: string
+          qty: number | null
+          sku: string | null
+          total: number | null
+          unit_cost: number | null
+          work_order_id: string
+        }
+        Insert: {
+          description: string
+          hours?: number | null
+          id?: string
+          line_type: string
+          qty?: number | null
+          sku?: string | null
+          total?: number | null
+          unit_cost?: number | null
+          work_order_id: string
+        }
+        Update: {
+          description?: string
+          hours?: number | null
+          id?: string
+          line_type?: string
+          qty?: number | null
+          sku?: string | null
+          total?: number | null
+          unit_cost?: number | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_lines_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_order_notes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string
+          work_order_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note: string
+          work_order_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_notes_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_orders: {
+        Row: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          assigned_to: string | null
+          attachments: string[] | null
+          closed_at: string | null
+          closed_by: string | null
+          company_id: string | null
+          created_at: string
+          description: string | null
+          driver_verification_required: boolean
+          due_date: string | null
+          id: string
+          labor_rate: number
+          meter_close_hours: number | null
+          meter_close_miles: number | null
+          meter_open_hours: number | null
+          meter_open_miles: number | null
+          opened_at: string
+          opened_by: string | null
+          priority: Database["public"]["Enums"]["work_order_priority"]
+          resolution_notes: string | null
+          source: Database["public"]["Enums"]["work_order_source"]
+          status: Database["public"]["Enums"]["work_order_status"]
+          tax_amount: number
+          total_cost: number
+          total_labor_hours: number
+          total_parts_cost: number
+          updated_at: string
+        }
+        Insert: {
+          asset_id: string
+          asset_type: Database["public"]["Enums"]["dvir_asset_type"]
+          assigned_to?: string | null
+          attachments?: string[] | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          driver_verification_required?: boolean
+          due_date?: string | null
+          id?: string
+          labor_rate?: number
+          meter_close_hours?: number | null
+          meter_close_miles?: number | null
+          meter_open_hours?: number | null
+          meter_open_miles?: number | null
+          opened_at?: string
+          opened_by?: string | null
+          priority?: Database["public"]["Enums"]["work_order_priority"]
+          resolution_notes?: string | null
+          source: Database["public"]["Enums"]["work_order_source"]
+          status?: Database["public"]["Enums"]["work_order_status"]
+          tax_amount?: number
+          total_cost?: number
+          total_labor_hours?: number
+          total_parts_cost?: number
+          updated_at?: string
+        }
+        Update: {
+          asset_id?: string
+          asset_type?: Database["public"]["Enums"]["dvir_asset_type"]
+          assigned_to?: string | null
+          attachments?: string[] | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          driver_verification_required?: boolean
+          due_date?: string | null
+          id?: string
+          labor_rate?: number
+          meter_close_hours?: number | null
+          meter_close_miles?: number | null
+          meter_open_hours?: number | null
+          meter_open_miles?: number | null
+          opened_at?: string
+          opened_by?: string | null
+          priority?: Database["public"]["Enums"]["work_order_priority"]
+          resolution_notes?: string | null
+          source?: Database["public"]["Enums"]["work_order_source"]
+          status?: Database["public"]["Enums"]["work_order_status"]
+          tax_amount?: number
+          total_cost?: number
+          total_labor_hours?: number
+          total_parts_cost?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -7268,6 +7744,10 @@ export type Database = {
       clerk_user_is_admin: {
         Args: { clerk_user_id: string }
         Returns: boolean
+      }
+      complete_work_order: {
+        Args: { work_order_uuid: string; _closed_by?: string }
+        Returns: Json
       }
       create_default_service_locations: {
         Args: Record<PropertyKey, never>
@@ -7730,6 +8210,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      open_work_order_for_defect: {
+        Args: { defect_uuid: string; _opened_by?: string }
+        Returns: string
+      }
       preview_next_item_code: {
         Args: { category_prefix: string }
         Returns: string
@@ -7897,6 +8381,34 @@ export type Database = {
         | "bars_restaurants"
         | "retail"
         | "other"
+      defect_severity: "minor" | "major"
+      defect_status: "open" | "in_work" | "closed"
+      dvir_asset_type: "vehicle" | "trailer"
+      dvir_report_type: "pre_trip" | "post_trip"
+      dvir_status:
+        | "draft"
+        | "submitted"
+        | "defects_found"
+        | "verified"
+        | "rejected"
+      pm_target_type: "vehicle" | "trailer" | "group"
+      work_order_priority: "low" | "normal" | "high" | "critical"
+      work_order_source:
+        | "dvir_defect"
+        | "pm"
+        | "breakdown"
+        | "recall"
+        | "campaign"
+        | "other"
+      work_order_status:
+        | "open"
+        | "awaiting_parts"
+        | "in_progress"
+        | "vendor"
+        | "on_hold"
+        | "ready_for_verification"
+        | "completed"
+        | "canceled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -8047,6 +8559,37 @@ export const Constants = {
         "bars_restaurants",
         "retail",
         "other",
+      ],
+      defect_severity: ["minor", "major"],
+      defect_status: ["open", "in_work", "closed"],
+      dvir_asset_type: ["vehicle", "trailer"],
+      dvir_report_type: ["pre_trip", "post_trip"],
+      dvir_status: [
+        "draft",
+        "submitted",
+        "defects_found",
+        "verified",
+        "rejected",
+      ],
+      pm_target_type: ["vehicle", "trailer", "group"],
+      work_order_priority: ["low", "normal", "high", "critical"],
+      work_order_source: [
+        "dvir_defect",
+        "pm",
+        "breakdown",
+        "recall",
+        "campaign",
+        "other",
+      ],
+      work_order_status: [
+        "open",
+        "awaiting_parts",
+        "in_progress",
+        "vendor",
+        "on_hold",
+        "ready_for_verification",
+        "completed",
+        "canceled",
       ],
     },
   },
