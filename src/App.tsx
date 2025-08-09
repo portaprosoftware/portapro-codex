@@ -32,6 +32,7 @@ import Consumables from './pages/Consumables';
 import PurchaseOrders from './pages/PurchaseOrders';
 import StorageSites from './pages/StorageSites';
 import { ConsumableRequestPage } from './pages/ConsumableRequestPage';
+import FleetTruckStock from './pages/FleetTruckStock';
 import { DriverLayout } from './components/driver/DriverLayout';
 import { DriverDashboardPage } from './pages/DriverDashboardPage';
 import { DriverMapPage } from './pages/DriverMapPage';
@@ -255,6 +256,12 @@ const App = () => {
           <Route path="/fleet/files" element={
             <>
               <SignedIn><Layout><FleetFiles /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/truck-stock" element={
+            <>
+              <SignedIn><Layout><FleetTruckStock /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />

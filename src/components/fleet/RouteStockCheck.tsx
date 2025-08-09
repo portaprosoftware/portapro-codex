@@ -40,6 +40,7 @@ export const RouteStockCheck: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle>Route vs Truck Stock</CardTitle>
+        {/* SEO: canonical and h1 in parent page; this is a sub-card */}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">

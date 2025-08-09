@@ -48,6 +48,12 @@ export const FleetSidebar: React.FC = () => {
       end: true
     },
     {
+      title: "Truck Stock",
+      href: "/fleet/truck-stock",
+      icon: Package,
+      description: "Per-vehicle consumables"
+    },
+    {
       title: "Transport & Spill Compliance",
       href: "/fleet/compliance",
       icon: AlertTriangle,
