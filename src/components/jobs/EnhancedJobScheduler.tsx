@@ -22,6 +22,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { format, addDays, startOfWeek, endOfWeek } from 'date-fns';
+import { IncidentCreateModal } from '@/components/fleet/compliance/IncidentCreateModal';
+import { SpillKitCheckModal } from '@/components/fleet/compliance/SpillKitCheckModal';
 
 interface Job {
   id: string;
@@ -70,7 +72,10 @@ export const EnhancedJobScheduler: React.FC = () => {
     driver: 'all'
   });
 
-  const queryClient = useQueryClient();
+const [incidentOpen, setIncidentOpen] = useState(false);
+const [spillKitOpen, setSpillKitOpen] = useState(false);
+
+const queryClient = useQueryClient();
 
   // Fetch jobs for the current week
   const { data: jobs, isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
@@ -350,6 +355,14 @@ export const EnhancedJobScheduler: React.FC = () => {
             <Zap className="w-4 h-4 mr-2" />
             {autoAssignMutation.isPending ? 'Assigning...' : 'Optimize Schedule'}
           </Button>
+
+          {/* Quick compliance actions for Dispatch */}
+          <Button onClick={() => setIncidentOpen(true)}>
+            Log Incident
+          </Button>
+          <Button onClick={() => setSpillKitOpen(true)} variant="secondary">
+            Spill Kit Check
+          </Button>
           
           {/* Refresh */}
           <Button variant="outline" onClick={() => refetchJobs()}>
@@ -516,6 +529,10 @@ export const EnhancedJobScheduler: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Dispatch Modals */}
+      <IncidentCreateModal isOpen={incidentOpen} onClose={() => setIncidentOpen(false)} />
+      <SpillKitCheckModal isOpen={spillKitOpen} onClose={() => setSpillKitOpen(false)} />
     </div>
   );
 };
