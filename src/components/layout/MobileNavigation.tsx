@@ -139,12 +139,12 @@ export const MobileBottomNavigation: React.FC = () => {
             key={item.href}
             to={item.href}
             className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 min-w-0 flex-1",
-                isActive
-                  ? "text-primary"
-                  : "text-gray-500 hover:text-gray-700"
-              )
+                  cn(
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 min-w-0 flex-1 min-h-[44px]", // Added min touch target
+                    isActive
+                      ? "text-primary"
+                      : "text-gray-500 hover:text-gray-700"
+                  )
             }
           >
             {({ isActive }) => (
