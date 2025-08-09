@@ -37,6 +37,7 @@ import { useUser } from '@clerk/clerk-react';
 import { DateRange } from 'react-day-picker';
 import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
+import { RouteStockCheck } from '@/components/fleet/RouteStockCheck';
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -588,6 +589,13 @@ const JobsPage: React.FC = () => {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600">Manage driver schedules and job assignments</p>
+                </div>
+
+                {/* Route vs Truck Stock warnings */}
+                <div className="border-b border-gray-200 p-4 bg-white">
+                  <div className="max-w-4xl">
+                    <RouteStockCheck />
+                  </div>
                 </div>
 
                 {/* Grid Layout Container */}
