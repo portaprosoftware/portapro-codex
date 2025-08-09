@@ -35,6 +35,11 @@ export function TeamSchedulingTab() {
   }, [driverDirectory]);
 
   const { data: templates = [] } = useShiftTemplates();
+  const templateById = React.useMemo(() => {
+    const m: Record<string, any> = {};
+    (templates || []).forEach((t: any) => { m[t.id] = t; });
+    return m;
+  }, [templates]);
   const { data: weekShifts = [] } = useDriverShiftsForWeek(selectedDate);
   const createTemplate = useCreateShiftTemplate();
   const assignShift = useAssignShift();
@@ -255,36 +260,36 @@ export function TeamSchedulingTab() {
                           {day.getDate()}
                         </div>
                         
-                        {/* Sample shifts for demonstration */}
-                        {index < 2 && shiftTemplates.slice(0, index + 1).map((shift, shiftIndex) => (
-                          <Draggable
-                            key={`${shift.id}-${index}`}
-                            draggableId={`${shift.id}-${index}`}
-                            index={shiftIndex}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`p-2 mb-2 rounded text-xs ${
-                                  snapshot.isDragging ? 'opacity-50' : ''
-                                } bg-primary/10 border border-primary/20`}
-                              >
-                                <div className="font-medium truncate">{shift.name}</div>
-                                <div className="text-muted-foreground">{shift.start}-{shift.end}</div>
-                                <div className="flex items-center gap-1 mt-1">
-                                  <Avatar className="h-4 w-4">
-                                    <AvatarFallback className="text-xs">JS</AvatarFallback>
-                                  </Avatar>
-                                  <Badge variant="outline" className="text-xs">
-                                    Confirmed
-                                  </Badge>
+                        {/* Render real shifts for this day */}
+                        {(() => {
+                          const dayStr = format(day, 'yyyy-MM-dd');
+                          const shiftsForDay = (weekShifts as any[]).filter((s: any) => s.shift_date === dayStr);
+                          return shiftsForDay.map((shift: any, shiftIndex: number) => (
+                            <Draggable key={shift.id} draggableId={shift.id} index={shiftIndex}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`p-2 mb-2 rounded text-xs ${
+                                    snapshot.isDragging ? 'opacity-50' : ''
+                                  } bg-primary/10 border border-primary/20`}
+                                >
+                                  <div className="font-medium truncate">{templateById[shift.template_id]?.name || 'Shift'}</div>
+                                  <div className="text-muted-foreground">{String(shift.start_time).slice(0,5)}-{String(shift.end_time).slice(0,5)}</div>
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Avatar className="h-4 w-4">
+                                      <AvatarFallback className="text-xs">{driverByClerk[shift.driver_clerk_id]?.initials || 'DR'}</AvatarFallback>
+                                    </Avatar>
+                                    <Badge variant="outline" className="text-xs">
+                                      {shift.status}
+                                    </Badge>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                              )}
+                            </Draggable>
+                          ));
+                        })()}
                         
                         {provided.placeholder}
                       </div>
@@ -306,23 +311,23 @@ export function TeamSchedulingTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Template Name</Label>
-              <Input placeholder="e.g., Morning Route" />
+              <Input placeholder="e.g., Morning Route" value={templateName} onChange={(e) => setTemplateName(e.target.value)} />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Input type="time" defaultValue="08:00" />
+                <Input type="time" value={templateStart} onChange={(e) => setTemplateStart(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>End Time</Label>
-                <Input type="time" defaultValue="16:00" />
+                <Input type="time" value={templateEnd} onChange={(e) => setTemplateEnd(e.target.value)} />
               </div>
             </div>
             
             <div className="space-y-2">
               <Label>Shift Type</Label>
-              <Select>
+              <Select value={templateType} onValueChange={setTemplateType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -336,14 +341,23 @@ export function TeamSchedulingTab() {
             
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea placeholder="Brief description of this shift..." />
+              <Textarea placeholder="Brief description of this shift..." value={templateDescription} onChange={(e) => setTemplateDescription(e.target.value)} />
             </div>
             
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShiftTemplateModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setShiftTemplateModalOpen(false)}>
+              <Button onClick={async () => {
+                await createTemplate.mutateAsync({
+                  name: templateName,
+                  shift_type: templateType,
+                  description: templateDescription,
+                  start_time: `${templateStart}:00`,
+                  end_time: `${templateEnd}:00`,
+                } as any);
+                setShiftTemplateModalOpen(false);
+              }}>
                 Create Template
               </Button>
             </div>
@@ -360,19 +374,19 @@ export function TeamSchedulingTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Date</Label>
-              <Input type="date" />
+              <Input type="date" value={assignmentDateStr} onChange={(e) => setAssignmentDateStr(e.target.value)} />
             </div>
             
             <div className="space-y-2">
               <Label>Shift Template</Label>
-              <Select>
+              <Select value={assignmentTemplateId} onValueChange={setAssignmentTemplateId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select template" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shiftTemplates.map(template => (
+                  {templates.map((template: any) => (
                     <SelectItem key={template.id} value={template.id}>
-                      {template.name} ({template.start}-{template.end})
+                      {template.name} ({String(template.start_time).slice(0,5)}-{String(template.end_time).slice(0,5)})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -381,16 +395,19 @@ export function TeamSchedulingTab() {
             
             <div className="space-y-2">
               <Label>Assign To</Label>
-              <Select>
+              <Select value={assignmentDriverClerkId} onValueChange={setAssignmentDriverClerkId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select team member" />
                 </SelectTrigger>
                 <SelectContent>
-                  {teamMembers.filter(member => member.status === 'available').map(member => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.name} - {member.role}
-                    </SelectItem>
-                  ))}
+                  {driverDirectory.map((d: any) => {
+                    const name = `${d.first_name ?? ''} ${d.last_name ?? ''}`.trim() || d.email || 'Driver';
+                    return (
+                      <SelectItem key={d.clerk_user_id ?? d.id} value={d.clerk_user_id ?? ''}>
+                        {name}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -399,7 +416,15 @@ export function TeamSchedulingTab() {
               <Button variant="outline" onClick={() => setAssignmentModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setAssignmentModalOpen(false)}>
+              <Button onClick={async () => {
+                if (!assignmentDriverClerkId || !assignmentDateStr) return;
+                await assignShift.mutateAsync({
+                  driver_clerk_id: assignmentDriverClerkId,
+                  date: assignmentDateStr,
+                  template_id: assignmentTemplateId,
+                });
+                setAssignmentModalOpen(false);
+              }}>
                 Assign Shift
               </Button>
             </div>
