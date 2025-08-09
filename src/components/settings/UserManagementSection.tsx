@@ -211,7 +211,7 @@ export function UserManagementSection() {
     mutationFn: async ({ userId, team }: { userId: string; team: string }) => {
       const { error } = await supabase
         .from("profiles")
-        .update({ team_assignment: team })
+        .update({ team_assignment: team } as any)
         .eq("id", userId);
       if (error) throw error;
     },
@@ -226,7 +226,7 @@ export function UserManagementSection() {
     mutationFn: async ({ userId, locationId }: { userId: string; locationId: string }) => {
       const { error } = await supabase
         .from("profiles")
-        .update({ work_location_id: locationId })
+        .update({ work_location_id: locationId } as any)
         .eq("id", userId);
       if (error) throw error;
     },
