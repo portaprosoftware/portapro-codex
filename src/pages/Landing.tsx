@@ -8,6 +8,14 @@ import { Logo } from '@/components/ui/logo';
 import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
+
+// Import demo images
+import demoAiScanning from '@/assets/demo-ai-scanning.jpg';
+import demoJobWizard from '@/assets/demo-job-wizard.jpg';
+import demoInventory from '@/assets/demo-inventory.jpg';
+import demoQuotes from '@/assets/demo-quotes.jpg';
+import demoMobileApp from '@/assets/demo-mobile-app.jpg';
+import demoTeamManagement from '@/assets/demo-team-management.jpg';
 // Core Features Data
 const coreFeatures = [{
   title: "Google Vision AI",
@@ -415,7 +423,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <AutoCarousel media={googleAIImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src={demoAiScanning} 
+                alt="AI Scanning Demo - Google Vision AI Interface" 
+                className="w-full rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -453,7 +465,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <AutoCarousel media={jobWizardImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src={demoJobWizard} 
+                alt="Job Wizard Demo - Step-by-step Job Creation Interface" 
+                className="w-full rounded-xl"
+              />
             </div>
           </div>
         </div>
@@ -482,7 +498,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <AutoCarousel media={inventoryImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src={demoInventory} 
+                alt="Inventory Management Demo - Multi-location Tracking Interface" 
+                className="w-full rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -578,6 +598,14 @@ export const Landing: React.FC = () => {
                 <span>Job & Invoice Generated</span>
               </div>
             </div>
+            
+            <div className="mt-12">
+              <img 
+                src={demoQuotes} 
+                alt="Quote-to-Job Demo - Customer Portal and Payment Integration" 
+                className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -602,7 +630,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <AutoCarousel media={teamImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src={demoTeamManagement} 
+                alt="Team Management Demo - Shift Scheduling Interface" 
+                className="w-full rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
@@ -669,7 +701,11 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <AutoCarousel media={mobileImages} className="w-full max-w-sm mx-auto" aspectRatio="aspect-[3/4]" />
+              <img 
+                src={demoMobileApp} 
+                alt="Mobile Driver App Demo - Route Navigation and Job Updates" 
+                className="w-full max-w-sm mx-auto rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
