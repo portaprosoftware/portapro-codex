@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface DVIRFormProps {
   open: boolean;
@@ -26,6 +27,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
   const [majorDefect, setMajorDefect] = useState(false);
   const [defectKey, setDefectKey] = useState("brakes");
   const [submitting, setSubmitting] = useState(false);
+  const [verifyFix, setVerifyFix] = useState(false);
 
   const itemsJson = useMemo(() => {
     const base: Record<string, any> = {};
@@ -45,6 +47,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
     setEngineHours("");
     setMajorDefect(false);
     setDefectKey("brakes");
+    setVerifyFix(false);
   };
 
   const handleSubmit = async () => {
@@ -84,11 +87,24 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
         if (defErr) throw defErr;
       }
 
+      if (verifyFix) {
+        const { error: closeErr } = await supabase
+          .from("dvir_defects")
+          .update({ status: "closed", closed_at: new Date().toISOString() })
+          .eq("asset_type", assetType)
+          .eq("asset_id", assetId)
+          .eq("status", "open");
+        if (closeErr) throw closeErr;
+      }
+
       await qc.invalidateQueries({ queryKey: ["dvir-reports"] });
+      await qc.invalidateQueries({ queryKey: ["dvir-defects"] });
+      toast.success("DVIR submitted" + (verifyFix ? " and prior defects verified" : ""));
       onOpenChange(false);
       reset();
     } catch (e) {
       console.error(e);
+      toast.error("Failed to submit DVIR");
     } finally {
       setSubmitting(false);
     }
@@ -148,6 +164,26 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
                   ))}
                 </select>
               </div>
+            )}
+          </div>
+
+          <div className="border rounded-md p-3">
+            <div className="flex items-center gap-2">
+              <input
+                id="verifyFix"
+                type="checkbox"
+                checked={verifyFix}
+                onChange={e=>setVerifyFix(e.target.checked)}
+                disabled={majorDefect}
+              />
+              <label htmlFor="verifyFix" className="text-sm font-medium">
+                Driver verifies prior defects for this asset are fixed
+              </label>
+            </div>
+            {majorDefect && (
+              <p className="text-sm text-gray-500 mt-2">
+                Verification is disabled when reporting a major defect.
+              </p>
             )}
           </div>
         </div>
