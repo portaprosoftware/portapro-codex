@@ -2706,6 +2706,58 @@ export type Database = {
           },
         ]
       }
+      job_type_consumable_recipes: {
+        Row: {
+          consumable_id: string
+          created_at: string
+          id: string
+          job_type: string
+          notes: string | null
+          quantity_per_job: number
+          updated_at: string
+        }
+        Insert: {
+          consumable_id: string
+          created_at?: string
+          id?: string
+          job_type: string
+          notes?: string | null
+          quantity_per_job?: number
+          updated_at?: string
+        }
+        Update: {
+          consumable_id?: string
+          created_at?: string
+          id?: string
+          job_type?: string
+          notes?: string | null
+          quantity_per_job?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_type_consumable_recipes_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "job_type_consumable_recipes_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "job_type_consumable_recipes_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           actual_completion_time: string | null
@@ -7032,6 +7084,58 @@ export type Database = {
         }
         Relationships: []
       }
+      job_materials_cost: {
+        Row: {
+          job_id: string | null
+          total_material_cost: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_job_consumables_job_id"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_consumable_balances: {
+        Row: {
+          balance_qty: number | null
+          consumable_id: string | null
+          vehicle_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       add_customer_note: {
@@ -7304,6 +7408,17 @@ export type Database = {
           maintenance_count: number
         }[]
       }
+      get_consumable_forecast: {
+        Args: { start_date: string; end_date: string }
+        Returns: {
+          consumable_id: string
+          consumable_name: string
+          required_qty: number
+          on_hand: number
+          deficit: number
+          suggested_order_qty: number
+        }[]
+      }
       get_consumables_with_location_stock: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -7502,6 +7617,17 @@ export type Database = {
           total_cost: number
           fuel_station: string
           odometer_reading: number
+        }[]
+      }
+      get_route_stock_status: {
+        Args: { vehicle_uuid: string; service_date: string }
+        Returns: {
+          consumable_id: string
+          consumable_name: string
+          needed_qty: number
+          vehicle_balance: number
+          deficit: number
+          ok: boolean
         }[]
       }
       get_service_analytics: {
