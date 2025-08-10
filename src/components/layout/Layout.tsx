@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -7,6 +7,14 @@ import { useUserRole } from "@/hooks/useUserRole";
 interface LayoutProps {
   children: React.ReactNode;
 }
+
+// Ensure Sidebar renders only after client mount to avoid hook context issues
+const SafeSidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>;
+};
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { role, user, isLoaded } = useUserRole();
@@ -43,7 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SafeSidebarProvider>
       <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
         <AppSidebar 
           activeSection={activeSection} 
@@ -55,6 +63,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
+    </SafeSidebarProvider>
   );
 };
