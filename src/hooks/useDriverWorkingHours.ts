@@ -38,35 +38,9 @@ export function useDriversWithHours() {
   const query = useQuery({
     queryKey: ['drivers-with-hours'],
     queryFn: async () => {
-      // Fetch all drivers
-      const { data: drivers, error: driversError } = await supabase
-        .from('profiles')
-        .select(`id, first_name, last_name, email, is_active, user_roles!inner(role)`) 
-        .eq('user_roles.role', 'driver');
-      if (driversError) throw driversError;
-
-      const driverIds = (drivers || []).map((d: any) => d.id);
-
-      // Fetch working hours for these drivers
-      const { data: hours, error: hoursError } = await supabase
-        .from('driver_working_hours')
-        .select('*')
-        .in('driver_id', driverIds.length ? driverIds : ['00000000-0000-0000-0000-000000000000']);
-      if (hoursError) throw hoursError;
-
-      // Group hours by driver
-      const hoursByDriver: Record<string, WorkingHour[]> = {};
-      (hours || []).forEach((h: any) => {
-        const key = h.driver_id;
-        if (!hoursByDriver[key]) hoursByDriver[key] = [];
-        hoursByDriver[key].push(h);
-      });
-
-      // Combine
-      return (drivers || []).map((d: any) => ({
-        ...d,
-        working_hours: hoursByDriver[d.id] || []
-      }));
+      const { data, error } = await supabase.rpc('get_drivers_with_hours');
+      if (error) throw error;
+      return data;
     },
   });
 
