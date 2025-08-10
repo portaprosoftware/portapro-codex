@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from "react";
-// Removed SidebarProvider/Trigger to avoid invalid hook calls during render
+import React, { useState } from "react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -9,31 +9,8 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [mounted, setMounted] = useState(false);
+  const { role, user } = useUserRole();
   const [activeSection, setActiveSection] = useState<string>('/');
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  const { role, user, isLoaded } = useUserRole();
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-  
-  // Show loading while Clerk is initializing
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   if (!role && user) {
     return (
@@ -57,16 +34,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
-      <AppSidebar 
-        activeSection={activeSection} 
-        onSectionChange={setActiveSection} 
-      />
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
+        <AppSidebar 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection} 
+        />
+        <div className="flex-1 flex flex-col">
+          <main className="flex-1 overflow-y-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
