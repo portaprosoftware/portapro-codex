@@ -25,6 +25,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     setMounted(true);
   }, []);
   
+  const { role, user, isLoaded } = useUserRole();
+
   // Don't render anything until mounted
   if (!mounted) {
     return (
@@ -34,8 +36,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
   
-  const { role, user, isLoaded } = useUserRole();
-
   // Show loading while Clerk is initializing
   if (!isLoaded) {
     return (
