@@ -17,8 +17,24 @@ const SafeSidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { role, user, isLoaded } = useUserRole();
+  const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('/');
+  
+  // Ensure component mounts only after client-side to avoid SSR/hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Don't render anything until mounted
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+  
+  const { role, user, isLoaded } = useUserRole();
 
   // Show loading while Clerk is initializing
   if (!isLoaded) {
