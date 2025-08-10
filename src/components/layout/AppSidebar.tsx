@@ -24,15 +24,6 @@ import {
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { Logo } from '@/components/ui/logo';
-import { 
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -185,181 +176,67 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const visibleManagementItems = getVisibleItems(managementItems);
   const visibleAdminItems = getVisibleItems(adminItems);
 
+  const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
+    <div className="py-2">
+      {title && (
+        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          {title}
+        </div>
+      )}
+      <ul className="flex w-full min-w-0 flex-col gap-1">
+        {items.map((item) => {
+          const isActive = activeSection === item.url || location.pathname === item.url
+          return (
+            <li key={item.title} className="group/menu-item relative">
+              <NavLink
+                to={item.url}
+                onClick={() => onSectionChange?.(item.url)}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-md p-2 text-left text-sm hover:bg-gray-100",
+                  isActive && "bg-gray-100 font-medium"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="truncate">{item.title}</span>
+                {item.badge && (
+                  <Badge className="ml-auto border-0 font-bold bg-gray-200 text-gray-800">
+                    {item.badge}
+                  </Badge>
+                )}
+              </NavLink>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+
   return (
-    <Sidebar className="w-64 border-r">
+    <aside className="w-64 border-r bg-white flex h-full flex-col">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-start">
           <Logo showText={false} />
         </div>
       </div>
-      
-      <SidebarContent>
-        {/* Core Navigation */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visibleCoreItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={activeSection === item.url || location.pathname === item.url}
-                    className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                  >
-                    <NavLink
-                      to={item.url}
-                      onClick={() => onSectionChange?.(item.url)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span className="text-sm font-medium">{item.title}</span>
-                       {item.badge && (
-                        <Badge 
-                          className="ml-auto border-0 font-bold bg-gray-200 text-gray-800"
-                        >
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
 
-        {/* Day-to-Day Section */}
-        {visibleDayToDayItems.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              DAY-TO-DAY
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {visibleDayToDayItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={activeSection === item.url || location.pathname === item.url}
-                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                    >
-                      <NavLink
-                        to={item.url}
-                        onClick={() => onSectionChange?.(item.url)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{item.title}</span>
-                         {item.badge && (
-                          <Badge 
-                            className="ml-auto border-0 font-bold bg-gray-200 text-gray-800"
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
-
-        {/* Inventory Section */}
-        {visibleInventoryItems.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              INVENTORY
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {visibleInventoryItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={activeSection === item.url || location.pathname === item.url}
-                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                    >
-                      <NavLink
-                        to={item.url}
-                        onClick={() => onSectionChange?.(item.url)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
-        {/* Management Section */}
-        {visibleManagementItems.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              MANAGEMENT
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {visibleManagementItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={activeSection === item.url || location.pathname === item.url}
-                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                    >
-                      <NavLink
-                        to={item.url}
-                        onClick={() => onSectionChange?.(item.url)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
-        {/* Admin Section */}
-        {visibleAdminItems.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              ADMIN
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {visibleAdminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={activeSection === item.url || location.pathname === item.url}
-                      className={activeSection === item.url || location.pathname === item.url ? 'nav-item-active' : ''}
-                    >
-                      <NavLink
-                        to={item.url}
-                        onClick={() => onSectionChange?.(item.url)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span className="text-sm font-medium">{item.title}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-      </SidebarContent>
+      <div className="flex-1 overflow-y-auto">
+        <nav className="px-2 py-3">
+          <NavSection items={visibleCoreItems} />
+          {visibleDayToDayItems.length > 0 && (
+            <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />
+          )}
+          {visibleInventoryItems.length > 0 && (
+            <NavSection title="INVENTORY" items={visibleInventoryItems} />
+          )}
+          {visibleManagementItems.length > 0 && (
+            <NavSection title="MANAGEMENT" items={visibleManagementItems} />
+          )}
+          {visibleAdminItems.length > 0 && (
+            <NavSection title="ADMIN" items={visibleAdminItems} />
+          )}
+        </nav>
+      </div>
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 mt-auto">
@@ -377,6 +254,6 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           </div>
         </div>
       </div>
-    </Sidebar>
+    </aside>
   );
 }

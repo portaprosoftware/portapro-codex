@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+// Removed SidebarProvider/Trigger to avoid invalid hook calls during render
 import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -8,26 +8,16 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-// Ensure Sidebar renders only after client mount to avoid hook context issues
-const SafeSidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
-  return <SidebarProvider defaultOpen={true}>{children}</SidebarProvider>;
-};
-
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('/');
   
-  // Ensure component mounts only after client-side to avoid SSR/hydration issues
   useEffect(() => {
     setMounted(true);
   }, []);
   
   const { role, user, isLoaded } = useUserRole();
 
-  // Don't render anything until mounted
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
@@ -67,18 +57,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <SafeSidebarProvider>
-      <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
-        <AppSidebar 
-          activeSection={activeSection} 
-          onSectionChange={setActiveSection} 
-        />
-        <div className="flex-1 flex flex-col">
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
+    <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
+      <AppSidebar 
+        activeSection={activeSection} 
+        onSectionChange={setActiveSection} 
+      />
+      <div className="flex-1 flex flex-col">
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
       </div>
-    </SafeSidebarProvider>
+    </div>
   );
 };
