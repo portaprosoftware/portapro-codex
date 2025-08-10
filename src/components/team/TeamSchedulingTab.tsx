@@ -11,6 +11,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Calendar, Clock, Plus, Users, Settings, Edit, Trash2, AlertTriangle, CheckCircle, Copy } from 'lucide-react';
 import { DriverWorkingHoursSection } from '@/components/settings/DriverWorkingHoursSection';
+import { useShiftTemplates, useDriverShiftsForWeek, useAssignShift, useMoveShift, useCreateShiftTemplate } from '@/hooks/useScheduling';
+import { useDriverDirectory } from '@/hooks/useDirectory';
+import { format } from 'date-fns';
 
 export function TeamSchedulingTab() {
   const [showDriverHours, setShowDriverHours] = useState(false);
@@ -19,30 +22,40 @@ export function TeamSchedulingTab() {
   const [shiftTemplateModalOpen, setShiftTemplateModalOpen] = useState(false);
   const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
 
-  // Mock data
-  const teamMembers = [
-    { id: '1', name: 'John Smith', role: 'Driver', team: 'Drivers', status: 'available' },
-    { id: '2', name: 'Sarah Johnson', role: 'Admin', team: 'Office', status: 'available' },
-    { id: '3', name: 'Mike Wilson', role: 'Driver', team: 'Drivers', status: 'unavailable' },
-    { id: '4', name: 'Emily Davis', role: 'Warehouse Tech', team: 'Warehouse', status: 'available' }
-  ];
+  // Data from Supabase
+  const { data: driverDirectory = [] } = useDriverDirectory();
+  const driverByClerk = React.useMemo(() => {
+    const map: Record<string, { name: string; initials: string }> = {};
+    driverDirectory.forEach((d: any) => {
+      const name = `${d.first_name ?? ''} ${d.last_name ?? ''}`.trim() || d.email || 'Driver';
+      const initials = `${(d.first_name?.[0] ?? 'D')}${(d.last_name?.[0] ?? '')}`.toUpperCase();
+      if (d.clerk_user_id) map[d.clerk_user_id] = { name, initials };
+    });
+    return map;
+  }, [driverDirectory]);
 
-  const shiftTemplates = [
-    { id: '1', name: 'Morning Route', start: '08:00', end: '16:00', type: 'Driver', description: 'Standard morning delivery route' },
-    { id: '2', name: 'Evening Clean', start: '17:00', end: '21:00', type: 'Driver', description: 'Evening service and maintenance' },
-    { id: '3', name: 'Warehouse Day', start: '09:00', end: '17:00', type: 'Warehouse', description: 'Warehouse operations and inventory' }
-  ];
+  const { data: templates = [] } = useShiftTemplates();
+  const templateById = React.useMemo(() => {
+    const m: Record<string, any> = {};
+    (templates || []).forEach((t: any) => { m[t.id] = t; });
+    return m;
+  }, [templates]);
+  const { data: weekShifts = [] } = useDriverShiftsForWeek(selectedDate);
+  const createTemplate = useCreateShiftTemplate();
+  const assignShift = useAssignShift();
+  const moveShift = useMoveShift();
 
-  const weeklySchedule = [
-    { id: '1', date: '2024-01-15', shifts: [
-      { id: 's1', templateId: '1', assignedTo: '1', status: 'confirmed', conflicts: [] },
-      { id: 's2', templateId: '3', assignedTo: '4', status: 'pending', conflicts: [] }
-    ]},
-    { id: '2', date: '2024-01-16', shifts: [
-      { id: 's3', templateId: '1', assignedTo: '1', status: 'confirmed', conflicts: [] },
-      { id: 's4', templateId: '2', assignedTo: '3', status: 'conflict', conflicts: ['unavailable'] }
-    ]}
-  ];
+  // Template form state
+  const [templateName, setTemplateName] = useState("");
+  const [templateStart, setTemplateStart] = useState("08:00");
+  const [templateEnd, setTemplateEnd] = useState("16:00");
+  const [templateType, setTemplateType] = useState("driver");
+  const [templateDescription, setTemplateDescription] = useState("");
+
+  // Assignment form state
+  const [assignmentDateStr, setAssignmentDateStr] = useState(format(selectedDate, 'yyyy-MM-dd'));
+  const [assignmentTemplateId, setAssignmentTemplateId] = useState<string | undefined>(undefined);
+  const [assignmentDriverClerkId, setAssignmentDriverClerkId] = useState<string | undefined>(undefined);
 
   const getWeekDays = () => {
     const start = new Date(selectedDate);
@@ -54,13 +67,15 @@ export function TeamSchedulingTab() {
     });
   };
 
-  const onDragEnd = (result) => {
-    const { destination, source, draggableId } = result;
-    
+  const onDragEnd = (result: any) => {
+    const { destination, draggableId } = result;
     if (!destination) return;
-    
-    // Handle shift reassignment logic here
-    console.log('Reassigning shift:', { source, destination, draggableId });
+    const [, dayIndexStr] = destination.droppableId.split('-');
+    const dayIndex = parseInt(dayIndexStr, 10);
+    const days = getWeekDays();
+    const newDate = days[dayIndex];
+    if (!newDate) return;
+    moveShift.mutate({ shift_id: draggableId, new_date: format(newDate, 'yyyy-MM-dd') });
   };
 
   const getStatusColor = (status) => {
@@ -164,13 +179,13 @@ export function TeamSchedulingTab() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {shiftTemplates.map((template) => (
+              {templates.map((template: any) => (
                 <Card key={template.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h4 className="font-semibold">{template.name}</h4>
-                        <p className="text-sm text-muted-foreground">{template.type}</p>
+                        <p className="text-sm text-muted-foreground">{template.shift_type}</p>
                       </div>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm">
@@ -187,11 +202,11 @@ export function TeamSchedulingTab() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="h-4 w-4" />
-                        <span>{template.start} - {template.end}</span>
+                        <span>{String(template.start_time).slice(0,5)} - {String(template.end_time).slice(0,5)}</span>
                       </div>
                       <p className="text-sm text-muted-foreground">{template.description}</p>
                     </div>
-                    <Button variant="outline" className="w-full mt-3" onClick={() => setAssignmentModalOpen(true)}>
+                    <Button variant="outline" className="w-full mt-3" onClick={() => { setAssignmentTemplateId(template.id); setAssignmentModalOpen(true); }}>
                       Assign to Date
                     </Button>
                   </CardContent>
@@ -245,36 +260,36 @@ export function TeamSchedulingTab() {
                           {day.getDate()}
                         </div>
                         
-                        {/* Sample shifts for demonstration */}
-                        {index < 2 && shiftTemplates.slice(0, index + 1).map((shift, shiftIndex) => (
-                          <Draggable
-                            key={`${shift.id}-${index}`}
-                            draggableId={`${shift.id}-${index}`}
-                            index={shiftIndex}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`p-2 mb-2 rounded text-xs ${
-                                  snapshot.isDragging ? 'opacity-50' : ''
-                                } bg-primary/10 border border-primary/20`}
-                              >
-                                <div className="font-medium truncate">{shift.name}</div>
-                                <div className="text-muted-foreground">{shift.start}-{shift.end}</div>
-                                <div className="flex items-center gap-1 mt-1">
-                                  <Avatar className="h-4 w-4">
-                                    <AvatarFallback className="text-xs">JS</AvatarFallback>
-                                  </Avatar>
-                                  <Badge variant="outline" className="text-xs">
-                                    Confirmed
-                                  </Badge>
+                        {/* Render real shifts for this day */}
+                        {(() => {
+                          const dayStr = format(day, 'yyyy-MM-dd');
+                          const shiftsForDay = (weekShifts as any[]).filter((s: any) => s.shift_date === dayStr);
+                          return shiftsForDay.map((shift: any, shiftIndex: number) => (
+                            <Draggable key={shift.id} draggableId={shift.id} index={shiftIndex}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`p-2 mb-2 rounded text-xs ${
+                                    snapshot.isDragging ? 'opacity-50' : ''
+                                  } bg-primary/10 border border-primary/20`}
+                                >
+                                  <div className="font-medium truncate">{templateById[shift.template_id]?.name || 'Shift'}</div>
+                                  <div className="text-muted-foreground">{String(shift.start_time).slice(0,5)}-{String(shift.end_time).slice(0,5)}</div>
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Avatar className="h-4 w-4">
+                                      <AvatarFallback className="text-xs">{driverByClerk[shift.driver_clerk_id]?.initials || 'DR'}</AvatarFallback>
+                                    </Avatar>
+                                    <Badge variant="outline" className="text-xs">
+                                      {shift.status}
+                                    </Badge>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
+                              )}
+                            </Draggable>
+                          ));
+                        })()}
                         
                         {provided.placeholder}
                       </div>
@@ -296,23 +311,23 @@ export function TeamSchedulingTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Template Name</Label>
-              <Input placeholder="e.g., Morning Route" />
+              <Input placeholder="e.g., Morning Route" value={templateName} onChange={(e) => setTemplateName(e.target.value)} />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Input type="time" defaultValue="08:00" />
+                <Input type="time" value={templateStart} onChange={(e) => setTemplateStart(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>End Time</Label>
-                <Input type="time" defaultValue="16:00" />
+                <Input type="time" value={templateEnd} onChange={(e) => setTemplateEnd(e.target.value)} />
               </div>
             </div>
             
             <div className="space-y-2">
               <Label>Shift Type</Label>
-              <Select>
+              <Select value={templateType} onValueChange={setTemplateType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -326,14 +341,23 @@ export function TeamSchedulingTab() {
             
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea placeholder="Brief description of this shift..." />
+              <Textarea placeholder="Brief description of this shift..." value={templateDescription} onChange={(e) => setTemplateDescription(e.target.value)} />
             </div>
             
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShiftTemplateModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setShiftTemplateModalOpen(false)}>
+              <Button onClick={async () => {
+                await createTemplate.mutateAsync({
+                  name: templateName,
+                  shift_type: templateType,
+                  description: templateDescription,
+                  start_time: `${templateStart}:00`,
+                  end_time: `${templateEnd}:00`,
+                } as any);
+                setShiftTemplateModalOpen(false);
+              }}>
                 Create Template
               </Button>
             </div>
@@ -350,19 +374,19 @@ export function TeamSchedulingTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Date</Label>
-              <Input type="date" />
+              <Input type="date" value={assignmentDateStr} onChange={(e) => setAssignmentDateStr(e.target.value)} />
             </div>
             
             <div className="space-y-2">
               <Label>Shift Template</Label>
-              <Select>
+              <Select value={assignmentTemplateId} onValueChange={setAssignmentTemplateId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select template" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shiftTemplates.map(template => (
+                  {templates.map((template: any) => (
                     <SelectItem key={template.id} value={template.id}>
-                      {template.name} ({template.start}-{template.end})
+                      {template.name} ({String(template.start_time).slice(0,5)}-{String(template.end_time).slice(0,5)})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -371,16 +395,19 @@ export function TeamSchedulingTab() {
             
             <div className="space-y-2">
               <Label>Assign To</Label>
-              <Select>
+              <Select value={assignmentDriverClerkId} onValueChange={setAssignmentDriverClerkId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select team member" />
                 </SelectTrigger>
                 <SelectContent>
-                  {teamMembers.filter(member => member.status === 'available').map(member => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.name} - {member.role}
-                    </SelectItem>
-                  ))}
+                  {driverDirectory.map((d: any) => {
+                    const name = `${d.first_name ?? ''} ${d.last_name ?? ''}`.trim() || d.email || 'Driver';
+                    return (
+                      <SelectItem key={d.clerk_user_id ?? d.id} value={d.clerk_user_id ?? ''}>
+                        {name}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -389,7 +416,15 @@ export function TeamSchedulingTab() {
               <Button variant="outline" onClick={() => setAssignmentModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setAssignmentModalOpen(false)}>
+              <Button onClick={async () => {
+                if (!assignmentDriverClerkId || !assignmentDateStr) return;
+                await assignShift.mutateAsync({
+                  driver_clerk_id: assignmentDriverClerkId,
+                  date: assignmentDateStr,
+                  template_id: assignmentTemplateId,
+                });
+                setAssignmentModalOpen(false);
+              }}>
                 Assign Shift
               </Button>
             </div>
