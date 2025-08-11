@@ -15,7 +15,7 @@ export const ConsumablesAlertCard: React.FC = () => {
   const { data: totalStats, isLoading } = useQuery({
     queryKey: ['dashboard-consumable-location-stats'],
     queryFn: async () => {
-      // Get all location stock entries with their low stock thresholds
+      // Get all location stock entries with their low stock thresholds and consumable reorder thresholds
       const { data: locationStockData, error } = await supabase
         .from('consumable_location_stock')
         .select(`
@@ -25,7 +25,8 @@ export const ConsumablesAlertCard: React.FC = () => {
           consumable:consumables!inner(
             id,
             name,
-            is_active
+            is_active,
+            reorder_threshold
           )
         `);
       
@@ -36,12 +37,18 @@ export const ConsumablesAlertCard: React.FC = () => {
         (stock: any) => stock.consumable?.is_active === true
       );
       
-      // Count low stock locations (where location has a threshold set and quantity is below it)
-      const lowStockLocations = activeLocationStocks.filter((stock: any) => 
-        stock.low_stock_threshold && 
-        stock.low_stock_threshold > 0 && 
-        stock.quantity <= stock.low_stock_threshold
-      ).length;
+      // Count low stock locations using either location threshold or global reorder threshold
+      const lowStockLocations = activeLocationStocks.filter((stock: any) => {
+        const locationThreshold = stock.low_stock_threshold;
+        const globalThreshold = stock.consumable?.reorder_threshold || 0;
+        
+        // Use location threshold if set, otherwise fall back to global threshold
+        const effectiveThreshold = (locationThreshold && locationThreshold > 0) 
+          ? locationThreshold 
+          : globalThreshold;
+        
+        return effectiveThreshold > 0 && stock.quantity <= effectiveThreshold;
+      }).length;
       
       // Get unique consumable count
       const uniqueConsumableIds = new Set(
