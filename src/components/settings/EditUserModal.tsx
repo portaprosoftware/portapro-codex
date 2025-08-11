@@ -17,7 +17,7 @@ const editUserFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["admin", "dispatch", "driver"]),
+  role: z.enum(["admin", "dispatcher", "driver"]),
 });
 
 type EditUserFormData = z.infer<typeof editUserFormSchema>;
@@ -238,7 +238,7 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="driver">Driver</SelectItem>
-                      <SelectItem value="dispatch">Dispatcher</SelectItem>
+                      <SelectItem value="dispatcher">Dispatcher</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
