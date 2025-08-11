@@ -233,11 +233,6 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
         {jobTypeInfo.label}
       </div>
 
-      {/* Job Number */}
-      <div className="text-xs font-medium text-gray-900 truncate w-full text-center leading-tight">
-        {job.job_number}
-      </div>
-
       {/* Status Badges Container - Positioned higher */}
       <div className="flex flex-col items-center gap-0.5 mt-auto mb-1">
         <Badge className={cn("text-xs px-1.5 py-0 font-bold text-center whitespace-nowrap leading-tight", statusInfo.primary.gradient)}>
