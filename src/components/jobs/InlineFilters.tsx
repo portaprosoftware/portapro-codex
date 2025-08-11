@@ -46,7 +46,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
       {/* Instructions */}
       <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
         <span>
-          <strong>Quick Job Search:</strong> Type a complete Job ID (e.g., 2032) and press Enter to find jobs across all dates. 
+          <strong>Quick Job Search:</strong> Type a complete Job ID (e.g., DEL-012) and press Enter to find jobs across all dates. 
           Regular search filters current date only.
         </span>
       </div>
@@ -58,7 +58,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               type="text"
-              placeholder="Enter Job ID (e.g., 2032) or Customer name"
+              placeholder="Enter Job ID (e.g., DEL-012) or Customer name"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               onKeyDown={onSearchKeyDown}
