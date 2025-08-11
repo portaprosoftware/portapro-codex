@@ -7118,7 +7118,6 @@ export type Database = {
           id: string
           invitation_token: string
           invited_by: string
-          role: Database["public"]["Enums"]["app_role"]
         }
         Insert: {
           accepted_at?: string | null
@@ -7128,7 +7127,6 @@ export type Database = {
           id?: string
           invitation_token: string
           invited_by: string
-          role: Database["public"]["Enums"]["app_role"]
         }
         Update: {
           accepted_at?: string | null
@@ -7138,7 +7136,6 @@ export type Database = {
           id?: string
           invitation_token?: string
           invited_by?: string
-          role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
       }
@@ -8258,16 +8255,6 @@ export type Database = {
         Args: { job_uuid: string; job_type_param: string }
         Returns: boolean
       }
-      admin_create_user: {
-        Args: {
-          user_email: string
-          user_password: string
-          user_first_name: string
-          user_last_name: string
-          user_role: Database["public"]["Enums"]["app_role"]
-        }
-        Returns: Json
-      }
       auto_fix_storage_location_issues: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -8982,13 +8969,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role:
-        | "owner"
-        | "dispatcher"
-        | "driver"
-        | "customer"
-        | "admin"
-        | "dispatch"
+      app_role: "admin" | "dispatch" | "driver"
       consumable_category:
         | "sanitizer"
         | "deodorizer"
@@ -9165,14 +9146,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: [
-        "owner",
-        "dispatcher",
-        "driver",
-        "customer",
-        "admin",
-        "dispatch",
-      ],
+      app_role: ["admin", "dispatch", "driver"],
       consumable_category: [
         "sanitizer",
         "deodorizer",
