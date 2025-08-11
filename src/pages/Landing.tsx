@@ -334,16 +334,18 @@ export const Landing: React.FC = () => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Header and Photo Row */}
+          {/* Header and Why it matters Row */}
           <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
-            <div className="space-y-6">
-              <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
-              <p className="text-xl text-muted-foreground">
-                Eliminate manual data entry — just snap a photo.
-              </p>
-              <p className="text-lg text-muted-foreground">
-                PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
-              </p>
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
+                <p className="text-xl text-muted-foreground">
+                  Eliminate manual data entry — just snap a photo.
+                </p>
+                <p className="text-lg text-muted-foreground">
+                  PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
+                </p>
+              </div>
               
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
@@ -383,24 +385,6 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="relative">
-              <img 
-                src={demoAiScanning} 
-                alt="AI Scanning Demo - Google Vision AI Interface" 
-                className="w-full rounded-2xl shadow-lg"
-              />
-            </div>
-          </div>
-
-          {/* Bottom Row: OCR Box and Why it matters */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
-              <p className="text-muted-foreground">
-                It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-              </p>
-            </div>
 
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
@@ -430,6 +414,24 @@ export const Landing: React.FC = () => {
                   <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Bottom Row: OCR Box and Photo */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
+              <p className="text-muted-foreground">
+                It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
+              </p>
+            </div>
+
+            <div className="relative">
+              <img 
+                src={demoAiScanning} 
+                alt="AI Scanning Demo - Google Vision AI Interface" 
+                className="w-full rounded-2xl shadow-lg"
+              />
             </div>
           </div>
         </div>
