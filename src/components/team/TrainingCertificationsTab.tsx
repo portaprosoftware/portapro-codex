@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { GraduationCap, Upload, AlertTriangle, CheckCircle, Plus, FileText, Calendar, Bell, Download, Search, Filter, Eye, Edit, Trash2 } from 'lucide-react';
+import { useCertificationTypes, useEmployeeCertifications, useAddEmployeeCertification, useTrainingRequirements, useDeleteTrainingRequirement } from '@/hooks/useTraining';
+import { useDriverDirectory } from '@/hooks/useDirectory';
 
 export function TrainingCertificationsTab() {
   const [addCertModalOpen, setAddCertModalOpen] = useState(false);
@@ -19,96 +21,94 @@ export function TrainingCertificationsTab() {
   const [viewMode, setViewMode] = useState('overview'); // overview, individual, requirements
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock data
-  const certificationCategories = [
-    { 
-      id: 'cdl', 
-      name: 'CDL Licenses', 
-      description: 'Commercial driver\'s licenses',
-      active: 15, 
-      expiring: 2,
-      required: true,
-      roles: ['Driver']
-    },
-    { 
-      id: 'safety', 
-      name: 'Safety Training', 
-      description: 'OSHA and safety certifications',
-      active: 23, 
-      expiring: 1,
-      required: true,
-      roles: ['Driver', 'Warehouse Tech']
-    },
-    { 
-      id: 'equipment', 
-      name: 'Equipment Operation', 
-      description: 'Specialized equipment certifications',
-      active: 9, 
-      expiring: 2,
-      required: false,
-      roles: ['Warehouse Tech']
-    },
-    { 
-      id: 'hazmat', 
-      name: 'HAZMAT Certification', 
-      description: 'Hazardous materials handling',
-      active: 5, 
-      expiring: 0,
-      required: false,
-      roles: ['Driver']
-    }
-  ];
+  // Data hooks
+  const { data: certTypes = [] } = useCertificationTypes();
+  const { data: empCerts = [] } = useEmployeeCertifications();
+  const { data: requirements = [] } = useTrainingRequirements();
+  const addCert = useAddEmployeeCertification();
+  const deleteRequirement = useDeleteTrainingRequirement();
+  const { data: driverDirectory = [] } = useDriverDirectory();
 
-  const individualCertifications = [
-    {
-      id: '1',
-      employeeName: 'John Smith',
-      employeeId: '1',
-      role: 'Driver',
-      certifications: [
-        { type: 'CDL Class A', issueDate: '2023-01-15', expiryDate: '2025-01-15', status: 'valid', authority: 'DMV' },
-        { type: 'Safety Training', issueDate: '2023-06-01', expiryDate: '2024-06-01', status: 'expiring', authority: 'OSHA' },
-        { type: 'HAZMAT', issueDate: '2023-03-10', expiryDate: '2025-03-10', status: 'valid', authority: 'TSA' }
-      ]
-    },
-    {
-      id: '2',
-      employeeName: 'Emily Davis',
-      employeeId: '4',
-      role: 'Warehouse Tech',
-      certifications: [
-        { type: 'Forklift Operation', issueDate: '2023-02-20', expiryDate: '2024-02-20', status: 'expired', authority: 'OSHA' },
-        { type: 'Safety Training', issueDate: '2023-07-15', expiryDate: '2024-07-15', status: 'valid', authority: 'OSHA' }
-      ]
-    }
-  ];
+  // Add cert modal state
+  const [selectedDriverId, setSelectedDriverId] = useState<string | undefined>(undefined);
+  const [selectedTypeId, setSelectedTypeId] = useState<string | undefined>(undefined);
+  const [issueDate, setIssueDate] = useState<string>('');
+  const [expiryDate, setExpiryDate] = useState<string>('');
 
-  const trainingRequirements = [
-    { 
-      id: '1', 
-      name: 'CDL License', 
-      roles: ['Driver'], 
-      frequency: 'Every 4 years', 
-      mandatory: true,
-      description: 'Valid commercial driver\'s license required for all driving positions'
-    },
-    { 
-      id: '2', 
-      name: 'Annual Safety Training', 
-      roles: ['Driver', 'Warehouse Tech'], 
-      frequency: 'Annually', 
-      mandatory: true,
-      description: 'Comprehensive safety training covering workplace hazards'
-    },
-    { 
-      id: '3', 
-      name: 'Equipment Training', 
-      roles: ['Warehouse Tech'], 
-      frequency: 'Every 2 years', 
-      mandatory: true,
-      description: 'Forklift and heavy equipment operation certification'
+  // Helper maps
+  const certTypeById = React.useMemo(() => {
+    const m: Record<string, any> = {};
+    (certTypes || []).forEach((t: any) => { m[t.id] = t; });
+    return m;
+  }, [certTypes]);
+
+  const driverByClerk = React.useMemo(() => {
+    const m: Record<string, { name: string; initials: string; role: string } > = {};
+    (driverDirectory || []).forEach((d: any) => {
+      const name = `${d.first_name ?? ''} ${d.last_name ?? ''}`.trim() || d.email || 'Team Member';
+      const initials = `${(d.first_name?.[0] ?? 'T')}${(d.last_name?.[0] ?? '')}`.toUpperCase();
+      if (d.clerk_user_id) m[d.clerk_user_id] = { name, initials, role: d.role || 'Team Member' };
+    });
+    return m;
+  }, [driverDirectory]);
+
+  // Derived categories summary
+  const categoriesSummary = React.useMemo(() => {
+    const now = new Date();
+    const soon = new Date();
+    soon.setDate(now.getDate() + 30);
+
+    return (certTypes || []).map((type: any) => {
+      const certsForType = (empCerts as any[]).filter(c => c.certification_type_id === type.id);
+      const active = certsForType.filter(c => !c.expires_on || new Date(c.expires_on) > now).length;
+      const expiring = certsForType.filter(c => c.expires_on && new Date(c.expires_on) <= soon && new Date(c.expires_on) >= now).length;
+      return {
+        id: type.id,
+        name: type.name,
+        description: type.description || '',
+        active,
+        expiring,
+        required: !!type.is_mandatory,
+        roles: [],
+      };
+    });
+  }, [certTypes, empCerts]);
+
+  // Group certifications by driver
+  const individuals = React.useMemo(() => {
+    const byDriver: Record<string, { id: string; employeeName: string; role: string; certifications: any[] } > = {};
+    (empCerts as any[]).forEach((c: any) => {
+      const driverId = c.driver_clerk_id;
+      const type = certTypeById[c.certification_type_id];
+      const issueDate = c.completed_on;
+      const expiryDate = c.expires_on || '';
+      const now = new Date();
+      const status = expiryDate ? (new Date(expiryDate) < now ? 'expired' : (new Date(expiryDate) <= new Date(now.getTime() + 30*24*60*60*1000) ? 'expiring' : 'valid')) : 'valid';
+      const driverInfo = driverByClerk[driverId] || { name: driverId || 'Team Member', initials: 'TM', role: 'Team Member' };
+      if (!byDriver[driverId]) {
+        byDriver[driverId] = {
+          id: driverId,
+          employeeName: driverInfo.name,
+          role: driverInfo.role,
+          certifications: [],
+        };
+      }
+      byDriver[driverId].certifications.push({
+        type: type?.name || 'Certification',
+        issueDate,
+        expiryDate,
+        status,
+        authority: '',
+      });
+    });
+
+    let list = Object.values(byDriver);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(emp => emp.employeeName.toLowerCase().includes(q) || emp.certifications.some(c => c.type.toLowerCase().includes(q)));
     }
-  ];
+    return list;
+  }, [empCerts, certTypeById, driverByClerk, searchQuery]);
 
   const getStatusColor = (status) => {
     const colors = {
@@ -121,14 +121,16 @@ export function TrainingCertificationsTab() {
 
   const getComplianceRate = (employee) => {
     const total = employee.certifications.length;
-    const valid = employee.certifications.filter(cert => cert.status === 'valid').length;
+    const valid = employee.certifications.filter((cert: any) => cert.status === 'valid').length;
     return total > 0 ? Math.round((valid / total) * 100) : 0;
   };
 
-  const expiringCertifications = individualCertifications
-    .flatMap(emp => emp.certifications.map(cert => ({ ...cert, employeeName: emp.employeeName })))
-    .filter(cert => cert.status === 'expiring')
-    .slice(0, 5);
+  const expiringCertifications = React.useMemo(() => {
+    return individuals
+      .flatMap((emp: any) => emp.certifications.map((cert: any) => ({ ...cert, employeeName: emp.employeeName })))
+      .filter((cert: any) => cert.status === 'expiring')
+      .slice(0, 5);
+  }, [individuals]);
 
   return (
     <div className="space-y-6">
@@ -158,7 +160,7 @@ export function TrainingCertificationsTab() {
               <CheckCircle className="h-5 w-5 text-green-600" />
               <div>
                 <p className="text-sm font-medium">Active Certs</p>
-                <p className="text-2xl font-bold">52</p>
+                <p className="text-2xl font-bold">{empCerts.length}</p>
               </div>
             </div>
           </CardContent>
@@ -170,7 +172,7 @@ export function TrainingCertificationsTab() {
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
               <div>
                 <p className="text-sm font-medium">Expiring Soon</p>
-                <p className="text-2xl font-bold">5</p>
+                <p className="text-2xl font-bold">{expiringCertifications.length}</p>
               </div>
             </div>
           </CardContent>
@@ -182,7 +184,7 @@ export function TrainingCertificationsTab() {
               <GraduationCap className="h-5 w-5 text-blue-600" />
               <div>
                 <p className="text-sm font-medium">Training Hours</p>
-                <p className="text-2xl font-bold">156</p>
+                <p className="text-2xl font-bold">—</p>
               </div>
             </div>
           </CardContent>
@@ -194,7 +196,7 @@ export function TrainingCertificationsTab() {
               <FileText className="h-5 w-5 text-purple-600" />
               <div>
                 <p className="text-sm font-medium">Compliance</p>
-                <p className="text-2xl font-bold">94.2%</p>
+                <p className="text-2xl font-bold">—</p>
               </div>
             </div>
           </CardContent>
@@ -268,7 +270,7 @@ export function TrainingCertificationsTab() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {certificationCategories.map((category) => (
+                {categoriesSummary.map((category) => (
                   <Card key={category.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
@@ -279,7 +281,7 @@ export function TrainingCertificationsTab() {
                             {category.required && (
                               <Badge variant="destructive" className="text-xs">Required</Badge>
                             )}
-                            {category.roles.map(role => (
+                            {category.roles.map((role: string) => (
                               <Badge key={role} variant="outline" className="text-xs">{role}</Badge>
                             ))}
                           </div>
@@ -294,7 +296,7 @@ export function TrainingCertificationsTab() {
                           <span>Active: {category.active}</span>
                           <span className="text-yellow-600">Expiring: {category.expiring}</span>
                         </div>
-                        <Progress value={(category.active / (category.active + category.expiring)) * 100} className="h-2" />
+                        <Progress value={(category.active / Math.max(category.active + category.expiring, 1)) * 100} className="h-2" />
                       </div>
                       
                       <div className="flex items-center gap-2 mt-3">
@@ -323,14 +325,14 @@ export function TrainingCertificationsTab() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {individualCertifications.map((employee) => (
+                {individuals.map((employee: any) => (
                   <Card key={employee.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
                             <AvatarFallback className="bg-primary/10 text-primary">
-                              {employee.employeeName.split(' ').map(n => n[0]).join('')}
+                              {employee.employeeName.split(' ').map((n: string) => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
                           <div>
@@ -349,7 +351,7 @@ export function TrainingCertificationsTab() {
                       </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {employee.certifications.map((cert, index) => (
+                        {employee.certifications.map((cert: any, index: number) => (
                           <div key={index} className="p-3 border rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <h5 className="font-medium text-sm">{cert.type}</h5>
@@ -359,8 +361,8 @@ export function TrainingCertificationsTab() {
                             </div>
                             <div className="text-xs text-muted-foreground space-y-1">
                               <p>Issued: {cert.issueDate}</p>
-                              <p>Expires: {cert.expiryDate}</p>
-                              <p>Authority: {cert.authority}</p>
+                              <p>Expires: {cert.expiryDate || '—'}</p>
+                              {cert.authority && <p>Authority: {cert.authority}</p>}
                             </div>
                           </div>
                         ))}
@@ -381,26 +383,25 @@ export function TrainingCertificationsTab() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {trainingRequirements.map((requirement) => (
+                {requirements.map((requirement: any) => (
                   <div key={requirement.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold">{requirement.name}</h4>
-                        {requirement.mandatory && (
+                        <h4 className="font-semibold">{certTypeById[requirement.certification_type_id]?.name || 'Certification'}</h4>
+                        {requirement.is_required && (
                           <Badge variant="destructive" className="text-xs">Mandatory</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">{requirement.description}</p>
+                      <div className="text-sm text-muted-foreground mb-2">Role: {requirement.role}</div>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>Frequency: {requirement.frequency}</span>
-                        <span>Roles: {requirement.roles.join(', ')}</span>
+                        <span>Frequency (months): {requirement.frequency_months ?? '—'}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="sm">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-destructive">
+                      <Button variant="ghost" size="sm" className="text-destructive" onClick={() => deleteRequirement.mutate(requirement.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -464,14 +465,14 @@ export function TrainingCertificationsTab() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Team Member</Label>
-              <Select>
+              <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select team member" />
                 </SelectTrigger>
                 <SelectContent>
-                  {individualCertifications.map(emp => (
-                    <SelectItem key={emp.id} value={emp.id}>
-                      {emp.employeeName} - {emp.role}
+                  {driverDirectory.map((d: any) => (
+                    <SelectItem key={d.clerk_user_id} value={d.clerk_user_id}>
+                      {(d.first_name || d.last_name) ? `${d.first_name ?? ''} ${d.last_name ?? ''}`.trim() : (d.email || d.clerk_user_id)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -480,12 +481,12 @@ export function TrainingCertificationsTab() {
             
             <div className="space-y-2">
               <Label>Certification Type</Label>
-              <Select>
+              <Select value={selectedTypeId} onValueChange={setSelectedTypeId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select certification type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {certificationCategories.map(cat => (
+                  {certTypes.map((cat: any) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
@@ -497,29 +498,34 @@ export function TrainingCertificationsTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Issue Date</Label>
-                <Input type="date" />
+                <Input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Expiry Date</Label>
-                <Input type="date" />
+                <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Issuing Authority</Label>
-              <Input placeholder="e.g., DMV, OSHA, TSA" />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Certificate Number</Label>
-              <Input placeholder="Certification number or ID" />
             </div>
             
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setAddCertModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setAddCertModalOpen(false)}>
+              <Button onClick={async () => {
+                if (!selectedDriverId || !selectedTypeId || !issueDate) return;
+                await addCert.mutateAsync({
+                  driver_clerk_id: selectedDriverId,
+                  certification_type_id: selectedTypeId,
+                  completed_on: issueDate,
+                  expires_on: expiryDate || null,
+                  certificate_url: null,
+                  notes: null,
+                } as any);
+                setAddCertModalOpen(false);
+                setSelectedDriverId(undefined);
+                setSelectedTypeId(undefined);
+                setIssueDate('');
+                setExpiryDate('');
+              }}>
                 Add Certification
               </Button>
             </div>
