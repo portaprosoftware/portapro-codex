@@ -114,7 +114,7 @@ export const ConsumablesAlertCard: React.FC = () => {
           {/* Right Section - Action Button */}
           <div className="flex items-center gap-3">
             {totalStats && totalStats.lowStockCount > 0 && (
-              <Badge variant="destructive" className="text-sm px-3 py-1">
+              <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-sm px-3 py-1">
                 {totalStats.lowStockCount} LOW
               </Badge>
             )}
