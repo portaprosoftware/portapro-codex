@@ -164,7 +164,7 @@ const Dashboard = () => {
             </p>
             {role && (
               <Badge className="bg-gradient-blue text-white font-bold">
-                Role: {role === 'owner' ? 'Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
+                Role: {role === 'admin' ? 'Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
               </Badge>
             )}
           </div>

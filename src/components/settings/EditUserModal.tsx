@@ -17,7 +17,7 @@ const editUserFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["owner", "dispatcher", "driver", "customer", "admin"]),
+  role: z.enum(["admin", "dispatch", "driver"]),
 });
 
 type EditUserFormData = z.infer<typeof editUserFormSchema>;

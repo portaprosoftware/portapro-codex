@@ -28,33 +28,27 @@ const userFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["owner", "dispatcher", "driver", "customer", "admin"]),
+  role: z.enum(["admin", "dispatch", "driver"]),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
-  owner: "bg-gradient-primary",
-  dispatcher: "bg-gradient-secondary", 
+  admin: "bg-gradient-primary",
+  dispatch: "bg-gradient-secondary", 
   driver: "bg-gradient-accent",
-  customer: "bg-gradient-warning",
-  admin: "bg-gradient-destructive",
 };
 
 const roleLabels = {
-  owner: "Admin",
-  dispatcher: "Dispatcher",
-  driver: "Driver",
-  customer: "Customer",
   admin: "Admin",
+  dispatch: "Dispatcher",
+  driver: "Driver",
 };
 
 const roleIcons = {
-  owner: Crown,
-  dispatcher: Headphones,
+  admin: Crown,
+  dispatch: Headphones,
   driver: Truck,
-  customer: User,
-  admin: Shield,
 };
 
 export function UserManagementSection() {
@@ -408,11 +402,9 @@ export function UserManagementSection() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="owner">Owner</SelectItem>
-                <SelectItem value="dispatcher">Dispatcher</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="dispatch">Dispatcher</SelectItem>
                 <SelectItem value="driver">Driver</SelectItem>
-                <SelectItem value="customer">Customer</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -6,23 +6,22 @@ export const useUserRole = () => {
 
   const role = (user?.publicMetadata?.role as UserRole) || null;
 
-  const isOwner = role === "owner";
+  const isAdmin = role === "admin";
   const isDispatch = role === "dispatch";
   const isDriver = role === "driver";
-  const isCustomer = role === "customer";
 
-  // Admin level access (owner + dispatch)
-  const hasAdminAccess = isOwner || isDispatch;
+  // Admin level access (admin + dispatch)
+  const hasAdminAccess = isAdmin || isDispatch;
 
-  // Staff level access (owner + dispatch + driver)
-  const hasStaffAccess = isOwner || isDispatch || isDriver;
+  // Staff level access (admin + dispatch + driver)
+  const hasStaffAccess = isAdmin || isDispatch || isDriver;
 
   return {
     role,
-    isOwner,
+    isOwner: isAdmin, // Keep for backward compatibility
+    isAdmin,
     isDispatch,
     isDriver,
-    isCustomer,
     hasAdminAccess,
     hasStaffAccess,
     user,
