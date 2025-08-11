@@ -28,6 +28,7 @@ export const RouteStockCheck: React.FC = () => {
   const { data: routeStatus, isLoading } = useQuery({
     queryKey: ['route-stock-status', vehicleId, serviceDate],
     queryFn: async () => {
+      if (!vehicleId || !serviceDate) return [];
       const { data, error } = await supabase.rpc('get_route_stock_status', {
         vehicle_uuid: vehicleId,
         service_date: serviceDate,
@@ -36,6 +37,8 @@ export const RouteStockCheck: React.FC = () => {
       return (data || []) as any[];
     },
     enabled: !!vehicleId && !!serviceDate,
+    staleTime: 30000, // Cache for 30 seconds
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   return (

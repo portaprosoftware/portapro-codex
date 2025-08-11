@@ -572,26 +572,8 @@ const JobsPage: React.FC = () => {
               onDragEnd={handleDragEnd}
               key={`drag-context-${dragContextKey}`}
             >
-              <div className="bg-white h-full">
-                {/* Dispatch Header */}
-                <div className="border-b border-gray-200 p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" className="p-1">
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <h2 className="text-lg font-semibold text-gray-900">Dispatch Board</h2>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-900">
-                        {format(selectedDate, 'MMMM do, yyyy')}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">Manage driver schedules and job assignments</p>
-                </div>
-
-                {/* Route vs Truck Stock warnings */}
+               <div className="bg-white h-full">
+                {/* Route vs Truck Stock */}
                 <div className="border-b border-gray-200 p-4 bg-white">
                   <div className="max-w-4xl">
                     <RouteStockCheck />
