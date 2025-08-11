@@ -334,17 +334,16 @@ export const Landing: React.FC = () => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-6">
-                <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
-                <p className="text-xl text-muted-foreground">
-                  Eliminate manual data entry — just snap a photo.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
-                </p>
-              </div>
+          {/* Header and Photo Row */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
+            <div className="space-y-6">
+              <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
+              <p className="text-xl text-muted-foreground">
+                Eliminate manual data entry — just snap a photo.
+              </p>
+              <p className="text-lg text-muted-foreground">
+                PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
+              </p>
               
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
@@ -373,13 +372,6 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
-                <p className="text-muted-foreground">
-                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-                </p>
-              </div>
-
               <div className="text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold">
                   <Camera className="h-5 w-5" />
@@ -401,11 +393,18 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Why it matters section - moved below the main content */}
-          <div className="mt-12 max-w-4xl mx-auto">
+          {/* Bottom Row: OCR Box and Why it matters */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
+              <p className="text-muted-foreground">
+                It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
+              </p>
+            </div>
+
             <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground text-center">Why it matters:</h3>
-              <div className="grid sm:grid-cols-2 gap-6">
+              <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
+              <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
                     <Zap className="h-5 w-5 text-primary flex-shrink-0" />
