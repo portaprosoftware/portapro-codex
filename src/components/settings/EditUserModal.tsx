@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ProfilePhotoUpload } from "@/components/shared/ProfilePhotoUpload";
+
 
 const editUserFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -149,20 +149,8 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Profile Photo Upload */}
-            <div className="flex justify-center">
-              <ProfilePhotoUpload
-                currentPhotoUrl={user.profile_photo}
-                userId={user.id}
-                userInitials={`${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`}
-                onPhotoUpdate={(photoUrl) => {
-                  updateUser.mutate({ 
-                    ...form.getValues(), 
-                    profile_photo: photoUrl 
-                  });
-                }}
-                size="lg"
-              />
+            <div className="text-sm text-muted-foreground text-center">
+              Profile photos are managed through Clerk. Users can update their photos by clicking their avatar in the top right corner.
             </div>
             
             <div className="grid grid-cols-2 gap-4">
