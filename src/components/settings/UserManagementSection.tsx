@@ -25,6 +25,7 @@ const userFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
   role: z.enum(["owner", "dispatcher", "driver", "customer", "admin"]),
 });
 
@@ -97,6 +98,7 @@ export function UserManagementSection() {
       first_name: "",
       last_name: "",
       email: "",
+      phone: "",
       role: "driver",
     },
   });
@@ -112,6 +114,7 @@ export function UserManagementSection() {
           first_name: data.first_name,
           last_name: data.last_name,
           email: data.email,
+          phone: data.phone || null,
           clerk_user_id: `temp_${Date.now()}`,
         });
 
@@ -296,6 +299,20 @@ export function UserManagementSection() {
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input placeholder="john@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="(555) 123-4567" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -15,6 +15,7 @@ const editUserFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
   role: z.enum(["owner", "dispatcher", "driver", "customer", "admin"]),
 });
 
@@ -26,6 +27,7 @@ interface EditUserModalProps {
     first_name: string;
     last_name: string;
     email: string;
+    phone?: string | null;
     user_roles?: Array<{ role: string }>;
   };
   open: boolean;
@@ -41,6 +43,7 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
       first_name: user.first_name || "",
       last_name: user.last_name || "",
       email: user.email || "",
+      phone: user.phone || "",
       role: (user.user_roles?.[0]?.role as any) || "driver",
     },
   });
@@ -57,6 +60,7 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
             first_name: data.first_name,
             last_name: data.last_name,
             email: data.email,
+            phone: data.phone || null,
           })
           .eq("id", user.id);
 
@@ -174,6 +178,20 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="john@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="(555) 123-4567" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

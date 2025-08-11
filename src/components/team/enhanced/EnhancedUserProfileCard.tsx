@@ -19,6 +19,7 @@ interface User {
   current_role: string;
   phone?: string | null;
   hire_date?: string | null;
+  created_at?: string | null;
 }
 
 interface EnhancedUserProfileCardProps {
@@ -145,10 +146,10 @@ export function EnhancedUserProfileCard({
             <Mail className={`w-4 h-4 mr-2 ${!user.is_active ? 'text-gray-400' : ''}`} />
             {user.email}
           </div>
-          {user.hire_date && (
+          {user.created_at && (
             <div className={`flex items-center text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>
               <Calendar className={`w-4 h-4 mr-2 ${!user.is_active ? 'text-gray-400' : ''}`} />
-              Joined {new Date(user.hire_date).toLocaleDateString()}
+              Joined {new Date(user.created_at).toLocaleDateString()}
             </div>
           )}
         </div>

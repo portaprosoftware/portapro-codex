@@ -19,6 +19,7 @@ interface User {
   current_role: string;
   phone?: string | null;
   hire_date?: string | null;
+  created_at?: string | null;
 }
 
 interface UserListViewProps {
@@ -150,16 +151,16 @@ export function UserListView({
                 </TableCell>
                 
                 <TableCell>
-                  <div className={`text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>
-                    {user.hire_date ? (
-                      <div className="flex items-center">
-                        <Calendar className={`w-3 h-3 mr-1 ${!user.is_active ? 'text-gray-400' : ''}`} />
-                        {new Date(user.hire_date).toLocaleDateString()}
-                      </div>
-                    ) : (
-                      <span className="text-gray-300">—</span>
-                    )}
-                  </div>
+                   <div className={`text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>
+                     {user.created_at ? (
+                       <div className="flex items-center">
+                         <Calendar className={`w-3 h-3 mr-1 ${!user.is_active ? 'text-gray-400' : ''}`} />
+                         {new Date(user.created_at).toLocaleDateString()}
+                       </div>
+                     ) : (
+                       <span className="text-gray-300">—</span>
+                     )}
+                   </div>
                 </TableCell>
                 
                 <TableCell>
