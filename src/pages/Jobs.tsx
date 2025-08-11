@@ -37,7 +37,7 @@ import { useUser } from '@clerk/clerk-react';
 import { DateRange } from 'react-day-picker';
 import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
-import { RouteStockCheck } from '@/components/fleet/RouteStockCheck';
+
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
@@ -572,12 +572,7 @@ const JobsPage: React.FC = () => {
               onDragEnd={handleDragEnd}
               key={`drag-context-${dragContextKey}`}
             >
-               <div className="bg-white h-full">
-                {/* Route vs Truck Stock */}
-                <div className="border-b border-gray-200 p-4">
-                  <RouteStockCheck />
-                </div>
-
+              <div className="h-full">
                 {/* Grid Layout Container */}
                 <div className="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] h-[calc(100vh-200px)]">
                   {/* Top Header - Unassigned Jobs (spans both columns) */}
