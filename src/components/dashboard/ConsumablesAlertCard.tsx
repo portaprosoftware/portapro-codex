@@ -15,40 +15,43 @@ export const ConsumablesAlertCard: React.FC = () => {
   const { data: totalStats, isLoading } = useQuery({
     queryKey: ['dashboard-consumable-location-stats'],
     queryFn: async () => {
-      // Get consumables with their location stock
-      const { data: consumables, error } = await supabase
-        .from('consumables')
+      // Get all location stock entries with their low stock thresholds
+      const { data: locationStockData, error } = await supabase
+        .from('consumable_location_stock')
         .select(`
-          id, 
-          name,
-          reorder_threshold,
-          consumable_location_stock(
-            quantity,
-            storage_location_id
+          id,
+          quantity,
+          low_stock_threshold,
+          consumable:consumables!inner(
+            id,
+            name,
+            is_active
           )
-        `)
-        .eq('is_active', true);
+        `);
       
       if (error) throw error;
       
-      let lowStockLocations = 0;
-      let totalLocationStocks = 0;
+      // Filter for active consumables only
+      const activeLocationStocks = locationStockData.filter(
+        (stock: any) => stock.consumable?.is_active === true
+      );
       
-      consumables.forEach((consumable: any) => {
-        if (consumable.consumable_location_stock && consumable.consumable_location_stock.length > 0) {
-          consumable.consumable_location_stock.forEach((locationStock: any) => {
-            totalLocationStocks++;
-            if (locationStock.quantity <= consumable.reorder_threshold) {
-              lowStockLocations++;
-            }
-          });
-        }
-      });
+      // Count low stock locations (where location has a threshold set and quantity is below it)
+      const lowStockLocations = activeLocationStocks.filter((stock: any) => 
+        stock.low_stock_threshold && 
+        stock.low_stock_threshold > 0 && 
+        stock.quantity <= stock.low_stock_threshold
+      ).length;
+      
+      // Get unique consumable count
+      const uniqueConsumableIds = new Set(
+        activeLocationStocks.map((stock: any) => stock.consumable?.id)
+      );
       
       return { 
         lowStockCount: lowStockLocations, 
-        totalItems: consumables.length,
-        totalLocationStocks 
+        totalItems: uniqueConsumableIds.size,
+        totalLocationStocks: activeLocationStocks.length 
       };
     },
     enabled: hasAdminAccess
