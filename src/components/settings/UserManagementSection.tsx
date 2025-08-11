@@ -38,9 +38,9 @@ const roleColors = {
 };
 
 const roleLabels = {
-  owner: "Owner",
+  owner: "Admin",
   dispatcher: "Dispatcher",
-  driver: "Driver", 
+  driver: "Driver",
   customer: "Customer",
   admin: "Admin",
 };
@@ -317,7 +317,7 @@ export function UserManagementSection() {
                             <SelectItem value="dispatcher">Dispatcher</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
-                            <SelectItem value="owner">Owner</SelectItem>
+                            <SelectItem value="owner">Admin</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

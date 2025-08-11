@@ -37,7 +37,7 @@ const roleIcons = {
 };
 
 const roleLabels = {
-  owner: "Owner",
+  owner: "Admin",
   dispatcher: "Dispatcher",
   driver: "Driver", 
   customer: "Customer",

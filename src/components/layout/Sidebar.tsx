@@ -59,7 +59,7 @@ const Sidebar = () => {
   const getRoleDisplayName = (role: string) => {
     switch (role) {
       case "owner":
-        return "Owner";
+        return "Admin";
       case "dispatch":
         return "Dispatch";
       case "driver":
