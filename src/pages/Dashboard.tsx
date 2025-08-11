@@ -302,7 +302,6 @@ const Dashboard = () => {
           iconBg="#fbbf24"
           subtitle={`${documentsData?.totalDocuments || 0} documents (30 days)`}
           subtitleColor="text-orange-600"
-          chart={<ProgressBar overdue={1} expiring={3} total={4} />}
           delay={700}
         />
       </div>
