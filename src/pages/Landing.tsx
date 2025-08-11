@@ -625,7 +625,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Team & Scheduling - White */}
-      <section id="team" className="py-4 bg-white">
+      <section id="team" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -654,8 +654,15 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
       {/* Reporting & Templates - White */}
-      <section id="reports" className="py-4 bg-white">
+      <section id="reports" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -668,20 +675,27 @@ export const Landing: React.FC = () => {
               <div className="space-y-4">
                 {reportFeatures.map((feature, index) => <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-white/90">{feature}</span>
+                    <span className="text-foreground">{feature}</span>
                   </div>)}
               </div>
             </div>
             
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 order-1 lg:order-2">
               <AutoCarousel media={reportingImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
       {/* Mobile App - White */}
-      <section id="mobile-app" className="py-4 bg-white">
+      <section id="mobile-app" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -715,11 +729,13 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <img 
-                src={demoMobileApp} 
-                alt="Mobile Driver App Demo - Route Navigation and Job Updates" 
-                className="w-full max-w-sm mx-auto rounded-2xl shadow-lg"
-              />
+              <div className="flex justify-center">
+                <img 
+                  src={demoMobileApp} 
+                  alt="Mobile Driver App Demo - Route Navigation and Job Updates" 
+                  className="w-full max-w-sm rounded-2xl shadow-lg"
+                />
+              </div>
             </div>
           </div>
         </div>
