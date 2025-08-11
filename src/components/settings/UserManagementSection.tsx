@@ -28,26 +28,26 @@ const userFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["admin", "dispatch", "driver"]),
+  role: z.enum(["admin", "dispatcher", "driver"]),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
   admin: "bg-gradient-primary",
-  dispatch: "bg-gradient-secondary", 
+  dispatcher: "bg-gradient-secondary", 
   driver: "bg-gradient-accent",
 };
 
 const roleLabels = {
   admin: "Admin",
-  dispatch: "Dispatcher",
+  dispatcher: "Dispatcher",
   driver: "Driver",
 };
 
 const roleIcons = {
   admin: Crown,
-  dispatch: Headphones,
+  dispatcher: Headphones,
   driver: Truck,
 };
 
@@ -81,12 +81,16 @@ export function UserManagementSection() {
       
       if (error) throw error;
       
-      // Transform the data to ensure user_roles is properly structured
+      // Transform the data to ensure user_roles is properly structured for EditUserModal
       return data?.map(user => ({
         ...user,
         current_role: Array.isArray(user.user_roles) 
           ? user.user_roles[0]?.role 
-          : user.user_roles?.role || null
+          : user.user_roles?.role || null,
+        // Keep the original user_roles structure for EditUserModal
+        user_roles: Array.isArray(user.user_roles) 
+          ? user.user_roles 
+          : [user.user_roles]
       })) || [];
     },
   });
@@ -354,7 +358,7 @@ export function UserManagementSection() {
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="driver">Driver</SelectItem>
-                            <SelectItem value="dispatch">Dispatcher</SelectItem>
+                            <SelectItem value="dispatcher">Dispatcher</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>
                         </Select>
@@ -403,7 +407,7 @@ export function UserManagementSection() {
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="dispatch">Dispatcher</SelectItem>
+                <SelectItem value="dispatcher">Dispatcher</SelectItem>
                 <SelectItem value="driver">Driver</SelectItem>
               </SelectContent>
             </Select>
