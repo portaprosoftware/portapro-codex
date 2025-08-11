@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
+import { UserListView } from "@/components/team/enhanced/UserListView";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -61,6 +62,7 @@ export function UserManagementSection() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const { isOwner } = useUserRole();
   const queryClient = useQueryClient();
 
@@ -343,54 +345,90 @@ export function UserManagementSection() {
       </CardHeader>
       <CardContent>
         {/* Filters */}
-        <div className="flex items-center space-x-4 mb-6">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-40">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="owner">Owner</SelectItem>
+                <SelectItem value="dispatcher">Dispatcher</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="driver">Driver</SelectItem>
+                <SelectItem value="customer">Customer</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-40">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="owner">Owner</SelectItem>
-              <SelectItem value="dispatcher">Dispatcher</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="driver">Driver</SelectItem>
-              <SelectItem value="customer">Customer</SelectItem>
-            </SelectContent>
-          </Select>
+
+          {/* View Toggle */}
+          <div className="flex items-center space-x-1 border rounded-lg p-1">
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="h-8 px-3"
+            >
+              <List className="w-4 h-4 mr-1" />
+              List
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="h-8 px-3"
+            >
+              <Grid3X3 className="w-4 h-4 mr-1" />
+              Grid
+            </Button>
+          </div>
         </div>
 
-        {/* Enhanced Users Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
+        {/* Users Display */}
+        {viewMode === "list" ? (
+          <UserListView
+            users={filteredUsers}
+            onEdit={setEditingUser}
+            onDelete={handleDeleteClick}
+            onToggleStatus={(userId, isActive) => 
+              toggleUserStatus.mutate({ userId, isActive })
+            }
+            isLoading={isLoading}
+          />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredUsers.map((user) => (
-              <EnhancedUserProfileCard
-                key={user.id}
-                user={user}
-                onEdit={setEditingUser}
-                onDelete={handleDeleteClick}
-                onToggleStatus={(userId, isActive) => 
-                  toggleUserStatus.mutate({ userId, isActive })
-                }
-              />
-            ))}
-          </div>
+          isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredUsers.map((user) => (
+                <EnhancedUserProfileCard
+                  key={user.id}
+                  user={user}
+                  onEdit={setEditingUser}
+                  onDelete={handleDeleteClick}
+                  onToggleStatus={(userId, isActive) => 
+                    toggleUserStatus.mutate({ userId, isActive })
+                  }
+                />
+              ))}
+            </div>
+          )
         )}
 
         {/* Edit User Modal */}
