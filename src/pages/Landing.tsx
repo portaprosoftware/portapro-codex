@@ -741,8 +741,8 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center mt-12">
-              <Card className="relative border-gray-200/50 bg-gradient-to-br from-gray-100 via-gray-50 to-white shadow-2xl shadow-gray-900/10 max-w-2xl w-full backdrop-blur-sm ring-1 ring-gray-200/50">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-gray-100/30 rounded-lg"></div>
+              <Card className="relative border-gray-300/50 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 shadow-2xl shadow-gray-900/10 max-w-2xl w-full backdrop-blur-sm ring-1 ring-gray-300/50">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-gray-500/20 rounded-lg"></div>
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-lg">
                   Complete Package
                 </Badge>
