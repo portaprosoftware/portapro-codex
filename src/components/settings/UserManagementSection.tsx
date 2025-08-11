@@ -217,6 +217,10 @@ export function UserManagementSection() {
     }
   };
 
+  // Debug current user matching
+  console.log('Current Clerk User ID:', clerkUser?.id);
+  console.log('All users clerk_user_ids:', users.map(u => ({ name: `${u.first_name} ${u.last_name}`, clerk_user_id: u.clerk_user_id })));
+  
   // Separate current user from others
   const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
   const otherUsers = users.filter(user => user.clerk_user_id !== clerkUser?.id);
