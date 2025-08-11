@@ -11,7 +11,6 @@ import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
 import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
-import { MapLegend } from '@/components/maps/MapLegend';
 
 
 
@@ -483,15 +482,6 @@ export function SimpleJobsMapView({
             />
           </div>
         )}
-      </div>
-
-      {/* Map Legend - Bottom Left */}
-      <div className="absolute bottom-4 left-4 z-10">
-        <MapLegend 
-          isDriverMode={isDriverMode}
-          filteredJobsCount={filteredJobs.length}
-          availableDrivers={[]} // Add drivers data if available
-        />
       </div>
 
       {/* Weather Radar */}
