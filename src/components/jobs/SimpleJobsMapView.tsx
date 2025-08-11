@@ -399,10 +399,15 @@ export function SimpleJobsMapView({
     if (hasCoordinates && jobsByLocation.size > 0) {
       setTimeout(() => {
         if (map.current) {
-          map.current.fitBounds(bounds, { 
-            padding: 50,
-            duration: 0 // No animation
-          });
+          // Only fit bounds if we have more than one location or this is the initial load
+          const shouldFitBounds = jobsByLocation.size > 1 || markersRef.current.length === 0;
+          
+          if (shouldFitBounds) {
+            map.current.fitBounds(bounds, { 
+              padding: 50,
+              duration: 0 // No animation
+            });
+          }
         }
       }, 100);
     }
