@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ProfilePhotoUpload } from "@/components/shared/ProfilePhotoUpload";
 
 const editUserFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -28,6 +29,7 @@ interface EditUserModalProps {
     last_name: string;
     email: string;
     phone?: string | null;
+    profile_photo?: string | null;
     user_roles?: Array<{ role: string }>;
   };
   open: boolean;
@@ -49,19 +51,25 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
   });
 
   const updateUser = useMutation({
-    mutationFn: async (data: EditUserFormData) => {
+    mutationFn: async (data: EditUserFormData & { profile_photo?: string | null }) => {
       console.log('Updating user:', user.id, 'with data:', data);
       
       try {
         // Update profile
+        const updateData: any = {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          phone: data.phone || null,
+        };
+
+        if (data.profile_photo !== undefined) {
+          updateData.profile_photo = data.profile_photo;
+        }
+
         const { error: profileError } = await supabase
           .from("profiles")
-          .update({
-            first_name: data.first_name,
-            last_name: data.last_name,
-            email: data.email,
-            phone: data.phone || null,
-          })
+          .update(updateData)
           .eq("id", user.id);
 
         if (profileError) {
@@ -141,6 +149,22 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Profile Photo Upload */}
+            <div className="flex justify-center">
+              <ProfilePhotoUpload
+                currentPhotoUrl={user.profile_photo}
+                userId={user.id}
+                userInitials={`${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`}
+                onPhotoUpdate={(photoUrl) => {
+                  updateUser.mutate({ 
+                    ...form.getValues(), 
+                    profile_photo: photoUrl 
+                  });
+                }}
+                size="lg"
+              />
+            </div>
+            
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

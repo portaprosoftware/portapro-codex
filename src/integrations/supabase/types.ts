@@ -5137,6 +5137,7 @@ export type Database = {
           is_active: boolean
           last_name: string | null
           phone: string | null
+          profile_photo: string | null
           updated_at: string
         }
         Insert: {
@@ -5148,6 +5149,7 @@ export type Database = {
           is_active?: boolean
           last_name?: string | null
           phone?: string | null
+          profile_photo?: string | null
           updated_at?: string
         }
         Update: {
@@ -5159,6 +5161,7 @@ export type Database = {
           is_active?: boolean
           last_name?: string | null
           phone?: string | null
+          profile_photo?: string | null
           updated_at?: string
         }
         Relationships: []

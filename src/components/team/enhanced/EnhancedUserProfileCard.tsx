@@ -18,6 +18,7 @@ interface User {
   is_active: boolean;
   current_role: string;
   phone?: string | null;
+  profile_photo?: string | null;
   hire_date?: string | null;
   created_at?: string | null;
 }
@@ -61,8 +62,8 @@ export function EnhancedUserProfileCard({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.first_name}${user.last_name}`} />
-              <AvatarFallback className={`font-bold ${user.is_active ? 'bg-blue-500 text-white' : 'bg-gray-400 text-gray-600'}`}>
+              <AvatarImage src={user.profile_photo || undefined} />
+              <AvatarFallback className="font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
