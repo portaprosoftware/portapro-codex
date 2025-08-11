@@ -796,12 +796,12 @@ export const Landing: React.FC = () => {
                 <CardContent className="space-y-4">
                   <ul className="grid grid-cols-2 gap-3">
                     {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-white/90 font-bold">{feature}</span>
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6 mt-6 font-bold">
+                    <Button className="w-full bg-white text-black hover:bg-white/90 text-lg py-6 mt-6 font-bold">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
