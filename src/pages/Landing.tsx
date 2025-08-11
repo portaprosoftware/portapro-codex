@@ -380,36 +380,6 @@ export const Landing: React.FC = () => {
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Zap className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Shield className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Clock className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Save hours per week on manual entry</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Camera className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
-                  </div>
-                </div>
-              </div>
-
               <div className="text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold">
                   <Camera className="h-5 w-5" />
@@ -428,6 +398,39 @@ export const Landing: React.FC = () => {
                 alt="AI Scanning Demo - Google Vision AI Interface" 
                 className="w-full rounded-2xl shadow-lg"
               />
+            </div>
+          </div>
+
+          {/* Why it matters section - moved below the main content */}
+          <div className="mt-12 max-w-4xl mx-auto">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground text-center">Why it matters:</h3>
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                    <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                    <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                    <Clock className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <span className="text-muted-foreground">Save hours per week on manual entry</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                    <Camera className="h-5 w-5 text-primary flex-shrink-0" />
+                  </div>
+                  <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
