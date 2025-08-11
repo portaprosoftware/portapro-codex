@@ -252,7 +252,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="flex items-center justify-between">
-                    Overdue Job Status & Marking Jobs with a Priority Badge
+                    Quick Tips
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-2">
