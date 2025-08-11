@@ -83,7 +83,7 @@ export const getJobStatusConfig = () => ({
   completed: { 
     gradient: 'bg-gradient-to-r from-green-500 to-green-600 text-white', 
     label: 'Completed',
-    color: '#10B981'
+    color: '#22C55E'
   },
   completed_late: { 
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 

@@ -103,7 +103,7 @@
 
     /* Job Status Colors (H, S%, L%) - Updated to match new color scheme */
     --status-delivery: 214 83% 53%;        /* Blue (#3B82F6) */
-    --status-pickup: 32 95% 44%;           /* Gold (#D97706) - amber-600 matching job wizard */
+    --status-pickup: 32 95% 44%;           /* Gold/Amber (#D97706) - matching job wizard exactly */
     --status-partial-pickup: 25 95% 53%;   /* Orange (#F97316) */
     --status-service: 259 55% 52%;         /* Purple (#8B5CF6) */
     --status-survey: 0 74% 35%;            /* Maroon (#B91C1C) */
@@ -366,7 +366,7 @@
     left: 0;
     width: 4px;
     height: 100%;
-    background: var(--gradient-green);
+    background: var(--gradient-yellow);
     border-top-left-radius: 0.75rem;
     border-bottom-left-radius: 0.75rem;
   }
