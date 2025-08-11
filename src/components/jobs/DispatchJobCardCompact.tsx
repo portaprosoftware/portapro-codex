@@ -209,7 +209,7 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
     );
   }
 
-  // Compact view - icon only
+  // Compact view - job type text and full status badge
   return (
     <div 
       className={cn(
@@ -228,31 +228,26 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
         <ChevronRight className="w-3 h-3" />
       </Button>
 
-      {/* Job Type Icon */}
-      <div className="text-lg mb-1">
-        {jobTypeInfo.icon}
+      {/* Job Type Text */}
+      <div className="text-xs font-medium text-gray-700 text-center mb-1">
+        {jobTypeInfo.label}
       </div>
 
       {/* Job Number */}
-      <div className="text-xs font-medium text-gray-900 truncate w-full text-center">
+      <div className="text-xs font-medium text-gray-900 truncate w-full text-center mb-1">
         {job.job_number}
       </div>
 
-      {/* Status Badge */}
-      <Badge className={cn("text-xs px-1 py-0 font-bold text-center", statusInfo.primary.gradient)}>
-        {statusInfo.primary.label.slice(0, 3)}
+      {/* Full Status Badge */}
+      <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
+        {statusInfo.primary.label}
       </Badge>
 
-      {/* Time indicator if available */}
-      {job.scheduled_time && (
-        <div className="text-xs text-gray-500">
-          {(() => {
-            const [hours, minutes] = job.scheduled_time.split(':').map(Number);
-            const period = hours >= 12 ? 'PM' : 'AM';
-            const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-            return `${hours12}:${minutes.toString().padStart(2, '0')}`;
-          })()}
-        </div>
+      {/* Secondary Status Badge if available */}
+      {statusInfo.secondary && (
+        <Badge className={cn("text-xs px-1 py-0 font-bold text-center mt-1", statusInfo.secondary.gradient)}>
+          {statusInfo.secondary.label}
+        </Badge>
       )}
     </div>
   );
