@@ -229,10 +229,7 @@ export const Landing: React.FC = () => {
 
       {/* Sticky CTA Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button 
-          onClick={() => window.open('https://accounts.portaprosoftware.com/sign-up', '_blank')}
-          className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-        >
+        <Button onClick={() => window.open('https://accounts.portaprosoftware.com/sign-up', '_blank')} className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
           Start Free Trial
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
@@ -283,12 +280,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div>
-              <img 
-                src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" 
-                alt="PortaPro Dashboard Preview" 
-                loading="lazy" decoding="async"
-                className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" 
-              />
+              <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
             </div>
           </div>
         </div>
@@ -427,11 +419,7 @@ export const Landing: React.FC = () => {
             </div>
 
             <div className="relative">
-              <img 
-                src={demoAiScanning} 
-                alt="AI Scanning Demo - Google Vision AI Interface" 
-                className="w-full rounded-2xl shadow-lg"
-              />
+              <img src={demoAiScanning} alt="AI Scanning Demo - Google Vision AI Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -469,11 +457,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <img 
-                src={demoJobWizard} 
-                alt="Job Wizard Demo - Step-by-step Job Creation Interface" 
-                className="w-full rounded-xl"
-              />
+              <img src={demoJobWizard} alt="Job Wizard Demo - Step-by-step Job Creation Interface" className="w-full rounded-xl" />
             </div>
           </div>
         </div>
@@ -502,11 +486,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img 
-                src={demoInventory} 
-                alt="Inventory Management Demo - Multi-location Tracking Interface" 
-                className="w-full rounded-2xl shadow-lg"
-              />
+              <img src={demoInventory} alt="Inventory Management Demo - Multi-location Tracking Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -618,11 +598,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="mt-12">
-              <img 
-                src={demoQuotes} 
-                alt="Quote-to-Job Demo - Customer Portal and Payment Integration" 
-                className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg"
-              />
+              <img src={demoQuotes} alt="Quote-to-Job Demo - Customer Portal and Payment Integration" className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -648,11 +624,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <img 
-                src={demoTeamManagement} 
-                alt="Team Management Demo - Shift Scheduling Interface" 
-                className="w-full rounded-2xl shadow-lg"
-              />
+              <img src={demoTeamManagement} alt="Team Management Demo - Shift Scheduling Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -734,11 +706,7 @@ export const Landing: React.FC = () => {
             
             <div className="lg:col-span-1 order-1 lg:order-2">
               <div className="flex justify-center">
-                <img 
-                  src={demoMobileApp} 
-                  alt="Mobile Driver App Demo - Route Navigation and Job Updates" 
-                  className="w-full max-w-sm rounded-2xl shadow-lg"
-                />
+                <img src={demoMobileApp} alt="Mobile Driver App Demo - Route Navigation and Job Updates" className="w-full max-w-sm rounded-2xl shadow-lg" />
               </div>
             </div>
           </div>
@@ -790,7 +758,7 @@ export const Landing: React.FC = () => {
                   <CardDescription className="text-white/90 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
                 <div className="mt-0 mb-4 flex items-center justify-center gap-3">
-                  <Badge className="bg-white/20 text-white">14-day, no card</Badge>
+                  <Badge className="bg-white/20 text-white">14-day trial</Badge>
                   <Badge className="bg-white/20 text-white">Full support included</Badge>
                 </div>
                 <CardContent className="space-y-4">
@@ -801,7 +769,7 @@ export const Landing: React.FC = () => {
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-white text-black hover:bg-white/90 text-lg py-6 mt-6 font-bold">
+                    <Button className="w-full bg-white text-black hover:bg-white/90 text-lg py-6 mt-6 font-medium">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
