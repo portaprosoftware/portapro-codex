@@ -672,20 +672,6 @@ const JobsPage: React.FC = () => {
                           </span>
                           <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
                         </div>
-                        <div className="flex items-center gap-4 text-xs">
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-blue-500 rounded"></div>
-                            <span>Assigned</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-yellow-500 rounded"></div>
-                            <span>In Progress</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-green-500 rounded"></div>
-                            <span>Completed</span>
-                          </div>
-                        </div>
                       </div>
                     </div>
                     
