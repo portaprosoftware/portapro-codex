@@ -117,7 +117,7 @@ const completePackage = {
     annual: 125
   },
   description: "All features, onboarding and support included",
-  features: ["Unlimited drivers and users", "Smart job wizard with multi-step creation", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
+  features: ["Unlimited drivers and users", "Multi-Step Job Creation Wizard", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
 export const Landing: React.FC = () => {
   // Image arrays for carousels
