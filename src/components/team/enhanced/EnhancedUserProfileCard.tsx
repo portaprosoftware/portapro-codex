@@ -61,7 +61,7 @@ export function EnhancedUserProfileCard({
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
               <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.first_name}${user.last_name}`} />
-              <AvatarFallback className={`font-bold ${user.is_active ? 'bg-gradient-primary text-white' : 'bg-gray-400 text-gray-600'}`}>
+              <AvatarFallback className={`font-bold ${user.is_active ? 'bg-blue-500 text-white' : 'bg-gray-400 text-gray-600'}`}>
                 {initials}
               </AvatarFallback>
             </Avatar>
