@@ -511,11 +511,11 @@ export const Landing: React.FC = () => {
               <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -653,7 +653,7 @@ export const Landing: React.FC = () => {
               
               <div className="space-y-4">
                 {reportFeatures.map((feature, index) => <div key={index} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">{feature}</span>
                   </div>)}
               </div>
