@@ -213,7 +213,7 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex flex-col items-center justify-center px-2 gap-1 min-w-[80px] cursor-pointer",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex flex-col items-center justify-start px-2 py-1 gap-1 min-w-[80px] cursor-pointer",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
@@ -223,32 +223,34 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 w-6 p-0 flex-shrink-0 hover:bg-gray-100 mb-1"
+        className="h-4 w-4 p-0 flex-shrink-0 hover:bg-gray-100"
       >
         <ChevronRight className="w-3 h-3" />
       </Button>
 
-      {/* Job Type Text */}
-      <div className="text-xs font-medium text-gray-700 text-center mb-1">
+      {/* Job Type Text - Bold */}
+      <div className="text-xs font-bold text-gray-700 text-center leading-tight">
         {jobTypeInfo.label}
       </div>
 
       {/* Job Number */}
-      <div className="text-xs font-medium text-gray-900 truncate w-full text-center mb-1">
+      <div className="text-xs font-medium text-gray-900 truncate w-full text-center leading-tight">
         {job.job_number}
       </div>
 
-      {/* Full Status Badge */}
-      <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
-        {statusInfo.primary.label}
-      </Badge>
-
-      {/* Secondary Status Badge if available */}
-      {statusInfo.secondary && (
-        <Badge className={cn("text-xs px-1 py-0 font-bold text-center mt-1", statusInfo.secondary.gradient)}>
-          {statusInfo.secondary.label}
+      {/* Status Badges Container - Positioned higher */}
+      <div className="flex flex-col items-center gap-0.5 mt-auto mb-1">
+        <Badge className={cn("text-xs px-1.5 py-0 font-bold text-center whitespace-nowrap leading-tight", statusInfo.primary.gradient)}>
+          {statusInfo.primary.label}
         </Badge>
-      )}
+
+        {/* Secondary Status Badge if available */}
+        {statusInfo.secondary && (
+          <Badge className={cn("text-xs px-1 py-0 font-bold text-center whitespace-nowrap leading-tight", statusInfo.secondary.gradient)}>
+            {statusInfo.secondary.label}
+          </Badge>
+        )}
+      </div>
     </div>
   );
 };
