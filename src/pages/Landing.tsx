@@ -476,7 +476,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Inventory & Consumables - White */}
-      <section id="inventory" className="py-4 bg-white">
+      <section id="inventory" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -508,8 +508,15 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
       {/* Transport & Spill Compliance Suite - White */}
-      <section id="compliance" className="py-4 bg-white">
+      <section id="compliance" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -538,8 +545,15 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
       {/* DVIRs & Maintenance - White */}
-      <section id="dvir" className="py-4 bg-white">
+      <section id="dvir" className="py-16 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
