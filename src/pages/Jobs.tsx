@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -575,58 +576,65 @@ const JobsPage: React.FC = () => {
               <div className="h-full">
                 {/* Grid Layout Container */}
                 <div className="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] h-[calc(100vh-200px)]">
-                  {/* Top Header - Unassigned Jobs (spans both columns) */}
-                  <div className="col-span-2 border-b border-gray-200 p-4 bg-gray-50">
-                    <div className="flex items-center gap-2 mb-3">
-                      <AlertTriangle className="h-4 w-4 text-orange-500" />
-                      <span className="font-medium text-sm">Unassigned Jobs</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {filterJobs(unassignedJobs).length}
-                      </Badge>
-                    </div>
-
-                    <Droppable droppableId="unassigned" direction="horizontal">
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className={cn(
-                            "flex gap-3 min-h-[90px] border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
-                            snapshot.isDraggingOver 
-                              ? "border-orange-400 bg-orange-50" 
-                              : "border-gray-300 bg-white"
-                          )}
-                        >
-                          {filterJobs(unassignedJobs).length === 0 ? (
-                            <div className="flex-1 text-center py-6 text-gray-500">
-                              <ClipboardList className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                              <p className="text-sm">No unassigned jobs</p>
-                              <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
-                            </div>
-                          ) : (
-                            filterJobs(unassignedJobs).map((job, index) => (
-                              <Draggable key={job.id} draggableId={job.id} index={index}>
-                                {(provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
-                                  >
-                                     <DispatchJobCardCompact
-                                        job={job}
-                                        onView={handleJobView}
-                                        isDragging={snapshot.isDragging}
-                                      />
-                                  </div>
+                  {/* Top Header - Unassigned Jobs (spans both columns) - Collapsible */}
+                  <div className="col-span-2 border-b border-gray-200 bg-gray-50">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="unassigned-jobs" className="border-none">
+                        <AccordionTrigger className="hover:no-underline p-4 pb-0">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-500" />
+                            <span className="font-medium text-sm">Unassigned Jobs</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {filterJobs(unassignedJobs).length}
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pb-4 px-4">
+                          <Droppable droppableId="unassigned" direction="horizontal">
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={cn(
+                                  "flex gap-3 min-h-[90px] border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
+                                  snapshot.isDraggingOver 
+                                    ? "border-orange-400 bg-orange-50" 
+                                    : "border-gray-300 bg-white"
                                 )}
-                              </Draggable>
-                            ))
-                          )}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
+                              >
+                                {filterJobs(unassignedJobs).length === 0 ? (
+                                  <div className="flex-1 text-center py-6 text-gray-500">
+                                    <ClipboardList className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                                    <p className="text-sm">No unassigned jobs</p>
+                                    <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
+                                  </div>
+                                ) : (
+                                  filterJobs(unassignedJobs).map((job, index) => (
+                                    <Draggable key={job.id} draggableId={job.id} index={index}>
+                                      {(provided, snapshot) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          className={`flex-shrink-0 ${snapshot.isDragging ? 'opacity-50' : ''}`}
+                                        >
+                                           <DispatchJobCardCompact
+                                              job={job}
+                                              onView={handleJobView}
+                                              isDragging={snapshot.isDragging}
+                                            />
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  ))
+                                )}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </div>
 
                   {/* Left Column - Driver Names */}
