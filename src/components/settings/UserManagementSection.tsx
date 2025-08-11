@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { EditUserModal } from "./EditUserModal";
+import { useUser } from "@clerk/clerk-react";
 
 const userFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -65,6 +66,7 @@ export function UserManagementSection() {
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const { isOwner } = useUserRole();
+  const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery({
@@ -215,15 +217,36 @@ export function UserManagementSection() {
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  // Separate current user from others
+  const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
+  const otherUsers = users.filter(user => user.clerk_user_id !== clerkUser?.id);
+
+  // Filter current user
+  const filteredCurrentUser = currentUser && (() => {
     const matchesSearch = !searchTerm || 
-      `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      `${currentUser.first_name} ${currentUser.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      currentUser.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
+    const matchesRole = roleFilter === "all" || currentUser.current_role === roleFilter;
     
-    return matchesSearch && matchesRole;
-  });
+    return matchesSearch && matchesRole ? currentUser : null;
+  })();
+
+  // Filter and sort other users alphabetically by first name
+  const filteredOtherUsers = otherUsers
+    .filter(user => {
+      const matchesSearch = !searchTerm || 
+        `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
+      
+      return matchesSearch && matchesRole;
+    })
+    .sort((a, b) => a.first_name.toLowerCase().localeCompare(b.first_name.toLowerCase()));
+
+  // Combine for display
+  const allFilteredUsers = filteredCurrentUser ? [filteredCurrentUser, ...filteredOtherUsers] : filteredOtherUsers;
 
   if (!isOwner) {
     return (
@@ -246,7 +269,7 @@ export function UserManagementSection() {
           <CardTitle className="flex items-center space-x-2">
             <Users className="w-5 h-5" />
             <span>User Management</span>
-            <Badge variant="secondary">{filteredUsers.length} users</Badge>
+            <Badge variant="secondary">{allFilteredUsers.length} users</Badge>
           </CardTitle>
           
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
@@ -415,15 +438,39 @@ export function UserManagementSection() {
 
         {/* Users Display */}
         {viewMode === "list" ? (
-          <UserListView
-            users={filteredUsers}
-            onEdit={setEditingUser}
-            onDelete={handleDeleteClick}
-            onToggleStatus={(userId, isActive) => 
-              toggleUserStatus.mutate({ userId, isActive })
-            }
-            isLoading={isLoading}
-          />
+          <div className="space-y-6">
+            {/* Current User Section */}
+            {filteredCurrentUser && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
+                <UserListView
+                  users={[filteredCurrentUser]}
+                  onEdit={setEditingUser}
+                  onDelete={handleDeleteClick}
+                  onToggleStatus={(userId, isActive) => 
+                    toggleUserStatus.mutate({ userId, isActive })
+                  }
+                  isLoading={isLoading}
+                />
+              </div>
+            )}
+            
+            {/* Other Users Section */}
+            {filteredOtherUsers.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
+                <UserListView
+                  users={filteredOtherUsers}
+                  onEdit={setEditingUser}
+                  onDelete={handleDeleteClick}
+                  onToggleStatus={(userId, isActive) => 
+                    toggleUserStatus.mutate({ userId, isActive })
+                  }
+                  isLoading={isLoading}
+                />
+              </div>
+            )}
+          </div>
         ) : (
           isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -432,18 +479,44 @@ export function UserManagementSection() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredUsers.map((user) => (
-                <EnhancedUserProfileCard
-                  key={user.id}
-                  user={user}
-                  onEdit={setEditingUser}
-                  onDelete={handleDeleteClick}
-                  onToggleStatus={(userId, isActive) => 
-                    toggleUserStatus.mutate({ userId, isActive })
-                  }
-                />
-              ))}
+            <div className="space-y-6">
+              {/* Current User Grid Section */}
+              {filteredCurrentUser && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <EnhancedUserProfileCard
+                      key={filteredCurrentUser.id}
+                      user={filteredCurrentUser}
+                      onEdit={setEditingUser}
+                      onDelete={handleDeleteClick}
+                      onToggleStatus={(userId, isActive) => 
+                        toggleUserStatus.mutate({ userId, isActive })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Other Users Grid Section */}
+              {filteredOtherUsers.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredOtherUsers.map((user) => (
+                      <EnhancedUserProfileCard
+                        key={user.id}
+                        user={user}
+                        onEdit={setEditingUser}
+                        onDelete={handleDeleteClick}
+                        onToggleStatus={(userId, isActive) => 
+                          toggleUserStatus.mutate({ userId, isActive })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )
         )}
