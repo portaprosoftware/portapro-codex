@@ -251,8 +251,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
   }, [consumables, categoryFilter, searchTerm, sortField, sortDirection]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-6 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <div className="max-w-full px-6 py-6 space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-lg border shadow-sm p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -336,70 +336,70 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('name')}
-                    >
-                      <div className="flex items-center">
-                        Name
-                        {getSortIcon('name')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('category')}
-                    >
-                      <div className="flex items-center">
-                        Category
-                        {getSortIcon('category')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('sku')}
-                    >
-                      <div className="flex items-center">
-                        SKU
-                        {getSortIcon('sku')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('unit_cost')}
-                    >
-                      <div className="flex items-center">
-                        Unit Cost
-                        {getSortIcon('unit_cost')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('unit_price')}
-                    >
-                      <div className="flex items-center">
-                        Unit Price
-                        {getSortIcon('unit_price')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer select-none hover:bg-gray-50"
-                      onClick={() => handleSort('on_hand_qty')}
-                    >
-                      <div className="flex items-center">
-                        On Hand
-                        {getSortIcon('on_hand_qty')}
-                      </div>
-                    </TableHead>
-                    <TableHead>ADU 7</TableHead>
-                    <TableHead>ADU 30</TableHead>
-                    <TableHead>ADU 90</TableHead>
-                    <TableHead>Days of Supply</TableHead>
-                    <TableHead className="w-80">Locations</TableHead>
-                    <TableHead className="w-16">Actions</TableHead>
+              <div className="overflow-x-auto border rounded-lg">
+                <Table className="min-w-[1200px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[120px]"
+                        onClick={() => handleSort('name')}
+                      >
+                        <div className="flex items-center">
+                          Name
+                          {getSortIcon('name')}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[120px]"
+                        onClick={() => handleSort('category')}
+                      >
+                        <div className="flex items-center">
+                          Category
+                          {getSortIcon('category')}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[80px]"
+                        onClick={() => handleSort('sku')}
+                      >
+                        <div className="flex items-center">
+                          SKU
+                          {getSortIcon('sku')}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[90px]"
+                        onClick={() => handleSort('unit_cost')}
+                      >
+                        <div className="flex items-center">
+                          Unit Cost
+                          {getSortIcon('unit_cost')}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[90px]"
+                        onClick={() => handleSort('unit_price')}
+                      >
+                        <div className="flex items-center">
+                          Unit Price
+                          {getSortIcon('unit_price')}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[80px]"
+                        onClick={() => handleSort('on_hand_qty')}
+                      >
+                        <div className="flex items-center">
+                          On Hand
+                          {getSortIcon('on_hand_qty')}
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[70px]">ADU 7</TableHead>
+                      <TableHead className="min-w-[70px]">ADU 30</TableHead>
+                      <TableHead className="min-w-[70px]">ADU 90</TableHead>
+                      <TableHead className="min-w-[100px]">Days of Supply</TableHead>
+                      <TableHead className="min-w-[250px]">Locations</TableHead>
+                      <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
