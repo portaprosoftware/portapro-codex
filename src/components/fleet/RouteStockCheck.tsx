@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 export const RouteStockCheck: React.FC = () => {
   const [vehicleId, setVehicleId] = useState<string>('');
@@ -37,11 +39,35 @@ export const RouteStockCheck: React.FC = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Route vs Truck Stock</CardTitle>
-        {/* SEO: canonical and h1 in parent page; this is a sub-card */}
-      </CardHeader>
+    <TooltipProvider>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Route vs Truck Stock</CardTitle>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="p-1 hover:bg-muted rounded-full transition-colors">
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs p-4" side="left">
+                <div className="space-y-2">
+                  <h4 className="font-medium">How This Works</h4>
+                  <p className="text-sm text-muted-foreground">
+                    This tool helps you ensure your truck has enough supplies before starting your route.
+                  </p>
+                  <div className="space-y-1 text-xs">
+                    <p><strong>Needed:</strong> Total supplies required for all jobs assigned to this truck</p>
+                    <p><strong>On Truck:</strong> Current stock levels loaded on the vehicle</p>
+                    <p><strong>Deficit:</strong> How many more items you need to load</p>
+                    <p><strong>Status:</strong> "OK" means you're ready, "Replenish" means load more supplies</p>
+                  </div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          {/* SEO: canonical and h1 in parent page; this is a sub-card */}
+        </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
           <div className="space-y-1">
@@ -101,6 +127,7 @@ export const RouteStockCheck: React.FC = () => {
         )}
       </CardContent>
     </Card>
+    </TooltipProvider>
   );
 };
 
