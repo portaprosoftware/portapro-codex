@@ -743,38 +743,38 @@ export const Landing: React.FC = () => {
             <div className="flex justify-center mt-12">
               <Card className="relative border-gray-300/50 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 shadow-2xl shadow-gray-900/10 max-w-2xl w-full backdrop-blur-sm ring-1 ring-gray-300/50">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-gray-500/20 rounded-lg"></div>
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-lg">
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
                   Complete Package
                 </Badge>
                 <CardHeader className="text-center relative z-10">
-                  <CardTitle className="text-2xl text-gray-900 font-bold">{completePackage.name}</CardTitle>
+                  <CardTitle className="text-2xl text-white font-bold">{completePackage.name}</CardTitle>
                   <div className="space-y-2">
-                    <div className="text-4xl font-bold text-gray-900">
+                    <div className="text-4xl font-bold text-white">
                       ${isAnnual ? completePackage.price.annual : completePackage.price.monthly}
-                      <span className="text-lg font-normal text-gray-600">
+                      <span className="text-lg font-normal text-white/90">
                         /month
                       </span>
                     </div>
-                     {isAnnual && <div className="text-sm text-gray-700 font-bold">
+                     {isAnnual && <div className="text-sm text-white/90 font-bold">
                         Billed annually (${(completePackage.price.annual * 12).toLocaleString()}/year) - Save $600/year
                       </div>}
                   </div>
-                  <CardDescription className="text-gray-700 font-bold">{completePackage.description}</CardDescription>
+                  <CardDescription className="text-white/90 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
                 <div className="mt-0 mb-4 flex items-center justify-center gap-3 relative z-10">
-                  <Badge className="bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-md">14-day trial</Badge>
-                  <Badge className="bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-md">Full support included</Badge>
-                  <Badge className="bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-md">No contracts required</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">14-day trial</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">Full support included</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">No contracts required</Badge>
                 </div>
                 <CardContent className="space-y-4 relative z-10">
                   <ul className="grid grid-cols-2 gap-3">
                     {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-gray-800 font-medium">{feature}</span>
+                        <span className="text-sm text-white font-medium">{feature}</span>
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-900 hover:to-black text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
