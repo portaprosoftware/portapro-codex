@@ -116,7 +116,7 @@ const completePackage = {
     monthly: 175,
     annual: 125
   },
-  description: "All features included - onboarding and support included",
+  description: "All features, onboarding and support included",
   features: ["Unlimited drivers and users", "Smart job wizard with multi-step creation", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
 export const Landing: React.FC = () => {
@@ -751,8 +751,8 @@ export const Landing: React.FC = () => {
                         /month
                       </span>
                     </div>
-                    {isAnnual && <div className="text-sm text-white/80 font-bold">
-                        Billed annually (${completePackage.price.annual * 12}/year) - Save $600/year
+                     {isAnnual && <div className="text-sm text-white/80 font-bold">
+                        Billed annually (${(completePackage.price.annual * 12).toLocaleString()}/year) - Save $600/year
                       </div>}
                   </div>
                   <CardDescription className="text-white/90 font-bold">{completePackage.description}</CardDescription>
@@ -760,6 +760,7 @@ export const Landing: React.FC = () => {
                 <div className="mt-0 mb-4 flex items-center justify-center gap-3">
                   <Badge className="bg-white/20 text-white">14-day trial</Badge>
                   <Badge className="bg-white/20 text-white">Full support included</Badge>
+                  <Badge className="bg-white/20 text-white">No contracts required</Badge>
                 </div>
                 <CardContent className="space-y-4">
                   <ul className="grid grid-cols-2 gap-3">
