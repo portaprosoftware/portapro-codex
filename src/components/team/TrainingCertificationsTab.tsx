@@ -11,8 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { GraduationCap, Upload, AlertTriangle, CheckCircle, Plus, FileText, Calendar, Bell, Download, Search, Filter, Eye, Edit, Trash2 } from 'lucide-react';
-import { useCertificationTypes, useEmployeeCertifications, useAddEmployeeCertification, useTrainingRequirements, useDeleteTrainingRequirement } from '@/hooks/useTraining';
+import { useCertificationTypes, useEmployeeCertifications, useAddEmployeeCertification, useTrainingRequirements, useDeleteTrainingRequirement, useUpdateEmployeeCertification } from '@/hooks/useTraining';
 import { useDriverDirectory } from '@/hooks/useDirectory';
+import { CertificateUploadButton } from '@/components/training/CertificateUploadButton';
 
 export function TrainingCertificationsTab() {
   const [addCertModalOpen, setAddCertModalOpen] = useState(false);
@@ -26,6 +27,7 @@ export function TrainingCertificationsTab() {
   const { data: empCerts = [] } = useEmployeeCertifications();
   const { data: requirements = [] } = useTrainingRequirements();
   const addCert = useAddEmployeeCertification();
+  const updateCert = useUpdateEmployeeCertification();
   const deleteRequirement = useDeleteTrainingRequirement();
   const { data: driverDirectory = [] } = useDriverDirectory();
 
@@ -34,6 +36,10 @@ export function TrainingCertificationsTab() {
   const [selectedTypeId, setSelectedTypeId] = useState<string | undefined>(undefined);
   const [issueDate, setIssueDate] = useState<string>('');
   const [expiryDate, setExpiryDate] = useState<string>('');
+  const [newCertFileUrl, setNewCertFileUrl] = useState<string>('');
+
+  // Upload modal state
+  const [selectedEmpCertId, setSelectedEmpCertId] = useState<string>('');
 
   // Helper maps
   const certTypeById = React.useMemo(() => {
@@ -94,11 +100,13 @@ export function TrainingCertificationsTab() {
         };
       }
       byDriver[driverId].certifications.push({
+        id: c.id,
         type: type?.name || 'Certification',
         issueDate,
         expiryDate,
         status,
         authority: '',
+        certificateUrl: c.certificate_url || '',
       });
     });
 
@@ -362,8 +370,17 @@ export function TrainingCertificationsTab() {
                             <div className="text-xs text-muted-foreground space-y-1">
                               <p>Issued: {cert.issueDate}</p>
                               <p>Expires: {cert.expiryDate || '—'}</p>
-                              {cert.authority && <p>Authority: {cert.authority}</p>}
                             </div>
+                            {cert.certificateUrl && (
+                              <div className="mt-2">
+                                <Button asChild variant="outline" size="sm" className="w-full">
+                                  <a href={cert.certificateUrl} target="_blank" rel="noopener noreferrer">
+                                    <FileText className="h-4 w-4 mr-2" />
+                                    View Certificate
+                                  </a>
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -453,7 +470,16 @@ export function TrainingCertificationsTab() {
       </Tabs>
 
       {/* Add Certification Modal */}
-      <Dialog open={addCertModalOpen} onOpenChange={setAddCertModalOpen}>
+      <Dialog open={addCertModalOpen} onOpenChange={(v) => {
+        setAddCertModalOpen(v);
+        if (!v) {
+          setSelectedDriverId(undefined);
+          setSelectedTypeId(undefined);
+          setIssueDate('');
+          setExpiryDate('');
+          setNewCertFileUrl('');
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add New Certification</DialogTitle>
@@ -505,6 +531,18 @@ export function TrainingCertificationsTab() {
                 <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>Attach Certificate (optional)</Label>
+              <CertificateUploadButton
+                driverId={selectedDriverId}
+                certificationName={certTypes.find((t: any) => t.id === selectedTypeId)?.name ?? null}
+                uploadedFile={newCertFileUrl || null}
+                onRemove={() => setNewCertFileUrl('')}
+                onUploaded={(url) => setNewCertFileUrl(url)}
+                buttonText="Upload Certificate"
+              />
+            </div>
             
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setAddCertModalOpen(false)}>
@@ -517,14 +555,10 @@ export function TrainingCertificationsTab() {
                   certification_type_id: selectedTypeId,
                   completed_on: issueDate,
                   expires_on: expiryDate || null,
-                  certificate_url: null,
+                  certificate_url: newCertFileUrl || null,
                   notes: null,
                 } as any);
                 setAddCertModalOpen(false);
-                setSelectedDriverId(undefined);
-                setSelectedTypeId(undefined);
-                setIssueDate('');
-                setExpiryDate('');
               }}>
                 Add Certification
               </Button>
@@ -534,45 +568,63 @@ export function TrainingCertificationsTab() {
       </Dialog>
 
       {/* Upload Modal */}
-      <Dialog open={uploadModalOpen} onOpenChange={setUploadModalOpen}>
+      <Dialog open={uploadModalOpen} onOpenChange={(v) => {
+        setUploadModalOpen(v);
+        if (!v) setSelectedEmpCertId('');
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Upload Certificate</DialogTitle>
             <DialogDescription>
-              Upload a certificate document for verification
+              Attach a certificate file to an existing certification record
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-muted rounded-lg p-6 text-center">
-              <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">
-                Drag and drop files here, or click to select
-              </p>
-              <Button variant="outline" className="mt-2">
-                Select Files
-              </Button>
-            </div>
-            
             <div className="space-y-2">
-              <Label>Related Certification</Label>
-              <Select>
+              <Label>Existing Certification</Label>
+              <Select value={selectedEmpCertId} onValueChange={setSelectedEmpCertId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Link to existing certification" />
+                  <SelectValue placeholder="Select certification" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="john-cdl">John Smith - CDL Class A</SelectItem>
-                  <SelectItem value="emily-safety">Emily Davis - Safety Training</SelectItem>
+                  {(empCerts as any[]).map((c) => {
+                    const driverInfo = driverByClerk[c.driver_clerk_id];
+                    const typeName = certTypeById[c.certification_type_id]?.name || 'Certification';
+                    const label = `${driverInfo?.name || c.driver_clerk_id} — ${typeName} — issued ${c.completed_on}`;
+                    return (
+                      <SelectItem key={c.id} value={c.id}>
+                        {label}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
-            
+
+            {selectedEmpCertId && (() => {
+              const c: any = (empCerts as any[]).find(ec => ec.id === selectedEmpCertId);
+              const typeName = c ? (certTypeById[c.certification_type_id]?.name || '') : '';
+              const driverId = c?.driver_clerk_id;
+              return (
+                <div className="space-y-2" key={selectedEmpCertId}>
+                  <Label>Certificate File</Label>
+                  <CertificateUploadButton
+                    driverId={driverId}
+                    certificationName={typeName}
+                    uploadedFile={c?.certificate_url || null}
+                    onUploaded={(url) => {
+                      updateCert.mutate({ id: selectedEmpCertId, certificate_url: url });
+                    }}
+                    buttonText={c?.certificate_url ? 'Replace Certificate' : 'Upload Certificate'}
+                  />
+                </div>
+              );
+            })()}
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setUploadModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setUploadModalOpen(false)}>
-                Upload
+                Close
               </Button>
             </div>
           </div>
