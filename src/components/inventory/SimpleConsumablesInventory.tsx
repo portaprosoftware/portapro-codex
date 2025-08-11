@@ -336,7 +336,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <Table>
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead 
@@ -470,6 +471,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             )}
           </div>
         </div>
