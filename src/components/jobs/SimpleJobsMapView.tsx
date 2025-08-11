@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Satellite, Map as MapIcon, Radar } from 'lucide-react';
+import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
 import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
+import { MapLegend } from '@/components/maps/MapLegend';
 
 
 
@@ -20,6 +21,8 @@ interface SimpleJobsMapViewProps {
   jobType?: string;
   status?: string;
   selectedDate: Date;
+  isDriverMode: boolean;
+  onMapModeChange: (isDriverMode: boolean) => void;
 }
 
 export function SimpleJobsMapView({ 
@@ -27,7 +30,9 @@ export function SimpleJobsMapView({
   selectedDriver, 
   jobType, 
   status, 
-  selectedDate 
+  selectedDate,
+  isDriverMode,
+  onMapModeChange
 }: SimpleJobsMapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -119,13 +124,38 @@ export function SimpleJobsMapView({
       style: mapStyle === 'satellite' 
         ? 'mapbox://styles/mapbox/satellite-v9'
         : 'mapbox://styles/mapbox/streets-v12',
-      center: [-95.7129, 37.0902],
-      zoom: 4,
+      center: [-81.6944, 41.4993], // Cleveland, Ohio coordinates
+      zoom: 9, // Zoom level to show Cleveland metro area
       attributionControl: false
     });
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+
+    // Add smooth zoom animation to Cleveland area with different behavior for driver vs standard mode
+    setTimeout(() => {
+      if (map.current) {
+        if (isDriverMode) {
+          // Driver mode: More focused zoom with faster animation
+          map.current.flyTo({
+            center: [-81.6944, 41.4993], // Cleveland, Ohio
+            zoom: 11,
+            duration: 1500, // 1.5 second animation
+            curve: 1.2, // More aggressive curve
+            easing: (t) => 1 - Math.pow(1 - t, 3) // Ease out cubic
+          });
+        } else {
+          // Standard mode: Broader view with smooth animation
+          map.current.flyTo({
+            center: [-81.6944, 41.4993], // Cleveland, Ohio
+            zoom: 10,
+            duration: 2000, // 2 second animation
+            curve: 1.42, // Smooth curve
+            easing: (t) => t * (2 - t) // Ease out animation
+          });
+        }
+      }
+    }, 500); // Small delay to let map fully initialize
 
     return () => {
       markersRef.current.forEach(marker => marker.remove());
@@ -135,7 +165,7 @@ export function SimpleJobsMapView({
         map.current = null;
       }
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, isDriverMode]);
 
   // Update map style when changed
   useEffect(() => {
@@ -402,6 +432,18 @@ export function SimpleJobsMapView({
           </Button>
         </div>
 
+        {/* Driver Mode Toggle */}
+        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Driver Mode</span>
+            <Switch
+              checked={isDriverMode}
+              onCheckedChange={onMapModeChange}
+            />
+          </div>
+        </div>
+
         {/* Map Status */}
         {filteredJobs.length > 0 && (
           <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
@@ -441,6 +483,15 @@ export function SimpleJobsMapView({
             />
           </div>
         )}
+      </div>
+
+      {/* Map Legend - Bottom Left */}
+      <div className="absolute bottom-4 left-4 z-10">
+        <MapLegend 
+          isDriverMode={isDriverMode}
+          filteredJobsCount={filteredJobs.length}
+          availableDrivers={[]} // Add drivers data if available
+        />
       </div>
 
       {/* Weather Radar */}

@@ -27,6 +27,8 @@ export function JobsMapView({
       jobType={jobType}
       status={status}
       selectedDate={selectedDate}
+      isDriverMode={isDriverMode}
+      onMapModeChange={onMapModeChange}
     />
   );
 }
