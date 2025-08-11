@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Calendar, Clock, Plus, Users, Settings, Edit, Trash2, AlertTriangle, CheckCircle, Copy } from 'lucide-react';
 import { DriverWorkingHoursSection } from '@/components/settings/DriverWorkingHoursSection';
-import { useShiftTemplates, useDriverShiftsForWeek, useAssignShift, useMoveShift, useCreateShiftTemplate } from '@/hooks/useScheduling';
+import { useShiftTemplates, useDriverShiftsForWeek, useAssignShift, useMoveShift, useCreateShiftTemplate, useDeleteShiftTemplate } from '@/hooks/useScheduling';
 import { useDriverDirectory } from '@/hooks/useDirectory';
 import { format } from 'date-fns';
 
@@ -42,8 +42,44 @@ export function TeamSchedulingTab() {
   }, [templates]);
   const { data: weekShifts = [] } = useDriverShiftsForWeek(selectedDate);
   const createTemplate = useCreateShiftTemplate();
+  const deleteTemplate = useDeleteShiftTemplate();
   const assignShift = useAssignShift();
   const moveShift = useMoveShift();
+
+  // Quick stats from real data
+  const confirmedCount = (weekShifts as any[]).filter((s: any) => ['confirmed', 'scheduled'].includes(s.status)).length;
+  const pendingCount = (weekShifts as any[]).filter((s: any) => s.status === 'pending').length;
+
+  const timeToMinutes = (t: string) => {
+    const [h, m] = String(t).split(':');
+    return (parseInt(h || '0', 10) * 60) + parseInt(m || '0', 10);
+  };
+
+  const conflictCount = React.useMemo(() => {
+    const byKey: Record<string, any[]> = {};
+    (weekShifts as any[]).forEach((s: any) => {
+      if (!s.driver_clerk_id) return;
+      const key = `${s.driver_clerk_id}-${s.shift_date}`;
+      (byKey[key] ||= []).push(s);
+    });
+    let conflicts = 0;
+    Object.values(byKey).forEach((list: any[]) => {
+      list.sort((a: any, b: any) => timeToMinutes(a.start_time) - timeToMinutes(b.start_time));
+      for (let i = 0; i < list.length; i++) {
+        for (let j = i + 1; j < list.length; j++) {
+          if (timeToMinutes(list[i].end_time) > timeToMinutes(list[j].start_time)) {
+            conflicts++;
+          } else {
+            break;
+          }
+        }
+      }
+    });
+    return conflicts;
+  }, [weekShifts]);
+
+  const assignedDrivers = new Set((weekShifts as any[]).map((s: any) => s.driver_clerk_id).filter(Boolean));
+  const availableCount = Math.max((driverDirectory || []).filter((d: any) => d.clerk_user_id).length - assignedDrivers.size, 0);
 
   // Template form state
   const [templateName, setTemplateName] = useState("");
@@ -127,7 +163,7 @@ export function TeamSchedulingTab() {
               <CheckCircle className="h-5 w-5 text-green-600" />
               <div>
                 <p className="text-sm font-medium">Confirmed Shifts</p>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{confirmedCount}</p>
               </div>
             </div>
           </CardContent>
@@ -139,7 +175,7 @@ export function TeamSchedulingTab() {
               <Clock className="h-5 w-5 text-yellow-600" />
               <div>
                 <p className="text-sm font-medium">Pending</p>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-2xl font-bold">{pendingCount}</p>
               </div>
             </div>
           </CardContent>
@@ -151,7 +187,7 @@ export function TeamSchedulingTab() {
               <AlertTriangle className="h-5 w-5 text-red-600" />
               <div>
                 <p className="text-sm font-medium">Conflicts</p>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">{conflictCount}</p>
               </div>
             </div>
           </CardContent>
@@ -163,7 +199,7 @@ export function TeamSchedulingTab() {
               <Users className="h-5 w-5 text-blue-600" />
               <div>
                 <p className="text-sm font-medium">Available</p>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{availableCount}</p>
               </div>
             </div>
           </CardContent>
@@ -191,10 +227,18 @@ export function TeamSchedulingTab() {
                         <Button variant="ghost" size="sm">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={async () => {
+                          await createTemplate.mutateAsync({
+                            name: `${template.name} (Copy)`,
+                            shift_type: template.shift_type,
+                            description: template.description,
+                            start_time: template.start_time,
+                            end_time: template.end_time,
+                          } as any);
+                        }}>
                           <Copy className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive">
+                        <Button variant="ghost" size="sm" className="text-destructive" onClick={() => deleteTemplate.mutate(template.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

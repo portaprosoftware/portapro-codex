@@ -97,12 +97,20 @@ export function AnalyticsKPIDashboard() {
         .gte('assignment_date', prevStartStr)
         .lte('assignment_date', prevEndStr);
 
-      const prevCompleted = (prevJobs as any[]).filter(j => j.status === 'completed').length;
-      const jobsChange = prevCompleted ? ((completedJobs.length - prevCompleted) / prevCompleted) * 100 : 0;
+      const prevCompleted = (prevJobs as any[]).filter(j => j.status === 'completed');
+      const prevOnTime = prevCompleted.filter((j: any) => {
+        if (!j.completed_at || !j.scheduled_date) return false;
+        const scheduled = new Date(`${j.scheduled_date}T${j.scheduled_time || '23:59'}`);
+        const completed = new Date(j.completed_at);
+        return completed <= scheduled;
+      }).length;
+      const jobsChange = prevCompleted.length ? ((completedJobs.length - prevCompleted.length) / prevCompleted.length) * 100 : 0;
       const prevHours = (prevAssignments?.length || 0) * 8;
       const hoursChange = prevHours ? ((totalHours - prevHours) / prevHours) * 100 : 0;
 
       const onTimeRate = completedJobs.length ? (onTimeJobs.length / completedJobs.length) * 100 : 0;
+      const prevOnTimeRate = prevCompleted.length ? (prevOnTime / prevCompleted.length) * 100 : 0;
+      const onTimeChange = prevOnTimeRate ? ((onTimeRate - prevOnTimeRate) / prevOnTimeRate) * 100 : 0;
 
       return {
         totalHours,
@@ -110,7 +118,7 @@ export function AnalyticsKPIDashboard() {
         jobsCompleted: completedJobs.length,
         jobsChange,
         onTimeRate,
-        onTimeChange: 0,
+        onTimeChange,
         activeTeamMembers,
         teamChange: 0,
       } as KPIData;
@@ -120,22 +128,52 @@ export function AnalyticsKPIDashboard() {
   const { data: performanceData = [] } = useQuery({
     queryKey: ['team-performance-chart', dateRange, roleFilter],
     queryFn: async () => {
-      // Generate sample performance data for chart
-      const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
-      const data = [];
-      
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        
-        data.push({
-          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          jobs: Math.floor(Math.random() * 20) + 5,
-          hours: Math.floor(Math.random() * 50) + 20,
-          onTime: Math.floor(Math.random() * 20) + 80,
-        });
+      const endDate = new Date();
+      const days = dateRange === '7d' ? 7 : dateRange === '90d' ? 90 : 30;
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - days + 1);
+
+      const startStr = startDate.toISOString().split('T')[0];
+      const endStr = endDate.toISOString().split('T')[0];
+
+      const { data: jobs = [] } = await supabase
+        .from('jobs')
+        .select('id,status,scheduled_date,completed_at,scheduled_time')
+        .gte('scheduled_date', startStr)
+        .lte('scheduled_date', endStr);
+
+      // Build date buckets
+      const buckets: Record<string, { jobs: number; onTimeRate: number; completed: number; onTime: number }> = {};
+      for (let i = 0; i < days; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+        const key = d.toISOString().split('T')[0];
+        buckets[key] = { jobs: 0, onTimeRate: 0, completed: 0, onTime: 0 };
       }
-      
+
+      (jobs as any[]).forEach((j: any) => {
+        if (j.status !== 'completed' || !j.completed_at) return;
+        const completedDay = new Date(j.completed_at).toISOString().split('T')[0];
+        if (!buckets[completedDay]) return;
+        buckets[completedDay].jobs += 1;
+        buckets[completedDay].completed += 1;
+        const scheduled = j.scheduled_date ? new Date(`${j.scheduled_date}T${j.scheduled_time || '23:59'}`) : null;
+        const completed = new Date(j.completed_at);
+        if (scheduled && completed <= scheduled) {
+          buckets[completedDay].onTime += 1;
+        }
+      });
+
+      const data = Object.entries(buckets).map(([key, val]) => {
+        const dateObj = new Date(key + 'T00:00:00');
+        const onTime = val.completed ? (val.onTime / val.completed) * 100 : 0;
+        return {
+          date: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          jobs: val.jobs,
+          onTime: Math.round(onTime * 10) / 10,
+        };
+      });
+
       return data;
     }
   });
