@@ -92,7 +92,7 @@
     --gradient-purple: linear-gradient(135deg, hsl(271, 81%, 40%), hsl(271, 81%, 50%));
     --gradient-green: linear-gradient(135deg, hsl(142, 76%, 35%), hsl(142, 76%, 40%));
     --gradient-orange: linear-gradient(135deg, hsl(25, 95%, 45%), hsl(25, 95%, 50%));
-    --gradient-yellow: linear-gradient(135deg, hsl(45, 93%, 47%), hsl(45, 93%, 53%));
+    --gradient-yellow: linear-gradient(135deg, hsl(32, 95%, 44%), hsl(32, 95%, 40%));
     --gradient-red: linear-gradient(135deg, hsl(0, 84%, 45%), hsl(0, 84%, 50%));
     
     /* Transition System */
@@ -103,7 +103,7 @@
 
     /* Job Status Colors (H, S%, L%) - Updated to match new color scheme */
     --status-delivery: 214 83% 53%;        /* Blue (#3B82F6) */
-    --status-pickup: 45 93% 53%;           /* Gold (#F59E0B) - matching job wizard */
+    --status-pickup: 32 95% 44%;           /* Gold (#D97706) - amber-600 matching job wizard */
     --status-partial-pickup: 25 95% 53%;   /* Orange (#F97316) */
     --status-service: 259 55% 52%;         /* Purple (#8B5CF6) */
     --status-survey: 0 74% 35%;            /* Maroon (#B91C1C) */

@@ -29,7 +29,7 @@ export const getDriverColor = (driverId: string, drivers: any[] = []) => {
 export const getJobTypeColor = (jobType: string) => {
   const colors = {
     delivery: '#3B82F6',       // blue-500
-    pickup: '#F59E0B',         // amber-500 (matching job wizard)
+    pickup: '#D97706',         // amber-600 (matching job wizard exactly)
     partial_pickup: '#F97316', // orange-500
     service: '#8B5CF6',        // violet-500 (changed from amber to match dropdown)
     return: '#8B5CF6',         // violet-500
