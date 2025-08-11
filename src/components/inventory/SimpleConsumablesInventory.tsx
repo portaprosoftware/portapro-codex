@@ -422,21 +422,21 @@ export const SimpleConsumablesInventory: React.FC = () => {
                              {consumable.location_stock.map((loc, index) => {
                                const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
                                return (
-                                 <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border ${isLowStock ? 'border-red-200 bg-red-50' : ''}`}>
+                                 <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border ${isLowStock ? 'border-orange-200 bg-orange-50' : ''}`}>
                                    <div className="flex flex-col">
                                      <div className="flex items-center gap-2">
                                        <span className="font-medium text-sm text-gray-900">{loc.locationName}</span>
-                                       {isLowStock && <AlertTriangle className="w-3 h-3 text-red-500" />}
+                                       {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
                                      </div>
                                      <div className="flex items-center gap-1">
                                        <span className="text-xs text-gray-500">Location</span>
-                                       {isLowStock && (
-                                         <span className="text-xs text-red-600 font-medium">Low Stock</span>
-                                       )}
-                                     </div>
-                                   </div>
-                                   <div className="flex flex-col items-end">
-                                     <span className={`font-semibold text-sm ${isLowStock ? 'text-red-600' : 'text-gray-900'}`}>
+                                        {isLowStock && (
+                                          <span className="text-xs text-orange-600 font-medium">Low Stock</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                      <span className={`font-semibold text-sm ${isLowStock ? 'text-orange-600' : 'text-gray-900'}`}>
                                        {loc.quantity}
                                      </span>
                                      <span className="text-xs text-gray-500">qty</span>

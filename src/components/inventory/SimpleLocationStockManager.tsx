@@ -106,11 +106,11 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
               {value.map((item, index) => {
                 const isLowStock = item.lowStockThreshold && item.quantity <= item.lowStockThreshold;
                 return (
-                  <TableRow key={index} className={isLowStock ? "bg-destructive/10" : ""}>
+                  <TableRow key={index} className={isLowStock ? "bg-orange-50" : ""}>
                     <TableCell className="font-medium">
                       {item.locationName}
                       {isLowStock && (
-                        <div className="text-xs text-destructive font-medium mt-1">
+                        <div className="text-xs text-orange-600 font-medium mt-1">
                           Low Stock
                         </div>
                       )}
@@ -122,7 +122,7 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(item.locationId, parseInt(e.target.value) || 0)}
                         disabled={disabled}
-                        className={`w-20 ${isLowStock ? "border-destructive" : ""}`}
+                        className={`w-20 ${isLowStock ? "border-orange-300" : ""}`}
                       />
                     </TableCell>
                     <TableCell>

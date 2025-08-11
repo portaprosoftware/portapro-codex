@@ -105,7 +105,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                       <TableRow 
                         key={`${stock.id}-${index}`}
                         className={cn(
-                          status.status === 'out' && 'bg-red-50',
+                          status.status === 'out' && 'bg-orange-50',
                           status.status === 'low' && 'bg-amber-50'
                         )}
                       >
@@ -120,7 +120,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                         <TableCell className="text-right">
                           <span className={cn(
                             "font-medium",
-                            status.status === 'out' && "text-red-600",
+                            status.status === 'out' && "text-orange-600",
                             status.status === 'low' && "text-amber-600"
                           )}>
                             {stock.quantity}
@@ -131,7 +131,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                             variant={status.color as any}
                             className={cn(
                               status.status === 'low' && "bg-amber-100 text-amber-800 border-amber-200",
-                              status.status === 'out' && "bg-red-100 text-red-800 border-red-200"
+                              status.status === 'out' && "bg-orange-100 text-orange-800 border-orange-200"
                             )}
                           >
                             {status.text}
