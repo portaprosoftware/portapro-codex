@@ -7148,6 +7148,7 @@ export type Database = {
           created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -7155,6 +7156,7 @@ export type Database = {
           created_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -7162,6 +7164,7 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -8979,7 +8982,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "owner" | "dispatcher" | "driver" | "customer" | "admin"
+      app_role:
+        | "owner"
+        | "dispatcher"
+        | "driver"
+        | "customer"
+        | "admin"
+        | "dispatch"
       consumable_category:
         | "sanitizer"
         | "deodorizer"
@@ -9156,7 +9165,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["owner", "dispatcher", "driver", "customer", "admin"],
+      app_role: [
+        "owner",
+        "dispatcher",
+        "driver",
+        "customer",
+        "admin",
+        "dispatch",
+      ],
       consumable_category: [
         "sanitizer",
         "deodorizer",
