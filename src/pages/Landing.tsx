@@ -255,16 +255,16 @@ export const Landing: React.FC = () => {
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20 hover:border-white/50 active:bg-white/30">
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20 hover:border-white/50 active:bg-white/30" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200" onClick={openCalendlyPopup}>
                   Schedule Demo
                   <Calendar className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:bg-white/20 hover:border-white/50 active:bg-white/30">
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
                   Watch 60-second tour
                   <Play className="w-4 h-4 ml-2" />
                 </Button>
