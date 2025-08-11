@@ -66,6 +66,54 @@ export function SimpleJobsMapView({
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
 
+  // Deduplicate jobs and prioritize entries with GPS coordinates
+  const deduplicateJobs = (jobs: any[]) => {
+    const jobMap = new Map();
+    
+    jobs.forEach(job => {
+      const key = job.job_number || job.id;
+      
+      if (!jobMap.has(key)) {
+        jobMap.set(key, job);
+      } else {
+        // Check if current job has better GPS coordinates than stored one
+        const currentJob = jobMap.get(key);
+        const currentHasGPS = hasValidGPS(currentJob);
+        const newHasGPS = hasValidGPS(job);
+        
+        // Prioritize entry with GPS coordinates
+        if (!currentHasGPS && newHasGPS) {
+          jobMap.set(key, job);
+        }
+        // If both have GPS, prefer the default location
+        else if (currentHasGPS && newHasGPS) {
+          const currentDefaultLocation = currentJob.customers?.customer_service_locations?.find(loc => loc.is_default);
+          const newDefaultLocation = job.customers?.customer_service_locations?.find(loc => loc.is_default);
+          
+          if (!currentDefaultLocation?.gps_coordinates && newDefaultLocation?.gps_coordinates) {
+            jobMap.set(key, job);
+          }
+        }
+      }
+    });
+    
+    return Array.from(jobMap.values());
+  };
+
+  // Helper function to check if a job has valid GPS coordinates
+  const hasValidGPS = (job: any) => {
+    const serviceLocations = job.customers?.customer_service_locations;
+    if (!serviceLocations || serviceLocations.length === 0) return false;
+    
+    // First try to find default location with GPS
+    const defaultLocation = serviceLocations.find(loc => loc.is_default && loc.gps_coordinates);
+    if (defaultLocation?.gps_coordinates) return true;
+    
+    // Then try any location with GPS
+    const anyLocationWithGPS = serviceLocations.find(loc => loc.gps_coordinates);
+    return !!anyLocationWithGPS?.gps_coordinates;
+  };
+
   // Filter jobs based on search term
   const filterJobs = (jobs: any[]) => {
     return jobs.filter(job => {
@@ -77,7 +125,8 @@ export function SimpleJobsMapView({
     });
   };
 
-  const filteredJobs = filterJobs(allJobs);
+  const deduplicatedJobs = deduplicateJobs(allJobs);
+  const filteredJobs = filterJobs(deduplicatedJobs);
 
   // Auto-disable radar when date is not today
   useEffect(() => {
@@ -195,10 +244,26 @@ export function SimpleJobsMapView({
     const jobsWithoutLocation = [];
     
     filteredJobs.forEach(job => {
-      // Get customer's default service location GPS coordinates
+      // Get customer's service location GPS coordinates with smart selection
       const serviceLocations = job.customers?.customer_service_locations;
-      const defaultLocation = serviceLocations?.find(loc => loc.is_default) || serviceLocations?.[0];
-      const gpsCoords = defaultLocation?.gps_coordinates;
+      let selectedLocation = null;
+      
+      if (serviceLocations && serviceLocations.length > 0) {
+        // First try to find default location with GPS
+        selectedLocation = serviceLocations.find(loc => loc.is_default && loc.gps_coordinates);
+        
+        // If no default with GPS, find any location with GPS
+        if (!selectedLocation) {
+          selectedLocation = serviceLocations.find(loc => loc.gps_coordinates);
+        }
+        
+        // Fallback to default location (even without GPS)
+        if (!selectedLocation) {
+          selectedLocation = serviceLocations.find(loc => loc.is_default) || serviceLocations[0];
+        }
+      }
+      
+      const gpsCoords = selectedLocation?.gps_coordinates;
       
       if (gpsCoords && typeof gpsCoords === 'string') {
         // Parse the POINT format: (longitude,latitude)
