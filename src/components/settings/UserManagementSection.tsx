@@ -315,7 +315,6 @@ export function UserManagementSection() {
                           <SelectContent>
                             <SelectItem value="driver">Driver</SelectItem>
                             <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                            <SelectItem value="customer">Customer</SelectItem>
                             <SelectItem value="owner">Admin</SelectItem>
                           </SelectContent>
                         </Select>
