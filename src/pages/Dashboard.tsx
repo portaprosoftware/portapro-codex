@@ -266,9 +266,9 @@ const Dashboard = () => {
           title="Fuel Cost"
           value="$1,245"
           icon={Fuel}
-          gradientFrom="#fbbf24"
-          gradientTo="#f59e0b"
-          iconBg="#fbbf24"
+          gradientFrom="#eab308"
+          gradientTo="#ca8a04"
+          iconBg="#eab308"
           subtitle="Month to date fuel expenses"
           subtitleColor="text-gray-600"
           delay={500}
@@ -290,9 +290,9 @@ const Dashboard = () => {
           title="Expiring Documents"
           value={documentsData?.affectedVehicles || 0}
           icon={FileX}
-          gradientFrom="#eab308"
-          gradientTo="#ca8a04"
-          iconBg="#eab308"
+          gradientFrom="#fbbf24"
+          gradientTo="#f59e0b"
+          iconBg="#fbbf24"
           subtitle={`${documentsData?.totalDocuments || 0} documents (30 days)`}
           subtitleColor="text-orange-600"
           chart={<ProgressBar overdue={1} expiring={3} total={4} />}
