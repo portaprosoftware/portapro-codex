@@ -75,8 +75,8 @@ const JobsPage: React.FC = () => {
 
   // Smart job search for cross-date navigation - only trigger on Enter key
   const [shouldTriggerSmartSearch, setShouldTriggerSmartSearch] = useState(false);
-  const searchLooksLikeJobId = searchTerm.length >= 6 && /^[A-Z]{3}-\d+$/i.test(searchTerm.toUpperCase());
-  const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm.toUpperCase() : undefined);
+  const searchLooksLikeJobId = searchTerm.length === 4 && /^\d{4}$/.test(searchTerm);
+  const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm : undefined);
 
   // Handle smart job search and date navigation
   const handleSmartSearch = useCallback(() => {
