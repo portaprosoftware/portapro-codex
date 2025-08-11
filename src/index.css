@@ -103,7 +103,7 @@
 
     /* Job Status Colors (H, S%, L%) - Updated to match new color scheme */
     --status-delivery: 214 83% 53%;        /* Blue (#3B82F6) */
-    --status-pickup: 142 71% 45%;          /* Green (#10B981) */
+    --status-pickup: 45 93% 47%;           /* Gold (#F59E0B) */
     --status-partial-pickup: 25 95% 53%;   /* Orange (#F97316) */
     --status-service: 259 55% 52%;         /* Purple (#8B5CF6) */
     --status-survey: 0 74% 35%;            /* Maroon (#B91C1C) */

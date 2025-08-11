@@ -26,7 +26,7 @@ const jobTypes = [
     label: 'Pickup',
     description: 'Pick up equipment from customer location',
     icon: Package,
-    color: 'bg-gradient-to-r from-green-500 to-green-600 text-white',
+    color: 'bg-gradient-to-r from-amber-500 to-amber-600 text-white',
   },
   {
     value: 'service',
@@ -100,7 +100,7 @@ export function JobTypeSchedulingStep() {
                   "p-1 rounded-xl transition-all",
                   state.data.job_type === type.value && "ring-4 ring-offset-2",
                   type.value === 'delivery' && state.data.job_type === type.value && "ring-blue-500",
-                  type.value === 'pickup' && state.data.job_type === type.value && "ring-green-500",
+                  type.value === 'pickup' && state.data.job_type === type.value && "ring-amber-500",
                   type.value === 'service' && state.data.job_type === type.value && "ring-purple-500",
                   type.value === 'on-site-survey' && state.data.job_type === type.value && "ring-red-700"
                 )}
