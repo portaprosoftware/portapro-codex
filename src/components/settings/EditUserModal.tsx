@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -49,6 +49,19 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
       role: (user.user_roles?.[0]?.role as any) || "driver",
     },
   });
+
+  // Reset form when user prop changes or modal opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        role: (user.user_roles?.[0]?.role as any) || "driver",
+      });
+    }
+  }, [user, open, form]);
 
   const updateUser = useMutation({
     mutationFn: async (data: EditUserFormData & { profile_photo?: string | null }) => {
@@ -128,6 +141,7 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
       queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['user-role'] }); // Invalidate user role queries
       toast.success("User updated successfully");
       onOpenChange(false);
     },
@@ -216,7 +230,7 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue />
