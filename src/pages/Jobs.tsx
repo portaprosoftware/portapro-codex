@@ -646,7 +646,7 @@ const JobsPage: React.FC = () => {
                       {drivers.map(driver => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
                         return (
-                          <div key={driver.id} className="p-4 border-b border-gray-200 last:border-b-0 h-24 flex items-center">
+                          <div key={driver.id} className="p-4 border-b border-gray-200 last:border-b-0 h-24 flex items-center bg-gray-50">
                             <div className="flex items-center gap-3 w-full">
                               <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
                                 <User className="w-4 h-4 text-gray-600" />
