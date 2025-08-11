@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
   MoreVertical, Edit, Trash2, UserCheck, UserX,
-  MapPin, Phone, Mail, Calendar
+  Phone, Mail, Calendar
 } from 'lucide-react';
 
 interface User {
@@ -18,8 +17,6 @@ interface User {
   email: string;
   is_active: boolean;
   current_role: string;
-  team_assignment?: string | null;
-  work_location_id?: string | null;
   phone?: string | null;
   hire_date?: string | null;
 }
@@ -29,10 +26,6 @@ interface EnhancedUserProfileCardProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
-  onTeamAssignmentChange: (userId: string, team: string) => void;
-  onLocationChange: (userId: string, locationId: string) => void;
-  teamOptions?: { value: string; label: string }[];
-  locationOptions?: { value: string; label: string }[];
 }
 
 const roleIcons = {
@@ -51,48 +44,15 @@ const roleLabels = {
   admin: "Admin",
 };
 
-const defaultTeamOptions = [
-  { value: 'drivers', label: 'Drivers' },
-  { value: 'warehouse', label: 'Warehouse' },
-  { value: 'office', label: 'Office' },
-  { value: 'maintenance', label: 'Maintenance' },
-];
-
-const defaultLocationOptions = [
-  { value: 'main-yard', label: 'Main Yard' },
-  { value: 'north-depot', label: 'North Depot' },
-  { value: 'south-depot', label: 'South Depot' },
-  { value: 'remote', label: 'Remote' },
-];
 
 export function EnhancedUserProfileCard({ 
   user, 
   onEdit, 
   onDelete, 
-  onToggleStatus,
-  onTeamAssignmentChange,
-  onLocationChange,
-  teamOptions,
-  locationOptions
+  onToggleStatus
 }: EnhancedUserProfileCardProps) {
-  const [isEditingTeam, setIsEditingTeam] = useState(false);
-  const [isEditingLocation, setIsEditingLocation] = useState(false);
-
-  const tOptions = teamOptions ?? defaultTeamOptions;
-  const lOptions = locationOptions ?? defaultLocationOptions;
-
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
-
-  const handleTeamChange = (newTeam: string) => {
-    onTeamAssignmentChange(user.id, newTeam);
-    setIsEditingTeam(false);
-  };
-
-  const handleLocationChange = (newLocation: string) => {
-    onLocationChange(user.id, newLocation);
-    setIsEditingLocation(false);
-  };
 
   return (
     <Card className="h-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary">
@@ -193,78 +153,6 @@ export function EnhancedUserProfileCard({
           )}
         </div>
 
-        {/* Team Assignment */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Team Assignment:</span>
-            {isEditingTeam ? (
-              <Select 
-                value={user.team_assignment || ''} 
-                onValueChange={handleTeamChange}
-                onOpenChange={(open) => !open && setIsEditingTeam(false)}
-              >
-                <SelectTrigger className="w-32 h-8">
-                  <SelectValue placeholder="Select team" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditingTeam(true)}
-                className="h-8 px-2 text-xs"
-              >
-{user.team_assignment ? 
-                  tOptions.find(t => t.value === user.team_assignment)?.label : 
-                  "Assign Team"
-                }
-              </Button>
-            )}
-          </div>
-
-          {/* Work Location */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Work Location:</span>
-            {isEditingLocation ? (
-              <Select 
-                value={user.work_location_id || ''} 
-                onValueChange={handleLocationChange}
-                onOpenChange={(open) => !open && setIsEditingLocation(false)}
-              >
-                <SelectTrigger className="w-32 h-8">
-                  <SelectValue placeholder="Select location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {lOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditingLocation(true)}
-                className="h-8 px-2 text-xs flex items-center"
-              >
-                <MapPin className="w-3 h-3 mr-1" />
-                {user.work_location_id ? 
-                  lOptions.find(l => l.value === user.work_location_id)?.label : 
-                  "Set Location"
-                }
-              </Button>
-            )}
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

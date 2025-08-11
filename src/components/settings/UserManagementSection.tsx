@@ -88,19 +88,6 @@ export function UserManagementSection() {
     },
   });
 
-  // Fetch active storage locations for work location options
-  const { data: locations = [] } = useQuery({
-    queryKey: ["storage-locations-active"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("storage_locations")
-        .select("id, name")
-        .eq("is_active", true)
-        .order("name", { ascending: true });
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userFormSchema),
@@ -207,35 +194,6 @@ export function UserManagementSection() {
     },
   });
 
-  const updateTeamAssignment = useMutation({
-    mutationFn: async ({ userId, team }: { userId: string; team: string }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ team_assignment: team } as any)
-        .eq("id", userId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users-with-roles" ]});
-      toast.success("Team assignment updated");
-    },
-    onError: () => toast.error("Failed to update team assignment"),
-  });
-
-  const updateWorkLocation = useMutation({
-    mutationFn: async ({ userId, locationId }: { userId: string; locationId: string }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ work_location_id: locationId } as any)
-        .eq("id", userId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users-with-roles" ]});
-      toast.success("Work location updated");
-    },
-    onError: () => toast.error("Failed to update work location"),
-  });
 
   const onSubmit = (data: UserFormData) => {
     createUser.mutate(data);
@@ -432,13 +390,6 @@ export function UserManagementSection() {
                 onToggleStatus={(userId, isActive) => 
                   toggleUserStatus.mutate({ userId, isActive })
                 }
-                onTeamAssignmentChange={(userId, team) => {
-                  updateTeamAssignment.mutate({ userId, team });
-                }}
-                onLocationChange={(userId, locationId) => {
-                  updateWorkLocation.mutate({ userId, locationId });
-                }}
-                locationOptions={locations.map((l: any) => ({ value: l.id, label: l.name }))}
               />
             ))}
           </div>
