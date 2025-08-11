@@ -53,7 +53,7 @@ export const RouteStockCheck: React.FC = () => {
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent className="max-w-xs p-4" side="left">
+              <TooltipContent className="max-w-xs p-4 z-50 bg-popover border shadow-md pointer-events-auto" side="left">
                 <div className="space-y-2">
                   <h4 className="font-medium">How This Works</h4>
                   <p className="text-sm text-muted-foreground">
