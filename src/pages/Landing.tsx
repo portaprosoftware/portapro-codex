@@ -326,7 +326,14 @@ export const Landing: React.FC = () => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Header and Why it matters Row */}
+          {/* Top Row: Image */}
+          <div className="mb-12">
+            <div className="relative">
+              <img src={demoAiScanning} alt="AI Scanning Demo - Google Vision AI Interface" className="w-full rounded-2xl shadow-lg" />
+            </div>
+          </div>
+
+          {/* Middle Row: Header and Why it matters */}
           <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
             <div className="space-y-8">
               <div className="space-y-6">
@@ -409,17 +416,13 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Row: OCR Box and Photo */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div className="bg-gray-50 p-6 rounded-lg">
+          {/* Bottom Row: OCR Box */}
+          <div className="flex justify-center">
+            <div className="bg-gray-50 p-6 rounded-lg max-w-2xl">
               <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
               <p className="text-muted-foreground">
                 It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
               </p>
-            </div>
-
-            <div className="relative">
-              <img src={demoAiScanning} alt="AI Scanning Demo - Google Vision AI Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
