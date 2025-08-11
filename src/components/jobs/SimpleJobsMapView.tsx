@@ -496,17 +496,6 @@ export function SimpleJobsMapView({
           </Button>
         </div>
 
-        {/* Driver Mode Toggle */}
-        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Driver Mode</span>
-            <Switch
-              checked={isDriverMode}
-              onCheckedChange={onMapModeChange}
-            />
-          </div>
-        </div>
 
         {/* Map Status */}
         {filteredJobs.length > 0 && (
