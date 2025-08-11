@@ -212,7 +212,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   )
 
   return (
-    <aside className="w-64 border-r bg-white flex h-full flex-col">
+    <aside className="w-64 border-r bg-white flex h-screen flex-col fixed left-0 top-0 z-30">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-start">
