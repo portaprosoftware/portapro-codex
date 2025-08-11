@@ -574,10 +574,8 @@ const JobsPage: React.FC = () => {
             >
                <div className="bg-white h-full">
                 {/* Route vs Truck Stock */}
-                <div className="border-b border-gray-200 p-4 bg-white">
-                  <div className="max-w-4xl">
-                    <RouteStockCheck />
-                  </div>
+                <div className="border-b border-gray-200 p-4">
+                  <RouteStockCheck />
                 </div>
 
                 {/* Grid Layout Container */}
