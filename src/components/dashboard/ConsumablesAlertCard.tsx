@@ -91,8 +91,8 @@ export const ConsumablesAlertCard: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Left Section - Icon and Title */}
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-orange-100">
-              <Droplets className="w-6 h-6 text-orange-600" />
+            <div className="p-2 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700">
+              <Droplets className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Consumables Alert</h3>
