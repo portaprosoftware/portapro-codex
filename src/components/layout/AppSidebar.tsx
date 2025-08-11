@@ -66,7 +66,7 @@ const dayToDayItems: NavigationItem[] = [
     title: 'Quotes & Invoices', 
     url: '/quotes-invoices', 
     icon: FileText,
-    permission: 'admin'
+    permission: 'staff'
   },
 ];
 
@@ -88,7 +88,7 @@ const inventoryItems: NavigationItem[] = [
     title: 'Storage Sites', 
     url: '/storage-sites', 
     icon: Building,
-    permission: 'admin'
+    permission: 'staff'
   },
 ];
 
@@ -103,13 +103,13 @@ const managementItems: NavigationItem[] = [
     title: 'Fleet Management', 
     url: '/fleet-management', 
     icon: Truck,
-    permission: 'admin'
+    permission: 'staff'
   },
   { 
     title: 'Services Hub', 
     url: '/maintenance-hub', 
     icon: ClipboardCheck,
-    permission: 'admin'
+    permission: 'staff'
   },
 ];
 
@@ -130,7 +130,7 @@ const adminItems: NavigationItem[] = [
     title: 'Settings', 
     url: '/settings', 
     icon: Settings,
-    permission: 'owner'
+    permission: 'admin'
   },
 ];
 

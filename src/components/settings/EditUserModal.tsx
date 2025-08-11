@@ -224,8 +224,8 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="driver">Driver</SelectItem>
-                      <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                      <SelectItem value="owner">Admin</SelectItem>
+                      <SelectItem value="dispatch">Dispatcher</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

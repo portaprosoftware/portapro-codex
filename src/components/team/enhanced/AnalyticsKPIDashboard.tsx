@@ -63,7 +63,7 @@ export function AnalyticsKPIDashboard() {
       if (roleFilter !== 'all') {
         rolesQuery = rolesQuery.eq('role', roleFilter as any);
       } else {
-        rolesQuery = rolesQuery.in('role', ['driver', 'dispatcher', 'admin']);
+        rolesQuery = rolesQuery.in('role', ['driver', 'dispatch', 'admin']);
       }
       const { data: roles = [] } = await rolesQuery;
       const activeTeamMembers = new Set((roles as any[]).map(r => r.user_id)).size;
@@ -233,7 +233,7 @@ export function AnalyticsKPIDashboard() {
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="driver">Drivers</SelectItem>
-              <SelectItem value="dispatcher">Dispatchers</SelectItem>
+              <SelectItem value="dispatch">Dispatchers</SelectItem>
               <SelectItem value="admin">Admins</SelectItem>
             </SelectContent>
           </Select>
