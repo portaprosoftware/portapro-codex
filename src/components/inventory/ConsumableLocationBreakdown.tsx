@@ -16,6 +16,7 @@ interface ConsumableLocationBreakdownProps {
 interface LocationStockData {
   id: string;
   quantity: number;
+  low_stock_threshold?: number;
   storage_location: {
     id: string;
     name: string;
@@ -37,6 +38,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
         .select(`
           id,
           quantity,
+          low_stock_threshold,
           storage_location:storage_locations(id, name),
           consumable:consumables(reorder_threshold)
         `)
@@ -48,9 +50,9 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
     }
   });
 
-  const getStockStatus = (quantity: number, reorderThreshold: number) => {
+  const getStockStatus = (quantity: number, lowStockThreshold?: number) => {
     if (quantity === 0) return { status: 'out', color: 'destructive', text: 'Out of Stock' };
-    if (quantity <= reorderThreshold) return { status: 'low', color: 'warning', text: 'Low Stock' };
+    if (lowStockThreshold && quantity <= lowStockThreshold) return { status: 'low', color: 'warning', text: 'Low Stock' };
     return { status: 'good', color: 'default', text: 'Good Stock' };
   };
 
@@ -96,7 +98,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                   {locationStock.map((stock, index) => {
                     const status = getStockStatus(
                       stock.quantity, 
-                      stock.consumable?.reorder_threshold || 0
+                      stock.low_stock_threshold
                     );
                     
                     return (

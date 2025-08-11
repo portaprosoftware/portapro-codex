@@ -12,6 +12,7 @@ interface LocationStockItem {
   locationId: string;
   locationName: string;
   quantity: number;
+  lowStockThreshold?: number;
 }
 
 interface SimpleLocationStockManagerProps {
@@ -49,6 +50,15 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
     onChange(updatedStock);
   };
 
+  const handleThresholdChange = (locationId: string, threshold: number) => {
+    const updatedStock = value.map(item => 
+      item.locationId === locationId 
+        ? { ...item, lowStockThreshold: Math.max(0, threshold) }
+        : item
+    );
+    onChange(updatedStock);
+  };
+
   const addLocation = (locationId: string) => {
     const location = storageLocations?.find(loc => loc.id === locationId);
     if (!location) return;
@@ -59,7 +69,8 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
     const newStock = [...value, {
       locationId: location.id,
       locationName: location.name,
-      quantity: 0
+      quantity: 0,
+      lowStockThreshold: 0
     }];
     onChange(newStock);
   };
@@ -87,38 +98,58 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
               <TableRow>
                 <TableHead>Location</TableHead>
                 <TableHead>Quantity</TableHead>
+                <TableHead>Low Stock Alert</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {value.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">
-                    {item.locationName}
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min="0"
-                      value={item.quantity}
-                      onChange={(e) => handleQuantityChange(item.locationId, parseInt(e.target.value) || 0)}
-                      disabled={disabled}
-                      className="w-20"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeLocation(item.locationId)}
-                      disabled={disabled}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {value.map((item, index) => {
+                const isLowStock = item.lowStockThreshold && item.quantity <= item.lowStockThreshold;
+                return (
+                  <TableRow key={index} className={isLowStock ? "bg-destructive/10" : ""}>
+                    <TableCell className="font-medium">
+                      {item.locationName}
+                      {isLowStock && (
+                        <div className="text-xs text-destructive font-medium mt-1">
+                          Low Stock
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={item.quantity}
+                        onChange={(e) => handleQuantityChange(item.locationId, parseInt(e.target.value) || 0)}
+                        disabled={disabled}
+                        className={`w-20 ${isLowStock ? "border-destructive" : ""}`}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={item.lowStockThreshold || 0}
+                        onChange={(e) => handleThresholdChange(item.locationId, parseInt(e.target.value) || 0)}
+                        disabled={disabled}
+                        className="w-20"
+                        placeholder="0"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeLocation(item.locationId)}
+                        disabled={disabled}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         ) : (

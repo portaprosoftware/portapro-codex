@@ -526,6 +526,7 @@ export type Database = {
           consumable_id: string
           created_at: string
           id: string
+          low_stock_threshold: number
           quantity: number
           storage_location_id: string
           updated_at: string
@@ -534,6 +535,7 @@ export type Database = {
           consumable_id: string
           created_at?: string
           id?: string
+          low_stock_threshold?: number
           quantity?: number
           storage_location_id: string
           updated_at?: string
@@ -542,6 +544,7 @@ export type Database = {
           consumable_id?: string
           created_at?: string
           id?: string
+          low_stock_threshold?: number
           quantity?: number
           storage_location_id?: string
           updated_at?: string
