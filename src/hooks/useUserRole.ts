@@ -24,20 +24,20 @@ export const useUserRole = () => {
 
   const role = roleData;
   const isAdmin = role === "admin";
-  const isDispatch = role === "dispatch";
+  const isDispatcher = role === "dispatcher";
   const isDriver = role === "driver";
 
-  // Admin level access (admin + dispatch)
-  const hasAdminAccess = isAdmin || isDispatch;
+  // Admin level access (admin + dispatcher)
+  const hasAdminAccess = isAdmin || isDispatcher;
 
-  // Staff level access (admin + dispatch + driver)
-  const hasStaffAccess = isAdmin || isDispatch || isDriver;
+  // Staff level access (admin + dispatcher + driver)
+  const hasStaffAccess = isAdmin || isDispatcher || isDriver;
 
   return {
     role,
     isOwner: isAdmin, // Keep for backward compatibility
     isAdmin,
-    isDispatch,
+    isDispatcher,
     isDriver,
     hasAdminAccess,
     hasStaffAccess,

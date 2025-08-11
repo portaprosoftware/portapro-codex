@@ -1,6 +1,6 @@
 // Global type definitions for PortaPro
 
-export type UserRole = "admin" | "dispatch" | "driver";
+export type UserRole = "admin" | "dispatcher" | "driver";
 
 export interface User {
   id: string;
