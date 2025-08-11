@@ -11,7 +11,7 @@ interface StatCardProps {
   gradientFrom: string;
   gradientTo: string;
   iconBg: string;
-  subtitle?: string;
+  subtitle?: string | React.ReactNode;
   subtitleColor?: string;
   chart?: React.ReactNode;
   className?: string;

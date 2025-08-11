@@ -232,9 +232,16 @@ const Dashboard = () => {
           gradientFrom="#3b82f6"
           gradientTo="#2563eb"
           iconBg="#3b82f6"
-          subtitle={`${jobsData?.deliveries || 0} deliveries, ${jobsData?.pickups || 0} pickups, ${jobsData?.services || 0} services • ${jobsData?.partialPickups || 0} partial pickups • ${jobsData?.surveys || 0} surveys/estimates`}
+          subtitle={
+            <div className="space-y-1">
+              <div>{jobsData?.deliveries || 0} deliveries</div>
+              <div>{jobsData?.pickups || 0} pickups</div>
+              <div>{jobsData?.services || 0} services</div>
+              <div>{jobsData?.surveys || 0} surveys/estimates</div>
+              <div>{jobsData?.partialPickups || 0} partial pickups</div>
+            </div>
+          }
           subtitleColor="text-gray-600"
-          chart={<Sparkline data={jobsSparklineData} color="#3b82f6" />}
           delay={200}
         />
         
