@@ -197,7 +197,6 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
                       <SelectItem value="dispatcher">Dispatcher</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
                       <SelectItem value="owner">Admin</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
