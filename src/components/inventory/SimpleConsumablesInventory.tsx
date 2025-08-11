@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -36,6 +36,7 @@ interface LocationStockItem {
   locationId: string;
   locationName: string;
   quantity: number;
+  lowStockThreshold?: number;
 }
 
 export const SimpleConsumablesInventory: React.FC = () => {
@@ -418,18 +419,31 @@ export const SimpleConsumablesInventory: React.FC = () => {
                       <TableCell className="w-80">
                         {consumable.location_stock?.length > 0 ? (
                           <div className="space-y-2">
-                            {consumable.location_stock.map((loc, index) => (
-                              <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border">
-                                <div className="flex flex-col">
-                                  <span className="font-medium text-sm text-gray-900">{loc.locationName}</span>
-                                  <span className="text-xs text-gray-500">Location</span>
-                                </div>
-                                <div className="flex flex-col items-end">
-                                  <span className="font-semibold text-sm text-gray-900">{loc.quantity}</span>
-                                  <span className="text-xs text-gray-500">qty</span>
-                                </div>
-                              </div>
-                            ))}
+                             {consumable.location_stock.map((loc, index) => {
+                               const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
+                               return (
+                                 <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border ${isLowStock ? 'border-red-200 bg-red-50' : ''}`}>
+                                   <div className="flex flex-col">
+                                     <div className="flex items-center gap-2">
+                                       <span className="font-medium text-sm text-gray-900">{loc.locationName}</span>
+                                       {isLowStock && <AlertTriangle className="w-3 h-3 text-red-500" />}
+                                     </div>
+                                     <div className="flex items-center gap-1">
+                                       <span className="text-xs text-gray-500">Location</span>
+                                       {isLowStock && (
+                                         <span className="text-xs text-red-600 font-medium">Low Stock</span>
+                                       )}
+                                     </div>
+                                   </div>
+                                   <div className="flex flex-col items-end">
+                                     <span className={`font-semibold text-sm ${isLowStock ? 'text-red-600' : 'text-gray-900'}`}>
+                                       {loc.quantity}
+                                     </span>
+                                     <span className="text-xs text-gray-500">qty</span>
+                                   </div>
+                                 </div>
+                               );
+                             })}
                           </div>
                         ) : (
                           <div className="text-center py-4">
