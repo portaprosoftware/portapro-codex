@@ -70,7 +70,8 @@ export function UserListView({
         <TableHeader>
           <TableRow>
             <TableHead className="w-12"></TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead>First Name</TableHead>
+            <TableHead>Last Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
@@ -101,7 +102,15 @@ export function UserListView({
                 <TableCell>
                   <div className="font-medium">
                     <span className={!user.is_active ? 'text-gray-400' : ''}>
-                      {user.first_name} {user.last_name}
+                      {user.first_name}
+                    </span>
+                  </div>
+                </TableCell>
+                
+                <TableCell>
+                  <div className="font-medium">
+                    <span className={!user.is_active ? 'text-gray-400' : ''}>
+                      {user.last_name}
                     </span>
                   </div>
                 </TableCell>
@@ -143,7 +152,7 @@ export function UserListView({
                     {user.phone ? (
                       <div className="flex items-center">
                         <Phone className={`w-3 h-3 mr-1 ${!user.is_active ? 'text-gray-400' : ''}`} />
-                        {user.phone}
+                        {user.phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')}
                       </div>
                     ) : (
                       <span className="text-gray-300">—</span>
