@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, User, FileText, Edit, Eye } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar, DollarSign, User, FileText, Edit, Eye, Trash2, UserCheck, Download } from 'lucide-react';
 import { WorkOrder } from './types';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 
@@ -11,14 +13,47 @@ interface WorkOrderListViewProps {
   onEdit: (workOrder: WorkOrder) => void;
   onViewDetails: (workOrder: WorkOrder) => void;
   onStatusChange?: (workOrderId: string, newStatus: string) => void;
+  onBulkAction?: (action: string, workOrderIds: string[]) => void;
+  isStatusChanging?: boolean;
 }
 
 export const WorkOrderListView: React.FC<WorkOrderListViewProps> = ({
   workOrders,
   onEdit,
   onViewDetails,
-  onStatusChange
+  onStatusChange,
+  onBulkAction,
+  isStatusChanging = false
 }) => {
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedWorkOrders, setSelectedWorkOrders] = useState<string[]>([]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedWorkOrders(workOrders.map(wo => wo.id));
+    } else {
+      setSelectedWorkOrders([]);
+    }
+  };
+
+  const handleSelectWorkOrder = (workOrderId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedWorkOrders(prev => [...prev, workOrderId]);
+    } else {
+      setSelectedWorkOrders(prev => prev.filter(id => id !== workOrderId));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedWorkOrders.length > 0 && onBulkAction) {
+      onBulkAction(action, selectedWorkOrders);
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedWorkOrders([]);
+    setSelectionMode(false);
+  };
   const getPriorityBadge = (priority: string) => {
     const priorityColors = {
       'Low': 'bg-green-100 text-green-800 border-green-200',
@@ -93,19 +128,112 @@ export const WorkOrderListView: React.FC<WorkOrderListViewProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Selection Mode Header */}
+      <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              checked={selectionMode}
+              onCheckedChange={(checked) => setSelectionMode(checked as boolean)}
+            />
+            <span className="text-sm font-medium">
+              {selectionMode ? 'Exit Selection Mode' : 'Enable Selection Mode'}
+            </span>
+          </div>
+          
+          {selectionMode && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={selectedWorkOrders.length === workOrders.length && workOrders.length > 0}
+                onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+              />
+              <span className="text-sm">Select All</span>
+            </div>
+          )}
+        </div>
+
+        {selectedWorkOrders.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">
+              {selectedWorkOrders.length} selected
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkAction('assign')}
+            >
+              <UserCheck className="h-4 w-4 mr-1" />
+              Assign
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkAction('export')}
+            >
+              <Download className="h-4 w-4 mr-1" />
+              Export
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkAction('delete')}
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearSelection}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
+      </div>
+
       {workOrders.map((workOrder) => (
-        <Card key={workOrder.id} className="hover:shadow-md transition-shadow">
+        <Card 
+          key={workOrder.id} 
+          className={`hover:shadow-md transition-shadow ${
+            selectedWorkOrders.includes(workOrder.id) ? 'ring-2 ring-primary' : ''
+          }`}
+        >
           <CardContent className="p-6">
             <div className="flex flex-col space-y-4">
               {/* Header Row */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-3">
+                  {selectionMode && (
+                    <Checkbox
+                      checked={selectedWorkOrders.includes(workOrder.id)}
+                      onCheckedChange={(checked) => handleSelectWorkOrder(workOrder.id, checked as boolean)}
+                    />
+                  )}
                   <h3 className="font-semibold text-lg">{workOrder.work_order_number}</h3>
                   {getPriorityBadge(workOrder.priority)}
                   {getSourceBadge(workOrder.source)}
-                  <Badge variant={getStatusBadgeVariant(workOrder.status as any)}>
-                    {workOrder.status}
-                  </Badge>
+                  
+                  {/* Status Dropdown */}
+                  <Select
+                    value={workOrder.status}
+                    onValueChange={(newStatus) => onStatusChange?.(workOrder.id, newStatus)}
+                    disabled={isStatusChanging}
+                  >
+                    <SelectTrigger className="w-36">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="awaiting_parts">Awaiting Parts</SelectItem>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="vendor">Vendor</SelectItem>
+                      <SelectItem value="on_hold">On Hold</SelectItem>
+                      <SelectItem value="ready_for_verification">Ready for Verification</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
                   {workOrder.out_of_service && (
                     <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
                       Out of Service

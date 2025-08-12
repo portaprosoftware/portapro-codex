@@ -157,6 +157,15 @@ export const ComprehensiveWorkOrders: React.FC = () => {
     setOosOnly(false);
   };
 
+  const handleBulkAction = (action: string, workOrderIds: string[]) => {
+    console.log(`Bulk ${action} for work orders:`, workOrderIds);
+    // TODO: Implement bulk actions
+    toast({
+      title: "Bulk Action",
+      description: `${action} action will be implemented for ${workOrderIds.length} work orders`
+    });
+  };
+
   const handleBulkAssign = () => {
     console.log('Bulk assign');
     // TODO: Implement bulk assignment
@@ -263,6 +272,8 @@ export const ComprehensiveWorkOrders: React.FC = () => {
           onEdit={handleEdit}
           onViewDetails={handleViewDetails}
           onStatusChange={handleStatusChange}
+          onBulkAction={handleBulkAction}
+          isStatusChanging={statusChangeMutation.isPending}
         />
       )}
 
