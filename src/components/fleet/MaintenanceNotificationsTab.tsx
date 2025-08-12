@@ -179,25 +179,9 @@ export const MaintenanceNotificationsTab: React.FC = () => {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell>Jan 15, 2025</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>fleet@company.com</TableCell>
-                <TableCell>Maintenance Reminder - Truck 101 Oil Change</TableCell>
-                <TableCell><span className="text-green-600">Sent</span></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jan 14, 2025</TableCell>
-                <TableCell>SMS</TableCell>
-                <TableCell>+1234567890</TableCell>
-                <TableCell>CRITICAL: Van 205 brake inspection overdue</TableCell>
-                <TableCell><span className="text-green-600">Delivered</span></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jan 13, 2025</TableCell>
-                <TableCell>Push</TableCell>
-                <TableCell>Fleet Manager</TableCell>
-                <TableCell>Maintenance completed: Truck 103</TableCell>
-                <TableCell><span className="text-green-600">Read</span></TableCell>
+                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                  No notifications sent yet
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
