@@ -60,6 +60,11 @@ export function EnhancedUserProfileCard({
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
 
+  // Debug logging
+  console.log('EnhancedUserProfileCard - User:', user.first_name, user.last_name);
+  console.log('EnhancedUserProfileCard - User role:', user.current_role);
+  console.log('EnhancedUserProfileCard - Is driver?', user.current_role === 'driver');
+
   return (
     <Card className={`h-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary ${!user.is_active ? 'opacity-60' : ''}`}>
       <CardContent className="p-6">
