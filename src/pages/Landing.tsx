@@ -784,39 +784,44 @@ export const Landing: React.FC = () => {
       {/* Analytics Dashboard - White */}
       <section id="analytics" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <Card className="p-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Analytics Dashboard</h2>
-                <p className="text-lg text-muted-foreground">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Revenue tracking and forecasting</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Fleet utilization reports</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Customer analytics and insights</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Performance benchmarking</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="rounded-2xl border bg-gray-50 p-6">
-                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                  <p className="text-muted-foreground">Analytics Dashboard Preview Coming Soon</p>
-                </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Analytics Dashboard</h2>
+              <p className="text-lg text-muted-foreground">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Revenue tracking and forecasting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Fleet utilization reports</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Customer analytics and insights</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Performance benchmarking</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Analytics Dashboard Preview Coming Soon</p>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
 
       {/* Group 3: Operations Features - Blue */}
       <section className="py-8 bg-gradient-blue">
@@ -914,39 +919,44 @@ export const Landing: React.FC = () => {
       {/* Consumables - White */}
       <section id="consumables" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <Card className="p-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Consumables Management</h2>
-                <p className="text-lg text-muted-foreground">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Automated inventory tracking</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Reorder alerts and suggestions</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Usage analytics and forecasting</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Supplier management and pricing</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="rounded-2xl border bg-gray-50 p-6">
-                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                  <p className="text-muted-foreground">Consumables Management Preview Coming Soon</p>
-                </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Consumables Management</h2>
+              <p className="text-lg text-muted-foreground">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automated inventory tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Reorder alerts and suggestions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Usage analytics and forecasting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Supplier management and pricing</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Consumables Management Preview Coming Soon</p>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
 
       {/* Services Hub - White */}
       <section id="services-hub" className="py-8 bg-white">
@@ -986,39 +996,44 @@ export const Landing: React.FC = () => {
       {/* Marketing Tools - White */}
       <section id="marketing" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <Card className="p-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Marketing Tools</h2>
-                <p className="text-lg text-muted-foreground">Customer communication, promotions, and lead generation features.</p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Email campaign management</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Customer segmentation and targeting</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Promotional code management</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Lead tracking and conversion</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="rounded-2xl border bg-gray-50 p-6">
-                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                  <p className="text-muted-foreground">Marketing Tools Preview Coming Soon</p>
-                </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Marketing Tools</h2>
+              <p className="text-lg text-muted-foreground">Customer communication, promotions, and lead generation features.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Email campaign management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Customer segmentation and targeting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Promotional code management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Lead tracking and conversion</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Marketing Tools Preview Coming Soon</p>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
 
       {/* Reporting & Templates - White */}
       <section id="reports" className="py-8 bg-white">
