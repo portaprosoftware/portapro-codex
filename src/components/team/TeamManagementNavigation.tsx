@@ -60,32 +60,36 @@ export const TeamManagementNavigation: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mt-6 mb-6">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6 mb-6">
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 font-inter">
+            <h1 className="text-xl md:text-2xl font-semibold text-gray-900 font-inter">
               Team Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm md:text-base text-gray-600 font-inter mt-1">
               Manage your team members, schedules, time off, and performance
             </p>
           </div>
         </div>
         
-        <TabNav ariaLabel="Team Management Navigation">
-          {navigationItems.map((item) => (
-            <TabNav.Item
-              key={item.value}
-              to={item.href}
-              isActive={isActiveRoute(item.value)}
-              onClick={() => handleNavigation(item.value)}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.title}</span>
-            </TabNav.Item>
-          ))}
-        </TabNav>
+        <div className="flex items-center space-x-4">
+          <div className="enterprise-tabs">
+            <TabNav ariaLabel="Team Management Navigation">
+              {navigationItems.map((item) => (
+                <TabNav.Item
+                  key={item.value}
+                  to={item.href}
+                  isActive={isActiveRoute(item.value)}
+                  onClick={() => handleNavigation(item.value)}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </TabNav.Item>
+              ))}
+            </TabNav>
+          </div>
+        </div>
       </div>
     </div>
   );
