@@ -82,8 +82,8 @@ export function DetailedDriverProfile() {
       <div className="p-6 text-center">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Driver Not Found</h2>
         <p className="text-gray-600 mb-4">The requested driver profile could not be found.</p>
-        <Button onClick={() => navigate('/team-management/users')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+        <Button variant="primary" onClick={() => navigate('/team-management/users')}>
+          <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Team Management
         </Button>
       </div>
@@ -104,11 +104,10 @@ export function DetailedDriverProfile() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <Button 
-          variant="ghost" 
+          variant="primary" 
           onClick={() => navigate('/team-management/users')}
-          className="text-gray-600 hover:text-gray-900"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Team Management
         </Button>
         
