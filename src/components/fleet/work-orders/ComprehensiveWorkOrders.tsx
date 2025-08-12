@@ -9,6 +9,7 @@ import { WorkOrderFilters } from "./WorkOrderFilters";
 import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { useToast } from "@/hooks/use-toast";
+import { WorkOrder } from "./types";
 
 export const ComprehensiveWorkOrders: React.FC = () => {
   const { toast } = useToast();
@@ -30,57 +31,19 @@ export const ComprehensiveWorkOrders: React.FC = () => {
   const { data: workOrders, isLoading, refetch } = useQuery({
     queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedSource, selectedAssignee, overdueOnly, oosOnly],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from("work_orders")
-        .select(`
-          *,
-          vehicles(license_plate, vehicle_type),
-          product_items(item_code),
-          maintenance_technicians(first_name, last_name)
-        `)
-        .order("opened_at", { ascending: false });
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      // Apply filters
-      if (searchTerm) {
-        query = query.or(`work_order_number.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      if (selectedAssetType !== 'all') {
-        query = query.eq('asset_type', selectedAssetType);
-      }
-      
-      if (selectedPriority !== 'all') {
-        query = query.eq('priority', selectedPriority);
-      }
-      
-      if (selectedSource !== 'all') {
-        query = query.eq('source', selectedSource);
-      }
-      
-      if (selectedAssignee === 'unassigned') {
-        query = query.is('assignee_id', null);
-      } else if (selectedAssignee !== 'all') {
-        query = query.eq('assignee_id', selectedAssignee);
-      }
-      
-      if (overdueOnly) {
-        query = query.lt('due_date', new Date().toISOString());
-      }
-      
-      if (oosOnly) {
-        query = query.eq('out_of_service', true);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
       
       // Transform data to include asset names and assignee names
-      return (data || []).map(wo => ({
+      return (data || []).map((wo: any) => ({
         ...wo,
-        asset_name: wo.vehicles?.[0]?.license_plate || wo.product_items?.[0]?.item_code || 'Unknown Asset',
-        assignee_name: wo.maintenance_technicians?.[0] 
-          ? `${wo.maintenance_technicians[0].first_name} ${wo.maintenance_technicians[0].last_name}`
-          : null
+        work_order_number: wo.work_order_number || `WO-${wo.id?.slice(-8)}`,
+        asset_name: wo.asset_id || 'Unknown Asset',
+        assignee_name: wo.assigned_to || null
       }));
     }
   });
@@ -91,7 +54,7 @@ export const ComprehensiveWorkOrders: React.FC = () => {
       const { error } = await supabase
         .from('work_orders')
         .update({ 
-          status: newStatus,
+          status: newStatus as "open" | "awaiting_parts" | "in_progress" | "vendor" | "on_hold" | "ready_for_verification" | "completed",
           updated_at: new Date().toISOString()
         })
         .eq('id', workOrderId);
@@ -225,7 +188,7 @@ export const ComprehensiveWorkOrders: React.FC = () => {
 
         <TabsContent value="board" className="mt-6">
           <WorkOrderKanbanBoard
-            workOrders={workOrders || []}
+            workOrders={workOrders as any || []}
             onEdit={handleEdit}
             onViewDetails={handleViewDetails}
             onStatusChange={handleStatusChange}

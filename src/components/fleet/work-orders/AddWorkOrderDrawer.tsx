@@ -103,18 +103,18 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       
       const payload = {
         work_order_number: woNumber,
-        source: form.source,
+        source: (form.source === "pm_schedule" ? "pm" : form.source) as "dvir_defect" | "pm" | "breakdown" | "other",
         asset_id: form.asset_id,
-        asset_type: form.asset_type,
-        priority: form.priority,
-        assignee_id: form.assignee_id || null,
+        asset_type: form.asset_type as "vehicle" | "trailer",
+        priority: form.priority as "low" | "normal" | "high" | "critical",
+        assigned_to: form.assignee_id || null,
         due_date: form.due_date || null,
         meter_at_open: form.meter_at_open ? parseFloat(form.meter_at_open) : null,
         description: form.description,
         tasks: form.tasks,
         out_of_service: form.out_of_service,
         driver_verification_required: form.driver_verification_required,
-        status: 'open',
+        status: 'open' as const,
         opened_at: new Date().toISOString()
       };
 

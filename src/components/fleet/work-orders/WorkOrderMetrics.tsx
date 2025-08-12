@@ -16,9 +16,29 @@ export const WorkOrderMetrics: React.FC = () => {
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["work-order-metrics"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_work_order_metrics");
-      if (error) throw error;
-      return data as WorkOrderMetrics;
+      // Get metrics directly from work_orders table
+      const { data: workOrders } = await supabase
+        .from('work_orders')
+        .select('status, created_at, due_date, total_cost');
+      
+      if (!workOrders) return { open: 0, awaiting_parts: 0, overdue: 0, average_age_days: 0, mtd_cost: 0 };
+      
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      const open = workOrders.filter(wo => wo.status === 'open').length;
+      const awaiting_parts = workOrders.filter(wo => wo.status === 'awaiting_parts').length;
+      const overdue = workOrders.filter(wo => wo.due_date && new Date(wo.due_date) < now).length;
+      
+      const openOrders = workOrders.filter(wo => wo.status !== 'completed' && wo.status !== 'canceled');
+      const average_age_days = openOrders.length > 0 
+        ? openOrders.reduce((sum, wo) => sum + Math.floor((now.getTime() - new Date(wo.created_at).getTime()) / (1000 * 60 * 60 * 24)), 0) / openOrders.length
+        : 0;
+      
+      const mtdOrders = workOrders.filter(wo => new Date(wo.created_at) >= monthStart);
+      const mtd_cost = mtdOrders.reduce((sum, wo) => sum + (wo.total_cost || 0), 0);
+      
+      return { open, awaiting_parts, overdue, average_age_days: Math.round(average_age_days), mtd_cost };
     }
   });
 
