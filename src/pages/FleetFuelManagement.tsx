@@ -22,7 +22,7 @@ export const FleetFuelManagement: React.FC = () => {
             subtitle="Track fuel usage, costs, and efficiency across your fleet"
           />
           
-          <div className="flex items-center gap-2 mt-4">
+          <div className="flex items-center mt-4">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter ${
