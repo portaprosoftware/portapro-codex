@@ -1740,6 +1740,230 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_activity_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          created_at: string
+          driver_id: string
+          id: string
+          ip_address: string | null
+          performed_by: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          created_at?: string
+          driver_id: string
+          id?: string
+          ip_address?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          created_at?: string
+          driver_id?: string
+          id?: string
+          ip_address?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_activity_log_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_activity_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_credentials: {
+        Row: {
+          created_at: string
+          driver_id: string
+          id: string
+          license_class: string | null
+          license_endorsements: string[] | null
+          license_expiry_date: string | null
+          license_image_url: string | null
+          license_number: string | null
+          license_state: string | null
+          medical_card_expiry_date: string | null
+          medical_card_image_url: string | null
+          medical_card_reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          id?: string
+          license_class?: string | null
+          license_endorsements?: string[] | null
+          license_expiry_date?: string | null
+          license_image_url?: string | null
+          license_number?: string | null
+          license_state?: string | null
+          medical_card_expiry_date?: string | null
+          medical_card_image_url?: string | null
+          medical_card_reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          id?: string
+          license_class?: string | null
+          license_endorsements?: string[] | null
+          license_expiry_date?: string | null
+          license_image_url?: string | null
+          license_number?: string | null
+          license_state?: string | null
+          medical_card_expiry_date?: string | null
+          medical_card_image_url?: string | null
+          medical_card_reference?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_credentials_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_devices: {
+        Row: {
+          app_access_connected: boolean | null
+          app_last_login: string | null
+          created_at: string
+          driver_id: string
+          driver_tag_id: string | null
+          id: string
+          telematics_provider: string | null
+          updated_at: string
+        }
+        Insert: {
+          app_access_connected?: boolean | null
+          app_last_login?: string | null
+          created_at?: string
+          driver_id: string
+          driver_tag_id?: string | null
+          id?: string
+          telematics_provider?: string | null
+          updated_at?: string
+        }
+        Update: {
+          app_access_connected?: boolean | null
+          app_last_login?: string | null
+          created_at?: string
+          driver_id?: string
+          driver_tag_id?: string | null
+          id?: string
+          telematics_provider?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_devices_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_equipment_qualifications: {
+        Row: {
+          certificate_url: string | null
+          created_at: string
+          driver_id: string
+          equipment_type: string
+          id: string
+          qualification_expires: string | null
+          qualified_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          created_at?: string
+          driver_id: string
+          equipment_type: string
+          id?: string
+          qualification_expires?: string | null
+          qualified_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          certificate_url?: string | null
+          created_at?: string
+          driver_id?: string
+          equipment_type?: string
+          id?: string
+          qualification_expires?: string | null
+          qualified_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_equipment_qualifications_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_ppe_info: {
+        Row: {
+          boot_size: string | null
+          driver_id: string
+          glove_size: string | null
+          hard_hat_size: string | null
+          id: string
+          updated_at: string
+          vest_size: string | null
+        }
+        Insert: {
+          boot_size?: string | null
+          driver_id: string
+          glove_size?: string | null
+          hard_hat_size?: string | null
+          id?: string
+          updated_at?: string
+          vest_size?: string | null
+        }
+        Update: {
+          boot_size?: string | null
+          driver_id?: string
+          glove_size?: string | null
+          hard_hat_size?: string | null
+          id?: string
+          updated_at?: string
+          vest_size?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_ppe_info_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_shifts: {
         Row: {
           created_at: string
@@ -1849,44 +2073,49 @@ export type Database = {
       driver_training_records: {
         Row: {
           certificate_url: string | null
-          company_id: string | null
-          completed_on: string
-          course_type: string
           created_at: string
-          created_by_clerk: string | null
-          driver_clerk_id: string
-          expires_on: string | null
+          driver_id: string
           id: string
+          instructor_name: string | null
+          last_completed: string | null
+          next_due: string | null
           notes: string | null
+          training_type: string
           updated_at: string
         }
         Insert: {
           certificate_url?: string | null
-          company_id?: string | null
-          completed_on: string
-          course_type: string
           created_at?: string
-          created_by_clerk?: string | null
-          driver_clerk_id: string
-          expires_on?: string | null
+          driver_id: string
           id?: string
+          instructor_name?: string | null
+          last_completed?: string | null
+          next_due?: string | null
           notes?: string | null
+          training_type: string
           updated_at?: string
         }
         Update: {
           certificate_url?: string | null
-          company_id?: string | null
-          completed_on?: string
-          course_type?: string
           created_at?: string
-          created_by_clerk?: string | null
-          driver_clerk_id?: string
-          expires_on?: string | null
+          driver_id?: string
           id?: string
+          instructor_name?: string | null
+          last_completed?: string | null
+          next_due?: string | null
           notes?: string | null
+          training_type?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "driver_training_records_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       driver_working_hours: {
         Row: {
@@ -5131,40 +5360,75 @@ export type Database = {
         Row: {
           clerk_user_id: string | null
           created_at: string
+          driver_id: string | null
           email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
           first_name: string | null
+          hire_date: string | null
+          home_base: string | null
           id: string
           is_active: boolean
           last_name: string | null
+          notes: string | null
           phone: string | null
           profile_photo: string | null
+          status: string | null
+          status_effective_date: string | null
+          supervisor_id: string | null
           updated_at: string
         }
         Insert: {
           clerk_user_id?: string | null
           created_at?: string
+          driver_id?: string | null
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           first_name?: string | null
+          hire_date?: string | null
+          home_base?: string | null
           id: string
           is_active?: boolean
           last_name?: string | null
+          notes?: string | null
           phone?: string | null
           profile_photo?: string | null
+          status?: string | null
+          status_effective_date?: string | null
+          supervisor_id?: string | null
           updated_at?: string
         }
         Update: {
           clerk_user_id?: string | null
           created_at?: string
+          driver_id?: string | null
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           first_name?: string | null
+          hire_date?: string | null
+          home_base?: string | null
           id?: string
           is_active?: boolean
           last_name?: string | null
+          notes?: string | null
           phone?: string | null
           profile_photo?: string | null
+          status?: string | null
+          status_effective_date?: string | null
+          supervisor_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       property_variations: {
         Row: {
