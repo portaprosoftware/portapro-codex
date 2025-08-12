@@ -7,8 +7,6 @@ export const QuoteToJobShowcase: React.FC = () => {
   const kpis = [
     { title: 'Quotes accepted', value: '72%', icon: FileText },
     { title: 'Avg. deposit collected', value: '$225', icon: DollarSign },
-    { title: 'Time to convert', value: '2m 10s', icon: CreditCard },
-    { title: 'Jobs auto-created', value: '94%', icon: ClipboardList },
   ];
 
   return (
@@ -22,8 +20,48 @@ export const QuoteToJobShowcase: React.FC = () => {
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
-        {/* Left: KPIs and highlights */}
+        {/* Left: Job card + KPIs and highlights */}
         <aside className="space-y-6">
+          {/* Job Created moved here */}
+          <AspectRatio ratio={4/3}>
+            <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
+              <div className="border-b px-4 py-2 bg-muted/40">
+                <h4 className="text-sm font-semibold text-foreground">Job Created from Accepted Quote</h4>
+              </div>
+              <div className="p-4 space-y-3 text-sm">
+                {[ 
+                  ['Job #', 'JB-2984'],
+                  ['Customer', 'ACME Construction'],
+                  ['Location', '1250 Market St, Denver CO'],
+                  ['Delivery', 'Mon Jan 8'],
+                  ['Pickup', 'Fri Jan 12'],
+                  ['Units', '3 Standard, 1 ADA, 1 Handwash'],
+                  ['Services', 'Wed, Fri'],
+                ].map(([k,v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span className="text-muted-foreground">{k}</span>
+                    <span className="font-medium text-foreground">{v}</span>
+                  </div>
+                ))}
+
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  {[
+                    'Assigned: Driver M. Lopez',
+                    'Vehicle: Truck 12',
+                    'Route: 4',
+                    'Initial invoice created',
+                  ].map((t) => (
+                    <div key={t} className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      <span className="text-xs text-foreground">{t}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </AspectRatio>
+
+          {/* Keep only two KPI cards */}
           <div className="grid grid-cols-2 gap-3">
             {kpis.map((k, i) => (
               <StatCard
@@ -57,7 +95,7 @@ export const QuoteToJobShowcase: React.FC = () => {
         </aside>
 
         {/* Right: Stacked mock screenshots */}
-        <main className="space-y-6 transform origin-top-right scale-[0.8] md:scale-[0.85] lg:scale-[0.8]">
+        <main className="space-y-6">
           {/* 1) Quote Builder */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
@@ -163,44 +201,7 @@ export const QuoteToJobShowcase: React.FC = () => {
             </div>
           </AspectRatio>
 
-          {/* 3) Auto-created Job */}
-          <AspectRatio ratio={4/3}>
-            <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
-              <div className="border-b px-4 py-2 bg-muted/40">
-                <h4 className="text-sm font-semibold text-foreground">Job Created from Accepted Quote</h4>
-              </div>
-              <div className="p-4 space-y-3 text-sm">
-                {[ 
-                  ['Job #', 'JB-2984'],
-                  ['Customer', 'ACME Construction'],
-                  ['Location', '1250 Market St, Denver CO'],
-                  ['Delivery', 'Mon Jan 8'],
-                  ['Pickup', 'Fri Jan 12'],
-                  ['Units', '3 Standard, 1 ADA, 1 Handwash'],
-                  ['Services', 'Wed, Fri'],
-                ].map(([k,v]) => (
-                  <div key={k} className="flex items-center justify-between">
-                    <span className="text-muted-foreground">{k}</span>
-                    <span className="font-medium text-foreground">{v}</span>
-                  </div>
-                ))}
-
-                <div className="grid grid-cols-2 gap-2 pt-2">
-                  {[
-                    'Assigned: Driver M. Lopez',
-                    'Vehicle: Truck 12',
-                    'Route: 4',
-                    'Initial invoice created',
-                  ].map((t) => (
-                    <div key={t} className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
-                      <CheckCircle className="w-4 h-4 text-primary" />
-                      <span className="text-xs text-foreground">{t}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </AspectRatio>
+          {/* Job card moved to left column */}
         </main>
       </div>
     </div>
