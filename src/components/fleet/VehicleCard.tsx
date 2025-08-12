@@ -53,7 +53,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
     return (
       <div className="bg-card rounded-lg border shadow-sm hover:shadow-md transition-shadow p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-1">
             <div className="h-12 w-12 bg-muted rounded-md flex items-center justify-center overflow-hidden">
               {vehicle.vehicle_image ? (
                 <img
@@ -66,7 +66,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
               )}
             </div>
             
-            <div>
+            <div className="flex-1">
               <h3 className="text-lg font-medium">{vehicle.license_plate}</h3>
               <div className="flex items-center space-x-4 mt-1">
                 {vehicle.make && vehicle.model && (
@@ -75,19 +75,22 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
                 {vehicle.vehicle_type && (
                   <span className="text-sm text-muted-foreground">• {vehicle.vehicle_type}</span>
                 )}
-                <span className={cn("inline-block text-xs font-medium py-1 px-2 rounded-md", getStatusClasses(vehicle.status))}>
-                  {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </span>
               </div>
             </div>
           </div>
           
-          <Button
-            onClick={() => onManage?.(vehicle)}
-            variant="outline"
-          >
-            View Details
-          </Button>
+          <div className="flex items-center space-x-3">
+            <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
+              {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </Badge>
+            
+            <Button
+              onClick={() => onManage?.(vehicle)}
+              variant="outline"
+            >
+              View Details
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -129,9 +132,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
-          <span className={cn("inline-block text-xs font-medium py-1 px-2 rounded-md", getStatusClasses(vehicle.status))}>
+          <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
             {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-          </span>
+          </Badge>
         </div>
       </div>
       
