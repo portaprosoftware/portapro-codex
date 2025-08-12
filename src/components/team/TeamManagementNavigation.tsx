@@ -4,12 +4,12 @@ import {
   Users, 
   Calendar, 
   Clock, 
-  BarChart3, 
+  FileText,
   GraduationCap
 } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'training' | 'custom-reports';
 
 export const TeamManagementNavigation: React.FC = () => {
   const location = useLocation();
@@ -35,16 +35,16 @@ export const TeamManagementNavigation: React.FC = () => {
       href: "/team-management/time-off"
     },
     {
-      title: "Analytics",
-      value: "analytics" as TeamTab,
-      icon: BarChart3,
-      href: "/team-management/analytics"
-    },
-    {
       title: "Training",
       value: "training" as TeamTab,
       icon: GraduationCap,
       href: "/team-management/training"
+    },
+    {
+      title: "Custom Reports",
+      value: "custom-reports" as TeamTab,
+      icon: FileText,
+      href: "/team-management/custom-reports"
     }
   ];
 

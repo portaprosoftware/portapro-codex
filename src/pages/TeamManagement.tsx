@@ -5,7 +5,6 @@ import { UserManagementSection } from '@/components/settings/UserManagementSecti
 import { DriverWorkingHoursSection } from '@/components/settings/DriverWorkingHoursSection';
 import { DriverTimeOffSection } from '@/components/settings/DriverTimeOffSection';
 import { TeamSchedulingTab } from '@/components/team/TeamSchedulingTab';
-import { TeamAnalyticsTab } from '@/components/team/TeamAnalyticsTab';
 import { TrainingCertificationsTab } from '@/components/team/TrainingCertificationsTab';
 import { BulkTeamOperations } from '@/components/team/BulkTeamOperations';
 import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
@@ -14,7 +13,7 @@ import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
 
 import { DetailedDriverProfile } from '@/components/driver/DetailedDriverProfile';
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'driver';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'training' | 'custom-reports' | 'bulk-operations' | 'compliance' | 'reports' | 'driver';
 
 export default function TeamManagement() {
   const navigate = useNavigate();
@@ -43,8 +42,8 @@ export default function TeamManagement() {
         {currentTab === 'users' && <UserManagementSection />}
         {currentTab === 'scheduling' && <TeamSchedulingTab />}
         {currentTab === 'time-off' && <DriverTimeOffSection onBack={() => navigate('/team-management/users')} />}
-        {currentTab === 'analytics' && <TeamAnalyticsTab />}
         {currentTab === 'training' && <TrainingCertificationsTab />}
+        {currentTab === 'custom-reports' && <CustomReportBuilder />}
         {currentTab === 'bulk-operations' && <BulkTeamOperations />}
         {currentTab === 'compliance' && <ComplianceDashboard />}
         {currentTab === 'reports' && <CustomReportBuilder />}
