@@ -478,41 +478,43 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Job Wizard Deep Dive - Blue */}
-      <section id="job-wizard" className="py-8 bg-gradient-blue text-white">
+      {/* Job Wizard Deep Dive - White */}
+      <section id="job-wizard" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-white">
-                  Powerful Job Creation—Simplified
-                </h2>
-                <p className="text-lg text-white/90">
-                  Our 5-step wizard handles everything from customer selection to final confirmation in one smooth flow.
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                    Powerful Job Creation—Simplified
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Our 5-step wizard handles everything from customer selection to final confirmation in one smooth flow.
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  {jobWizardSteps.map((step, index) => <div key={index} className="flex items-start gap-4">
+                      <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {step.number}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-base mb-1 text-foreground">{step.title}</h4>
+                        <p className="text-muted-foreground text-sm">{step.description}</p>
+                      </div>
+                    </div>)}
+                </div>
+                
+                <p className="text-sm text-muted-foreground">
+                  Optional partial pickups, on-site estimates, and custom report templates.
                 </p>
               </div>
               
-              <div className="space-y-4">
-                {jobWizardSteps.map((step, index) => <div key={index} className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-white text-primary rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {step.number}
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-base mb-1 text-white">{step.title}</h4>
-                      <p className="text-white/80 text-sm">{step.description}</p>
-                    </div>
-                  </div>)}
+              <div className="bg-gray-50 rounded-2xl p-6 shadow-xl">
+                <img src={demoJobWizard} alt="Job Wizard Demo - Step-by-step Job Creation Interface" className="w-full rounded-xl" />
               </div>
-              
-              <p className="text-sm text-white/80">
-                Optional partial pickups, on-site estimates, and custom report templates.
-              </p>
             </div>
-            
-            <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <img src={demoJobWizard} alt="Job Wizard Demo - Step-by-step Job Creation Interface" className="w-full rounded-xl" />
-            </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -558,44 +560,46 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Driver Mobile App - Blue */}
-      <section id="mobile-app" className="py-8 bg-gradient-blue">
+      {/* Driver Mobile App - White */}
+      <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-white">
-                  Driver Mobile App - Works Offline
-                </h2>
-                <p className="text-lg text-white/90">
-                  Native mobile app with GPS navigation, photo upload, and digital checklists that work even without signal.
-                </p>
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                    Driver Mobile App - Works Offline
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Native mobile app with GPS navigation, photo upload, and digital checklists that work even without signal.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-foreground">Offline-capable route navigation</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-foreground">Photo documentation with GPS stamps</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-foreground">Digital delivery confirmations</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-foreground">Real-time job status updates</span>
+                  </div>
+                </div>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                  <span className="text-white/90">Offline-capable route navigation</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                  <span className="text-white/90">Photo documentation with GPS stamps</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                  <span className="text-white/90">Digital delivery confirmations</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                  <span className="text-white/90">Real-time job status updates</span>
-                </div>
+              <div className="rounded-2xl p-6 bg-gray-50">
+                <img src={demoMobileApp} alt="Mobile App Demo - Driver Interface" className="w-full rounded-xl" />
               </div>
             </div>
-            
-            <div className="bg-white/10 rounded-2xl p-6">
-              <img src={demoMobileApp} alt="Mobile App Demo - Driver Interface" className="w-full rounded-xl" />
-            </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -686,32 +690,34 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Team Management - Blue */}
-      <section id="team-management" className="py-8 bg-gradient-blue">
+      {/* Team Management - White */}
+      <section id="team-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-white">
-                  Team Management Made Easy
-                </h2>
-                <p className="text-lg text-white/90">
-                  Coordinate your crew with smart scheduling and role management.
-                </p>
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                    Team Management Made Easy
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Coordinate your crew with smart scheduling and role management.
+                  </p>
+                </div>
+                
+                <div className="grid gap-4">
+                  {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span className="font-medium text-foreground">{feature}</span>
+                    </div>)}
+                </div>
               </div>
               
-              <div className="grid gap-4">
-                {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                    <span className="font-medium text-white/90">{feature}</span>
-                  </div>)}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <img src={demoTeamManagement} alt="Team Management Demo - Scheduling and Roles Interface" className="w-full rounded-xl" />
               </div>
             </div>
-            
-            <div className="bg-white/10 rounded-2xl p-6">
-              <img src={demoTeamManagement} alt="Team Management Demo - Scheduling and Roles Interface" className="w-full rounded-xl" />
-            </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -750,38 +756,40 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Analytics Dashboard - Blue */}
-      <section id="analytics" className="py-8 bg-gradient-blue">
+      {/* Analytics Dashboard - White */}
+      <section id="analytics" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">Analytics Dashboard</h2>
-              <p className="text-lg text-white/90">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Revenue tracking and forecasting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Fleet utilization reports</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Customer analytics and insights</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Performance benchmarking</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-white/10 rounded-2xl p-6">
-              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-white/70">Analytics Dashboard Preview Coming Soon</p>
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Analytics Dashboard</h2>
+                <p className="text-lg text-muted-foreground">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Revenue tracking and forecasting</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Fleet utilization reports</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Customer analytics and insights</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Performance benchmarking</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="rounded-2xl border bg-gray-50 p-6">
+                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                  <p className="text-muted-foreground">Analytics Dashboard Preview Coming Soon</p>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -873,38 +881,40 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Consumables - Blue */}
-      <section id="consumables" className="py-8 bg-gradient-blue">
+      {/* Consumables - White */}
+      <section id="consumables" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">Consumables Management</h2>
-              <p className="text-lg text-white/90">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Automated inventory tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Reorder alerts and suggestions</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Usage analytics and forecasting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Supplier management and pricing</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-white/10 rounded-2xl p-6">
-              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-white/70">Consumables Management Preview Coming Soon</p>
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Consumables Management</h2>
+                <p className="text-lg text-muted-foreground">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Automated inventory tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Reorder alerts and suggestions</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Usage analytics and forecasting</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Supplier management and pricing</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="rounded-2xl border bg-gray-50 p-6">
+                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                  <p className="text-muted-foreground">Consumables Management Preview Coming Soon</p>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -943,38 +953,40 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Marketing Tools - Blue */}
-      <section id="marketing" className="py-8 bg-gradient-blue">
+      {/* Marketing Tools - White */}
+      <section id="marketing" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">Marketing Tools</h2>
-              <p className="text-lg text-white/90">Customer communication, promotions, and lead generation features.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Email campaign management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Customer segmentation and targeting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Promotional code management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Lead tracking and conversion</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-white/10 rounded-2xl p-6">
-              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-white/70">Marketing Tools Preview Coming Soon</p>
+          <Card className="p-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Marketing Tools</h2>
+                <p className="text-lg text-muted-foreground">Customer communication, promotions, and lead generation features.</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Email campaign management</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Customer segmentation and targeting</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Promotional code management</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Lead tracking and conversion</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="rounded-2xl border bg-gray-50 p-6">
+                <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                  <p className="text-muted-foreground">Marketing Tools Preview Coming Soon</p>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
