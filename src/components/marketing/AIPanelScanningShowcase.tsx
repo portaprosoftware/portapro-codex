@@ -45,13 +45,14 @@ export const AIPanelScanningShowcase: React.FC = () => {
         {/* Before - Photo of embossed plastic */}
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-foreground text-center">1. Snap a photo</h3>
-          <div className="aspect-square rounded-2xl border bg-gradient-to-br from-muted/50 to-muted/20 p-6 flex items-center justify-center shadow-lg">
-            <div className="w-full h-full rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-dashed border-primary/30 flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Camera className="w-12 h-12 text-primary mx-auto" />
-                <div className="text-sm text-muted-foreground">Embossed plastic panel</div>
-                <div className="text-xs text-muted-foreground">PT-1234 • SATELLITE</div>
-              </div>
+          <div className="aspect-square rounded-2xl border bg-card p-4 flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="w-full h-full rounded-xl overflow-hidden relative">
+              <img 
+                src="/lovable-uploads/f550f01a-a436-4f0b-bb81-d3f51b8fe0c0.png" 
+                alt="Embossed plastic panel showing UNIT G1042, MOLD 7A-221, SER PP-221"
+                className="w-full h-full object-cover object-left"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20"></div>
             </div>
           </div>
         </div>
