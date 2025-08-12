@@ -141,7 +141,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
       {/* Action Button */}
       <Button
         onClick={() => onManage?.(vehicle)}
-        variant="ocean"
+        variant="outline"
         className="w-full mt-4"
       >
         View Details
