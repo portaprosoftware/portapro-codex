@@ -52,13 +52,13 @@ export const DriverBottomNav: React.FC = () => {
                 "flex flex-col items-center px-3 py-2 min-w-0 flex-1",
                 "text-xs font-medium rounded-lg transition-colors",
                 isActive
-                  ? "text-blue-600 bg-blue-50"
+                  ? "text-white bg-gradient-primary"
                   : "text-gray-600 hover:text-gray-900"
               )}
             >
               <item.icon className={cn(
                 "w-6 h-6 mb-1",
-                isActive ? "text-blue-600" : "text-gray-400"
+                isActive ? "text-white" : "text-gray-400"
               )} />
               <span className="truncate">{item.label}</span>
             </NavLink>

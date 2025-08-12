@@ -108,7 +108,7 @@ export const FleetSidebar: React.FC = () => {
                   cn(
                     "flex items-center justify-between p-3 rounded-lg transition-colors",
                     isActive
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-gradient-primary text-white"
                       : "hover:bg-muted"
                   )
                 }

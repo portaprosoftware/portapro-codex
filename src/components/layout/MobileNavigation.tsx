@@ -142,7 +142,7 @@ export const MobileBottomNavigation: React.FC = () => {
                   cn(
                     "flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 min-w-0 flex-1 min-h-[44px]", // Added min touch target
                     isActive
-                      ? "text-primary"
+                      ? "bg-gradient-primary text-white font-bold"
                       : "text-gray-500 hover:text-gray-700"
                   )
             }
@@ -152,7 +152,7 @@ export const MobileBottomNavigation: React.FC = () => {
                 <item.icon 
                   className={cn(
                     "w-5 h-5 flex-shrink-0",
-                    isActive ? "text-primary" : "text-gray-500"
+                    isActive ? "text-white" : "text-gray-500"
                   )} 
                   strokeWidth={2} 
                 />
