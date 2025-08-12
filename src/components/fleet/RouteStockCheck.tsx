@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Info } from 'lucide-react';
 
 export const RouteStockCheck: React.FC = () => {
@@ -42,18 +42,18 @@ export const RouteStockCheck: React.FC = () => {
   });
 
   return (
-    <TooltipProvider>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <CardTitle>Route vs Truck Stock</CardTitle>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <button className="p-1 hover:bg-muted rounded-full transition-colors">
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs p-4 z-50 bg-popover border shadow-md pointer-events-auto" side="left">
+              </PopoverTrigger>
+              <PopoverContent className="max-w-xs p-4" side="bottom" align="start">
                 <div className="space-y-2">
                   <h4 className="font-medium">How This Works</h4>
                   <p className="text-sm text-muted-foreground">
@@ -66,11 +66,12 @@ export const RouteStockCheck: React.FC = () => {
                     <p><strong>Status:</strong> "OK" means you're ready, "Replenish" means load more supplies</p>
                   </div>
                 </div>
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </div>
-          {/* SEO: canonical and h1 in parent page; this is a sub-card */}
-        </CardHeader>
+        </div>
+        {/* SEO: canonical and h1 in parent page; this is a sub-card */}
+      </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
           <div className="space-y-1">
@@ -130,7 +131,6 @@ export const RouteStockCheck: React.FC = () => {
         )}
       </CardContent>
     </Card>
-    </TooltipProvider>
   );
 };
 
