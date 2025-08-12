@@ -326,7 +326,7 @@ export function UserListView({
                         <DropdownMenuItem asChild>
                           <Link to={`/team-management/driver/${user.id}`}>
                             <ExternalLink className="w-4 h-4 mr-2" />
-                            View Profile
+                            Driver Details
                           </Link>
                         </DropdownMenuItem>
                       )}
