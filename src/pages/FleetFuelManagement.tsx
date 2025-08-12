@@ -22,34 +22,33 @@ export const FleetFuelManagement: React.FC = () => {
             subtitle="Track fuel usage, costs, and efficiency across your fleet"
           />
           
-          <div className="flex items-center mt-4">
-            <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="logs">All Logs</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex items-center mt-4">
+              <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="logs">All Logs</TabsTrigger>
+                <TabsTrigger value="reports">Reports</TabsTrigger>
+                <TabsTrigger value="settings">Settings</TabsTrigger>
+              </TabsList>
+            </div>
+          
+            <div className="flex-1 overflow-auto">
+              <TabsContent value="overview" className="mt-6">
+                <FuelOverviewTab />
+              </TabsContent>
 
-            <TabsContent value="overview" className="mt-6">
-              <FuelOverviewTab />
-            </TabsContent>
+              <TabsContent value="logs" className="mt-6">
+                <FuelAllLogsTab />
+              </TabsContent>
 
-            <TabsContent value="logs" className="mt-6">
-              <FuelAllLogsTab />
-            </TabsContent>
+              <TabsContent value="reports" className="mt-6">
+                <FuelReportsTab />
+              </TabsContent>
 
-            <TabsContent value="reports" className="mt-6">
-              <FuelReportsTab />
-            </TabsContent>
-
-            <TabsContent value="settings" className="mt-6">
-              <FuelSettingsTab />
-            </TabsContent>
+              <TabsContent value="settings" className="mt-6">
+                <FuelSettingsTab />
+              </TabsContent>
+            </div>
           </Tabs>
         </div>
       </div>

@@ -298,36 +298,31 @@ export default function FleetFiles() {
 
         {/* Document Categories Navigation */}
         <div className="flex items-center mt-4">
-          <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-            <TabsTrigger value="all">
-              All ({filteredDocuments.length})
-            </TabsTrigger>
-            <TabsTrigger value="receipt">
-              Receipts ({documentsByCategory.receipt?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="warranty">
-              Warranties ({documentsByCategory.warranty?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="photo">
-              Photos ({documentsByCategory.photo?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="other">
-              Other ({documentsByCategory.other?.length || 0})
-            </TabsTrigger>
-            <TabsTrigger value="categories">
-              <Settings className="w-3 h-3 mr-1" />
-              Categories
-            </TabsTrigger>
-          </TabsList>
-        </div>
-      </div>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+              <TabsTrigger value="all">
+                All ({filteredDocuments.length})
+              </TabsTrigger>
+              <TabsTrigger value="receipt">
+                Receipts ({documentsByCategory.receipt?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="warranty">
+                Warranties ({documentsByCategory.warranty?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="photo">
+                Photos ({documentsByCategory.photo?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="other">
+                Other ({documentsByCategory.other?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="categories">
+                <Settings className="w-3 h-3 mr-1" />
+                Categories
+              </TabsTrigger>
+            </TabsList>
 
-      {/* Document Categories Content */}
-      <div className="flex-1 overflow-hidden">
-        <Tabs defaultValue="all" className="h-full flex flex-col">
-          <div className="flex-1 overflow-auto p-6">
             {/* All Documents */}
-            <TabsContent value="all" className="mt-0">
+            <TabsContent value="all" className="mt-6">
               {isLoading ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -360,7 +355,7 @@ export default function FleetFiles() {
 
             {/* Category-specific tabs */}
             {categories?.map((category) => (
-              <TabsContent key={category.name} value={category.name} className="mt-0">
+              <TabsContent key={category.name} value={category.name} className="mt-6">
                 <div className={`grid gap-4 ${
                   viewMode === "grid" 
                     ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
@@ -381,11 +376,11 @@ export default function FleetFiles() {
             ))}
 
             {/* Categories Management Tab */}
-            <TabsContent value="categories" className="mt-0">
+            <TabsContent value="categories" className="mt-6">
               <DocumentCategoryManagement />
             </TabsContent>
-          </div>
-        </Tabs>
+          </Tabs>
+        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}
