@@ -46,15 +46,21 @@ const DOCUMENT_TYPES = [
   'Other'
 ];
 
-// Mock document storage (in real app, this would be in Supabase)
 interface Document {
   id: string;
   driver_id: string;
   document_type: string;
+  document_name: string;
   file_name: string;
+  file_path: string;
   file_url: string;
+  file_size?: number;
+  file_type?: string;
+  issue_date?: string;
   expiry_date?: string;
   notes?: string;
+  uploaded_by?: string;
+  upload_date?: string;
   created_at: string;
   updated_at: string;
 }
@@ -65,35 +71,22 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
 
-  // Mock data - in real app, this would query Supabase
+  // Fetch real documents from Supabase
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ['driver-documents', driverId],
     queryFn: async () => {
-      // Mock documents for now
-      return [
-        {
-          id: '1',
-          driver_id: driverId,
-          document_type: 'Driver License',
-          file_name: 'driver_license.pdf',
-          file_url: '/mock/driver_license.pdf',
-          expiry_date: '2025-12-31',
-          notes: 'Class A Commercial License',
-          created_at: '2024-01-15T10:00:00Z',
-          updated_at: '2024-01-15T10:00:00Z'
-        },
-        {
-          id: '2', 
-          driver_id: driverId,
-          document_type: 'Medical Certificate',
-          file_name: 'medical_cert.pdf',
-          file_url: '/mock/medical_cert.pdf',
-          expiry_date: '2024-06-30',
-          notes: 'DOT Physical Examination',
-          created_at: '2024-01-10T09:00:00Z',
-          updated_at: '2024-01-10T09:00:00Z'
-        }
-      ] as Document[];
+      const { data, error } = await supabase
+        .from('driver_documents')
+        .select('*')
+        .eq('driver_id', driverId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching driver documents:', error);
+        throw error;
+      }
+
+      return data || [];
     }
   });
 
@@ -110,9 +103,29 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
 
   const addDocument = useMutation({
     mutationFn: async (data: DocumentFormData) => {
-      // In real app, this would save to Supabase
-      console.log('Adding document:', data);
-      return { id: Date.now().toString() };
+      const { data: result, error } = await supabase
+        .from('driver_documents')
+        .insert({
+          driver_id: driverId,
+          document_type: data.document_type,
+          document_name: data.document_type,
+          file_name: data.file_name,
+          file_path: data.file_url,
+          file_url: data.file_url,
+          file_size: selectedFile?.size || null,
+          file_type: selectedFile?.type || null,
+          expiry_date: data.expiry_date || null,
+          notes: data.notes || null,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error adding document:', error);
+        throw error;
+      }
+
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-documents', driverId] });
@@ -129,8 +142,30 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
 
   const deleteDocument = useMutation({
     mutationFn: async (documentId: string) => {
-      // In real app, this would delete from Supabase and storage
-      console.log('Deleting document:', documentId);
+      // First get the document to delete from storage
+      const { data: document } = await supabase
+        .from('driver_documents')
+        .select('file_path')
+        .eq('id', documentId)
+        .single();
+
+      // Delete from storage if file exists
+      if (document?.file_path) {
+        await supabase.storage
+          .from('driver-documents')
+          .remove([document.file_path]);
+      }
+
+      // Delete from database
+      const { error } = await supabase
+        .from('driver_documents')
+        .delete()
+        .eq('id', documentId);
+
+      if (error) {
+        console.error('Error deleting document:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-documents', driverId] });
@@ -146,19 +181,46 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type and size
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a PDF or image file (JPG, PNG)');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
     setSelectedFile(file);
     form.setValue('file_name', file.name);
     
-    // In real app, upload to Supabase storage
+    // Upload to Supabase storage
     setUploading(true);
     try {
-      // Mock upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const mockUrl = `/documents/${driverId}/${file.name}`;
-      form.setValue('file_url', mockUrl);
+      const timestamp = Date.now();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${driverId}/${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      
+      const { data, error } = await supabase.storage
+        .from('driver-documents')
+        .upload(fileName, file);
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('driver-documents')
+        .getPublicUrl(fileName);
+
+      form.setValue('file_url', publicUrl);
       toast.success('File uploaded successfully');
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error('Failed to upload file');
+      setSelectedFile(null);
     } finally {
       setUploading(false);
     }
@@ -381,10 +443,23 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
                         {expiryStatus && getExpiryBadge(expiryStatus)}
                         
                         <div className="flex items-center space-x-1">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => window.open(document.file_url, '_blank')}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = document.file_url;
+                              link.download = document.file_name;
+                              link.click();
+                            }}
+                          >
                             <Download className="w-4 h-4" />
                           </Button>
                           <Button 
@@ -412,10 +487,12 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
                         </div>
                       )}
                       
-                      <div>
-                        <span className="font-medium text-gray-600">Size:</span>
-                        <p>245 KB</p> {/* Mock size */}
-                      </div>
+                      {document.file_size && (
+                        <div>
+                          <span className="font-medium text-gray-600">Size:</span>
+                          <p>{Math.round(document.file_size / 1024)} KB</p>
+                        </div>
+                      )}
                     </div>
                     
                     {document.notes && (

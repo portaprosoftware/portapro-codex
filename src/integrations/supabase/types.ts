@@ -1900,6 +1900,71 @@ export type Database = {
           },
         ]
       }
+      driver_documents: {
+        Row: {
+          created_at: string
+          document_name: string
+          document_type: string
+          driver_id: string
+          expiry_date: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          issue_date: string | null
+          notes: string | null
+          updated_at: string
+          upload_date: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_name: string
+          document_type: string
+          driver_id: string
+          expiry_date?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          issue_date?: string | null
+          notes?: string | null
+          updated_at?: string
+          upload_date?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_name?: string
+          document_type?: string
+          driver_id?: string
+          expiry_date?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          issue_date?: string | null
+          notes?: string | null
+          updated_at?: string
+          upload_date?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_documents_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "driver_credentials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_equipment_qualifications: {
         Row: {
           certificate_url: string | null
