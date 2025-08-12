@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Truck, X } from "lucide-react";
+import { Search, Truck } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface Vehicle {
@@ -116,11 +116,17 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     onOpenChange(false);
   };
 
+  const getVehicleImageUrl = (imagePath: string) => {
+    return supabase.storage
+      .from('vehicle-images')
+      .getPublicUrl(imagePath).data.publicUrl;
+  };
+
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto">
-          <div className="flex items-center justify-center h-64">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
+          <div className="flex items-center justify-center flex-1">
             <LoadingSpinner />
           </div>
         </DialogContent>
@@ -128,22 +134,16 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     );
   }
 
-  const getVehicleImageUrl = (imagePath: string) => {
-    return supabase.storage
-      .from('vehicle-images')
-      .getPublicUrl(imagePath).data.publicUrl;
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-4 border-b">
+      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">Select Vehicle</DialogTitle>
         </DialogHeader>
 
-        <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {/* Search and Filters */}
-          <div className="space-y-4 flex-shrink-0">
+          <div className="p-6 pb-4 space-y-4 flex-shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
@@ -179,9 +179,9 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
             </div>
           </div>
 
-          {/* Vehicle Grid */}
-          <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
+          {/* Vehicle Grid - Scrollable Area */}
+          <div className="flex-1 overflow-y-auto px-6 pb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredVehicles.map((vehicle) => {
                 const vehicleStatus = getVehicleStatus(vehicle);
                 const isSelected = selectedVehicle?.id === vehicle.id;
