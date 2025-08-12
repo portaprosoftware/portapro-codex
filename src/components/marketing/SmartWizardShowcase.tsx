@@ -59,7 +59,7 @@ export const SmartWizardShowcase: React.FC = () => {
         </aside>
 
         {/* Right: "Make-believe screenshots" stack */}
-        <main className="space-y-6">
+        <main className="space-y-6 transform origin-top-right scale-[0.8] md:scale-[0.85] lg:scale-[0.8]">
           {/* Main mock: Create Job */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
@@ -96,7 +96,7 @@ export const SmartWizardShowcase: React.FC = () => {
                   {/* AI Recommendation pill */}
                   <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs shadow hover-scale">
                     <Zap className="w-3.5 h-3.5" />
-                    <span>For 280 guests / 8 hrs: 12 units + 2 handwash</span>
+                    <span>For 280 guests / 4-day event: 12 units + 2 handwash</span>
                   </div>
                 </div>
 
@@ -119,10 +119,24 @@ export const SmartWizardShowcase: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Services */}
+                <div className="rounded-xl border bg-background">
+                  <div className="px-4 py-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-muted-foreground">Services</div>
+                      <div className="text-sm font-medium text-foreground">Mid-week service ×2 (Wed, Fri)</div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Service reports auto-generated after each visit</div>
+                  </div>
+                </div>
+
                 {/* Footer totals */}
                 <div className="flex items-center justify-between rounded-xl border bg-muted/30 px-4 py-3">
                   <div className="font-semibold text-foreground">Subtotal: $2,515</div>
-                  <div className="text-sm text-muted-foreground">Delivery: Fri 8:00–10:00 AM</div>
+                  <div className="text-sm text-muted-foreground text-right">
+                    <div>Rental: Mon Jan 8 – Fri Jan 12 (4 days)</div>
+                    <div>Services: Wed, Fri</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -150,8 +164,16 @@ export const SmartWizardShowcase: React.FC = () => {
                     <span className="font-medium text-foreground">Route 4</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Window</span>
-                    <span className="font-medium text-foreground">8:00–10:00 AM</span>
+                    <span className="text-muted-foreground">Delivery</span>
+                    <span className="font-medium text-foreground">Mon Jan 8</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Pickup</span>
+                    <span className="font-medium text-foreground">Fri Jan 12</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Service Days</span>
+                    <span className="font-medium text-foreground">Wed, Fri</span>
                   </div>
 
                   {/* Tiny calendar mock */}
@@ -164,7 +186,7 @@ export const SmartWizardShowcase: React.FC = () => {
                         key={i}
                         className={[
                           'h-6 rounded-md text-[10px] flex items-center justify-center',
-                          i === 9 || i === 16 ? 'bg-primary text-primary-foreground' : 'bg-muted/30 text-muted-foreground',
+                          i === 7 || i === 9 || i === 11 ? 'bg-primary text-primary-foreground' : 'bg-muted/30 text-muted-foreground',
                         ].join(' ')}
                         aria-hidden
                       >
@@ -189,9 +211,18 @@ export const SmartWizardShowcase: React.FC = () => {
                       <span className="font-medium text-foreground">$2,515</span>
                     </div>
                     <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Rental days</span>
+                      <span className="font-medium text-foreground">4</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Service visits</span>
+                      <span className="font-medium text-foreground">2</span>
+                    </div>
+                    <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">Tax</span>
                       <span className="font-medium text-foreground">$201.20</span>
                     </div>
+                    <div className="text-xs text-muted-foreground">Service reports: 2 scheduled (auto-generated)</div>
                     <div className="flex items-center justify-between border-t pt-2">
                       <span className="font-semibold text-foreground">Total</span>
                       <span className="font-semibold text-foreground">$2,716.20</span>
