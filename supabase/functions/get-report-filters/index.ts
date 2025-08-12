@@ -117,18 +117,27 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'compliance':
+        // Query database for actual compliance document types
+        const { data: complianceTypes } = await supabase
+          .from('compliance_document_types')
+          .select('name')
+          .eq('is_active', true);
+
+        const documentTypes = complianceTypes?.map(type => ({
+          value: type.name.toLowerCase().replace(/\s+/g, '_'),
+          label: type.name
+        })) || [
+          { value: 'license', label: 'Driver License' },
+          { value: 'medical', label: 'Medical Card' },
+          { value: 'training', label: 'Training Certificate' }
+        ];
+
         filters = [
           {
             id: 'document_type',
             type: 'select',
             label: 'Document Type',
-            options: [
-              { value: 'license', label: 'Driver License' },
-              { value: 'medical', label: 'Medical Card' },
-              { value: 'training', label: 'Training Certificate' },
-              { value: 'insurance', label: 'Insurance Documents' },
-              { value: 'vehicle_registration', label: 'Vehicle Registration' }
-            ]
+            options: documentTypes
           },
           {
             id: 'expiry_status',
@@ -139,39 +148,6 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'expiring', label: 'Expiring Soon' },
               { value: 'expired', label: 'Expired' },
               { value: 'missing', label: 'Missing' }
-            ]
-          },
-          {
-            id: 'compliance_score_range',
-            type: 'select',
-            label: 'Compliance Score Range',
-            options: [
-              { value: '90-100', label: '90-100% (Excellent)' },
-              { value: '80-90', label: '80-90% (Good)' },
-              { value: '70-80', label: '70-80% (Fair)' },
-              { value: '0-70', label: 'Below 70% (Poor)' }
-            ]
-          },
-          {
-            id: 'audit_results',
-            type: 'select',
-            label: 'Audit Results',
-            options: [
-              { value: 'passed', label: 'Passed' },
-              { value: 'failed', label: 'Failed' },
-              { value: 'pending', label: 'Pending Review' },
-              { value: 'not_audited', label: 'Not Audited' }
-            ]
-          },
-          {
-            id: 'training_completion_status',
-            type: 'select',
-            label: 'Training Completion Status',
-            options: [
-              { value: 'completed', label: 'All Required Training Complete' },
-              { value: 'in_progress', label: 'Training In Progress' },
-              { value: 'overdue', label: 'Overdue Training' },
-              { value: 'not_started', label: 'Not Started' }
             ]
           },
           {
@@ -189,17 +165,26 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'training':
+        // Query database for actual certification types
+        const { data: certTypes } = await supabase
+          .from('certification_types')
+          .select('name, category')
+          .eq('is_mandatory', true);
+
+        const trainingTypes = certTypes?.map(cert => ({
+          value: cert.name.toLowerCase().replace(/\s+/g, '_'),
+          label: cert.name
+        })) || [
+          { value: 'safety', label: 'Safety Training' },
+          { value: 'defensive_driving', label: 'Defensive Driving' }
+        ];
+
         filters = [
           {
             id: 'training_type',
             type: 'select',
             label: 'Training Type',
-            options: [
-              { value: 'safety', label: 'Safety Training' },
-              { value: 'defensive_driving', label: 'Defensive Driving' },
-              { value: 'hazmat', label: 'Hazmat Certification' },
-              { value: 'equipment', label: 'Equipment Training' }
-            ]
+            options: trainingTypes
           },
           {
             id: 'completion_status',
@@ -211,43 +196,53 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'overdue', label: 'Overdue' },
               { value: 'not_started', label: 'Not Started' }
             ]
-          },
-          {
-            id: 'instructor',
-            type: 'select',
-            label: 'Instructor',
-            options: [
-              { value: 'internal', label: 'Internal Staff' },
-              { value: 'external', label: 'External Provider' }
-            ]
           }
         ];
         break;
 
       case 'equipment':
+        // Query database for actual vehicle and equipment types
+        const { data: vehicleTypes } = await supabase
+          .from('vehicles')
+          .select('vehicle_type')
+          .not('vehicle_type', 'is', null);
+
+        const { data: productTypes } = await supabase
+          .from('products')
+          .select('name, category')
+          .eq('is_active', true);
+
+        const uniqueVehicleTypes = [...new Set(
+          vehicleTypes?.map(v => v.vehicle_type).filter(Boolean) || []
+        )].map(type => ({
+          value: type.toLowerCase().replace(/\s+/g, '_'),
+          label: type
+        }));
+
+        const uniqueProductTypes = [...new Set(
+          productTypes?.map(p => p.name).filter(Boolean) || []
+        )].map(type => ({
+          value: type.toLowerCase().replace(/\s+/g, '_'),
+          label: type
+        }));
+
         filters = [
           {
             id: 'vehicle_type',
             type: 'select',
             label: 'Vehicle Type',
-            options: [
+            options: uniqueVehicleTypes.length > 0 ? uniqueVehicleTypes : [
               { value: 'service_truck', label: 'Service Truck' },
-              { value: 'pumper_truck', label: 'Pumper Truck' },
-              { value: 'delivery_truck', label: 'Delivery Truck' },
-              { value: 'van', label: 'Van' },
-              { value: 'trailer', label: 'Trailer' }
+              { value: 'delivery_truck', label: 'Delivery Truck' }
             ]
           },
           {
             id: 'equipment_type',
             type: 'select',
             label: 'Equipment Type',
-            options: [
+            options: uniqueProductTypes.length > 0 ? uniqueProductTypes : [
               { value: 'portable_toilet', label: 'Portable Toilet' },
-              { value: 'sink', label: 'Hand Wash Station' },
-              { value: 'trailer', label: 'Trailer' },
-              { value: 'pump', label: 'Pump' },
-              { value: 'generator', label: 'Generator' }
+              { value: 'sink', label: 'Hand Wash Station' }
             ]
           },
           {
@@ -258,8 +253,7 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'assigned', label: 'Assigned' },
               { value: 'available', label: 'Available' },
               { value: 'out_of_service', label: 'Out of Service' },
-              { value: 'maintenance', label: 'In Maintenance' },
-              { value: 'retired', label: 'Retired' }
+              { value: 'maintenance', label: 'In Maintenance' }
             ]
           },
           {
@@ -272,26 +266,21 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'overdue', label: 'Overdue' },
               { value: 'in_progress', label: 'In Progress' }
             ]
-          },
-          {
-            id: 'location_based',
-            type: 'boolean',
-            label: 'Include Location Data'
           }
         ];
         break;
 
       case 'incidents':
+        // Based on actual spill_incidents and spill_incident_reports tables
         filters = [
           {
             id: 'incident_type',
             type: 'select',
             label: 'Incident Type',
             options: [
-              { value: 'accident', label: 'Vehicle Accident' },
-              { value: 'injury', label: 'Workplace Injury' },
-              { value: 'damage', label: 'Equipment Damage' },
-              { value: 'complaint', label: 'Customer Complaint' }
+              { value: 'spill', label: 'Spill Incident' },
+              { value: 'equipment_damage', label: 'Equipment Damage' },
+              { value: 'vehicle_incident', label: 'Vehicle Incident' }
             ]
           },
           {
@@ -306,14 +295,32 @@ const handler = async (req: Request): Promise<Response> => {
             ]
           },
           {
-            id: 'resolved',
-            type: 'boolean',
-            label: 'Include Only Resolved'
+            id: 'cleanup_status',
+            type: 'select',
+            label: 'Cleanup Status',
+            options: [
+              { value: 'completed', label: 'Cleanup Completed' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'pending', label: 'Pending' }
+            ]
           }
         ];
         break;
 
       case 'maintenance':
+        // Query database for actual maintenance data sources
+        const { data: maintenanceVehicles } = await supabase
+          .from('vehicles')
+          .select('vehicle_type')
+          .not('vehicle_type', 'is', null);
+
+        const maintenanceVehicleTypes = [...new Set(
+          maintenanceVehicles?.map(v => v.vehicle_type).filter(Boolean) || []
+        )].map(type => ({
+          value: type.toLowerCase().replace(/\s+/g, '_'),
+          label: type
+        }));
+
         filters = [
           {
             id: 'maintenance_type',
@@ -330,11 +337,9 @@ const handler = async (req: Request): Promise<Response> => {
             id: 'vehicle_type',
             type: 'select',
             label: 'Vehicle Type',
-            options: [
-              { value: 'truck', label: 'Service Truck' },
-              { value: 'van', label: 'Van' },
-              { value: 'trailer', label: 'Trailer' },
-              { value: 'equipment', label: 'Equipment' }
+            options: maintenanceVehicleTypes.length > 0 ? maintenanceVehicleTypes : [
+              { value: 'service_truck', label: 'Service Truck' },
+              { value: 'delivery_truck', label: 'Delivery Truck' }
             ]
           },
           {
