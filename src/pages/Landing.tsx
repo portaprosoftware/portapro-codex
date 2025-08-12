@@ -17,6 +17,7 @@ import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarV
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { SmartWizardShowcase } from '@/components/marketing/SmartWizardShowcase';
 import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningShowcase';
+import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -467,40 +468,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Quote-to-Job Flow - White */}
       <section id="quotes" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                One Click from Quote to Job
-              </h2>
-            </div>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {quoteFlow.map((step, index) => <Card key={index} className="text-center">
-                  <CardContent className="p-6">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="font-bold text-primary">{index + 1}</span>
-                    </div>
-                    <h3 className="font-semibold text-foreground">{step}</h3>
-                  </CardContent>
-                </Card>)}
-            </div>
-            
-            <div className="flex items-center justify-center gap-4 pt-6">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <span>Quote</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Customer Accepts</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Deposit Paid</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Job & Invoice Generated</span>
-              </div>
-            </div>
-            
-            <div className="mt-8">
-              <AutoCarousel media={quotesMedia} className="w-full max-w-4xl mx-auto" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
+          <QuoteToJobShowcase />
         </div>
       </section>
 
