@@ -19,11 +19,11 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('Fetching compliance statistics...');
 
-    // Get total driver count
+    // Get total driver count from user_roles table
     const { count: totalDrivers, error: driversError } = await supabase
-      .from('profiles')
+      .from('user_roles')
       .select('*', { count: 'exact', head: true })
-      .eq('user_roles.role', 'driver');
+      .eq('role', 'driver');
 
     if (driversError) throw driversError;
 
@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from('driver_credentials')
       .select(`
         license_expiry_date,
-        profiles!inner(id)
+        driver_id
       `);
 
     if (licenseError) throw licenseError;
@@ -42,7 +42,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from('driver_credentials')
       .select(`
         medical_card_expiry_date,
-        profiles!inner(id)
+        driver_id
       `)
       .not('medical_card_expiry_date', 'is', null);
 
@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
       .select(`
         next_due,
         last_completed,
-        profiles!inner(id)
+        driver_id
       `);
 
     if (trainingError) throw trainingError;

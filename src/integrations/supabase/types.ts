@@ -5397,6 +5397,7 @@ export type Database = {
           id: string
           image_url: string | null
           includes_lock: boolean | null
+          is_active: boolean
           low_stock_threshold: number
           monthly_rate: number | null
           name: string
@@ -5424,6 +5425,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           includes_lock?: boolean | null
+          is_active?: boolean
           low_stock_threshold?: number
           monthly_rate?: number | null
           name: string
@@ -5451,6 +5453,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           includes_lock?: boolean | null
+          is_active?: boolean
           low_stock_threshold?: number
           monthly_rate?: number | null
           name?: string

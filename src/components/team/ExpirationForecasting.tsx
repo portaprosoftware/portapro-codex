@@ -27,14 +27,17 @@ interface ForecastData {
 }
 
 export function ExpirationForecasting() {
-  const { data: forecastData, isLoading } = useQuery({
+  const { data: forecastData, isLoading, error } = useQuery({
     queryKey: ['expiration-forecasting'],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('get-expiration-forecast');
       if (error) throw error;
       return data;
     },
-    refetchInterval: 3600000 // Refresh every hour
+    refetchInterval: 3600000, // Refresh every hour
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 1800000 // 30 minutes
   });
 
   const forecasts = forecastData?.forecasts || [];
@@ -61,6 +64,19 @@ export function ExpirationForecasting() {
       default: return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load forecasting data. Please try again later.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
