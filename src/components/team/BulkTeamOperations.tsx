@@ -73,7 +73,7 @@ export function BulkTeamOperations() {
           first_name,
           last_name,
           status,
-          user_roles!inner(role)
+          user_roles(role)
         `);
       
       if (error) throw error;
@@ -82,7 +82,7 @@ export function BulkTeamOperations() {
         email: member.email || '',
         firstName: member.first_name || '',
         lastName: member.last_name || '',
-        role: member.user_roles?.[0]?.role || 'unknown',
+        role: member.user_roles?.[0]?.role || 'user',
         status: member.status || 'active'
       }));
     }
@@ -218,20 +218,60 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Role Filter */}
-            <div className="flex items-center gap-4">
-              <Label>Filter by Role:</Label>
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="admin">Admins</SelectItem>
-                  <SelectItem value="dispatcher">Dispatchers</SelectItem>
-                  <SelectItem value="driver">Drivers</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Filter and Selection Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-4">
+                <Label>Filter by Role:</Label>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="admin">Admins</SelectItem>
+                    <SelectItem value="dispatcher">Dispatchers</SelectItem>
+                    <SelectItem value="driver">Drivers</SelectItem>
+                    <SelectItem value="user">Users</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <Label>Select Users:</Label>
+                <Select value="" onValueChange={(memberId) => {
+                  if (memberId && !selectedMembers.includes(memberId)) {
+                    setSelectedMembers(prev => [...prev, memberId]);
+                  }
+                }}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder={`${selectedMembers.length} selected`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredMembers.map((member) => {
+                      const RoleIcon = getRoleIcon(member.role);
+                      const isSelected = selectedMembers.includes(member.id);
+                      return (
+                        <SelectItem 
+                          key={member.id} 
+                          value={member.id}
+                          disabled={isSelected}
+                        >
+                          <div className="flex items-center gap-2">
+                            <RoleIcon className="h-3 w-3" />
+                            <span>{member.firstName} {member.lastName}</span>
+                            <Badge 
+                              className={`text-xs text-white ${getRoleColor(member.role)}`}
+                            >
+                              {member.role}
+                            </Badge>
+                            {isSelected && <CheckCircle className="h-3 w-3 text-green-600" />}
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Quick Role Selection */}
@@ -271,42 +311,49 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
               </Button>
             )}
 
-            {/* Team Members Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto">
-              {filteredMembers.map((member) => {
-                const RoleIcon = getRoleIcon(member.role);
-                return (
-                  <div key={member.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                    <Checkbox
-                      checked={selectedMembers.includes(member.id)}
-                      onCheckedChange={(checked) => handleMemberSelection(member.id, !!checked)}
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium text-sm flex items-center gap-2">
+            {/* Selected Members Summary */}
+            {selectedMembers.length > 0 && (
+              <div className="bg-muted p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium">Selected Members ({selectedMembers.length})</h4>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedMembers([])}
+                  >
+                    Clear All
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedMembers.slice(0, 10).map((memberId) => {
+                    const member = allMembers.find(m => m.id === memberId);
+                    if (!member) return null;
+                    const RoleIcon = getRoleIcon(member.role);
+                    return (
+                      <Badge 
+                        key={memberId} 
+                        variant="secondary" 
+                        className="flex items-center gap-1"
+                      >
                         <RoleIcon className="h-3 w-3" />
                         {member.firstName} {member.lastName}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {member.email}
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <Badge 
-                        variant={member.status === 'active' ? 'default' : 'secondary'} 
-                        className="text-xs"
-                      >
-                        {member.status}
+                        <button
+                          onClick={() => handleMemberSelection(memberId, false)}
+                          className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                        >
+                          ×
+                        </button>
                       </Badge>
-                      <Badge 
-                        className={`text-xs text-white ${getRoleColor(member.role)}`}
-                      >
-                        {member.role}
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                  {selectedMembers.length > 10 && (
+                    <Badge variant="outline">
+                      +{selectedMembers.length - 10} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
