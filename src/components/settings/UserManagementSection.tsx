@@ -21,7 +21,7 @@ import { BulkDriverOperations } from "@/components/team/BulkDriverOperations";
 import { ComplianceDashboard } from "@/components/team/ComplianceDashboard";
 import { CustomReportBuilder } from "@/components/team/CustomReportBuilder";
 
-import { PushNotificationSupport } from "@/components/team/PushNotificationSupport";
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -469,7 +469,7 @@ export function UserManagementSection() {
             <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Compliance</TabsTrigger>
             <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Custom Reports</TabsTrigger>
             
-            <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Notifications</TabsTrigger>
+            
           </TabsList>
           
           <TabsContent value="overview">
@@ -627,9 +627,6 @@ export function UserManagementSection() {
           </TabsContent>
 
 
-          <TabsContent value="notifications">
-            <PushNotificationSupport />
-          </TabsContent>
         </Tabs>
 
         {/* Edit User Modal */}
