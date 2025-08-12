@@ -343,6 +343,36 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/team-management/bulk-operations" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management/compliance" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management/reports" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management/forecasting" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/team-management/notifications" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/settings" element={
             <>
               <SignedIn><Layout><Settings /></Layout></SignedIn>
