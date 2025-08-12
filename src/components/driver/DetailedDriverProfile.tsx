@@ -34,8 +34,7 @@ export function DetailedDriverProfile() {
           driver_credentials(*),
           driver_training_records(*),
           driver_devices(*),
-          driver_ppe_info(*),
-          driver_working_hours(*)
+          driver_ppe_info(*)
         `)
         .eq('id', driverId)
         .eq('user_roles.role', 'driver')
@@ -43,6 +42,23 @@ export function DetailedDriverProfile() {
 
       if (error) throw error;
       return data;
+    },
+    enabled: !!driverId
+  });
+
+  // Fetch working hours separately to avoid foreign key issues
+  const { data: workingHours } = useQuery({
+    queryKey: ['driver-working-hours', driverId],
+    queryFn: async () => {
+      if (!driverId) return [];
+      
+      const { data, error } = await supabase
+        .from('driver_working_hours')
+        .select('*')
+        .eq('driver_id', driverId);
+
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!driverId
   });
@@ -211,7 +227,7 @@ export function DetailedDriverProfile() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Working Days</span>
                   <Badge variant="secondary">
-                    {Array.isArray(driver.driver_working_hours) ? driver.driver_working_hours.filter(h => h.is_active)?.length || 0 : 0} Days/Week
+                    {Array.isArray(workingHours) ? workingHours.filter(h => h.is_active)?.length || 0 : 0} Days/Week
                   </Badge>
                 </div>
               </CardContent>
