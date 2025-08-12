@@ -96,7 +96,7 @@ export function DriverTimeOffSection({
         </div>
       </div>;
   }
-  return <div className="p-6 space-y-6">
+  return <div className="space-y-6 w-full">
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
