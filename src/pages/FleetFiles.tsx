@@ -299,23 +299,23 @@ export default function FleetFiles() {
         {/* Document Categories Navigation */}
         <div className="flex items-center mt-4">
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-              <TabsTrigger value="all">
+            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
+              <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 All ({filteredDocuments.length})
               </TabsTrigger>
-              <TabsTrigger value="receipt">
+              <TabsTrigger value="receipt" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 Receipts ({documentsByCategory.receipt?.length || 0})
               </TabsTrigger>
-              <TabsTrigger value="warranty">
+              <TabsTrigger value="warranty" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 Warranties ({documentsByCategory.warranty?.length || 0})
               </TabsTrigger>
-              <TabsTrigger value="photo">
+              <TabsTrigger value="photo" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 Photos ({documentsByCategory.photo?.length || 0})
               </TabsTrigger>
-              <TabsTrigger value="other">
+              <TabsTrigger value="other" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 Other ({documentsByCategory.other?.length || 0})
               </TabsTrigger>
-              <TabsTrigger value="categories">
+              <TabsTrigger value="categories" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 <Settings className="w-3 h-3 mr-1" />
                 Categories
               </TabsTrigger>
