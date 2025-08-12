@@ -206,10 +206,10 @@ Jane,Smith,jane.smith@example.com,555-0124,D987654321,CA,CDL-B,2025-11-30,2025-0
         </div>
       </div>
 
-      <Tabs defaultValue="bulk-actions" className="space-y-4">
+      <Tabs defaultValue="driver-list" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="bulk-actions">Bulk Actions</TabsTrigger>
           <TabsTrigger value="driver-list">Driver Selection</TabsTrigger>
+          <TabsTrigger value="bulk-actions">Bulk Actions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bulk-actions" className="space-y-4">
