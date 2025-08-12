@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Download, Send, FileText, Users, CheckCircle } from 'lucide-react';
+import { Upload, Download, Send, FileText, Users, CheckCircle, MessageSquare, Calendar, IdCard, FileSpreadsheet, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -190,71 +190,113 @@ Jane,Smith,jane.smith@example.com,555-0124,D987654321,CA,CDL-B,2025-11-30,2025-0
             Manage multiple drivers efficiently with bulk operations
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={downloadCSVTemplate}>
-            <Download className="h-4 w-4 mr-2" />
-            CSV Template
-          </Button>
-          <Button variant="outline" onClick={() => setShowImportModal(true)}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import Drivers
-          </Button>
-          <Button variant="outline" onClick={() => setShowExportModal(true)}>
-            <FileText className="h-4 w-4 mr-2" />
-            Export Compliance
-          </Button>
-        </div>
       </div>
 
-      <Tabs defaultValue="driver-list" className="space-y-4">
+      {/* Persistent Driver Selection Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Driver Selection
+          </CardTitle>
+          <CardDescription>
+            Select drivers for bulk operations ({selectedDrivers.length} selected)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedDrivers.length === drivers.length && drivers.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+                <Label>Select All ({drivers.length} drivers)</Label>
+              </div>
+              {selectedDrivers.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedDrivers([])}
+                >
+                  Clear Selection
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto">
+              {drivers.map((driver) => (
+                <div key={driver.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                  <Checkbox
+                    checked={selectedDrivers.includes(driver.id)}
+                    onCheckedChange={(checked) => handleDriverSelection(driver.id, !!checked)}
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">
+                      {driver.firstName} {driver.lastName}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {driver.email}
+                    </div>
+                  </div>
+                  <Badge variant={driver.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                    {driver.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Operations Tabs */}
+      <Tabs defaultValue="communication" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="driver-list">Driver Selection</TabsTrigger>
-          <TabsTrigger value="bulk-actions">Bulk Actions</TabsTrigger>
+          <TabsTrigger value="communication">Communication & Actions</TabsTrigger>
+          <TabsTrigger value="data">Data Management</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="bulk-actions" className="space-y-4">
+        <TabsContent value="communication" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Bulk Operations
+                <MessageSquare className="h-5 w-5" />
+                Communication & Actions
               </CardTitle>
               <CardDescription>
-                Perform actions on multiple drivers at once
+                Send communications and perform operational tasks on selected drivers
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Badge variant="secondary">
-                  {selectedDrivers.length} drivers selected
-                </Badge>
-                <Select value={bulkAction} onValueChange={setBulkAction}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select action" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="send_reminders">Send Reminders</SelectItem>
-                    <SelectItem value="update_status">Update Status</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {bulkAction === 'send_reminders' && (
-                <div className="space-y-2">
-                  <Label htmlFor="reminder-message">Reminder Message</Label>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Send Reminders */}
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Send className="h-4 w-4" />
+                    <h3 className="font-medium">Send Reminders</h3>
+                  </div>
                   <Textarea
-                    id="reminder-message"
-                    placeholder="Enter your reminder message here..."
+                    placeholder="Enter reminder message..."
                     value={reminderMessage}
                     onChange={(e) => setReminderMessage(e.target.value)}
                     rows={3}
                   />
+                  <Button 
+                    onClick={() => bulkReminderMutation.mutate({ driverIds: selectedDrivers, message: reminderMessage })}
+                    disabled={!reminderMessage.trim() || selectedDrivers.length === 0 || bulkReminderMutation.isPending}
+                    className="w-full"
+                    size="sm"
+                  >
+                    {bulkReminderMutation.isPending ? "Sending..." : "Send Reminders"}
+                  </Button>
                 </div>
-              )}
 
-              {bulkAction === 'update_status' && (
-                <div className="space-y-2">
-                  <Label htmlFor="status-update">New Status</Label>
+                {/* Update Status */}
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    <h3 className="font-medium">Update Status</h3>
+                  </div>
                   <Select value={statusUpdate} onValueChange={setStatusUpdate}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -266,65 +308,156 @@ Jane,Smith,jane.smith@example.com,555-0124,D987654321,CA,CDL-B,2025-11-30,2025-0
                       <SelectItem value="training">In Training</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Button 
+                    onClick={() => bulkStatusMutation.mutate({ driverIds: selectedDrivers, status: statusUpdate })}
+                    disabled={!statusUpdate || selectedDrivers.length === 0 || bulkStatusMutation.isPending}
+                    className="w-full"
+                    size="sm"
+                  >
+                    {bulkStatusMutation.isPending ? "Updating..." : "Update Status"}
+                  </Button>
                 </div>
-              )}
 
-              <Button 
-                onClick={handleBulkAction}
-                disabled={!bulkAction || selectedDrivers.length === 0 || bulkReminderMutation.isPending || bulkStatusMutation.isPending}
-                className="w-full"
-              >
-                {bulkReminderMutation.isPending || bulkStatusMutation.isPending ? (
-                  "Processing..."
-                ) : (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Execute Action
-                  </>
-                )}
-              </Button>
+                {/* Send Documents - Placeholder */}
+                <div className="space-y-4 p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <h3 className="font-medium">Send Documents</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Distribute policy updates, forms, or notices to selected drivers.
+                  </p>
+                  <Button disabled className="w-full" size="sm">
+                    Coming Soon
+                  </Button>
+                </div>
+
+                {/* Assign Training - Placeholder */}
+                <div className="space-y-4 p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    <h3 className="font-medium">Assign Training</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Bulk assign required training courses and certifications.
+                  </p>
+                  <Button disabled className="w-full" size="sm">
+                    Coming Soon
+                  </Button>
+                </div>
+
+                {/* Schedule Shifts - Placeholder */}
+                <div className="space-y-4 p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <h3 className="font-medium">Schedule Shifts</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Assign multiple drivers to shifts and time slots.
+                  </p>
+                  <Button disabled className="w-full" size="sm">
+                    Coming Soon
+                  </Button>
+                </div>
+
+                {/* Generate ID Cards - Placeholder */}
+                <div className="space-y-4 p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center gap-2">
+                    <IdCard className="h-4 w-4" />
+                    <h3 className="font-medium">Generate ID Cards</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Create printable ID cards and access badges.
+                  </p>
+                  <Button disabled className="w-full" size="sm">
+                    Coming Soon
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="driver-list" className="space-y-4">
+        <TabsContent value="data" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Driver Selection</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <FileSpreadsheet className="h-5 w-5" />
+                Data Management
+              </CardTitle>
               <CardDescription>
-                Select drivers for bulk operations
+                Import, export, and generate reports for driver data
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedDrivers.length === drivers.length && drivers.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
-                  <Label>Select All ({drivers.length} drivers)</Label>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Import Drivers */}
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    <h3 className="font-medium">Import Drivers</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Upload CSV file to import multiple driver records.
+                  </p>
+                  <Button 
+                    onClick={() => setShowImportModal(true)}
+                    className="w-full"
+                    size="sm"
+                  >
+                    Import CSV
+                  </Button>
                 </div>
 
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {drivers.map((driver) => (
-                    <div key={driver.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      <Checkbox
-                        checked={selectedDrivers.includes(driver.id)}
-                        onCheckedChange={(checked) => handleDriverSelection(driver.id, !!checked)}
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">
-                          {driver.firstName} {driver.lastName}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {driver.email}
-                        </div>
-                      </div>
-                      <Badge variant={driver.status === 'active' ? 'default' : 'secondary'}>
-                        {driver.status}
-                      </Badge>
-                    </div>
-                  ))}
+                {/* Export Compliance */}
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    <h3 className="font-medium">Export Compliance</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Export compliance data for regulatory reporting.
+                  </p>
+                  <Button 
+                    onClick={() => setShowExportModal(true)}
+                    className="w-full"
+                    size="sm"
+                  >
+                    Export Data
+                  </Button>
+                </div>
+
+                {/* CSV Template */}
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Download className="h-4 w-4" />
+                    <h3 className="font-medium">CSV Template</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Download the template for importing driver data.
+                  </p>
+                  <Button 
+                    onClick={downloadCSVTemplate}
+                    variant="outline"
+                    className="w-full"
+                    size="sm"
+                  >
+                    Download Template
+                  </Button>
+                </div>
+
+                {/* Generate Reports - Placeholder */}
+                <div className="space-y-4 p-4 border rounded-lg opacity-60">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    <h3 className="font-medium">Generate Reports</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Create bulk driver performance and compliance reports.
+                  </p>
+                  <Button disabled className="w-full" size="sm">
+                    Coming Soon
+                  </Button>
                 </div>
               </div>
             </CardContent>
