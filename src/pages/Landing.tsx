@@ -9,6 +9,11 @@ import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { StatCard } from '@/components/ui/StatCard';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDrivers';
+import { useDriverShiftsForWeek } from '@/hooks/useScheduling';
+import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -28,6 +33,10 @@ const consumablesMedia: string[] = [];
 const servicesHubMedia: string[] = [];
 const marketingMedia: string[] = [];
 const reportingMedia: string[] = [];
+// Team detail placeholders
+const teamSchedulingMedia: string[] = [];
+const teamTimeOffMedia: string[] = [];
+const teamTrainingMedia: string[] = [];
 // Core Features - Section 1 (Blue background)
 const coreFeatures = [{
   title: "Google Vision AI",
@@ -211,7 +220,7 @@ export const Landing: React.FC = () => {
       });
     }
   };
-  const scrollToSection = (sectionId: string) => {
+const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({
@@ -219,6 +228,50 @@ export const Landing: React.FC = () => {
       });
     }
   };
+
+  // Team KPIs (live) for landing visualizations
+  const { data: allUsers } = useAllEnhancedUsers();
+  const totalMembers = allUsers?.length ?? 0;
+
+  const { data: drivers } = useEnhancedDrivers();
+  const activeDrivers = drivers?.length ?? 0;
+
+  const { data: shiftsWeek } = useDriverShiftsForWeek(new Date());
+  const todayStr = new Date().toISOString().split('T')[0];
+  const shiftsToday = (shiftsWeek || []).filter(s => s.shift_date === todayStr).length;
+
+  const { data: timeOffTodayCount = 0 } = useQuery({
+    queryKey: ['timeoff-today', todayStr],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('driver_time_off_requests')
+        .select('id')
+        .eq('status', 'approved')
+        .eq('request_date', todayStr);
+      if (error) throw error;
+      return (data || []).length;
+    }
+  });
+
+  const { data: expiringCredsCount = 0 } = useQuery({
+    queryKey: ['expiring-creds', todayStr],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('driver_credentials')
+        .select('license_expiry_date, medical_card_expiry_date');
+      if (error) throw error;
+      const today = new Date(todayStr);
+      const end = new Date(todayStr);
+      end.setDate(end.getDate() + 30);
+      const inWindow = (d: string | null) => {
+        if (!d) return false;
+        const dt = new Date(d);
+        return dt >= today && dt <= end;
+      };
+      return (data || []).filter((row: any) => inWindow(row.license_expiry_date) || inWindow(row.medical_card_expiry_date)).length;
+    }
+  });
+
   return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
@@ -859,30 +912,167 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Team Management - White */}
+{/* Team Management - White */}
       <section id="team-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
+            <p className="text-lg text-muted-foreground">Everything you need to manage people, time, and compliance</p>
+          </div>
+
+          {/* Team KPIs */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+            <StatCard
+              title="Total Members"
+              value={totalMembers}
+              icon={Users}
+              gradientFrom="hsl(var(--primary))"
+              gradientTo="hsl(var(--primary) / 0.7)"
+              iconBg="hsl(var(--primary))"
+              subtitle={<span className="text-muted-foreground">All roles</span>}
+            />
+            <StatCard
+              title="Active Drivers"
+              value={activeDrivers}
+              icon={Users}
+              gradientFrom="hsl(var(--accent))"
+              gradientTo="hsl(var(--accent) / 0.7)"
+              iconBg="hsl(var(--accent))"
+              subtitle={<span className="text-muted-foreground">Drivers on roster</span>}
+            />
+            <StatCard
+              title="Shifts Today"
+              value={shiftsToday}
+              icon={CalendarClock}
+              gradientFrom="hsl(var(--secondary))"
+              gradientTo="hsl(var(--secondary) / 0.7)"
+              iconBg="hsl(var(--secondary))"
+              subtitle={<span className="text-muted-foreground">Scheduled shifts</span>}
+            />
+            <StatCard
+              title="Approved Time Off"
+              value={timeOffTodayCount}
+              icon={Calendar}
+              gradientFrom="hsl(var(--destructive))"
+              gradientTo="hsl(var(--destructive) / 0.7)"
+              iconBg="hsl(var(--destructive))"
+              subtitle={<span className="text-muted-foreground">Today</span>}
+            />
+            <StatCard
+              title="Expiring Credentials"
+              value={expiringCredsCount}
+              icon={Shield}
+              gradientFrom="hsl(var(--primary))"
+              gradientTo="hsl(var(--primary) / 0.7)"
+              iconBg="hsl(var(--primary))"
+              subtitle={<span className="text-muted-foreground">Next 30 days</span>}
+            />
+          </div>
+
+          {/* Team Ops Toolkit */}
+          <div className="grid sm:grid-cols-2 gap-4 mb-12">
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <ClipboardList className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Shift Templates</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Reusable day parts and roles to schedule faster with consistency.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Users className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Availability</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">See who’s available at a glance with conflict detection.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Calendar className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Time Off Approvals</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Structured requests with status, notes, and attachments.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Shield className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Roles & Permissions</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Owner/Admin controls powered by Clerk — simple and secure.</p>
+            </div>
+          </div>
+
+          {/* Scheduling & Availability */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Scheduling & Availability</h3>
+              <p className="text-lg text-muted-foreground">Plan faster with draggable shifts and clear daily rollups.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Weekly board with driver assignment and handoffs</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Templates for morning/afternoon/evening shifts</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Conflict checks and warnings before double-booking</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={teamSchedulingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* Time Off & Leave Management */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6 order-2 lg:order-1">
+              <h3 className="text-2xl font-bold text-foreground">Time Off & Leave Management</h3>
+              <p className="text-lg text-muted-foreground">Approve requests quickly with a clean, visual calendar.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Full-day, AM/PM, or custom times with reasons</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Statuses: pending, approved, denied</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Instant visibility into impact to shifts</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
+              <TimeOffCalendarView />
+            </div>
+          </div>
+
+          {/* Training & Compliance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Team Management Made Easy
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Coordinate your crew with smart scheduling and role management.
-                </p>
-              </div>
-              
-              <div className="grid gap-4">
-                {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="font-medium text-foreground">{feature}</span>
-                  </div>)}
-              </div>
+              <h3 className="text-2xl font-bold text-foreground">Training & Compliance</h3>
+              <p className="text-lg text-muted-foreground">Keep licenses, medical cards, and trainings up to date.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto-reminders for upcoming expirations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Track certifications and attach proof</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Company-specific requirements per role</span>
+                </li>
+              </ul>
             </div>
-            
-            <div className="bg-gray-50 rounded-2xl p-6">
-              <AutoCarousel media={teamManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={teamTrainingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
