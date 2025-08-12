@@ -25,8 +25,8 @@ interface Service {
   code: string;
   description: string;
   category: string;
-  estimated_duration: number;
-  eligible_targets: string[];
+  estimated_duration_minutes: number;
+  eligible_targets: any;
 }
 
 interface Customer {
@@ -58,7 +58,13 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
         .order('name');
 
       if (error) throw error;
-      return data as Service[];
+      return data?.map(service => ({
+        ...service,
+        estimated_duration: service.estimated_duration_minutes,
+        eligible_targets: Array.isArray(service.eligible_targets) 
+          ? service.eligible_targets 
+          : (service.eligible_targets as any)?.units || []
+      })) as Service[];
     }
   });
 
@@ -107,7 +113,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
         scheduled_time: scheduledTime,
         driver_id: assignedTech || null,
         notes: `Scheduled ${selectedService.name} service`,
-        estimated_duration: selectedService.estimated_duration,
+        estimated_duration: selectedService.estimated_duration_minutes,
         service_id: selectedService.id,
       };
 
@@ -218,7 +224,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{service.description}</p>
-                      <p className="text-xs text-gray-500">Est. {service.estimated_duration} minutes</p>
+                      <p className="text-xs text-gray-500">Est. {service.estimated_duration_minutes} minutes</p>
                     </div>
                   </div>
                 </div>

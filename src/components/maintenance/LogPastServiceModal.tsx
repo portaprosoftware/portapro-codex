@@ -23,6 +23,7 @@ interface Service {
   name: string;
   code: string;
   category: string;
+  default_template_id?: string;
 }
 
 interface Customer {
@@ -51,7 +52,7 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('id, name, code, category')
+        .select('id, name, code, category, default_template_id')
         .eq('is_active', true)
         .order('name');
 
@@ -111,12 +112,18 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
         photos_count: formData.photos.length,
       };
 
+      const selectedService = services?.find(s => s.id === formData.service_id);
+
       const { error: reportError } = await supabase
         .from('maintenance_reports')
         .insert([{
           job_id: job.id,
           customer_id: formData.customer_id,
-          template_id: "00000000-0000-0000-0000-000000000000", // Default template
+          template_id: selectedService?.default_template_id || null,
+          source_type: 'manual',
+          source_id: job.id,
+          service_id: formData.service_id,
+          auto_generated: false,
           status: 'completed',
           completion_percentage: 100,
           report_data: reportData,

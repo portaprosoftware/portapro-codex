@@ -17,11 +17,11 @@ interface Service {
   category: string;
   pricing_method: string;
   default_rate: number;
-  estimated_duration: number;
+  estimated_duration_minutes: number;
   default_template_id: string;
   consumables_recipe: any;
   evidence_requirements: any;
-  eligible_targets: string[];
+  eligible_targets: any;
   can_be_recurring: boolean;
   is_active: boolean;
   created_at: string;
@@ -44,7 +44,12 @@ export const ServiceCatalogTab: React.FC = () => {
         .order('name');
 
       if (error) throw error;
-      return data as Service[];
+      return data?.map(service => ({
+        ...service,
+        eligible_targets: Array.isArray(service.eligible_targets) 
+          ? service.eligible_targets 
+          : (service.eligible_targets as any)?.units || []
+      })) as Service[];
     }
   });
 
@@ -230,7 +235,7 @@ export const ServiceCatalogTab: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-blue-600" />
-                    <span className="text-gray-600">{service.estimated_duration}m</span>
+                    <span className="text-gray-600">{service.estimated_duration_minutes}m</span>
                   </div>
                 </div>
 
@@ -314,7 +319,7 @@ export const ServiceCatalogTab: React.FC = () => {
                       {formatRate(service.default_rate, service.pricing_method)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {service.estimated_duration}m
+                      {service.estimated_duration_minutes}m
                     </td>
                     <td className="px-6 py-4">
                       <Badge variant={service.can_be_recurring ? "default" : "outline"} className="text-xs">

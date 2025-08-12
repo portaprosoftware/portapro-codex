@@ -3459,6 +3459,7 @@ export type Database = {
           scheduled_date: string
           scheduled_time: string | null
           service_due_date: string | null
+          service_id: string | null
           service_schedule_info: Json | null
           special_instructions: string | null
           status: string
@@ -3493,6 +3494,7 @@ export type Database = {
           scheduled_date: string
           scheduled_time?: string | null
           service_due_date?: string | null
+          service_id?: string | null
           service_schedule_info?: Json | null
           special_instructions?: string | null
           status?: string
@@ -3527,6 +3529,7 @@ export type Database = {
           scheduled_date?: string
           scheduled_time?: string | null
           service_due_date?: string | null
+          service_id?: string | null
           service_schedule_info?: Json | null
           special_instructions?: string | null
           status?: string
@@ -3558,6 +3561,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
           {
@@ -4078,6 +4088,7 @@ export type Database = {
         Row: {
           actual_completion: string | null
           assigned_technician: string | null
+          auto_generated: boolean | null
           completed_at: string | null
           completed_by: string | null
           completion_percentage: number | null
@@ -4094,6 +4105,9 @@ export type Database = {
           report_number: string | null
           review_date: string | null
           reviewed_by: string | null
+          service_id: string | null
+          source_id: string | null
+          source_type: string | null
           status: string | null
           template_id: string
           updated_at: string | null
@@ -4103,6 +4117,7 @@ export type Database = {
         Insert: {
           actual_completion?: string | null
           assigned_technician?: string | null
+          auto_generated?: boolean | null
           completed_at?: string | null
           completed_by?: string | null
           completion_percentage?: number | null
@@ -4119,6 +4134,9 @@ export type Database = {
           report_number?: string | null
           review_date?: string | null
           reviewed_by?: string | null
+          service_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
           status?: string | null
           template_id: string
           updated_at?: string | null
@@ -4128,6 +4146,7 @@ export type Database = {
         Update: {
           actual_completion?: string | null
           assigned_technician?: string | null
+          auto_generated?: boolean | null
           completed_at?: string | null
           completed_by?: string | null
           completion_percentage?: number | null
@@ -4144,6 +4163,9 @@ export type Database = {
           report_number?: string | null
           review_date?: string | null
           reviewed_by?: string | null
+          service_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
           status?: string | null
           template_id?: string
           updated_at?: string | null
@@ -4156,6 +4178,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_reports_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
           {
@@ -6669,6 +6698,71 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      services: {
+        Row: {
+          can_be_recurring: boolean | null
+          category: string
+          code: string | null
+          consumables_recipe: Json | null
+          created_at: string | null
+          default_rate: number | null
+          default_template_id: string | null
+          description: string | null
+          eligible_targets: Json | null
+          estimated_duration_minutes: number | null
+          evidence_requirements: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          pricing_method: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          can_be_recurring?: boolean | null
+          category: string
+          code?: string | null
+          consumables_recipe?: Json | null
+          created_at?: string | null
+          default_rate?: number | null
+          default_template_id?: string | null
+          description?: string | null
+          eligible_targets?: Json | null
+          estimated_duration_minutes?: number | null
+          evidence_requirements?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          pricing_method?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          can_be_recurring?: boolean | null
+          category?: string
+          code?: string | null
+          consumables_recipe?: Json | null
+          created_at?: string | null
+          default_rate?: number | null
+          default_template_id?: string | null
+          description?: string | null
+          eligible_targets?: Json | null
+          estimated_duration_minutes?: number | null
+          evidence_requirements?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          pricing_method?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_default_template_id_fkey"
+            columns: ["default_template_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_report_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shift_templates: {
         Row: {

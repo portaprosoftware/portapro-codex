@@ -19,6 +19,7 @@ interface ServiceRecord {
   completion_percentage: number;
   assigned_technician: string;
   actual_completion: string;
+  auto_generated?: boolean;
   jobs?: {
     job_number: string;
     job_type: string;
@@ -29,6 +30,10 @@ interface ServiceRecord {
   maintenance_report_templates?: {
     name: string;
     template_type: string;
+  };
+  services?: {
+    name: string;
+    category: string;
   };
 }
 
@@ -55,6 +60,10 @@ export const ServiceRecordsTab: React.FC = () => {
           maintenance_report_templates (
             name,
             template_type
+          ),
+          services (
+            name,
+            category
           )
         `)
         .order('created_at', { ascending: false });
@@ -273,13 +282,20 @@ export const ServiceRecordsTab: React.FC = () => {
                       {new Date(record.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {record.maintenance_report_templates?.template_type || 'General Service'}
+                      {record.services?.name || record.maintenance_report_templates?.template_type || 'General Service'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {record.jobs?.customers?.name || 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {getSourceLabel(record)}
+                      <div className="flex items-center gap-2">
+                        <span>{getSourceLabel(record)}</span>
+                        {record.auto_generated && (
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                            Auto
+                          </Badge>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <Badge className={`capitalize ${getStatusColor(record.status)}`}>
