@@ -15,11 +15,7 @@ import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDriv
 import { useDriverShiftsForWeek } from '@/hooks/useScheduling';
 import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { JobWizardProvider } from '@/contexts/JobWizardContext';
-import { ProductsServicesStep } from '@/components/jobs/steps/ProductsServicesStep';
-import { WizardPreviewSummary } from '@/components/jobs/WizardPreviewSummary';
-import { useJobCounts } from '@/hooks/useJobCounts';
-import { useJobsWithDateRange } from '@/hooks/useJobsWithDateRange';
+import { SmartWizardShowcase } from '@/components/marketing/SmartWizardShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -201,13 +197,8 @@ export const Landing: React.FC = () => {
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
 
-  // Live data for Smart Job Wizard section
-  const { data: jobCountsData } = useJobCounts();
-  const jobCounts = jobCountsData || { today: 0, last7Days: 0 } as any;
+  // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
-  const { data: serviceJobsToday } = useJobsWithDateRange({ startDate: todayStr, endDate: todayStr, job_type: 'service' } as any);
-  const { data: deliveryJobsToday } = useJobsWithDateRange({ startDate: todayStr, endDate: todayStr, job_type: 'delivery' } as any);
-  const { data: jobsTodayList } = useJobsWithDateRange({ startDate: todayStr, endDate: todayStr } as any);
 
 
   // Load Calendly widget
@@ -554,117 +545,10 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Job Wizard Deep Dive - White */}
+      {/* Job Wizard Showcase - White */}
       <section id="job-wizard" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Powerful Job Creation—Simplified
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Our 5-step wizard handles everything from customer selection to final confirmation in one smooth flow.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                {/* Live KPIs */}
-                <div className="grid grid-cols-2 gap-3">
-                  <StatCard
-                    title="Jobs Today"
-                    value={jobCounts.today || 0}
-                    icon={CalendarClock}
-                    gradientFrom="hsl(var(--primary))"
-                    gradientTo="hsl(var(--primary) / 0.7)"
-                    iconBg="hsl(var(--primary))"
-                  />
-                  <StatCard
-                    title="Last 7 Days"
-                    value={jobCounts.last7Days || 0}
-                    icon={Calendar}
-                    gradientFrom="hsl(var(--primary))"
-                    gradientTo="hsl(var(--primary) / 0.7)"
-                    iconBg="hsl(var(--primary))"
-                  />
-                  <StatCard
-                    title="Service Today"
-                    value={(serviceJobsToday || []).length}
-                    icon={Wrench}
-                    gradientFrom="hsl(var(--primary))"
-                    gradientTo="hsl(var(--primary) / 0.7)"
-                    iconBg="hsl(var(--primary))"
-                  />
-                  <StatCard
-                    title="Delivery Today"
-                    value={(deliveryJobsToday || []).length}
-                    icon={Truck}
-                    gradientFrom="hsl(var(--primary))"
-                    gradientTo="hsl(var(--primary) / 0.7)"
-                    iconBg="hsl(var(--primary))"
-                  />
-                </div>
-
-                {/* Today feed */}
-                <div className="mt-2">
-                  <h4 className="font-semibold text-base mb-2 text-foreground">Today at a glance</h4>
-                  <div className="space-y-2">
-                    {(jobsTodayList || []).slice(0, 3).map((job: any) => (
-                      <div key={job.id} className="flex items-center justify-between rounded-lg border p-2 bg-card">
-                        <span className="text-sm capitalize">{job.job_type || 'job'}</span>
-                        <span className="text-xs text-muted-foreground">{job.scheduled_time || job.scheduled_date}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Steps overview */}
-                <div className="space-y-4">
-                  {jobWizardSteps.map((step, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                        {step.number}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-base mb-1 text-foreground">{step.title}</h4>
-                        <p className="text-muted-foreground text-sm">{step.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <p className="text-sm text-muted-foreground">
-                Optional partial pickups, on-site estimates, and custom report templates.
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 rounded-2xl p-6 shadow-xl">
-              <JobWizardProvider>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border bg-card p-3 h-[480px] overflow-hidden relative z-10 isolation-isolate">
-                    <div className="h-full overflow-auto pr-1">
-                      <ProductsServicesStep />
-                    </div>
-                  </div>
-                  <div className="rounded-xl border bg-card p-3 space-y-3 h-[480px] overflow-hidden flex flex-col">
-                    <WizardPreviewSummary />
-                    <div className="pt-2 border-t flex-1 overflow-auto min-h-0">
-                      <h4 className="text-sm font-semibold mb-2 text-foreground">Today's Jobs</h4>
-                      <div className="space-y-2">
-                        {(jobsTodayList || []).slice(0, 4).map((job: any) => (
-                          <div key={job.id} className="flex items-center justify-between rounded-lg bg-muted/30 p-2">
-                            <div className="text-sm font-medium capitalize">{job.job_type}</div>
-                            <div className="text-xs text-muted-foreground">{job.scheduled_time || job.scheduled_date}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </JobWizardProvider>
-            </div>
-          </div>
+          <SmartWizardShowcase />
         </div>
       </section>
 
