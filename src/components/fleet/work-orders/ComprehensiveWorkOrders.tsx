@@ -38,14 +38,53 @@ export const ComprehensiveWorkOrders: React.FC = () => {
 
       if (error) throw error;
       
+      // Apply client-side filtering to avoid complex query rebuilds
+      let filteredData = data || [];
+      
+      if (searchTerm) {
+        filteredData = filteredData.filter(wo => 
+          (wo as any).work_order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          wo.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      if (selectedAssetType !== 'all') {
+        filteredData = filteredData.filter(wo => wo.asset_type === selectedAssetType);
+      }
+      
+      if (selectedPriority !== 'all') {
+        filteredData = filteredData.filter(wo => wo.priority === selectedPriority);
+      }
+      
+      if (selectedSource !== 'all') {
+        const sourceValue = selectedSource === "pm_schedule" ? "pm" : selectedSource;
+        filteredData = filteredData.filter(wo => wo.source === sourceValue);
+      }
+      
+      if (selectedAssignee === 'unassigned') {
+        filteredData = filteredData.filter(wo => !wo.assigned_to);
+      } else if (selectedAssignee !== 'all') {
+        filteredData = filteredData.filter(wo => wo.assigned_to === selectedAssignee);
+      }
+      
+      if (overdueOnly) {
+        filteredData = filteredData.filter(wo => wo.due_date && new Date(wo.due_date) < new Date());
+      }
+      
+      if (oosOnly) {
+        filteredData = filteredData.filter(wo => (wo as any).out_of_service === true);
+      }
+
       // Transform data to include asset names and assignee names
-      return (data || []).map((wo: any) => ({
+      return filteredData.map((wo: any) => ({
         ...wo,
         work_order_number: wo.work_order_number || `WO-${wo.id?.slice(-8)}`,
         asset_name: wo.asset_id || 'Unknown Asset',
         assignee_name: wo.assigned_to || null
       }));
-    }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false
   });
 
   // Status change mutation

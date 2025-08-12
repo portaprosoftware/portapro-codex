@@ -247,7 +247,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
                       <SelectValue placeholder="Select technician" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {/* Add dynamic technician options */}
                     </SelectContent>
                   </Select>

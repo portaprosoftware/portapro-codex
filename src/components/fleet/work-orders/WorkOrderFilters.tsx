@@ -91,7 +91,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           <SelectTrigger className="w-32">
             <SelectValue placeholder="Asset Type" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
             <SelectItem value="all">All Assets</SelectItem>
             <SelectItem value="vehicle">Vehicles</SelectItem>
             <SelectItem value="trailer">Trailers</SelectItem>
@@ -103,7 +103,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           <SelectTrigger className="w-28">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
             <SelectItem value="all">All Priority</SelectItem>
             <SelectItem value="critical">Critical</SelectItem>
             <SelectItem value="high">High</SelectItem>
@@ -116,7 +116,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           <SelectTrigger className="w-32">
             <SelectValue placeholder="Source" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
             <SelectItem value="all">All Sources</SelectItem>
             <SelectItem value="dvir_defect">DVIR Defect</SelectItem>
             <SelectItem value="pm_schedule">PM Schedule</SelectItem>
@@ -130,7 +130,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           <SelectTrigger className="w-32">
             <SelectValue placeholder="Assignee" />
           </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
             <SelectItem value="all">All Assignees</SelectItem>
             <SelectItem value="unassigned">Unassigned</SelectItem>
             {/* Add dynamic assignee options here */}
