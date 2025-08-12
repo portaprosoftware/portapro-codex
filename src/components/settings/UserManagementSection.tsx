@@ -457,58 +457,43 @@ export function UserManagementSection() {
       </CardHeader>
       <CardContent>
         {/* Phase 4 Features Quick Access */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            Advanced Team Management Features
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/team-management/bulk-operations'}
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <Upload className="h-3 w-3" />
-              Bulk Operations
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/team-management/compliance'}
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <Shield className="h-3 w-3" />
-              Compliance
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/team-management/reports'}
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <FileText className="h-3 w-3" />
-              Custom Reports
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/team-management/forecasting'}
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <TrendingUp className="h-3 w-3" />
-              Forecasting
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/team-management/notifications'}
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <Bell className="h-3 w-3" />
-              Notifications
-            </Button>
-          </div>
+        {/* Advanced Team Management Features */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <Button
+            onClick={() => window.location.href = '/team-management/bulk-operations'}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-sm font-medium"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Bulk Operations
+          </Button>
+          <Button
+            onClick={() => window.location.href = '/team-management/compliance'}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Compliance
+          </Button>
+          <Button
+            onClick={() => window.location.href = '/team-management/reports'}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Custom Reports
+          </Button>
+          <Button
+            onClick={() => window.location.href = '/team-management/forecasting'}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Forecasting
+          </Button>
+          <Button
+            onClick={() => window.location.href = '/team-management/notifications'}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
+          >
+            <Bell className="h-4 w-4 mr-2" />
+            Notifications
+          </Button>
         </div>
 
         {/* Filters */}
