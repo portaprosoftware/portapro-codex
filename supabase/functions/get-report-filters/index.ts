@@ -24,6 +24,37 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch (dataSource) {
       case 'drivers':
+        // Query database for actual options
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('home_base')
+          .not('home_base', 'is', null);
+        
+        const { data: licenseData } = await supabase
+          .from('driver_credentials')
+          .select('license_class, cdl_class')
+          .not('license_class', 'is', null);
+
+        // Get unique locations
+        const locations = [...new Set(
+          profilesData?.map(p => p.home_base).filter(Boolean) || []
+        )].map(location => ({
+          value: location.toLowerCase().replace(/\s+/g, '_'),
+          label: location
+        }));
+
+        // Get unique license types
+        const licenseTypes = [...new Set([
+          ...(licenseData?.map(l => l.license_class).filter(Boolean) || []),
+          ...(licenseData?.map(l => l.cdl_class).filter(Boolean) || [])
+        ])].map(license => ({
+          value: license,
+          label: license === 'CDL-A' ? 'CDL Class A' :
+                 license === 'CDL-B' ? 'CDL Class B' :
+                 license === 'CDL-C' ? 'CDL Class C' :
+                 license
+        }));
+
         filters = [
           {
             id: 'status',
@@ -31,16 +62,14 @@ const handler = async (req: Request): Promise<Response> => {
             label: 'Driver Status',
             options: [
               { value: 'active', label: 'Active' },
-              { value: 'inactive', label: 'Inactive' },
-              { value: 'suspended', label: 'Suspended' },
-              { value: 'training', label: 'In Training' }
+              { value: 'inactive', label: 'Inactive' }
             ]
           },
           {
             id: 'license_class',
             type: 'multiselect',
             label: 'License Type/Class',
-            options: [
+            options: licenseTypes.length > 0 ? licenseTypes : [
               { value: 'CDL-A', label: 'CDL Class A' },
               { value: 'CDL-B', label: 'CDL Class B' },
               { value: 'CDL-C', label: 'CDL Class C' },
@@ -67,23 +96,10 @@ const handler = async (req: Request): Promise<Response> => {
             id: 'location_region',
             type: 'select',
             label: 'Location/Region',
-            options: [
-              { value: 'north', label: 'North Region' },
-              { value: 'south', label: 'South Region' },
-              { value: 'east', label: 'East Region' },
-              { value: 'west', label: 'West Region' },
-              { value: 'central', label: 'Central Region' }
-            ]
-          },
-          {
-            id: 'experience_level',
-            type: 'select',
-            label: 'Experience Level',
-            options: [
-              { value: 'entry', label: 'Entry Level (0-1 years)' },
-              { value: 'intermediate', label: 'Intermediate (1-3 years)' },
-              { value: 'experienced', label: 'Experienced (3-5 years)' },
-              { value: 'senior', label: 'Senior (5+ years)' }
+            options: locations.length > 0 ? locations : [
+              { value: 'main_office', label: 'Main Office' },
+              { value: 'warehouse', label: 'Warehouse' },
+              { value: 'field', label: 'Field Operations' }
             ]
           },
           {
