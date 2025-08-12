@@ -373,15 +373,8 @@ export const Landing: React.FC = () => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Top Row: Image */}
-          <div className="mb-8">
-            <div className="relative">
-              <AutoCarousel media={aiScanningMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-
-          {/* Middle Row: Header and Why it matters */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start mb-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Left Column: Content */}
             <div className="space-y-6">
               <div className="space-y-4">
                 <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
@@ -430,46 +423,50 @@ export const Landing: React.FC = () => {
                   <span>Save. That's it.</span>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
+              {/* "This isn't just OCR" card moved here as vertical card */}
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
+                <p className="text-muted-foreground">
+                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
+                </p>
+              </div>
+
+              {/* Why it matters section */}
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
+                    <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
                   </div>
-                  <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Shield className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
+                    <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
                   </div>
-                  <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <Clock className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Clock className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
+                    <span className="text-muted-foreground">Save hours per week on manual entry</span>
                   </div>
-                  <span className="text-muted-foreground">Save hours per week on manual entry</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                    <Camera className="h-5 w-5 text-primary flex-shrink-0" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                      <Camera className="h-5 w-5 text-primary flex-shrink-0" />
+                    </div>
+                    <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
                   </div>
-                  <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Row: OCR Box */}
-          <div className="flex justify-center">
-            <div className="bg-gray-50 p-6 rounded-lg max-w-2xl">
-              <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
-              <p className="text-muted-foreground">
-                It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-              </p>
+            {/* Right Column: Image Slider */}
+            <div className="lg:sticky lg:top-8">
+              <AutoCarousel media={aiScanningMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
