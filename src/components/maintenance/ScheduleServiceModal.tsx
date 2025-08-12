@@ -220,7 +220,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-medium">{service.name}</h4>
                         <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
-                          {service.category}
+                          {service.category?.charAt(0).toUpperCase() + service.category?.slice(1).toLowerCase()}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{service.description}</p>
@@ -359,7 +359,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
                 <span className="font-medium">Service: </span>
                 <span>{selectedService?.name}</span>
                 <Badge className={`ml-2 text-xs ${getCategoryColor(selectedService?.category || '')}`}>
-                  {selectedService?.category}
+                  {selectedService?.category?.charAt(0).toUpperCase() + selectedService?.category?.slice(1).toLowerCase()}
                 </Badge>
               </div>
               
