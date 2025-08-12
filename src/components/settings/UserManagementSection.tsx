@@ -13,9 +13,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
+import { BulkDriverOperations } from "@/components/team/BulkDriverOperations";
+import { ComplianceDashboard } from "@/components/team/ComplianceDashboard";
+import { CustomReportBuilder } from "@/components/team/CustomReportBuilder";
+import { ExpirationForecasting } from "@/components/team/ExpirationForecasting";
+import { PushNotificationSupport } from "@/components/team/PushNotificationSupport";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -456,185 +462,178 @@ export function UserManagementSection() {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Phase 4 Features Quick Access */}
-        {/* Advanced Team Management Features */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Button
-            onClick={() => window.location.href = '/team-management/bulk-operations'}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-sm font-medium"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Bulk Operations
-          </Button>
-          <Button
-            onClick={() => window.location.href = '/team-management/compliance'}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Compliance
-          </Button>
-          <Button
-            onClick={() => window.location.href = '/team-management/reports'}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Custom Reports
-          </Button>
-          <Button
-            onClick={() => window.location.href = '/team-management/forecasting'}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
-          >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Forecasting
-          </Button>
-          <Button
-            onClick={() => window.location.href = '/team-management/notifications'}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 text-sm font-medium"
-          >
-            <Bell className="h-4 w-4 mr-2" />
-            Notifications
-          </Button>
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-40">
-                <Filter className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                <SelectItem value="driver">Driver</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* View Toggle */}
-          <div className="flex items-center space-x-1 border rounded-lg p-1">
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-              className="h-8 px-3"
-            >
-              <List className="w-4 h-4 mr-1" />
-              List
-            </Button>
-            <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-              className="h-8 px-3"
-            >
-              <Grid3X3 className="w-4 h-4 mr-1" />
-              Grid
-            </Button>
-          </div>
-        </div>
-
-        {/* Users Display */}
-        {viewMode === "list" ? (
-          <div className="space-y-6">
-            {/* Current User Section */}
-            {filteredCurrentUser && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
-                <UserListView
-                  users={[filteredCurrentUser]}
-                  onEdit={setEditingUser}
-                  onDelete={handleDeleteClick}
-                  onToggleStatus={(userId, isActive) => 
-                    toggleUserStatus.mutate({ userId, isActive })
-                  }
-                  isLoading={isLoading}
-                  canDeleteUser={canDeleteCurrentUser}
-                />
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
+            <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Bulk Operations</TabsTrigger>
+            <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Compliance</TabsTrigger>
+            <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Custom Reports</TabsTrigger>
+            <TabsTrigger value="forecasting" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Forecasting</TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Notifications</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview">
+            {/* Filters */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-4">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="w-40">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="dispatcher">Dispatcher</SelectItem>
+                    <SelectItem value="driver">Driver</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            )}
-            
-            {/* Other Users Section */}
-            {filteredOtherUsers.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
-                <UserListView
-                  users={filteredOtherUsers}
-                  onEdit={setEditingUser}
-                  onDelete={handleDeleteClick}
-                  onToggleStatus={(userId, isActive) => 
-                    toggleUserStatus.mutate({ userId, isActive })
-                  }
-                  isLoading={isLoading}
-                  sortColumn={sortColumn}
-                  sortDirection={sortDirection}
-                  onSort={handleSort}
-                />
+
+              {/* View Toggle */}
+              <div className="flex items-center space-x-1 border rounded-lg p-1">
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="h-8 px-3"
+                >
+                  <List className="w-4 h-4 mr-1" />
+                  List
+                </Button>
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="h-8 px-3"
+                >
+                  <Grid3X3 className="w-4 h-4 mr-1" />
+                  Grid
+                </Button>
               </div>
-            )}
-          </div>
-        ) : (
-          isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-              ))}
             </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Current User Grid Section */}
-              {filteredCurrentUser && (
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <EnhancedUserProfileCard
-                      key={filteredCurrentUser.id}
-                      user={filteredCurrentUser}
+
+            {/* Users Display */}
+            {viewMode === "list" ? (
+              <div className="space-y-6">
+                {/* Current User Section */}
+                {filteredCurrentUser && (
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
+                    <UserListView
+                      users={[filteredCurrentUser]}
                       onEdit={setEditingUser}
                       onDelete={handleDeleteClick}
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
+                      isLoading={isLoading}
                       canDeleteUser={canDeleteCurrentUser}
                     />
                   </div>
-                </div>
-              )}
-              
-              {/* Other Users Grid Section */}
-              {filteredOtherUsers.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredOtherUsers.map((user) => (
-                      <EnhancedUserProfileCard
-                        key={user.id}
-                        user={user}
-                        onEdit={setEditingUser}
-                        onDelete={handleDeleteClick}
-                        onToggleStatus={(userId, isActive) => 
-                          toggleUserStatus.mutate({ userId, isActive })
-                        }
-                      />
-                    ))}
+                )}
+                
+                {/* Other Users Section */}
+                {filteredOtherUsers.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
+                    <UserListView
+                      users={filteredOtherUsers}
+                      onEdit={setEditingUser}
+                      onDelete={handleDeleteClick}
+                      onToggleStatus={(userId, isActive) => 
+                        toggleUserStatus.mutate({ userId, isActive })
+                      }
+                      isLoading={isLoading}
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={handleSort}
+                    />
                   </div>
+                )}
+              </div>
+            ) : (
+              isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+                  ))}
                 </div>
-              )}
-            </div>
-          )
-        )}
+              ) : (
+                <div className="space-y-6">
+                  {/* Current User Grid Section */}
+                  {filteredCurrentUser && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <EnhancedUserProfileCard
+                          key={filteredCurrentUser.id}
+                          user={filteredCurrentUser}
+                          onEdit={setEditingUser}
+                          onDelete={handleDeleteClick}
+                          onToggleStatus={(userId, isActive) => 
+                            toggleUserStatus.mutate({ userId, isActive })
+                          }
+                          canDeleteUser={canDeleteCurrentUser}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Other Users Grid Section */}
+                  {filteredOtherUsers.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredOtherUsers.map((user) => (
+                          <EnhancedUserProfileCard
+                            key={user.id}
+                            user={user}
+                            onEdit={setEditingUser}
+                            onDelete={handleDeleteClick}
+                            onToggleStatus={(userId, isActive) => 
+                              toggleUserStatus.mutate({ userId, isActive })
+                            }
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+          </TabsContent>
+
+          <TabsContent value="bulk-operations">
+            <BulkDriverOperations />
+          </TabsContent>
+
+          <TabsContent value="compliance">
+            <ComplianceDashboard />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <CustomReportBuilder />
+          </TabsContent>
+
+          <TabsContent value="forecasting">
+            <ExpirationForecasting />
+          </TabsContent>
+
+          <TabsContent value="notifications">
+            <PushNotificationSupport />
+          </TabsContent>
+        </Tabs>
 
         {/* Edit User Modal */}
         {editingUser && (
