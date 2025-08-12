@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ChevronDown, Filter, X, BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { GlobalFilters } from '@/components/analytics/GlobalFilters';
 import { OverviewSection } from '@/components/analytics/OverviewSection';
 import { RevenueSection } from '@/components/analytics/RevenueSection';
@@ -88,18 +89,22 @@ const Analytics = () => {
         </div>
 
         {/* Navigation Pills */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={cn(
+                "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter",
+                "flex items-center gap-2",
+                "focus:outline-none",
+                "transform hover:-translate-y-0.5",
                 activeTab === tab.id && !isReportBuilderOpen
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
+                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
                   : tab.id === 'reports' && isReportBuilderOpen
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-blue-100 hover:to-blue-50 hover:text-blue-700'
-              }`}
+                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                  : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+              )}
             >
               {tab.label}
             </button>
