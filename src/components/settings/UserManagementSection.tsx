@@ -497,9 +497,6 @@ export function UserManagementSection() {
                     toggleUserStatus.mutate({ userId, isActive })
                   }
                   isLoading={isLoading}
-                  sortColumn={sortColumn}
-                  sortDirection={sortDirection}
-                  onSort={handleSort}
                 />
               </div>
             )}
