@@ -48,7 +48,7 @@ export function useEnhancedDrivers() {
       // For each driver, get their credentials and additional info
       const enhancedDrivers: EnhancedDriver[] = await Promise.all(
         (users || []).map(async (user: any) => {
-          // Get driver credentials
+          // Get driver credentials - using id since profiles.id is text type
           const { data: credentials } = await supabase
             .from('driver_credentials')
             .select('license_expiry_date, medical_card_expiry_date')

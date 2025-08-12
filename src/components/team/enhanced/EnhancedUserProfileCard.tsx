@@ -64,6 +64,7 @@ export function EnhancedUserProfileCard({
   console.log('EnhancedUserProfileCard - User:', user.first_name, user.last_name);
   console.log('EnhancedUserProfileCard - User role:', user.current_role);
   console.log('EnhancedUserProfileCard - Is driver?', user.current_role === 'driver');
+  console.log('EnhancedUserProfileCard - Full user object:', user);
 
   return (
     <Card className={`h-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary ${!user.is_active ? 'opacity-60' : ''}`}>
