@@ -10,6 +10,7 @@ import { DriverCredentialsSection } from './DriverCredentialsSection';
 import { DriverTrainingSection } from './DriverTrainingSection';
 import { DriverComplianceStatus } from './DriverComplianceStatus';
 import { DriverDocumentManagement } from './DriverDocumentManagement';
+import { EditDriverProfileDialog } from './EditDriverProfileDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, Edit, User, Shield, GraduationCap, 
@@ -20,6 +21,7 @@ export function DetailedDriverProfile() {
   const { driverId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const { data: driver, isLoading } = useQuery({
     queryKey: ['driver-detail', driverId],
@@ -110,7 +112,7 @@ export function DetailedDriverProfile() {
           Back to Team Management
         </Button>
         
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
           <Edit className="w-4 h-4 mr-2" />
           Edit Profile
         </Button>
@@ -285,6 +287,13 @@ export function DetailedDriverProfile() {
           <DriverDocumentManagement driverId={driverId!} />
         </TabsContent>
       </Tabs>
+
+      {/* Edit Dialog */}
+      <EditDriverProfileDialog 
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        driver={driver}
+      />
     </div>
   );
 }
