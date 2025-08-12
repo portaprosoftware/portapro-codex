@@ -345,7 +345,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
             </div>
             <div className="flex items-center gap-2">
               <Badge className={cn("badge-gradient", getStatusColor(vehicle.status))}>
-                {vehicle.status}
+                {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
               </Badge>
               <Button 
                 variant="outline" 
