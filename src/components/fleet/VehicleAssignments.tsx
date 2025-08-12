@@ -19,16 +19,16 @@ export const VehicleAssignments: React.FC = () => {
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground font-inter">
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">
               Driver Assignments
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-base text-gray-600 font-inter mt-1">
               Manage daily vehicle assignments and track driver usage
             </p>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button onClick={() => setIsWizardOpen(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+            <Button onClick={() => setIsWizardOpen(true)} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
               <Plus className="w-4 h-4 mr-2" />
               New Assignment
             </Button>
