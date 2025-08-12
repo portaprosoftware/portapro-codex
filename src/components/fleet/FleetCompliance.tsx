@@ -33,61 +33,63 @@ export const FleetCompliance: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Transport & Spill Compliance</h1>
-            <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
+    <div className="space-y-6">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mx-6">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Transport & Spill Compliance</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
+            </div>
+            <Button 
+              onClick={() => setIsAddDocumentModalOpen(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Document
+            </Button>
           </div>
-          <Button 
-            onClick={() => setIsAddDocumentModalOpen(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Document
-          </Button>
+
+          <Tabs defaultValue="documents" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="types">Document Types</TabsTrigger>
+              <TabsTrigger value="spill-kits">Spill Kits</TabsTrigger>
+              <TabsTrigger value="incidents">Incidents</TabsTrigger>
+              <TabsTrigger value="decon">Decon Logs</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="documents">
+              <FleetComplianceContent />
+            </TabsContent>
+
+            <TabsContent value="types">
+              <DocumentTypeManagement />
+            </TabsContent>
+
+            <TabsContent value="spill-kits">
+              <SpillKitsTab />
+            </TabsContent>
+
+            <TabsContent value="incidents">
+              <IncidentsTab />
+            </TabsContent>
+
+            <TabsContent value="decon">
+              <DeconLogsTab />
+            </TabsContent>
+
+            <TabsContent value="reports">
+              <ComplianceReporting />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
-      <ComplianceHelpPanel />
-
-      <Card className="p-6">
-        <Tabs defaultValue="documents" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="types">Document Types</TabsTrigger>
-            <TabsTrigger value="spill-kits">Spill Kits</TabsTrigger>
-            <TabsTrigger value="incidents">Incidents</TabsTrigger>
-            <TabsTrigger value="decon">Decon Logs</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-          </TabsList>
-        
-        <TabsContent value="documents">
-          <FleetComplianceContent />
-        </TabsContent>
-
-        <TabsContent value="types">
-          <DocumentTypeManagement />
-        </TabsContent>
-
-        <TabsContent value="spill-kits">
-          <SpillKitsTab />
-        </TabsContent>
-
-        <TabsContent value="incidents">
-          <IncidentsTab />
-        </TabsContent>
-
-        <TabsContent value="decon">
-          <DeconLogsTab />
-        </TabsContent>
-
-        <TabsContent value="reports">
-          <ComplianceReporting />
-        </TabsContent>
-        </Tabs>
-      </Card>
+      <div className="mx-6">
+        <ComplianceHelpPanel />
+      </div>
 
       <AddDocumentModal 
         isOpen={isAddDocumentModalOpen}

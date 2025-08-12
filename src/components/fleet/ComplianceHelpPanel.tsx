@@ -6,7 +6,7 @@ export const ComplianceHelpPanel: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Card className="p-4 bg-white">
+    <Card className="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-base font-semibold">How this works</h3>
