@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
   MoreVertical, Edit, Trash2, UserCheck, UserX,
-  Phone, Mail, Calendar
+  Phone, Mail, Calendar, CircleDot
 } from 'lucide-react';
 
 interface User {
@@ -94,7 +94,7 @@ export function EnhancedUserProfileCard({
             <DropdownMenuContent align="end">
               {user.current_role === 'driver' && (
                 <DropdownMenuItem onClick={() => navigate(`/team-management/driver/${user.id}`)}>
-                  <User className="w-4 h-4 mr-2" />
+                  <CircleDot className="w-4 h-4 mr-2" />
                   Driver Details
                 </DropdownMenuItem>
               )}
@@ -183,7 +183,7 @@ export function EnhancedUserProfileCard({
 
         {user.current_role === 'driver' && (
           <Button size="sm" onClick={() => navigate(`/team-management/driver/${user.id}`)}>
-            <User className="w-4 h-4 mr-2" />
+            <CircleDot className="w-4 h-4 mr-2" />
             Driver Details
           </Button>
         )}
