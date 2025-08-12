@@ -1027,34 +1027,29 @@ const scrollToSection = (sectionId: string) => {
           </div>
 
           {/* Time Off & Leave Management */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-start mb-12">
+            <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Time Off & Leave Management</h3>
               <p className="text-lg text-muted-foreground">Approve requests quickly with a clean, visual calendar.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Full-day, AM/PM, or custom times with reasons</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Statuses: pending, approved, denied</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Instant visibility into impact to shifts</span>
+                </li>
+              </ul>
             </div>
             
-            <div className="grid lg:grid-cols-3 gap-8 items-start">
-              <div className="lg:col-span-1 space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Full-day, AM/PM, or custom times with reasons</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Statuses: pending, approved, denied</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Instant visibility into impact to shifts</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="lg:col-span-2 flex justify-center">
-                <div className="w-full max-w-lg">
-                  <TimeOffCalendarView />
-                </div>
+            <div className="flex justify-center">
+              <div className="w-96 h-96">
+                <TimeOffCalendarView />
               </div>
             </div>
           </div>
