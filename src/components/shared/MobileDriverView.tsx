@@ -368,22 +368,31 @@ export function MobileDriverView({ driverId }: MobileDriverViewProps) {
 
       {/* Document Upload Modal */}
       {showUpload && (
-        <div className="fixed inset-0 z-50 bg-background">
+        <div className="fixed inset-0 z-50 bg-background p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Upload {uploadType}</h3>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowUpload(false)}
+            >
+              Cancel
+            </Button>
+          </div>
           <DocumentUpload
-            allowedTypes={['image/*', '.pdf']}
-            maxFileSize={5 * 1024 * 1024}
-            metadata={{
-              document_type: uploadType,
-              driver_id: currentDriverId
+            driverId={currentDriverId!}
+            documentType={uploadType === 'license' ? 'license' : uploadType === 'medical' ? 'medical_card' : 'training'}
+            onUploadComplete={handleUploadSuccess}
+            onUploadError={(error) => {
+              toast({
+                title: "Upload Failed",
+                description: error,
+                variant: "destructive"
+              });
             }}
+            maxFileSize={5}
+            acceptedFileTypes={['application/pdf', 'image/jpeg', 'image/png']}
           />
-          <Button 
-            variant="outline" 
-            onClick={() => setShowUpload(false)}
-            className="absolute top-4 right-4"
-          >
-            Cancel
-          </Button>
         </div>
       )}
     </div>

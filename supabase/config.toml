@@ -31,4 +31,22 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.validate-document]
-verify_jwt = true
+verify_jwt = false
+
+[functions.send-bulk-reminders]
+verify_jwt = false
+
+[functions.export-compliance-data]
+verify_jwt = false
+
+[functions.get-compliance-stats]
+verify_jwt = false
+
+[functions.get-report-filters]
+verify_jwt = false
+
+[functions.generate-custom-report]
+verify_jwt = false
+
+[functions.get-expiration-forecast]
+verify_jwt = false
