@@ -65,12 +65,12 @@ export const WorkOrderKanbanBoard: React.FC<WorkOrderKanbanBoardProps> = ({
             
             return (
               <div key={`header-${column.id}`} className="flex flex-col items-center gap-1">
-                <h3 className="font-semibold text-sm text-foreground text-center">
-                  {column.label}
-                </h3>
                 <Badge variant="secondary" className="text-xs">
                   {columnWorkOrders.length}
                 </Badge>
+                <h3 className="font-semibold text-sm text-foreground text-center">
+                  {column.label}
+                </h3>
               </div>
             );
           })}
