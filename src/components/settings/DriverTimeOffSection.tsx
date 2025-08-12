@@ -97,18 +97,7 @@ export function DriverTimeOffSection({
       </div>;
   }
   return <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Settings
-        </Button>
-      </div>
-
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
-          <Calendar className="w-6 h-6 text-white" />
-        </div>
+      <div className="flex items-center justify-between">
         <div className="flex-1">
           <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
           <p className="text-muted-foreground">Review and manage driver time-off requests</p>
