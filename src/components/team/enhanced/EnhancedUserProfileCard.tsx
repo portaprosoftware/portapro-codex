@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,7 @@ export function EnhancedUserProfileCard({
   onToggleStatus,
   canDeleteUser = true
 }: EnhancedUserProfileCardProps) {
+  const navigate = useNavigate();
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
 
@@ -85,7 +87,7 @@ export function EnhancedUserProfileCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {user.current_role === 'driver' && (
-                <DropdownMenuItem onClick={() => window.location.href = `/team-management/driver/${user.id}`}>
+                <DropdownMenuItem onClick={() => navigate(`/team-management/driver/${user.id}`)}>
                   <User className="w-4 h-4 mr-2" />
                   View Details
                 </DropdownMenuItem>

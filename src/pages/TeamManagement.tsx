@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { TeamManagementLayout } from '@/components/team/TeamManagementLayout';
 import { UserManagementSection } from '@/components/settings/UserManagementSection';
 import { DriverWorkingHoursSection } from '@/components/settings/DriverWorkingHoursSection';
@@ -19,9 +19,12 @@ type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 
 export default function TeamManagement() {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
   
+  // Check if we're on a driver detail page
+  const isDriverDetail = location.pathname.includes('/driver/');
   // Extract tab from URL or default to 'users'
-  const currentTab = (location.pathname.split('/').pop() as TeamTab) || 'users';
+  const currentTab = isDriverDetail ? 'driver' : (location.pathname.split('/').pop() as TeamTab) || 'users';
   
   useEffect(() => {
     document.title = 'Team Management | PortaPro';
@@ -47,7 +50,7 @@ export default function TeamManagement() {
         {currentTab === 'reports' && <CustomReportBuilder />}
         {currentTab === 'forecasting' && <ExpirationForecasting />}
         {currentTab === 'notifications' && <PushNotificationSupport />}
-        {location.pathname.includes('/driver/') && <DetailedDriverProfile />}
+        {currentTab === 'driver' && <DetailedDriverProfile />}
       </div>
     </TeamManagementLayout>
   );
