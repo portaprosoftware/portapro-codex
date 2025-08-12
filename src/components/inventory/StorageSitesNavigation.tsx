@@ -43,7 +43,7 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
               Manage storage locations and view location analytics
             </p>
           </div>
-          <Button onClick={onAddStorage} className="bg-gradient-primary text-white hover:bg-gradient-primary/90 gap-2">
+          <Button onClick={onAddStorage} className="bg-gradient-primary text-white hover:opacity-90 gap-2">
             <Plus className="h-4 w-4" />
             Add Storage Site
           </Button>

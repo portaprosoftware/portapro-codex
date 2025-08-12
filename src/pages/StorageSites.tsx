@@ -292,7 +292,7 @@ export default function StorageSites() {
                 <p className="text-muted-foreground mb-4">
                   Get started by adding your first storage location
                 </p>
-                <Button onClick={() => setShowAddModal(true)} className="bg-gradient-primary text-white hover:bg-gradient-primary/90 gap-2">
+                <Button onClick={() => setShowAddModal(true)} className="bg-gradient-primary text-white hover:opacity-90 gap-2">
                   <Plus className="h-4 w-4" />
                   Add Storage Site
                 </Button>
