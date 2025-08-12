@@ -296,69 +296,35 @@ export default function FleetFiles() {
           </div>
         </div>
 
-        {/* Secondary Navigation */}
+        {/* Document Categories Navigation */}
         <div className="flex items-center mt-4">
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm"
-          >
-            All ({filteredDocuments.length})
-          </button>
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-          >
-            Receipts ({documentsByCategory.receipt?.length || 0})
-          </button>
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-          >
-            Warranties ({documentsByCategory.warranty?.length || 0})
-          </button>
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-          >
-            Photos ({documentsByCategory.photo?.length || 0})
-          </button>
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-          >
-            Other ({documentsByCategory.other?.length || 0})
-          </button>
-          <button
-            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-          >
-            <Settings className="w-3 h-3 mr-1" />
-            Categories
-          </button>
+          <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+            <TabsTrigger value="all">
+              All ({filteredDocuments.length})
+            </TabsTrigger>
+            <TabsTrigger value="receipt">
+              Receipts ({documentsByCategory.receipt?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="warranty">
+              Warranties ({documentsByCategory.warranty?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="photo">
+              Photos ({documentsByCategory.photo?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="other">
+              Other ({documentsByCategory.other?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="categories">
+              <Settings className="w-3 h-3 mr-1" />
+              Categories
+            </TabsTrigger>
+          </TabsList>
         </div>
       </div>
 
-      {/* Document Categories Tabs */}
+      {/* Document Categories Content */}
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="all" className="h-full flex flex-col">
-          <div className="border-b px-6">
-            <TabsList className="grid grid-cols-6 lg:grid-cols-9 w-full max-w-5xl">
-              <TabsTrigger value="all" className="text-xs">
-                All ({filteredDocuments.length})
-              </TabsTrigger>
-              <TabsTrigger value="receipt" className="text-xs">
-                Receipts ({documentsByCategory.receipt?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="warranty" className="text-xs">
-                Warranties ({documentsByCategory.warranty?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="photo" className="text-xs">
-                Photos ({documentsByCategory.photo?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="other" className="text-xs">
-                Other ({documentsByCategory.other?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="categories" className="text-xs">
-                <Settings className="w-3 h-3 mr-1" />
-                Categories
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
           <div className="flex-1 overflow-auto p-6">
             {/* All Documents */}
             <TabsContent value="all" className="mt-0">

@@ -23,46 +23,12 @@ export const FleetFuelManagement: React.FC = () => {
           />
           
           <div className="flex items-center mt-4">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter ${
-                activeTab === 'overview'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm'
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('logs')}
-              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter ${
-                activeTab === 'logs'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm'
-              }`}
-            >
-              All Logs
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter ${
-                activeTab === 'reports'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm'
-              }`}
-            >
-              Reports
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter ${
-                activeTab === 'settings'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm'
-              }`}
-            >
-              Settings
-            </button>
+            <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="logs">All Logs</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
           </div>
         </div>
         
