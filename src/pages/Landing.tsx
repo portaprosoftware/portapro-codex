@@ -9,13 +9,20 @@ import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 
-// Import demo images
-import demoAiScanning from '@/assets/demo-ai-scanning.jpg';
-import demoJobWizard from '@/assets/demo-job-wizard.jpg';
-import demoInventory from '@/assets/demo-inventory.jpg';
-import demoQuotes from '@/assets/demo-quotes.jpg';
-import demoMobileApp from '@/assets/demo-mobile-app.jpg';
-import demoTeamManagement from '@/assets/demo-team-management.jpg';
+// Demo content arrays for carousels - empty to be populated
+const aiScanningMedia: string[] = [];
+const jobWizardMedia: string[] = [];
+const quotesMedia: string[] = [];
+const mobileAppMedia: string[] = [];
+const fleetManagementMedia: string[] = [];
+const teamManagementMedia: string[] = [];
+const customerDashboardMedia: string[] = [];
+const analyticsMedia: string[] = [];
+const inventoryMedia: string[] = [];
+const consumablesMedia: string[] = [];
+const servicesHubMedia: string[] = [];
+const marketingMedia: string[] = [];
+const reportingMedia: string[] = [];
 // Core Features - Section 1 (Blue background)
 const coreFeatures = [{
   title: "Google Vision AI",
@@ -161,14 +168,6 @@ const completePackage = {
   features: ["Unlimited drivers and users", "Multi-Step Job Creation Wizard", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
 export const Landing: React.FC = () => {
-  // Image arrays for carousels
-  const aiPanelImages = ['/lovable-uploads/0aaf6ddd-b2a4-4d47-bbda-6a1a4cd07b9a.png'];
-  const googleAIImages = ['/lovable-uploads/88fecdfc-2af8-411d-be32-c0d6de398a59.png'];
-  const jobWizardImages = ['/lovable-uploads/000da128-8181-457e-85c7-8dcbc26734ee.png', '/lovable-uploads/0ac8d222-a55d-4abc-aab0-e9b34dc983e5.png', '/lovable-uploads/baad8a96-f346-4808-bd4b-641dc717fb89.png'];
-  const inventoryImages = ['/lovable-uploads/4f491786-7f7a-4dc3-bb83-a919b928c766.png', '/lovable-uploads/b9ab637c-b429-4038-be9d-f8f3b5f6a4eb.png', '/lovable-uploads/540cf6a3-2a5b-465b-ac69-ca6f4645a265.png'];
-  const teamImages = ['/lovable-uploads/12ff3d89-29f4-46b2-810b-d4cf0d3d9ca3.png', '/lovable-uploads/512cf733-6eb4-4b1d-9a9c-46787e6e86d6.png', '/lovable-uploads/5e758ed0-03a4-40d8-8ece-677fe1fb285a.png'];
-  const reportingImages = ['/lovable-uploads/269955d2-a4f5-41ed-aaa3-3c93d6e096c4.png', '/lovable-uploads/62459b5d-e91c-4b88-8e19-55e991482602.png'];
-  const mobileImages = ['/lovable-uploads/298c7157-c616-403a-9832-ad5279814883.png', '/lovable-uploads/df397e89-fe41-4640-9f41-42a976d4bb25.png'];
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
@@ -377,7 +376,7 @@ export const Landing: React.FC = () => {
           {/* Top Row: Image */}
           <div className="mb-8">
             <div className="relative">
-              <img src={demoAiScanning} alt="AI Scanning Demo - Google Vision AI Interface" className="w-full rounded-2xl shadow-lg" />
+              <AutoCarousel media={aiScanningMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
 
@@ -515,7 +514,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-gray-50 rounded-2xl p-6 shadow-xl">
-              <img src={demoJobWizard} alt="Job Wizard Demo - Step-by-step Job Creation Interface" className="w-full rounded-xl" />
+              <AutoCarousel media={jobWizardMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -562,7 +561,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="mt-8">
-              <img src={demoQuotes} alt="Quote-to-Job Demo - Customer Portal and Payment Integration" className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg" />
+              <AutoCarousel media={quotesMedia} className="w-full max-w-4xl mx-auto" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -610,7 +609,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="rounded-2xl p-6 bg-gray-50">
-              <img src={demoMobileApp} alt="Mobile App Demo - Driver Interface" className="w-full rounded-xl" />
+              <AutoCarousel media={mobileAppMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -680,7 +679,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
 
@@ -704,7 +703,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -733,7 +732,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="bg-gray-50 rounded-2xl p-6">
-              <img src={demoTeamManagement} alt="Team Management Demo - Scheduling and Roles Interface" className="w-full rounded-xl" />
+              <AutoCarousel media={teamManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -773,9 +772,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Customer Dashboard Preview Coming Soon</p>
-              </div>
+              <AutoCarousel media={customerDashboardMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -874,7 +871,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img src={demoInventory} alt="Inventory Management Demo - Multi-location Tracking Interface" className="w-full rounded-2xl shadow-lg" />
+              <AutoCarousel media={inventoryMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -910,7 +907,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="relative">
-              <img src={demoInventory} alt="Inventory Management Demo - Multi-location Tracking Interface" className="w-full rounded-2xl shadow-lg" />
+              <AutoCarousel media={inventoryMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -943,9 +940,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
-              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Consumables Management Preview Coming Soon</p>
-              </div>
+              <AutoCarousel media={consumablesMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -985,9 +980,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Services Hub Preview Coming Soon</p>
-              </div>
+              <AutoCarousel media={servicesHubMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -1020,9 +1013,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
-              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Marketing Tools Preview Coming Soon</p>
-              </div>
+              <AutoCarousel media={marketingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -1055,7 +1046,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div>
-              <AutoCarousel media={reportingImages} className="w-full" aspectRatio="aspect-[4/3]" />
+              <AutoCarousel media={reportingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
@@ -1104,7 +1095,7 @@ export const Landing: React.FC = () => {
             
             <div className="lg:col-span-1 order-1 lg:order-2">
               <div className="flex justify-center">
-                <img src={demoMobileApp} alt="Mobile Driver App Demo - Route Navigation and Job Updates" className="w-full max-w-sm rounded-2xl shadow-lg" />
+                <AutoCarousel media={mobileAppMedia} className="w-full max-w-sm" aspectRatio="aspect-[9/16]" />
               </div>
             </div>
           </div>
