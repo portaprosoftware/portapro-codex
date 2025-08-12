@@ -48,7 +48,7 @@ export const FleetNavigation: React.FC = () => {
       icon: Package
     },
     {
-      title: "Transport & Spill",
+      title: "Compliance",
       href: "/fleet/compliance",
       icon: AlertTriangle,
       badge: (complianceCounts?.total && complianceCounts.total > 0) ? complianceCounts.total.toString() : undefined

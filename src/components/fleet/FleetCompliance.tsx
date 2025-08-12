@@ -52,15 +52,16 @@ export const FleetCompliance: React.FC = () => {
 
       <ComplianceHelpPanel />
 
-      <Tabs defaultValue="documents" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="types">Document Types</TabsTrigger>
-          <TabsTrigger value="spill-kits">Spill Kits</TabsTrigger>
-          <TabsTrigger value="incidents">Incidents</TabsTrigger>
-          <TabsTrigger value="decon">Decon Logs</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
+      <Card className="p-6">
+        <Tabs defaultValue="documents" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="types">Document Types</TabsTrigger>
+            <TabsTrigger value="spill-kits">Spill Kits</TabsTrigger>
+            <TabsTrigger value="incidents">Incidents</TabsTrigger>
+            <TabsTrigger value="decon">Decon Logs</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
         
         <TabsContent value="documents">
           <FleetComplianceContent />
@@ -85,7 +86,8 @@ export const FleetCompliance: React.FC = () => {
         <TabsContent value="reports">
           <ComplianceReporting />
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </Card>
 
       <AddDocumentModal 
         isOpen={isAddDocumentModalOpen}
