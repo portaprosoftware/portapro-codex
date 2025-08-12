@@ -62,13 +62,26 @@ export const VehicleAssignments: React.FC = () => {
 const VehicleAssignmentsStats: React.FC<{
   selectedDate: Date;
 }> = ({ selectedDate }) => {
+  const { data: allVehiclesData } = useQuery({
+    queryKey: ["all-vehicles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("*")
+        .order("license_plate");
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const { data: availableVehiclesData } = useQuery({
     queryKey: ["available-vehicles"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "active")
+        .eq("status", "available")
         .order("license_plate");
       
       if (error) throw error;
@@ -94,7 +107,7 @@ const VehicleAssignmentsStats: React.FC<{
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Card className="p-4">
         <h4 className="font-medium text-gray-900 mb-2">Total Vehicles</h4>
-        <p className="text-2xl font-bold text-blue-600">{availableVehiclesData?.length || 0}</p>
+        <p className="text-2xl font-bold text-blue-600">{allVehiclesData?.length || 0}</p>
       </Card>
       
       <Card className="p-4">
