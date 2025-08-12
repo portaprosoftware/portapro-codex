@@ -64,7 +64,7 @@ export const WorkOrderKanbanBoard: React.FC<WorkOrderKanbanBoardProps> = ({
             const columnWorkOrders = getWorkOrdersByStatus(column.id);
             
             return (
-              <div key={`header-${column.id}`} className="flex items-center justify-between">
+              <div key={`header-${column.id}`} className="flex items-center justify-center gap-2">
                 <h3 className="font-semibold text-sm text-foreground">
                   {column.label}
                 </h3>
