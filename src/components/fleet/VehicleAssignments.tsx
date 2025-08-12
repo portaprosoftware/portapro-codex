@@ -4,13 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AssignmentCreationWizard } from "./AssignmentCreationWizard";
-import { Calendar as CalendarIcon, Plus, User, Truck } from "lucide-react";
+import { EnhancedDateNavigator } from "@/components/jobs/EnhancedDateNavigator";
+import { Plus, User, Truck } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 export const VehicleAssignments: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -95,22 +92,11 @@ const VehicleAssignmentsContent: React.FC<{
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <h3 className="text-lg font-semibold text-gray-900">Daily Vehicle Assignments</h3>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-240">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {format(selectedDate, "PPP")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <EnhancedDateNavigator
+            date={selectedDate}
+            onDateChange={setSelectedDate}
+            label="Assignment Date"
+          />
         </div>
         
         <Button onClick={() => setIsWizardOpen(true)}>
