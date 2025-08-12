@@ -47,7 +47,7 @@ export default function MaintenanceHub() {
                 Log Past Service
               </Button>
               <Button 
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-4 py-2 w-full sm:w-auto"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
                 onClick={() => setShowScheduleService(true)}
               >
                 <Plus className="w-4 h-4 mr-2" />

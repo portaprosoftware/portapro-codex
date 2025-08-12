@@ -104,15 +104,15 @@ export const ServiceCatalogTab: React.FC = () => {
   const getCategoryColor = (category: string) => {
     switch (category?.toLowerCase()) {
       case 'cleaning':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
+        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0';
       case 'maintenance':
-        return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white';
+        return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0';
       case 'emergency':
-        return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
+        return 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0';
       case 'inspection':
-        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white';
+        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0';
       default:
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
+        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0';
     }
   };
 
@@ -219,7 +219,7 @@ export const ServiceCatalogTab: React.FC = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="font-semibold text-gray-900">{service.name}</h3>
                       <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
-                        {service.category}
+                        {service.category?.charAt(0).toUpperCase() + service.category?.slice(1).toLowerCase()}
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">Code: {service.code}</p>
@@ -313,7 +313,7 @@ export const ServiceCatalogTab: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
-                        {service.category}
+                        {service.category?.charAt(0).toUpperCase() + service.category?.slice(1).toLowerCase()}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
