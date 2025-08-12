@@ -44,12 +44,12 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const { data: vehicles = [], isLoading } = useQuery({
-    queryKey: ["vehicles", "active"],
+    queryKey: ["vehicles", "available-in-service-maintenance"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "active")
+        .in("status", ["available", "in service", "maintenance"])
         .order("license_plate");
 
       if (error) throw error;
