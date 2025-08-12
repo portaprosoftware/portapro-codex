@@ -424,14 +424,6 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
 
-              {/* "This isn't just OCR" card moved here as vertical card */}
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
-                <p className="text-muted-foreground">
-                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-                </p>
-              </div>
-
               {/* Why it matters section */}
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
@@ -464,8 +456,17 @@ export const Landing: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Image Slider */}
-            <div className="lg:sticky lg:top-8">
+            {/* Right Column: OCR Card + Image Slider */}
+            <div className="lg:sticky lg:top-8 space-y-6">
+              {/* "This isn't just OCR" card moved to top of right column */}
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
+                <p className="text-muted-foreground">
+                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
+                </p>
+              </div>
+              
+              {/* Image Slider */}
               <AutoCarousel media={aiScanningMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
