@@ -47,7 +47,7 @@ export const DVIRList: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">DVIRs</h2>
+        <h2 className="text-xl font-semibold">Driver Vehicle Inspection Reports</h2>
         <Button onClick={() => setOpen(true)}>New DVIR</Button>
       </div>
 
@@ -96,7 +96,7 @@ export const DVIRList: React.FC = () => {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500">No DVIRs yet</p>
+            <p className="text-gray-500">No Driver Vehicle Inspection Reports yet</p>
           )}
         </CardContent>
       </Card>
