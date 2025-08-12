@@ -94,7 +94,7 @@ export function EnhancedUserProfileCard({
             <DropdownMenuContent align="end">
               {user.current_role === 'driver' && (
                 <DropdownMenuItem onClick={() => navigate(`/team-management/driver/${user.id}`)}>
-                  <Navigation className="w-4 h-4 mr-2" />
+                  <Truck className="w-4 h-4 mr-2" />
                   Driver Details
                 </DropdownMenuItem>
               )}
@@ -183,7 +183,7 @@ export function EnhancedUserProfileCard({
 
         {user.current_role === 'driver' && (
           <Button size="sm" onClick={() => navigate(`/team-management/driver/${user.id}`)}>
-            <Navigation className="w-4 h-4 mr-2" />
+            <Truck className="w-4 h-4 mr-2" />
             Driver Details
           </Button>
         )}

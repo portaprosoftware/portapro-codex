@@ -325,7 +325,7 @@ export function UserListView({
                       {user.current_role === 'driver' && (
                         <DropdownMenuItem asChild>
                           <Link to={`/team-management/driver/${user.id}`}>
-                            <Navigation className="w-4 h-4 mr-2" />
+                            <Truck className="w-4 h-4 mr-2" />
                             Driver Details
                           </Link>
                         </DropdownMenuItem>
