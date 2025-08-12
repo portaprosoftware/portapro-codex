@@ -642,12 +642,14 @@ const scrollToSection = (sectionId: string) => {
             <div className="bg-gray-50 rounded-2xl p-6 shadow-xl">
               <JobWizardProvider>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border bg-card p-3 max-h-[420px] overflow-auto">
-                    <ProductsServicesStep />
+                  <div className="rounded-xl border bg-card p-3 h-[480px] overflow-hidden relative z-10 isolation-isolate">
+                    <div className="h-full overflow-auto pr-1">
+                      <ProductsServicesStep />
+                    </div>
                   </div>
-                  <div className="rounded-xl border bg-card p-3 space-y-3">
+                  <div className="rounded-xl border bg-card p-3 space-y-3 h-[480px] overflow-hidden flex flex-col">
                     <WizardPreviewSummary />
-                    <div className="pt-2 border-t">
+                    <div className="pt-2 border-t flex-1 overflow-auto min-h-0">
                       <h4 className="text-sm font-semibold mb-2 text-foreground">Today's Jobs</h4>
                       <div className="space-y-2">
                         {(jobsTodayList || []).slice(0, 4).map((job: any) => (
