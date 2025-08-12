@@ -23,6 +23,7 @@ interface Vehicle {
   vehicle_type: string;
   status: string;
   current_mileage?: number;
+  image_url?: string;
 }
 
 interface VehicleSelectionModalProps {
@@ -89,15 +90,24 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     return matchesSearch;
   });
 
-  const getAvailabilityStatus = (vehicleId: string) => {
-    return assignedVehicleIds.has(vehicleId) ? "assigned" : "available";
+  const getVehicleStatus = (vehicle: Vehicle) => {
+    const isAssigned = assignedVehicleIds.has(vehicle.id);
+    if (isAssigned) return "assigned";
+    return vehicle.status; // Return actual vehicle status
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeClasses = (status: string) => {
     switch (status) {
-      case "available": return "bg-green-500/10 text-green-700 border-green-200";
-      case "assigned": return "bg-blue-500/10 text-blue-700 border-blue-200";
-      default: return "bg-gray-500/10 text-gray-700 border-gray-200";
+      case "available": 
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
+      case "maintenance": 
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
+      case "in service": 
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
+      case "assigned": 
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
+      default: 
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 
@@ -173,9 +183,9 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
           {/* Vehicle Grid */}
           <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-1">
               {filteredVehicles.map((vehicle) => {
-                const availabilityStatus = getAvailabilityStatus(vehicle.id);
+                const vehicleStatus = getVehicleStatus(vehicle);
                 const isSelected = selectedVehicle?.id === vehicle.id;
                 
                 return (
@@ -185,43 +195,57 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                       isSelected 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50"
-                    }`}
+                    } max-w-full overflow-hidden`}
                     onClick={() => handleVehicleSelect(vehicle)}
                   >
-                    {/* Vehicle Icon */}
-                    <div className="flex items-center justify-center w-16 h-16 bg-muted rounded-lg mb-4 mx-auto">
-                      <Truck className="h-8 w-8 text-muted-foreground" />
+                    {/* Vehicle Image or Icon */}
+                    <div className="flex items-center justify-center w-16 h-16 bg-muted rounded-lg mb-4 mx-auto overflow-hidden">
+                      {vehicle.image_url ? (
+                        <img 
+                          src={vehicle.image_url} 
+                          alt={vehicle.license_plate}
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <Truck className={`h-8 w-8 text-muted-foreground ${vehicle.image_url ? 'hidden' : ''}`} />
                     </div>
 
                     {/* License Plate */}
-                    <h3 className="text-lg font-semibold text-center mb-2">
+                    <h3 className="text-lg font-semibold text-center mb-2 truncate">
                       {vehicle.license_plate}
                     </h3>
 
                     {/* Vehicle Details */}
                     <div className="space-y-2 text-sm">
-                      <p className="text-center text-muted-foreground">
+                      <p className="text-center text-muted-foreground truncate">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </p>
                       
                       {vehicle.nickname && (
-                        <p className="text-center font-medium">
+                        <p className="text-center font-medium truncate">
                           "{vehicle.nickname}"
                         </p>
                       )}
 
                       <div className="flex justify-center">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs truncate max-w-full">
                           {vehicle.vehicle_type}
                         </Badge>
                       </div>
 
                       <div className="flex justify-center">
                         <Badge 
-                          variant="outline" 
-                          className={`text-xs ${getStatusColor(availabilityStatus)}`}
+                          className={`text-xs ${getStatusBadgeClasses(vehicleStatus)}`}
                         >
-                          {availabilityStatus === "available" ? "Available" : "Assigned"}
+                          {vehicleStatus === "available" ? "Available" : 
+                           vehicleStatus === "maintenance" ? "Maintenance" :
+                           vehicleStatus === "in service" ? "In Service" :
+                           vehicleStatus === "assigned" ? "Assigned" : vehicleStatus}
                         </Badge>
                       </div>
 
