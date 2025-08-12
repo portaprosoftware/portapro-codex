@@ -200,7 +200,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
           {/* Tab Navigation Inside Card */}
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
+            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-full max-w-full overflow-x-auto flex-nowrap scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300">
               <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 Overview
               </TabsTrigger>
