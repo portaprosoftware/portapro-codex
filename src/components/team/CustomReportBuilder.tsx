@@ -25,6 +25,7 @@ import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { SavedReportsManager } from './SavedReportsManager';
 
 interface ReportFilter {
   id: string;
@@ -252,8 +253,8 @@ export function CustomReportBuilder() {
       <Tabs defaultValue="config" className="space-y-4">
         <TabsList>
           <TabsTrigger value="config">Configuration</TabsTrigger>
-          <TabsTrigger value="filters">Filters</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="saved">Saved Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="config" className="space-y-4">
@@ -370,108 +371,108 @@ export function CustomReportBuilder() {
                   </Popover>
                 </div>
               </div>
+
+              {/* Filters Section - Now in Configuration Tab */}
+              {reportConfig.dataSource && (
+                <div className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    <h3 className="font-medium">Report Filters</h3>
+                  </div>
+                  
+                  {availableFilters.length > 0 && (
+                    <div className="space-y-3">
+                      <Label>Available Filters</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {availableFilters.map((filterTemplate: any) => (
+                          <Button
+                            key={filterTemplate.id}
+                            variant="outline"
+                            onClick={() => addFilter(filterTemplate)}
+                            disabled={reportConfig.filters.some(f => f.label === filterTemplate.label)}
+                            className="justify-start"
+                            size="sm"
+                          >
+                            {filterTemplate.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {reportConfig.filters.length > 0 && (
+                    <>
+                      <Separator />
+                      <div className="space-y-3">
+                        <Label>Active Filters</Label>
+                        {reportConfig.filters.map((filter) => (
+                          <div key={filter.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                            <div className="flex-1">
+                              <Label className="text-sm font-medium">{filter.label}</Label>
+                              <div className="mt-1">
+                                {filter.type === 'select' && (
+                                  <Select
+                                    value={filter.value}
+                                    onValueChange={(value) => updateFilter(filter.id, value)}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Select value" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {filter.options?.map((option) => (
+                                        <SelectItem key={option.value} value={option.value}>
+                                          {option.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                                {filter.type === 'boolean' && (
+                                  <Checkbox
+                                    checked={filter.value}
+                                    onCheckedChange={(checked) => updateFilter(filter.id, checked)}
+                                  />
+                                )}
+                                {filter.type === 'date' && (
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {filter.value ? format(new Date(filter.value), 'MMM dd, yyyy') : 'Select date'}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={filter.value ? new Date(filter.value) : undefined}
+                                        onSelect={(date) => updateFilter(filter.id, date?.toISOString())}
+                                        initialFocus
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeFilter(filter.id)}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="filters" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Report Filters
-              </CardTitle>
-              <CardDescription>
-                Add filters to customize your report data
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {reportConfig.dataSource && (
-                <div className="space-y-3">
-                  <Label>Available Filters</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {availableFilters.map((filterTemplate: any) => (
-                      <Button
-                        key={filterTemplate.id}
-                        variant="outline"
-                        onClick={() => addFilter(filterTemplate)}
-                        disabled={reportConfig.filters.some(f => f.label === filterTemplate.label)}
-                        className="justify-start"
-                      >
-                        {filterTemplate.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {reportConfig.filters.length > 0 && (
-                <>
-                  <Separator />
-                  <div className="space-y-3">
-                    <Label>Active Filters</Label>
-                    {reportConfig.filters.map((filter) => (
-                      <div key={filter.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <Label className="text-sm font-medium">{filter.label}</Label>
-                          <div className="mt-1">
-                            {filter.type === 'select' && (
-                              <Select
-                                value={filter.value}
-                                onValueChange={(value) => updateFilter(filter.id, value)}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select value" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {filter.options?.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            )}
-                            {filter.type === 'boolean' && (
-                              <Checkbox
-                                checked={filter.value}
-                                onCheckedChange={(checked) => updateFilter(filter.id, checked)}
-                              />
-                            )}
-                            {filter.type === 'date' && (
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button variant="outline" className="w-full justify-start text-left font-normal">
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {filter.value ? format(new Date(filter.value), 'MMM dd, yyyy') : 'Select date'}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={filter.value ? new Date(filter.value) : undefined}
-                                    onSelect={(date) => updateFilter(filter.id, date?.toISOString())}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFilter(filter.id)}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="saved" className="space-y-4">
+          <SavedReportsManager onLoadReport={(report) => setReportConfig(report)} />
         </TabsContent>
 
         <TabsContent value="preview" className="space-y-4">

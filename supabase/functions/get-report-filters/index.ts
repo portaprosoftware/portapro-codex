@@ -37,19 +37,64 @@ const handler = async (req: Request): Promise<Response> => {
             ]
           },
           {
-            id: 'hire_date_range',
-            type: 'date',
-            label: 'Hire Date Range'
-          },
-          {
             id: 'license_class',
             type: 'multiselect',
-            label: 'License Class',
+            label: 'License Type/Class',
             options: [
               { value: 'CDL-A', label: 'CDL Class A' },
               { value: 'CDL-B', label: 'CDL Class B' },
               { value: 'CDL-C', label: 'CDL Class C' },
               { value: 'regular', label: 'Regular License' }
+            ]
+          },
+          {
+            id: 'training_status',
+            type: 'select',
+            label: 'Training Status',
+            options: [
+              { value: 'completed', label: 'Completed' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'overdue', label: 'Overdue' },
+              { value: 'not_started', label: 'Not Started' }
+            ]
+          },
+          {
+            id: 'hire_date_range',
+            type: 'date',
+            label: 'Hire Date Range'
+          },
+          {
+            id: 'location_region',
+            type: 'select',
+            label: 'Location/Region',
+            options: [
+              { value: 'north', label: 'North Region' },
+              { value: 'south', label: 'South Region' },
+              { value: 'east', label: 'East Region' },
+              { value: 'west', label: 'West Region' },
+              { value: 'central', label: 'Central Region' }
+            ]
+          },
+          {
+            id: 'experience_level',
+            type: 'select',
+            label: 'Experience Level',
+            options: [
+              { value: 'entry', label: 'Entry Level (0-1 years)' },
+              { value: 'intermediate', label: 'Intermediate (1-3 years)' },
+              { value: 'experienced', label: 'Experienced (3-5 years)' },
+              { value: 'senior', label: 'Senior (5+ years)' }
+            ]
+          },
+          {
+            id: 'certification_status',
+            type: 'select',
+            label: 'Certification Status',
+            options: [
+              { value: 'current', label: 'All Current' },
+              { value: 'expiring_soon', label: 'Expiring Soon' },
+              { value: 'expired', label: 'Has Expired Certs' },
+              { value: 'missing', label: 'Missing Required Certs' }
             ]
           }
         ];
@@ -64,18 +109,53 @@ const handler = async (req: Request): Promise<Response> => {
             options: [
               { value: 'license', label: 'Driver License' },
               { value: 'medical', label: 'Medical Card' },
-              { value: 'training', label: 'Training Certificate' }
+              { value: 'training', label: 'Training Certificate' },
+              { value: 'insurance', label: 'Insurance Documents' },
+              { value: 'vehicle_registration', label: 'Vehicle Registration' }
             ]
           },
           {
             id: 'expiry_status',
             type: 'select',
-            label: 'Expiry Status',
+            label: 'Document Expiration Status',
             options: [
               { value: 'current', label: 'Current' },
               { value: 'expiring', label: 'Expiring Soon' },
               { value: 'expired', label: 'Expired' },
               { value: 'missing', label: 'Missing' }
+            ]
+          },
+          {
+            id: 'compliance_score_range',
+            type: 'select',
+            label: 'Compliance Score Range',
+            options: [
+              { value: '90-100', label: '90-100% (Excellent)' },
+              { value: '80-90', label: '80-90% (Good)' },
+              { value: '70-80', label: '70-80% (Fair)' },
+              { value: '0-70', label: 'Below 70% (Poor)' }
+            ]
+          },
+          {
+            id: 'audit_results',
+            type: 'select',
+            label: 'Audit Results',
+            options: [
+              { value: 'passed', label: 'Passed' },
+              { value: 'failed', label: 'Failed' },
+              { value: 'pending', label: 'Pending Review' },
+              { value: 'not_audited', label: 'Not Audited' }
+            ]
+          },
+          {
+            id: 'training_completion_status',
+            type: 'select',
+            label: 'Training Completion Status',
+            options: [
+              { value: 'completed', label: 'All Required Training Complete' },
+              { value: 'in_progress', label: 'Training In Progress' },
+              { value: 'overdue', label: 'Overdue Training' },
+              { value: 'not_started', label: 'Not Started' }
             ]
           },
           {
@@ -131,6 +211,18 @@ const handler = async (req: Request): Promise<Response> => {
       case 'equipment':
         filters = [
           {
+            id: 'vehicle_type',
+            type: 'select',
+            label: 'Vehicle Type',
+            options: [
+              { value: 'service_truck', label: 'Service Truck' },
+              { value: 'pumper_truck', label: 'Pumper Truck' },
+              { value: 'delivery_truck', label: 'Delivery Truck' },
+              { value: 'van', label: 'Van' },
+              { value: 'trailer', label: 'Trailer' }
+            ]
+          },
+          {
             id: 'equipment_type',
             type: 'select',
             label: 'Equipment Type',
@@ -138,7 +230,8 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'portable_toilet', label: 'Portable Toilet' },
               { value: 'sink', label: 'Hand Wash Station' },
               { value: 'trailer', label: 'Trailer' },
-              { value: 'pump', label: 'Pump' }
+              { value: 'pump', label: 'Pump' },
+              { value: 'generator', label: 'Generator' }
             ]
           },
           {
@@ -148,8 +241,20 @@ const handler = async (req: Request): Promise<Response> => {
             options: [
               { value: 'assigned', label: 'Assigned' },
               { value: 'available', label: 'Available' },
+              { value: 'out_of_service', label: 'Out of Service' },
               { value: 'maintenance', label: 'In Maintenance' },
               { value: 'retired', label: 'Retired' }
+            ]
+          },
+          {
+            id: 'maintenance_status',
+            type: 'select',
+            label: 'Maintenance Status',
+            options: [
+              { value: 'up_to_date', label: 'Up to Date' },
+              { value: 'due_soon', label: 'Due Soon' },
+              { value: 'overdue', label: 'Overdue' },
+              { value: 'in_progress', label: 'In Progress' }
             ]
           },
           {
