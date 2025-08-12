@@ -73,8 +73,8 @@ export function BulkDriverOperations() {
     },
     onSuccess: () => {
       toast({
-        title: "Reminders Sent",
-        description: `Sent reminders to ${selectedDrivers.length} drivers successfully.`
+        title: "Messages Sent",
+        description: `Sent messages to ${selectedDrivers.length} drivers successfully.`
       });
       setSelectedDrivers([]);
       setReminderMessage('');
@@ -82,7 +82,7 @@ export function BulkDriverOperations() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to send bulk reminders. Please try again.",
+        description: "Failed to send bulk messages. Please try again.",
         variant: "destructive"
       });
     }
@@ -142,11 +142,11 @@ export function BulkDriverOperations() {
     }
 
     switch (bulkAction) {
-      case 'send_reminders':
+      case 'send_messages':
         if (!reminderMessage.trim()) {
           toast({
             title: "Message Required",
-            description: "Please enter a reminder message.",
+            description: "Please enter a message.",
             variant: "destructive"
           });
           return;
@@ -268,29 +268,29 @@ Jane,Smith,jane.smith@example.com,555-0124,D987654321,CA,CDL-B,2025-11-30,2025-0
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Send Reminders */}
-                <div className="space-y-4 p-4 border rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Send className="h-4 w-4" />
-                    <h3 className="font-medium">Send Reminders</h3>
-                  </div>
-                  <Textarea
-                    placeholder="Enter reminder message..."
-                    value={reminderMessage}
-                    onChange={(e) => setReminderMessage(e.target.value)}
-                    rows={3}
-                  />
-                  <Button 
-                    onClick={() => bulkReminderMutation.mutate({ driverIds: selectedDrivers, message: reminderMessage })}
-                    disabled={!reminderMessage.trim() || selectedDrivers.length === 0 || bulkReminderMutation.isPending}
-                    className="w-full"
-                    size="sm"
-                  >
-                    {bulkReminderMutation.isPending ? "Sending..." : "Send Reminders"}
-                  </Button>
+              {/* Send Message - Full Width Row */}
+              <div className="space-y-4 p-4 border rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Send className="h-4 w-4" />
+                  <h3 className="font-medium">Send Message</h3>
                 </div>
+                <Textarea
+                  placeholder="Enter message..."
+                  value={reminderMessage}
+                  onChange={(e) => setReminderMessage(e.target.value)}
+                  rows={3}
+                />
+                <Button 
+                  onClick={() => bulkReminderMutation.mutate({ driverIds: selectedDrivers, message: reminderMessage })}
+                  disabled={!reminderMessage.trim() || selectedDrivers.length === 0 || bulkReminderMutation.isPending}
+                  className="w-full"
+                  size="sm"
+                >
+                  {bulkReminderMutation.isPending ? "Sending..." : "Send Message"}
+                </Button>
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Update Status */}
                 <div className="space-y-4 p-4 border rounded-lg">
                   <div className="flex items-center gap-2">
