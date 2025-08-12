@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { StorageSitesLayout } from "@/components/inventory/StorageSitesLayout";
+import { StorageSitesNavigation } from "@/components/inventory/StorageSitesNavigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -15,7 +15,7 @@ import { StorageLocationReporting } from "@/components/inventory/StorageLocation
 import { Plus, MapPin, Edit, Trash2, Building, BarChart3, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface StorageLocation {
   id: string;
@@ -36,12 +36,19 @@ interface StorageLocation {
 export default function StorageSites() {
   const { hasAdminAccess } = useUserRole();
   const queryClient = useQueryClient();
+  const location = useLocation();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSite, setEditingSite] = useState<StorageLocation | null>(null);
+
+  useEffect(() => {
+    document.title = 'Storage Sites | PortaPro';
+  }, []);
 
   if (!hasAdminAccess) {
     return <Navigate to="/dashboard" replace />;
   }
+
+  const activeTab = location.hash === "#reporting" ? "reporting" : "locations";
 
   const { data: storageLocations, isLoading: locationsLoading } = useQuery({
     queryKey: ['storage-locations'],
@@ -145,180 +152,159 @@ export default function StorageSites() {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      <PageHeader
-        title="Storage Sites"
-        subtitle="Manage storage locations and view location analytics"
-      />
-
-      <Tabs defaultValue="locations" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="locations" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            Storage Locations
-          </TabsTrigger>
-          <TabsTrigger value="reporting" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Location Reporting
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="locations" className="space-y-6">
-          <div className="flex justify-end">
-            <Button onClick={() => setShowAddModal(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Storage Site
-            </Button>
-          </div>
-
-          {isLoading ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="animate-pulse space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                      <div className="h-4 bg-muted rounded w-1/4"></div>
-                      <div className="h-4 bg-muted rounded w-1/2"></div>
-                      <div className="h-4 bg-muted rounded w-1/4"></div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-32">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {storageLocations?.map((site) => {
-                    const addressInfo = formatAddress(site);
-                    
-                    return (
-                      <TableRow key={site.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Building className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <div className="font-medium">{site.name}</div>
-                              {site.description && (
-                                <div className="text-sm text-muted-foreground">
-                                  {site.description}
+    <StorageSitesLayout>
+      <StorageSitesNavigation onAddStorage={() => setShowAddModal(true)} />
+      
+      <div className="space-y-6">
+        {activeTab === "locations" ? (
+          <>
+            {isLoading ? (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="animate-pulse space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex items-center space-x-4">
+                        <div className="h-4 bg-muted rounded w-1/4"></div>
+                        <div className="h-4 bg-muted rounded w-1/2"></div>
+                        <div className="h-4 bg-muted rounded w-1/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Address</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="w-32">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {storageLocations?.map((site) => {
+                      const addressInfo = formatAddress(site);
+                      
+                      return (
+                        <TableRow key={site.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Building className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">{site.name}</div>
+                                {site.description && (
+                                  <div className="text-sm text-muted-foreground">
+                                    {site.description}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-start gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <div className="text-sm">
+                                <div className="font-medium text-muted-foreground">
+                                  {addressInfo.label}
                                 </div>
+                                <div className="text-muted-foreground">
+                                  {addressInfo.address}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              {site.is_default && (
+                                <Badge variant="secondary">
+                                  Default
+                                </Badge>
+                              )}
+                              {site.is_active ? (
+                                <Badge variant="active">
+                                  Active
+                                </Badge>
+                              ) : (
+                                <Badge variant="inactive">
+                                  Inactive
+                                </Badge>
                               )}
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-start gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                            <div className="text-sm">
-                              <div className="font-medium text-muted-foreground">
-                                {addressInfo.label}
-                              </div>
-                              <div className="text-muted-foreground">
-                                {addressInfo.address}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {site.is_default && (
-                              <Badge variant="secondary">
-                                Default
-                              </Badge>
-                            )}
-                            {site.is_active ? (
-                              <Badge variant="active">
-                                Active
-                              </Badge>
-                            ) : (
-                              <Badge variant="inactive">
-                                Inactive
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-background border z-50">
-                              <DropdownMenuItem onClick={() => setEditingSite(site)}>
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              {!site.is_default && (
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem
-                                      onSelect={(e) => e.preventDefault()}
-                                      className="text-red-600 focus:text-red-600 cursor-pointer"
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Delete Storage Site</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Are you sure you want to delete "{site.name}"? This action cannot be undone.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => handleDelete(site)}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-background border z-50">
+                                <DropdownMenuItem onClick={() => setEditingSite(site)}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                {!site.is_default && (
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <DropdownMenuItem
+                                        onSelect={(e) => e.preventDefault()}
+                                        className="text-red-600 focus:text-red-600 cursor-pointer"
                                       >
+                                        <Trash2 className="w-4 h-4 mr-2" />
                                         Delete
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </Card>
-          )}
+                                      </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete Storage Site</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Are you sure you want to delete "{site.name}"? This action cannot be undone.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() => handleDelete(site)}
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                          Delete
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
 
-          {storageLocations?.length === 0 && !isLoading && (
-            <Card className="p-8 text-center">
-              <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Storage Sites</h3>
-              <p className="text-muted-foreground mb-4">
-                Get started by adding your first storage location
-              </p>
-              <Button onClick={() => setShowAddModal(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Storage Site
-              </Button>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="reporting">
+            {storageLocations?.length === 0 && !isLoading && (
+              <Card className="p-8 text-center">
+                <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Storage Sites</h3>
+                <p className="text-muted-foreground mb-4">
+                  Get started by adding your first storage location
+                </p>
+                <Button onClick={() => setShowAddModal(true)} className="bg-gradient-primary text-white hover:bg-gradient-primary/90 gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Storage Site
+                </Button>
+              </Card>
+            )}
+          </>
+        ) : (
           <StorageLocationReporting />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       <AddStorageSiteModal
         open={showAddModal}
@@ -334,6 +320,6 @@ export default function StorageSites() {
           onClose={() => setEditingSite(null)}
         />
       )}
-    </div>
+    </StorageSitesLayout>
   );
 }
