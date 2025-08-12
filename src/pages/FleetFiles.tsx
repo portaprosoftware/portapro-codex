@@ -224,7 +224,7 @@ export default function FleetFiles() {
   return (
     <FleetLayout>
       {/* Enhanced Header */}
-      <div className="border-b bg-card p-6">
+      <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground font-inter">
@@ -294,6 +294,41 @@ export default function FleetFiles() {
               <List className="w-4 h-4" />
             </Button>
           </div>
+        </div>
+
+        {/* Secondary Navigation */}
+        <div className="flex items-center mt-4">
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold shadow-sm"
+          >
+            All ({filteredDocuments.length})
+          </button>
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+          >
+            Receipts ({documentsByCategory.receipt?.length || 0})
+          </button>
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+          >
+            Warranties ({documentsByCategory.warranty?.length || 0})
+          </button>
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+          >
+            Photos ({documentsByCategory.photo?.length || 0})
+          </button>
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+          >
+            Other ({documentsByCategory.other?.length || 0})
+          </button>
+          <button
+            className="px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+          >
+            <Settings className="w-3 h-3 mr-1" />
+            Categories
+          </button>
         </div>
       </div>
 
