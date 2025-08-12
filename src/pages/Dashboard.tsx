@@ -234,10 +234,14 @@ const Dashboard = () => {
           iconBg="#3b82f6"
           subtitle={
             <div className="space-y-1">
-              <div>{jobsData?.deliveries || 0} deliveries</div>
-              <div>{jobsData?.pickups || 0} pickups</div>
-              <div>{jobsData?.services || 0} services</div>
-              <div>{jobsData?.surveys || 0} surveys/estimates</div>
+              <div className="flex justify-between">
+                <span>{jobsData?.deliveries || 0} deliveries</span>
+                <span>{jobsData?.pickups || 0} pickups</span>
+              </div>
+              <div className="flex justify-between">
+                <span>{jobsData?.services || 0} services</span>
+                <span>{jobsData?.surveys || 0} surveys</span>
+              </div>
               <div>{jobsData?.partialPickups || 0} partial pickups</div>
             </div>
           }
