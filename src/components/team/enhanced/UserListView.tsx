@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,8 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
   MoreVertical, Edit, Trash2, UserCheck, UserX,
-  Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown
+  Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown,
+  ExternalLink, AlertTriangle, Clock, FileText
 } from 'lucide-react';
+import { format, differenceInDays } from 'date-fns';
 
 interface User {
   id: string;
@@ -21,10 +24,18 @@ interface User {
   profile_photo?: string | null;
   hire_date?: string | null;
   created_at?: string | null;
+  // Driver-specific fields
+  driver_id?: string;
+  license_expiry_date?: string | null;
+  medical_card_expiry_date?: string | null;
+  next_training_due?: string | null;
+  home_base?: string | null;
+  supervisor?: string | null;
+  app_last_login?: string | null;
 }
 
 type SortDirection = 'asc' | 'desc' | 'default';
-type SortColumn = 'first_name' | 'last_name' | 'role' | 'status';
+type SortColumn = 'first_name' | 'last_name' | 'role' | 'status' | 'license_expiry' | 'medical_expiry' | 'training_due';
 
 interface UserListViewProps {
   users: User[];
@@ -36,6 +47,7 @@ interface UserListViewProps {
   sortDirection?: SortDirection;
   onSort?: (column: SortColumn) => void;
   canDeleteUser?: boolean;
+  showDriverColumns?: boolean;
 }
 
 const roleIcons = {
@@ -63,8 +75,66 @@ export function UserListView({
   sortColumn,
   sortDirection = 'default',
   onSort,
-  canDeleteUser = true
+  canDeleteUser = true,
+  showDriverColumns = false
 }: UserListViewProps) {
+
+  // Helper function to get expiry status
+  const getExpiryStatus = (expiryDate: string | null) => {
+    if (!expiryDate) return null;
+    
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const daysUntil = differenceInDays(expiry, today);
+    
+    if (daysUntil < 0) return { status: 'overdue', daysUntil: Math.abs(daysUntil), color: 'red' };
+    if (daysUntil <= 30) return { status: 'expiring', daysUntil, color: 'orange' };
+    if (daysUntil <= 60) return { status: 'due_soon', daysUntil, color: 'yellow' };
+    return { status: 'valid', daysUntil, color: 'green' };
+  };
+
+  const renderExpiryBadge = (expiryDate: string | null, label: string) => {
+    if (!expiryDate) {
+      return <Badge variant="outline" className="text-gray-400">Not Set</Badge>;
+    }
+    
+    const status = getExpiryStatus(expiryDate);
+    if (!status) return null;
+    
+    const { status: statusType, daysUntil, color } = status;
+    
+    if (statusType === 'overdue') {
+      return (
+        <Badge className="bg-red-500 text-white font-medium">
+          <AlertTriangle className="w-3 h-3 mr-1" />
+          Overdue {daysUntil}d
+        </Badge>
+      );
+    }
+    
+    if (statusType === 'expiring') {
+      return (
+        <Badge className="bg-orange-500 text-white font-medium">
+          <Clock className="w-3 h-3 mr-1" />
+          {daysUntil}d left
+        </Badge>
+      );
+    }
+    
+    if (statusType === 'due_soon') {
+      return (
+        <Badge className="bg-yellow-500 text-white font-medium">
+          {daysUntil}d left
+        </Badge>
+      );
+    }
+    
+    return (
+      <Badge variant="outline" className="text-green-600 border-green-600">
+        {format(new Date(expiryDate), 'MMM dd, yyyy')}
+      </Badge>
+    );
+  };
   // Create sortable header component
   const SortableHeader = ({ 
     column, 
@@ -116,6 +186,14 @@ export function UserListView({
             <TableHead>Email</TableHead>
             <SortableHeader column="role">Role</SortableHeader>
             <SortableHeader column="status">Status</SortableHeader>
+            {showDriverColumns && (
+              <>
+                <SortableHeader column="license_expiry">License</SortableHeader>
+                <SortableHeader column="medical_expiry">Medical Card</SortableHeader>
+                <SortableHeader column="training_due">Next Training</SortableHeader>
+                <TableHead>Home Base</TableHead>
+              </>
+            )}
             <TableHead>Phone</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="w-12"></TableHead>
@@ -188,6 +266,28 @@ export function UserListView({
                   </Badge>
                 </TableCell>
                 
+                {showDriverColumns && (
+                  <>
+                    <TableCell>
+                      {renderExpiryBadge(user.license_expiry_date, 'License')}
+                    </TableCell>
+                    
+                    <TableCell>
+                      {renderExpiryBadge(user.medical_card_expiry_date, 'Medical')}
+                    </TableCell>
+                    
+                    <TableCell>
+                      {renderExpiryBadge(user.next_training_due, 'Training')}
+                    </TableCell>
+                    
+                    <TableCell>
+                      <span className={`text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>
+                        {user.home_base || '—'}
+                      </span>
+                    </TableCell>
+                  </>
+                )}
+                
                 <TableCell>
                   <div className={`text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>
                     {user.phone ? (
@@ -222,6 +322,14 @@ export function UserListView({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      {showDriverColumns && user.current_role === 'driver' && (
+                        <DropdownMenuItem asChild>
+                          <Link to={`/team-management/users/${user.id}`}>
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            View Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onClick={() => onEdit(user)}>
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Profile
