@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.fleet-docs]
 verify_jwt = false
+
+[functions.check-driver-expirations]
+verify_jwt = false
+
+[functions.validate-document]
+verify_jwt = true
