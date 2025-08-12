@@ -8527,6 +8527,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      backup_compliance_documents: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       batch_geocode_existing_locations: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -8596,6 +8600,10 @@ export type Database = {
       cleanup_failed_geocoding: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      cleanup_old_activity_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       clerk_user_has_role: {
         Args: { clerk_user_id: string; required_role: string }
