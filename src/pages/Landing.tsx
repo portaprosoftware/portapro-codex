@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDrivers';
 import { useDriverShiftsForWeek } from '@/hooks/useScheduling';
 import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -1048,8 +1049,12 @@ const scrollToSection = (sectionId: string) => {
             </div>
             
             <div className="flex justify-center">
-              <div className="w-96 h-96">
-                <TimeOffCalendarView />
+              <div className="w-full max-w-md">
+                <AspectRatio ratio={1}>
+                  <div className="h-full">
+                    <TimeOffCalendarView compact />
+                  </div>
+                </AspectRatio>
               </div>
             </div>
           </div>

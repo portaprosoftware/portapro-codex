@@ -21,7 +21,7 @@ interface TimeOffEvent {
   };
 }
 
-export function TimeOffCalendarView() {
+export function TimeOffCalendarView({ compact = false }: { compact?: boolean }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const { data: approvedTimeOff = [] } = useQuery({
@@ -83,8 +83,9 @@ export function TimeOffCalendarView() {
   const firstDay = getFirstDayOfMonth(currentDate);
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className={compact ? 'h-full' : ''}>
+      {!compact && (
+        <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
             <Calendar className="w-5 h-5 text-blue-600" />
@@ -110,9 +111,10 @@ export function TimeOffCalendarView() {
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-7 gap-1 mb-4">
+        </CardHeader>
+      )}
+      <CardContent className={compact ? 'h-full flex flex-col' : ''}>
+        <div className={`grid grid-cols-7 gap-1 ${compact ? 'mb-2' : 'mb-4'}`}>
           {dayNames.map(day => (
             <div key={day} className="p-2 text-center font-medium text-sm text-muted-foreground">
               {day}
@@ -120,10 +122,10 @@ export function TimeOffCalendarView() {
           ))}
         </div>
         
-        <div className="grid grid-cols-7 gap-1">
+        <div className={compact ? "grid grid-cols-7 gap-1 flex-1 auto-rows-[minmax(0,1fr)] min-h-0" : "grid grid-cols-7 gap-1"}>
           {/* Empty cells for days before month starts */}
           {Array.from({ length: firstDay }).map((_, index) => (
-            <div key={`empty-${index}`} className="h-24 p-1"></div>
+            <div key={`empty-${index}`} className={`${compact ? '' : 'h-24'} p-1`}></div>
           ))}
           
           {/* Days of the month */}
@@ -136,7 +138,7 @@ export function TimeOffCalendarView() {
             return (
               <div
                 key={day}
-                className={`h-24 p-1 border rounded-lg overflow-y-auto ${
+                className={`${compact ? 'min-h-0 h-full' : 'h-24'} p-1 border rounded-lg overflow-y-auto ${
                   isToday ? 'bg-primary/5 border-primary' : 'border-border'
                 }`}
               >
@@ -170,22 +172,26 @@ export function TimeOffCalendarView() {
           })}
         </div>
 
-        {/* Legend */}
-        <div className="mt-4 pt-4 border-t">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Legend:</span>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded bg-orange-100 border border-orange-300"></div>
-                <span>Approved Time Off</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded bg-primary/20 border border-primary"></div>
-                <span>Today</span>
+        {!compact && (
+          <>
+          {/* Legend */}
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>Legend:</span>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded bg-orange-100 border border-orange-300"></div>
+                  <span>Approved Time Off</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded bg-primary/20 border border-primary"></div>
+                  <span>Today</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
