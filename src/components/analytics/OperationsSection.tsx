@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { KPICard } from './KPICard';
+import { StatCard } from '@/components/ui/StatCard';
 import { Truck, Package, Wrench, RotateCcw } from 'lucide-react';
 import type { OperationsAnalytics } from '@/types/analytics';
 
@@ -29,40 +29,44 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
     <div className="space-y-8">
       {/* Operations KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard
+        <StatCard
           title="Deliveries"
           value={operations?.deliveries || 0}
-          change={15.3}
           icon={Truck}
-          color="#3366FF"
-          loading={isLoading}
+          gradientFrom="from-blue-600"
+          gradientTo="to-blue-400"
+          iconBg="#3366FF"
+          subtitle="+15.3% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Pickups"
           value={operations?.pickups || 0}
-          change={-2.1}
           icon={Package}
-          color="#33CC66"
-          loading={isLoading}
+          gradientFrom="from-green-600"
+          gradientTo="to-green-400"
+          iconBg="#33CC66"
+          subtitle="-2.1% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Services"
           value={operations?.services || 0}
-          change={8.7}
           icon={Wrench}
-          color="#FF9933"
-          loading={isLoading}
+          gradientFrom="from-orange-600"
+          gradientTo="to-orange-400"
+          iconBg="#FF9933"
+          subtitle="+8.7% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Returns"
           value={operations?.returns || 0}
-          change={5.2}
           icon={RotateCcw}
-          color="#8B5CF6"
-          loading={isLoading}
+          gradientFrom="from-purple-600"
+          gradientTo="to-purple-400"
+          iconBg="#8B5CF6"
+          subtitle="+5.2% vs last period"
         />
       </div>
 

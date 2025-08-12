@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { KPICard } from './KPICard';
+import { StatCard } from '@/components/ui/StatCard';
 import { Users, CheckCircle, Clock, Briefcase } from 'lucide-react';
 import type { DriverAnalytics } from '@/types/analytics';
 
@@ -28,40 +28,44 @@ export const DriversSection: React.FC<DriversSectionProps> = ({ dateRange }) => 
     <div className="space-y-8">
       {/* Driver KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard
+        <StatCard
           title="Active Drivers"
           value={drivers?.active_drivers || 0}
-          change={5.2}
           icon={Users}
-          color="#3366FF"
-          loading={isLoading}
+          gradientFrom="from-blue-600"
+          gradientTo="to-blue-400"
+          iconBg="#3366FF"
+          subtitle="+5.2% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Avg. Completion"
           value={`${(drivers?.avg_completion_rate || 0).toFixed(1)}%`}
-          change={3.8}
           icon={CheckCircle}
-          color="#33CC66"
-          loading={isLoading}
+          gradientFrom="from-green-600"
+          gradientTo="to-green-400"
+          iconBg="#33CC66"
+          subtitle="+3.8% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Jobs Completed"
           value={drivers?.completed_jobs || 0}
-          change={12.4}
           icon={Briefcase}
-          color="#FF9933"
-          loading={isLoading}
+          gradientFrom="from-orange-600"
+          gradientTo="to-orange-400"
+          iconBg="#FF9933"
+          subtitle="+12.4% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Total Jobs"
           value={drivers?.total_jobs || 0}
-          change={8.9}
           icon={Clock}
-          color="#8B5CF6"
-          loading={isLoading}
+          gradientFrom="from-purple-600"
+          gradientTo="to-purple-400"
+          iconBg="#8B5CF6"
+          subtitle="+8.9% vs last period"
         />
       </div>
 

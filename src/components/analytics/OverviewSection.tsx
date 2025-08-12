@@ -2,7 +2,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { KPICard } from './KPICard';
+import { StatCard } from '@/components/ui/StatCard';
 import { TrendChart } from './TrendChart';
 import { DonutChart } from './DonutChart';
 import { ActivityFeed } from './ActivityFeed';
@@ -105,13 +105,14 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
     <div className="space-y-8">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard
+        <StatCard
           title="Job Summary"
-          value={`${overview?.jobs?.total || 0} total`}
+          value={`${overview?.jobs?.total || 0}`}
           subtitle={`${overview?.jobs?.completed || 0} completed`}
           icon={Briefcase}
-          color="#3366FF"
-          loading={isLoading}
+          gradientFrom="from-blue-600"
+          gradientTo="to-blue-400"
+          iconBg="#3366FF"
           chart={
             <div className="h-12 flex items-end space-x-1">
               {[65, 45, 78, 52, 90, 65, 88].map((height, i) => (
@@ -125,30 +126,33 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
           }
         />
         
-        <KPICard
+        <StatCard
           title="Revenue"
           value={`$${(overview?.revenue || 0).toLocaleString()}`}
-          change={12.5}
           icon={DollarSign}
-          color="#33CC66"
-          loading={isLoading}
+          gradientFrom="from-green-600"
+          gradientTo="to-green-400"
+          iconBg="#33CC66"
+          subtitle="+12.5% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Fleet Utilization"
           value={`${(overview?.fleet_utilization || 0).toFixed(1)}%`}
-          change={-2.1}
           icon={Truck}
-          color="#FF9933"
-          loading={isLoading}
+          gradientFrom="from-orange-600"
+          gradientTo="to-orange-400"
+          iconBg="#FF9933"
+          subtitle="-2.1% vs last period"
         />
         
-        <KPICard
+        <StatCard
           title="Customer Growth"
           value={`${(overview?.customer_growth || 0) >= 0 ? '+' : ''}${(overview?.customer_growth || 0).toFixed(1)}%`}
           icon={TrendingUp}
-          color="#8B5CF6"
-          loading={isLoading}
+          gradientFrom="from-purple-600"
+          gradientTo="to-purple-400"
+          iconBg="#8B5CF6"
         />
       </div>
 
