@@ -34,7 +34,7 @@ export const FleetCompliance: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mx-6">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -87,7 +87,7 @@ export const FleetCompliance: React.FC = () => {
         </div>
       </div>
 
-      <div className="mx-6">
+      <div>
         <ComplianceHelpPanel />
       </div>
 
