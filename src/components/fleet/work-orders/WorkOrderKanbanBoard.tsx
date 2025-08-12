@@ -57,73 +57,79 @@ export const WorkOrderKanbanBoard: React.FC<WorkOrderKanbanBoardProps> = ({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 min-h-[600px]">
-        {STATUS_COLUMNS.map((column) => {
-          const columnWorkOrders = getWorkOrdersByStatus(column.id);
-          
-          return (
-            <Card key={column.id} className="flex flex-col">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: column.color }}
-                    />
-                    {column.label}
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {columnWorkOrders.length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              
-              <Droppable droppableId={column.id}>
-                {(provided, snapshot) => (
-                  <CardContent 
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={`flex-1 space-y-3 p-3 ${
-                      snapshot.isDraggingOver ? 'bg-muted/50' : ''
-                    }`}
-                  >
-                    {columnWorkOrders.map((workOrder, index) => (
-                      <Draggable 
-                        key={workOrder.id} 
-                        draggableId={workOrder.id} 
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`${
-                              snapshot.isDragging ? 'opacity-50' : ''
-                            }`}
-                          >
-                            <WorkOrderCard
-                              workOrder={workOrder}
-                              onEdit={onEdit}
-                              onViewDetails={onViewDetails}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                    
-                    {columnWorkOrders.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground text-sm">
-                        No work orders
-                      </div>
-                    )}
-                  </CardContent>
-                )}
-              </Droppable>
-            </Card>
-          );
-        })}
+      <div className="space-y-6">
+        {/* Column Headers */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+          {STATUS_COLUMNS.map((column) => {
+            const columnWorkOrders = getWorkOrdersByStatus(column.id);
+            
+            return (
+              <div key={`header-${column.id}`} className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm text-foreground">
+                  {column.label}
+                </h3>
+                <Badge variant="secondary" className="text-xs">
+                  {columnWorkOrders.length}
+                </Badge>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Kanban Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 min-h-[600px]">
+          {STATUS_COLUMNS.map((column) => {
+            const columnWorkOrders = getWorkOrdersByStatus(column.id);
+            
+            return (
+              <Card key={column.id} className="flex flex-col">
+                <Droppable droppableId={column.id}>
+                  {(provided, snapshot) => (
+                    <CardContent 
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={`flex-1 space-y-3 p-3 min-h-[500px] ${
+                        snapshot.isDraggingOver ? 'bg-muted/50' : ''
+                      }`}
+                    >
+                      {columnWorkOrders.map((workOrder, index) => (
+                        <Draggable 
+                          key={workOrder.id} 
+                          draggableId={workOrder.id} 
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={`${
+                                snapshot.isDragging ? 'opacity-50' : ''
+                              }`}
+                            >
+                              <WorkOrderCard
+                                workOrder={workOrder}
+                                onEdit={onEdit}
+                                onViewDetails={onViewDetails}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                      
+                      {columnWorkOrders.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                          No work orders
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Droppable>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </DragDropContext>
   );
