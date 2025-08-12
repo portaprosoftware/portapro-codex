@@ -1790,48 +1790,63 @@ export type Database = {
       }
       driver_credentials: {
         Row: {
+          cdl_class: string | null
           created_at: string
           driver_id: string
           id: string
+          license_category: string | null
           license_class: string | null
           license_endorsements: string[] | null
           license_expiry_date: string | null
           license_image_url: string | null
           license_number: string | null
+          license_restrictions: string[] | null
           license_state: string | null
           medical_card_expiry_date: string | null
           medical_card_image_url: string | null
           medical_card_reference: string | null
+          notes: string | null
+          operating_scope: string | null
           updated_at: string
         }
         Insert: {
+          cdl_class?: string | null
           created_at?: string
           driver_id: string
           id?: string
+          license_category?: string | null
           license_class?: string | null
           license_endorsements?: string[] | null
           license_expiry_date?: string | null
           license_image_url?: string | null
           license_number?: string | null
+          license_restrictions?: string[] | null
           license_state?: string | null
           medical_card_expiry_date?: string | null
           medical_card_image_url?: string | null
           medical_card_reference?: string | null
+          notes?: string | null
+          operating_scope?: string | null
           updated_at?: string
         }
         Update: {
+          cdl_class?: string | null
           created_at?: string
           driver_id?: string
           id?: string
+          license_category?: string | null
           license_class?: string | null
           license_endorsements?: string[] | null
           license_expiry_date?: string | null
           license_image_url?: string | null
           license_number?: string | null
+          license_restrictions?: string[] | null
           license_state?: string | null
           medical_card_expiry_date?: string | null
           medical_card_image_url?: string | null
           medical_card_reference?: string | null
+          notes?: string | null
+          operating_scope?: string | null
           updated_at?: string
         }
         Relationships: [
