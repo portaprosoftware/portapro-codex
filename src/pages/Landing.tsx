@@ -16,6 +16,7 @@ import { useDriverShiftsForWeek } from '@/hooks/useScheduling';
 import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { SmartWizardShowcase } from '@/components/marketing/SmartWizardShowcase';
+import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -438,103 +439,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column: Content */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
-                <p className="text-xl text-muted-foreground">
-                  Eliminate manual data entry — just snap a photo.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  PortaPro uses advanced Google Cloud Vision AI to instantly scan and extract critical molded-in data from your units, including:
-                </p>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <span className="text-foreground">Tool Numbers</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <span className="text-foreground">Vendor IDs</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <span className="text-foreground">Plastic Type Codes (HDPE)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                  </div>
-                  <span className="text-foreground">Manufacturing Dates</span>
-                </div>
-              </div>
-
-              <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold">
-                  <Camera className="h-5 w-5" />
-                  <span>Snap.</span>
-                  <Eye className="h-5 w-5" />
-                  <span>Scan.</span>
-                  <Database className="h-5 w-5" />
-                  <span>Save. That's it.</span>
-                </div>
-              </div>
-
-              {/* Why it matters section */}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-foreground">Why it matters:</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Zap className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Track every unit's origin and age instantly</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Shield className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Eliminate mix-ups during inspections and audits</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Clock className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Save hours per week on manual entry</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Camera className="h-5 w-5 text-primary flex-shrink-0" />
-                    </div>
-                    <span className="text-muted-foreground">Boost accountability with photo-verified records</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: OCR Card + Image Slider */}
-            <div className="space-y-6">
-              {/* "This isn't just OCR" card moved to top of right column */}
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
-                <p className="text-muted-foreground">
-                  It's a purpose-built system designed for embossed plastic, trained to recognize the exact formatting used by top manufacturers like Satellite Industries.
-                </p>
-              </div>
-              
-              {/* Image Slider */}
-              <AutoCarousel media={aiScanningMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
+          <AIPanelScanningShowcase />
         </div>
       </section>
 
