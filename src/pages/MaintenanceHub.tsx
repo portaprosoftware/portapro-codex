@@ -3,26 +3,27 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TabNav } from "@/components/ui/TabNav";
 import { Button } from "@/components/ui/button";
-import { MaintenanceReportsTab } from "@/components/maintenance/MaintenanceReportsTab";
-import { ServicesProvidedTab } from "@/components/maintenance/ServicesProvidedTab";
+import { OverviewTab } from "@/components/maintenance/OverviewTab";
+import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
 import { ReportTemplatesTab } from "@/components/maintenance/ReportTemplatesTab";
-import { CreateServiceRecordModal } from "@/components/maintenance/CreateServiceRecordModal";
-import { ImportReportsModal } from "@/components/maintenance/ImportReportsModal";
-import { FileDown, Plus } from "lucide-react";
+import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
+import { ScheduleServiceModal } from "@/components/maintenance/ScheduleServiceModal";
+import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
+import { Calendar, Plus } from "lucide-react";
 
 export default function MaintenanceHub() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'reports' | 'services' | 'templates'>('reports');
-  const [showCreateRecord, setShowCreateRecord] = useState(false);
-  const [showImportReports, setShowImportReports] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'catalog' | 'templates' | 'records'>('overview');
+  const [showScheduleService, setShowScheduleService] = useState(false);
+  const [showLogPastService, setShowLogPastService] = useState(false);
 
   // Set the active tab based on URL params
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tab = urlParams.get('tab');
-    if (tab && ['reports', 'services', 'templates'].includes(tab)) {
-      setActiveTab(tab as 'reports' | 'services' | 'templates');
+    if (tab && ['overview', 'catalog', 'templates', 'records'].includes(tab)) {
+      setActiveTab(tab as 'overview' | 'catalog' | 'templates' | 'records');
     }
   }, [location.search]);
 
@@ -40,17 +41,17 @@ export default function MaintenanceHub() {
               <Button 
                 variant="outline" 
                 className="border-blue-500 text-blue-600 hover:bg-blue-50 w-full sm:w-auto"
-                onClick={() => setShowImportReports(true)}
+                onClick={() => setShowLogPastService(true)}
               >
-                <FileDown className="w-4 h-4 mr-2" />
-                Import Reports
+                <Calendar className="w-4 h-4 mr-2" />
+                Log Past Service
               </Button>
               <Button 
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-4 py-2 w-full sm:w-auto"
-                onClick={() => setShowCreateRecord(true)}
+                onClick={() => setShowScheduleService(true)}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                New Service Record
+                Schedule Service
               </Button>
             </div>
           </div>
@@ -60,25 +61,32 @@ export default function MaintenanceHub() {
             <div className="enterprise-tabs">
               <TabNav ariaLabel="Services views">
                 <TabNav.Item 
-                  to="/maintenance-hub?tab=reports" 
-                  isActive={activeTab === 'reports'}
-                  onClick={() => setActiveTab('reports')}
+                  to="/maintenance-hub?tab=overview" 
+                  isActive={activeTab === 'overview'}
+                  onClick={() => setActiveTab('overview')}
                 >
-                  Service Records
+                  Overview
                 </TabNav.Item>
                 <TabNav.Item 
-                  to="/maintenance-hub?tab=services" 
-                  isActive={activeTab === 'services'}
-                  onClick={() => setActiveTab('services')}
+                  to="/maintenance-hub?tab=catalog" 
+                  isActive={activeTab === 'catalog'}
+                  onClick={() => setActiveTab('catalog')}
                 >
-                  Services Offered
+                  Service Catalog
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/maintenance-hub?tab=templates" 
                   isActive={activeTab === 'templates'}
                   onClick={() => setActiveTab('templates')}
                 >
-                  Report Templates
+                  Templates
+                </TabNav.Item>
+                <TabNav.Item 
+                  to="/maintenance-hub?tab=records" 
+                  isActive={activeTab === 'records'}
+                  onClick={() => setActiveTab('records')}
+                >
+                  Records
                 </TabNav.Item>
               </TabNav>
             </div>
@@ -88,28 +96,35 @@ export default function MaintenanceHub() {
 
       {/* Content Area */}
       <div className="space-y-6">
-        {activeTab === 'reports' && (
-          <MaintenanceReportsTab />
+        {activeTab === 'overview' && (
+          <OverviewTab 
+            onScheduleService={() => setShowScheduleService(true)}
+            onLogPastService={() => setShowLogPastService(true)}
+          />
         )}
 
-        {activeTab === 'services' && (
-          <ServicesProvidedTab />
+        {activeTab === 'catalog' && (
+          <ServiceCatalogTab />
         )}
 
         {activeTab === 'templates' && (
           <ReportTemplatesTab />
         )}
+
+        {activeTab === 'records' && (
+          <ServiceRecordsTab />
+        )}
       </div>
 
       {/* Modals */}
-      <CreateServiceRecordModal
-        isOpen={showCreateRecord}
-        onClose={() => setShowCreateRecord(false)}
+      <ScheduleServiceModal
+        isOpen={showScheduleService}
+        onClose={() => setShowScheduleService(false)}
       />
       
-      <ImportReportsModal
-        isOpen={showImportReports}
-        onClose={() => setShowImportReports(false)}
+      <LogPastServiceModal
+        isOpen={showLogPastService}
+        onClose={() => setShowLogPastService(false)}
       />
     </div>
   );
