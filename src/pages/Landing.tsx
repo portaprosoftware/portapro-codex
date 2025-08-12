@@ -16,7 +16,7 @@ import demoInventory from '@/assets/demo-inventory.jpg';
 import demoQuotes from '@/assets/demo-quotes.jpg';
 import demoMobileApp from '@/assets/demo-mobile-app.jpg';
 import demoTeamManagement from '@/assets/demo-team-management.jpg';
-// Core Features Data
+// Core Features - Section 1 (Blue background)
 const coreFeatures = [{
   title: "Google Vision AI",
   description: "Scan tool numbers and data directly from molded plastic panels.",
@@ -28,11 +28,6 @@ const coreFeatures = [{
   icon: ClipboardList,
   href: "#job-wizard"
 }, {
-  title: "Inventory & Supplies",
-  description: "Track units and consumables across multiple storage sites.",
-  icon: Building2,
-  href: "#inventory"
-}, {
   title: "Quotes & Payments",
   description: "Build quotes with services and supplies, collect deposits online.",
   icon: DollarSign,
@@ -42,26 +37,42 @@ const coreFeatures = [{
   description: "Offline-capable route navigation, job updates, and digital checklists.",
   icon: Smartphone,
   href: "#mobile-app"
-}, {
+}];
+
+// Management Features - Section 2 (White background)
+const managementFeatures = [{
   title: "Fleet Management",
   description: "Track vehicles, fuel, maintenance schedules, and driver assignments.",
   icon: Truck,
   href: "#fleet-management"
+}, {
+  title: "Team Management",
+  description: "Schedule crews, track time, and manage roles and permissions.",
+  icon: Users,
+  href: "#team-management"
 }, {
   title: "Customer Dashboard",
   description: "Self-service portal for customers to manage orders and track deliveries.",
   icon: Users,
   href: "#customer-portal"
 }, {
+  title: "Analytics Dashboard",
+  description: "Real-time insights into revenue, fleet utilization, and performance metrics.",
+  icon: BarChart3,
+  href: "#analytics"
+}];
+
+// Services & Operations - Section 3 (Blue background)
+const servicesFeatures = [{
+  title: "Inventory & Supplies",
+  description: "Track units and consumables across multiple storage sites.",
+  icon: Building2,
+  href: "#inventory"
+}, {
   title: "Consumables",
   description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
   icon: FileText,
   href: "#consumables"
-}, {
-  title: "Team Management",
-  description: "Schedule crews, track time, and manage roles and permissions.",
-  icon: Users,
-  href: "#team-management"
 }, {
   title: "Services Hub",
   description: "Coordinate pumping, cleaning, and maintenance service operations.",
@@ -72,11 +83,6 @@ const coreFeatures = [{
   description: "Customer communication, promotions, and lead generation features.",
   icon: Eye,
   href: "#marketing"
-}, {
-  title: "Analytics Dashboard",
-  description: "Real-time insights into revenue, fleet utilization, and performance metrics.",
-  icon: BarChart3,
-  href: "#analytics"
 }];
 
 // Job Wizard Steps
@@ -337,11 +343,16 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Core Features Grid - Blue */}
+      {/* Core Features - Blue */}
       <section id="features" className="py-4 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Core Features</h2>
+            <p className="text-white/80 text-lg">Essential tools to get your business running efficiently</p>
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreFeatures.map((feature, index) => <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+            {coreFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
                     <feature.icon className="w-8 h-8 text-white" />
@@ -352,7 +363,60 @@ export const Landing: React.FC = () => {
                     Learn More <ArrowRight className="w-3 h-3" />
                   </button>
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Management Features - White */}
+      <section className="py-4 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Management & Analytics</h2>
+            <p className="text-muted-foreground text-lg">Advanced tools for fleet, team, and business management</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {managementFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-blue/10 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services & Operations - Blue */}
+      <section className="py-4 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Services & Operations</h2>
+            <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {servicesFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
