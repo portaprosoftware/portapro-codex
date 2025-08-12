@@ -328,12 +328,12 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Why PortaPro - White */}
-      <section id="about" className="py-4 bg-white">
+      <section id="about" className="py-2 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-12">
+          <div className="text-center space-y-8">
             <div className="grid sm:grid-cols-3 gap-8">
               {whyPortaPro.map((item, index) => (
-                <div key={index} className="text-center space-y-4">
+                <div key={index} className="text-center space-y-2">
                   <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
                   <p className="text-muted-foreground">{item.description}</p>
                 </div>
@@ -343,11 +343,11 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Core Features - Blue */}
-      <section id="features" className="py-4 bg-gradient-blue">
+      {/* Group 1: Core Features - Blue */}
+      <section id="features" className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">Core Features</h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Core Workflow Features</h2>
             <p className="text-white/80 text-lg">Essential tools to get your business running efficiently</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -369,72 +369,22 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Management Features - White */}
-      <section className="py-4 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Management & Analytics</h2>
-            <p className="text-muted-foreground text-lg">Advanced tools for fleet, team, and business management</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {managementFeatures.map((feature, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-blue/10 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2 text-foreground">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 mx-auto">
-                    Learn More <ArrowRight className="w-3 h-3" />
-                  </button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services & Operations - Blue */}
-      <section className="py-4 bg-gradient-blue">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">Services & Operations</h2>
-            <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {servicesFeatures.map((feature, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
-                    Learn More <ArrowRight className="w-3 h-3" />
-                  </button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Detailed Sections for Group 1: Core Features */}
 
       {/* Smart AI Panel Scanning Section - White */}
-      <section id="ai-scanning" className="py-4 bg-white">
+      <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           {/* Top Row: Image */}
-          <div className="mb-12">
+          <div className="mb-8">
             <div className="relative">
               <img src={demoAiScanning} alt="AI Scanning Demo - Google Vision AI Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
 
           {/* Middle Row: Header and Why it matters */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
-            <div className="space-y-8">
-              <div className="space-y-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-8">
+            <div className="space-y-6">
+              <div className="space-y-4">
                 <h2 className="text-4xl font-bold text-foreground">Smart AI Panel Scanning with Google Cloud Vision</h2>
                 <p className="text-xl text-muted-foreground">
                   Eliminate manual data entry — just snap a photo.
@@ -527,10 +477,10 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Job Wizard Deep Dive - Blue */}
-      <section id="job-wizard" className="py-4 bg-gradient-blue text-white">
+      <section id="job-wizard" className="py-8 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div className="space-y-4">
                 <h2 className="text-3xl lg:text-4xl font-bold text-white">
                   Powerful Job Creation—Simplified
@@ -559,6 +509,330 @@ export const Landing: React.FC = () => {
             
             <div className="bg-white rounded-2xl p-6 shadow-xl">
               <img src={demoJobWizard} alt="Job Wizard Demo - Step-by-step Job Creation Interface" className="w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quote-to-Job Flow - White */}
+      <section id="quotes" className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                One Click from Quote to Job
+              </h2>
+            </div>
+            
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {quoteFlow.map((step, index) => <Card key={index} className="text-center">
+                  <CardContent className="p-6">
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="font-bold text-primary">{index + 1}</span>
+                    </div>
+                    <h3 className="font-semibold text-foreground">{step}</h3>
+                  </CardContent>
+                </Card>)}
+            </div>
+            
+            <div className="flex items-center justify-center gap-4 pt-6">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <span>Quote</span>
+                <ArrowRight className="w-4 h-4" />
+                <span>Customer Accepts</span>
+                <ArrowRight className="w-4 h-4" />
+                <span>Deposit Paid</span>
+                <ArrowRight className="w-4 h-4" />
+                <span>Job & Invoice Generated</span>
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <img src={demoQuotes} alt="Quote-to-Job Demo - Customer Portal and Payment Integration" className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Driver Mobile App - Blue */}
+      <section id="mobile-app" className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-3xl lg:text-4xl font-bold text-white">
+                  Driver Mobile App - Works Offline
+                </h2>
+                <p className="text-lg text-white/90">
+                  Native mobile app with GPS navigation, photo upload, and digital checklists that work even without signal.
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                  <span className="text-white/90">Offline-capable route navigation</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                  <span className="text-white/90">Photo documentation with GPS stamps</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                  <span className="text-white/90">Digital delivery confirmations</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                  <span className="text-white/90">Real-time job status updates</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white/10 rounded-2xl p-6">
+              <img src={demoMobileApp} alt="Mobile App Demo - Driver Interface" className="w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Group 2: Management Features - Blue */}
+      <section className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Management Features</h2>
+            <p className="text-white/80 text-lg">Advanced tools for fleet, team, and business management</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {managementFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Detailed Sections for Group 2: Management Features */}
+
+      {/* Fleet Management (includes Transport & Spill Compliance + DVIRs) - White */}
+      <section id="fleet-management" className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Fleet Management & Compliance</h2>
+            <p className="text-lg text-muted-foreground">Complete vehicle tracking, maintenance, and compliance management</p>
+          </div>
+
+          {/* Transport & Spill Compliance */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
+              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto reminders for expiring documents</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* DVIRs & Maintenance */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Maintenance logs and alerts</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Driver photos and signatures</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Management - Blue */}
+      <section id="team-management" className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-3xl lg:text-4xl font-bold text-white">
+                  Team Management Made Easy
+                </h2>
+                <p className="text-lg text-white/90">
+                  Coordinate your crew with smart scheduling and role management.
+                </p>
+              </div>
+              
+              <div className="grid gap-4">
+                {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
+                    <span className="font-medium text-white/90">{feature}</span>
+                  </div>)}
+              </div>
+            </div>
+            
+            <div className="bg-white/10 rounded-2xl p-6">
+              <img src={demoTeamManagement} alt="Team Management Demo - Scheduling and Roles Interface" className="w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Dashboard - White */}
+      <section id="customer-portal" className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Customer Dashboard</h2>
+              <p className="text-lg text-muted-foreground">Self-service portal for customers to manage orders and track deliveries.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Order tracking and history</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Real-time delivery updates</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Invoice access and payment portal</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Service request submissions</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Customer Dashboard Preview Coming Soon</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Analytics Dashboard - Blue */}
+      <section id="analytics" className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">Analytics Dashboard</h2>
+              <p className="text-lg text-white/90">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Revenue tracking and forecasting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Fleet utilization reports</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Customer analytics and insights</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Performance benchmarking</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white/10 rounded-2xl p-6">
+              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-white/70">Analytics Dashboard Preview Coming Soon</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Group 3: Operations Features - Blue */}
+      <section className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Operations Features</h2>
+            <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {servicesFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Detailed Sections for Group 3: Operations Features */}
+
+      {/* Inventory & Supplies - White */}
+      <section id="inventory" className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                  Real-Time Inventory, Wherever You Store It
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Split stock across garages or yards, see availability by date.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                {inventoryFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
+                    <feature.icon className="w-6 h-6 text-primary flex-shrink-0" />
+                    <span className="font-medium">{feature.title}</span>
+                  </div>)}
+              </div>
+            </div>
+            
+            <div className="relative">
+              <img src={demoInventory} alt="Inventory Management Demo - Multi-location Tracking Interface" className="w-full rounded-2xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -593,156 +867,116 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
-
-      {/* Transport & Spill Compliance Suite - White */}
-      <section id="compliance" className="py-16 bg-white">
+      {/* Consumables - Blue */}
+      <section id="consumables" className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Transport & Spill Compliance Suite</h2>
-              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">Consumables Management</h2>
+              <p className="text-lg text-white/90">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Automated inventory tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Reorder alerts and suggestions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Usage analytics and forecasting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Supplier management and pricing</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white/10 rounded-2xl p-6">
+              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-white/70">Consumables Management Preview Coming Soon</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Hub - White */}
+      <section id="services-hub" className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Services Hub</h2>
+              <p className="text-lg text-muted-foreground">Coordinate pumping, cleaning, and maintenance service operations.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
+                  <span className="text-foreground">Service scheduling and dispatch</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                  <span className="text-foreground">Maintenance tracking and history</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Auto reminders for expiring documents</span>
+                  <span className="text-foreground">Service quality documentation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Customer service communications</span>
                 </li>
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
-              {/* Placeholder slideshow preserved */}
-              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+              <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Services Hub Preview Coming Soon</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
-
-      {/* DVIRs & Maintenance - White */}
-      <section id="dvir" className="py-16 bg-white">
+      {/* Marketing Tools - Blue */}
+      <section id="marketing" className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">DVIRs & Fleet Maintenance</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">Marketing Tools</h2>
+              <p className="text-lg text-white/90">Customer communication, promotions, and lead generation features.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Maintenance logs and alerts</span>
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Email campaign management</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white/90">Driver photos and signatures</span>
+                  <span className="text-white/90">Customer segmentation and targeting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Promotional code management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white/90">Lead tracking and conversion</span>
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl bg-white/10 p-6">
-              <AutoCarousel media={[]} className="w-full" aspectRatio="aspect-[4/3]" />
+            <div className="bg-white/10 rounded-2xl p-6">
+              <div className="bg-white/20 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-white/70">Marketing Tools Preview Coming Soon</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Quote-to-Job Flow - Blue */}
-      <section id="quotes" className="py-4 bg-gradient-blue">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">
-                One Click from Quote to Job
-              </h2>
-            </div>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {quoteFlow.map((step, index) => <Card key={index} className="text-center bg-white/10 backdrop-blur border-white/20">
-                  <CardContent className="p-6">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-white/20 flex items-center justify-center">
-                      <span className="font-bold text-white">{index + 1}</span>
-                    </div>
-                    <h3 className="font-semibold text-white">{step}</h3>
-                  </CardContent>
-                </Card>)}
-            </div>
-            
-            <div className="flex items-center justify-center gap-4 pt-8">
-              <div className="flex items-center gap-2 text-white">
-                <span>Quote</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Customer Accepts</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Deposit Paid</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Job & Invoice Generated</span>
-              </div>
-            </div>
-            
-            <div className="mt-12">
-              <img src={demoQuotes} alt="Quote-to-Job Demo - Customer Portal and Payment Integration" className="w-full max-w-4xl mx-auto rounded-2xl shadow-lg" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team & Scheduling - White */}
-      <section id="team" className="py-16 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Team Management Made Easy
-                </h2>
-              </div>
-              
-              <div className="grid gap-4">
-                {teamFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="font-medium text-foreground">{feature}</span>
-                  </div>)}
-              </div>
-            </div>
-            
-            <div className="lg:col-span-1 order-1 lg:order-2">
-              <img src={demoTeamManagement} alt="Team Management Demo - Shift Scheduling Interface" className="w-full rounded-2xl shadow-lg" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
 
       {/* Reporting & Templates - White */}
-      <section id="reports" className="py-16 bg-white">
+      <section id="reports" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div className="space-y-4">
                 <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                   Custom Service Reports
@@ -757,7 +991,7 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div className="lg:col-span-1 order-1 lg:order-2">
+            <div>
               <AutoCarousel media={reportingImages} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
