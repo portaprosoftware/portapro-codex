@@ -84,6 +84,12 @@ export function EnhancedUserProfileCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {user.current_role === 'driver' && (
+                <DropdownMenuItem onClick={() => window.location.href = `/team-management/driver/${user.id}`}>
+                  <User className="w-4 h-4 mr-2" />
+                  View Details
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => onEdit(user)}>
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile

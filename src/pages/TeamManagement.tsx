@@ -12,8 +12,9 @@ import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
 import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
 import { ExpirationForecasting } from '@/components/team/ExpirationForecasting';
 import { PushNotificationSupport } from '@/components/team/PushNotificationSupport';
+import { DetailedDriverProfile } from '@/components/driver/DetailedDriverProfile';
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'forecasting' | 'notifications';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'forecasting' | 'notifications' | 'driver';
 
 export default function TeamManagement() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function TeamManagement() {
         {currentTab === 'reports' && <CustomReportBuilder />}
         {currentTab === 'forecasting' && <ExpirationForecasting />}
         {currentTab === 'notifications' && <PushNotificationSupport />}
+        {location.pathname.includes('/driver/') && <DetailedDriverProfile />}
       </div>
     </TeamManagementLayout>
   );
