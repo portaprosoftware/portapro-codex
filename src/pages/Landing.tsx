@@ -286,22 +286,6 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Why PortaPro - White */}
-      <section id="about" className="py-4 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-12">
-            <div className="grid sm:grid-cols-3 gap-8">
-              {whyPortaPro.map((item, index) => <div key={index} className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                    <item.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                </div>)}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Core Features Grid - Blue */}
       <section id="features" className="py-4 bg-gradient-blue">
