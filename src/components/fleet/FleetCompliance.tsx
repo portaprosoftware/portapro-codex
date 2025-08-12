@@ -176,33 +176,33 @@ const FleetComplianceContent: React.FC = () => {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-4 border-red-200 bg-red-50">
+        <Card className="p-4 bg-gradient-to-r from-red-500 to-red-600 border-0 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-red-800">Overdue</p>
-              <p className="text-2xl font-bold text-red-900">{overdueCount}</p>
+              <p className="text-sm font-bold text-white">Overdue</p>
+              <p className="text-2xl font-bold text-white">{overdueCount}</p>
             </div>
-            <AlertTriangle className="w-8 h-8 text-red-600" />
+            <AlertTriangle className="w-8 h-8 text-white" />
           </div>
         </Card>
         
-        <Card className="p-4 border-orange-200 bg-orange-50">
+        <Card className="p-4 bg-gradient-to-r from-orange-500 to-orange-600 border-0 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-orange-800">Critical (≤7 days)</p>
-              <p className="text-2xl font-bold text-orange-900">{criticalCount}</p>
+              <p className="text-sm font-bold text-white">Critical (≤7 days)</p>
+              <p className="text-2xl font-bold text-white">{criticalCount}</p>
             </div>
-            <Calendar className="w-8 h-8 text-orange-600" />
+            <Calendar className="w-8 h-8 text-white" />
           </div>
         </Card>
         
-        <Card className="p-4 border-amber-200 bg-amber-50">
+        <Card className="p-4 bg-gradient-to-r from-amber-500 to-amber-600 border-0 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-amber-800">Warning (≤30 days)</p>
-              <p className="text-2xl font-bold text-amber-900">{warningCount}</p>
+              <p className="text-sm font-bold text-white">Warning (≤30 days)</p>
+              <p className="text-2xl font-bold text-white">{warningCount}</p>
             </div>
-            <FileText className="w-8 h-8 text-amber-600" />
+            <FileText className="w-8 h-8 text-white" />
           </div>
         </Card>
       </div>
