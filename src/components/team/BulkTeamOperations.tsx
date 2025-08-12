@@ -40,13 +40,13 @@ const getRoleIcon = (role: string) => {
 const getRoleColor = (role: string) => {
   switch (role) {
     case 'admin':
-      return 'bg-gradient-to-r from-purple-500 to-purple-600';
+      return { background: 'linear-gradient(135deg, #10B981, #059669)' }; // Green gradient
     case 'dispatcher':
-      return 'bg-gradient-to-r from-blue-500 to-blue-600';
+      return { background: 'linear-gradient(135deg, #3B82F6, #2563EB)' }; // Blue gradient
     case 'driver':
-      return 'bg-gradient-to-r from-green-500 to-green-600';
+      return { background: 'linear-gradient(135deg, #F59E0B, #D97706)' }; // Orange gradient
     default:
-      return 'bg-gradient-to-r from-gray-500 to-gray-600';
+      return { background: 'linear-gradient(135deg, #6B7280, #4B5563)' }; // Gray gradient
   }
 };
 
@@ -77,12 +77,8 @@ export function BulkTeamOperations() {
         `);
       
       if (error) throw error;
-      console.log('Raw member data:', data);
       return data.map(member => {
-        console.log('Processing member:', member);
-        console.log('Member user_roles:', member.user_roles);
         const extractedRole = member.user_roles?.role || member.user_roles?.[0]?.role || 'user';
-        console.log('Extracted role:', extractedRole);
         return {
           id: member.id,
           email: member.email || '',
@@ -238,7 +234,6 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                     <SelectItem value="admin">Admins</SelectItem>
                     <SelectItem value="dispatcher">Dispatchers</SelectItem>
                     <SelectItem value="driver">Drivers</SelectItem>
-                    <SelectItem value="user">Users</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -264,12 +259,13 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                           disabled={isSelected}
                         >
                           <div className="flex items-center gap-2">
-                            <RoleIcon className="h-3 w-3" />
                             <span>{member.firstName} {member.lastName}</span>
                             <Badge 
-                              className={`text-xs text-white ${getRoleColor(member.role)}`}
+                              className="text-xs text-white border-0"
+                              style={getRoleColor(member.role)}
                             >
-                              {member.role}
+                              <RoleIcon className="h-3 w-3 mr-1" />
+                              {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                             </Badge>
                             {isSelected && <CheckCircle className="h-3 w-3 text-green-600" />}
                           </div>
