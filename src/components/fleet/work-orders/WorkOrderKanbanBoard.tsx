@@ -57,15 +57,15 @@ export const WorkOrderKanbanBoard: React.FC<WorkOrderKanbanBoardProps> = ({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="space-y-6">
+      <div className="space-y-2">
         {/* Column Headers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
           {STATUS_COLUMNS.map((column) => {
             const columnWorkOrders = getWorkOrdersByStatus(column.id);
             
             return (
-              <div key={`header-${column.id}`} className="flex items-center justify-center gap-2">
-                <h3 className="font-semibold text-sm text-foreground">
+              <div key={`header-${column.id}`} className="flex flex-col items-center gap-1">
+                <h3 className="font-semibold text-sm text-foreground text-center">
                   {column.label}
                 </h3>
                 <Badge variant="secondary" className="text-xs">
