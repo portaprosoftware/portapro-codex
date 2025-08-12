@@ -37,18 +37,18 @@ export const FleetNavigation: React.FC = () => {
 
   const navigationItems = [
     {
-      title: "Fleet Overview",
+      title: "Overview",
       href: "/fleet-management",
       icon: Truck,
       end: true
     },
     {
-      title: "Truck Stock",
+      title: "Stock",
       href: "/fleet/truck-stock",
       icon: Package
     },
     {
-      title: "Transport & Spill Compliance",
+      title: "Transport & Spill",
       href: "/fleet/compliance",
       icon: AlertTriangle,
       badge: (complianceCounts?.total && complianceCounts.total > 0) ? complianceCounts.total.toString() : undefined
@@ -70,7 +70,7 @@ export const FleetNavigation: React.FC = () => {
       icon: Fuel
     },
     {
-      title: "Documents & Photos",
+      title: "Uploads",
       href: "/fleet/files",
       icon: FolderOpen
     }
@@ -88,7 +88,7 @@ export const FleetNavigation: React.FC = () => {
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl shadow-sm mx-6 mt-6 mb-6">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mx-6 mt-6 mb-6">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
