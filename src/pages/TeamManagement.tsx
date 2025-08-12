@@ -7,7 +7,7 @@ import { DriverTimeOffSection } from '@/components/settings/DriverTimeOffSection
 import { TeamSchedulingTab } from '@/components/team/TeamSchedulingTab';
 import { TeamAnalyticsTab } from '@/components/team/TeamAnalyticsTab';
 import { TrainingCertificationsTab } from '@/components/team/TrainingCertificationsTab';
-import { BulkDriverOperations } from '@/components/team/BulkDriverOperations';
+import { BulkTeamOperations } from '@/components/team/BulkTeamOperations';
 import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
 import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
 
@@ -45,7 +45,7 @@ export default function TeamManagement() {
         {currentTab === 'time-off' && <DriverTimeOffSection onBack={() => navigate('/team-management/users')} />}
         {currentTab === 'analytics' && <TeamAnalyticsTab />}
         {currentTab === 'training' && <TrainingCertificationsTab />}
-        {currentTab === 'bulk-operations' && <BulkDriverOperations />}
+        {currentTab === 'bulk-operations' && <BulkTeamOperations />}
         {currentTab === 'compliance' && <ComplianceDashboard />}
         {currentTab === 'reports' && <CustomReportBuilder />}
         

@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
-import { BulkDriverOperations } from "@/components/team/BulkDriverOperations";
+import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
 import { ComplianceDashboard } from "@/components/team/ComplianceDashboard";
 import { CustomReportBuilder } from "@/components/team/CustomReportBuilder";
 
@@ -615,7 +615,7 @@ export function UserManagementSection() {
           </TabsContent>
 
           <TabsContent value="bulk-operations">
-            <BulkDriverOperations />
+            <BulkTeamOperations />
           </TabsContent>
 
           <TabsContent value="compliance">

@@ -23,12 +23,16 @@ const handler = async (req: Request): Promise<Response> => {
     let filters: any[] = [];
 
     switch (dataSource) {
-      case 'drivers':
-        // Query database for actual options
+      case 'team_members':
+        // Query database for actual options including all team members
         const { data: profilesData } = await supabase
           .from('profiles')
           .select('home_base')
           .not('home_base', 'is', null);
+        
+        const { data: rolesData } = await supabase
+          .from('user_roles')
+          .select('role');
         
         const { data: licenseData } = await supabase
           .from('driver_credentials')
@@ -41,6 +45,14 @@ const handler = async (req: Request): Promise<Response> => {
         )].map(location => ({
           value: location.toLowerCase().replace(/\s+/g, '_'),
           label: location
+        }));
+
+        // Get unique roles
+        const roles = [...new Set(
+          rolesData?.map(r => r.role).filter(Boolean) || []
+        )].map(role => ({
+          value: role,
+          label: role.charAt(0).toUpperCase() + role.slice(1)
         }));
 
         // Get unique license types
@@ -57,9 +69,19 @@ const handler = async (req: Request): Promise<Response> => {
 
         filters = [
           {
+            id: 'role',
+            type: 'select',
+            label: 'Team Member Role',
+            options: roles.length > 0 ? roles : [
+              { value: 'admin', label: 'Admin' },
+              { value: 'dispatcher', label: 'Dispatcher' },
+              { value: 'driver', label: 'Driver' }
+            ]
+          },
+          {
             id: 'status',
             type: 'select',
-            label: 'Driver Status',
+            label: 'Status',
             options: [
               { value: 'active', label: 'Active' },
               { value: 'inactive', label: 'Inactive' }
@@ -68,23 +90,12 @@ const handler = async (req: Request): Promise<Response> => {
           {
             id: 'license_class',
             type: 'multiselect',
-            label: 'License Type/Class',
+            label: 'License Type/Class (Drivers Only)',
             options: licenseTypes.length > 0 ? licenseTypes : [
               { value: 'CDL-A', label: 'CDL Class A' },
               { value: 'CDL-B', label: 'CDL Class B' },
               { value: 'CDL-C', label: 'CDL Class C' },
               { value: 'regular', label: 'Regular License' }
-            ]
-          },
-          {
-            id: 'training_status',
-            type: 'select',
-            label: 'Training Status',
-            options: [
-              { value: 'completed', label: 'Completed' },
-              { value: 'in_progress', label: 'In Progress' },
-              { value: 'overdue', label: 'Overdue' },
-              { value: 'not_started', label: 'Not Started' }
             ]
           },
           {
@@ -100,17 +111,6 @@ const handler = async (req: Request): Promise<Response> => {
               { value: 'main_office', label: 'Main Office' },
               { value: 'warehouse', label: 'Warehouse' },
               { value: 'field', label: 'Field Operations' }
-            ]
-          },
-          {
-            id: 'certification_status',
-            type: 'select',
-            label: 'Certification Status',
-            options: [
-              { value: 'current', label: 'All Current' },
-              { value: 'expiring_soon', label: 'Expiring Soon' },
-              { value: 'expired', label: 'Has Expired Certs' },
-              { value: 'missing', label: 'Missing Required Certs' }
             ]
           }
         ];

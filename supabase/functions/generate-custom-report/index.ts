@@ -25,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Apply data source specific queries
     switch (config.dataSource) {
-      case 'drivers':
+      case 'team_members':
         query = supabase
           .from('profiles')
           .select(`
@@ -35,12 +35,12 @@ const handler = async (req: Request): Promise<Response> => {
             email,
             phone,
             status,
+            home_base,
             hire_date,
             created_at,
-            driver_credentials(license_number, license_expiry_date, medical_card_expiry_date),
+            driver_credentials(license_number, license_expiry_date, medical_card_expiry_date, license_class),
             user_roles!inner(role)
-          `)
-          .eq('user_roles.role', 'driver');
+          `);
         break;
 
       case 'compliance':
@@ -118,8 +118,12 @@ const handler = async (req: Request): Promise<Response> => {
         case 'select':
           if (filter.id === 'status') {
             query = query.eq('status', filter.value);
+          } else if (filter.id === 'role' && config.dataSource === 'team_members') {
+            query = query.eq('user_roles.role', filter.value);
           } else if (filter.id === 'license_class') {
-            query = query.eq('license_class', filter.value);
+            query = query.eq('driver_credentials.license_class', filter.value);
+          } else if (filter.id === 'location_region' && config.dataSource === 'team_members') {
+            query = query.eq('home_base', filter.value);
           } else if (filter.id === 'document_type' && config.dataSource === 'compliance') {
             // Special handling for compliance document type filter
             if (filter.value === 'license') {
@@ -144,15 +148,18 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Process and transform data based on data source
     switch (config.dataSource) {
-      case 'drivers':
-        records = data?.map(driver => ({
-          driver_name: `${driver.first_name} ${driver.last_name}`,
-          email: driver.email,
-          phone: driver.phone,
-          status: driver.status,
-          hire_date: driver.hire_date,
-          license_expires: driver.driver_credentials?.[0]?.license_expiry_date || 'N/A',
-          medical_expires: driver.driver_credentials?.[0]?.medical_card_expiry_date || 'N/A'
+      case 'team_members':
+        records = data?.map(member => ({
+          member_name: `${member.first_name} ${member.last_name}`,
+          email: member.email,
+          phone: member.phone,
+          role: member.user_roles?.[0]?.role || 'unknown',
+          status: member.status,
+          home_base: member.home_base || 'N/A',
+          hire_date: member.hire_date || member.created_at,
+          license_expires: member.driver_credentials?.[0]?.license_expiry_date || 'N/A',
+          medical_expires: member.driver_credentials?.[0]?.medical_card_expiry_date || 'N/A',
+          license_class: member.driver_credentials?.[0]?.license_class || 'N/A'
         })) || [];
         break;
 

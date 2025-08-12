@@ -63,7 +63,7 @@ export function CustomReportBuilder() {
   const { toast } = useToast();
 
   const dataSources = [
-    { value: 'drivers', label: 'Driver Management' },
+    { value: 'team_members', label: 'Team Management' },
     { value: 'compliance', label: 'Compliance Records' },
     { value: 'training', label: 'Training Data' },
     { value: 'equipment', label: 'Equipment Assignments' },
