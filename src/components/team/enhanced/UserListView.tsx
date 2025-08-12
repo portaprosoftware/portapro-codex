@@ -9,7 +9,7 @@ import {
   Crown, Headphones, Truck, User, Shield, 
   MoreVertical, Edit, Trash2, UserCheck, UserX,
   Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown,
-  ExternalLink, AlertTriangle, Clock, FileText
+  ExternalLink, AlertTriangle, Clock, FileText, Navigation
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
@@ -325,7 +325,7 @@ export function UserListView({
                       {user.current_role === 'driver' && (
                         <DropdownMenuItem asChild>
                           <Link to={`/team-management/driver/${user.id}`}>
-                            <ExternalLink className="w-4 h-4 mr-2" />
+                            <Navigation className="w-4 h-4 mr-2" />
                             Driver Details
                           </Link>
                         </DropdownMenuItem>
