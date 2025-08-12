@@ -23,7 +23,7 @@ interface Vehicle {
   vehicle_type: string;
   status: string;
   current_mileage?: number;
-  image_url?: string;
+  vehicle_image?: string;
 }
 
 interface VehicleSelectionModalProps {
@@ -128,24 +128,22 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     );
   }
 
+  const getVehicleImageUrl = (imagePath: string) => {
+    return supabase.storage
+      .from('vehicle-images')
+      .getPublicUrl(imagePath).data.publicUrl;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0">
+      <DialogContent className="max-w-5xl max-h-[90vh] p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-xl font-semibold">Select Vehicle</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={() => onOpenChange(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
-        <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col min-h-0">
           {/* Search and Filters */}
-          <div className="space-y-4">
+          <div className="space-y-4 flex-shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
@@ -162,28 +160,28 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                 size="sm"
                 onClick={() => setStatusFilter("all")}
               >
-                All ({filteredVehicles.length})
+                All ({vehicles.length})
               </Button>
               <Button
                 variant={statusFilter === "available" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("available")}
               >
-                Available ({filteredVehicles.filter(v => !assignedVehicleIds.has(v.id)).length})
+                Available ({vehicles.filter(v => !assignedVehicleIds.has(v.id) && v.status === "available").length})
               </Button>
               <Button
                 variant={statusFilter === "assigned" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("assigned")}
               >
-                Assigned ({filteredVehicles.filter(v => assignedVehicleIds.has(v.id)).length})
+                Assigned ({vehicles.filter(v => assignedVehicleIds.has(v.id)).length})
               </Button>
             </div>
           </div>
 
           {/* Vehicle Grid */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-1">
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
               {filteredVehicles.map((vehicle) => {
                 const vehicleStatus = getVehicleStatus(vehicle);
                 const isSelected = selectedVehicle?.id === vehicle.id;
@@ -195,14 +193,14 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                       isSelected 
                         ? "border-primary bg-primary/5" 
                         : "border-border hover:border-primary/50"
-                    } max-w-full overflow-hidden`}
+                    }`}
                     onClick={() => handleVehicleSelect(vehicle)}
                   >
                     {/* Vehicle Image or Icon */}
                     <div className="flex items-center justify-center w-16 h-16 bg-muted rounded-lg mb-4 mx-auto overflow-hidden">
-                      {vehicle.image_url ? (
+                      {vehicle.vehicle_image ? (
                         <img 
-                          src={vehicle.image_url} 
+                          src={getVehicleImageUrl(vehicle.vehicle_image)} 
                           alt={vehicle.license_plate}
                           className="w-full h-full object-cover rounded-lg"
                           onError={(e) => {
@@ -212,7 +210,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                           }}
                         />
                       ) : null}
-                      <Truck className={`h-8 w-8 text-muted-foreground ${vehicle.image_url ? 'hidden' : ''}`} />
+                      <Truck className={`h-8 w-8 text-muted-foreground ${vehicle.vehicle_image ? 'hidden' : ''}`} />
                     </div>
 
                     {/* License Plate */}
@@ -277,7 +275,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
         {/* Footer */}
         {selectedVehicle && (
-          <div className="p-6 pt-4 border-t bg-muted/30">
+          <div className="p-6 pt-4 border-t bg-muted/30 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{selectedVehicle.license_plate}</p>
