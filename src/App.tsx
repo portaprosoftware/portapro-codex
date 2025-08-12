@@ -337,6 +337,12 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/team-management/driver/:driverId" element={
+            <>
+              <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/settings" element={
             <>
               <SignedIn><Layout><Settings /></Layout></SignedIn>

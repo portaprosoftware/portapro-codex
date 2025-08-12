@@ -181,6 +181,13 @@ export function EnhancedUserProfileCard({
           )}
         </div>
 
+        {user.current_role === 'driver' && (
+          <Button size="sm" onClick={() => navigate(`/team-management/driver/${user.id}`)}>
+            <User className="w-4 h-4 mr-2" />
+            View Details
+          </Button>
+        )}
+
       </CardContent>
     </Card>
   );

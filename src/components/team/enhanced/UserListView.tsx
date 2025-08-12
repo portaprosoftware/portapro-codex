@@ -315,57 +315,67 @@ export function UserListView({
                 </TableCell>
                 
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreVertical className="h-4 w-4" />
+                  <div className="flex items-center gap-2">
+                    {user.current_role === 'driver' && (
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/team-management/driver/${user.id}`}>
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          View
+                        </Link>
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {showDriverColumns && user.current_role === 'driver' && (
-                        <DropdownMenuItem asChild>
-                          <Link to={`/team-management/users/${user.id}`}>
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            View Profile
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem onClick={() => onEdit(user)}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
-                        {user.is_active ? (
-                          <>
-                            <UserX className="w-4 h-4 mr-2" />
-                            Deactivate
-                          </>
-                        ) : (
-                          <>
-                            <UserCheck className="w-4 h-4 mr-2" />
-                            Activate
-                          </>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {user.current_role === 'driver' && (
+                          <DropdownMenuItem asChild>
+                            <Link to={`/team-management/driver/${user.id}`}>
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              View Profile
+                            </Link>
+                          </DropdownMenuItem>
                         )}
-                      </DropdownMenuItem>
-                      {canDeleteUser ? (
-                        <DropdownMenuItem 
-                          onClick={() => onDelete(user)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete User
+                        <DropdownMenuItem onClick={() => onEdit(user)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit Profile
                         </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem 
-                          disabled
-                          className="text-muted-foreground opacity-50"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Cannot delete last admin
+                        <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
+                          {user.is_active ? (
+                            <>
+                              <UserX className="w-4 h-4 mr-2" />
+                              Deactivate
+                            </>
+                          ) : (
+                            <>
+                              <UserCheck className="w-4 h-4 mr-2" />
+                              Activate
+                            </>
+                          )}
                         </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        {canDeleteUser ? (
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(user)}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete User
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem 
+                            disabled
+                            className="text-muted-foreground opacity-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Cannot delete last admin
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             );

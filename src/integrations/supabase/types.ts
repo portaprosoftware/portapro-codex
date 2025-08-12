@@ -9166,7 +9166,7 @@ export type Database = {
           last_name_param: string
           image_url_param?: string
         }
-        Returns: string
+        Returns: Json
       }
       sync_consumable_total_from_locations: {
         Args: { consumable_uuid: string }
