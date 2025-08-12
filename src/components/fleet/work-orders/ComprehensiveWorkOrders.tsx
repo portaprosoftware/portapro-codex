@@ -10,7 +10,7 @@ import { WorkOrderMetrics } from "./WorkOrderMetrics";
 import { WorkOrderFilters } from "./WorkOrderFilters";
 import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
 import { WorkOrderListView } from "./WorkOrderListView";
-import { WorkOrderCalendarView } from "./WorkOrderCalendarView";
+import { WorkOrderCalendarViewEnhanced } from "./WorkOrderCalendarViewEnhanced";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
@@ -267,11 +267,12 @@ export const ComprehensiveWorkOrders: React.FC = () => {
       )}
 
       {view === 'calendar' && (
-        <WorkOrderCalendarView
+        <WorkOrderCalendarViewEnhanced
           workOrders={workOrders as WorkOrder[] || []}
           onEdit={handleEdit}
           onViewDetails={handleViewDetails}
           onStatusChange={handleStatusChange}
+          onRefresh={() => refetch()}
         />
       )}
 

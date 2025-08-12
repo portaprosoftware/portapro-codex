@@ -25,6 +25,7 @@ interface AddWorkOrderDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  defaultDueDate?: string;
 }
 
 interface WorkOrderForm {
@@ -46,7 +47,8 @@ interface WorkOrderForm {
 export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   open,
   onOpenChange,
-  onSuccess
+  onSuccess,
+  defaultDueDate
 }) => {
   const { toast } = useToast();
   
@@ -56,7 +58,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
     asset_type: 'vehicle',
     priority: 'normal',
     assignee_id: '',
-    due_date: '',
+    due_date: defaultDueDate || '',
     meter_at_open: '',
     description: '',
     tasks: [],
