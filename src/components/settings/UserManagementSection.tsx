@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -51,6 +51,10 @@ const roleIcons = {
   driver: Truck,
 };
 
+// Define sort types
+type SortDirection = 'asc' | 'desc' | 'default';
+type SortColumn = 'first_name' | 'last_name' | 'role' | 'status';
+
 export function UserManagementSection() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -60,6 +64,8 @@ export function UserManagementSection() {
   const [userToDelete, setUserToDelete] = useState<any>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const { isOwner } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
@@ -106,6 +112,23 @@ export function UserManagementSection() {
       role: "driver",
     },
   });
+
+  // Handle sorting
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      if (sortDirection === 'default') {
+        setSortDirection('asc');
+      } else if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortColumn(null);
+        setSortDirection('default');
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
   const createUser = useMutation({
     mutationFn: async (data: UserFormData) => {
@@ -223,20 +246,9 @@ export function UserManagementSection() {
   const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
   const otherUsers = users.filter(user => user.clerk_user_id !== clerkUser?.id);
 
-  // Filter current user
-  const filteredCurrentUser = currentUser && (() => {
-    const matchesSearch = !searchTerm || 
-      `${currentUser.first_name} ${currentUser.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      currentUser.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesRole = roleFilter === "all" || currentUser.current_role === roleFilter;
-    
-    return matchesSearch && matchesRole ? currentUser : null;
-  })();
-
-  // Filter and sort other users alphabetically by first name
-  const filteredOtherUsers = otherUsers
-    .filter(user => {
+  // Filter and sort users
+  const filteredAndSortedUsers = useMemo(() => {
+    let filtered = users.filter(user => {
       const matchesSearch = !searchTerm || 
         `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -244,11 +256,45 @@ export function UserManagementSection() {
       const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
       
       return matchesSearch && matchesRole;
-    })
-    .sort((a, b) => a.first_name.toLowerCase().localeCompare(b.first_name.toLowerCase()));
+    });
+
+    // Apply sorting
+    if (sortColumn && sortDirection !== 'default') {
+      filtered = [...filtered].sort((a, b) => {
+        let comparison = 0;
+        
+        switch (sortColumn) {
+          case 'first_name':
+            comparison = (a.first_name || '').localeCompare(b.first_name || '');
+            break;
+          case 'last_name':
+            comparison = (a.last_name || '').localeCompare(b.last_name || '');
+            break;
+          case 'role':
+            // Sort order: admin → dispatcher → driver
+            const roleOrder = { admin: 1, dispatcher: 2, driver: 3 };
+            const roleA = roleOrder[a.current_role as keyof typeof roleOrder] || 999;
+            const roleB = roleOrder[b.current_role as keyof typeof roleOrder] || 999;
+            comparison = roleA - roleB;
+            break;
+          case 'status':
+            comparison = a.is_active === b.is_active ? 0 : a.is_active ? -1 : 1;
+            break;
+        }
+        
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    return filtered;
+  }, [users, searchTerm, roleFilter, sortColumn, sortDirection]);
+
+  // Split filtered users for display sections
+  const filteredCurrentUser = filteredAndSortedUsers.find(user => user.clerk_user_id === clerkUser?.id);
+  const filteredOtherUsers = filteredAndSortedUsers.filter(user => user.clerk_user_id !== clerkUser?.id);
 
   // Combine for display
-  const allFilteredUsers = filteredCurrentUser ? [filteredCurrentUser, ...filteredOtherUsers] : filteredOtherUsers;
+  const allFilteredUsers = filteredAndSortedUsers;
 
   if (!isOwner) {
     return (
@@ -451,6 +497,9 @@ export function UserManagementSection() {
                     toggleUserStatus.mutate({ userId, isActive })
                   }
                   isLoading={isLoading}
+                  sortColumn={sortColumn}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
                 />
               </div>
             )}
@@ -467,6 +516,9 @@ export function UserManagementSection() {
                     toggleUserStatus.mutate({ userId, isActive })
                   }
                   isLoading={isLoading}
+                  sortColumn={sortColumn}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
                 />
               </div>
             )}

@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
   MoreVertical, Edit, Trash2, UserCheck, UserX,
-  Phone, Mail, Calendar
+  Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown
 } from 'lucide-react';
 
 interface User {
@@ -23,12 +23,18 @@ interface User {
   created_at?: string | null;
 }
 
+type SortDirection = 'asc' | 'desc' | 'default';
+type SortColumn = 'first_name' | 'last_name' | 'role' | 'status';
+
 interface UserListViewProps {
   users: User[];
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
   isLoading?: boolean;
+  sortColumn?: SortColumn | null;
+  sortDirection?: SortDirection;
+  onSort?: (column: SortColumn) => void;
 }
 
 const roleIcons = {
@@ -52,8 +58,41 @@ export function UserListView({
   onEdit, 
   onDelete, 
   onToggleStatus,
-  isLoading = false
+  isLoading = false,
+  sortColumn,
+  sortDirection = 'default',
+  onSort
 }: UserListViewProps) {
+  // Create sortable header component
+  const SortableHeader = ({ 
+    column, 
+    children, 
+    className = "" 
+  }: { 
+    column: SortColumn; 
+    children: React.ReactNode; 
+    className?: string;
+  }) => {
+    const isActive = sortColumn === column;
+    const getSortIcon = () => {
+      if (!isActive) return <ChevronsUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+      if (sortDirection === 'asc') return <ChevronUp className="w-4 h-4 ml-1 text-gray-600" />;
+      if (sortDirection === 'desc') return <ChevronDown className="w-4 h-4 ml-1 text-gray-600" />;
+      return <ChevronsUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+    };
+
+    return (
+      <TableHead 
+        className={`font-medium text-gray-900 cursor-pointer hover:bg-gray-50 select-none ${className}`}
+        onClick={() => onSort && onSort(column)}
+      >
+        <div className="flex items-center">
+          {children}
+          {getSortIcon()}
+        </div>
+      </TableHead>
+    );
+  };
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -70,11 +109,11 @@ export function UserListView({
         <TableHeader>
           <TableRow>
             <TableHead className="w-12"></TableHead>
-            <TableHead>First Name</TableHead>
-            <TableHead>Last Name</TableHead>
+            <SortableHeader column="first_name">First Name</SortableHeader>
+            <SortableHeader column="last_name">Last Name</SortableHeader>
             <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
+            <SortableHeader column="role">Role</SortableHeader>
+            <SortableHeader column="status">Status</SortableHeader>
             <TableHead>Phone</TableHead>
             <TableHead>Joined</TableHead>
             <TableHead className="w-12"></TableHead>
