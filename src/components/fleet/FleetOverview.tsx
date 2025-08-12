@@ -76,16 +76,7 @@ export const FleetOverview: React.FC = () => {
 
   return (
     <div className="max-w-none px-6 py-6 space-y-6">
-      <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Fleet Overview</h1>
-            <p className="text-base text-gray-600 font-inter mt-1">Manage your fleet vehicles and operations</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="bg-white rounded-lg border shadow-sm p-6">
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-card p-4 rounded-lg border shadow-sm">
@@ -106,94 +97,95 @@ export const FleetOverview: React.FC = () => {
           </div>
         </div>
 
-            {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              {/* Search */}
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Search vehicles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                />
-              </div>
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          {/* Search */}
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search vehicles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          </div>
+          
+          {/* View Mode */}
+          <div className="flex border rounded-md">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-l-md transition-colors",
+                viewMode === "grid"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
+              )}
+            >
+              <Grid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-r-md transition-colors",
+                viewMode === "list"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
+              )}
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+          
+          {/* Add Vehicle */}
+          <Button
+            onClick={() => setIsAddVehicleModalOpen(true)}
+            className="bg-gradient-primary text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Vehicle
+          </Button>
+        </div>
+
+        {/* Status Filters */}
+        <div className="flex flex-wrap gap-2">
+          {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => {
+            const getFilterButtonClass = (status: string, isActive: boolean) => {
+              if (!isActive) {
+                return "bg-muted text-muted-foreground hover:bg-muted/80";
+              }
               
-              {/* View Mode */}
-              <div className="flex border rounded-md">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "px-3 py-2 text-sm font-medium rounded-l-md transition-colors",
-                    viewMode === "grid"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background hover:bg-muted"
-                  )}
-                >
-                  <Grid className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={cn(
-                    "px-3 py-2 text-sm font-medium rounded-r-md transition-colors",
-                    viewMode === "list"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background hover:bg-muted"
-                  )}
-                >
-                  <List className="h-4 w-4" />
-                </button>
-              </div>
-              
-              {/* Add Vehicle */}
-              <Button
-                onClick={() => setIsAddVehicleModalOpen(true)}
-                className="bg-gradient-primary text-white"
+              switch (status) {
+                case 'available':
+                  return "bg-gradient-green text-white font-bold";
+                case 'in_service':
+                  return "bg-gradient-red text-white font-bold";
+                case 'maintenance':
+                  return "bg-gradient-orange text-white font-bold";
+                default:
+                  return "bg-primary text-primary-foreground";
+              }
+            };
+
+            return (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={cn(
+                  "inline-flex items-center text-sm font-medium py-1.5 px-3 rounded-full transition-colors",
+                  getFilterButtonClass(status, statusFilter === status)
+                )}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Vehicle
-              </Button>
-            </div>
-
-            {/* Status Filters */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => {
-                const getFilterButtonClass = (status: string, isActive: boolean) => {
-                  if (!isActive) {
-                    return "bg-muted text-muted-foreground hover:bg-muted/80";
-                  }
-                  
-                  switch (status) {
-                    case 'available':
-                      return "bg-gradient-green text-white font-bold";
-                    case 'in_service':
-                      return "bg-gradient-red text-white font-bold";
-                    case 'maintenance':
-                      return "bg-gradient-orange text-white font-bold";
-                    default:
-                      return "bg-primary text-primary-foreground";
-                  }
-                };
-
-                return (
-                  <button
-                    key={status}
-                    onClick={() => setStatusFilter(status)}
-                    className={cn(
-                      "inline-flex items-center text-sm font-medium py-1.5 px-3 rounded-full transition-colors",
-                      getFilterButtonClass(status, statusFilter === status)
-                    )}
-                  >
-                    {status === 'all' ? 'All' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    {status !== 'all' && (
-                      <span className="ml-1">
-                        ({statusCounts[status]})
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+                {status === 'all' ? 'All' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                {status !== 'all' && (
+                  <span className="ml-1">
+                    ({statusCounts[status]})
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Vehicle Grid/List */}
       <div className={cn(
@@ -234,7 +226,6 @@ export const FleetOverview: React.FC = () => {
         isOpen={isAddVehicleModalOpen}
         onClose={() => setIsAddVehicleModalOpen(false)}
       />
-      </div>
     </div>
   );
 };
