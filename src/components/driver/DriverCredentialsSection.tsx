@@ -16,12 +16,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2, Edit, Calendar, AlertTriangle, HelpCircle, Truck, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const credentialsSchema = z.object({
   license_category: z.enum(['NON_CDL', 'CDL']).optional(),
@@ -229,8 +229,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
   const medicalCardExpiryStatus = getExpiryStatus(credentialsData?.medical_card_expiry_date);
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -262,14 +261,16 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                         <div className="flex items-center gap-2">
                           <div className="h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">1</div>
                           <h3 className="text-lg font-semibold">License Category</h3>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs">Choose Non-CDL for regular licenses. Choose CDL if the driver operates commercial vehicles that require a CDL.</p>
-                            </TooltipContent>
-                          </Tooltip>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80" side="bottom" align="start">
+                              <p className="text-sm">Choose Non-CDL for regular licenses. Choose CDL if the driver operates commercial vehicles that require a CDL.</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         
                         <FormField
@@ -311,14 +312,16 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                             <div className="flex items-center gap-2">
                               <div className="h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">2</div>
                               <h3 className="text-lg font-semibold">CDL Class (US)</h3>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="max-w-xs">Portable sanitation fleets often use Class B. If towing heavy restroom trailers over 10k, you may need Class A.</p>
-                                </TooltipContent>
-                              </Tooltip>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80" side="bottom" align="start">
+                                  <p className="text-sm">Portable sanitation fleets often use Class B. If towing heavy restroom trailers over 10k, you may need Class A.</p>
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             
                             <FormField
@@ -456,14 +459,16 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                             {watchLicenseCategory === 'CDL' ? '4' : '3'}
                           </div>
                           <h3 className="text-lg font-semibold">Endorsements</h3>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs">Most septage operations need N – Tanker. Hazmat is uncommon unless hauling regulated materials.</p>
-                            </TooltipContent>
-                          </Tooltip>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80" side="bottom" align="start">
+                              <p className="text-sm">Most septage operations need N – Tanker. Hazmat is uncommon unless hauling regulated materials.</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         
                         <FormField
@@ -528,14 +533,16 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                             {watchLicenseCategory === 'CDL' ? '5' : '4'}
                           </div>
                           <h3 className="text-lg font-semibold">Restrictions</h3>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs">Air-brake (L) or intrastate-only (K) limits what vehicles/routes a driver can take.</p>
-                            </TooltipContent>
-                          </Tooltip>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80" side="bottom" align="start">
+                              <p className="text-sm">Air-brake (L) or intrastate-only (K) limits what vehicles/routes a driver can take.</p>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         
                         <FormField
@@ -870,6 +877,5 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
           </CardContent>
         </Card>
       </div>
-    </TooltipProvider>
   );
 }
