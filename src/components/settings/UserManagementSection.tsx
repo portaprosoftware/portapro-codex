@@ -88,16 +88,25 @@ export function UserManagementSection() {
       if (error) throw error;
       
       // Transform the data to ensure user_roles is properly structured for EditUserModal
-      return data?.map(user => ({
-        ...user,
-        current_role: Array.isArray(user.user_roles) 
+      return data?.map(user => {
+        console.log('UserManagementSection - Processing user:', user.first_name, user.last_name);
+        console.log('UserManagementSection - User roles data:', user.user_roles);
+        
+        const current_role = Array.isArray(user.user_roles) 
           ? user.user_roles[0]?.role 
-          : user.user_roles?.role || null,
-        // Keep the original user_roles structure for EditUserModal
-        user_roles: Array.isArray(user.user_roles) 
-          ? user.user_roles 
-          : [user.user_roles]
-      })) || [];
+          : user.user_roles?.role || null;
+          
+        console.log('UserManagementSection - Assigned current_role:', current_role);
+        
+        return {
+          ...user,
+          current_role,
+          // Keep the original user_roles structure for EditUserModal
+          user_roles: Array.isArray(user.user_roles) 
+            ? user.user_roles 
+            : [user.user_roles]
+        };
+      }) || [];
     },
   });
 
