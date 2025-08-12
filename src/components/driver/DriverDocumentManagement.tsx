@@ -454,7 +454,7 @@ export function DriverDocumentManagement({ driverId }: DriverDocumentManagementP
                             variant="ghost" 
                             size="sm"
                             onClick={() => {
-                              const link = document.createElement('a');
+                              const link = window.document.createElement('a');
                               link.href = document.file_url;
                               link.download = document.file_name;
                               link.click();
