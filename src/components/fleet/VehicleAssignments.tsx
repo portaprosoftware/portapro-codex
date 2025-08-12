@@ -14,7 +14,37 @@ export const VehicleAssignments: React.FC = () => {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
+      {/* Header Card */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground font-inter">
+              Driver Assignments
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Manage daily vehicle assignments and track driver usage
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setIsWizardOpen(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+              <Plus className="w-4 h-4 mr-2" />
+              New Assignment
+            </Button>
+          </div>
+        </div>
+
+        {/* Date Selection */}
+        <div className="flex items-center mt-4">
+          <EnhancedDateNavigator
+            date={selectedDate}
+            onDateChange={setSelectedDate}
+            label="Assignment Date"
+          />
+        </div>
+      </div>
+
       <VehicleAssignmentsContent 
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
@@ -88,23 +118,6 @@ const VehicleAssignmentsContent: React.FC<{
 
   return (
     <div className="space-y-6">
-      {/* Date Selection */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h3 className="text-lg font-semibold text-gray-900">Daily Vehicle Assignments</h3>
-          <EnhancedDateNavigator
-            date={selectedDate}
-            onDateChange={setSelectedDate}
-            label="Assignment Date"
-          />
-        </div>
-        
-        <Button onClick={() => setIsWizardOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Assignment
-        </Button>
-      </div>
-
       {/* Assignments List */}
       <div className="space-y-4">
         {assignments?.map((assignment) => (
