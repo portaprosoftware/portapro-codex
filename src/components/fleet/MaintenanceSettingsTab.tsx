@@ -100,10 +100,10 @@ export const MaintenanceSettingsTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <div>
-              <h4 className="font-medium text-blue-900">In-House Shop Management</h4>
-              <p className="text-sm text-blue-600 mt-1">
+              <h4 className="font-medium text-gray-900">In-House Shop Management</h4>
+              <p className="text-sm text-gray-600 mt-1">
                 Enable this to access technician assignment, parts tracking, and drag-and-drop calendar scheduling
               </p>
             </div>
