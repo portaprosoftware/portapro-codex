@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
-  Sheet, 
-  SheetContent, 
-  SheetDescription, 
-  SheetHeader, 
-  SheetTitle 
-} from "@/components/ui/sheet";
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -427,17 +427,14 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:w-[50%] sm:max-w-none flex flex-col"
-      >
-        <SheetHeader className="pb-6">
-          <SheetTitle>Create Vehicle Assignment</SheetTitle>
-          <SheetDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="pb-6">
+          <DialogTitle>Create Vehicle Assignment</DialogTitle>
+          <DialogDescription>
             {steps[currentStepIndex]?.description}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Progress Indicator */}
         <div className="flex items-center space-x-2 pb-6">
@@ -466,7 +463,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-[400px]">
           {renderStepContent()}
         </div>
 
@@ -505,7 +502,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             )}
           </Button>
         </div>
-      </SheetContent>
+      </DialogContent>
 
       {/* Vehicle Selection Modal */}
       <VehicleSelectionModal
@@ -524,6 +521,6 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         selectedDriver={selectedDriver}
         onDriverSelect={setSelectedDriver}
       />
-    </Sheet>
+    </Dialog>
   );
 };
