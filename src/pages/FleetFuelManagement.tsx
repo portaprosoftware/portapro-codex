@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FleetSidebar } from '@/components/fleet/FleetSidebar';
+import { FleetLayout } from '@/components/fleet/FleetLayout';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { FuelOverviewTab } from '@/components/fleet/fuel/FuelOverviewTab';
 import { FuelAllLogsTab } from '@/components/fleet/fuel/FuelAllLogsTab';
@@ -14,19 +14,16 @@ export const FleetFuelManagement: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen bg-background">
-      <FleetSidebar />
-      <div className="flex-1 overflow-auto">
-        <div className="container mx-auto px-6 py-6 max-w-7xl">
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border shadow-sm p-6">
-              <PageHeader 
-                title="Fuel Management" 
-                subtitle="Track fuel usage, costs, and efficiency across your fleet"
-              />
-            </div>
-            
-            <div className="flex-1 overflow-auto">
+    <FleetLayout>
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <PageHeader 
+            title="Fuel Management" 
+            subtitle="Track fuel usage, costs, and efficiency across your fleet"
+          />
+        </div>
+        
+        <div className="flex-1 overflow-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -50,11 +47,9 @@ export const FleetFuelManagement: React.FC = () => {
             <TabsContent value="settings" className="mt-6">
               <FuelSettingsTab />
             </TabsContent>
-            </Tabs>
-            </div>
-          </div>
+          </Tabs>
         </div>
       </div>
-    </div>
+    </FleetLayout>
   );
 };

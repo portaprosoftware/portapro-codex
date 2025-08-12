@@ -88,8 +88,19 @@ export const FleetNavigation: React.FC = () => {
   };
 
   return (
-    <div className="border-b bg-card mb-6">
-      <div className="container mx-auto px-6 py-4">
+    <div className="bg-card border border-border rounded-2xl shadow-sm mx-6 mt-6 mb-6">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">
+              Fleet Management
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Manage vehicles, compliance, maintenance, and operations
+            </p>
+          </div>
+        </div>
+        
         <TabNav ariaLabel="Fleet Management Navigation">
           {navigationItems.map((item) => (
             <TabNav.Item
