@@ -73,7 +73,7 @@ const Analytics = () => {
     <div className="max-w-none px-6 py-6 min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 font-inter">Analytics</h1>
             <p className="text-base text-gray-600 font-inter mt-1">Executive dashboard and insights</p>
@@ -85,6 +85,25 @@ const Analytics = () => {
             <BarChart3 className="w-4 h-4 mr-2" />
             Report Builder
           </Button>
+        </div>
+
+        {/* Navigation Pills */}
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabClick(tab.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeTab === tab.id && !isReportBuilderOpen
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
+                  : tab.id === 'reports' && isReportBuilderOpen
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gradient-to-r hover:from-blue-100 hover:to-blue-50 hover:text-blue-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -103,31 +122,9 @@ const Analytics = () => {
         }}
       />
 
-      {/* Section Tabs */}
-      <div className="bg-white border-b border-gray-200 px-6 -mx-6 mb-6 rounded-t-lg">
-        <div className="flex space-x-8 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabClick(tab.id)}
-              className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-200 ${
-                activeTab === tab.id && !isReportBuilderOpen
-                  ? 'border-blue-500 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } ${
-                tab.id === 'reports' && isReportBuilderOpen
-                  ? 'border-blue-500 text-blue-600 font-semibold'
-                  : ''
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Main Content */}
-      <div className="space-y-6 bg-white rounded-b-lg p-6 border border-t-0 shadow-sm">
+      <div className="space-y-6 bg-white rounded-lg p-6 border shadow-sm">
         {renderActiveSection()}
       </div>
 
