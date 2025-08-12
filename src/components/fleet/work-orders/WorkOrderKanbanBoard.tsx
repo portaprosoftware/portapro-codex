@@ -32,7 +32,7 @@ const STATUS_COLUMNS = [
   { id: 'in_progress', label: 'In Progress', color: 'hsl(var(--primary))' },
   { id: 'vendor', label: 'Vendor', color: 'hsl(var(--secondary))' },
   { id: 'on_hold', label: 'On Hold', color: 'hsl(var(--muted))' },
-  { id: 'ready_for_verification', label: 'Ready for Verification', color: 'hsl(var(--success))' },
+  { id: 'ready_for_verification', label: 'Verification', color: 'hsl(var(--success))' },
   { id: 'completed', label: 'Completed', color: 'hsl(var(--muted))' }
 ];
 

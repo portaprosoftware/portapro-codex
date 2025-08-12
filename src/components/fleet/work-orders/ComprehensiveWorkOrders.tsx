@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Plus, Kanban, List, Calendar, Eye } from "lucide-react";
 import { WorkOrderMetrics } from "./WorkOrderMetrics";
 import { WorkOrderFilters } from "./WorkOrderFilters";
@@ -198,10 +200,6 @@ export const ComprehensiveWorkOrders: React.FC = () => {
         onSourceChange={setSelectedSource}
         selectedAssignee={selectedAssignee}
         onAssigneeChange={setSelectedAssignee}
-        overdueOnly={overdueOnly}
-        onOverdueToggle={setOverdueOnly}
-        oosOnly={oosOnly}
-        onOosToggle={setOosOnly}
         activeFiltersCount={getActiveFiltersCount()}
         onClearFilters={handleClearFilters}
         onBulkAssign={handleBulkAssign}
@@ -209,43 +207,65 @@ export const ComprehensiveWorkOrders: React.FC = () => {
       />
 
       {/* View Toggle */}
-      <Tabs value={view} onValueChange={(value) => setView(value as any)}>
-        <TabsList>
-          <TabsTrigger value="board" className="flex items-center gap-2">
-            <Kanban className="h-4 w-4" />
-            Board
-          </TabsTrigger>
-          <TabsTrigger value="list" className="flex items-center gap-2">
-            <List className="h-4 w-4" />
-            List
-          </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Calendar
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="board" className="mt-6">
-          <WorkOrderKanbanBoard
-            workOrders={workOrders as any || []}
-            onEdit={handleEdit}
-            onViewDetails={handleViewDetails}
-            onStatusChange={handleStatusChange}
-          />
-        </TabsContent>
-
-        <TabsContent value="list" className="mt-6">
-          <div className="text-center py-12 text-muted-foreground">
-            List view coming soon...
+      <div className="flex items-center justify-between">
+        <Tabs value={view} onValueChange={(value) => setView(value as any)}>
+          <TabsList>
+            <TabsTrigger value="board" className="flex items-center gap-2">
+              <Kanban className="h-4 w-4" />
+              Board
+            </TabsTrigger>
+            <TabsTrigger value="list" className="flex items-center gap-2">
+              <List className="h-4 w-4" />
+              List
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Calendar
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+        
+        <div className="flex items-center gap-6">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="overdue-filter"
+              checked={overdueOnly}
+              onCheckedChange={setOverdueOnly}
+            />
+            <Label htmlFor="overdue-filter" className="text-sm">Overdue only</Label>
           </div>
-        </TabsContent>
 
-        <TabsContent value="calendar" className="mt-6">
-          <div className="text-center py-12 text-muted-foreground">
-            Calendar view coming soon...
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="oos-filter"
+              checked={oosOnly}
+              onCheckedChange={setOosOnly}
+            />
+            <Label htmlFor="oos-filter" className="text-sm">Out of service</Label>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
+
+      {view === 'board' && (
+        <WorkOrderKanbanBoard
+          workOrders={workOrders as any || []}
+          onEdit={handleEdit}
+          onViewDetails={handleViewDetails}
+          onStatusChange={handleStatusChange}
+        />
+      )}
+
+      {view === 'list' && (
+        <div className="text-center py-12 text-muted-foreground">
+          List view coming soon...
+        </div>
+      )}
+
+      {view === 'calendar' && (
+        <div className="text-center py-12 text-muted-foreground">
+          Calendar view coming soon...
+        </div>
+      )}
 
       {/* Add Work Order Drawer */}
       <AddWorkOrderDrawer

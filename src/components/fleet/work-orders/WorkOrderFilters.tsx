@@ -18,10 +18,6 @@ interface WorkOrderFiltersProps {
   onSourceChange: (value: string) => void;
   selectedAssignee: string;
   onAssigneeChange: (value: string) => void;
-  overdueOnly: boolean;
-  onOverdueToggle: (value: boolean) => void;
-  oosOnly: boolean;
-  onOosToggle: (value: boolean) => void;
   activeFiltersCount: number;
   onClearFilters: () => void;
   onBulkAssign: () => void;
@@ -39,10 +35,6 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   onSourceChange,
   selectedAssignee,
   onAssigneeChange,
-  overdueOnly,
-  onOverdueToggle,
-  oosOnly,
-  onOosToggle,
   activeFiltersCount,
   onClearFilters,
   onBulkAssign,
@@ -86,9 +78,9 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
       </div>
 
       {/* Filter Row */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="grid grid-cols-4 gap-3">
         <Select value={selectedAssetType} onValueChange={onAssetTypeChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger>
             <SelectValue placeholder="Asset Type" />
           </SelectTrigger>
           <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
@@ -100,7 +92,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
         </Select>
 
         <Select value={selectedPriority} onValueChange={onPriorityChange}>
-          <SelectTrigger className="w-28">
+          <SelectTrigger>
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
@@ -113,7 +105,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
         </Select>
 
         <Select value={selectedSource} onValueChange={onSourceChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger>
             <SelectValue placeholder="Source" />
           </SelectTrigger>
           <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
@@ -127,7 +119,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
         </Select>
 
         <Select value={selectedAssignee} onValueChange={onAssigneeChange}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger>
             <SelectValue placeholder="Assignee" />
           </SelectTrigger>
           <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
@@ -136,25 +128,8 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
             {/* Add dynamic assignee options here */}
           </SelectContent>
         </Select>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="overdue-filter"
-            checked={overdueOnly}
-            onCheckedChange={onOverdueToggle}
-          />
-          <Label htmlFor="overdue-filter" className="text-sm">Overdue only</Label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="oos-filter"
-            checked={oosOnly}
-            onCheckedChange={onOosToggle}
-          />
-          <Label htmlFor="oos-filter" className="text-sm">Out of service</Label>
-        </div>
       </div>
+
     </div>
   );
 };
