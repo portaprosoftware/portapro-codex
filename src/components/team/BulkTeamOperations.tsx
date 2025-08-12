@@ -73,7 +73,7 @@ export function BulkTeamOperations() {
           first_name,
           last_name,
           status,
-          user_roles(role)
+          user_roles!inner(role)
         `);
       
       if (error) throw error;
