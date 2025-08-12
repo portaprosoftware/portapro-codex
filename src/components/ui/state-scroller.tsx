@@ -85,8 +85,8 @@ export function StateScroller({ value, onValueChange, placeholder = "Select stat
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 bg-background border shadow-md z-50">
-        <ScrollArea className="h-[200px] w-full">
+      <PopoverContent className="w-full p-0 bg-background border shadow-md z-[100] pointer-events-auto">
+        <ScrollArea className="h-[200px] w-full pointer-events-auto">
           <div className="p-1">
             {US_STATES.map((state) => (
               <div
