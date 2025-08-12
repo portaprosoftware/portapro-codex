@@ -842,14 +842,16 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                 <div className="border-t pt-4 space-y-3">
                   <div className="text-sm font-medium text-muted-foreground">Document Uploads</div>
                   <div className="flex flex-wrap gap-2">
-                    <CertificateUploadButton
-                      driverId={driverId}
-                      label="Upload License"
+              <CertificateUploadButton
+                driverId={driverId}
+                buttonText="Upload License"
+                onUploaded={() => {}}
                     />
                     {credentialsData.license_category === 'CDL' && (
-                      <CertificateUploadButton
-                        driverId={driverId}
-                        label="Upload Medical Card"
+                <CertificateUploadButton
+                  driverId={driverId}
+                  buttonText="Upload Medical Card"
+                  onUploaded={() => {}}
                       />
                     )}
                   </div>
