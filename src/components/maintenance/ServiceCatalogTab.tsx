@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ServiceEditModal } from "./ServiceEditModal";
-import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign } from "lucide-react";
+import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign, MoreVertical } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 interface Service {
@@ -30,7 +31,7 @@ interface Service {
 export const ServiceCatalogTab: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -151,20 +152,20 @@ export const ServiceCatalogTab: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="flex bg-gray-100 rounded-lg p-1">
             <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-              className="px-3"
-            >
-              <Grid className="w-4 h-4" />
-            </Button>
-            <Button
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("list")}
               className="px-3"
             >
               <List className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="px-3"
+            >
+              <Grid className="w-4 h-4" />
             </Button>
           </div>
           <Button
@@ -327,30 +328,30 @@ export const ServiceCatalogTab: React.FC = () => {
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedService(service)}
-                        >
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => duplicateServiceMutation.mutate(service)}
-                        >
-                          <Copy className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => archiveServiceMutation.mutate(service.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Archive className="w-3 h-3" />
-                        </Button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setSelectedService(service)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => duplicateServiceMutation.mutate(service)}>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Duplicate
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => archiveServiceMutation.mutate(service.id)}
+                            className="text-red-600"
+                          >
+                            <Archive className="w-4 h-4 mr-2" />
+                            Archive
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
