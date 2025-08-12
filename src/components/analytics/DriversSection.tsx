@@ -32,40 +32,40 @@ export const DriversSection: React.FC<DriversSectionProps> = ({ dateRange }) => 
           title="Active Drivers"
           value={drivers?.active_drivers || 0}
           icon={Users}
-          gradientFrom="from-blue-600"
-          gradientTo="to-blue-400"
+          gradientFrom="#3b82f6"
+          gradientTo="#1d4ed8"
           iconBg="#3366FF"
-          subtitle="+5.2% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+5.2% vs last period</span>}
         />
         
         <StatCard
           title="Avg. Completion"
           value={`${(drivers?.avg_completion_rate || 0).toFixed(1)}%`}
           icon={CheckCircle}
-          gradientFrom="from-green-600"
-          gradientTo="to-green-400"
+          gradientFrom="#10b981"
+          gradientTo="#059669"
           iconBg="#33CC66"
-          subtitle="+3.8% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+3.8% vs last period</span>}
         />
         
         <StatCard
           title="Jobs Completed"
           value={drivers?.completed_jobs || 0}
           icon={Briefcase}
-          gradientFrom="from-orange-600"
-          gradientTo="to-orange-400"
+          gradientFrom="#f59e0b"
+          gradientTo="#d97706"
           iconBg="#FF9933"
-          subtitle="+12.4% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+12.4% vs last period</span>}
         />
         
         <StatCard
           title="Total Jobs"
           value={drivers?.total_jobs || 0}
           icon={Clock}
-          gradientFrom="from-purple-600"
-          gradientTo="to-purple-400"
+          gradientFrom="#8b5cf6"
+          gradientTo="#7c3aed"
           iconBg="#8B5CF6"
-          subtitle="+8.9% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+8.9% vs last period</span>}
         />
       </div>
 

@@ -32,40 +32,40 @@ export const RevenueSection: React.FC<RevenueSectionProps> = ({ dateRange }) => 
           title="Total Invoiced"
           value={`$${(revenue?.invoiced || 0).toLocaleString()}`}
           icon={DollarSign}
-          gradientFrom="from-green-600"
-          gradientTo="to-green-400"
+          gradientFrom="#10b981"
+          gradientTo="#059669"
           iconBg="#33CC66"
-          subtitle="+8.2% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+8.2% vs last period</span>}
         />
         
         <StatCard
           title="Collected"
           value={`$${(revenue?.collected || 0).toLocaleString()}`}
           icon={TrendingUp}
-          gradientFrom="from-blue-600"
-          gradientTo="to-blue-400"
+          gradientFrom="#3b82f6"
+          gradientTo="#1d4ed8"
           iconBg="#3366FF"
-          subtitle="+12.5% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+12.5% vs last period</span>}
         />
         
         <StatCard
           title="Outstanding"
           value={`$${(revenue?.outstanding || 0).toLocaleString()}`}
           icon={AlertCircle}
-          gradientFrom="from-orange-600"
-          gradientTo="to-orange-400"
+          gradientFrom="#f59e0b"
+          gradientTo="#d97706"
           iconBg="#FF9933"
-          subtitle="-5.3% vs last period"
+          subtitle={<span className="text-red-600 font-semibold">-5.3% vs last period</span>}
         />
         
         <StatCard
           title="Collection Rate"
           value={`${(revenue?.collection_rate || 0).toFixed(1)}%`}
           icon={Target}
-          gradientFrom="from-purple-600"
-          gradientTo="to-purple-400"
+          gradientFrom="#8b5cf6"
+          gradientTo="#7c3aed"
           iconBg="#8B5CF6"
-          subtitle="+3.1% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+3.1% vs last period</span>}
         />
       </div>
 

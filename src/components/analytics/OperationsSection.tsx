@@ -33,40 +33,40 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
           title="Deliveries"
           value={operations?.deliveries || 0}
           icon={Truck}
-          gradientFrom="from-blue-600"
-          gradientTo="to-blue-400"
+          gradientFrom="#3b82f6"
+          gradientTo="#1d4ed8"
           iconBg="#3366FF"
-          subtitle="+15.3% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+15.3% vs last period</span>}
         />
         
         <StatCard
           title="Pickups"
           value={operations?.pickups || 0}
           icon={Package}
-          gradientFrom="from-green-600"
-          gradientTo="to-green-400"
+          gradientFrom="#10b981"
+          gradientTo="#059669"
           iconBg="#33CC66"
-          subtitle="-2.1% vs last period"
+          subtitle={<span className="text-red-600 font-semibold">-2.1% vs last period</span>}
         />
         
         <StatCard
           title="Services"
           value={operations?.services || 0}
           icon={Wrench}
-          gradientFrom="from-orange-600"
-          gradientTo="to-orange-400"
+          gradientFrom="#f59e0b"
+          gradientTo="#d97706"
           iconBg="#FF9933"
-          subtitle="+8.7% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+8.7% vs last period</span>}
         />
         
         <StatCard
           title="Returns"
           value={operations?.returns || 0}
           icon={RotateCcw}
-          gradientFrom="from-purple-600"
-          gradientTo="to-purple-400"
+          gradientFrom="#8b5cf6"
+          gradientTo="#7c3aed"
           iconBg="#8B5CF6"
-          subtitle="+5.2% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+5.2% vs last period</span>}
         />
       </div>
 

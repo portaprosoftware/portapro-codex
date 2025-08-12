@@ -108,10 +108,15 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         <StatCard
           title="Job Summary"
           value={`${overview?.jobs?.total || 0}`}
-          subtitle={`${overview?.jobs?.completed || 0} completed`}
+          subtitle={
+            <div>
+              <div>{overview?.jobs?.completed || 0} completed</div>
+              <div className="text-green-600 font-semibold">+12.5% vs last period</div>
+            </div>
+          }
           icon={Briefcase}
-          gradientFrom="from-blue-600"
-          gradientTo="to-blue-400"
+          gradientFrom="#3b82f6"
+          gradientTo="#1d4ed8"
           iconBg="#3366FF"
           chart={
             <div className="h-12 flex items-end space-x-1">
@@ -130,29 +135,30 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
           title="Revenue"
           value={`$${(overview?.revenue || 0).toLocaleString()}`}
           icon={DollarSign}
-          gradientFrom="from-green-600"
-          gradientTo="to-green-400"
+          gradientFrom="#10b981"
+          gradientTo="#059669"
           iconBg="#33CC66"
-          subtitle="+12.5% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+12.5% vs last period</span>}
         />
         
         <StatCard
           title="Fleet Utilization"
           value={`${(overview?.fleet_utilization || 0).toFixed(1)}%`}
           icon={Truck}
-          gradientFrom="from-orange-600"
-          gradientTo="to-orange-400"
+          gradientFrom="#f59e0b"
+          gradientTo="#d97706"
           iconBg="#FF9933"
-          subtitle="-2.1% vs last period"
+          subtitle={<span className="text-red-600 font-semibold">-2.1% vs last period</span>}
         />
         
         <StatCard
           title="Customer Growth"
-          value={`${(overview?.customer_growth || 0) >= 0 ? '+' : ''}${(overview?.customer_growth || 0).toFixed(1)}%`}
+          value={`+${(overview?.customer_growth || 0).toFixed(1)}%`}
           icon={TrendingUp}
-          gradientFrom="from-purple-600"
-          gradientTo="to-purple-400"
+          gradientFrom="#8b5cf6"
+          gradientTo="#7c3aed"
           iconBg="#8B5CF6"
+          subtitle={<span className="text-green-600 font-semibold">+123.3% vs last period</span>}
         />
       </div>
 

@@ -33,40 +33,40 @@ export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange })
           title="New Customers"
           value={customers?.new_customers || 0}
           icon={UserPlus}
-          gradientFrom="from-green-600"
-          gradientTo="to-green-400"
+          gradientFrom="#10b981"
+          gradientTo="#059669"
           iconBg="#33CC66"
-          subtitle="+22.1% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+22.1% vs last period</span>}
         />
         
         <StatCard
           title="Returning Customers"
           value={customers?.returning_customers || 0}
           icon={Users}
-          gradientFrom="from-blue-600"
-          gradientTo="to-blue-400"
+          gradientFrom="#3b82f6"
+          gradientTo="#1d4ed8"
           iconBg="#3366FF"
-          subtitle="+8.5% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+8.5% vs last period</span>}
         />
         
         <StatCard
           title="Retention Rate"
           value={`${(customers?.retention_rate || 0).toFixed(1)}%`}
           icon={Heart}
-          gradientFrom="from-orange-600"
-          gradientTo="to-orange-400"
+          gradientFrom="#f59e0b"
+          gradientTo="#d97706"
           iconBg="#FF9933"
-          subtitle="+4.2% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+4.2% vs last period</span>}
         />
         
         <StatCard
           title="Avg. CLV"
           value={`$${(customers?.avg_clv || 0).toLocaleString()}`}
           icon={DollarSign}
-          gradientFrom="from-purple-600"
-          gradientTo="to-purple-400"
+          gradientFrom="#8b5cf6"
+          gradientTo="#7c3aed"
           iconBg="#8B5CF6"
-          subtitle="+15.8% vs last period"
+          subtitle={<span className="text-green-600 font-semibold">+15.8% vs last period</span>}
         />
       </div>
 
