@@ -77,14 +77,21 @@ export function BulkTeamOperations() {
         `);
       
       if (error) throw error;
-      return data.map(member => ({
-        id: member.id,
-        email: member.email || '',
-        firstName: member.first_name || '',
-        lastName: member.last_name || '',
-        role: member.user_roles?.[0]?.role || 'user',
-        status: member.status || 'active'
-      }));
+      console.log('Raw member data:', data);
+      return data.map(member => {
+        console.log('Processing member:', member);
+        console.log('Member user_roles:', member.user_roles);
+        const extractedRole = member.user_roles?.role || member.user_roles?.[0]?.role || 'user';
+        console.log('Extracted role:', extractedRole);
+        return {
+          id: member.id,
+          email: member.email || '',
+          firstName: member.first_name || '',
+          lastName: member.last_name || '',
+          role: extractedRole,
+          status: member.status || 'active'
+        };
+      });
     }
   });
 
