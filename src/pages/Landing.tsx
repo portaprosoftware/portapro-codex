@@ -457,7 +457,7 @@ export const Landing: React.FC = () => {
             </div>
 
             {/* Right Column: OCR Card + Image Slider */}
-            <div className="lg:sticky lg:top-8 space-y-6">
+            <div className="space-y-6">
               {/* "This isn't just OCR" card moved to top of right column */}
               <div className="bg-gray-50 p-6 rounded-lg">
                 <p className="text-lg font-semibold text-foreground mb-2">This isn't just OCR.</p>
