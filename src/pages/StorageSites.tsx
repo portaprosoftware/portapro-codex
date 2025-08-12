@@ -152,9 +152,7 @@ export default function StorageSites() {
   };
 
   return (
-    <StorageSitesLayout>
-      <StorageSitesNavigation onAddStorage={() => setShowAddModal(true)} />
-      
+    <StorageSitesLayout onAddStorage={() => setShowAddModal(true)}>
       <div className="space-y-6">
         {activeTab === "locations" ? (
           <>
