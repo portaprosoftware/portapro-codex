@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StateScroller } from '@/components/ui/state-scroller';
 import { CertificateUploadButton } from '@/components/training/CertificateUploadButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -97,16 +98,30 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
 
   const updateCredentials = useMutation({
     mutationFn: async (data: CredentialsFormData) => {
+      console.log('Updating credentials with data:', data);
+      console.log('Driver ID:', driverId);
+      
+      const credentialsData = {
+        driver_id: driverId,
+        license_number: data.license_number,
+        license_class: data.license_class,
+        license_state: data.license_state,
+        license_expiry_date: data.license_expiry_date || null,
+        license_endorsements: data.license_endorsements || [],
+        medical_card_expiry_date: data.medical_card_expiry_date || null,
+        medical_card_reference: data.medical_card_reference || null,
+      };
+
+      console.log('Final credentials data:', credentialsData);
+
       const { error } = await supabase
         .from('driver_credentials')
-        .upsert({
-          driver_id: driverId,
-          ...data,
-          license_expiry_date: data.license_expiry_date || null,
-          medical_card_expiry_date: data.medical_card_expiry_date || null,
-        });
+        .upsert(credentialsData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['driver-credentials', driverId] });
@@ -212,7 +227,11 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                           <FormItem>
                             <FormLabel>Issuing State</FormLabel>
                             <FormControl>
-                              <Input placeholder="CA" {...field} />
+                              <StateScroller
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Select state"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
