@@ -7,8 +7,13 @@ import { DriverTimeOffSection } from '@/components/settings/DriverTimeOffSection
 import { TeamSchedulingTab } from '@/components/team/TeamSchedulingTab';
 import { TeamAnalyticsTab } from '@/components/team/TeamAnalyticsTab';
 import { TrainingCertificationsTab } from '@/components/team/TrainingCertificationsTab';
+import { BulkDriverOperations } from '@/components/team/BulkDriverOperations';
+import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
+import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
+import { ExpirationForecasting } from '@/components/team/ExpirationForecasting';
+import { PushNotificationSupport } from '@/components/team/PushNotificationSupport';
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'forecasting' | 'notifications';
 
 export default function TeamManagement() {
   const navigate = useNavigate();
@@ -36,6 +41,11 @@ export default function TeamManagement() {
         {currentTab === 'time-off' && <DriverTimeOffSection onBack={() => navigate('/team-management/users')} />}
         {currentTab === 'analytics' && <TeamAnalyticsTab />}
         {currentTab === 'training' && <TrainingCertificationsTab />}
+        {currentTab === 'bulk-operations' && <BulkDriverOperations />}
+        {currentTab === 'compliance' && <ComplianceDashboard />}
+        {currentTab === 'reports' && <CustomReportBuilder />}
+        {currentTab === 'forecasting' && <ExpirationForecasting />}
+        {currentTab === 'notifications' && <PushNotificationSupport />}
       </div>
     </TeamManagementLayout>
   );

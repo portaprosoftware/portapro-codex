@@ -1,9 +1,20 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Users, Calendar, Clock, BarChart3, GraduationCap } from "lucide-react";
+import { 
+  Users, 
+  Calendar, 
+  Clock, 
+  BarChart3, 
+  GraduationCap,
+  Upload,
+  Shield,
+  FileText,
+  TrendingUp,
+  Bell
+} from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'forecasting' | 'notifications';
 
 export const TeamManagementNavigation: React.FC = () => {
   const location = useLocation();
@@ -39,6 +50,36 @@ export const TeamManagementNavigation: React.FC = () => {
       value: "training" as TeamTab,
       icon: GraduationCap,
       href: "/team-management/training"
+    },
+    {
+      title: "Bulk Operations",
+      value: "bulk-operations" as TeamTab,
+      icon: Upload,
+      href: "/team-management/bulk-operations"
+    },
+    {
+      title: "Compliance",
+      value: "compliance" as TeamTab,
+      icon: Shield,
+      href: "/team-management/compliance"
+    },
+    {
+      title: "Reports",
+      value: "reports" as TeamTab,
+      icon: FileText,
+      href: "/team-management/reports"
+    },
+    {
+      title: "Forecasting",
+      value: "forecasting" as TeamTab,
+      icon: TrendingUp,
+      href: "/team-management/forecasting"
+    },
+    {
+      title: "Notifications",
+      value: "notifications" as TeamTab,
+      icon: Bell,
+      href: "/team-management/notifications"
     }
   ];
 

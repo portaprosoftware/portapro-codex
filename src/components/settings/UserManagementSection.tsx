@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { supabase } from "@/integrations/supabase/client";
@@ -447,6 +447,61 @@ export function UserManagementSection() {
         </div>
       </CardHeader>
       <CardContent>
+        {/* Phase 4 Features Quick Access */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Advanced Team Management Features
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/team-management/bulk-operations'}
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <Upload className="h-3 w-3" />
+              Bulk Operations
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/team-management/compliance'}
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <Shield className="h-3 w-3" />
+              Compliance
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/team-management/reports'}
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <FileText className="h-3 w-3" />
+              Custom Reports
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/team-management/forecasting'}
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <TrendingUp className="h-3 w-3" />
+              Forecasting
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/team-management/notifications'}
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <Bell className="h-3 w-3" />
+              Notifications
+            </Button>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
