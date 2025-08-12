@@ -10,11 +10,11 @@ import { TrainingCertificationsTab } from '@/components/team/TrainingCertificati
 import { BulkDriverOperations } from '@/components/team/BulkDriverOperations';
 import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
 import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
-import { ExpirationForecasting } from '@/components/team/ExpirationForecasting';
+
 import { PushNotificationSupport } from '@/components/team/PushNotificationSupport';
 import { DetailedDriverProfile } from '@/components/driver/DetailedDriverProfile';
 
-type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'forecasting' | 'notifications' | 'driver';
+type TeamTab = 'users' | 'scheduling' | 'time-off' | 'analytics' | 'training' | 'bulk-operations' | 'compliance' | 'reports' | 'notifications' | 'driver';
 
 export default function TeamManagement() {
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ export default function TeamManagement() {
         {currentTab === 'bulk-operations' && <BulkDriverOperations />}
         {currentTab === 'compliance' && <ComplianceDashboard />}
         {currentTab === 'reports' && <CustomReportBuilder />}
-        {currentTab === 'forecasting' && <ExpirationForecasting />}
+        
         {currentTab === 'notifications' && <PushNotificationSupport />}
         {currentTab === 'driver' && <DetailedDriverProfile />}
       </div>
