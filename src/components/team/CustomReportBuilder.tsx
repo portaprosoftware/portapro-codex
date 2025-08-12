@@ -250,14 +250,13 @@ export function CustomReportBuilder() {
         </div>
       </div>
 
-      <Tabs defaultValue="config" className="space-y-4">
+      <Tabs defaultValue="create" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="config">Configuration</TabsTrigger>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="create">Create Reports</TabsTrigger>
           <TabsTrigger value="saved">Saved Reports</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="config" className="space-y-4">
+        <TabsContent value="create" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Report Configuration</CardTitle>
@@ -372,7 +371,7 @@ export function CustomReportBuilder() {
                 </div>
               </div>
 
-              {/* Filters Section - Now in Configuration Tab */}
+              {/* Filters Section */}
               {reportConfig.dataSource && (
                 <div className="space-y-4 p-4 border rounded-lg">
                   <div className="flex items-center gap-2">
@@ -469,13 +468,8 @@ export function CustomReportBuilder() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="saved" className="space-y-4">
-          <SavedReportsManager onLoadReport={(report) => setReportConfig(report)} />
-        </TabsContent>
-
-        <TabsContent value="preview" className="space-y-4">
+          {/* Preview Section - Now under configuration */}
           <Card>
             <CardHeader>
               <CardTitle>Report Preview</CardTitle>
@@ -537,6 +531,10 @@ export function CustomReportBuilder() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="saved" className="space-y-4">
+          <SavedReportsManager onLoadReport={(report) => setReportConfig(report)} />
         </TabsContent>
       </Tabs>
     </div>
