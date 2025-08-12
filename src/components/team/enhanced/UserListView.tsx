@@ -35,6 +35,7 @@ interface UserListViewProps {
   sortColumn?: SortColumn | null;
   sortDirection?: SortDirection;
   onSort?: (column: SortColumn) => void;
+  canDeleteUser?: boolean;
 }
 
 const roleIcons = {
@@ -61,7 +62,8 @@ export function UserListView({
   isLoading = false,
   sortColumn,
   sortDirection = 'default',
-  onSort
+  onSort,
+  canDeleteUser = true
 }: UserListViewProps) {
   // Create sortable header component
   const SortableHeader = ({ 
@@ -237,13 +239,23 @@ export function UserListView({
                           </>
                         )}
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => onDelete(user)}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete User
-                      </DropdownMenuItem>
+                      {canDeleteUser ? (
+                        <DropdownMenuItem 
+                          onClick={() => onDelete(user)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete User
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem 
+                          disabled
+                          className="text-muted-foreground opacity-50"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Cannot delete last admin
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

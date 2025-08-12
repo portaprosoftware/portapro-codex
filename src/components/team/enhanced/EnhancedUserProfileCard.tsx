@@ -28,6 +28,7 @@ interface EnhancedUserProfileCardProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
+  canDeleteUser?: boolean;
 }
 
 const roleIcons = {
@@ -51,7 +52,8 @@ export function EnhancedUserProfileCard({
   user, 
   onEdit, 
   onDelete, 
-  onToggleStatus
+  onToggleStatus,
+  canDeleteUser = true
 }: EnhancedUserProfileCardProps) {
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
@@ -99,13 +101,23 @@ export function EnhancedUserProfileCard({
                   </>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDelete(user)}
-                className="text-destructive"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete User
-              </DropdownMenuItem>
+              {canDeleteUser ? (
+                <DropdownMenuItem 
+                  onClick={() => onDelete(user)}
+                  className="text-destructive"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete User
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem 
+                  disabled
+                  className="text-muted-foreground opacity-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Cannot delete last admin
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

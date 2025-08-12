@@ -174,6 +174,15 @@ export function UserManagementSection() {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
+      // Check if this is the last admin trying to delete themselves
+      const userToDelete = users.find(user => user.id === userId);
+      if (userToDelete?.current_role === 'admin') {
+        const activeAdmins = users.filter(user => user.current_role === 'admin' && user.is_active);
+        if (activeAdmins.length <= 1 && userToDelete.clerk_user_id === clerkUser?.id) {
+          throw new Error("Cannot delete the last active admin. Please create another admin before deleting this account.");
+        }
+      }
+
       // Delete role first (foreign key constraint)
       const { error: roleError } = await supabase
         .from("user_roles")
@@ -242,9 +251,15 @@ export function UserManagementSection() {
     }
   };
 
+  // Count active admins
+  const activeAdminCount = users.filter(user => user.current_role === 'admin' && user.is_active).length;
+
   // Separate current user from others
   const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
   const otherUsers = users.filter(user => user.clerk_user_id !== clerkUser?.id);
+
+  // Check if current user can be deleted (not the last admin)
+  const canDeleteCurrentUser = !(currentUser?.current_role === 'admin' && activeAdminCount <= 1);
 
   // Filter and sort users
   const filteredAndSortedUsers = useMemo(() => {
@@ -497,6 +512,7 @@ export function UserManagementSection() {
                     toggleUserStatus.mutate({ userId, isActive })
                   }
                   isLoading={isLoading}
+                  canDeleteUser={canDeleteCurrentUser}
                 />
               </div>
             )}
@@ -542,6 +558,7 @@ export function UserManagementSection() {
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
+                      canDeleteUser={canDeleteCurrentUser}
                     />
                   </div>
                 </div>
