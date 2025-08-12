@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Logo } from '@/components/ui/logo';
 import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
+import { StatCard } from '@/components/ui/StatCard';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -15,6 +16,10 @@ const jobWizardMedia: string[] = [];
 const quotesMedia: string[] = [];
 const mobileAppMedia: string[] = [];
 const fleetManagementMedia: string[] = [];
+// Fleet detail placeholders
+const fleetNotificationsMedia: string[] = [];
+const fuelLogsMedia: string[] = [];
+const driverAssignmentsMedia: string[] = [];
 const teamManagementMedia: string[] = [];
 const customerDashboardMedia: string[] = [];
 const analyticsMedia: string[] = [];
@@ -702,6 +707,153 @@ export const Landing: React.FC = () => {
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
               <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* Fleet KPIs */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <StatCard
+              title="Vehicles"
+              value={24}
+              icon={Truck}
+              gradientFrom="hsl(var(--primary))"
+              gradientTo="hsl(var(--primary) / 0.7)"
+              iconBg="hsl(var(--primary))"
+              subtitle={<span className="text-muted-foreground">Active + standby</span>}
+            />
+            <StatCard
+              title="Active Drivers"
+              value={12}
+              icon={Users}
+              gradientFrom="hsl(var(--accent))"
+              gradientTo="hsl(var(--accent) / 0.7)"
+              iconBg="hsl(var(--accent))"
+              subtitle={<span className="text-muted-foreground">On schedule today</span>}
+            />
+            <StatCard
+              title="Monthly Fuel Spend"
+              value={"$8,420"}
+              icon={DollarSign}
+              gradientFrom="hsl(var(--secondary))"
+              gradientTo="hsl(var(--secondary) / 0.7)"
+              iconBg="hsl(var(--secondary))"
+              subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>}
+            />
+            <StatCard
+              title="Upcoming Services"
+              value={9}
+              icon={Wrench}
+              gradientFrom="hsl(var(--destructive))"
+              gradientTo="hsl(var(--destructive) / 0.7)"
+              iconBg="hsl(var(--destructive))"
+              subtitle={<span className="text-muted-foreground">Due in next 7 days</span>}
+            />
+          </div>
+
+          {/* Vehicle Ops Toolkit */}
+          <div className="grid sm:grid-cols-2 gap-4 mb-12">
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <CalendarClock className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Scheduled PMs</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Set mileage or time-based intervals. Auto-create work orders when due.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Parts & Costs</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Users className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Assignments</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">Daily driver shifts with vehicle handoffs and checklists.</p>
+            </div>
+            <div className="p-5 rounded-xl border bg-card shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <Shield className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground">Compliance Locker</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">DOCs, registrations, insurance—alerts before anything expires.</p>
+            </div>
+          </div>
+
+          {/* Maintenance Notifications & Scheduling */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Maintenance Notifications & Scheduling</h3>
+              <p className="text-lg text-muted-foreground">Never miss a service with automated alerts and a clean calendar view.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <BellRing className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Threshold-based alerts: mileage, engine hours, dates</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Drag-and-drop scheduling with conflict warnings</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Wrench className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto-generate work orders with parts and labor</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={fleetNotificationsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* Fuel Logs & Cost Tracking */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6 order-2 lg:order-1">
+              <h3 className="text-2xl font-bold text-foreground">Fuel Logs & Cost Tracking</h3>
+              <p className="text-lg text-muted-foreground">Understand spend, MPG, and trends across the fleet.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Receipt photos with automatic data capture</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">MPG by vehicle and route—spot outliers fast</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <DollarSign className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Monthly budget vs actual with trendlines</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
+              <AutoCarousel media={fuelLogsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* Daily Driver Assignments */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Daily Driver Assignments</h3>
+              <p className="text-lg text-muted-foreground">Simple, clear dispatch—drivers know exactly where to go.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Drag-and-drop shift board with availability</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Pre-trip checklists and handoff notes</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Routes and stops synced to the mobile app</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={driverAssignmentsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
