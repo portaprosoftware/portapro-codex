@@ -300,11 +300,15 @@ export const Landing: React.FC = () => {
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
         <div className="container mx-auto px-12 h-full flex items-center justify-between max-w-full">
-          <Logo />
+          <div className="flex items-center gap-6">
+            <Logo />
+            <div className="hidden md:block">
+              <FeaturesMegaMenu />
+            </div>
+          </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
-            <FeaturesMegaMenu />
+          <nav className="hidden md:flex items-center gap-8">
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
             <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
             <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
