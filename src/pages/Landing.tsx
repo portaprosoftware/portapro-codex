@@ -248,7 +248,6 @@ export const Landing: React.FC = () => {
         const elementRect = element.getBoundingClientRect();
         const absoluteElementTop = elementRect.top + window.pageYOffset;
         const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
-        
         window.scrollTo({
           top: Math.max(0, targetPosition),
           behavior: 'smooth'
@@ -346,7 +345,10 @@ export const Landing: React.FC = () => {
         {mobileMenuOpen && <div className="md:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
-                <button onClick={() => { setFeaturesSheetOpen(true); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</button>
+                <button onClick={() => {
+              setFeaturesSheetOpen(true);
+              setMobileMenuOpen(false);
+            }} className="block w-full text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</button>
                 <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
                 <button onClick={() => setQuestionsFormOpen(true)} className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
                 <a href="#tour" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
@@ -471,10 +473,14 @@ export const Landing: React.FC = () => {
 
           {/* Trust strip */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">14-day free trial</span>
-            <span className="opacity-50">•</span>
-            <span>Cancel anytime</span>
-            <span className="opacity-50">•</span>
+            <span className="font-medium text-foreground">
+          </span>
+            <span className="opacity-50">
+          </span>
+            <span>
+          </span>
+            <span className="opacity-50">
+          </span>
             <span>No setup fees</span>
             <span className="opacity-50">•</span>
             <span>Unlimited users, trucks & units</span>
@@ -492,10 +498,7 @@ export const Landing: React.FC = () => {
               <CheckCircle className="h-4 w-4" aria-hidden="true" />
               <span className="text-foreground">1:1 onboarding calls</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">Template libraries included</span>
-            </div>
+            
             <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
               <CheckCircle className="h-4 w-4" aria-hidden="true" />
               <span className="text-foreground">User friendly and easy to understand</span>
