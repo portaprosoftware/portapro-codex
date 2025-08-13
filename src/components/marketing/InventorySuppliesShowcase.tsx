@@ -3,10 +3,8 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
-
 export function InventorySuppliesShowcase() {
-  return (
-    <section id="inventory" className="py-12 bg-white">
+  return <section id="inventory" className="py-12 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
@@ -111,14 +109,8 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <AspectRatio ratio={4/3}>
-                       <img
-                         src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png"
-                         alt="QR code for Standard Porta Potty unit 1001"
-                         className="w-full h-full object-cover rounded-xl border border-border"
-                         loading="lazy"
-                         decoding="async"
-                       />
+                     <AspectRatio ratio={4 / 3}>
+                       <img src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png" alt="QR code for Standard Porta Potty unit 1001" className="w-full h-full object-cover rounded-xl border border-border" loading="lazy" decoding="async" />
                      </AspectRatio>
 
                     <div className="rounded-xl border border-border p-3">
@@ -150,12 +142,8 @@ export function InventorySuppliesShowcase() {
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                <AspectRatio ratio={4/5}>
-                  <img 
-                    src="/lovable-uploads/47061b38-ad88-4a95-9d7b-0db78537d483.png"
-                    alt="Embossed plastic panel with unit information"
-                    className="w-full h-full object-cover rounded-xl border"
-                  />
+                <AspectRatio ratio={4 / 5}>
+                  <img src="/lovable-uploads/47061b38-ad88-4a95-9d7b-0db78537d483.png" alt="Embossed plastic panel with unit information" className="w-full h-full object-cover rounded-xl border" />
                 </AspectRatio>
                 
                 {/* AI Reading Results */}
@@ -211,35 +199,24 @@ export function InventorySuppliesShowcase() {
                 <li>Bulk, individual, and hybrid tracking in one system</li>
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
-                <li>Padlock detection and overdue padlock alerts</li>
-                <li>Auto‑sync totals, real‑time updates across products</li>
+                <li>Padlock tracking and "zip-locked upon drop-off" notation</li>
+                <li>Instant clarity on status — available, assigned, service</li>
                 <li>Offline scans attach to units and sync later</li>
               </ul>
             </div>
 
             <div className="rounded-2xl border border-border p-5">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">What customers love</h4>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Instant clarity on status — available, assigned, service</li>
-                <li>Printable labels that survive worksite conditions</li>
-              </ul>
+              
             </div>
 
-            <div className="rounded-2xl border border-border p-5">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Quick Facts</h4>
-              <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>No signal needed:</strong> Scan brand-new QR codes or snap photos of embossed text/serials; everything saves locally.</li>
-                <li><strong>Smart PortaPro QRs:</strong> On-device decode reveals the unit ID + a signed token, so the app can recognize and create/link records offline.</li>
-                <li><strong>Third-party QRs:</strong> If it's just a web link, we still decode and save it offline; details load once you're online.</li>
-                <li><strong>Auto-sync on reconnect:</strong> We verify the signature, run Google Vision OCR on saved photos, upload images, and update records. (Or tap Sync Now anytime.)</li>
-                <li><strong>Built as a PWA:</strong> App shell is cached for offline use; scans/photos queue safely in IndexedDB with retry logic.</li>
-              </ul>
+            <div className="flex gap-3">
+              <Button className="bg-gradient-blue text-white">Explore Inventory</Button>
+              <Button variant="outline">See a live demo</Button>
             </div>
           </aside>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }
-
 export default InventorySuppliesShowcase;
