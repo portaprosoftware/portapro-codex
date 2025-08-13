@@ -12,7 +12,6 @@ export const QuoteToJobShowcase: React.FC = () => {
   return (
     <div className="space-y-10">
       <header className="space-y-2 text-center">
-        <p className="text-xs font-medium text-muted-foreground tracking-wide uppercase">Quotes & Payments</p>
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job, in one flow</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
           Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
