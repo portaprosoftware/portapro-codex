@@ -15,11 +15,9 @@ export const LandingLogo: React.FC<LandingLogoProps> = ({
     <div className={`flex items-center ${className}`}>
       <div className="h-8 flex items-center justify-start overflow-hidden">
         <img 
-          src="/lovable-uploads/62bc6422-ca64-450b-b038-8217a9bb2d17.png" 
+          src="/lovable-uploads/bba9759b-f689-4bca-9769-3fdfdb280b94.png" 
           alt="PortaPro logo" 
           className="h-full w-auto object-contain"
-          onLoad={() => console.log('PortaPro logo loaded successfully')}
-          onError={(e) => console.error('PortaPro logo failed to load:', e)}
         />
       </div>
     </div>
