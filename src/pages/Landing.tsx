@@ -1048,12 +1048,12 @@ export const Landing: React.FC = () => {
                         Billed annually (${(completePackage.price.annual * 12).toLocaleString()}/year) - Save $600/year
                       </div>}
                   </div>
-                  <CardDescription className="text-gray-700 font-bold mb-4">{completePackage.description}</CardDescription>
+                  <CardDescription className="text-gray-700 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
                 <div className="mt-0 mb-4 flex items-center justify-center gap-3 relative z-10">
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-base px-4 py-2">14-day trial</Badge>
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-base px-4 py-2">Full support included</Badge>
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-base px-4 py-2">No contracts required</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">14-day trial</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">Full support included</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">No contracts required</Badge>
                 </div>
                 <CardContent className="space-y-4 relative z-10">
                   <ul className="grid grid-cols-2 gap-3">
