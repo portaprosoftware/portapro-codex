@@ -416,8 +416,62 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </section>
 
-      {/* Group 1: Core Features - Blue */}
+      {/* Group 1: Operations Features - Blue */}
       <section id="features" className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Operations Features</h2>
+            <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {servicesFeatures.map((feature, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Detailed Sections for Group 1: Operations Features */}
+
+      {/* Inventory & Supplies - White */}
+      <InventorySuppliesShowcase />
+
+      {/* Consumables - White */}
+      <ConsumablesShowcase />
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
+      {/* Services Hub - White */}
+      <ServicesHubShowcase />
+
+      {/* Marketing Tools - White */}
+      <MarketingShowcase />
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t border-border"></div>
+        </div>
+      </div>
+
+      {/* Group 2: Core Features - Blue */}
+      <section className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">Core Workflow Features</h2>
@@ -442,7 +496,7 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </section>
 
-      {/* Detailed Sections for Group 1: Core Features */}
+      {/* Detailed Sections for Group 2: Core Features */}
 
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-8 bg-white">
