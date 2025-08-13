@@ -1011,8 +1011,8 @@ export const Landing: React.FC = () => {
       {/* Pricing - Blue */}
       <section id="pricing" className="py-4 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-8">
-            <div className="space-y-4">
+          <div className="text-center space-y-4">
+            <div className="space-y-2">
               <h2 className="text-3xl lg:text-4xl font-bold text-white">
                 Simple, Transparent Pricing
               </h2>
