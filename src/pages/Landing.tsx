@@ -501,6 +501,13 @@ const scrollToSection = (sectionId: string) => {
       {/* Inventory & Supplies - White */}
       <InventorySuppliesShowcase />
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
       {/* Consumables - White */}
       <ConsumablesShowcase />
 
@@ -523,13 +530,6 @@ const scrollToSection = (sectionId: string) => {
 
       {/* Marketing Tools - White */}
       <MarketingShowcase />
-
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t-2 border-border"></div>
-        </div>
-      </div>
 
       {/* Group 2: Core Features - Blue */}
       <div id="core-workflow-features" />
@@ -608,13 +608,6 @@ const scrollToSection = (sectionId: string) => {
           <DriverAppShowcase />
         </div>
       </section>
-
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t-2 border-border"></div>
-        </div>
-      </div>
 
       {/* Group 3: Management Features - Blue */}
       <div id="management-features" />
@@ -1050,13 +1043,6 @@ const scrollToSection = (sectionId: string) => {
 
       {/* Company Analytics - White */}
       <CompanyAnalyticsShowcase />
-
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t-2 border-border"></div>
-        </div>
-      </div>
 
 
 
