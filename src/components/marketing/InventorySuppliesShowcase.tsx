@@ -123,9 +123,9 @@ export function InventorySuppliesShowcase() {
 
                     <div className="rounded-xl border border-border p-3">
                       <div className="text-sm font-medium">QR Label</div>
-                      <div className="mt-2 rounded-lg border border-dashed p-3 text-sm">
-                        PT‑1234 • Satellite
-                      </div>
+                       <div className="mt-2 rounded-lg border border-dashed p-3 text-sm">
+                         PT‑1232 • Standard Porta Potty
+                       </div>
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" className="bg-gradient-blue text-white">Generate</Button>
                         <Button size="sm" variant="outline">Print</Button>
