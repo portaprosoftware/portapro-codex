@@ -453,17 +453,119 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </section>
 
-      {/* Why PortaPro - White */}
-      <section id="about" className="py-2 bg-white">
+      {/* Proof Bar + Trust strip + Switching is easy - White */}
+      <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center space-y-8">
-            <div className="grid sm:grid-cols-3 gap-8">
-              {whyPortaPro.map((item, index) => (
-                <div key={index} className="text-center space-y-2">
-                  <h3 className="font-semibold text-lg text-foreground">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
+          {/* Proof Bar */}
+          <div className="mb-4">
+            <div className="sr-only">Proof Bar</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {/* Industry-Focused */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <ClipboardList className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
+                    <p className="text-xs text-muted-foreground">Built for portable toilet rentals—units, routes, invoices.</p>
+                  </div>
                 </div>
-              ))}
+              </article>
+
+              {/* Affordable Plans */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <DollarSign className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Affordable Plans</h3>
+                    <p className="text-xs text-muted-foreground">Start small, scale up—no hidden fees.</p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Friendly Support */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <Phone className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
+                    <p className="text-xs text-muted-foreground">Email, chat, or call anytime.</p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Photo/GPS Proof */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <Camera className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Photo/GPS Proof</h3>
+                    <p className="text-xs text-muted-foreground">Every clean comes with evidence.</p>
+                  </div>
+                </div>
+              </article>
+
+              {/* DVIR + Maintenance */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <Wrench className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">DVIR + Maintenance</h3>
+                    <p className="text-xs text-muted-foreground">Driver inspections, work orders, and PM in one place.</p>
+                  </div>
+                </div>
+              </article>
+
+              {/* Fast Billing */}
+              <article className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-md bg-muted text-foreground flex items-center justify-center">
+                    <Zap className="h-4 w-4 opacity-80" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Fast Billing</h3>
+                    <p className="text-xs text-muted-foreground">Quote → (deposit) → job → invoice → pay.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          {/* Trust strip */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">14-day free trial</span>
+            <span className="opacity-50">•</span>
+            <span>Cancel anytime</span>
+            <span className="opacity-50">•</span>
+            <span>No setup fees</span>
+            <span className="opacity-50">•</span>
+            <span>Unlimited users</span>
+            <span className="opacity-50">•</span>
+            <span>Data export anytime</span>
+          </div>
+
+          {/* Switching is easy */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">Free import assistance</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">1:1 onboarding calls</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">Template libraries included</span>
             </div>
           </div>
         </div>
