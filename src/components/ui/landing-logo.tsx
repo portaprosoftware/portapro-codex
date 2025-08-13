@@ -15,7 +15,7 @@ export const LandingLogo: React.FC<LandingLogoProps> = ({
     <div className={`flex items-center ${className}`}>
       <div className="h-8 flex items-center justify-start overflow-hidden">
         <img 
-          src="/lovable-uploads/bba9759b-f689-4bca-9769-3fdfdb280b94.png" 
+          src="/lovable-uploads/8fecc290-9e53-4e50-a078-5c2fba112c80.png" 
           alt="PortaPro logo" 
           className="h-full w-auto object-contain"
         />
