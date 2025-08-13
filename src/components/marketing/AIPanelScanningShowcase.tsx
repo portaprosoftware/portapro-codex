@@ -10,10 +10,10 @@ export const AIPanelScanningShowcase: React.FC = () => {
   ];
 
   const reads = [
-    'Tool Numbers (T-20788-1A)',
-    'Vendor IDs (ABC Manufacturing)',
-    'Serial numbers',
-    'Manufacture dates',
+    { title: 'Tool Numbers', subtitle: '(T-20788-1A)' },
+    { title: 'Vendor IDs', subtitle: '(ABC Manufacturing)' },
+    { title: 'Serial numbers', subtitle: null },
+    { title: 'Manufacture dates', subtitle: null },
   ];
 
   return (
@@ -102,7 +102,10 @@ export const AIPanelScanningShowcase: React.FC = () => {
               <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                 <CheckCircle className="w-4 h-4" />
               </div>
-              <span className="text-sm font-medium text-foreground">{item}</span>
+              <div className="text-sm font-medium text-foreground">
+                <div>{item.title}</div>
+                {item.subtitle && <div className="text-xs text-muted-foreground">{item.subtitle}</div>}
+              </div>
             </div>
           ))}
         </div>
