@@ -12,10 +12,7 @@ export function FeaturesMegaMenu() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button 
-          className={cn(
-            "text-sm font-medium shadow-none hover:shadow-none bg-transparent hover:bg-muted/50 transition-colors hover:scale-105 transform duration-200 flex items-center gap-1",
-            open && "bg-muted/50"
-          )}
+          className="text-sm font-medium shadow-none hover:shadow-none bg-transparent hover:bg-muted/50 transition-colors hover:scale-105 transform duration-200 flex items-center gap-1"
           aria-expanded={open}
         >
           Features
