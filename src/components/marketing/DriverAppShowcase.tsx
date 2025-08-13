@@ -22,7 +22,6 @@ export const DriverAppShowcase: React.FC = () => {
   return (
     <section aria-label="Driver Mobile App" className="space-y-10">
       <header className="space-y-2 text-center">
-        <p className="text-xs font-medium text-muted-foreground tracking-wide uppercase">Mobile</p>
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Driver Mobile App — built for the field</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
           Mobile-first routing, one-tap GPS navigation, satellite map pins for precise drop-offs, and full offline mode with service reports.
@@ -31,7 +30,7 @@ export const DriverAppShowcase: React.FC = () => {
 
       <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
         {/* Left: Phone mock with stack of feature screens */}
-        <main className="space-y-6">
+        <main className="space-y-3">
           <AspectRatio ratio={9/16}>
             <div className="rounded-[2rem] border bg-card shadow-lg overflow-hidden relative animate-enter">
               {/* Phone top bar */}
