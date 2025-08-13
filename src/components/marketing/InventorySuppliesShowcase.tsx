@@ -147,11 +147,42 @@ export function InventorySuppliesShowcase() {
               <div className="flex items-center gap-2 text-sm font-medium mb-2">
                 <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
               </div>
-              <AspectRatio ratio={16/9}>
-                <div className="w-full h-full rounded-xl bg-muted grid place-items-center text-sm text-muted-foreground">
-                  Mock demo — coming soon
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Photo of embossed panel */}
+                <AspectRatio ratio={4/5}>
+                  <img 
+                    src="/lovable-uploads/47061b38-ad88-4a95-9d7b-0db78537d483.png"
+                    alt="Embossed plastic panel with unit information"
+                    className="w-full h-full object-cover rounded-xl border"
+                  />
+                </AspectRatio>
+                
+                {/* AI Reading Results */}
+                <div className="space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground mb-2">AI Reading Results:</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Unit No:</span>
+                      <span className="font-medium text-foreground">PT-1234</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Vendor:</span>
+                      <span className="font-medium text-foreground">ABC Manufacturing</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Serial No:</span>
+                      <span className="font-medium text-foreground">7A-221</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Mfg Date:</span>
+                      <span className="font-medium text-foreground">2025-02</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="text-xs text-green-700 font-medium">✓ Successfully tracked</div>
+                  </div>
                 </div>
-              </AspectRatio>
+              </div>
             </div>
           </div>
 
