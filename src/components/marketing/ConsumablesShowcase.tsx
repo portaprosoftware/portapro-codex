@@ -25,7 +25,7 @@ export const ConsumablesShowcase: React.FC = () => {
 
               {/* Segmented control mock */}
               <div className="inline-flex rounded-xl border bg-background p-1 text-sm mb-4">
-                <button className="px-3 py-1 rounded-lg bg-primary/10 text-primary font-medium">Included (bundled)</button>
+                <button className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-md">Included (bundled)</button>
                 <button className="px-3 py-1 rounded-lg text-foreground">Itemized actuals</button>
                 <button className="px-3 py-1 rounded-lg text-foreground">Kit fee (+ overage)</button>
               </div>
@@ -40,7 +40,7 @@ export const ConsumablesShowcase: React.FC = () => {
                 </ul>
 
                 <div className="mt-3 grid sm:grid-cols-3 gap-2 text-xs">
-                  <div className="rounded-lg bg-primary/10 text-primary px-3 py-2">Included: Hidden on invoice; usage tracked</div>
+                  <div className="rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold px-3 py-2 shadow-md">Included: Hidden on invoice; usage tracked</div>
                   <div className="rounded-lg bg-secondary/10 text-secondary-foreground px-3 py-2">Itemized: Per unit pricing; tech can adjust</div>
                   <div className="rounded-lg bg-accent/10 text-accent-foreground px-3 py-2">Kit: Flat fee + auto overage</div>
                 </div>
