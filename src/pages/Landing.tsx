@@ -242,7 +242,12 @@ export const Landing: React.FC = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({
+      const headerHeight = 56; // Account for sticky header
+      const additionalOffset = 40; // Additional white space above title
+      const targetPosition = element.offsetTop - headerHeight - additionalOffset;
+      
+      window.scrollTo({
+        top: targetPosition,
         behavior: 'smooth'
       });
     }
