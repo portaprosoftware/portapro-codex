@@ -152,7 +152,7 @@ export function InventorySuppliesShowcase() {
                 {/* Photo of embossed panel */}
                  <AspectRatio ratio={4/5}>
                    <img 
-                     src="/lovable-uploads/f6ce03b7-e310-497c-9b09-9e524c0a4539.png"
+                     src="/lovable-uploads/9fdaf359-12c1-4da4-a23d-5026d4aab569.png"
                      alt="Embossed plastic panel with unit information"
                      className="w-full h-full object-cover rounded-xl border"
                    />
