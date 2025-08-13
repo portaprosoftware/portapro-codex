@@ -24,22 +24,22 @@ export function CompanyAnalyticsShowcase() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 gap-12 items-start">
           {/* Left Column - Interactive Demonstrations */}
           <div className="space-y-8">
             {/* Navigation & Controls Demo */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white animate-fade-in">
+            <Card className="border border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-blue-800 flex items-center gap-2">
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <Filter className="w-5 h-5" />
                   Navigation & Controls
                 </CardTitle>
-                <CardDescription>Persistent date range and filtering across all tabs</CardDescription>
+                <CardDescription className="text-muted-foreground">Persistent date range and filtering across all tabs</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Mock Tab Navigation */}
-                <div className="flex flex-wrap gap-1 p-2 bg-gray-100 rounded-lg">
-                  <Badge variant="default" className="bg-blue-600 text-white px-3 py-1">Overview</Badge>
+                <div className="flex flex-wrap gap-1 p-2 bg-muted/30 rounded-lg">
+                  <Badge variant="outline" className="px-3 py-1">Overview</Badge>
                   <Badge variant="outline" className="px-3 py-1">Revenue</Badge>
                   <Badge variant="outline" className="px-3 py-1">Operations</Badge>
                   <Badge variant="outline" className="px-3 py-1">Customers</Badge>
@@ -48,87 +48,87 @@ export function CompanyAnalyticsShowcase() {
                 </div>
                 
                 {/* Mock Date Range Picker */}
-                <div className="flex items-center gap-3 p-3 bg-white border rounded-lg">
-                  <div className="text-sm text-gray-600">Date Range:</div>
+                <div className="flex items-center gap-3 p-3 bg-card border rounded-lg">
+                  <div className="text-sm text-muted-foreground">Date Range:</div>
                   <Badge variant="outline">Last 30 Days</Badge>
-                  <Badge variant="outline" className="text-blue-600">Compare to previous period</Badge>
+                  <Badge variant="outline">Compare to previous period</Badge>
                 </div>
 
                 {/* Mock Active Filters */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-gray-600">Active filters:</span>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">Service Type: Deliveries</Badge>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">Route: Zone A</Badge>
+                  <span className="text-sm text-muted-foreground">Active filters:</span>
+                  <Badge variant="outline">Service Type: Deliveries</Badge>
+                  <Badge variant="outline">Route: Zone A</Badge>
                 </div>
               </CardContent>
             </Card>
 
             {/* Overview Dashboard Demo */}
-            <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-white animate-fade-in">
+            <Card className="border border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-green-800 flex items-center gap-2">
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <BarChart3 className="w-5 h-5" />
                   Overview Dashboard
                 </CardTitle>
-                <CardDescription>Real-time KPIs with sparklines and delta indicators</CardDescription>
+                <CardDescription className="text-muted-foreground">Real-time KPIs with sparklines and delta indicators</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Mock KPI Cards Grid */}
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Jobs Completed</div>
-                    <div className="text-lg font-bold text-blue-600 flex items-center gap-2">
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Jobs Completed</div>
+                    <div className="text-lg font-bold text-foreground flex items-center gap-2">
                       247
-                      <Sparkline data={jobsSparklineData} color="#3B82F6" height={16} />
+                      <Sparkline data={jobsSparklineData} color="hsl(var(--muted-foreground))" height={16} />
                     </div>
-                    <div className="text-xs text-green-600">▲ 15.2%</div>
+                    <div className="text-xs text-muted-foreground">▲ 15.2%</div>
                   </div>
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Collected Revenue</div>
-                    <div className="text-lg font-bold text-green-600 flex items-center gap-2">
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Collected Revenue</div>
+                    <div className="text-lg font-bold text-foreground flex items-center gap-2">
                       $42.1k
-                      <Sparkline data={revenueSparklineData} color="#10B981" height={16} />
+                      <Sparkline data={revenueSparklineData} color="hsl(var(--muted-foreground))" height={16} />
                     </div>
-                    <div className="text-xs text-green-600">▲ 22.8%</div>
+                    <div className="text-xs text-muted-foreground">▲ 22.8%</div>
                   </div>
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">On-time Service Rate</div>
-                    <div className="text-lg font-bold text-orange-600">94.2%</div>
-                    <div className="text-xs text-green-600">▲ 3.1%</div>
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">On-time Service Rate</div>
+                    <div className="text-lg font-bold text-foreground">94.2%</div>
+                    <div className="text-xs text-muted-foreground">▲ 3.1%</div>
                   </div>
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Active Customers</div>
-                    <div className="text-lg font-bold text-purple-600">156</div>
-                    <div className="text-xs text-green-600">▲ 8.7%</div>
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Active Customers</div>
+                    <div className="text-lg font-bold text-foreground">156</div>
+                    <div className="text-xs text-muted-foreground">▲ 8.7%</div>
                   </div>
                 </div>
 
-                {/* Mock Stacked Bar Chart */}
-                <div className="p-3 bg-white border rounded-lg">
-                  <div className="text-sm font-medium mb-2">Job Volume (7 days)</div>
+                {/* Mock Stacked Bar Chart (neutral screenshot style) */}
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-sm font-medium mb-2 text-foreground">Job Volume (7 days)</div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded"></div>
-                      <span className="text-xs">Deliveries (45%)</span>
+                      <div className="w-2 h-2 bg-muted rounded"></div>
+                      <span className="text-xs text-muted-foreground">Deliveries</span>
                     </div>
-                    <div className="h-6 bg-gray-100 rounded overflow-hidden flex">
-                      <div className="bg-blue-500 w-[45%]"></div>
-                      <div className="bg-green-500 w-[25%]"></div>
-                      <div className="bg-orange-500 w-[20%]"></div>
-                      <div className="bg-purple-500 w-[10%]"></div>
+                    <div className="h-6 bg-muted/30 rounded overflow-hidden flex">
+                      <div className="bg-muted w-[45%]"></div>
+                      <div className="bg-muted/80 w-[25%]"></div>
+                      <div className="bg-muted/60 w-[20%]"></div>
+                      <div className="bg-muted/40 w-[10%]"></div>
                     </div>
-                    <div className="flex items-center gap-4 text-xs">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded"></div>
-                        <span>Pickups (25%)</span>
+                        <div className="w-2 h-2 bg-muted rounded"></div>
+                        <span>Pickups</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-orange-500 rounded"></div>
-                        <span>Services (20%)</span>
+                        <div className="w-2 h-2 bg-muted rounded"></div>
+                        <span>Services</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-purple-500 rounded"></div>
-                        <span>Returns (10%)</span>
+                        <div className="w-2 h-2 bg-muted rounded"></div>
+                        <span>Returns</span>
                       </div>
                     </div>
                   </div>
@@ -137,47 +137,47 @@ export function CompanyAnalyticsShowcase() {
             </Card>
 
             {/* Revenue Deep-dive */}
-            <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white animate-fade-in">
+            <Card className="border border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-emerald-800 flex items-center gap-2">
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
                   Revenue Analytics
                 </CardTitle>
-                <CardDescription>Financial performance with A/R aging and collection rates</CardDescription>
+                <CardDescription className="text-muted-foreground">Financial performance with A/R aging and collection rates</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Total Invoiced</div>
-                    <div className="text-lg font-bold text-blue-600">$48.7k</div>
-                    <div className="text-xs text-green-600">▲ 18.5%</div>
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
+                    <div className="text-lg font-bold text-foreground">$48.7k</div>
+                    <div className="text-xs text-muted-foreground">▲ 18.5%</div>
                   </div>
-                  <div className="p-3 bg-white border rounded-lg">
-                    <div className="text-xs text-gray-600 mb-1">Collection Rate</div>
-                    <div className="text-lg font-bold text-green-600">86.4%</div>
-                    <div className="text-xs text-green-600">▲ 4.2%</div>
+                  <div className="p-3 bg-card border rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
+                    <div className="text-lg font-bold text-foreground">86.4%</div>
+                    <div className="text-xs text-muted-foreground">▲ 4.2%</div>
                   </div>
                 </div>
                 
-                {/* A/R Aging Preview */}
-                <div className="p-3 bg-white border rounded-lg">
-                  <div className="text-sm font-medium mb-2">A/R Aging Breakdown</div>
+                {/* A/R Aging Preview (neutral) */}
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-sm font-medium mb-2 text-foreground">A/R Aging Breakdown</div>
                   <div className="space-y-1">
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>0-30 days</span>
-                      <span className="font-medium">$4.2k (64%)</span>
+                      <span className="font-medium text-foreground">$4.2k (64%)</span>
                     </div>
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>31-60 days</span>
-                      <span className="font-medium">$1.8k (27%)</span>
+                      <span className="font-medium text-foreground">$1.8k (27%)</span>
                     </div>
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>61-90 days</span>
-                      <span className="font-medium">$0.4k (6%)</span>
+                      <span className="font-medium text-foreground">$0.4k (6%)</span>
                     </div>
-                    <div className="flex justify-between text-xs">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>90+ days</span>
-                      <span className="font-medium text-red-600">$0.2k (3%)</span>
+                      <span className="font-medium text-foreground">$0.2k (3%)</span>
                     </div>
                   </div>
                 </div>
@@ -185,13 +185,13 @@ export function CompanyAnalyticsShowcase() {
             </Card>
 
             {/* Reports Hub */}
-            <Card className="border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-white animate-fade-in">
+            <Card className="border border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-violet-800 flex items-center gap-2">
+                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   One-Click Reports
                 </CardTitle>
-                <CardDescription>Ready-to-use reports instead of blank builders</CardDescription>
+                <CardDescription className="text-muted-foreground">Ready-to-use reports instead of blank builders</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
@@ -201,10 +201,10 @@ export function CompanyAnalyticsShowcase() {
                     { name: "Revenue & AR", desc: "Invoiced, collected, aging table" },
                     { name: "Customer Service Pack", desc: "Service logs & photos by customer/date" }
                   ].map((report, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-2 bg-white border rounded">
+                    <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded">
                       <div>
-                        <div className="text-sm font-medium">{report.name}</div>
-                        <div className="text-xs text-gray-600">{report.desc}</div>
+                        <div className="text-sm font-medium text-foreground">{report.name}</div>
+                        <div className="text-xs text-muted-foreground">{report.desc}</div>
                       </div>
                       <div className="flex gap-1">
                         <Button size="sm" variant="outline" className="text-xs px-2 py-1">
@@ -221,121 +221,32 @@ export function CompanyAnalyticsShowcase() {
             </Card>
           </div>
 
-          {/* Right Column - KPIs and Highlights */}
-          <div className="space-y-8">
-            {/* KPIs Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <StatCard
-                title="Dashboard Tabs"
-                value="6"
-                icon={BarChart3}
-                gradientFrom="from-blue-600"
-                gradientTo="to-blue-800"
-                iconBg="bg-blue-100"
-                subtitle="Complete coverage"
-              />
-              <StatCard
-                title="KPI Metrics"
-                value="24+"
-                icon={TrendingUp}
-                gradientFrom="from-green-600"
-                gradientTo="to-green-800"
-                iconBg="bg-green-100"
-                subtitle="Real-time tracking"
-              />
-              <StatCard
-                title="One-Click Reports"
-                value="4"
-                icon={FileText}
-                gradientFrom="from-purple-600"
-                gradientTo="to-purple-800"
-                iconBg="bg-purple-100"
-                subtitle="Ready to export"
-              />
-              <StatCard
-                title="Export Formats"
-                value="CSV/PDF"
-                icon={Download}
-                gradientFrom="from-orange-600"
-                gradientTo="to-orange-800"
-                iconBg="bg-orange-100"
-                subtitle="Instant downloads"
-              />
-            </div>
-
-            {/* Features Highlights */}
-            <Card className="border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">Complete Analytics Features</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[
-                    "6 comprehensive tabs: Overview, Revenue, Operations, Customers, Drivers, Reports",
-                    "Persistent date range controls with period comparisons",
-                    "Real-time KPIs with sparklines and delta indicators (▲▼)",
-                    "Consistent color coding: Deliveries=blue, Pickups=green, Services=orange, Returns=purple",
-                    "Click-to-filter: any chart element creates filter chips",
-                    "4 ready-to-use reports (Daily Ops, Weekly KPI, Revenue & AR, Customer Service)",
-                    "CSV/PDF export for all data and reports",
-                    "Zero \"coming soon\" placeholders—every feature works today"
-                  ].map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Testimonial Box */}
-            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-blue-800">What operations teams love</h3>
-                  <div className="space-y-3">
-                    <blockquote className="text-sm italic text-blue-700">
-                      "Finally, analytics that make sense for our business"
-                    </blockquote>
-                    <blockquote className="text-sm italic text-blue-700">
-                      "One-click reports save hours every week"
-                    </blockquote>
-                    <blockquote className="text-sm italic text-blue-700">
-                      "Date range controls work across every tab"
-                    </blockquote>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="space-y-3">
+          {/* Actions */}
+          <div className="space-y-3">
+            <Button 
+              className="w-full"
+              onClick={() => window.open('/analytics', '_self')}
+            >
+              Open Analytics Dashboard
+              <BarChart3 className="w-4 h-4 ml-2" />
+            </Button>
+            <div className="grid grid-cols-2 gap-3">
               <Button 
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium hover:from-blue-700 hover:to-blue-900"
-                onClick={() => window.open('/analytics', '_self')}
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open('/analytics?tab=reports', '_self')}
               >
-                Open Analytics Dashboard
-                <BarChart3 className="w-4 h-4 ml-2" />
+                View Reports
+                <FileText className="w-4 h-4 ml-2" />
               </Button>
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.open('/analytics?tab=reports', '_self')}
-                >
-                  View Reports
-                  <FileText className="w-4 h-4 ml-2" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => alert('Demo CSV export triggered')}
-                >
-                  Export Data
-                  <Download className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => alert('Demo CSV export triggered')}
+              >
+                Export Data
+                <Download className="w-4 h-4 ml-2" />
+              </Button>
             </div>
           </div>
         </div>
