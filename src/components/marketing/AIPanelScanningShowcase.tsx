@@ -10,8 +10,8 @@ export const AIPanelScanningShowcase: React.FC = () => {
   ];
 
   const reads = [
-    'Unit numbers (PT-1234)',
-    'Vendor IDs (Satellite)',
+    'Tool Numbers (T-20788-1A)',
+    'Vendor IDs (ABC Manufacturing)',
     'Serial numbers',
     'Manufacture dates',
   ];
