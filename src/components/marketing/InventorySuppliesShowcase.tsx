@@ -111,10 +111,10 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <AspectRatio ratio={3/4}>
+                     <AspectRatio ratio={1/1}>
                        <img
-                         src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png"
-                         alt="QR code for Standard Porta Potty unit 1001"
+                         src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
+                         alt="QR code for Standard Porta Potty unit 1232"
                          className="w-full h-full object-cover rounded-xl border border-border"
                          loading="lazy"
                          decoding="async"
