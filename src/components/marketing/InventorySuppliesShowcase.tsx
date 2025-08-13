@@ -3,10 +3,8 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
-
 export function InventorySuppliesShowcase() {
-  return (
-    <section id="inventory" className="py-12 bg-white">
+  return <section id="inventory" className="py-12 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
@@ -54,7 +52,8 @@ export function InventorySuppliesShowcase() {
                         <li className="flex items-center justify-between"><span>PT-1235</span><span className="font-medium text-foreground">Assigned</span></li>
                         <li className="flex items-center justify-between"><span>PT-1236</span><span className="font-medium text-foreground">Service</span></li>
                       </ul>
-                      <div className="mt-3 text-xs text-muted-foreground">QR-ready • padlock status visible</div>
+                      <div className="mt-3 text-xs text-muted-foreground">
+                    </div>
                     </div>
 
                     {/* Hybrid mock */}
@@ -111,26 +110,15 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <div className="flex flex-col items-center space-y-3">
-                       <div className="w-3/4">
-                         <AspectRatio ratio={1/1}>
-                           <img
-                             src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
-                             alt="QR code for Standard Porta Potty unit 1232"
-                             className="w-full h-full object-cover rounded-xl border border-border"
-                             loading="lazy"
-                             decoding="async"
-                           />
-                         </AspectRatio>
-                       </div>
-                       <div className="text-sm font-bold text-foreground">PT‑1232 • Standard Porta Potty</div>
-                     </div>
+                     <AspectRatio ratio={4 / 3}>
+                       <img src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png" alt="QR code for Standard Porta Potty unit 1001" className="w-full h-full object-cover rounded-xl border border-border" loading="lazy" decoding="async" />
+                     </AspectRatio>
 
                     <div className="rounded-xl border border-border p-3">
                       <div className="text-sm font-medium">QR Label</div>
-                       <div className="mt-2 rounded-lg border border-dashed p-3 text-sm">
-                         PT‑1232 • Standard Porta Potty
-                       </div>
+                      <div className="mt-2 rounded-lg border border-dashed p-3 text-sm">
+                        PT‑1234 • Satellite
+                      </div>
                       <div className="mt-3 flex gap-2">
                         <Button size="sm" className="bg-gradient-blue text-white">Generate</Button>
                         <Button size="sm" variant="outline">Print</Button>
@@ -138,9 +126,9 @@ export function InventorySuppliesShowcase() {
                       <div className="mt-3 text-xs text-muted-foreground">
                         Works offline — syncs later. Instant attach to units & jobs.
                       </div>
-                       <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                         <Lock className="w-3 h-3" /> Padlock & zip-ties requested status
-                       </div>
+                      <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> Padlock detection & overdue alerts
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -151,41 +139,33 @@ export function InventorySuppliesShowcase() {
             <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
                <div className="rounded-2xl bg-white border border-border p-4">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Numbers & Other Data in Embossed Plastic
+                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                 <AspectRatio ratio={4/5}>
-                   <img 
-                     src="/lovable-uploads/9fdaf359-12c1-4da4-a23d-5026d4aab569.png"
-                     alt="Embossed plastic panel with unit information"
-                     className="w-full h-full object-cover rounded-xl border"
-                   />
-                 </AspectRatio>
+                <AspectRatio ratio={4 / 5}>
+                  <img src="/lovable-uploads/47061b38-ad88-4a95-9d7b-0db78537d483.png" alt="Embossed plastic panel with unit information" className="w-full h-full object-cover rounded-xl border" />
+                </AspectRatio>
                 
                 {/* AI Reading Results */}
                 <div className="space-y-3">
                   <div className="text-xs font-medium text-muted-foreground mb-2">AI Reading Results:</div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
+                      <span className="text-muted-foreground">Unit No:</span>
+                      <span className="font-medium text-foreground">PT-1234</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Vendor:</span>
                       <span className="font-medium text-foreground">ABC Manufacturing</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tool No:</span>
-                      <span className="font-medium text-foreground">T-207788-1A</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Vendor ID:</span>
-                      <span className="font-medium text-foreground">32123</span>
+                      <span className="text-muted-foreground">Serial No:</span>
+                      <span className="font-medium text-foreground">7A-221</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Mfg Date:</span>
-                      <span className="font-medium text-foreground">January 13, 2016</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Plastic:</span>
-                      <span className="font-medium text-foreground">HDPE</span>
+                      <span className="font-medium text-foreground">2025-02</span>
                     </div>
                   </div>
                   <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
@@ -194,9 +174,9 @@ export function InventorySuppliesShowcase() {
                   <div className="mt-3 text-xs text-muted-foreground">
                     Works offline — syncs later. Instant attach to units & jobs.
                   </div>
-                   <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                     <Lock className="w-3 h-3" /> Padlock & zip-ties requested status
-                   </div>
+                  <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Padlock detection & overdue alerts
+                  </div>
                  </div>
                </div>
                </div>
@@ -220,28 +200,24 @@ export function InventorySuppliesShowcase() {
                 <li>Bulk, individual, and hybrid tracking in one system</li>
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
-                <li>Padlock detection and overdue padlock alerts</li>
+                <li>Padlock tracking and "zip-locked upon drop-off" notation</li>
                 <li>Instant clarity on status — available, assigned, service</li>
                 <li>Offline scans attach to units and sync later</li>
               </ul>
             </div>
 
-
             <div className="rounded-2xl border border-border p-5">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Technical Facts</h4>
-              <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>No signal needed:</strong> Scan brand-new QR codes or snap photos of embossed text/serials; everything saves locally.</li>
-                <li><strong>Smart PortaPro QRs:</strong> On-device decode reveals the unit ID + a signed token, so the app can recognize and create/link records offline.</li>
-                <li><strong>Third-party QRs:</strong> If it's just a web link, we still decode and save it offline; details load once you're online.</li>
-                <li><strong>Auto-sync on reconnect:</strong> We verify the signature, run Google Vision OCR on saved photos, upload images, and update records. (Or tap Sync Now anytime.)</li>
-                <li><strong>Built as a PWA:</strong> App shell is cached for offline use; scans/photos queue safely in IndexedDB with retry logic.</li>
-              </ul>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">What customers love</h4>
+              
+            </div>
+
+            <div className="flex gap-3">
+              <Button className="bg-gradient-blue text-white">Explore Inventory</Button>
+              <Button variant="outline">See a live demo</Button>
             </div>
           </aside>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }
-
 export default InventorySuppliesShowcase;
