@@ -16,11 +16,11 @@ export function FeaturesMegaMenu() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>
+          <NavigationMenuTrigger className="text-sm font-medium shadow-none hover:shadow-none bg-transparent hover:bg-muted/50 transition-colors hover:scale-105 transform duration-200">
             Features
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-background border rounded-xl shadow-lg">
+            <div className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-xl shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {featureGroups.map((group, groupIdx) => (
                   <section key={group.key} aria-labelledby={`features-group-${group.key}`}>
