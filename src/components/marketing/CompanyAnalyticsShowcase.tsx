@@ -224,7 +224,6 @@ export function CompanyAnalyticsShowcase() {
           <div className="space-y-3">
             <Button 
               className="w-full"
-              onClick={() => window.open('/analytics', '_self')}
             >
               Open Analytics Dashboard
               <BarChart3 className="w-4 h-4 ml-2" />
@@ -233,7 +232,6 @@ export function CompanyAnalyticsShowcase() {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open('/analytics?tab=reports', '_self')}
               >
                 View Reports
                 <FileText className="w-4 h-4 ml-2" />
@@ -241,7 +239,6 @@ export function CompanyAnalyticsShowcase() {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => alert('Demo CSV export triggered')}
               >
                 Export Data
                 <Download className="w-4 h-4 ml-2" />
