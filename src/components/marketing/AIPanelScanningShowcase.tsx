@@ -63,22 +63,22 @@ export const AIPanelScanningShowcase: React.FC = () => {
           <div className="aspect-square rounded-2xl border bg-card p-6 shadow-lg">
             <div className="space-y-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">PT-1234</div>
-                <div className="text-sm text-muted-foreground">Unit Number</div>
+                <div className="text-2xl font-bold text-foreground">T-20788-1A</div>
+                <div className="text-sm text-muted-foreground">Tool Number</div>
               </div>
               
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Vendor</span>
-                  <span className="font-medium text-foreground">Satellite</span>
+                  <span className="text-sm text-muted-foreground">Manufacturer</span>
+                  <span className="font-medium text-foreground">ABC Manufacturing Inc.</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Serial</span>
-                  <span className="font-medium text-foreground">0012457</span>
+                  <span className="text-sm text-muted-foreground">Vendor ID</span>
+                  <span className="font-medium text-foreground">32123</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Date</span>
-                  <span className="font-medium text-foreground">2021-04</span>
+                  <span className="text-sm text-muted-foreground">Manufacture Date</span>
+                  <span className="font-medium text-foreground">Jan 16, 2016</span>
                 </div>
               </div>
 
