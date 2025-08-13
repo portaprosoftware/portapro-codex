@@ -265,7 +265,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
               <ConsumableCategoryManager />
               <Button 
                 onClick={() => setShowAddModal(true)}
-                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold border-0 shadow-md"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Consumable

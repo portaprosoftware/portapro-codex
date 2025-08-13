@@ -205,14 +205,16 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
               variant={data.templateAssignmentMode === 'automatic' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'automatic' })}
               className={`h-auto p-4 flex flex-col items-center space-y-2 ${
-                data.templateAssignmentMode === 'automatic' ? 'text-white' : ''
+                data.templateAssignmentMode === 'automatic' 
+                  ? 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold border-0 shadow-md' 
+                  : ''
               }`}
             >
               <Star className="w-5 h-5" />
-              <span className="font-medium">Automatic</span>
+              <span className="font-bold">Automatic</span>
               <span className={`text-xs text-center ${
                 data.templateAssignmentMode === 'automatic' 
-                  ? 'text-white/80' 
+                  ? 'text-white font-bold' 
                   : 'text-muted-foreground'
               }`}>
                 Use recommended templates
@@ -222,14 +224,16 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
               variant={data.templateAssignmentMode === 'manual' ? 'default' : 'outline'}
               onClick={() => onUpdate({ ...data, templateAssignmentMode: 'manual' })}
               className={`h-auto p-4 flex flex-col items-center space-y-2 ${
-                data.templateAssignmentMode === 'manual' ? 'text-white' : ''
+                data.templateAssignmentMode === 'manual' 
+                  ? 'bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold border-0 shadow-md' 
+                  : ''
               }`}
             >
               <Plus className="w-5 h-5" />
-              <span className="font-medium">Manual</span>
+              <span className="font-bold">Manual</span>
               <span className={`text-xs text-center ${
                 data.templateAssignmentMode === 'manual' 
-                  ? 'text-white/80' 
+                  ? 'text-white font-bold' 
                   : 'text-muted-foreground'
               }`}>
                 Choose specific templates
@@ -301,8 +305,8 @@ export const ServiceTemplateAssignmentStep: React.FC<ServiceTemplateAssignmentSt
             {applicableTemplates.filter(t => recommendedTypes.includes(t.template_type)).length > 0 && (
               <div>
                 <div className="flex items-center space-x-2 mb-3">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm font-medium text-primary">
+                  <Star className="w-4 h-4 text-white" />
+                  <span className="text-sm font-bold text-white px-3 py-1 bg-gradient-to-r from-blue-700 to-blue-800 rounded-full shadow-md">
                     Recommended for {jobType} jobs
                   </span>
                 </div>
