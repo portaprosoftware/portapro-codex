@@ -23,7 +23,7 @@ export function FeaturesMegaMenu() {
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-xl shadow-lg"
+        className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-gradient-to-b from-muted via-muted to-muted/70 border rounded-xl shadow-lg"
         align="start"
         sideOffset={8}
       >

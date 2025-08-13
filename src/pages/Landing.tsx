@@ -243,11 +243,13 @@ export const Landing: React.FC = () => {
     const element = document.getElementById(sectionId);
     if (element) {
       const headerHeight = 56; // Account for sticky header
-      const additionalOffset = 40; // Additional white space above title
-      const targetPosition = element.offsetTop - headerHeight - additionalOffset;
+      const additionalOffset = 80; // More white space above title
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
       
       window.scrollTo({
-        top: targetPosition,
+        top: Math.max(0, targetPosition),
         behavior: 'smooth'
       });
     }
