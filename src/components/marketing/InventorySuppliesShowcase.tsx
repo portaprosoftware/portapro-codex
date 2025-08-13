@@ -139,7 +139,7 @@ export function InventorySuppliesShowcase() {
                         Works offline — syncs later. Instant attach to units & jobs.
                       </div>
                        <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                         <Lock className="w-3 h-3" /> Padlock & zip-ties requested status
+                          <Lock className="w-3 h-3" /> Padlock & zip-ties status
                        </div>
                     </div>
                   </div>
@@ -195,7 +195,7 @@ export function InventorySuppliesShowcase() {
                     Works offline — syncs later. Instant attach to units & jobs.
                   </div>
                    <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                     <Lock className="w-3 h-3" /> Padlock & zip-ties requested status
+                     <Lock className="w-3 h-3" /> Padlock & zip-ties status
                    </div>
                  </div>
                </div>
