@@ -29,6 +29,7 @@ import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalytic
 import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -210,6 +211,7 @@ export const Landing: React.FC = () => {
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
+  const isMobile = useIsMobile();
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
@@ -1101,7 +1103,13 @@ export const Landing: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold text-white">Product</h4>
               <div className="space-y-2 text-sm text-white/80">
-                <button onClick={() => featuresMegaMenuRef.current?.triggerOpen()} className="block hover:text-white text-left">Features</button>
+                <button onClick={() => {
+                  if (isMobile) {
+                    setFeaturesSheetOpen(true);
+                  } else {
+                    featuresMegaMenuRef.current?.triggerOpen();
+                  }
+                }} className="block hover:text-white text-left">Features</button>
                 <a href="#mobile-app" className="block hover:text-white">Mobile App</a>
               </div>
             </div>
