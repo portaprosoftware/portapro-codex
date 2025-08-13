@@ -8,7 +8,20 @@
   "background_color": "#ffffff",
   "theme_color": "#3B82F6",
   "orientation": "portrait-primary",
-  "icons": [],
+  "icons": [
+    {
+      "src": "/lovable-uploads/bd35069b-599f-4b57-88be-7574eda2adf8.png?v=6",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/lovable-uploads/bd35069b-599f-4b57-88be-7574eda2adf8.png?v=6",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
   "categories": ["productivity", "business"],
   "lang": "en",
   "dir": "ltr"
