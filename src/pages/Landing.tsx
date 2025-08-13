@@ -307,23 +307,24 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
-            <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
-            <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
-          </nav>
-          
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center gap-4">
-            <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
-            </a>
-            <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-gradient-blue text-white text-sm font-medium">
-                Start Free Trial
-              </Button>
-            </a>
+          {/* Desktop Navigation & Auth Buttons */}
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex items-center gap-6">
+              <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
+              <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
+              <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
+            </nav>
+            
+            <div className="flex items-center gap-4">
+              <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
+              </a>
+              <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-gradient-blue text-white text-sm font-medium">
+                  Start Free Trial
+                </Button>
+              </a>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
