@@ -111,15 +111,15 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                    <AspectRatio ratio={4/3}>
-                      <img
-                        src="/lovable-uploads/f550f01a-a436-4f0b-bb81-d3f51b8fe0c0.png"
-                        alt="Embossed plastic AI scan preview for molded panel"
-                        className="w-full h-full object-cover rounded-xl border border-border"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </AspectRatio>
+                     <AspectRatio ratio={4/3}>
+                       <img
+                         src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png"
+                         alt="QR code for Standard Porta Potty unit 1001"
+                         className="w-full h-full object-cover rounded-xl border border-border"
+                         loading="lazy"
+                         decoding="async"
+                       />
+                     </AspectRatio>
 
                     <div className="rounded-xl border border-border p-3">
                       <div className="text-sm font-medium">QR Label</div>
@@ -143,10 +143,11 @@ export function InventorySuppliesShowcase() {
             </div>
 
             {/* Panel D — Photo Scanning */}
-            <div className="rounded-2xl border border-border p-4 animate-fade-in">
-              <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
-              </div>
+            <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
+               <div className="rounded-2xl bg-white border border-border p-4">
+                <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
+                </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
                 <AspectRatio ratio={4/5}>
@@ -181,10 +182,17 @@ export function InventorySuppliesShowcase() {
                   <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
                     <div className="text-xs text-white font-bold">✓ Successfully tracked</div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    Works offline — syncs later. Instant attach to units & jobs.
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Padlock detection & overdue alerts
+                  </div>
+                 </div>
+               </div>
+               </div>
+             </div>
+           </div>
 
           {/* Right: KPIs + Highlights */}
           <aside className="space-y-6 animate-fade-in">
