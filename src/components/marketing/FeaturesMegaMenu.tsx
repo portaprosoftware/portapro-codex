@@ -59,15 +59,6 @@ export function FeaturesMegaMenu() {
                   </section>
                 ))}
               </div>
-
-              <div className="mt-4 flex items-center justify-end gap-4">
-                <a href="/features#whats-new" className="text-xs text-muted-foreground hover:text-foreground">
-                  What’s new
-                </a>
-                <a href="/features" className="text-sm font-medium text-primary hover:underline">
-                  View all features →
-                </a>
-              </div>
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
