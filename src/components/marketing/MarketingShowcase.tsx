@@ -145,7 +145,7 @@ export const MarketingShowcase: React.FC = () => {
                   </div>
                   <div className="grid gap-1 relative">
                     <label className="text-muted-foreground">Timezone</label>
-                    <input className="rounded-lg border bg-card px-3 py-2 overflow-visible whitespace-nowrap min-w-0" placeholder="America/New York EDT" readOnly style={{width: 'auto', minWidth: '140px'}} />
+                    <input className="rounded-lg border bg-card px-3 py-2 overflow-visible whitespace-nowrap min-w-0" placeholder="Eastern / EDT" readOnly style={{width: 'auto', minWidth: '140px'}} />
                   </div>
                 </div>
                 <div className="text-sm text-foreground">
