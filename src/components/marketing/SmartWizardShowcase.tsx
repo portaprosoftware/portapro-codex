@@ -178,12 +178,12 @@ export const SmartWizardShowcase: React.FC = () => {
 
                   {/* Tiny calendar mock */}
                   <div className="mt-2 grid grid-cols-7 gap-1 text-center">
-                    {['S','M','T','W','T','F','S'].map((d) => (
-                      <div key={d} className="text-[10px] text-muted-foreground">{d}</div>
+                    {['S','M','T','W','T','F','S'].map((d, idx) => (
+                      <div key={`day-${idx}`} className="text-[10px] text-muted-foreground">{d}</div>
                     ))}
                     {Array.from({ length: 28 }).map((_, i) => (
                       <div
-                        key={i}
+                        key={`date-${i}`}
                         className={[
                           'h-6 rounded-md text-[10px] flex items-center justify-center',
                           i === 7 || i === 9 || i === 11 ? 'bg-primary text-primary-foreground' : 'bg-muted/30 text-muted-foreground',

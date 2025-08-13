@@ -240,19 +240,21 @@ export const Landing: React.FC = () => {
     }
   };
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerHeight = 56; // Account for sticky header
-      const additionalOffset = 120; // Even more white space above title
-      const elementRect = element.getBoundingClientRect();
-      const absoluteElementTop = elementRect.top + window.pageYOffset;
-      const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
-      
-      window.scrollTo({
-        top: Math.max(0, targetPosition),
-        behavior: 'smooth'
-      });
-    }
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const headerHeight = 56;
+        const additionalOffset = 120;
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
+        
+        window.scrollTo({
+          top: Math.max(0, targetPosition),
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Team KPIs (live) for landing visualizations
