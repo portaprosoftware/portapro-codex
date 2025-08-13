@@ -45,6 +45,8 @@ import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 
 
+import Features from './pages/Features';
+
 const App = () => {
   return (
     <ErrorBoundary>
@@ -59,7 +61,7 @@ const App = () => {
           {/* Landing Page Route - should be accessible without auth */}
           <Route path="/landing" element={<Landing />} />
           <Route path="/help" element={<Help />} />
-          
+          <Route path="/features" element={<Features />} />
           {/* Authentication Route */}
           <Route path="/auth" element={<Auth />} />
           

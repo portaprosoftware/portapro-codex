@@ -27,6 +27,8 @@ import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
+import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
+import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -205,6 +207,7 @@ export const Landing: React.FC = () => {
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
+  const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
 
   // Date string used across sections
@@ -301,50 +304,7 @@ export const Landing: React.FC = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
-          <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">
-                  Features
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[320px] p-3">
-                <div className="space-y-2">
-                  <button onClick={() => scrollToSection('operations-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
-                    Operations Features
-                  </button>
-                  <div className="grid grid-cols-1">
-                    <DropdownMenuItem onSelect={() => scrollToSection('inventory')}>Inventory & Supplies</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('consumables')}>Consumables</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('services-hub')}>Services Hub</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('marketing')}>Marketing Tools</DropdownMenuItem>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <div className="space-y-2">
-                  <button onClick={() => scrollToSection('core-workflow-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
-                    Core Workflow Features
-                  </button>
-                  <div className="grid grid-cols-1">
-                    <DropdownMenuItem onSelect={() => scrollToSection('ai-scanning')}>Google Vision AI</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('job-wizard')}>Smart Job Wizard</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('quotes')}>Quotes & Payments</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('mobile-app')}>Driver Mobile App</DropdownMenuItem>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <div className="space-y-2">
-                  <button onClick={() => scrollToSection('management-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
-                    Management Features
-                  </button>
-                  <div className="grid grid-cols-1">
-                    <DropdownMenuItem onSelect={() => scrollToSection('fleet-management')}>Fleet Management</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('team-management')}>Team Management</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('customer-portal')}>Customer Dashboard & Portal</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => scrollToSection('company-analytics')}>Company Analytics</DropdownMenuItem>
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <FeaturesMegaMenu />
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
             <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
             <a href="#tour" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
@@ -372,7 +332,7 @@ export const Landing: React.FC = () => {
         {mobileMenuOpen && <div className="md:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
-                <a href="#features" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</a>
+                <button onClick={() => { setFeaturesSheetOpen(true); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Features</button>
                 <a href="#pricing" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
                 <button onClick={() => setQuestionsFormOpen(true)} className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
                 <a href="#tour" className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch Tour</a>
@@ -388,6 +348,8 @@ export const Landing: React.FC = () => {
             </div>
           </div>}
       </header>
+
+      <FeaturesSheet open={featuresSheetOpen} onOpenChange={setFeaturesSheetOpen} />
 
       {/* Sticky CTA Button */}
       <div className="fixed bottom-6 right-6 z-50">
