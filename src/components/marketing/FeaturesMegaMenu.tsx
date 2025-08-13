@@ -16,11 +16,8 @@ export function FeaturesMegaMenu() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger asChild>
-            {/* Fallback link ensures navigation without JS */}
-            <a href="/features" aria-expanded={false} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Features
-            </a>
+          <NavigationMenuTrigger>
+            Features
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-background border rounded-xl shadow-lg">
