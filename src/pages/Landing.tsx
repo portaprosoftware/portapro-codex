@@ -19,6 +19,7 @@ import { SmartWizardShowcase } from '@/components/marketing/SmartWizardShowcase'
 import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningShowcase';
 import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
+import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -1012,69 +1013,8 @@ const scrollToSection = (sectionId: string) => {
       {/* Detailed Sections for Group 3: Operations Features */}
 
       {/* Inventory & Supplies - White */}
-      <section id="inventory" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Real-Time Inventory, Wherever You Store It
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Split stock across garages or yards, see availability by date.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                {inventoryFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <feature.icon className="w-6 h-6 text-primary flex-shrink-0" />
-                    <span className="font-medium">{feature.title}</span>
-                  </div>)}
-              </div>
-            </div>
-            
-            <div className="relative">
-              <AutoCarousel media={inventoryMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <InventorySuppliesShowcase />
 
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
-
-      {/* Inventory & Consumables - White */}
-      <section id="inventory" className="py-16 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Real-Time Inventory, Wherever You Store It
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Split stock across garages or yards, see availability by date.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                {inventoryFeatures.map((feature, index) => <div key={index} className="flex items-center gap-3">
-                    <feature.icon className="w-6 h-6 text-primary flex-shrink-0" />
-                    <span className="font-medium">{feature.title}</span>
-                  </div>)}
-              </div>
-            </div>
-            
-            <div className="relative">
-              <AutoCarousel media={inventoryMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Consumables - White */}
       <section id="consumables" className="py-8 bg-white">
