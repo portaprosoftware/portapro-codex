@@ -62,15 +62,14 @@ export const AIPanelScanningShowcase: React.FC = () => {
           <h3 className="text-xl font-semibold text-foreground text-center">2. Get clean data</h3>
           <div className="aspect-square rounded-2xl border bg-card p-6 shadow-lg">
             <div className="space-y-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">T-20788-1A</div>
-                <div className="text-sm text-muted-foreground">Tool Number</div>
-              </div>
-              
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-sm text-muted-foreground">Manufacturer</span>
                   <span className="font-medium text-foreground">ABC Manufacturing Inc.</span>
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                  <span className="text-sm text-muted-foreground">Tool Number</span>
+                  <span className="font-medium text-foreground">T-20788-1A</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-sm text-muted-foreground">Vendor ID</span>
@@ -79,6 +78,10 @@ export const AIPanelScanningShowcase: React.FC = () => {
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-sm text-muted-foreground">Manufacture Date</span>
                   <span className="font-medium text-foreground">Jan 16, 2016</span>
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                  <span className="text-sm text-muted-foreground">Plastic Type</span>
+                  <span className="font-medium text-foreground">HDPE</span>
                 </div>
               </div>
 
