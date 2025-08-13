@@ -24,6 +24,7 @@ import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase'
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
+import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -88,10 +89,10 @@ const managementFeatures = [{
   icon: Users,
   href: "#customer-portal"
 }, {
-  title: "Analytics Dashboard",
-  description: "Real-time insights into revenue, fleet utilization, and performance metrics.",
+  title: "Company Analytics",
+  description: "Complete insights across your entire operation with 6 tabs, 24+ KPIs, and one-click reports.",
   icon: BarChart3,
-  href: "#analytics"
+  href: "#company-analytics"
 }];
 
 // Services & Operations - Section 3 (Blue background)
@@ -916,40 +917,8 @@ const scrollToSection = (sectionId: string) => {
       {/* Customer Dashboard & Portal - White */}
       <CustomerDashboardPortalShowcase />
 
-      {/* Analytics Dashboard - White */}
-      <section id="analytics" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Analytics Dashboard</h2>
-              <p className="text-lg text-muted-foreground">Real-time insights into revenue, fleet utilization, and performance metrics.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Revenue tracking and forecasting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Fleet utilization reports</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Customer analytics and insights</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Performance benchmarking</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
-              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Analytics Dashboard Preview Coming Soon</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Company Analytics - White */}
+      <CompanyAnalyticsShowcase />
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
