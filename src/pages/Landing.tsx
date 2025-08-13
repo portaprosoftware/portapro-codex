@@ -20,6 +20,7 @@ import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningS
 import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
+import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -1017,37 +1018,7 @@ const scrollToSection = (sectionId: string) => {
 
 
       {/* Consumables - White */}
-      <section id="consumables" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Consumables Management</h2>
-              <p className="text-lg text-muted-foreground">Manage toilet paper, sanitizer, and cleaning supplies inventory.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automated inventory tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Reorder alerts and suggestions</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Usage analytics and forecasting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Supplier management and pricing</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
-              <AutoCarousel media={consumablesMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <ConsumablesShowcase />
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
