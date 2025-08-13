@@ -151,7 +151,7 @@ export function InventorySuppliesShowcase() {
             <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
                <div className="rounded-2xl bg-white border border-border p-4">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
+                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Numbers & Other Data in Embossed Plastic
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
