@@ -155,39 +155,35 @@ export function InventorySuppliesShowcase() {
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                 <AspectRatio ratio={4/5}>
-                   <img 
-                     src="/lovable-uploads/4d11b176-789c-48bb-ab0e-6aa2d2cb0632.png"
-                     alt="Embossed plastic panel with manufacturing information"
-                     className="w-full h-full object-cover rounded-xl border"
-                   />
-                 </AspectRatio>
+                  <AspectRatio ratio={4/5}>
+                    <img 
+                      src="/lovable-uploads/8b2f4c93-6dfe-4357-a68d-032dd562a7d3.png"
+                      alt="Embossed plastic panel with manufacturing information"
+                      className="w-full h-full object-cover rounded-xl border"
+                    />
+                  </AspectRatio>
                 
                 {/* AI Reading Results */}
                 <div className="space-y-3">
                   <div className="text-xs font-medium text-muted-foreground mb-2">AI Reading Results:</div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Vendor:</span>
-                      <span className="font-medium text-foreground">ABC Manufacturing</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tool No:</span>
-                      <span className="font-medium text-foreground">T-207788-1A</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Vendor ID:</span>
-                      <span className="font-medium text-foreground">32123</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mfg Date:</span>
-                      <span className="font-medium text-foreground">January 13, 2016</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Plastic:</span>
-                      <span className="font-medium text-foreground">HDPE</span>
-                    </div>
-                  </div>
+                   <div className="space-y-2 text-sm">
+                     <div className="flex justify-between">
+                       <span className="text-muted-foreground">Mfg by:</span>
+                       <span className="font-medium text-foreground">ABC Manufacturing Inc.</span>
+                     </div>
+                     <div className="flex justify-between">
+                       <span className="text-muted-foreground">Tool #:</span>
+                       <span className="font-medium text-foreground">T-20788-1A</span>
+                     </div>
+                     <div className="flex justify-between">
+                       <span className="text-muted-foreground">Vendor ID #:</span>
+                       <span className="font-medium text-foreground">32123</span>
+                     </div>
+                     <div className="flex justify-between">
+                       <span className="text-muted-foreground">Manufacture Date:</span>
+                       <span className="font-medium text-foreground">Jan 16, 2016</span>
+                     </div>
+                   </div>
                   <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
                     <div className="text-xs text-white font-bold">✓ Successfully tracked</div>
                   </div>
@@ -216,9 +212,9 @@ export function InventorySuppliesShowcase() {
 
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
-              <ul className="mt-3 space-y-2 text-sm text-foreground">
-                <li>Bulk, individual, and hybrid tracking in one system</li>
-                <li>Date‑range availability with per‑location allocation</li>
+               <ul className="mt-3 space-y-2 text-sm text-foreground">
+                <li>Tool Numbers (T-20788-1A)</li>
+                <li>Vendor IDs (ABC Manufacturing)</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
                 <li>Padlock detection and overdue padlock alerts</li>
                 <li>Instant clarity on status — available, assigned, service</li>
