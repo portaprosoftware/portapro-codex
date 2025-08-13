@@ -111,7 +111,7 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <AspectRatio ratio={4/3}>
+                     <AspectRatio ratio={3/4}>
                        <img
                          src="/lovable-uploads/cd17251a-5413-4aa2-a592-7f9c085a5ac1.png"
                          alt="QR code for Standard Porta Potty unit 1001"
@@ -150,13 +150,13 @@ export function InventorySuppliesShowcase() {
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                <AspectRatio ratio={4/5}>
-                  <img 
-                    src="/lovable-uploads/4db9f330-dc9b-466a-b3db-0ce5fd206e4b.png"
-                    alt="Embossed plastic panel with unit information"
-                    className="w-full h-full object-cover rounded-xl border"
-                  />
-                </AspectRatio>
+                 <AspectRatio ratio={4/5}>
+                   <img 
+                     src="/lovable-uploads/f6ce03b7-e310-497c-9b09-9e524c0a4539.png"
+                     alt="Embossed plastic panel with unit information"
+                     className="w-full h-full object-cover rounded-xl border"
+                   />
+                 </AspectRatio>
                 
                 {/* AI Reading Results */}
                 <div className="space-y-3">
