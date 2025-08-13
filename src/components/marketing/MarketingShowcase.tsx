@@ -55,9 +55,9 @@ export const MarketingShowcase: React.FC = () => {
                       <span className="px-2 py-1 rounded-md text-foreground">Both</span>
                     </div>
                   </div>
-                  <Button size="sm" className="bg-gradient-blue text-white inline-flex items-center gap-2">
+                  <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default inline-flex items-center gap-2">
                     <Sparkles className="w-4 h-4" /> Generate with AI
-                  </Button>
+                  </div>
                   <div className="text-xs rounded-md bg-muted px-2 py-1 w-max text-muted-foreground">Draft auto‑saved</div>
                 </div>
                 <div className="rounded-xl border bg-background p-4">
@@ -67,8 +67,7 @@ export const MarketingShowcase: React.FC = () => {
                     <div className="text-muted-foreground">Hi there — here’s a quick offer for your upcoming event...</div>
                   </div>
                   <div className="mt-3 flex items-center gap-2">
-                    <Button size="sm" variant="outline">Save template</Button>
-                    <Button size="sm" className="bg-gradient-blue text-white">Use in campaign</Button>
+                    <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default">Use in campaign</div>
                   </div>
                 </div>
               </div>
@@ -92,8 +91,8 @@ export const MarketingShowcase: React.FC = () => {
                       <div className="text-xs text-muted-foreground">{d.time}</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline">Resume</Button>
-                      <Button size="sm" variant="ghost">Delete</Button>
+                      <div className="px-2 py-1 rounded-md bg-muted text-muted-foreground text-xs cursor-default">Resume</div>
+                      <div className="px-2 py-1 rounded-md text-muted-foreground text-xs cursor-default">Delete</div>
                     </div>
                   </li>
                 ))}
@@ -132,8 +131,8 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="rounded-xl border bg-background p-4 space-y-3">
                 <div className="inline-flex rounded-xl border bg-card p-1 text-sm">
-                  <button className="px-3 py-1 rounded-lg bg-primary/10 text-primary font-medium">Send now</button>
-                  <button className="px-3 py-1 rounded-lg text-foreground">Schedule</button>
+                  <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold cursor-default">Send now</div>
+                  <div className="px-3 py-1 rounded-lg text-foreground cursor-default">Schedule</div>
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3 text-sm">
                   <div className="grid gap-1">
@@ -146,7 +145,7 @@ export const MarketingShowcase: React.FC = () => {
                   </div>
                   <div className="grid gap-1">
                     <label className="text-muted-foreground">Timezone</label>
-                    <input className="rounded-lg border bg-card px-3 py-2" placeholder="America/Chicago" readOnly />
+                    <input className="rounded-lg border bg-card px-3 py-2" placeholder="EDT" readOnly />
                   </div>
                 </div>
                 <div className="text-sm text-foreground">
@@ -192,11 +191,11 @@ export const MarketingShowcase: React.FC = () => {
               </ul>
 
               <div className="pt-2 flex flex-wrap gap-2">
-                <a href="/marketing/campaigns"><Button size="sm" className="bg-gradient-blue text-white inline-flex items-center gap-2"><Send className="w-4 h-4" /> Create Campaign</Button></a>
-                <a href="/marketing/templates"><Button size="sm" variant="outline" className="inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Manage Templates</Button></a>
-                <a href="/marketing/scheduled"><Button size="sm" variant="outline" className="inline-flex items-center gap-2"><CalendarClock className="w-4 h-4" /> Scheduled Sends</Button></a>
-                <a href="/marketing/segments"><Button size="sm" variant="outline" className="inline-flex items-center gap-2"><Target className="w-4 h-4" /> Smart Segments</Button></a>
-                <a href="/marketing/drafts"><Button size="sm" variant="outline" className="inline-flex items-center gap-2"><MessageSquareText className="w-4 h-4" /> Drafts</Button></a>
+                <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default inline-flex items-center gap-2"><Send className="w-4 h-4" /> Create Campaign</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Manage Templates</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><CalendarClock className="w-4 h-4" /> Scheduled Sends</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><Target className="w-4 h-4" /> Smart Segments</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><MessageSquareText className="w-4 h-4" /> Drafts</div>
               </div>
             </div>
           </aside>
