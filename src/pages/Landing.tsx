@@ -18,6 +18,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { SmartWizardShowcase } from '@/components/marketing/SmartWizardShowcase';
 import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningShowcase';
 import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
+import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -482,41 +483,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Driver Mobile App - White */}
       <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Driver Mobile App - Works Offline
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Native mobile app with GPS navigation, photo upload, and digital checklists that work even without signal.
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground">Offline-capable route navigation</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground">Photo documentation with GPS stamps</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground">Digital delivery confirmations</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground">Real-time job status updates</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="rounded-2xl p-6 bg-gray-50">
-              <AutoCarousel media={mobileAppMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
+          <DriverAppShowcase />
         </div>
       </section>
 
@@ -1255,48 +1222,6 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Mobile App - White */}
-      <section id="mobile-app" className="py-16 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Driver Mobile App
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Offline-capable interface with GPS tracking and real-time updates.
-                </p>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Offline Capability</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-primary" />
-                  <span className="font-medium">GPS Navigation</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Digital Checklists</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Real-Time Updates</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="lg:col-span-1 order-1 lg:order-2">
-              <div className="flex justify-center">
-                <AutoCarousel media={mobileAppMedia} className="w-full max-w-sm" aspectRatio="aspect-[9/16]" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       {/* Pricing - Blue */}
