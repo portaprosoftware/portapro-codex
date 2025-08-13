@@ -111,15 +111,20 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <AspectRatio ratio={1/1}>
-                       <img
-                         src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
-                         alt="QR code for Standard Porta Potty unit 1232"
-                         className="w-full h-full object-cover rounded-xl border border-border"
-                         loading="lazy"
-                         decoding="async"
-                       />
-                     </AspectRatio>
+                     <div className="flex flex-col items-center space-y-3">
+                       <div className="w-3/4">
+                         <AspectRatio ratio={1/1}>
+                           <img
+                             src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
+                             alt="QR code for Standard Porta Potty unit 1232"
+                             className="w-full h-full object-cover rounded-xl border border-border"
+                             loading="lazy"
+                             decoding="async"
+                           />
+                         </AspectRatio>
+                       </div>
+                       <div className="text-sm font-bold text-foreground">PT‑1232 • Standard Porta Potty</div>
+                     </div>
 
                     <div className="rounded-xl border border-border p-3">
                       <div className="text-sm font-medium">QR Label</div>
