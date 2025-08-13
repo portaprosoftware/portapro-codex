@@ -475,13 +475,14 @@ export const Landing: React.FC = () => {
                 <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
               </article>
 
-              <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="flex items-center gap-3">
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
                 </div>
+                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
               </article>
 
               
@@ -493,7 +494,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Trust strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">14-day free trial</span>
             <span className="opacity-50">•</span>
             <span>Cancel anytime</span>
@@ -518,6 +519,10 @@ export const Landing: React.FC = () => {
             <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
               <CheckCircle className="h-4 w-4" aria-hidden="true" />
               <span className="text-foreground">Template libraries included</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">User friendly and easy to understand</span>
             </div>
           </div>
         </div>
