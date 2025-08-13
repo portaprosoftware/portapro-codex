@@ -19,8 +19,7 @@ export function CompanyAnalyticsShowcase() {
             Company Analytics — Complete insights across your entire operation
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Six comprehensive tabs with persistent date controls, 24+ KPIs, one-click reports, and zero "coming soon" placeholders. 
-            Every feature works today with consistent color coding and click-to-filter functionality.
+            Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
           </p>
         </div>
 
