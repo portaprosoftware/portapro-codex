@@ -21,6 +21,7 @@ import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
+import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -1028,37 +1029,7 @@ const scrollToSection = (sectionId: string) => {
       </div>
 
       {/* Services Hub - White */}
-      <section id="services-hub" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Services Hub</h2>
-              <p className="text-lg text-muted-foreground">Coordinate pumping, cleaning, and maintenance service operations.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Service scheduling and dispatch</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Maintenance tracking and history</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Service quality documentation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Customer service communications</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={servicesHubMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <ServicesHubShowcase />
 
       {/* Marketing Tools - White */}
       <section id="marketing" className="py-8 bg-white">
@@ -1100,38 +1071,6 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Reporting & Templates - White */}
-      <section id="reports" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                  Custom Service Reports
-                </h2>
-              </div>
-              
-              <div className="space-y-4">
-                {reportFeatures.map((feature, index) => <div key={index} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">{feature}</span>
-                  </div>)}
-              </div>
-            </div>
-            
-            <div>
-              <AutoCarousel media={reportingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
 
 
 
