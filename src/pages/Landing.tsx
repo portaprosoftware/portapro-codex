@@ -210,7 +210,6 @@ export const Landing: React.FC = () => {
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
 
-
   // Load Calendly widget
   useEffect(() => {
     // Add Calendly CSS
@@ -237,7 +236,7 @@ export const Landing: React.FC = () => {
       });
     }
   };
-const scrollToSection = (sectionId: string) => {
+  const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({
@@ -247,35 +246,41 @@ const scrollToSection = (sectionId: string) => {
   };
 
   // Team KPIs (live) for landing visualizations
-  const { data: allUsers } = useAllEnhancedUsers();
+  const {
+    data: allUsers
+  } = useAllEnhancedUsers();
   const totalMembers = allUsers?.length ?? 0;
-
-  const { data: drivers } = useEnhancedDrivers();
+  const {
+    data: drivers
+  } = useEnhancedDrivers();
   const activeDrivers = drivers?.length ?? 0;
-
-  const { data: shiftsWeek } = useDriverShiftsForWeek(new Date());
+  const {
+    data: shiftsWeek
+  } = useDriverShiftsForWeek(new Date());
   // using todayStr from Smart Job Wizard section above
   const shiftsToday = (shiftsWeek || []).filter(s => s.shift_date === todayStr).length;
-
-  const { data: timeOffTodayCount = 0 } = useQuery({
+  const {
+    data: timeOffTodayCount = 0
+  } = useQuery({
     queryKey: ['timeoff-today', todayStr],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('driver_time_off_requests')
-        .select('id')
-        .eq('status', 'approved')
-        .eq('request_date', todayStr);
+      const {
+        data,
+        error
+      } = await supabase.from('driver_time_off_requests').select('id').eq('status', 'approved').eq('request_date', todayStr);
       if (error) throw error;
       return (data || []).length;
     }
   });
-
-  const { data: expiringCredsCount = 0 } = useQuery({
+  const {
+    data: expiringCredsCount = 0
+  } = useQuery({
     queryKey: ['expiring-creds', todayStr],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('driver_credentials')
-        .select('license_expiry_date, medical_card_expiry_date');
+      const {
+        data,
+        error
+      } = await supabase.from('driver_credentials').select('license_expiry_date, medical_card_expiry_date');
       if (error) throw error;
       const today = new Date(todayStr);
       const end = new Date(todayStr);
@@ -288,7 +293,6 @@ const scrollToSection = (sectionId: string) => {
       return (data || []).filter((row: any) => inWindow(row.license_expiry_date) || inWindow(row.medical_card_expiry_date)).length;
     }
   });
-
   return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
@@ -297,7 +301,7 @@ const scrollToSection = (sectionId: string) => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
-<DropdownMenu>
+          <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">
                   Features
@@ -305,10 +309,7 @@ const scrollToSection = (sectionId: string) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[320px] p-3">
                 <div className="space-y-2">
-                  <button
-                    onClick={() => scrollToSection('operations-features')}
-                    className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary"
-                  >
+                  <button onClick={() => scrollToSection('operations-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
                     Operations Features
                   </button>
                   <div className="grid grid-cols-1">
@@ -320,10 +321,7 @@ const scrollToSection = (sectionId: string) => {
                 </div>
                 <DropdownMenuSeparator />
                 <div className="space-y-2">
-                  <button
-                    onClick={() => scrollToSection('core-workflow-features')}
-                    className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary"
-                  >
+                  <button onClick={() => scrollToSection('core-workflow-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
                     Core Workflow Features
                   </button>
                   <div className="grid grid-cols-1">
@@ -335,10 +333,7 @@ const scrollToSection = (sectionId: string) => {
                 </div>
                 <DropdownMenuSeparator />
                 <div className="space-y-2">
-                  <button
-                    onClick={() => scrollToSection('management-features')}
-                    className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary"
-                  >
+                  <button onClick={() => scrollToSection('management-features')} className="w-full text-left font-semibold text-foreground text-base mb-1 hover:text-primary">
                     Management Features
                   </button>
                   <div className="grid grid-cols-1">
@@ -467,7 +462,7 @@ const scrollToSection = (sectionId: string) => {
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals</p>
+                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
               </article>
 
               <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
@@ -475,9 +470,9 @@ const scrollToSection = (sectionId: string) => {
                   <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
-                  <h3 className="text-sm font-semibold text-foreground">Affordable Plans</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">Start small, scale up with no hidden fees</p>
+                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
@@ -489,35 +484,11 @@ const scrollToSection = (sectionId: string) => {
                 </div>
               </article>
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Camera className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Photo/GPS Proof</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Every clean documented with evidence</p>
-              </article>
+              
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Wrench className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">DVIR + Maintenance</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">All inspections and maintenance in one place</p>
-              </article>
+              
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Zap className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Fast Billing</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Quote to payment in streamlined steps</p>
-              </article>
+              
             </div>
           </div>
 
@@ -561,26 +532,18 @@ const scrollToSection = (sectionId: string) => {
             <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {servicesFeatures.map((feature, index) => (
-              <Card
-                key={index}
-                className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
-              >
+            {servicesFeatures.map((feature, index) => <Card key={index} className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30">
                 <CardContent className="p-6 text-left">
                   <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <feature.icon className="w-5 h-5" strokeWidth={1.75} />
                   </div>
                   <h3 className="font-semibold text-lg mb-1 text-foreground">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
-                  <button
-                    onClick={() => scrollToSection(feature.href.substring(1))}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-                  >
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
                     Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
                   </button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -629,11 +592,7 @@ const scrollToSection = (sectionId: string) => {
             <p className="text-white/80 text-lg">Essential tools to get your business running efficiently</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {coreFeatures.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
-                >
+              {coreFeatures.map((feature, index) => <Card key={index} className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30">
                   <CardContent className="p-6 text-left">
                     <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                       <feature.icon className="w-5 h-5" strokeWidth={1.75} />
@@ -644,8 +603,7 @@ const scrollToSection = (sectionId: string) => {
                       Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
                     </button>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
           </div>
         </div>
       </section>
@@ -710,11 +668,7 @@ const scrollToSection = (sectionId: string) => {
             <p className="text-white/80 text-lg">Advanced tools for fleet, team, and business management</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {managementFeatures.map((feature, index) => (
-                <Card
-                  key={index}
-                  className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
-                >
+              {managementFeatures.map((feature, index) => <Card key={index} className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30">
                   <CardContent className="p-6 text-left">
                     <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                       <feature.icon className="w-5 h-5" strokeWidth={1.75} />
@@ -725,8 +679,7 @@ const scrollToSection = (sectionId: string) => {
                       Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
                     </button>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
           </div>
         </div>
       </section>
@@ -792,42 +745,10 @@ const scrollToSection = (sectionId: string) => {
 
           {/* Fleet KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            <StatCard
-              title="Vehicles"
-              value={24}
-              icon={Truck}
-              gradientFrom="hsl(var(--primary))"
-              gradientTo="hsl(var(--primary) / 0.7)"
-              iconBg="hsl(var(--primary))"
-              subtitle={<span className="text-muted-foreground">Active + standby</span>}
-            />
-            <StatCard
-              title="Active Drivers"
-              value={12}
-              icon={Users}
-              gradientFrom="hsl(var(--accent))"
-              gradientTo="hsl(var(--accent) / 0.7)"
-              iconBg="hsl(var(--accent))"
-              subtitle={<span className="text-muted-foreground">On schedule today</span>}
-            />
-            <StatCard
-              title="Monthly Fuel Spend"
-              value={"$8,420"}
-              icon={DollarSign}
-              gradientFrom="hsl(var(--secondary))"
-              gradientTo="hsl(var(--secondary) / 0.7)"
-              iconBg="hsl(var(--secondary))"
-              subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>}
-            />
-            <StatCard
-              title="Upcoming Services"
-              value={9}
-              icon={Wrench}
-              gradientFrom="hsl(var(--destructive))"
-              gradientTo="hsl(var(--destructive) / 0.7)"
-              iconBg="hsl(var(--destructive))"
-              subtitle={<span className="text-muted-foreground">Due in next 7 days</span>}
-            />
+            <StatCard title="Vehicles" value={24} icon={Truck} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">Active + standby</span>} />
+            <StatCard title="Active Drivers" value={12} icon={Users} gradientFrom="hsl(var(--accent))" gradientTo="hsl(var(--accent) / 0.7)" iconBg="hsl(var(--accent))" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
+            <StatCard title="Monthly Fuel Spend" value={"$8,420"} icon={DollarSign} gradientFrom="hsl(var(--secondary))" gradientTo="hsl(var(--secondary) / 0.7)" iconBg="hsl(var(--secondary))" subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>} />
+            <StatCard title="Upcoming Services" value={9} icon={Wrench} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Due in next 7 days</span>} />
           </div>
 
           {/* Vehicle Ops Toolkit */}
@@ -946,7 +867,7 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-{/* Team Management - White */}
+    {/* Team Management - White */}
       <section id="team-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
@@ -956,51 +877,11 @@ const scrollToSection = (sectionId: string) => {
 
           {/* Team KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
-            <StatCard
-              title="Total Members"
-              value={totalMembers}
-              icon={Users}
-              gradientFrom="hsl(var(--primary))"
-              gradientTo="hsl(var(--primary) / 0.7)"
-              iconBg="hsl(var(--primary))"
-              subtitle={<span className="text-muted-foreground">All roles</span>}
-            />
-            <StatCard
-              title="Active Drivers"
-              value={activeDrivers}
-              icon={Users}
-              gradientFrom="hsl(var(--accent))"
-              gradientTo="hsl(var(--accent) / 0.7)"
-              iconBg="hsl(var(--accent))"
-              subtitle={<span className="text-muted-foreground">Drivers on roster</span>}
-            />
-            <StatCard
-              title="Shifts Today"
-              value={shiftsToday}
-              icon={CalendarClock}
-              gradientFrom="hsl(var(--secondary))"
-              gradientTo="hsl(var(--secondary) / 0.7)"
-              iconBg="hsl(var(--secondary))"
-              subtitle={<span className="text-muted-foreground">Scheduled shifts</span>}
-            />
-            <StatCard
-              title="Approved Time Off"
-              value={timeOffTodayCount}
-              icon={Calendar}
-              gradientFrom="hsl(var(--destructive))"
-              gradientTo="hsl(var(--destructive) / 0.7)"
-              iconBg="hsl(var(--destructive))"
-              subtitle={<span className="text-muted-foreground">Today</span>}
-            />
-            <StatCard
-              title="Expiring Credentials"
-              value={expiringCredsCount}
-              icon={Shield}
-              gradientFrom="hsl(var(--primary))"
-              gradientTo="hsl(var(--primary) / 0.7)"
-              iconBg="hsl(var(--primary))"
-              subtitle={<span className="text-muted-foreground">Next 30 days</span>}
-            />
+            <StatCard title="Total Members" value={totalMembers} icon={Users} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">All roles</span>} />
+            <StatCard title="Active Drivers" value={activeDrivers} icon={Users} gradientFrom="hsl(var(--accent))" gradientTo="hsl(var(--accent) / 0.7)" iconBg="hsl(var(--accent))" subtitle={<span className="text-muted-foreground">Drivers on roster</span>} />
+            <StatCard title="Shifts Today" value={shiftsToday} icon={CalendarClock} gradientFrom="hsl(var(--secondary))" gradientTo="hsl(var(--secondary) / 0.7)" iconBg="hsl(var(--secondary))" subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} />
+            <StatCard title="Approved Time Off" value={timeOffTodayCount} icon={Calendar} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Today</span>} />
+            <StatCard title="Expiring Credentials" value={expiringCredsCount} icon={Shield} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">Next 30 days</span>} />
           </div>
 
           {/* Team Ops Toolkit */}
