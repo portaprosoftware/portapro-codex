@@ -1060,12 +1060,12 @@ export const Landing: React.FC = () => {
                 <CardContent className="space-y-4 relative z-10">
                   <ul className="grid grid-cols-2 gap-3">
                     {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-gray-800 font-medium">{feature}</span>
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-gradient-to-r from-gray-900 to-black text-white hover:from-black hover:to-gray-800 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <Button className="w-full bg-gradient-blue text-white hover:bg-blue-700 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
