@@ -178,8 +178,8 @@ export function InventorySuppliesShowcase() {
                       <span className="font-medium text-foreground">2025-02</span>
                     </div>
                   </div>
-                  <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="text-xs text-green-700 font-medium">✓ Successfully tracked</div>
+                  <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
+                    <div className="text-xs text-white font-bold">✓ Successfully tracked</div>
                   </div>
                 </div>
               </div>
