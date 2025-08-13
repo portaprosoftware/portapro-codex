@@ -22,6 +22,7 @@ import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
+import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -1032,37 +1033,7 @@ const scrollToSection = (sectionId: string) => {
       <ServicesHubShowcase />
 
       {/* Marketing Tools - White */}
-      <section id="marketing" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Marketing Tools</h2>
-              <p className="text-lg text-muted-foreground">Customer communication, promotions, and lead generation features.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Email campaign management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Customer segmentation and targeting</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Promotional code management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Lead tracking and conversion</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
-              <AutoCarousel media={marketingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <MarketingShowcase />
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
