@@ -507,12 +507,19 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Services Hub - White */}
       <ServicesHubShowcase />
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
 
       {/* Marketing Tools - White */}
       <MarketingShowcase />
@@ -520,7 +527,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
@@ -563,7 +570,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
@@ -577,7 +584,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
@@ -591,7 +598,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
@@ -605,7 +612,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
@@ -844,6 +851,13 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
 {/* Team Management - White */}
       <section id="team-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
@@ -1020,12 +1034,19 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Customer Dashboard & Portal - White */}
       <CustomerDashboardPortalShowcase />
+
+      {/* Section Divider */}
+      <div className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
 
       {/* Company Analytics - White */}
       <CompanyAnalyticsShowcase />
@@ -1033,7 +1054,7 @@ const scrollToSection = (sectionId: string) => {
       {/* Section Divider */}
       <div className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
+          <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
