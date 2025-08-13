@@ -152,7 +152,7 @@ export function InventorySuppliesShowcase() {
                 {/* Photo of embossed panel */}
                 <AspectRatio ratio={4/5}>
                   <img 
-                    src="/lovable-uploads/47061b38-ad88-4a95-9d7b-0db78537d483.png"
+                    src="/lovable-uploads/4db9f330-dc9b-466a-b3db-0ce5fd206e4b.png"
                     alt="Embossed plastic panel with unit information"
                     className="w-full h-full object-cover rounded-xl border"
                   />
@@ -163,20 +163,24 @@ export function InventorySuppliesShowcase() {
                   <div className="text-xs font-medium text-muted-foreground mb-2">AI Reading Results:</div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Unit No:</span>
-                      <span className="font-medium text-foreground">PT-1234</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Vendor:</span>
                       <span className="font-medium text-foreground">ABC Manufacturing</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Serial No:</span>
-                      <span className="font-medium text-foreground">7A-221</span>
+                      <span className="text-muted-foreground">Tool No:</span>
+                      <span className="font-medium text-foreground">T-207788-1A</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Vendor ID:</span>
+                      <span className="font-medium text-foreground">32123</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Mfg Date:</span>
-                      <span className="font-medium text-foreground">2025-02</span>
+                      <span className="font-medium text-foreground">January 13, 2016</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Plastic:</span>
+                      <span className="font-medium text-foreground">HDPE</span>
                     </div>
                   </div>
                   <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
