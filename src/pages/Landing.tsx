@@ -459,64 +459,58 @@ const scrollToSection = (sectionId: string) => {
           {/* Proof Bar */}
           <div className="mb-4">
             <div className="sr-only">Proof Bar</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
-                  <p className="text-sm text-muted-foreground">Built for portable toilet rentals—units, routes, invoices.</p>
                 </div>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Affordable Plans</h3>
-                  <p className="text-sm text-muted-foreground">Start small, scale up—no hidden fees.</p>
                 </div>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
-                  <p className="text-sm text-muted-foreground">Email, chat, or call anytime.</p>
                 </div>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <Camera className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Photo/GPS Proof</h3>
-                  <p className="text-sm text-muted-foreground">Every clean comes with evidence.</p>
                 </div>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <Wrench className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">DVIR + Maintenance</h3>
-                  <p className="text-sm text-muted-foreground">Driver inspections, work orders, and PM in one place.</p>
                 </div>
               </article>
 
               <article className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 h-full">
-                <div className="text-left">
-                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <Zap className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-foreground">Fast Billing</h3>
-                  <p className="text-sm text-muted-foreground">Quote → (deposit) → job → invoice → pay.</p>
                 </div>
               </article>
             </div>
