@@ -102,12 +102,12 @@ export function InventorySuppliesShowcase() {
               </div>
             </div>
 
-            {/* Panel C — Scanning & QR Codes */}
+            {/* Panel C — Track Units with QR Codes */}
             <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
               <div className="rounded-2xl bg-white border border-border">
                 <div className="p-4">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <QrCode className="w-4 h-4 text-primary" /> Scanning & QR Codes
+                    <QrCode className="w-4 h-4 text-primary" /> Track Units with QR Codes Automatically
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
@@ -142,10 +142,10 @@ export function InventorySuppliesShowcase() {
               </div>
             </div>
 
-            {/* Optional: short demo */}
+            {/* Panel D — Photo Scanning */}
             <div className="rounded-2xl border border-border p-4 animate-fade-in">
               <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                <Sparkles className="w-4 h-4 text-primary" /> Bulk to Hybrid in 30 seconds
+                <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Number in Embossed Plastic
               </div>
               <AspectRatio ratio={16/9}>
                 <div className="w-full h-full rounded-xl bg-muted grid place-items-center text-sm text-muted-foreground">
