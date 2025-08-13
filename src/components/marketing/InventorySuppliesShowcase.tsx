@@ -212,21 +212,14 @@ export function InventorySuppliesShowcase() {
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
                 <li>Padlock detection and overdue padlock alerts</li>
-                <li>Auto‑sync totals, real‑time updates across products</li>
+                <li>Instant clarity on status — available, assigned, service</li>
                 <li>Offline scans attach to units and sync later</li>
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-border p-5">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">What customers love</h4>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Instant clarity on status — available, assigned, service</li>
-                <li>Printable labels that survive worksite conditions</li>
-              </ul>
-            </div>
 
             <div className="rounded-2xl border border-border p-5">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Quick Facts</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Technical Facts</h4>
               <ul className="list-disc pl-5 space-y-2 text-sm">
                 <li><strong>No signal needed:</strong> Scan brand-new QR codes or snap photos of embossed text/serials; everything saves locally.</li>
                 <li><strong>Smart PortaPro QRs:</strong> On-device decode reveals the unit ID + a signed token, so the app can recognize and create/link records offline.</li>
