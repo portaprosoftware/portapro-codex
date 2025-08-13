@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, Boxes, FlaskConical, Megaphone } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,6 @@ import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { StatCard } from '@/components/ui/StatCard';
-import { EnterpriseFeatureCard } from '@/components/ui/enterprise-feature-card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDrivers';
@@ -100,23 +99,23 @@ const managementFeatures = [{
 // Services & Operations - Section 3 (Blue background)
 const servicesFeatures = [{
   title: "Inventory & Supplies",
-  description: "Track units and stock across yards.",
-  icon: Boxes,
+  description: "Track units and consumables across multiple storage sites.",
+  icon: Building2,
   href: "#inventory"
 }, {
   title: "Consumables",
-  description: "TP, sanitizer, deodorizer—managed.",
-  icon: FlaskConical,
+  description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
+  icon: FileText,
   href: "#consumables"
 }, {
   title: "Services Hub",
-  description: "Schedule cleaning and repairs.",
-  icon: Wrench,
+  description: "Coordinate pumping, cleaning, and maintenance service operations.",
+  icon: Zap,
   href: "#services-hub"
 }, {
   title: "Marketing Tools",
-  description: "Email, promos, and lead capture.",
-  icon: Megaphone,
+  description: "Customer communication, promotions, and lead generation features.",
+  icon: Eye,
   href: "#marketing"
 }];
 
@@ -582,13 +581,18 @@ const scrollToSection = (sectionId: string) => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {servicesFeatures.map((feature, index) => (
-              <EnterpriseFeatureCard
-                key={index}
-                title={feature.title}
-                description={feature.description}
-                Icon={feature.icon}
-                onClick={() => scrollToSection(feature.href.substring(1))}
-              />
+              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
+                    Learn More <ArrowRight className="w-3 h-3" />
+                  </button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
