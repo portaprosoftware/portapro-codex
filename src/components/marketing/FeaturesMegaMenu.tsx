@@ -1,12 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { featureGroups } from '@/data/featuresCatalog'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { ChevronDown } from 'lucide-react'
 
-export function FeaturesMegaMenu() {
+interface FeaturesMegaMenuRef {
+  triggerOpen: () => void
+}
+
+export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => {
   const [open, setOpen] = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    triggerOpen: () => setOpen(true)
+  }))
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,6 +72,8 @@ export function FeaturesMegaMenu() {
       </PopoverContent>
     </Popover>
   )
-}
+})
+
+FeaturesMegaMenu.displayName = 'FeaturesMegaMenu'
 
 export default FeaturesMegaMenu

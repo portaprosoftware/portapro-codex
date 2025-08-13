@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -209,6 +209,7 @@ export const Landing: React.FC = () => {
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
+  const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
@@ -311,7 +312,7 @@ export const Landing: React.FC = () => {
           <div className="flex items-center gap-6">
             <Logo />
             <div className="hidden md:block">
-              <FeaturesMegaMenu />
+              <FeaturesMegaMenu ref={featuresMegaMenuRef} />
             </div>
           </div>
           
@@ -1100,7 +1101,7 @@ export const Landing: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold text-white">Product</h4>
               <div className="space-y-2 text-sm text-white/80">
-                <a href="#features" className="block hover:text-white">Features</a>
+                <button onClick={() => featuresMegaMenuRef.current?.triggerOpen()} className="block hover:text-white text-left">Features</button>
                 <a href="#mobile-app" className="block hover:text-white">Mobile App</a>
               </div>
             </div>
