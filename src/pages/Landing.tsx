@@ -470,15 +470,15 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Group 2: Core Features - Blue */}
+      {/* Group 2: Management Features - Blue */}
       <section className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Core Workflow Features</h2>
-            <p className="text-white/80 text-lg">Essential tools to get your business running efficiently</p>
+            <h2 className="text-3xl font-bold text-white mb-2">Management Features</h2>
+            <p className="text-white/80 text-lg">Advanced tools for fleet, team, and business management</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreFeatures.map((feature, index) => (
+            {managementFeatures.map((feature, index) => (
               <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
@@ -496,12 +496,77 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </section>
 
-      {/* Detailed Sections for Group 2: Core Features */}
+      {/* Detailed Sections for Group 2: Management Features */}
 
-      {/* Smart AI Panel Scanning Section - White */}
-      <section id="ai-scanning" className="py-8 bg-white">
+      {/* Fleet Management (includes Transport & Spill Compliance + DVIRs) - White */}
+      <section id="fleet-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <AIPanelScanningShowcase />
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Fleet Management & Compliance</h2>
+            <p className="text-lg text-muted-foreground">Complete vehicle tracking, maintenance, and compliance management</p>
+          </div>
+
+          {/* Transport & Spill Compliance */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
+              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Transport permit tracking and renewals</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Spill incident documentation and reporting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">DOT compliance logs and inspection schedules</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Driver certification and training records</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">Fleet Compliance Dashboard Preview</p>
+              </div>
+            </div>
+          </div>
+
+          {/* DVIR Management */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white h-64 rounded-lg flex items-center justify-center">
+                <p className="text-muted-foreground">DVIR Mobile Interface Preview</p>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Digital Vehicle Inspection Reports (DVIR)</h3>
+              <p className="text-lg text-muted-foreground">Streamline daily vehicle inspections with mobile-first reporting.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Digital pre-trip and post-trip inspections</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Photo documentation of vehicle issues</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automated maintenance alerts and scheduling</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Compliance reporting and audit trails</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -512,10 +577,89 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Job Wizard Showcase - White */}
-      <section id="job-wizard" className="py-8 bg-white">
+      {/* Team Management - White */}
+      <section id="team-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <SmartWizardShowcase />
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
+            <p className="text-lg text-muted-foreground">Optimize workforce scheduling and performance tracking</p>
+          </div>
+
+          {/* Team Scheduling */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Smart Shift Scheduling</h3>
+              <p className="text-lg text-muted-foreground">Drag-and-drop scheduling with availability conflicts automatically detected.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Visual drag-and-drop shift assignments</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic conflict detection and warnings</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Time-off request integration</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Driver availability and skill matching</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white rounded-lg p-4">
+                <h4 className="font-semibold mb-3">Team Schedule - Current Week</h4>
+                <div className="space-y-2">
+                  {Array.from({length: 3}, (_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2 bg-blue-50 rounded border">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                        {["MJ", "SK", "RT"][i]}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">{["Mike Johnson", "Sarah Kim", "Robert Taylor"][i]}</div>
+                        <div className="text-xs text-muted-foreground">Route {i + 1} • 7:00 AM - 3:00 PM</div>
+                      </div>
+                      <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Active</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Time-Off Management */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="rounded-2xl border bg-gray-50 p-6 shadow-md">
+              <div className="bg-white rounded-lg p-4">
+                <TimeOffCalendarView compact={true} />
+              </div>
+            </div>
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Time-Off Request Management</h3>
+              <p className="text-lg text-muted-foreground">Streamlined approval process with calendar integration and coverage planning.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Calendar-based request submission</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">One-click approval workflow</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic coverage suggestions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Team notification system</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -526,26 +670,11 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Quote-to-Job Flow - White */}
-      <section id="quotes" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <QuoteToJobShowcase />
-        </div>
-      </section>
+      {/* Customer Dashboard & Portal - White */}
+      <CustomerDashboardPortalShowcase />
 
-      {/* Section Divider */}
-      <div className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="border-t border-border"></div>
-        </div>
-      </div>
-
-      {/* Driver Mobile App - White */}
-      <section id="mobile-app" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <DriverAppShowcase />
-        </div>
-      </section>
+      {/* Company Analytics - White */}
+      <CompanyAnalyticsShowcase />
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
