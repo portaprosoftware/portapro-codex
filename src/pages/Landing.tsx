@@ -4,7 +4,7 @@ import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Logo } from '@/components/ui/logo';
+import { LandingLogo } from '@/components/ui/landing-logo';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
@@ -312,7 +312,7 @@ export const Landing: React.FC = () => {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
         <div className="container mx-auto px-12 h-full flex items-center justify-between max-w-full">
           <div className="flex items-center gap-6">
-            <Logo />
+            <LandingLogo />
             <div className="hidden md:block">
               <FeaturesMegaMenu ref={featuresMegaMenuRef} />
             </div>
@@ -1140,7 +1140,7 @@ export const Landing: React.FC = () => {
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t">
             <div className="flex items-center gap-4">
-              <Logo variant="footer" />
+              <LandingLogo variant="footer" />
               <span className="text-sm text-white/80">© 2025 PortaPro. All rights reserved.</span>
             </div>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
