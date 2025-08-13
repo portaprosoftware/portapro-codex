@@ -134,7 +134,7 @@ export const MarketingShowcase: React.FC = () => {
                   <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold cursor-default">Send now</div>
                   <div className="px-3 py-1 rounded-lg text-foreground cursor-default">Schedule</div>
                 </div>
-                <div className="grid sm:grid-cols-3 gap-3 text-sm">
+                <div className="grid sm:grid-cols-3 gap-3 text-sm overflow-visible">
                   <div className="grid gap-1">
                     <label className="text-muted-foreground">Date</label>
                     <input className="rounded-lg border bg-card px-3 py-2" placeholder="2025-09-12" readOnly />
@@ -143,9 +143,9 @@ export const MarketingShowcase: React.FC = () => {
                     <label className="text-muted-foreground">Time</label>
                     <input className="rounded-lg border bg-card px-3 py-2" placeholder="09:00 AM" readOnly />
                   </div>
-                  <div className="grid gap-1">
+                  <div className="grid gap-1 relative">
                     <label className="text-muted-foreground">Timezone</label>
-                    <input className="rounded-lg border bg-card px-3 py-2" placeholder="EDT" readOnly />
+                    <input className="rounded-lg border bg-card px-3 py-2 overflow-visible whitespace-nowrap min-w-0" placeholder="America/New York EDT" readOnly style={{width: 'auto', minWidth: '140px'}} />
                   </div>
                 </div>
                 <div className="text-sm text-foreground">
