@@ -583,7 +583,7 @@ const scrollToSection = (sectionId: string) => {
             {servicesFeatures.map((feature, index) => (
               <Card
                 key={index}
-                className="group rounded-2xl border border-border bg-gradient-to-br from-muted/60 to-background text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
+                className="group rounded-2xl border border-border bg-gradient-to-br from-muted via-muted/50 to-card text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
               >
                 <CardContent className="p-6 text-left">
                   <div className="w-10 h-10 mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
