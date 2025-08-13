@@ -501,7 +501,7 @@ export const Landing: React.FC = () => {
             <span className="opacity-50">•</span>
             <span>No setup fees</span>
             <span className="opacity-50">•</span>
-            <span>Unlimited users</span>
+            <span>Unlimited users, trucks & units</span>
             <span className="opacity-50">•</span>
             <span>Data export anytime</span>
           </div>
