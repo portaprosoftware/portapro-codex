@@ -216,7 +216,7 @@ export function InventorySuppliesShowcase() {
 
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
-              <ul className="mt-3 space-y-2 text-sm text-foreground">
+              <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
                 <li>Bulk, individual, and hybrid tracking in one system</li>
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
