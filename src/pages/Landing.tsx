@@ -593,7 +593,7 @@ const scrollToSection = (sectionId: string) => {
                   <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
                   <button
                     onClick={() => scrollToSection(feature.href.substring(1))}
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
                   >
                     Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
                   </button>
@@ -648,20 +648,23 @@ const scrollToSection = (sectionId: string) => {
             <p className="text-white/80 text-lg">Essential tools to get your business running efficiently</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreFeatures.map((feature, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
-                    Learn More <ArrowRight className="w-3 h-3" />
-                  </button>
-                </CardContent>
-              </Card>
-            ))}
+              {coreFeatures.map((feature, index) => (
+                <Card
+                  key={index}
+                  className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
+                >
+                  <CardContent className="p-6 text-left">
+                    <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                      <feature.icon className="w-5 h-5" strokeWidth={1.75} />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-1 text-foreground">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
+                    <button onClick={() => scrollToSection(feature.href.substring(1))} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                      Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </div>
       </section>
@@ -726,20 +729,23 @@ const scrollToSection = (sectionId: string) => {
             <p className="text-white/80 text-lg">Advanced tools for fleet, team, and business management</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {managementFeatures.map((feature, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/10 backdrop-blur border-white/20">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/20 flex items-center justify-center">
-                    <feature.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2 text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/80 mb-3">{feature.description}</p>
-                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="text-white hover:text-white/80 text-sm font-medium flex items-center gap-1 mx-auto">
-                    Learn More <ArrowRight className="w-3 h-3" />
-                  </button>
-                </CardContent>
-              </Card>
-            ))}
+              {managementFeatures.map((feature, index) => (
+                <Card
+                  key={index}
+                  className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
+                >
+                  <CardContent className="p-6 text-left">
+                    <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                      <feature.icon className="w-5 h-5" strokeWidth={1.75} />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-1 text-foreground">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
+                    <button onClick={() => scrollToSection(feature.href.substring(1))} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                      Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </div>
       </section>
