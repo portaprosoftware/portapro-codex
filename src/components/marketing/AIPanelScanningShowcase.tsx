@@ -48,8 +48,8 @@ export const AIPanelScanningShowcase: React.FC = () => {
           <div className="aspect-square rounded-2xl border bg-card p-4 flex items-center justify-center shadow-lg overflow-hidden">
             <div className="w-full h-full rounded-xl overflow-hidden relative">
               <img 
-                src="/lovable-uploads/f550f01a-a436-4f0b-bb81-d3f51b8fe0c0.png" 
-                alt="Embossed plastic panel showing UNIT G1042, MOLD 7A-221, SER PP-221"
+                src="/lovable-uploads/02a5617f-771f-4924-a203-26f8d5b0e3f2.png" 
+                alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel showing Tool # T-20788-1A, Vendor ID # 32123"
                 className="w-full h-full object-cover object-left"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20"></div>
