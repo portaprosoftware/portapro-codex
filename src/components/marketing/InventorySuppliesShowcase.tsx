@@ -220,15 +220,20 @@ export function InventorySuppliesShowcase() {
             <div className="rounded-2xl border border-border p-5">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">What customers love</h4>
               <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Reorder suggestions that actually match lead times</li>
                 <li>Instant clarity on status — available, assigned, service</li>
                 <li>Printable labels that survive worksite conditions</li>
               </ul>
             </div>
 
-            <div className="flex gap-3">
-              <Button className="bg-gradient-blue text-white">Explore Inventory</Button>
-              <Button variant="outline">See a live demo</Button>
+            <div className="rounded-2xl border border-border p-5">
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Quick Facts</h4>
+              <ul className="list-disc pl-5 space-y-2 text-sm">
+                <li><strong>No signal needed:</strong> Scan brand-new QR codes or snap photos of embossed text/serials; everything saves locally.</li>
+                <li><strong>Smart PortaPro QRs:</strong> On-device decode reveals the unit ID + a signed token, so the app can recognize and create/link records offline.</li>
+                <li><strong>Third-party QRs:</strong> If it's just a web link, we still decode and save it offline; details load once you're online.</li>
+                <li><strong>Auto-sync on reconnect:</strong> We verify the signature, run Google Vision OCR on saved photos, upload images, and update records. (Or tap Sync Now anytime.)</li>
+                <li><strong>Built as a PWA:</strong> App shell is cached for offline use; scans/photos queue safely in IndexedDB with retry logic.</li>
+              </ul>
             </div>
           </aside>
         </div>
