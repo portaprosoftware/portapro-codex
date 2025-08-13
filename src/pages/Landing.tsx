@@ -23,6 +23,7 @@ import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppl
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
+import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
 import { AlertTriangle, Package } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
@@ -82,8 +83,8 @@ const managementFeatures = [{
   icon: Users,
   href: "#team-management"
 }, {
-  title: "Customer Dashboard",
-  description: "Self-service portal for customers to manage orders and track deliveries.",
+  title: "Customer Dashboard & Portal",
+  description: "Home base for customer data, history, unique contacts (billing, on-site), and full portal navigation.",
   icon: Users,
   href: "#customer-portal"
 }, {
@@ -912,38 +913,8 @@ const scrollToSection = (sectionId: string) => {
         </div>
       </div>
 
-      {/* Customer Dashboard - White */}
-      <section id="customer-portal" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Customer Dashboard</h2>
-              <p className="text-lg text-muted-foreground">Self-service portal for customers to manage orders and track deliveries.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Order tracking and history</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Real-time delivery updates</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Invoice access and payment portal</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Service request submissions</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={customerDashboardMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Customer Dashboard & Portal - White */}
+      <CustomerDashboardPortalShowcase />
 
       {/* Analytics Dashboard - White */}
       <section id="analytics" className="py-8 bg-white">
