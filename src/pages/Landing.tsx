@@ -1062,7 +1062,7 @@ export const Landing: React.FC = () => {
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-gradient-to-r from-[#2F4F9A] to-[#1E3A8A] text-white hover:shadow-lg text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] rounded-full">
+                    <Button className="w-full bg-gradient-to-r from-gray-900 to-black text-white hover:from-black hover:to-gray-800 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                       Start Free Trial
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
