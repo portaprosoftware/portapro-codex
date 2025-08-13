@@ -16,7 +16,7 @@ export const LandingLogo: React.FC<LandingLogoProps> = ({
       <div className="h-8 flex items-center justify-start overflow-hidden">
         {variant === 'footer' ? (
           <img 
-            src="/lovable-uploads/6b883fe2-158d-440c-93e4-df00b55317bc.png" 
+            src="/lovable-uploads/949b152d-dd96-4170-bd21-9c1982ebd847.png" 
             alt="PortaPro footer logo" 
             className="h-full w-auto object-contain"
           />
