@@ -26,7 +26,7 @@ import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase'
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
-import { AlertTriangle, Package } from 'lucide-react';
+import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -100,22 +100,22 @@ const managementFeatures = [{
 const servicesFeatures = [{
   title: "Inventory & Supplies",
   description: "Track units and consumables across multiple storage sites.",
-  icon: Building2,
+  icon: Package,
   href: "#inventory"
 }, {
   title: "Consumables",
   description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
-  icon: FileText,
+  icon: Droplets,
   href: "#consumables"
 }, {
   title: "Services Hub",
   description: "Coordinate pumping, cleaning, and maintenance service operations.",
-  icon: Zap,
+  icon: ClipboardCheck,
   href: "#services-hub"
 }, {
   title: "Marketing Tools",
   description: "Customer communication, promotions, and lead generation features.",
-  icon: Eye,
+  icon: Megaphone,
   href: "#marketing"
 }];
 
@@ -583,10 +583,10 @@ const scrollToSection = (sectionId: string) => {
             {servicesFeatures.map((feature, index) => (
               <Card
                 key={index}
-                className="group rounded-2xl border border-border bg-gradient-to-br from-muted via-muted/50 to-card text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
+                className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30"
               >
                 <CardContent className="p-6 text-left">
-                  <div className="w-10 h-10 mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                     <feature.icon className="w-5 h-5" strokeWidth={1.75} />
                   </div>
                   <h3 className="font-semibold text-lg mb-1 text-foreground">{feature.title}</h3>
