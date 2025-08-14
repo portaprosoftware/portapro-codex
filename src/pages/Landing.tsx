@@ -358,7 +358,7 @@ export const Landing: React.FC = () => {
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" className="w-full text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
+                  <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
                 </a>
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full text-sm font-medium">Start Free Trial</Button>
