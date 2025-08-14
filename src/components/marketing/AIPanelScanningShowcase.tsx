@@ -45,11 +45,11 @@ export const AIPanelScanningShowcase: React.FC = () => {
         {/* Before - Photo of embossed plastic */}
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-foreground text-center">1. Snap a photo</h3>
-          <div className="aspect-square rounded-2xl border bg-card p-4 flex items-center justify-center shadow-lg overflow-hidden">
+          <div className="flex justify-center">
             <img 
               src="/lovable-uploads/cc599aec-84ca-4b67-9575-06eb9d854204.png" 
               alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel showing Tool # T-20788-1A, Vendor ID # 32123"
-              className="w-full h-full object-contain"
+              className="max-w-full h-auto"
             />
           </div>
         </div>
