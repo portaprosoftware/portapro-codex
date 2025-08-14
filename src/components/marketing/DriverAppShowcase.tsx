@@ -33,7 +33,7 @@ export const DriverAppShowcase: React.FC = () => {
         <main className="order-2 lg:order-1">
           <div className="rounded-[2rem] overflow-hidden relative max-w-[75%] mx-auto">
             <img 
-              src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
+              src="/lovable-uploads/ec1bdcd8-48e9-4afe-aad9-8507b3433a04.png" 
               alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
               className="w-full h-auto object-cover"
             />
