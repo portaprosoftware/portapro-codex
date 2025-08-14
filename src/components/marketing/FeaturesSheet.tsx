@@ -41,7 +41,11 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
                   onClick={() => goTo(i)}
                   className={cn(
                     'whitespace-nowrap rounded-full px-3 py-1.5 text-sm',
-                    i === activeIdx ? 'bg-primary/10 text-primary font-semibold' : 'bg-muted text-foreground'
+                    i === activeIdx 
+                      ? (g.key === 'operations' || g.key === 'management') 
+                        ? 'bg-gradient-primary text-white font-semibold' 
+                        : 'bg-primary/10 text-primary font-semibold'
+                      : 'bg-muted text-foreground'
                   )}
                   aria-pressed={i === activeIdx}
                 >
@@ -65,7 +69,7 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
                           aria-label={`${item.label} — ${item.description}`}
                           onClick={() => onOpenChange(false)}
                         >
-                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-white">
                             <item.icon className="h-5 w-5" aria-hidden="true" />
                           </span>
                           <span className="min-w-0">
@@ -82,10 +86,7 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
           </div>
 
           {/* Utility row */}
-          <div className="mt-2 flex items-center justify-between px-4 pb-4 pt-2 border-t">
-            <a href="/features" className="text-sm font-medium text-primary hover:underline">
-              View all features
-            </a>
+          <div className="mt-2 flex items-center justify-end px-4 pb-4 pt-2 border-t">
             <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noreferrer">
               <Button size="sm" className="text-xs">Start free trial</Button>
             </a>
