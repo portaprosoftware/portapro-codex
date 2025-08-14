@@ -28,7 +28,7 @@ export const DriverAppShowcase: React.FC = () => {
         </p>
       </header>
 
-      <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
         {/* Left: Mobile app image only */}
         <main>
           <AspectRatio ratio={9/16}>
