@@ -177,7 +177,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
   const isFirstStep = state.currentStep === 1;
 
   return (
-    <div className="w-full h-[85vh] overflow-hidden flex flex-col">
+    <div className="w-full h-screen overflow-hidden flex flex-col">
       <DrawerHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
         <DrawerTitle className="text-xl font-semibold flex items-center gap-2">
           <Plus className="h-5 w-5" />
