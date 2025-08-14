@@ -57,7 +57,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     inMaintenance,
     trackingMethod,
     isConsistent,
-    needsAttention,
     adjustMasterStock,
     syncStockTotals,
     isAdjusting,
@@ -277,11 +276,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               {stockData && (
                 <Badge variant="outline" className="text-xs">
                   {trackingMethod} tracking
-                </Badge>
-              )}
-              {needsAttention && (
-                <Badge variant="destructive" className="text-xs">
-                  Needs Attention
                 </Badge>
               )}
             </div>
