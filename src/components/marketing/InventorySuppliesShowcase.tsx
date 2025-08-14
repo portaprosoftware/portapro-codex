@@ -1,8 +1,73 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
+
+function PhotoSlider() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const images = [
+    {
+      src: "/lovable-uploads/cf4e07bc-0d9b-4a24-a8e7-3db06efc8766.png",
+      alt: "Mobile scanning of embossed plastic panels"
+    },
+    {
+      src: "/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png", 
+      alt: "QR code generation and tracking"
+    },
+    {
+      src: "/placeholder.svg",
+      alt: "Inventory management dashboard"
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setCurrentIndex((current) => (current + 1) % images.length);
+          return 0;
+        }
+        return prev + (100 / 40); // 4 seconds = 4000ms, update every 100ms
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <div className="rounded-2xl border border-border overflow-hidden">
+      <div className="relative">
+        <AspectRatio ratio={16/10}>
+          <img
+            src={images[currentIndex].src}
+            alt={images[currentIndex].alt}
+            className="w-full h-full object-cover transition-opacity duration-500"
+            loading="lazy"
+          />
+        </AspectRatio>
+        
+        {/* Progress indicators */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {images.map((_, index) => (
+            <div
+              key={index}
+              className="relative w-12 h-1 bg-white/30 rounded-full overflow-hidden"
+            >
+              <div
+                className="absolute top-0 left-0 h-full bg-white transition-all duration-100 ease-linear rounded-full"
+                style={{
+                  width: index === currentIndex ? `${progress}%` : index < currentIndex ? '100%' : '0%'
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function InventorySuppliesShowcase() {
   return (
@@ -194,16 +259,9 @@ export function InventorySuppliesShowcase() {
              </div>
            </div>
 
-          {/* Right: KPIs + Highlights */}
+          {/* Right: Photo Slider */}
           <aside className="space-y-6 animate-fade-in">
-            <div className="grid grid-cols-2 gap-4">
-              <StatCard title="Inventory accuracy" value={99.7} subtitle="Audited monthly" gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={BarChart3} iconBg="hsl(var(--primary))" animateValue />
-              <StatCard title="Units tracked" value={1240} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={Package} iconBg="hsl(var(--primary))" animateValue />
-              <StatCard title="QR scans / month" value={2340} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={QrCode} iconBg="hsl(var(--primary))" animateValue />
-              <StatCard title="Low‑stock alerts / mo" value={18} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={BellRing} iconBg="hsl(var(--primary))" animateValue />
-              <StatCard title="Stockouts avoided" value={93} subtitle="percent" gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={Shield} iconBg="hsl(var(--primary))" animateValue />
-              <StatCard title="Time saved / week" value={12} subtitle="hours" gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" icon={Clock} iconBg="hsl(var(--primary))" animateValue />
-            </div>
+            <PhotoSlider />
 
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
