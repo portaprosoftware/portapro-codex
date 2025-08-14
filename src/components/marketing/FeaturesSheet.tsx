@@ -25,7 +25,7 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
-      <DrawerContent className="mx-auto max-w-md rounded-t-2xl" aria-label="Features">
+      <DrawerContent className="mx-auto max-w-md rounded-t-2xl bg-background" aria-label="Features">
         <div className="mx-auto h-[85vh] w-full max-w-md">
           <DrawerHeader className="pb-2">
             <div className="mx-auto h-1.5 w-10 rounded-full bg-muted" aria-hidden />
@@ -85,12 +85,6 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
             </div>
           </div>
 
-          {/* Utility row */}
-          <div className="mt-2 flex items-center justify-end px-4 pb-4 pt-2 border-t">
-            <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noreferrer">
-              <Button size="sm" className="text-xs">Start free trial</Button>
-            </a>
-          </div>
         </div>
       </DrawerContent>
     </Drawer>
