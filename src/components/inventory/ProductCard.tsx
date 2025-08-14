@@ -331,27 +331,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
               <CollapsibleContent className="space-y-1 mt-2">
                 <div className="space-y-1">
                   {availableCount > 0 && (
-                    <div className="flex items-center justify-between text-xs bg-green-50 rounded px-2 py-1">
+                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
                       <Badge variant="success" className="text-xs font-bold">
                         Available
                       </Badge>
-                      <span className="font-medium">{availableCount}</span>
+                      <span className="font-bold">{availableCount}</span>
                     </div>
                   )}
                   {onJobCount > 0 && (
-                    <div className="flex items-center justify-between text-xs bg-blue-50 rounded px-2 py-1">
+                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
                       <Badge variant="assigned" className="text-xs font-bold">
                         On Job
                       </Badge>
-                      <span className="font-medium">{onJobCount}</span>
+                      <span className="font-bold">{onJobCount}</span>
                     </div>
                   )}
                   {inMaintenanceCount > 0 && (
-                    <div className="flex items-center justify-between text-xs bg-orange-50 rounded px-2 py-1">
+                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
                       <Badge variant="warning" className="text-xs font-bold">
                         Maintenance
                       </Badge>
-                      <span className="font-medium">{inMaintenanceCount}</span>
+                      <span className="font-bold">{inMaintenanceCount}</span>
                     </div>
                   )}
                   {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && (
