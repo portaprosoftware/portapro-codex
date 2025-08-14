@@ -51,19 +51,19 @@ export const ConsumablesShowcase: React.FC = () => {
           {/* Right column: Photos + What customers love */}
           <aside className="space-y-6">
             {/* Consumables interface screenshots */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="aspect-video rounded-xl overflow-hidden border shadow-sm">
+            <div className="space-y-4">
+              <div className="rounded-2xl overflow-hidden border bg-card shadow-md">
                 <img 
                   src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
                   alt="Storage locations interface showing inventory levels across multiple locations"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-cover"
                 />
               </div>
-              <div className="aspect-video rounded-xl overflow-hidden border shadow-sm">
+              <div className="rounded-2xl overflow-hidden border bg-card shadow-md">
                 <img 
                   src="/lovable-uploads/80a182cc-9027-4692-ab3c-ab5c003b8711.png" 
                   alt="Product form interface for adding consumables with categories and SKU"
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-cover"
                 />
               </div>
             </div>
