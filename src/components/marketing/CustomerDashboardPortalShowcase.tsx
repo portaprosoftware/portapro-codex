@@ -145,31 +145,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </ul>
             </article>
 
-            {/* Portal Customization */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-base font-semibold text-foreground">Portal Customization</h4>
-                <Palette className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Palette className="w-4 h-4" /> White Label Branding</div>
-                  <div className="text-xs text-muted-foreground">Logo • Colors • Domain</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Settings className="w-4 h-4" /> Custom Features</div>
-                  <div className="text-xs text-muted-foreground">Toggle modules • Permissions</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Smartphone className="w-4 h-4" /> Mobile App</div>
-                  <div className="text-xs text-muted-foreground">iOS • Android • PWA</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><BarChart3 className="w-4 h-4" /> Portal Analytics</div>
-                  <div className="text-xs text-muted-foreground">Usage • Engagement • Support</div>
-                </div>
-              </div>
-            </article>
           </div>
         </div>
       </div>
