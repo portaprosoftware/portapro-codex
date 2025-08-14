@@ -58,18 +58,21 @@ export const ConsumablesShowcase: React.FC = () => {
           {/* Right column: Video + What customers love */}
           <aside className="space-y-6">
             <div className="rounded-2xl border bg-card shadow-md p-6">
-              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
-              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                  <p className="text-sm">Video player placeholder</p>
-                  <p className="text-xs mt-1">Upload your mp4 video here</p>
-                </div>
-              </div>
+              <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
+                __html: `
+                  <script src="https://fast.wistia.com/player.js" async></script>
+                  <script src="https://fast.wistia.com/embed/6qvo6ezwgi.js" async type="module"></script>
+                  <style>
+                    wistia-player[media-id='6qvo6ezwgi']:not(:defined) { 
+                      background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/6qvo6ezwgi/swatch'); 
+                      display: block; 
+                      filter: blur(5px); 
+                      padding-top:51.04%; 
+                    }
+                  </style> 
+                  <wistia-player media-id="6qvo6ezwgi" aspect="1.9591836734693877"></wistia-player>
+                `
+              }} />
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
