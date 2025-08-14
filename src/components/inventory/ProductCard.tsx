@@ -340,17 +340,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                   )}
                   {onJobCount > 0 && (
                     <div className="flex items-center justify-between text-xs rounded px-2 py-1">
-                      <Badge variant="assigned" className="text-xs font-bold">
-                        On Job
-                      </Badge>
+                      <div className="flex flex-col">
+                        <Badge variant="assigned" className="text-xs font-bold">
+                          On Job
+                        </Badge>
+                        <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
+                      </div>
                       <span className="font-bold">{onJobCount}</span>
                     </div>
                   )}
                   {inMaintenanceCount > 0 && (
                     <div className="flex items-center justify-between text-xs rounded px-2 py-1">
-                      <Badge variant="warning" className="text-xs font-bold">
-                        Maintenance
-                      </Badge>
+                      <div className="flex flex-col">
+                        <Badge variant="warning" className="text-xs font-bold">
+                          Maintenance
+                        </Badge>
+                        <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
+                      </div>
                       <span className="font-bold">{inMaintenanceCount}</span>
                     </div>
                   )}
