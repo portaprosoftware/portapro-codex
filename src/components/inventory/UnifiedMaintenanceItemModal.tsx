@@ -175,7 +175,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Manage Item • {item?.item_code}</DialogTitle>
+          <DialogTitle>Manage Unit • {item?.item_code}</DialogTitle>
           <DialogDescription className="sr-only">Manage maintenance item details, location, and updates</DialogDescription>
         </DialogHeader>
 
@@ -291,7 +291,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 <div className="bg-white border rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Settings className="w-4 h-4" />
-                    <h4 className="font-medium">Item Details</h4>
+                    <h4 className="font-medium">Unit Details</h4>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
