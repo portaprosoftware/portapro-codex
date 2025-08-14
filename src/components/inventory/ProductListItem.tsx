@@ -324,19 +324,25 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                   )}
                   {onJobCount > 0 && (
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        On Job
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          On Job
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
+                      </div>
                       <span className="font-medium">{onJobCount}</span>
                     </div>
                   )}
                   {inMaintenanceCount > 0 && (
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                        Maintenance
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600 flex items-center gap-2">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          Maintenance
+                        </span>
+                        <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
+                      </div>
                       <span className="font-medium">{inMaintenanceCount}</span>
                     </div>
                   )}
