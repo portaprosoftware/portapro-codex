@@ -415,7 +415,7 @@ export const Landing: React.FC = () => {
                   <span className="text-white/80 text-sm">Trusted by operators across North America</span>
                 </div>
                 
-                {/* 6 Badges */}
+                {/* 3 Badges */}
                 <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
                   <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
                     <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
@@ -428,18 +428,6 @@ export const Landing: React.FC = () => {
                   <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
                     <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
                     <span className="text-white text-sm">Unlimited users, trucks & units</span>
-                  </div>
-                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
-                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
-                    <span className="text-white text-sm">User friendly and easy to learn</span>
-                  </div>
-                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
-                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
-                    <span className="text-white text-sm">1:1 onboarding calls</span>
-                  </div>
-                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
-                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
-                    <span className="text-white text-sm">Data export anytime</span>
                   </div>
                 </div>
               </div>
