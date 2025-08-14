@@ -681,54 +681,6 @@ export const Landing: React.FC = () => {
             <p className="text-lg text-muted-foreground">Complete vehicle tracking, maintenance, and compliance management</p>
           </div>
 
-          {/* Transport & Spill Compliance */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
-              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Auto reminders for expiring documents</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
-
-          {/* DVIRs & Maintenance */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Maintenance logs and alerts</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Driver photos and signatures</span>
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
-          </div>
 
           {/* Fleet KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
@@ -821,7 +773,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Daily Driver Assignments */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Daily Driver Assignments</h3>
               <p className="text-lg text-muted-foreground">Simple, clear dispatch—drivers know exactly where to go.</p>
@@ -842,6 +794,55 @@ export const Landing: React.FC = () => {
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md">
               <AutoCarousel media={driverAssignmentsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* Transport & Spill Compliance */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
+              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto reminders for expiring documents</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
+          {/* DVIRs & Maintenance */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Maintenance logs and alerts</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Driver photos and signatures</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
         </div>
