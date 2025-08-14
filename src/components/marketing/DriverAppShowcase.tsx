@@ -20,7 +20,7 @@ export const DriverAppShowcase: React.FC = () => {
   ];
 
   return (
-    <section aria-label="Driver Mobile App" className="space-y-6 pb-6">
+    <section aria-label="Driver Mobile App" className="space-y-4 pb-4">
       <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Driver Mobile App — built for the field</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
@@ -32,7 +32,7 @@ export const DriverAppShowcase: React.FC = () => {
         {/* Left: Mobile app image only */}
         <main>
           <AspectRatio ratio={9/16}>
-            <div className="rounded-[2rem] overflow-hidden relative animate-enter">
+            <div className="rounded-[2rem] overflow-hidden relative animate-enter max-w-[75%] mx-auto">
               <img 
                 src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
                 alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
