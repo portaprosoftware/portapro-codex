@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { VehicleSelectionModal } from "./VehicleSelectionModal";
 import { DriverSelectionModal } from "./DriverSelectionModal";
-import { CalendarIcon, ChevronLeft, ChevronRight, Check, Truck, User, Plus } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, Check, Truck, User, Plus, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -427,19 +428,34 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="pb-6">
-          <DialogTitle>Create Vehicle Assignment</DialogTitle>
-          <DialogDescription>
-            {steps[currentStepIndex]?.description}
-          </DialogDescription>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent 
+        side="bottom" 
+        className="h-[95vh] w-full max-w-none flex flex-col rounded-t-2xl border-t"
+      >
+        <SheetHeader className="pb-6 border-b">
+          <div className="flex items-center justify-between">
+            <div>
+              <SheetTitle className="text-xl">Create Vehicle Assignment</SheetTitle>
+              <SheetDescription className="text-sm text-muted-foreground mt-1">
+                {steps[currentStepIndex]?.description}
+              </SheetDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </SheetHeader>
 
         {/* Progress Indicator */}
-        <div className="flex items-center space-x-2 pb-6">
+        <div className="flex items-center justify-center space-x-2 py-4 overflow-x-auto">
           {steps.map((step, index) => (
-            <div key={step.key} className="flex items-center">
+            <div key={step.key} className="flex items-center flex-shrink-0">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
                 index <= currentStepIndex 
@@ -454,7 +470,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
               {index < steps.length - 1 && (
                 <div className={cn(
-                  "flex-1 h-0.5 transition-colors ml-2",
+                  "w-8 h-0.5 transition-colors mx-2",
                   index < currentStepIndex ? "bg-primary" : "bg-muted"
                 )} />
               )}
@@ -463,16 +479,19 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto min-h-[400px]">
-          {renderStepContent()}
+        <div className="flex-1 overflow-y-auto px-1">
+          <div className="max-w-2xl mx-auto">
+            {renderStepContent()}
+          </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-6 border-t">
+        <div className="flex items-center justify-between pt-6 border-t bg-background">
           <Button
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstStep}
+            className="min-w-[100px]"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             Previous
@@ -481,6 +500,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
           <Button
             onClick={handleNext}
             disabled={!canProceed() || createAssignmentMutation.isPending}
+            className="min-w-[140px]"
           >
             {isLastStep ? (
               createAssignmentMutation.isPending ? (
@@ -502,7 +522,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             )}
           </Button>
         </div>
-      </DialogContent>
+      </SheetContent>
 
       {/* Vehicle Selection Modal */}
       <VehicleSelectionModal
@@ -521,6 +541,6 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         selectedDriver={selectedDriver}
         onDriverSelect={setSelectedDriver}
       />
-    </Dialog>
+    </Sheet>
   );
 };
