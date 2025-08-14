@@ -35,41 +35,18 @@ export const MarketingShowcase: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left visuals: template builder → what teams love → schedule & send → segments */}
           <div className="space-y-6">
-            {/* A) Template builder with AI magic */}
+            {/* A) AI Assistant */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Template builder</h3>
-                <FileText className="w-4 h-4 text-muted-foreground" />
+                <h3 className="text-base font-semibold text-foreground">AI Assistant</h3>
+                <Sparkles className="w-4 h-4 text-muted-foreground" />
               </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="rounded-xl border bg-background p-4 space-y-3">
-                  <div className="grid gap-2 text-sm">
-                    <label className="text-muted-foreground">Name</label>
-                    <input className="rounded-lg border bg-card px-3 py-2 text-sm" placeholder="Spring Promo" readOnly />
-                  </div>
-                  <div className="grid gap-2 text-sm">
-                    <label className="text-muted-foreground">Type</label>
-                    <div className="inline-flex rounded-lg border bg-card p-1 text-xs">
-                      <span className="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">Email</span>
-                      <span className="px-2 py-1 rounded-md text-foreground">SMS</span>
-                      <span className="px-2 py-1 rounded-md text-foreground">Both</span>
-                    </div>
-                  </div>
-                  <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default inline-flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Generate with AI
-                  </div>
-                  <div className="text-xs rounded-md bg-muted px-2 py-1 w-max text-muted-foreground">Draft auto‑saved</div>
-                </div>
-                <div className="rounded-xl border bg-background p-4">
-                  <div className="text-sm font-medium text-foreground mb-2">Preview</div>
-                  <div className="rounded-lg border bg-card p-3 space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-foreground"><Mail className="w-4 h-4" /> Subject: "Save on weekend rentals"</div>
-                    <div className="text-muted-foreground">Hi there — here's a quick offer for your upcoming event...</div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default">Use in campaign</div>
-                  </div>
-                </div>
+              <div className="rounded-xl border bg-background p-1">
+                <img 
+                  src="/lovable-uploads/eeaa3c75-f275-4bcd-8554-d5212130480b.png" 
+                  alt="AI Assistant interface showing email type selection, tone options including Professional, Friendly, Urgent, and Casual, with a Generate with AI button"
+                  className="w-full h-auto rounded-lg"
+                />
               </div>
             </article>
 
