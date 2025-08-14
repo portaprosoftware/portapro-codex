@@ -157,9 +157,9 @@ export function InventorySuppliesShowcase() {
                 {/* Photo of embossed panel */}
                  <AspectRatio ratio={4/5}>
                    <img 
-                     src="/lovable-uploads/4d11b176-789c-48bb-ab0e-6aa2d2cb0632.png"
-                     alt="Embossed plastic panel with manufacturing information"
-                     className="w-full h-full object-cover rounded-xl border"
+                     src="/lovable-uploads/57270a77-5a47-42e7-9e8d-6187f6ac34b1.png"
+                     alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel"
+                     className="w-full h-full object-contain rounded-xl"
                    />
                  </AspectRatio>
                 
