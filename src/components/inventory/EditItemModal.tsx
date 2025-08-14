@@ -340,9 +340,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="condition">Condition</Label>
-              <Select value={formData.condition} onValueChange={(value) => handleInputChange("condition", value)}>
-                <SelectTrigger>
+              <Label htmlFor="condition">Condition {formData.status === "maintenance" ? "(Auto-locked)" : ""}</Label>
+              <Select 
+                value={formData.condition} 
+                onValueChange={(value) => handleInputChange("condition", value)}
+                disabled={formData.status === "maintenance"}
+              >
+                <SelectTrigger className={formData.status === "maintenance" ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : ""}>
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -353,6 +357,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   <SelectItem value="needs_repair">Needs Repair</SelectItem>
                 </SelectContent>
               </Select>
+              {formData.status === "maintenance" && (
+                <p className="text-xs text-muted-foreground mt-1">Condition locked while unit is in maintenance</p>
+              )}
             </div>
           </div>
 
