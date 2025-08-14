@@ -1131,12 +1131,12 @@ export const Landing: React.FC = () => {
 
 
       {/* Footer */}
-      <footer id="resources" className="py-16 px-6 bg-gradient-blue text-white border-t">
+      <footer id="resources" className="py-8 sm:py-16 px-4 sm:px-6 bg-gradient-blue text-white border-t">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Product</h4>
-              <div className="space-y-2 text-sm text-white/80">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+            <div className="space-y-3 sm:space-y-4">
+              <h4 className="font-semibold text-white text-sm sm:text-base">Product</h4>
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <button onClick={() => {
                   if (isMobile) {
                     setFeaturesSheetOpen(true);
@@ -1147,24 +1147,24 @@ export const Landing: React.FC = () => {
                 <a href="#mobile-app" className="block hover:text-white">Mobile App</a>
               </div>
             </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Company</h4>
-              <div className="space-y-2 text-sm text-white/80">
+            <div className="space-y-3 sm:space-y-4">
+              <h4 className="font-semibold text-white text-sm sm:text-base">Company</h4>
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <button onClick={() => setAboutSliderOpen(true)} className="block hover:text-white text-left">About</button>
                 <a href="#" className="block hover:text-white">Careers</a>
                 <button onClick={() => setBlogSliderOpen(true)} className="block hover:text-white text-left">Blog</button>
               </div>
             </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Resources</h4>
-              <div className="space-y-2 text-sm text-white/80">
+            <div className="space-y-3 sm:space-y-4">
+              <h4 className="font-semibold text-white text-sm sm:text-base">Resources</h4>
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <a href="/help" className="block hover:text-white">Help Center</a>
                 <button onClick={() => setCommunitySliderOpen(true)} className="block hover:text-white text-left">Community</button>
               </div>
             </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Legal</h4>
-              <div className="space-y-2 text-sm text-white/80">
+            <div className="space-y-3 sm:space-y-4">
+              <h4 className="font-semibold text-white text-sm sm:text-base">Legal</h4>
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <button onClick={() => setTermsSliderOpen(true)} className="block hover:text-white text-left">Terms</button>
                 <button onClick={() => setPrivacySliderOpen(true)} className="block hover:text-white text-left">Privacy</button>
                 <button onClick={() => setSecuritySliderOpen(true)} className="block hover:text-white text-left">Security</button>
@@ -1172,25 +1172,38 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t">
-            <div className="flex items-center gap-4">
-              <LandingLogo variant="footer" />
-              <span className="text-sm text-white/80">© 2025 PortaPro. All rights reserved.</span>
-            </div>
-            <div className="flex items-center gap-6 mt-4 md:mt-0">
-              <div className="flex items-center gap-2 text-white/80">
-                <Phone className="w-4 h-4" />
-                <a href="tel:+12164123239" className="hover:text-white transition-colors">
-                  (216) 412-3239
-                </a>
+          <div className="flex flex-col space-y-4 pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-white/20">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <LandingLogo variant="footer" />
+                <span className="text-xs sm:text-sm text-white/80">© 2025 PortaPro. All rights reserved.</span>
               </div>
-              <button onClick={() => setContactFormOpen(true)} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
-                <Mail className="w-4 h-4" />
-                <span>Contact Us</span>
-              </button>
-              <button onClick={() => scrollToSection('top')} className="text-white/80 hover:text-white transition-colors">
-                ↑ Back to top
-              </button>
+              
+              <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:gap-6">
+                <div className="flex items-center gap-2 text-white/80">
+                  <Phone className="w-4 h-4" />
+                  <a href="tel:+12164123239" className="hover:text-white transition-colors text-sm">
+                    (216) 412-3239
+                  </a>
+                </div>
+                <button onClick={() => setContactFormOpen(true)} className="flex items-center gap-2 text-white/80 hover:text-white transition-colors justify-start sm:justify-center">
+                  <Mail className="w-4 h-4" />
+                  <span className="text-sm">Contact Us</span>
+                </button>
+                <button onClick={() => scrollToSection('top')} className="text-white/80 hover:text-white transition-colors text-sm text-left sm:text-center">
+                  ↑ Back to top
+                </button>
+              </div>
+            </div>
+            
+            {/* Mobile CTA */}
+            <div className="block sm:hidden">
+              <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="block">
+                <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 font-medium py-3 rounded-lg shadow-lg">
+                  Start Free Trial
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </a>
             </div>
           </div>
         </div>
