@@ -4,10 +4,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { CheckCircle, FileText, CreditCard, ClipboardList, ArrowRight, DollarSign } from 'lucide-react';
 
 export const QuoteToJobShowcase: React.FC = () => {
-  const kpis = [
-    { title: 'Quotes accepted', value: '72%', icon: FileText },
-    { title: 'Avg. deposit collected', value: '$225', icon: DollarSign },
-  ];
+  // KPIs removed as requested
 
   return (
     <div className="space-y-10">
@@ -60,20 +57,20 @@ export const QuoteToJobShowcase: React.FC = () => {
             </div>
           </AspectRatio>
 
-          {/* Keep only two KPI cards */}
-          <div className="grid grid-cols-2 gap-3">
-            {kpis.map((k, i) => (
-              <StatCard
-                key={i}
-                title={k.title}
-                value={k.value as any}
-                icon={k.icon}
-                gradientFrom="hsl(var(--primary))"
-                gradientTo="hsl(var(--primary) / 0.7)"
-                iconBg="hsl(var(--primary))"
-                animateValue
-              />
-            ))}
+          {/* Video placeholder */}
+          <div className="rounded-2xl border bg-card shadow-md p-6">
+            <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
+            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+              <div className="text-center text-muted-foreground">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+                <p className="text-sm">Video player placeholder</p>
+                <p className="text-xs mt-1">Upload your mp4 video here</p>
+              </div>
+            </div>
           </div>
 
           <ul className="space-y-3" aria-label="Quote-to-job highlights">
@@ -93,9 +90,9 @@ export const QuoteToJobShowcase: React.FC = () => {
           </ul>
         </aside>
 
-        {/* Right: Stacked mock screenshots */}
+        {/* Right: Quote Builder only */}
         <main className="space-y-6">
-          {/* 1) Quote Builder */}
+          {/* Quote Builder */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
               <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/40">
@@ -103,7 +100,7 @@ export const QuoteToJobShowcase: React.FC = () => {
                   <h3 className="text-sm font-semibold text-foreground">Quote • Q-1046</h3>
                   <p className="text-xs text-muted-foreground">ACME Construction — 1250 Market St, Denver CO</p>
                 </div>
-                <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs shadow">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow">
                   Awaiting acceptance
                 </div>
               </div>
@@ -166,42 +163,41 @@ export const QuoteToJobShowcase: React.FC = () => {
               </div>
             </div>
           </AspectRatio>
+        </main>
+      </div>
 
-          {/* 2) Customer Payment */}
-          <AspectRatio ratio={4/3}>
-            <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
-              <div className="border-b px-4 py-2 bg-muted/40">
-                <h4 className="text-sm font-semibold text-foreground">Customer Portal — Secure Payment</h4>
+      {/* Customer Payment section moved to bottom */}
+      <div className="max-w-lg mx-auto">
+        <AspectRatio ratio={4/3}>
+          <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
+            <div className="border-b px-4 py-2 bg-muted/40">
+              <h4 className="text-sm font-semibold text-foreground">Customer Portal — Secure Payment</h4>
+            </div>
+            <div className="p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">Deposit for Q-1046</div>
+                <div className="font-semibold text-foreground">$133.64</div>
               </div>
-              <div className="p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">Deposit for Q-1046</div>
-                  <div className="font-semibold text-foreground">$133.64</div>
+              <div className="rounded-xl border bg-background p-4 space-y-2">
+                <div className="text-sm text-foreground font-medium">Payment method</div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Card</div>
+                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">ACH</div>
+                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Apple / Google Pay</div>
                 </div>
-                <div className="rounded-xl border bg-background p-4 space-y-2">
-                  <div className="text-sm text-foreground font-medium">Payment method</div>
-                  <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                    <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Card</div>
-                    <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">ACH</div>
-                    <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Apple / Google Pay</div>
-                  </div>
+              </div>
+              <div className="pt-1">
+                <div
+                  role="button"
+                  aria-hidden
+                  className="w-full text-center rounded-xl bg-primary text-primary-foreground py-2 text-sm font-medium shadow hover:shadow-md transition hover-scale"
+                >
+                  Pay $133.64
                 </div>
-                <div className="pt-1">
-                  <div
-                    role="button"
-                    aria-hidden
-                    className="w-full text-center rounded-xl bg-primary text-primary-foreground py-2 text-sm font-medium shadow hover:shadow-md transition hover-scale"
-                  >
-                    Pay $133.64
-                  </div>
-                </div>
-                <div className="text-[10px] text-muted-foreground text-center">Powered by Stripe</div>
               </div>
             </div>
-          </AspectRatio>
-
-          {/* Job card moved to left column */}
-        </main>
+          </div>
+        </AspectRatio>
       </div>
     </div>
   );
