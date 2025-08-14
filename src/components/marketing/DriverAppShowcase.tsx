@@ -20,7 +20,7 @@ export const DriverAppShowcase: React.FC = () => {
   ];
 
   return (
-    <section aria-label="Driver Mobile App" className="space-y-10">
+    <section aria-label="Driver Mobile App" className="space-y-6 pb-6">
       <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Driver Mobile App — built for the field</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
@@ -29,8 +29,8 @@ export const DriverAppShowcase: React.FC = () => {
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
-        {/* Left: Replaced with supplied mobile app image */}
-        <main className="space-y-3">
+        {/* Left: Mobile app image only */}
+        <main>
           <AspectRatio ratio={9/16}>
             <div className="rounded-[2rem] overflow-hidden relative animate-enter">
               <img 
@@ -38,35 +38,6 @@ export const DriverAppShowcase: React.FC = () => {
                 alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
                 className="w-full h-full object-cover"
               />
-            </div>
-          </AspectRatio>
-
-          {/* Service report preview */}
-          <AspectRatio ratio={16/10}>
-            <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-fade-in">
-              <div className="border-b px-4 py-2 bg-muted/40 flex items-center justify-between">
-                <div className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <ClipboardCheck className="w-4 h-4" /> Service Report — Job JB‑2984
-                </div>
-                <div className="text-xs text-muted-foreground flex items-center gap-3">
-                  <Camera className="w-3.5 h-3.5" /> Photos • <Clock className="w-3.5 h-3.5" /> 3 min
-                </div>
-              </div>
-              <div className="p-4 grid sm:grid-cols-2 gap-3 text-sm">
-                {[ 
-                  ['Unit condition', 'Cleaned & stocked'],
-                  ['Deodorizer added', '2 oz — Blue Ocean'],
-                  ['Toilet paper', '2 rolls'],
-                  ['Handwash', 'Filled'],
-                  ['Signature', 'Captured on device'],
-                  ['Notes', 'Gate code 4217']
-                ].map(([k,v]) => (
-                  <div key={k} className="rounded-lg border bg-muted/30 px-3 py-2 flex items-center justify-between">
-                    <span className="text-muted-foreground">{k}</span>
-                    <span className="font-medium text-foreground">{v}</span>
-                  </div>
-                ))}
-              </div>
             </div>
           </AspectRatio>
         </main>
