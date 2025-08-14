@@ -432,28 +432,40 @@ export const Landing: React.FC = () => {
       {/* Feature Cards Section - White */}
       <section id="about" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* 3-Column Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Industry-Focused</h3>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
-              </CardContent>
-            </Card>
+          {/* 2-Column Layout: Cards on left, Image on right */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-5">
+            {/* Left Column: Stacked Cards */}
+            <div className="space-y-4">
+              <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm">
+                <CardContent className="p-5 text-left">
+                  <h3 className="text-base font-bold text-foreground mb-2">Industry-Focused</h3>
+                  <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
+                </CardContent>
+              </Card>
 
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Simple, All-Inclusive Pricing</h3>
-                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
-              </CardContent>
-            </Card>
+              <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm">
+                <CardContent className="p-5 text-left">
+                  <h3 className="text-base font-bold text-foreground mb-2">Simple, All-Inclusive Pricing</h3>
+                  <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
+                </CardContent>
+              </Card>
 
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Friendly, Ongoing Support</h3>
-                <p className="text-sm text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
-              </CardContent>
-            </Card>
+              <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm">
+                <CardContent className="p-5 text-left">
+                  <h3 className="text-base font-bold text-foreground mb-2">Friendly, Ongoing Support</h3>
+                  <p className="text-sm text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column: Features Overview Image */}
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/ee85e1d5-27fb-4d15-99b0-e54594dac661.png" 
+                alt="PortaPro Features Overview" 
+                className="w-full max-w-md rounded-xl shadow-sm"
+              />
+            </div>
           </div>
 
           {/* Bullet Text */}
