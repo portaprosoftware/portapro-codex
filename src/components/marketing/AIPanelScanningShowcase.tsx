@@ -60,30 +60,30 @@ export const AIPanelScanningShowcase: React.FC = () => {
             <div className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Manufacturer</span>
-                  <span className="font-medium text-foreground">ABC Manufacturing Inc.</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">Manufacturer</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">ABC Manufacturing</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Tool Number</span>
-                  <span className="font-medium text-foreground">T-20788-1A</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">Tool Number</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">T-20788-1A</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Vendor ID</span>
-                  <span className="font-medium text-foreground">32123</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">Vendor ID</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">32123</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Manufacture Date</span>
-                  <span className="font-medium text-foreground">Jan 16, 2016</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">Manufacture Date</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">Jan 16, 2016</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground">Plastic Type</span>
-                  <span className="font-medium text-foreground">HDPE</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">Plastic Type</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">HDPE</span>
                 </div>
               </div>
 
               <div className="text-center pt-2">
-                <span className="inline-flex items-center gap-2 text-xs text-primary">
-                  <CheckCircle className="w-4 h-4" />
+                <span className="inline-flex items-center gap-2 text-sm text-primary">
+                  <CheckCircle className="w-5 h-5" />
                   Linked to fleet automatically
                 </span>
               </div>
