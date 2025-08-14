@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -43,8 +43,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 }) => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("details");
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [updateToDelete, setUpdateToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     maintenance_reason: "",
@@ -198,8 +196,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     onSuccess: () => {
       toast.success("Maintenance update deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
-      setDeleteConfirmOpen(false);
-      setUpdateToDelete(null);
     },
     onError: (error) => {
       console.error("Error deleting maintenance update:", error);
@@ -208,14 +204,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const handleDeleteUpdate = (updateId: string) => {
-    setUpdateToDelete(updateId);
-    setDeleteConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (updateToDelete) {
-      deleteUpdateMutation.mutate(updateToDelete);
-    }
+    deleteUpdateMutation.mutate(updateId);
   };
 
   const handleItemSave = (e: React.FormEvent) => {
@@ -530,28 +519,30 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         No maintenance updates yet
                       </div>
                      ) : (
-                       (updates || []).map((update: any) => (
-                         <div key={update.id} className="border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between">
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             onClick={() => handleDeleteUpdate(update.id)}
-                             className="absolute top-3 right-3 h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                           >
-                             <Trash2 className="h-3 w-3" />
-                           </Button>
-                           <div className="pr-8">
-                             <div className="flex items-center justify-between mb-3">
-                               <Badge 
-                                 variant="outline" 
-                                 className={`text-xs ${
-                                   update.update_type === 'progress' 
-                                     ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
-                                     : ''
-                                 }`}
-                               >
-                                 {update.update_type === 'progress' ? 'Progress' : update.update_type}
-                               </Badge>
+                        (updates || []).map((update: any) => (
+                          <div key={update.id} className="border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`text-xs ${
+                                      update.update_type === 'progress' 
+                                        ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
+                                        : ''
+                                    }`}
+                                  >
+                                    {update.update_type === 'progress' ? 'Progress' : update.update_type}
+                                  </Badge>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDeleteUpdate(update.id)}
+                                    className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
                                </div>
@@ -590,17 +581,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         </div>
       </DialogContent>
       
-      <DeleteConfirmationDialog
-        isOpen={deleteConfirmOpen}
-        onClose={() => {
-          setDeleteConfirmOpen(false);
-          setUpdateToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        title="Delete Maintenance Update"
-        description="Are you sure you want to delete this maintenance update? This action cannot be undone."
-        isLoading={deleteUpdateMutation.isPending}
-      />
     </Dialog>
   );
 };
