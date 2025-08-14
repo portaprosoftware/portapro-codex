@@ -155,11 +155,11 @@ export function InventorySuppliesShowcase() {
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                 <div className="aspect-[4/5]">
+                 <div className="flex justify-center">
                    <img 
                      src="/lovable-uploads/cf4e07bc-0d9b-4a24-a8e7-3db06efc8766.png"
                      alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel"
-                     className="w-full h-full object-contain rounded-2xl"
+                     className="max-w-full h-auto rounded-2xl"
                    />
                  </div>
                 
