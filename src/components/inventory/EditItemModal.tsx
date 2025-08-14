@@ -174,6 +174,11 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
       setAttributeErrors({});
 
+      // Check if location changed to create transfer record
+      const originalLocation = item?.current_storage_location_id;
+      const newLocation = updateData.current_storage_location_id;
+      const locationChanged = originalLocation !== newLocation;
+
       // Prepare update data, handling empty date strings properly
       const cleanUpdateData = { ...updateData };
       
@@ -188,6 +193,24 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         .eq("id", itemId);
       
       if (error) throw error;
+
+      // Create transfer record if location changed
+      if (locationChanged && item?.product_id) {
+        const { error: transferError } = await supabase
+          .from('product_item_location_transfers')
+          .insert({
+            product_item_id: itemId,
+            product_id: item.product_id,
+            from_location_id: originalLocation,
+            to_location_id: newLocation,
+            notes: `Unit moved via edit - ${updateData.status === 'maintenance' ? 'moved to maintenance' : 'location update'}`
+          });
+
+        if (transferError) {
+          console.error('Failed to create transfer record:', transferError);
+          // Don't throw error here to avoid blocking the update
+        }
+      }
 
       // Update item attributes
       if (Object.keys(attributeValues).length > 0) {

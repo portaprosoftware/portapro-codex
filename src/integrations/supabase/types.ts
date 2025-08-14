@@ -5063,6 +5063,74 @@ export type Database = {
         }
         Relationships: []
       }
+      product_item_location_transfers: {
+        Row: {
+          created_at: string
+          from_location_id: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          product_item_id: string
+          quantity: number
+          to_location_id: string | null
+          transferred_at: string
+          transferred_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          from_location_id?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          product_item_id: string
+          quantity?: number
+          to_location_id?: string | null
+          transferred_at?: string
+          transferred_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          from_location_id?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          product_item_id?: string
+          quantity?: number
+          to_location_id?: string | null
+          transferred_at?: string
+          transferred_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_item_location_transfers_from_location_id_fkey"
+            columns: ["from_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_item_location_transfers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_item_location_transfers_product_item_id_fkey"
+            columns: ["product_item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_item_location_transfers_to_location_id_fkey"
+            columns: ["to_location_id"]
+            isOneToOne: false
+            referencedRelation: "storage_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_items: {
         Row: {
           barcode: string | null

@@ -26,6 +26,8 @@ interface LocationTransfer {
   transferred_at: string;
   transferred_by: string | null;
   notes: string | null;
+  transfer_type: 'bulk' | 'individual';
+  item_code?: string;
   from_location: {
     id: string;
     name: string;
@@ -59,18 +61,51 @@ export function ProductLocationTransferHistory({
   const { data: transferHistory = [], isLoading } = useQuery({
     queryKey: ['product-location-transfers', productId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch bulk product transfers
+      const { data: bulkTransfers, error: bulkError } = await supabase
         .from('product_location_transfers')
         .select(`
           *,
           from_location:storage_locations!from_location_id(id, name),
           to_location:storage_locations!to_location_id(id, name)
         `)
-        .eq('product_id', productId)
-        .order('transferred_at', { ascending: false });
+        .eq('product_id', productId);
 
-      if (error) throw error;
-      return data as LocationTransfer[];
+      if (bulkError) throw bulkError;
+
+      // Fetch individual item transfers
+      const { data: itemTransfers, error: itemError } = await supabase
+        .from('product_item_location_transfers')
+        .select(`
+          *,
+          from_location:storage_locations!from_location_id(id, name),
+          to_location:storage_locations!to_location_id(id, name),
+          product_items!inner(item_code)
+        `)
+        .eq('product_id', productId);
+
+      if (itemError) throw itemError;
+
+      // Combine and normalize the data
+      const combinedTransfers: LocationTransfer[] = [
+        // Bulk transfers
+        ...(bulkTransfers || []).map(transfer => ({
+          ...transfer,
+          transfer_type: 'bulk' as const
+        })),
+        // Individual item transfers
+        ...(itemTransfers || []).map(transfer => ({
+          ...transfer,
+          transfer_type: 'individual' as const,
+          item_code: transfer.product_items?.item_code,
+          quantity: 1 // Individual items are always quantity 1
+        }))
+      ];
+
+      // Sort by transferred_at descending
+      return combinedTransfers.sort((a, b) => 
+        new Date(b.transferred_at).getTime() - new Date(a.transferred_at).getTime()
+      );
     }
   });
 
@@ -99,9 +134,11 @@ export function ProductLocationTransferHistory({
     const transferDate = new Date(transfer.transferred_at);
     
     const matchesSearch = searchTerm === "" || 
-      transfer.from_location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transfer.to_location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (transfer.notes && transfer.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      transfer.from_location?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transfer.to_location?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (transfer.notes && transfer.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (transfer.item_code && transfer.item_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      transfer.transfer_type.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Fix date range filtering to include transfers on the end date
     let matchesDateRange = true;
@@ -126,15 +163,17 @@ export function ProductLocationTransferHistory({
       return;
     }
 
-    const headers = ["Date", "Time", "From Location", "To Location", "Quantity", "Notes", "Transferred By"];
+    const headers = ["Date", "Time", "From Location", "To Location", "Quantity", "Transfer Type", "Unit Code", "Notes", "Transferred By"];
     const csvContent = [
       headers.join(","),
       ...filteredHistory.map(transfer => [
         format(new Date(transfer.transferred_at), 'yyyy-MM-dd'),
         format(new Date(transfer.transferred_at), 'h:mm:ss a'),
-        `"${transfer.from_location.name}"`,
-        `"${transfer.to_location.name}"`,
+        `"${transfer.from_location?.name || 'Unknown'}"`,
+        `"${transfer.to_location?.name || 'Unknown'}"`,
         transfer.quantity,
+        transfer.transfer_type === 'individual' ? 'Individual' : 'Bulk',
+        `"${transfer.item_code || ''}"`,
         `"${transfer.notes || ''}"`,
         `"${transfer.transferred_by || 'System'}"`
       ].join(","))
@@ -290,19 +329,29 @@ export function ProductLocationTransferHistory({
                   
                   <div className="flex items-center space-x-3 flex-1">
                     <Badge variant="outline" className="font-medium">
-                      {transfer.from_location.name}
+                      {transfer.from_location?.name || 'Unknown'}
                     </Badge>
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
                     <Badge variant="outline" className="font-medium">
-                      {transfer.to_location.name}
+                      {transfer.to_location?.name || 'Unknown'}
                     </Badge>
+                    {transfer.transfer_type === 'individual' && transfer.item_code && (
+                      <Badge variant="secondary" className="text-xs">
+                        Unit: {transfer.item_code}
+                      </Badge>
+                    )}
                   </div>
                   
-                  <div className="text-right min-w-[80px]">
+                  <div className="text-right min-w-[100px]">
                     <div className="font-medium text-lg">
                       {transfer.quantity}
                     </div>
-                    <div className="text-xs text-muted-foreground">units</div>
+                    <div className="text-xs text-muted-foreground">
+                      {transfer.transfer_type === 'individual' ? 'unit' : 'units'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {transfer.transfer_type === 'individual' ? 'Individual' : 'Bulk'}
+                    </div>
                   </div>
                 </div>
                 
