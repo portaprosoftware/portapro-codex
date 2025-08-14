@@ -3,71 +3,6 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
 
-function PhotoSlider() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  const images = [
-    {
-      src: "/lovable-uploads/bfe824ef-8af0-416c-9cd9-ecd48214dfb1.png",
-      alt: "Standard Porta Potty product card with pricing and availability details"
-    },
-    {
-      src: "/lovable-uploads/661302df-ce04-4ea6-abcb-987d4352caa3.png", 
-      alt: "Inventory status dashboard showing available individual units, bulk pool, and maintenance status"
-    },
-    {
-      src: "/lovable-uploads/65a3711f-fa46-4012-9b21-2c03808a58f2.png",
-      alt: "Print QR Codes interface for generating and printing unit tracking codes"
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setCurrentIndex((current) => (current + 1) % images.length);
-          return 0;
-        }
-        return prev + (100 / 40); // 4 seconds = 4000ms, update every 100ms
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [images.length]);
-
-  return (
-    <div className="rounded-2xl border border-border overflow-hidden">
-      <div className="relative">
-        <AspectRatio ratio={16/10}>
-          <img
-            src={images[currentIndex].src}
-            alt={images[currentIndex].alt}
-            className="w-full h-full object-cover transition-opacity duration-500"
-            loading="lazy"
-          />
-        </AspectRatio>
-        
-        {/* Progress indicators */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              className="relative w-12 h-1 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm"
-            >
-              <div
-                className="absolute top-0 left-0 h-full bg-primary transition-all duration-100 ease-linear rounded-full"
-                style={{
-                  width: index === currentIndex ? `${progress}%` : index < currentIndex ? '100%' : '0%'
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function InventorySuppliesShowcase() {
   return (
@@ -86,8 +21,7 @@ export function InventorySuppliesShowcase() {
           {/* Left: Feature Visuals */}
           <div className="space-y-6">
             {/* Panel A — Unified Stock Modes */}
-            <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
-              <div className="rounded-2xl bg-white border border-border">
+            <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-4">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="px-3 py-1 rounded-full bg-muted text-foreground">Bulk</span>
@@ -133,12 +67,10 @@ export function InventorySuppliesShowcase() {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* Panel B — Availability & Multi‑location */}
-            <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
-              <div className="rounded-2xl bg-white border border-border">
+            <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-4">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <Calendar className="w-4 h-4 text-primary" /> Availability by date
@@ -161,12 +93,10 @@ export function InventorySuppliesShowcase() {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* Panel C — Track Units with QR Codes */}
-            <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
-              <div className="rounded-2xl bg-white border border-border">
+            <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-4">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <QrCode className="w-4 h-4 text-primary" /> Track Units with QR Codes Automatically
@@ -203,12 +133,10 @@ export function InventorySuppliesShowcase() {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* Panel D — Photo Scanning */}
-            <div className="p-[1px] rounded-2xl bg-gradient-blue animate-enter">
-               <div className="rounded-2xl bg-white border border-border p-4">
+            <div className="rounded-2xl bg-white border border-border p-4 animate-enter">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
                   <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Numbers & Other Data in Embossed Plastic
                 </div>
@@ -254,15 +182,12 @@ export function InventorySuppliesShowcase() {
                      Works offline — syncs later. Instant attach to units & jobs.
                    </div>
                  </div>
-               </div>
-               </div>
-             </div>
+                </div>
+            </div>
            </div>
 
-          {/* Right: Photo Slider */}
+          {/* Right: Benefits */}
           <aside className="space-y-6 animate-fade-in">
-            <PhotoSlider />
-
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
