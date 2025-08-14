@@ -365,15 +365,16 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
           <div className="space-y-2">
             <Label htmlFor="storage_location">
-              Storage Location {formData.status === "maintenance" ? "(Required for maintenance)" : ""}
+              Storage Location {formData.status === "maintenance" ? "(Locked - update from maintenance tracker)" : ""}
             </Label>
             <StorageLocationSelector
               value={formData.current_storage_location_id}
               onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
-              placeholder={formData.status === "maintenance" ? "Storage location required" : "Select storage location"}
+              placeholder={formData.status === "maintenance" ? "Locked during maintenance" : "Select storage location"}
+              disabled={formData.status === "maintenance"}
             />
-            {formData.status === "maintenance" && !formData.current_storage_location_id && (
-              <p className="text-xs text-red-600">Storage location is mandatory for maintenance items</p>
+            {formData.status === "maintenance" && (
+              <p className="text-xs text-muted-foreground">Storage location is locked during maintenance. Update from the maintenance tracker to change location.</p>
             )}
           </div>
 

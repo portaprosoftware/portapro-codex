@@ -118,6 +118,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       toast.success("Item updated");
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      queryClient.invalidateQueries({ queryKey: ["product-item", item.id] });
       onClose();
     },
     onError: (err) => {
