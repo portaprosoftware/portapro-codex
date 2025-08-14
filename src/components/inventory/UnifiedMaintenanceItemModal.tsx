@@ -451,9 +451,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       addUpdateMutation.mutate(updateForm);
                     }}
                     disabled={addUpdateMutation.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold hover:from-orange-700 hover:to-orange-800"
                   >
-                    {addUpdateMutation.isPending ? "Adding..." : "Add Update"}
+                    {addUpdateMutation.isPending ? "Adding..." : "Add Maintenance Update"}
                   </Button>
                 </div>
               </div>
