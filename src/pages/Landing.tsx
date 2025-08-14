@@ -379,45 +379,43 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Hero Section - Blue */}
-      <section className="py-4 md:py-6 bg-gradient-blue text-white">
+      <section className="py-12 md:py-16 bg-gradient-blue text-white">
         <div className="container mx-auto max-w-full px-12 lg:px-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="space-y-4">
                 <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
                 <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
-                  Streamline scheduling, fleet management, dispatch, invoicing, and customer communication. Everything you need to run your business efficiently in one platform.
+                  Streamline scheduling, fleet tracking, dispatch, invoicing, and customer communication — all in one platform.
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                  <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90 font-medium px-8 py-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="lg" className="font-medium px-8 py-3 border-white/30 text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-1 transition-all duration-200" onClick={openCalendlyPopup}>
                   Schedule Demo
-                  <Calendar className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                  Watch 60-second tour
-                  <Play className="w-4 h-4 ml-2" />
+                <Button variant="outline" size="lg" className="font-medium px-8 py-3 border-white/30 text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                  Watch 60-second Tour
                 </Button>
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-center gap-6 flex-wrap opacity-90">
-                  <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                </div>
-                <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
-                  <span className="font-bold text-base">• Full Support Included</span>
-                  <span className="font-bold text-base">• Cancel Anytime</span>
-                  <span className="font-bold text-base">• 14 Day Free Trial</span>
+                <p className="text-white/80 text-sm">
+                  Trusted by operators across North America
+                </p>
+                <div className="text-center">
+                  <p className="text-white/90 text-sm">
+                    Full support included • Cancel anytime • 14-day free trial
+                  </p>
                 </div>
               </div>
             </div>
@@ -429,83 +427,43 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Proof Bar + Trust strip + Switching is easy - White */}
-      <section id="about" className="py-6 bg-white">
+      {/* White Section */}
+      <section id="about" className="py-12 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Proof Bar */}
-          <div className="mb-4">
-            <div className="sr-only">Proof Bar</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
-              </article>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-2">Why operators choose PortaPro</h2>
+          </div>
+          
+          {/* Three Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="rounded-xl border border-border bg-white text-foreground p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Purpose-Built</h3>
+              <p className="text-muted-foreground">Built specifically for portable toilet rentals.</p>
+            </div>
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
-              </article>
+            <div className="rounded-xl border border-border bg-white text-foreground p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Transparent Pricing</h3>
+              <p className="text-muted-foreground">One simple plan. No surprise fees.</p>
+            </div>
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
-              </article>
-
-              
-
-              
-
-              
+            <div className="rounded-xl border border-border bg-white text-foreground p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Real Human Support</h3>
+              <p className="text-muted-foreground">Talk to a real person whenever you need help.</p>
             </div>
           </div>
 
-          {/* Trust strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>No setup fees</span>
-            <span className="opacity-50">•</span>
-            <span>Unlimited users, trucks & units</span>
-            <span className="opacity-50">•</span>
-            <span>Data export anytime</span>
+          {/* Compact Benefit Line */}
+          <div className="text-center mb-6">
+            <p className="text-sm text-muted-foreground">
+              No setup fees • Unlimited users, trucks & units • Data export anytime • Free import help • 1:1 onboarding calls • Easy to learn
+            </p>
           </div>
 
-          {/* Switching is easy */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">Free import assistance</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">1:1 onboarding calls</span>
-            </div>
-            
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">User friendly and easy to understand</span>
-            </div>
+          {/* CTA Row */}
+          <div className="text-center">
+            <Button variant="outline" className="bg-white hover:bg-gray-50">
+              See how it works
+            </Button>
           </div>
         </div>
       </section>
