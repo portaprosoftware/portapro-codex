@@ -62,7 +62,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-xs sm:text-sm text-muted-foreground">Manufacturer</span>
-                  <span className="font-medium text-xs sm:text-sm text-foreground">ABC Manufacturing</span>
+                  <span className="font-medium text-xs sm:text-sm text-foreground">ABC Manufacturing Inc.</span>
                 </div>
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-xs sm:text-sm text-muted-foreground">Tool Number</span>
