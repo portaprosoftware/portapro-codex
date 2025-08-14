@@ -20,7 +20,7 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button 
-          className="text-sm font-medium shadow-none hover:shadow-none bg-transparent hover:bg-muted/50 transition-colors hover:scale-105 transform duration-200 flex items-center gap-1"
+          className="text-sm font-medium shadow-none hover:shadow-none bg-transparent hover:bg-gradient-to-b hover:from-muted hover:via-muted hover:to-muted/70 transition-colors hover:scale-105 transform duration-200 flex items-center gap-1 px-3 py-2 rounded-md border border-transparent hover:border-border"
           aria-expanded={open}
         >
           Features
