@@ -33,7 +33,7 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left visuals: template builder → what teams love → segments → schedule */}
+          {/* Left visuals: template builder → what teams love → schedule & send → segments */}
           <div className="space-y-6">
             {/* A) Template builder with AI magic */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
@@ -91,30 +91,7 @@ export const MarketingShowcase: React.FC = () => {
               </div>
             </div>
 
-            {/* C) Audience & Smart Segments */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Audience & Segments</h3>
-                <Users className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs mb-3">
-                {[
-                  "All Customers",
-                  "Smart: Event rentals this week",
-                  "Smart: Inactive 90+ days",
-                  "Smart: High value accounts",
-                  "Custom: VIP corporate",
-                ].map((chip) => (
-                  <span key={chip} className="rounded-lg bg-muted px-3 py-1 text-muted-foreground">{chip}</span>
-                ))}
-              </div>
-              <div className="text-sm text-foreground">
-                2,340 recipients • 187 excluded (unsubscribed, bounced)
-              </div>
-              <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
-            </article>
-
-            {/* D) Schedule & Send */}
+            {/* C) Schedule & Send - moved up */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-semibold text-foreground">Schedule & Send</h3>
@@ -148,17 +125,46 @@ export const MarketingShowcase: React.FC = () => {
                 </div>
               </div>
             </article>
+
+            {/* D) Audience & Smart Segments - moved down */}
+            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold text-foreground">Audience & Segments</h3>
+                <Users className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs mb-3">
+                {[
+                  "All Customers",
+                  "Smart: Event rentals this week",
+                  "Smart: Inactive 90+ days",
+                  "Smart: High value accounts",
+                  "Custom: VIP corporate",
+                ].map((chip) => (
+                  <span key={chip} className="rounded-lg bg-muted px-3 py-1 text-muted-foreground">{chip}</span>
+                ))}
+              </div>
+              <div className="text-sm text-foreground">
+                2,340 recipients • 187 excluded (unsubscribed, bounced)
+              </div>
+              <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
+            </article>
           </div>
 
-          {/* Right column: KPIs + highlights */}
+          {/* Right column: Video + highlights */}
           <aside className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <StatCard title="Delivery rate" value="99.2%" icon={Send} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Email open rate" value="48%" icon={Mail} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Click‑through" value="9.4%" icon={Target} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="SMS read in 5 min" value="82%" icon={MessageSquareText} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Messages sent/mo" value={18400} icon={MessageSquareText} animateValue gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Unsubscribe rate" value="0.3%" icon={CheckCircle} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
+            <div className="rounded-2xl border bg-card shadow-md p-6">
+              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
+              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm">Video player placeholder</p>
+                  <p className="text-xs mt-1">Upload your mp4 video here</p>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
