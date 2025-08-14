@@ -237,7 +237,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       {/* Product Image */}
       <div className="flex justify-center mb-4">
-        <div className="w-52 h-52 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <div className="w-52 h-52 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
           {product.base_image ? (
             <img
               src={product.base_image}
@@ -247,6 +247,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
           ) : (
             <div className="w-24 h-24 bg-gray-300 rounded"></div>
           )}
+          {/* Available Count Badge */}
+          <div className="absolute top-2 left-2">
+            <Badge variant="success" className="text-xs px-2 py-1">
+              {availableCount}
+            </Badge>
+          </div>
         </div>
       </div>
 

@@ -162,7 +162,12 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
 
         {/* Product Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-medium text-gray-900">{product.name}</h3>
+            <Badge variant="success" className="text-xs px-2 py-1">
+              {availableCount}
+            </Badge>
+          </div>
           <p className="text-blue-600 font-medium">${product.default_price_per_day}/day</p>
         </div>
 
