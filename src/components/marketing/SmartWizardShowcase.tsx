@@ -39,15 +39,12 @@ export const SmartWizardShowcase: React.FC = () => {
             ))}
           </div>
 
-          <div className="rounded-2xl border bg-card shadow-md p-6">
-            <div className="text-base font-semibold mb-4 text-foreground">Job Wizard in Action</div>
-            <div className="aspect-video bg-muted rounded-xl overflow-hidden">
-              <img 
-                src="/lovable-uploads/8dc97539-4052-43f9-a9bb-7fb38e588590.png" 
-                alt="Smart Job Wizard interface showing customer selection step with search functionality and customer cards"
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="aspect-video bg-muted rounded-xl overflow-hidden">
+            <img 
+              src="/lovable-uploads/8dc97539-4052-43f9-a9bb-7fb38e588590.png" 
+              alt="Smart Job Wizard interface showing customer selection step with search functionality and customer cards"
+              className="w-full h-full object-cover transform scale-125"
+            />
           </div>
 
           <ul className="space-y-3" aria-label="Wizard highlights">
