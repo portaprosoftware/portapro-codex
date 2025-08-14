@@ -7,9 +7,7 @@ export const SmartWizardShowcase: React.FC = () => {
   // Static, believable KPIs for a thriving operation
   const kpis = [
     { title: 'Jobs booked this month', value: 148, icon: ClipboardList },
-    { title: 'Avg units per job', value: 6.8, icon: CalendarClock },
-    { title: 'On-time delivery rate', value: 99.1, icon: Truck },
-    { title: 'AI time saved per job (min)', value: 6, icon: Zap },
+    { title: '99% On-time delivery rate', value: 99, icon: Truck },
   ];
 
   const steps = ['Customer', 'Dates', 'Units', 'Assign', 'Review'];
@@ -24,9 +22,9 @@ export const SmartWizardShowcase: React.FC = () => {
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
-        {/* Left: Static KPIs and highlights */}
+        {/* Left: Static KPIs, video, and highlights */}
         <aside className="space-y-6">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             {kpis.map((k, i) => (
               <StatCard
                 key={i}
@@ -39,6 +37,21 @@ export const SmartWizardShowcase: React.FC = () => {
                 animateValue
               />
             ))}
+          </div>
+
+          <div className="rounded-2xl border bg-card shadow-md p-6">
+            <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
+            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+              <div className="text-center text-muted-foreground">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+                <p className="text-sm">Video player placeholder</p>
+                <p className="text-xs mt-1">Upload your mp4 video here</p>
+              </div>
+            </div>
           </div>
 
           <ul className="space-y-3" aria-label="Wizard highlights">
@@ -59,7 +72,7 @@ export const SmartWizardShowcase: React.FC = () => {
         </aside>
 
         {/* Right: "Make-believe screenshots" stack */}
-        <main className="space-y-6 transform origin-top-right scale-[0.8] md:scale-[0.85] lg:scale-[0.8]">
+        <main className="space-y-6 transform origin-top-right scale-[0.8] md:scale-[0.85] lg:scale-[0.8] mt-8">
           {/* Main mock: Create Job */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
@@ -143,7 +156,7 @@ export const SmartWizardShowcase: React.FC = () => {
           </AspectRatio>
 
           {/* Support mocks */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 mt-12">
             {/* Schedule & Assign */}
             <AspectRatio ratio={4/3}>
               <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
