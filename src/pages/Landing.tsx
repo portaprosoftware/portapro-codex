@@ -463,7 +463,7 @@ export const Landing: React.FC = () => {
               <img 
                 src="/lovable-uploads/ee85e1d5-27fb-4d15-99b0-e54594dac661.png" 
                 alt="PortaPro Features Overview" 
-                className="w-full max-w-md rounded-xl shadow-sm"
+                className="w-full max-w-lg"
               />
             </div>
           </div>
