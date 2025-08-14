@@ -191,11 +191,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       if (cleanUpdateData.current_storage_location_id === "") {
         cleanUpdateData.current_storage_location_id = null;
       }
-      if (cleanUpdateData.vendor_id === "") {
-        cleanUpdateData.vendor_id = null;
-      }
+      // vendor_id is a text field, not UUID, so we'll leave it as is for now
       
-      console.log('Sending update data:', cleanUpdateData);
+      console.log('Sending update data:', JSON.stringify(cleanUpdateData, null, 2));
 
       const { error } = await supabase
         .from("product_items")
@@ -268,8 +266,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       onClose();
     },
     onError: (error) => {
-      toast.error("Failed to update item");
-      console.error(error);
+      console.error('Update error details:', error);
+      toast.error(`Failed to update item: ${error.message}`);
     }
   });
 
