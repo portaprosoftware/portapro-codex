@@ -121,8 +121,8 @@ export const FuelOverviewTab: React.FC = () => {
           value={metrics?.total_gallons?.toFixed(1) || '0'}
           subtitle="Last 30 days"
           icon={Fuel}
-          gradientFrom="#2563EB"
-          gradientTo="#1E40AF"
+          gradientFrom="#F59E0B"
+          gradientTo="#D97706"
         />
         
         <DashboardCard
@@ -139,8 +139,8 @@ export const FuelOverviewTab: React.FC = () => {
           value={`$${metrics?.average_cost_per_gallon?.toFixed(2) || '0.00'}`}
           subtitle="Last 30 days"
           icon={TrendingUp}
-          gradientFrom="#9333EA"
-          gradientTo="#7C3AED"
+          gradientFrom="#DC2626"
+          gradientTo="#B91C1C"
         />
         
         <DashboardCard
@@ -148,8 +148,8 @@ export const FuelOverviewTab: React.FC = () => {
           value={metrics?.fleet_mpg?.toFixed(1) || '0.0'}
           subtitle="Last 30 days"
           icon={Truck}
-          gradientFrom="#EA580C"
-          gradientTo="#C2410C"
+          gradientFrom="#2563EB"
+          gradientTo="#1E40AF"
         />
       </div>
 
