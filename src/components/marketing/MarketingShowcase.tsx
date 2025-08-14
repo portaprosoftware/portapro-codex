@@ -15,7 +15,7 @@ import {
 
 export const MarketingShowcase: React.FC = () => {
   return (
-    <section id="marketing" className="py-8 bg-white">
+    <section id="marketing" className="py-6 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
@@ -73,23 +73,6 @@ export const MarketingShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* B) What teams love - moved from right column */}
-            <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
-              <div className="text-base font-semibold text-foreground">What teams love</div>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Smart Segments catch revenue you'd otherwise miss</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> AI drafts keep the team moving fast</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> No add‑on bills for messaging — ever</li>
-              </ul>
-
-              <div className="pt-2 flex flex-wrap gap-2">
-                <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default inline-flex items-center gap-2"><Send className="w-4 h-4" /> Create Campaign</div>
-                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Manage Templates</div>
-                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><CalendarClock className="w-4 h-4" /> Scheduled Sends</div>
-                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><Target className="w-4 h-4" /> Smart Segments</div>
-                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><MessageSquareText className="w-4 h-4" /> Drafts</div>
-              </div>
-            </div>
 
             {/* C) Schedule & Send - moved up */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
@@ -151,7 +134,7 @@ export const MarketingShowcase: React.FC = () => {
           </div>
 
           {/* Right column: Video + highlights */}
-          <aside className="space-y-6">
+          <aside className="space-y-4">
             <div className="rounded-2xl border bg-card shadow-md p-6">
               <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
               <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
@@ -177,6 +160,23 @@ export const MarketingShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Real‑time metrics for delivery, opens, clicks, unsubs</li>
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Unlimited texts and emails — included, no hidden fees</li>
               </ul>
+            </div>
+
+            <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
+              <div className="text-base font-semibold text-foreground">What teams love</div>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Smart Segments catch revenue you'd otherwise miss</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> AI drafts keep the team moving fast</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> No add‑on bills for messaging — ever</li>
+              </ul>
+
+              <div className="pt-2 flex flex-wrap gap-2">
+                <div className="px-3 py-1 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold text-sm cursor-default inline-flex items-center gap-2"><Send className="w-4 h-4" /> Create Campaign</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Manage Templates</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><CalendarClock className="w-4 h-4" /> Scheduled Sends</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><Target className="w-4 h-4" /> Smart Segments</div>
+                <div className="px-3 py-1 rounded-md border text-foreground text-sm cursor-default inline-flex items-center gap-2"><MessageSquareText className="w-4 h-4" /> Drafts</div>
+              </div>
             </div>
           </aside>
         </div>
