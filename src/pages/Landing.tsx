@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -898,11 +898,11 @@ export const Landing: React.FC = () => {
 
           {/* Team KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
-            <StatCard title="Total Members" value={totalMembers} icon={Users} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">All roles</span>} />
-            <StatCard title="Active Drivers" value={activeDrivers} icon={Users} gradientFrom="hsl(var(--accent))" gradientTo="hsl(var(--accent) / 0.7)" iconBg="hsl(var(--accent))" subtitle={<span className="text-muted-foreground">Drivers on roster</span>} />
-            <StatCard title="Shifts Today" value={shiftsToday} icon={CalendarClock} gradientFrom="hsl(var(--secondary))" gradientTo="hsl(var(--secondary) / 0.7)" iconBg="hsl(var(--secondary))" subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} />
+            <StatCard title="Total Members" value={totalMembers} icon={Users} gradientFrom="hsl(214, 100%, 50%)" gradientTo="hsl(214, 100%, 35%)" iconBg="hsl(214, 100%, 50%)" subtitle={<span className="text-muted-foreground">All roles</span>} />
+            <StatCard title="Active Drivers" value={activeDrivers} icon={HardHat} gradientFrom="hsl(214, 100%, 50%)" gradientTo="hsl(214, 100%, 35%)" iconBg="hsl(214, 100%, 50%)" subtitle={<span className="text-muted-foreground">Drivers on roster</span>} />
+            <StatCard title="Shifts Today" value={shiftsToday} icon={CalendarClock} gradientFrom="hsl(142, 76%, 36%)" gradientTo="hsl(142, 76%, 25%)" iconBg="hsl(142, 76%, 36%)" subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} />
             <StatCard title="Approved Time Off" value={timeOffTodayCount} icon={Calendar} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Today</span>} />
-            <StatCard title="Expiring Credentials" value={expiringCredsCount} icon={Shield} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">Next 30 days</span>} />
+            <StatCard title="Expiring Credentials" value={expiringCredsCount} icon={Shield} gradientFrom="hsl(45, 93%, 35%)" gradientTo="hsl(45, 93%, 25%)" iconBg="hsl(45, 93%, 35%)" subtitle={<span className="text-muted-foreground">Next 30 days</span>} />
           </div>
 
           {/* Team Ops Toolkit */}
@@ -933,7 +933,7 @@ export const Landing: React.FC = () => {
                 <Shield className="w-5 h-5 text-primary" />
                 <h4 className="font-semibold text-foreground">Roles & Permissions</h4>
               </div>
-              <p className="text-sm text-muted-foreground">Owner/Admin controls powered by Clerk — simple and secure.</p>
+              <p className="text-sm text-muted-foreground">Owner/Admin controlled approvals</p>
             </div>
           </div>
 
