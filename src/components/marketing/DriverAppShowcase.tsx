@@ -31,15 +31,13 @@ export const DriverAppShowcase: React.FC = () => {
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
         {/* Left: Mobile app image only */}
         <main>
-          <AspectRatio ratio={9/16}>
-            <div className="rounded-[2rem] overflow-hidden relative animate-enter max-w-[75%] mx-auto">
-              <img 
-                src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
-                alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </AspectRatio>
+          <div className="rounded-[2rem] overflow-hidden relative animate-enter max-w-[75%] mx-auto">
+            <img 
+              src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
+              alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
+              className="w-full h-auto object-cover"
+            />
+          </div>
         </main>
 
         {/* Right: Benefits & KPIs */}
