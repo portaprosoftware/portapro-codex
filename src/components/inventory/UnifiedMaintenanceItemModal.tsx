@@ -349,7 +349,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         className="bg-muted/50 text-muted-foreground cursor-not-allowed"
                         placeholder="—"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">Use "Edit Item" button to modify</p>
                     </div>
                     <div>
                       <Label>Vendor ID (Reference)</Label>
@@ -359,7 +358,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         className="bg-muted/50 text-muted-foreground cursor-not-allowed"
                         placeholder="—"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">Use "Edit Item" button to modify</p>
                     </div>
                     <div className="md:col-span-2">
                       <Label>Condition</Label>
