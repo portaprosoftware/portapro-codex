@@ -443,17 +443,18 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 <div className="flex justify-end">
                   <Button
                     onClick={() => {
+                      console.log("Add Update button clicked", updateForm); // Debug log
                       if (!updateForm.description.trim()) {
-                      toast.error("Description is required");
-                      return;
-                    }
-                    addUpdateMutation.mutate(updateForm);
-                  }}
-                  disabled={addUpdateMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {addUpdateMutation.isPending ? "Adding..." : "Add Update"}
-                </Button>
+                        toast.error("Description is required");
+                        return;
+                      }
+                      addUpdateMutation.mutate(updateForm);
+                    }}
+                    disabled={addUpdateMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {addUpdateMutation.isPending ? "Adding..." : "Add Update"}
+                  </Button>
                 </div>
               </div>
             </div>
