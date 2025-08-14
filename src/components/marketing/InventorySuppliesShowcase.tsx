@@ -96,8 +96,8 @@ export function InventorySuppliesShowcase() {
             {/* Panel C — Track Units with QR Codes */}
             <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-3">
-                  <div className="flex items-center gap-2 text-xs font-medium">
-                    <QrCode className="w-3 h-3 text-primary" /> Track Units with QR Codes Automatically
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <QrCode className="w-4 h-4 text-primary" /> Track Units with QR Codes Automatically
                   </div>
 
                   <div className="mt-3 grid sm:grid-cols-2 gap-3 items-center">
@@ -136,7 +136,7 @@ export function InventorySuppliesShowcase() {
             {/* Panel D — Photo Scanning */}
             <div className="rounded-2xl bg-white border border-border p-4 animate-enter">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                  <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Numbers & Other Data in Embossed Plastic
+                  <Sparkles className="w-4 h-4 text-primary" /> Snap & Track Units from Embossed Plastic Tool Numbers
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
