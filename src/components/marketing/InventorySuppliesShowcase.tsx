@@ -188,6 +188,15 @@ export function InventorySuppliesShowcase() {
 
           {/* Right: Benefits */}
           <aside className="space-y-6 animate-fade-in">
+            {/* Porta Potty Image - Top Right */}
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/8ecdefcc-49fa-404b-98c0-0212f89aae23.png"
+                alt="Standard Porta Potty inventory card showing pricing and availability"
+                className="max-w-full h-auto rounded-2xl"
+              />
+            </div>
+
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
@@ -210,6 +219,15 @@ export function InventorySuppliesShowcase() {
                 <li><strong>Auto-sync on reconnect:</strong> We verify the signature, run Google Vision OCR on saved photos, upload images, and update records. (Or tap Sync Now anytime.)</li>
                 <li><strong>Built as a PWA:</strong> App shell is cached for offline use; scans/photos queue safely in IndexedDB with retry logic.</li>
               </ul>
+            </div>
+
+            {/* Chart Image - Under Technical Facts */}
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/6fb9ebfb-71ef-45a0-a0de-50d0966319c4.png"
+                alt="Inventory stock chart showing available individual, bulk pool, and maintenance status"
+                className="max-w-full h-auto rounded-2xl"
+              />
             </div>
           </aside>
         </div>
