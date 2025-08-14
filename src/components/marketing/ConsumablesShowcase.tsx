@@ -17,9 +17,9 @@ export const ConsumablesShowcase: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left column: Highlights */}
-          <div className="space-y-4">
+          <div>
             {/* Highlights card */}
-            <div className="rounded-2xl border bg-card p-5 shadow-md">
+            <div className="rounded-2xl border bg-card p-5 shadow-sm">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Set billing at job creation: Included, Itemized actuals, or Kit fee (+ overage)</li>
@@ -38,7 +38,7 @@ export const ConsumablesShowcase: React.FC = () => {
             <img 
               src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
               alt="Add Consumable form interface with name, category, SKU and quantity fields"
-              className="w-full h-auto rounded-2xl"
+              className="w-full h-auto rounded-2xl -mt-2"
             />
           </div>
 
