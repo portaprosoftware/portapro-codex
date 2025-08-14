@@ -261,7 +261,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
-              <TabsTrigger value="update">Add Update</TabsTrigger>
+              <TabsTrigger value="update">Add / View Progress Updates</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
