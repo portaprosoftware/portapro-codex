@@ -155,7 +155,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           </TabsTrigger>
           <TabsTrigger value="maintenance" className="flex items-center gap-2">
             <Wrench className="w-4 h-4" />
-            Maintenance Tracker
+            Maintenance
             {maintenanceCount !== undefined && maintenanceCount > 0 && (
               <Badge 
                 className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800"

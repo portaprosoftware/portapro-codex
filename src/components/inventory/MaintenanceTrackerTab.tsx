@@ -171,7 +171,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
               <Wrench className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Maintenance Tracker</h3>
+              <h3 className="text-lg font-bold text-gray-900">Maintenance</h3>
               <p className="text-sm text-gray-600">
                 {maintenanceItems?.length || 0} unit(s) currently in maintenance
               </p>
