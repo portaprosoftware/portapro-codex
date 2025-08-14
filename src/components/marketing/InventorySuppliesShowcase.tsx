@@ -183,60 +183,59 @@ export function InventorySuppliesShowcase() {
                 </div>
             </div>
 
-            {/* Panel E — Consumables Billing */}
-            <div className="rounded-2xl bg-white border border-border animate-enter">
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Package className="w-4 h-4 text-primary" /> Consumables Billing — Flexible & Transparent
-                  </div>
-
-                  <div className="mt-4">
-                    <p className="text-sm text-muted-foreground mb-3">Choose how you want to bill for consumables:</p>
-                    
-                    <div className="space-y-3">
-                      <div className="rounded-lg border border-border p-3">
-                        <div className="font-medium text-sm text-foreground">Included (bundled):</div>
-                        <div className="text-sm text-muted-foreground">Bury the cost in your flat rate for simple pricing.</div>
-                      </div>
-                      
-                      <div className="rounded-lg border border-border p-3">
-                        <div className="font-medium text-sm text-foreground">Itemized Actuals:</div>
-                        <div className="text-sm text-muted-foreground">Track and charge for every product used—down to the dollar.</div>
-                      </div>
-                      
-                      <div className="rounded-lg border border-border p-3">
-                        <div className="font-medium text-sm text-foreground">Kit Fee + Overage:</div>
-                        <div className="text-sm text-muted-foreground">Charge a base fee per service kit, with automatic overage billing if usage exceeds your threshold.</div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                        <span className="text-foreground">Great for blue solution, deodorizers, toilet paper, and cleaning supplies</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                        <span className="text-foreground">Built into your job flow automatically</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                        <span className="text-foreground">Adjust per customer or per job</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
            </div>
 
           {/* Right: Benefits */}
           <aside className="space-y-6 animate-fade-in">
+            {/* Consumables Billing */}
+            <div className="rounded-2xl bg-white border border-border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Package className="w-4 h-4 text-primary" /> Consumables Billing — Flexible & Transparent
+              </div>
+
+              <div className="mt-4">
+                <p className="text-sm text-muted-foreground mb-3">Choose how you want to bill for consumables:</p>
+                
+                <div className="space-y-3">
+                  <div className="rounded-lg border border-border p-3">
+                    <div className="font-medium text-sm text-foreground">Included (bundled):</div>
+                    <div className="text-sm text-muted-foreground">Bury the cost in your flat rate for simple pricing.</div>
+                  </div>
+                  
+                  <div className="rounded-lg border border-border p-3">
+                    <div className="font-medium text-sm text-foreground">Itemized Actuals:</div>
+                    <div className="text-sm text-muted-foreground">Track and charge for every product used—down to the dollar.</div>
+                  </div>
+                  
+                  <div className="rounded-lg border border-border p-3">
+                    <div className="font-medium text-sm text-foreground">Kit Fee + Overage:</div>
+                    <div className="text-sm text-muted-foreground">Charge a base fee per service kit, with automatic overage billing if usage exceeds your threshold.</div>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <span className="text-foreground">Great for blue solution, deodorizers, toilet paper, and cleaning supplies</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <span className="text-foreground">Built into your job flow automatically</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                    <span className="text-foreground">Adjust per customer or per job</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
