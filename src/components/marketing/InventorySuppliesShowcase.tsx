@@ -29,42 +29,41 @@ export function InventorySuppliesShowcase() {
                     <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground">Hybrid</span>
                   </div>
 
-                  <div className="mt-4 grid md:grid-cols-2 gap-4">
-                    {/* Product Card */}
-                    <div className="rounded-xl border border-border overflow-hidden">
-                      <img
-                        src="/lovable-uploads/e9ab065d-68f9-4ccf-92ae-867032c6d32b.png"
-                        alt="Standard Porta Potty product card with pricing and availability"
-                        className="w-full h-auto"
-                        loading="lazy"
-                      />
+                  <div className="mt-4 grid md:grid-cols-3 gap-4">
+                    {/* Bulk mock */}
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Package className="w-4 h-4 text-primary" /> Bulk Stock
+                      </div>
+                      <ul className="mt-3 space-y-2 text-sm">
+                        <li className="flex items-center justify-between"><span>Yard A</span><span className="font-semibold">48</span></li>
+                        <li className="flex items-center justify-between"><span>Yard B</span><span className="font-semibold">14</span></li>
+                        <li className="flex items-center justify-between"><span>Warehouse</span><span className="font-semibold">20</span></li>
+                      </ul>
                     </div>
 
-                    {/* Stock Overview */}
-                    <div className="space-y-3">
-                      {/* Bulk mock */}
-                      <div className="rounded-xl border border-border p-3">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          <Package className="w-4 h-4 text-primary" /> Bulk Stock
-                        </div>
-                        <ul className="mt-3 space-y-2 text-sm">
-                          <li className="flex items-center justify-between"><span>Yard A</span><span className="font-semibold">48</span></li>
-                          <li className="flex items-center justify-between"><span>Yard B</span><span className="font-semibold">14</span></li>
-                          <li className="flex items-center justify-between"><span>Warehouse</span><span className="font-semibold">20</span></li>
-                        </ul>
+                    {/* Individual mock */}
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <QrCode className="w-4 h-4 text-primary" /> Units
                       </div>
+                      <ul className="mt-3 space-y-2 text-sm">
+                        <li className="flex items-center justify-between"><span>PT-1234</span><span className="font-medium text-foreground">Available</span></li>
+                        <li className="flex items-center justify-between"><span>PT-1235</span><span className="font-medium text-foreground">Assigned</span></li>
+                        <li className="flex items-center justify-between"><span>PT-1236</span><span className="font-medium text-foreground">Service</span></li>
+                      </ul>
+                    </div>
 
-                      {/* Individual mock */}
-                      <div className="rounded-xl border border-border p-3">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          <QrCode className="w-4 h-4 text-primary" /> Individual Units
-                        </div>
-                        <ul className="mt-3 space-y-2 text-sm">
-                          <li className="flex items-center justify-between"><span>PT-1234</span><span className="font-medium text-foreground">Available</span></li>
-                          <li className="flex items-center justify-between"><span>PT-1235</span><span className="font-medium text-foreground">Assigned</span></li>
-                          <li className="flex items-center justify-between"><span>PT-1236</span><span className="font-medium text-foreground">Service</span></li>
-                        </ul>
+                    {/* Hybrid mock */}
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <RefreshCcw className="w-4 h-4 text-primary" /> Hybrid Roll‑Up
                       </div>
+                      <ul className="mt-3 space-y-2 text-sm">
+                        <li className="flex items-center justify-between"><span>Master Total</span><span className="font-semibold">82</span></li>
+                        <li className="flex items-center justify-between"><span>Tracked Units</span><span className="font-semibold">62</span></li>
+                        <li className="flex items-center justify-between"><span>Bulk Remainder</span><span className="font-semibold">20</span></li>
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -78,13 +77,10 @@ export function InventorySuppliesShowcase() {
                   </div>
 
                   <div className="mt-4 grid sm:grid-cols-2 gap-4">
-                    <div className="rounded-xl border border-border overflow-hidden">
-                      <img
-                        src="/lovable-uploads/b7429715-c5e8-4953-bb66-a83aa2c46f7c.png"
-                        alt="Stock status dashboard showing Available Individual, Bulk Pool, and Maintenance counts"
-                        className="w-full h-auto"
-                        loading="lazy"
-                      />
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="text-sm font-medium">{`Range: ${new Date().toLocaleDateString()} → +7d`}</div>
+                      <div className="mt-2 text-2xl font-bold">45 of 62 available</div>
+                      <div className="text-xs text-muted-foreground mt-1">Auto‑holds for scheduled jobs</div>
                     </div>
                     <div className="rounded-xl border border-border p-3">
                       <div className="text-sm font-medium flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Locations</div>
