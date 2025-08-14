@@ -423,7 +423,7 @@ export const Landing: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
                     <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
-                    <span className="text-white text-sm">No setup fees - Support included</span>
+                    <span className="text-white text-sm">No setup fees • Support included</span>
                   </div>
                   <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
                     <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
