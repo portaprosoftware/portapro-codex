@@ -7,7 +7,7 @@ export const QuoteToJobShowcase: React.FC = () => {
   // KPIs removed as requested
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 overflow-hidden">
       <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job, in one flow</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
@@ -15,7 +15,7 @@ export const QuoteToJobShowcase: React.FC = () => {
         </p>
       </header>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
+      <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start">
         {/* Left: Job card + KPIs and highlights */}
         <aside className="space-y-6">
           {/* Job Created moved here */}

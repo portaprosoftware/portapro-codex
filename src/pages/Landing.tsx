@@ -623,21 +623,21 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Quote-to-Job Flow - White */}
-      <section id="quotes" className="py-8 bg-white">
+      <section id="quotes" className="min-h-screen py-8 bg-white md:min-h-0">
         <div className="container mx-auto max-w-6xl px-6">
           <QuoteToJobShowcase />
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 bg-white">
+      <div className="py-4 bg-white hidden md:block">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Driver Mobile App - White */}
-      <section id="mobile-app" className="py-8 bg-white">
+      <section id="mobile-app" className="min-h-screen py-12 bg-white md:min-h-0 md:py-8 clear-both">
         <div className="container mx-auto max-w-6xl px-6">
           <DriverAppShowcase />
         </div>

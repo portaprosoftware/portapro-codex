@@ -20,7 +20,7 @@ export const DriverAppShowcase: React.FC = () => {
   ];
 
   return (
-    <section aria-label="Driver Mobile App" className="space-y-4 pt-4 md:pt-0">
+    <section aria-label="Driver Mobile App" className="space-y-4 overflow-hidden">
       <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Driver Mobile App — built for the field</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
@@ -28,10 +28,10 @@ export const DriverAppShowcase: React.FC = () => {
         </p>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] items-start">
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1.2fr_1fr] lg:items-start">
         {/* Left: Mobile app image only */}
-        <main>
-          <div className="rounded-[2rem] overflow-hidden relative animate-enter max-w-[75%] mx-auto">
+        <main className="order-2 lg:order-1">
+          <div className="rounded-[2rem] overflow-hidden relative max-w-[75%] mx-auto">
             <img 
               src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
               alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
@@ -41,7 +41,7 @@ export const DriverAppShowcase: React.FC = () => {
         </main>
 
         {/* Right: Benefits & KPIs */}
-        <aside className="space-y-6">
+        <aside className="space-y-6 order-1 lg:order-2">
           <div className="grid grid-cols-2 gap-3">
             {kpis.map((k, i) => (
               <StatCard
