@@ -9,16 +9,16 @@ function PhotoSlider() {
 
   const images = [
     {
-      src: "/lovable-uploads/cf4e07bc-0d9b-4a24-a8e7-3db06efc8766.png",
-      alt: "Mobile scanning of embossed plastic panels"
+      src: "/lovable-uploads/645512ae-401d-4666-b129-eb1902de53b2.png",
+      alt: "Product inventory list with stock levels and location tracking"
     },
     {
-      src: "/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png", 
-      alt: "QR code generation and tracking"
+      src: "/lovable-uploads/cac0c679-6b7e-4f5e-860c-bf6ec02a5664.png", 
+      alt: "Storage sites management with location analytics"
     },
     {
-      src: "/placeholder.svg",
-      alt: "Inventory management dashboard"
+      src: "/lovable-uploads/3b58e3cf-cfc6-42d9-9293-3e41854bb6b9.png",
+      alt: "Individual product tracking with inventory status overview"
     }
   ];
 
