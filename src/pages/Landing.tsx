@@ -441,7 +441,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Proof Bar + Trust strip + Switching is easy - White */}
-      <section id="about" className="py-6 bg-white">
+      <section id="about" className="py-6" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           {/* Proof Bar */}
           <div className="mb-4">
@@ -518,7 +518,7 @@ export const Landing: React.FC = () => {
       <InventorySuppliesShowcase />
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
@@ -528,7 +528,7 @@ export const Landing: React.FC = () => {
       <ConsumablesShowcase />
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
@@ -538,7 +538,7 @@ export const Landing: React.FC = () => {
       <ServicesHubShowcase />
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
@@ -575,49 +575,49 @@ export const Landing: React.FC = () => {
       {/* Detailed Sections for Group 2: Core Features */}
 
       {/* Smart AI Panel Scanning Section - White */}
-      <section id="ai-scanning" className="py-8 bg-white">
+      <section id="ai-scanning" className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <AIPanelScanningShowcase />
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Job Wizard Showcase - White */}
-      <section id="job-wizard" className="py-8 bg-white">
+      <section id="job-wizard" className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <SmartWizardShowcase />
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Quote-to-Job Flow - White */}
-      <section id="quotes" className="py-8 bg-white">
+      <section id="quotes" className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <QuoteToJobShowcase />
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 bg-white">
+      <div className="py-4" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
       {/* Driver Mobile App - White */}
-      <section id="mobile-app" className="py-2 bg-white">
+      <section id="mobile-app" className="py-2" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <DriverAppShowcase />
         </div>
@@ -651,7 +651,7 @@ export const Landing: React.FC = () => {
       {/* Detailed Sections for Group 3: Management Features */}
 
       {/* Fleet Management (includes Transport & Spill Compliance + DVIRs) - White */}
-      <section id="fleet-management" className="py-8 bg-white">
+      <section id="fleet-management" className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Fleet Management & Compliance</h2>
@@ -859,14 +859,14 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
       </div>
 
     {/* Team Management - White */}
-      <section id="team-management" className="py-8 bg-white">
+      <section id="team-management" className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
@@ -999,7 +999,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
@@ -1009,7 +1009,7 @@ export const Landing: React.FC = () => {
       <CustomerDashboardPortalShowcase />
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-8" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
@@ -1089,7 +1089,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* In action: 60-second tour - White */}
-      <section id="tour" className="py-4 bg-white">
+      <section id="tour" className="py-4" style={{ backgroundColor: 'hsl(0, 0%, 98%)' }}>
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
