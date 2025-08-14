@@ -17,7 +17,7 @@ export const ConsumablesShowcase: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left column: Highlights */}
-          <div>
+          <div className="pt-4">
             {/* Highlights card */}
             <div className="rounded-2xl border bg-card p-5 shadow-sm">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
@@ -38,15 +38,15 @@ export const ConsumablesShowcase: React.FC = () => {
             <img 
               src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
               alt="Add Consumable form interface with name, category, SKU and quantity fields"
-              className="w-full h-auto rounded-2xl -mt-2"
+              className="w-full h-auto rounded-2xl -mt-6"
             />
           </div>
 
           {/* Right column: Storage image + What customers love */}
           <aside className="space-y-4">
             <img 
-              src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
-              alt="Storage locations interface showing inventory levels across multiple locations"
+              src="/lovable-uploads/6500178f-42ec-4caf-ac33-69938436e2cb.png" 
+              alt="Inventory management table showing product locations, quantities, and low stock alerts"
               className="w-full h-auto rounded-2xl"
             />
             
