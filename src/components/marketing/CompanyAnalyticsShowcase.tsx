@@ -213,35 +213,8 @@ export function CompanyAnalyticsShowcase() {
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" size="sm" className="w-full text-xs">Advanced Report Builder</Button>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Actions */}
-          <div className="space-y-3">
-            <Button 
-              className="w-full"
-            >
-              Open Analytics Dashboard
-              <BarChart3 className="w-4 h-4 ml-2" />
-            </Button>
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline" 
-                size="sm"
-              >
-                View Reports
-                <FileText className="w-4 h-4 ml-2" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-              >
-                Export Data
-                <Download className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
           </div>
         </div>
       </div>
