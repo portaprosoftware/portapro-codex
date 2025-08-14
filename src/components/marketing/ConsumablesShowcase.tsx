@@ -42,8 +42,47 @@ export const ConsumablesShowcase: React.FC = () => {
             />
           </div>
 
-          {/* Right column: Storage image + What customers love */}
+          {/* Right column: Billing card, Storage image + What customers love */}
           <aside className="space-y-4">
+            {/* Consumables Billing card */}
+            <div className="rounded-2xl border bg-card p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-sm font-medium mb-3">
+                <DollarSign className="w-4 h-4 text-primary" /> Consumables Billing — Flexible & Transparent
+              </div>
+
+              <div className="space-y-3">
+                <div className="rounded-lg border border-border p-3">
+                  <div className="font-medium text-sm text-foreground">Included (bundled):</div>
+                  <div className="text-sm text-muted-foreground">Bury the cost in your flat rate for simple pricing.</div>
+                </div>
+                
+                <div className="rounded-lg border border-border p-3">
+                  <div className="font-medium text-sm text-foreground">Itemized Actuals:</div>
+                  <div className="text-sm text-muted-foreground">Track and charge for every product used—down to the dollar.</div>
+                </div>
+                
+                <div className="rounded-lg border border-border p-3">
+                  <div className="font-medium text-sm text-foreground">Kit Fee + Overage:</div>
+                  <div className="text-sm text-muted-foreground">Charge a base fee per service kit, with automatic overage billing if usage exceeds your threshold.</div>
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-foreground">Great for blue solution, deodorizers, toilet paper, and cleaning supplies</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-foreground">Built into your job flow automatically</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-foreground">Adjust per customer or per job</span>
+                </div>
+              </div>
+            </div>
+
             <img 
               src="/lovable-uploads/cc2af9ff-9209-4a8b-8eb8-ff99ab053019.png" 
               alt="Inventory management table showing product locations, quantities, and low stock alerts"
