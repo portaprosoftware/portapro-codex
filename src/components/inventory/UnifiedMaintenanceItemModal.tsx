@@ -531,40 +531,44 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       </div>
                      ) : (
                        (updates || []).map((update: any) => (
-                         <div key={update.id} className="border rounded-lg p-3 relative">
+                         <div key={update.id} className="border rounded-lg p-4 relative min-h-[120px] flex flex-col justify-between">
                            <Button
                              variant="ghost"
                              size="sm"
                              onClick={() => handleDeleteUpdate(update.id)}
-                             className="absolute top-2 right-2 h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                             className="absolute top-3 right-3 h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
                            >
                              <Trash2 className="h-3 w-3" />
                            </Button>
-                           <div className="flex items-center justify-between mb-2 pr-8">
-                             <Badge variant="outline">{update.update_type}</Badge>
-                             <div className="text-xs text-muted-foreground">
-                               {new Date(update.created_at).toLocaleDateString()}
+                           <div className="pr-8">
+                             <div className="flex items-center justify-between mb-3">
+                               <Badge variant="outline" className="text-xs">{update.update_type}</Badge>
+                               <div className="text-xs text-muted-foreground">
+                                 {new Date(update.created_at).toLocaleDateString()}
+                               </div>
                              </div>
+                             {update.title && (
+                               <div className="text-sm font-medium mb-2">{update.title}</div>
+                             )}
+                             <div className="text-sm mb-3 line-clamp-2">{update.description}</div>
                            </div>
-                           {update.title && (
-                             <div className="text-sm font-medium mb-1">{update.title}</div>
-                           )}
-                           <div className="text-sm mb-2">{update.description}</div>
-                           {update.technician_name && (
-                             <div className="text-xs text-muted-foreground mb-1">
-                               Technician: {update.technician_name}
+                           <div className="space-y-1">
+                             {update.technician_name && (
+                               <div className="text-xs text-muted-foreground">
+                                 Technician: {update.technician_name}
+                               </div>
+                             )}
+                             <div className="flex gap-4 text-xs text-muted-foreground">
+                               {update.labor_hours > 0 && (
+                                 <span>Labor: {update.labor_hours}h</span>
+                               )}
+                               {update.cost_amount > 0 && (
+                                 <span>Total Cost: ${update.cost_amount}</span>
+                               )}
+                               {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
+                                 <span>Parts: {update.parts_used.join(', ')}</span>
+                               )}
                              </div>
-                           )}
-                           <div className="flex gap-4 text-xs text-muted-foreground">
-                             {update.labor_hours > 0 && (
-                               <span>Labor: {update.labor_hours}h</span>
-                             )}
-                             {update.cost_amount > 0 && (
-                               <span>Total Cost: ${update.cost_amount}</span>
-                             )}
-                             {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
-                               <span>Parts: {update.parts_used.join(', ')}</span>
-                             )}
                            </div>
                         </div>
                       ))
