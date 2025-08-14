@@ -777,7 +777,11 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <AutoCarousel media={fleetNotificationsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src="/lovable-uploads/9d865708-b884-4ae8-bebd-bfe16cdf3fd5.png" 
+                alt="Maintenance notifications showing past due and due this week tasks"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
 
