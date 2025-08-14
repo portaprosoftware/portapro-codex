@@ -892,7 +892,11 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src="/lovable-uploads/410aced4-4fe7-439f-b8db-022b38a721c1.png" 
+                alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
         </div>
