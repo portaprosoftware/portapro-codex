@@ -58,14 +58,8 @@ export const ConsumablesShowcase: React.FC = () => {
             />
           </div>
 
-          {/* Right column: Storage image + What customers love */}
+          {/* Right column: What customers love + Storage image */}
           <aside className="space-y-6">
-            <img 
-              src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
-              alt="Storage locations interface showing inventory levels across multiple locations"
-              className="w-full h-auto rounded-2xl"
-            />
-            
             {/* What customers love card moved here */}
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">What customers love</div>
@@ -75,6 +69,12 @@ export const ConsumablesShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Bundled simplicity when you want it</li>
               </ul>
             </div>
+            
+            <img 
+              src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
+              alt="Storage locations interface showing inventory levels across multiple locations"
+              className="w-full h-auto rounded-2xl"
+            />
           </aside>
         </div>
       </div>
