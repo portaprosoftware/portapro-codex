@@ -1,6 +1,8 @@
 import React from "react";
 import { StatCard } from "@/components/ui/StatCard";
 import { Droplet, Package, ClipboardList, Calculator, Scan, CheckCircle, DollarSign, Clock } from "lucide-react";
+import storageLocationsImg from "@/assets/consumables-storage-locations.png";
+import productFormImg from "@/assets/consumables-product-form.png";
 
 export const ConsumablesShowcase: React.FC = () => {
   return (
@@ -48,13 +50,21 @@ export const ConsumablesShowcase: React.FC = () => {
 
           {/* Right column: Photos + What customers love */}
           <aside className="space-y-6">
-            {/* Space for 2 photos */}
+            {/* Consumables interface screenshots */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="aspect-video rounded-xl bg-muted border border-dashed border-muted-foreground/30 flex items-center justify-center">
-                <span className="text-sm text-muted-foreground">Photo 1</span>
+              <div className="aspect-video rounded-xl overflow-hidden border shadow-sm">
+                <img 
+                  src={storageLocationsImg} 
+                  alt="Storage locations interface showing inventory levels across multiple locations"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="aspect-video rounded-xl bg-muted border border-dashed border-muted-foreground/30 flex items-center justify-center">
-                <span className="text-sm text-muted-foreground">Photo 2</span>
+              <div className="aspect-video rounded-xl overflow-hidden border shadow-sm">
+                <img 
+                  src={productFormImg} 
+                  alt="Product form interface for adding consumables with categories and SKU"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
