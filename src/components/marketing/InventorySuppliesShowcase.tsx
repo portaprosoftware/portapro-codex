@@ -155,13 +155,9 @@ export function InventorySuppliesShowcase() {
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Photo of embossed panel */}
-                 <AspectRatio ratio={4/5}>
-                   <img 
-                     src="/lovable-uploads/195c654e-5037-4dba-b06e-e9b491508df1.png"
-                     alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel"
-                     className="w-full h-full object-contain rounded-2xl"
-                   />
-                 </AspectRatio>
+                 <div className="aspect-[4/5] bg-muted rounded-2xl flex items-center justify-center">
+                   <span className="text-muted-foreground">Image removed</span>
+                 </div>
                 
                 {/* AI Reading Results */}
                 <div className="space-y-3">
