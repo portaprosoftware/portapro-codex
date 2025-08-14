@@ -313,44 +313,33 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                   Equipment Status
                 </h4>
                 <div className="space-y-2">
-                  {availableCount > 0 && (
-                    <div className="flex justify-between items-center text-sm">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Available
+                    </span>
+                    <span className="font-medium">{availableCount}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex flex-col">
                       <span className="text-gray-600 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        Available
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        On Job
                       </span>
-                      <span className="font-medium">{availableCount}</span>
+                      <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
                     </div>
-                  )}
-                  {onJobCount > 0 && (
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="flex flex-col">
-                        <span className="text-gray-600 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          On Job
-                        </span>
-                        <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
-                      </div>
-                      <span className="font-medium">{onJobCount}</span>
+                    <span className="font-medium">{onJobCount}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex flex-col">
+                      <span className="text-gray-600 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        Maintenance
+                      </span>
+                      <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
                     </div>
-                  )}
-                  {inMaintenanceCount > 0 && (
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="flex flex-col">
-                        <span className="text-gray-600 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          Maintenance
-                        </span>
-                        <span className="text-xs text-muted-foreground ml-4">(inventory not available)</span>
-                      </div>
-                      <span className="font-medium">{inMaintenanceCount}</span>
-                    </div>
-                  )}
-                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && (
-                    <div className="text-sm text-gray-500 text-center py-2">
-                      No equipment data
-                    </div>
-                  )}
+                    <span className="font-medium">{inMaintenanceCount}</span>
+                  </div>
                 </div>
               </div>
             )}

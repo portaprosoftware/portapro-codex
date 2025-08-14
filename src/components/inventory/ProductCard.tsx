@@ -330,41 +330,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-1 mt-2">
                 <div className="space-y-1">
-                  {availableCount > 0 && (
-                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
-                      <Badge variant="success" className="text-xs font-bold">
-                        Available
+                  <div className="flex items-center justify-between text-xs rounded px-2 py-1">
+                    <Badge variant="success" className="text-xs font-bold">
+                      Available
+                    </Badge>
+                    <span className="font-bold">{availableCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs rounded px-2 py-1">
+                    <div className="flex flex-col">
+                      <Badge variant="assigned" className="text-xs font-bold">
+                        On Job
                       </Badge>
-                      <span className="font-bold">{availableCount}</span>
+                      <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
                     </div>
-                  )}
-                  {onJobCount > 0 && (
-                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
-                      <div className="flex flex-col">
-                        <Badge variant="assigned" className="text-xs font-bold">
-                          On Job
-                        </Badge>
-                        <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
-                      </div>
-                      <span className="font-bold">{onJobCount}</span>
+                    <span className="font-bold">{onJobCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs rounded px-2 py-1">
+                    <div className="flex flex-col">
+                      <Badge variant="warning" className="text-xs font-bold">
+                        Maintenance
+                      </Badge>
+                      <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
                     </div>
-                  )}
-                  {inMaintenanceCount > 0 && (
-                    <div className="flex items-center justify-between text-xs rounded px-2 py-1">
-                      <div className="flex flex-col">
-                        <Badge variant="warning" className="text-xs font-bold">
-                          Maintenance
-                        </Badge>
-                        <span className="text-xs text-muted-foreground mt-1">(inventory not available)</span>
-                      </div>
-                      <span className="font-bold">{inMaintenanceCount}</span>
-                    </div>
-                  )}
-                  {availableCount === 0 && onJobCount === 0 && inMaintenanceCount === 0 && (
-                    <div className="text-xs text-gray-500 text-center py-2">
-                      No equipment data
-                    </div>
-                  )}
+                    <span className="font-bold">{inMaintenanceCount}</span>
+                  </div>
                 </div>
               </CollapsibleContent>
             </Collapsible>

@@ -11,15 +11,12 @@ interface UnifiedStockData {
     available: number;
     assigned: number;
     maintenance: number;
-    reserved: number;
   };
   bulk_stock: {
     pool_available: number;
-    reserved: number;
   };
   totals: {
     physically_available: number;
-    total_reserved: number;
     in_maintenance: number;
     tracked_individual: number;
     bulk_pool: number;
@@ -47,7 +44,6 @@ const hashStockData = (data: UnifiedStockData): string => {
     individual_assigned: data.individual_items.assigned,
     individual_maintenance: data.individual_items.maintenance,
     bulk_pool: data.totals.bulk_pool,
-    bulk_reserved: data.bulk_stock.reserved,
     physically_available: data.totals.physically_available,
   });
 };
@@ -248,7 +244,7 @@ export const useUnifiedStockManagement = (productId: string) => {
       isCriticalStock: totals.physically_available < (master_stock * 0.1), // Less than 10%
       hasInconsistency: (individual_items.total_tracked + totals.bulk_pool) !== master_stock,
       
-      // Breakdown display
+      // Breakdown display - always show all statuses
       statusBreakdown: [
         { 
           label: 'Available Individual', 
@@ -273,14 +269,8 @@ export const useUnifiedStockManagement = (productId: string) => {
           count: individual_items.maintenance, 
           color: 'bg-red-500',
           description: 'Individual items under maintenance (inventory not available)'
-        },
-        { 
-          label: 'Reserved', 
-          count: individual_items.reserved, 
-          color: 'bg-purple-500',
-          description: 'Individual items reserved for specific use'
         }
-      ].filter(item => item.count > 0)
+      ]
     };
   }, [stockData]);
 
@@ -303,7 +293,6 @@ export const useUnifiedStockManagement = (productId: string) => {
     // Quick access to key metrics
     masterStock: stockData?.master_stock || 0,
     physicallyAvailable: stockData?.totals.physically_available || 0,
-    totalReserved: stockData?.totals.total_reserved || 0,
     inMaintenance: stockData?.totals.in_maintenance || 0,
     trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid Tracking' : stockData?.tracking_method || 'none',
     

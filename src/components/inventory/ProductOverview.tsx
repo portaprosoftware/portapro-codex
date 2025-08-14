@@ -53,7 +53,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     isLoading: stockLoading,
     masterStock,
     physicallyAvailable,
-    totalReserved,
     inMaintenance,
     trackingMethod,
     isConsistent,
@@ -76,7 +75,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   // Use unified stock data only
   const displayData = {
     availableCount: physicallyAvailable,
-    onJobCount: totalReserved,
+    onJobCount: stockData?.individual_items?.assigned || 0,
     maintenanceCount: inMaintenance,
     
     totalStock: masterStock,
