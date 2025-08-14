@@ -1069,33 +1069,33 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center mt-6">
-              <Card className="relative border-gray-300/50 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 shadow-2xl shadow-gray-900/10 max-w-2xl w-full backdrop-blur-sm ring-1 ring-gray-300/50 scale-115">
+              <Card className="relative border-gray-300/50 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 shadow-2xl shadow-gray-900/10 max-w-2xl w-full backdrop-blur-sm ring-1 ring-gray-300/50 sm:scale-115">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-gray-500/20 rounded-lg"></div>
-                <CardHeader className="text-center relative z-10">
-                  <CardTitle className="text-2xl text-gray-900 font-bold">{completePackage.name}</CardTitle>
+                <CardHeader className="text-center relative z-10 px-4 sm:px-6">
+                  <CardTitle className="text-xl sm:text-2xl text-gray-900 font-bold">{completePackage.name}</CardTitle>
                   <div className="space-y-2">
-                    <div className="text-4xl font-bold text-gray-900">
+                    <div className="text-3xl sm:text-4xl font-bold text-gray-900">
                       ${isAnnual ? completePackage.price.annual : completePackage.price.monthly}
-                      <span className="text-lg font-normal text-gray-600">
+                      <span className="text-base sm:text-lg font-normal text-gray-600">
                         /month
                       </span>
                     </div>
-                     {isAnnual && <div className="text-sm text-gray-700 font-bold">
+                     {isAnnual && <div className="text-xs sm:text-sm text-gray-700 font-bold">
                         Billed annually (${(completePackage.price.annual * 12).toLocaleString()}/year) - Save $600/year
                       </div>}
                   </div>
-                  <CardDescription className="text-gray-700 font-bold">{completePackage.description}</CardDescription>
+                  <CardDescription className="text-sm sm:text-base text-gray-700 font-bold">{completePackage.description}</CardDescription>
                 </CardHeader>
-                <div className="mt-0 mb-4 flex items-center justify-center gap-3 relative z-10">
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">14-day trial</Badge>
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">Full support included</Badge>
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">No contracts required</Badge>
+                <div className="mt-0 mb-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 relative z-10 px-4">
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-xs sm:text-sm">14-day trial</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-xs sm:text-sm">Full support included</Badge>
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md text-xs sm:text-sm">No contracts required</Badge>
                 </div>
-                <CardContent className="space-y-4 relative z-10">
-                  <ul className="grid grid-cols-2 gap-3">
-                    {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-gray-800 font-medium">{feature}</span>
+                <CardContent className="space-y-4 relative z-10 px-4 sm:px-6">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    {completePackage.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-start gap-2 sm:gap-3">
+                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm text-gray-800 font-medium leading-tight">{feature}</span>
                       </li>)}
                   </ul>
                   <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
