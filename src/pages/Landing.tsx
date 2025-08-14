@@ -443,6 +443,19 @@ export const Landing: React.FC = () => {
       {/* Proof Bar + Trust strip + Switching is easy - White */}
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
+          {/* Feature badges */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
+              ✓ 14 Day Free Trial
+            </span>
+            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
+              ✓ No setup fees • Support included
+            </span>
+            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
+              ✓ Unlimited users, trucks & units
+            </span>
+          </div>
+          
           {/* Proof Bar */}
           <div className="mb-4">
             <div className="sr-only">Proof Bar</div>

@@ -59,19 +59,6 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
-              {/* Feature badges */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-                  ✓ 14 Day Free Trial
-                </span>
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-                  ✓ No setup fees • Support included
-                </span>
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-                  ✓ Unlimited users, trucks & units
-                </span>
-              </div>
-              
               <div className="text-base font-semibold mb-3 text-foreground">What customers love</div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Automatic overage detection (no missed revenue)</li>
