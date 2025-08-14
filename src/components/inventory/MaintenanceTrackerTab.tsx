@@ -96,6 +96,10 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["available-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      // Invalidate individual item cache keys to unlock fields in EditItemModal
+      itemIds.forEach(itemId => {
+        queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
+      });
       setSelectedItems([]);
     },
     onError: (error) => {
