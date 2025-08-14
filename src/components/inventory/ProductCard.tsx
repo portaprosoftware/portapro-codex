@@ -332,28 +332,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 <div className="space-y-1">
                   {availableCount > 0 && (
                     <div className="flex items-center justify-between text-xs bg-green-50 rounded px-2 py-1">
-                      <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <Badge variant="success" className="text-xs font-bold">
                         Available
-                      </span>
+                      </Badge>
                       <span className="font-medium">{availableCount}</span>
                     </div>
                   )}
                   {onJobCount > 0 && (
                     <div className="flex items-center justify-between text-xs bg-blue-50 rounded px-2 py-1">
-                      <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <Badge variant="assigned" className="text-xs font-bold">
                         On Job
-                      </span>
+                      </Badge>
                       <span className="font-medium">{onJobCount}</span>
                     </div>
                   )}
                   {inMaintenanceCount > 0 && (
                     <div className="flex items-center justify-between text-xs bg-orange-50 rounded px-2 py-1">
-                      <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <Badge variant="warning" className="text-xs font-bold">
                         Maintenance
-                      </span>
+                      </Badge>
                       <span className="font-medium">{inMaintenanceCount}</span>
                     </div>
                   )}
