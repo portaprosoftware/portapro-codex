@@ -46,28 +46,8 @@ export const ConsumablesShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> "Scan to add" for fast, error-free logging</li>
               </ul>
             </div>
-          </div>
 
-          {/* Right column: Photos + What customers love */}
-          <aside className="space-y-6">
-            {/* Consumables interface screenshots */}
-            <div className="space-y-4">
-              <div className="rounded-2xl overflow-hidden border bg-card shadow-md">
-                <img 
-                  src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
-                  alt="Storage locations interface showing inventory levels across multiple locations"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="rounded-2xl overflow-hidden border bg-card shadow-md">
-                <img 
-                  src="/lovable-uploads/80a182cc-9027-4692-ab3c-ab5c003b8711.png" 
-                  alt="Product form interface for adding consumables with categories and SKU"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </div>
-
+            {/* What customers love card */}
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">What customers love</div>
               <ul className="space-y-2 text-sm">
@@ -76,6 +56,20 @@ export const ConsumablesShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Bundled simplicity when you want it</li>
               </ul>
             </div>
+          </div>
+
+          {/* Right column: Photos only */}
+          <aside className="space-y-4">
+            <img 
+              src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
+              alt="Storage locations interface showing inventory levels across multiple locations"
+              className="w-full h-auto rounded-2xl"
+            />
+            <img 
+              src="/lovable-uploads/80a182cc-9027-4692-ab3c-ab5c003b8711.png" 
+              alt="Product form interface for adding consumables with categories and SKU"
+              className="w-full h-auto rounded-2xl"
+            />
           </aside>
         </div>
       </div>
