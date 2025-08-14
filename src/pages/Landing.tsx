@@ -421,7 +421,7 @@ export const Landing: React.FC = () => {
                         featuresMegaMenuRef.current?.triggerOpen();
                       }
                     }}
-                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-all duration-200"
+                    className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
                   >
                     <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
                     Explore All Features
