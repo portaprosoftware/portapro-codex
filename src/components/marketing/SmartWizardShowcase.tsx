@@ -103,13 +103,6 @@ export const SmartWizardShowcase: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Create Job — Units & Services</h3>
-                    <p className="text-sm text-muted-foreground">ACME Construction, 1250 Market St, Denver CO</p>
-                  </div>
-
-                  {/* AI Recommendation pill */}
-                  <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs shadow hover-scale">
-                    <Zap className="w-3.5 h-3.5" />
-                    <span>For 280 guests / 4-day event: 12 units + 2 handwash</span>
                   </div>
                 </div>
 
@@ -156,7 +149,7 @@ export const SmartWizardShowcase: React.FC = () => {
           </AspectRatio>
 
           {/* Support mocks */}
-          <div className="grid md:grid-cols-2 gap-4 mt-12">
+          <div className="grid md:grid-cols-2 gap-4 mt-20 md:mt-24">
             {/* Schedule & Assign */}
             <AspectRatio ratio={4/3}>
               <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
