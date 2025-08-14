@@ -85,7 +85,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .from("maintenance_updates")
         .select("*")
         .eq("item_id", itemId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(5);
       if (error) throw error;
       return data || [];
     },
