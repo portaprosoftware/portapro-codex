@@ -41,7 +41,6 @@ export function InventorySuppliesShowcase() {
                         <li className="flex items-center justify-between"><span>Yard B</span><span className="font-semibold">14</span></li>
                         <li className="flex items-center justify-between"><span>Warehouse</span><span className="font-semibold">20</span></li>
                       </ul>
-                      <div className="mt-3 text-xs text-muted-foreground">Low stock alert at Yard B</div>
                     </div>
 
                     {/* Individual mock */}
@@ -54,7 +53,6 @@ export function InventorySuppliesShowcase() {
                         <li className="flex items-center justify-between"><span>PT-1235</span><span className="font-medium text-foreground">Assigned</span></li>
                         <li className="flex items-center justify-between"><span>PT-1236</span><span className="font-medium text-foreground">Service</span></li>
                       </ul>
-                      <div className="mt-3 text-xs text-muted-foreground">QR-ready • padlock status visible</div>
                     </div>
 
                     {/* Hybrid mock */}
@@ -67,7 +65,6 @@ export function InventorySuppliesShowcase() {
                         <li className="flex items-center justify-between"><span>Tracked Units</span><span className="font-semibold">62</span></li>
                         <li className="flex items-center justify-between"><span>Bulk Remainder</span><span className="font-semibold">20</span></li>
                       </ul>
-                      <div className="mt-3 text-xs text-muted-foreground">Sync totals keeps everything aligned</div>
                     </div>
                   </div>
                 </div>
@@ -135,11 +132,8 @@ export function InventorySuppliesShowcase() {
                         <Button size="sm" className="bg-gradient-blue text-white">Generate</Button>
                         <Button size="sm" variant="outline">Print</Button>
                       </div>
-                      <div className="mt-3 text-xs text-muted-foreground">
-                        Works offline — syncs later. Instant attach to units & jobs.
-                      </div>
-                       <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                          <Lock className="w-3 h-3" /> Padlock & zip-ties status
+                       <div className="mt-3 text-xs text-muted-foreground">
+                         Works offline — syncs later. Instant attach to units & jobs.
                        </div>
                     </div>
                   </div>
@@ -191,11 +185,8 @@ export function InventorySuppliesShowcase() {
                   <div className="mt-3 p-2 bg-gradient-to-r from-green-600 to-green-500 rounded-lg shadow-sm">
                     <div className="text-xs text-white font-bold">✓ Successfully tracked</div>
                   </div>
-                  <div className="mt-3 text-xs text-muted-foreground">
-                    Works offline — syncs later. Instant attach to units & jobs.
-                  </div>
-                   <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                     <Lock className="w-3 h-3" /> Padlock & zip-ties status
+                   <div className="mt-3 text-xs text-muted-foreground">
+                     Works offline — syncs later. Instant attach to units & jobs.
                    </div>
                  </div>
                </div>
