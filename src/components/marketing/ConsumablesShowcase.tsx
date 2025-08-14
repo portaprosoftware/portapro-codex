@@ -45,7 +45,7 @@ export const ConsumablesShowcase: React.FC = () => {
           {/* Right column: Storage image + What customers love */}
           <aside className="space-y-4">
             <img 
-              src="/lovable-uploads/d4dafe74-f5f7-46c1-80cf-091450a8effb.png" 
+              src="/lovable-uploads/6500178f-42ec-4caf-ac33-69938436e2cb.png" 
               alt="Inventory management table showing product locations, quantities, and low stock alerts"
               className="w-full h-auto rounded-2xl"
             />
