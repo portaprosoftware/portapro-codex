@@ -38,7 +38,7 @@ export const ConsumablesShowcase: React.FC = () => {
             <img 
               src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
               alt="Add Consumable form interface with name, category, SKU and quantity fields"
-              className="w-full h-auto rounded-2xl -mt-8 scale-110"
+              className="w-full h-auto rounded-2xl -mt-8"
             />
           </div>
 
