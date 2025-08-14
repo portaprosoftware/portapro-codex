@@ -73,51 +73,53 @@ export const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> =
             </div>
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-left space-y-4">
-            <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
-              <div className="flex items-start gap-3">
-                <Trash2 className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
-                <div className="space-y-2">
-                  <p className="font-medium text-destructive">Danger Zone</p>
-                  <p className="text-sm text-muted-foreground">
-                    {finalDescription}
-                  </p>
-                  <div className="text-sm text-destructive/80 space-y-1">
-                    <p>• All inventory data will be permanently deleted</p>
-                    <p>• Location stock allocations will be removed</p>
-                    <p>• Historical usage data may be affected</p>
-                  </div>
+          <AlertDialogDescription className="text-sm text-muted-foreground">
+            {finalDescription}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        
+        <div className="space-y-4">
+          <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Trash2 className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+              <div className="space-y-2">
+                <div className="font-medium text-destructive">Danger Zone</div>
+                <div className="text-sm text-destructive/80 space-y-1">
+                  <div>• All inventory data will be permanently deleted</div>
+                  <div>• Location stock allocations will be removed</div>
+                  <div>• Historical usage data may be affected</div>
                 </div>
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirm-delete" className="text-sm font-medium">
-                To confirm deletion, type <code className="bg-muted px-1 py-0.5 rounded text-destructive font-mono">delete</code> below:
-              </Label>
-              <Input
-                id="confirm-delete"
-                type="text"
-                value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="Type 'delete' to confirm"
-                className={`transition-colors ${
-                  confirmText && !isConfirmValid 
-                    ? 'border-destructive focus-visible:ring-destructive' 
-                    : isConfirmValid 
-                    ? 'border-green-500 focus-visible:ring-green-500'
-                    : ''
-                }`}
-                disabled={isLoading}
-                autoComplete="off"
-              />
-            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="confirm-delete" className="text-sm font-medium">
+              To confirm deletion, type <code className="bg-muted px-1 py-0.5 rounded text-destructive font-mono">delete</code> below:
+            </Label>
+            <Input
+              id="confirm-delete"
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="Type 'delete' to confirm"
+              className={`transition-colors ${
+                confirmText && !isConfirmValid 
+                  ? 'border-destructive focus-visible:ring-destructive' 
+                  : isConfirmValid 
+                  ? 'border-green-500 focus-visible:ring-green-500'
+                  : ''
+              }`}
+              disabled={isLoading}
+              autoComplete="off"
+            />
+          </div>
 
-            <p className="text-sm font-medium text-center text-destructive">
-              This action is irreversible. Please confirm to proceed.
-            </p>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          <div className="text-sm font-medium text-center text-destructive">
+            This action is irreversible. Please confirm to proceed.
+          </div>
+        </div>
+        
         <AlertDialogFooter className="gap-3">
           <AlertDialogCancel 
             disabled={isLoading}
