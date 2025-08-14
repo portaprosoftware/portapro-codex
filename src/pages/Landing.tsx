@@ -806,7 +806,11 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
-              <AutoCarousel media={fuelLogsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src="/lovable-uploads/8a7e4247-d3f7-4ec3-a5ce-5c0d1b46a8fe.png" 
+                alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
 
