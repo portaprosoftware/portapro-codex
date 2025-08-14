@@ -429,47 +429,83 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Feature Cards Section - White */}
-      <section id="about" className="py-8 bg-white">
+      {/* Proof Bar + Trust strip + Switching is easy - White */}
+      <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* 3-Column Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Industry-Focused</h3>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.<br />Every feature designed for your workflow and business needs.</p>
-              </CardContent>
-            </Card>
+          {/* Proof Bar */}
+          <div className="mb-4">
+            <div className="sr-only">Proof Bar</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
+              </article>
 
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Simple, All-Inclusive Pricing</h3>
-                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
-              </CardContent>
-            </Card>
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
+              </article>
 
-            <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-5 text-left">
-                <h3 className="text-base font-bold text-foreground mb-2">Friendly, Ongoing Support</h3>
-                <p className="text-sm text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
-              </CardContent>
-            </Card>
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
+              </article>
+
+              
+
+              
+
+              
+            </div>
           </div>
 
-          {/* Features Overview Image */}
-          <div className="flex justify-center mb-5">
-            <img 
-              src="/lovable-uploads/ee85e1d5-27fb-4d15-99b0-e54594dac661.png" 
-              alt="PortaPro Features Overview" 
-              className="w-full max-w-lg"
-            />
+          {/* Trust strip */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">
+          </span>
+            <span className="opacity-50">
+          </span>
+            <span>
+          </span>
+            <span className="opacity-50">
+          </span>
+            <span>No setup fees</span>
+            <span className="opacity-50">•</span>
+            <span>Unlimited users, trucks & units</span>
+            <span className="opacity-50">•</span>
+            <span>Data export anytime</span>
           </div>
 
-          {/* Bullet Text */}
-          <div className="text-center">
-            <p className="text-base text-muted-foreground">
-              <span className="font-medium">Full support included</span> • <span className="font-medium">Cancel anytime</span> • <span className="font-medium">14-day free trial</span>
-            </p>
+          {/* Switching is easy */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">Free import assistance</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">1:1 onboarding calls</span>
+            </div>
+            
+            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
+              <CheckCircle className="h-4 w-4" aria-hidden="true" />
+              <span className="text-foreground">User friendly and easy to understand</span>
+            </div>
           </div>
         </div>
       </section>
