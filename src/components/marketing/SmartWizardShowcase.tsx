@@ -40,17 +40,13 @@ export const SmartWizardShowcase: React.FC = () => {
           </div>
 
           <div className="rounded-2xl border bg-card shadow-md p-6">
-            <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
-            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <p className="text-sm">Video player placeholder</p>
-                <p className="text-xs mt-1">Upload your mp4 video here</p>
-              </div>
+            <div className="text-base font-semibold mb-4 text-foreground">Job Wizard in Action</div>
+            <div className="aspect-video bg-muted rounded-xl overflow-hidden">
+              <img 
+                src="/lovable-uploads/8dc97539-4052-43f9-a9bb-7fb38e588590.png" 
+                alt="Smart Job Wizard interface showing customer selection step with search functionality and customer cards"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
