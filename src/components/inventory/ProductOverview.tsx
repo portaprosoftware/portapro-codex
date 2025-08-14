@@ -336,7 +336,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           </Button>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-              <span className="text-sm font-medium text-gray-600">Total Stock</span>
+              <span className="text-sm font-medium text-gray-600">Master Total Stock</span>
               <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-base px-3 py-1">
                 {displayData.totalStock}
               </Badge>
