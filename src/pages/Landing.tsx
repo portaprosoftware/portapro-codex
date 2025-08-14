@@ -443,53 +443,45 @@ export const Landing: React.FC = () => {
       {/* Proof Bar + Trust strip + Switching is easy - White */}
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Combined Card - Left Side */}
-            <div>
-              <div className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-8 shadow-sm">
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-foreground mb-2">Industry-Focused</h3>
-                      <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
-                    </div>
+          {/* Proof Bar */}
+          <div className="mb-4">
+            <div className="sr-only">Proof Bar</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                   </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-foreground mb-2">Affordable Cost</h3>
-                      <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-foreground mb-2">Friendly Support</h3>
-                      <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
-                    </div>
-                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
                 </div>
-              </div>
-            </div>
-            
-            {/* Features Image - Right Side */}
-            <div>
-              <img 
-                src="/lovable-uploads/693359ca-0570-4737-80c0-818a33727291.png" 
-                alt="PortaPro Features Overview" 
-                className="w-full max-w-lg mx-auto lg:max-w-none"
-                loading="lazy" 
-                decoding="async" 
-              />
+                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
+              </article>
+
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
+              </article>
+
+              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
+              </article>
+
+              
+
+              
+
+              
             </div>
           </div>
         </div>
