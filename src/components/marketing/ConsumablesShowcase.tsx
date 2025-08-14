@@ -17,7 +17,7 @@ export const ConsumablesShowcase: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left column: Job Wizard setup + Highlights */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Panel A — Job Wizard setup */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
