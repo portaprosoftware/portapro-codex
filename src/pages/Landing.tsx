@@ -414,7 +414,7 @@ export const Landing: React.FC = () => {
                 <div className="flex items-center gap-6 flex-wrap opacity-90">
                   <span className="text-white/80 text-sm">Trusted by operators across North America</span>
                   <span className="text-white/60">•</span>
-                  <button 
+                  <button
                     onClick={() => {
                       if (isMobile) {
                         setFeaturesSheetOpen(true);
@@ -422,9 +422,9 @@ export const Landing: React.FC = () => {
                         featuresMegaMenuRef.current?.triggerOpen();
                       }
                     }}
-                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-all duration-200 border border-white/30 rounded-md px-2 py-1 hover:border-white/50"
+                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-all duration-200"
                   >
-                    <Compass className="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:rotate-12" />
+                    <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
                     Explore All Features
                   </button>
                 </div>
