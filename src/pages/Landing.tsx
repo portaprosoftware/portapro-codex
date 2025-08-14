@@ -422,7 +422,7 @@ export const Landing: React.FC = () => {
                         featuresMegaMenuRef.current?.triggerOpen();
                       }
                     }}
-                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-colors underline hover:no-underline"
+                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-colors border border-white/30 rounded-md px-2 py-1 hover:border-white/50"
                   >
                     <Eye className="w-4 h-4" />
                     Explore All Features
