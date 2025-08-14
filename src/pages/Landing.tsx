@@ -430,55 +430,46 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Feature Cards Section - White */}
-      <section id="about" className="py-6 bg-white">
+      <section id="about" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           {/* 3-Column Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
             <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-4 text-left">
-                <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
-                  <Building2 className="h-3 w-3" strokeWidth={1.75} />
-                </div>
-                <h3 className="text-sm font-bold text-foreground mb-1">Industry-Focused</h3>
-                <p className="text-xs text-muted-foreground">Built specifically for portable toilet rentals.</p>
+              <CardContent className="p-5 text-left">
+                <h3 className="text-base font-bold text-foreground mb-2">Industry-Focused</h3>
+                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
               </CardContent>
             </Card>
 
             <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-4 text-left">
-                <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
-                  <DollarSign className="h-3 w-3" strokeWidth={1.75} />
-                </div>
-                <h3 className="text-sm font-bold text-foreground mb-1">Simple, All-Inclusive Pricing</h3>
-                <p className="text-xs text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
+              <CardContent className="p-5 text-left">
+                <h3 className="text-base font-bold text-foreground mb-2">Simple, All-Inclusive Pricing</h3>
+                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
               </CardContent>
             </Card>
 
             <Card className="rounded-xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-sm h-full">
-              <CardContent className="p-4 text-left">
-                <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
-                  <Heart className="h-3 w-3" strokeWidth={1.75} />
-                </div>
-                <h3 className="text-sm font-bold text-foreground mb-1">Friendly, Ongoing Support</h3>
-                <p className="text-xs text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
+              <CardContent className="p-5 text-left">
+                <h3 className="text-base font-bold text-foreground mb-2">Friendly, Ongoing Support</h3>
+                <p className="text-sm text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Bullet Text */}
-          <div className="text-center mb-4">
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center mb-5">
+            <p className="text-base text-muted-foreground">
               <span className="font-medium">Full support included</span> • <span className="font-medium">Cancel anytime</span> • <span className="font-medium">14-day free trial</span>
             </p>
           </div>
 
           {/* CTA Section */}
-          <div className="text-center max-w-xl mx-auto">
-            <h2 className="text-lg font-bold text-foreground mb-2">Ready to ditch the paperwork?</h2>
-            <p className="text-sm text-muted-foreground mb-3">Start your free 14-day trial of PortaPro today.</p>
-            <Button size="sm" className="w-full md:w-auto px-4 py-2 text-sm font-semibold">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-xl font-bold text-foreground mb-3">Ready to ditch the paperwork?</h2>
+            <p className="text-base text-muted-foreground mb-4">Start your free 14-day trial of PortaPro today.</p>
+            <Button size="default" className="w-full md:w-auto px-5 py-2 text-base font-semibold">
               Start My Free Trial
-              <ArrowRight className="w-3 h-3 ml-1" />
+              <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
         </div>
