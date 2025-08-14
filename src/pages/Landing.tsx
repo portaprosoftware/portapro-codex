@@ -416,25 +416,31 @@ export const Landing: React.FC = () => {
                 </div>
                 
                 {/* 6 Badges */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl mx-auto">
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    14 Day Free Trial
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    No setup fees - Support included
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    Unlimited users, trucks & units
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    User friendly and easy to learn
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    1:1 onboarding calls
-                  </Badge>
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
-                    Data export anytime
-                  </Badge>
+                <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">14 Day Free Trial</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">No setup fees - Support included</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">Unlimited users, trucks & units</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">User friendly and easy to learn</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">1:1 onboarding calls</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 shadow-sm">
+                    <CheckCircle className="h-4 w-4 text-white" aria-hidden="true" />
+                    <span className="text-white text-sm">Data export anytime</span>
+                  </div>
                 </div>
               </div>
             </div>
