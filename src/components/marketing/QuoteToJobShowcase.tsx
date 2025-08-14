@@ -166,39 +166,6 @@ export const QuoteToJobShowcase: React.FC = () => {
         </main>
       </div>
 
-      {/* Customer Payment Portal - positioned under the quote */}
-      <div className="max-w-sm mx-auto">
-        <AspectRatio ratio={4/3}>
-          <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
-            <div className="border-b px-4 py-2 bg-muted/40">
-              <h4 className="text-sm font-semibold text-foreground">Customer Portal — Secure Payment</h4>
-            </div>
-            <div className="p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">Deposit for Q-1046</div>
-                <div className="font-semibold text-foreground">$133.64</div>
-              </div>
-              <div className="rounded-xl border bg-background p-4 space-y-2">
-                <div className="text-sm text-foreground font-medium">Payment method</div>
-                <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Card</div>
-                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">ACH</div>
-                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-center">Apple / Google Pay</div>
-                </div>
-              </div>
-              <div className="pt-1">
-                <div
-                  role="button"
-                  aria-hidden
-                  className="w-full text-center rounded-xl bg-primary text-primary-foreground py-2 text-sm font-medium shadow hover:shadow-md transition hover-scale"
-                >
-                  Pay $133.64
-                </div>
-              </div>
-            </div>
-          </div>
-        </AspectRatio>
-      </div>
     </div>
   );
 };
