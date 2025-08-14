@@ -257,7 +257,7 @@ export const useUnifiedStockManagement = (productId: string) => {
           description: 'Individual items ready for assignment'
         },
         { 
-          label: 'Bulk Pool', 
+          label: 'Available Bulk Pool', 
           count: totals.bulk_pool, 
           color: 'bg-blue-500',
           description: 'Units available for bulk assignment'
@@ -266,13 +266,13 @@ export const useUnifiedStockManagement = (productId: string) => {
           label: 'On Job', 
           count: individual_items.assigned, 
           color: 'bg-yellow-500',
-          description: 'Individual items assigned to jobs'
+          description: 'Individual items assigned to jobs (inventory not available)'
         },
         { 
           label: 'Maintenance', 
           count: individual_items.maintenance, 
           color: 'bg-red-500',
-          description: 'Individual items under maintenance'
+          description: 'Individual items under maintenance (inventory not available)'
         },
         { 
           label: 'Reserved', 
