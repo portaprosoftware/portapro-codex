@@ -76,29 +76,27 @@ export function CompanyAnalyticsShowcase() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Jobs Completed</div>
-                    <div className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <div className="text-lg font-bold text-foreground">
                       247
-                      <Sparkline data={jobsSparklineData} color="hsl(var(--muted-foreground))" height={16} />
                     </div>
-                    <div className="text-xs text-muted-foreground">▲ 15.2%</div>
+                    <div className="text-xs text-muted-foreground">15.2%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Collected Revenue</div>
-                    <div className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <div className="text-lg font-bold text-foreground">
                       $42.1k
-                      <Sparkline data={revenueSparklineData} color="hsl(var(--muted-foreground))" height={16} />
                     </div>
-                    <div className="text-xs text-muted-foreground">▲ 22.8%</div>
+                    <div className="text-xs text-muted-foreground">22.8%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">On-time Service Rate</div>
                     <div className="text-lg font-bold text-foreground">94.2%</div>
-                    <div className="text-xs text-muted-foreground">▲ 3.1%</div>
+                    <div className="text-xs text-muted-foreground">3.1%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Active Customers</div>
                     <div className="text-lg font-bold text-foreground">156</div>
-                    <div className="text-xs text-muted-foreground">▲ 8.7%</div>
+                    <div className="text-xs text-muted-foreground">8.7%</div>
                   </div>
                 </div>
 
@@ -149,12 +147,12 @@ export function CompanyAnalyticsShowcase() {
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
                     <div className="text-lg font-bold text-foreground">$48.7k</div>
-                    <div className="text-xs text-muted-foreground">▲ 18.5%</div>
+                    <div className="text-xs text-muted-foreground">18.5%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
                     <div className="text-lg font-bold text-foreground">86.4%</div>
-                    <div className="text-xs text-muted-foreground">▲ 4.2%</div>
+                    <div className="text-xs text-muted-foreground">4.2%</div>
                   </div>
                 </div>
                 

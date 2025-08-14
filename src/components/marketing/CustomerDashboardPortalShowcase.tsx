@@ -115,28 +115,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                 </div>
               </div>
             </article>
-
-            {/* Communication Hub */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-base font-semibold text-foreground">Communication Hub</h4>
-                <MessageSquare className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="grid sm:grid-cols-3 gap-3 text-sm">
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Phone className="w-4 h-4" /> Call Logs</div>
-                  <div className="text-xs text-muted-foreground">History • Notes • Outcomes</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Mail className="w-4 h-4" /> Email History</div>
-                  <div className="text-xs text-muted-foreground">Templates • Tracking</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Edit className="w-4 h-4" /> Internal Notes</div>
-                  <div className="text-xs text-muted-foreground">Private team notes</div>
-                </div>
-              </div>
-            </article>
           </div>
 
           {/* Right Column: Customer Portals (Customer-Facing) */}
@@ -190,32 +168,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                   <div className="flex items-center gap-2 text-foreground"><BarChart3 className="w-4 h-4" /> Portal Analytics</div>
                   <div className="text-xs text-muted-foreground">Usage • Engagement • Support</div>
                 </div>
-              </div>
-            </article>
-
-            {/* Portal Management */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="text-base font-semibold mb-2 text-foreground flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Portal Management
-              </div>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Customer portal analytics and usage tracking</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Multi-tenant support with custom domains</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Automated customer account provisioning</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Portal onboarding and training materials</li>
-              </ul>
-
-              <div className="pt-3 flex flex-wrap gap-2">
-                <Button size="sm" className="bg-gradient-blue text-white inline-flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" /> Explore Customer Portal
-                </Button>
-                <Button size="sm" variant="outline" className="inline-flex items-center gap-2">
-                  <Users className="w-4 h-4" /> Manage Accounts
-                </Button>
-                <Button size="sm" variant="outline" className="inline-flex items-center gap-2">
-                  <Settings className="w-4 h-4" /> Portal Settings
-                </Button>
               </div>
             </article>
           </div>
