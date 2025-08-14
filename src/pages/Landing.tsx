@@ -857,7 +857,7 @@ export const Landing: React.FC = () => {
 
           {/* DVIRs & Maintenance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 order-2 lg:order-1">
+            <div className="space-y-6 order-1 lg:order-2">
               <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -874,7 +874,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
               <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
