@@ -544,9 +544,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                              <div className="flex items-center justify-between mb-3">
                                <Badge 
                                  variant="outline" 
-                                 className={`text-xs border-transparent ${
+                                 className={`text-xs ${
                                    update.update_type === 'progress' 
-                                     ? 'bg-transparent text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-700 font-semibold' 
+                                     ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
                                      : ''
                                  }`}
                                >
