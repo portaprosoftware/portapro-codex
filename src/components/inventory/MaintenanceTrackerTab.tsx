@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { MaintenanceItemActions } from "./MaintenanceItemActions";
 import { UnifiedMaintenanceItemModal } from "./UnifiedMaintenanceItemModal";
+import { ReturnToServiceModal, type ItemCondition } from "./ReturnToServiceModal";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -25,6 +26,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   // Modal states
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [itemsToReturn, setItemsToReturn] = useState<Array<{ id: string; itemCode: string }>>([]);
 
   // Fetch items in maintenance for this product
   const { data: maintenanceItems, isLoading } = useQuery({
@@ -77,21 +80,35 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
 
   // Return item to service mutation
   const returnToServiceMutation = useMutation({
-    mutationFn: async (itemIds: string[]) => {
-      const { error } = await supabase
-        .from("product_items")
-        .update({ 
-          status: "available",
-          maintenance_start_date: null,
-          maintenance_reason: null,
-          expected_return_date: null,
-          maintenance_notes: null
-        })
-        .in("id", itemIds);
-      
-      if (error) throw error;
+    mutationFn: async (itemsWithConditions: Array<{ id: string; condition: ItemCondition }>) => {
+      const updates = itemsWithConditions.map(({ id, condition }) => ({
+        id,
+        status: "available",
+        condition,
+        maintenance_start_date: null,
+        maintenance_reason: null,
+        expected_return_date: null,
+        maintenance_notes: null
+      }));
+
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("product_items")
+          .update({
+            status: update.status,
+            condition: update.condition,
+            maintenance_start_date: update.maintenance_start_date,
+            maintenance_reason: update.maintenance_reason,
+            expected_return_date: update.expected_return_date,
+            maintenance_notes: update.maintenance_notes
+          })
+          .eq("id", update.id);
+        
+        if (error) throw error;
+      }
     },
-    onSuccess: (_, itemIds) => {
+    onSuccess: (_, itemsWithConditions) => {
+      const itemIds = itemsWithConditions.map(item => item.id);
       toast.success(`Returned ${itemIds.length} item(s) to service`);
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["available-items", productId] });
@@ -101,6 +118,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
       });
       setSelectedItems([]);
+      setReturnModalOpen(false);
+      setItemsToReturn([]);
     },
     onError: (error) => {
       toast.error("Failed to return items to service");
@@ -137,7 +156,12 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       toast.error("Please select items to return to service");
       return;
     }
-    returnToServiceMutation.mutate(selectedItems);
+    
+    const items = maintenanceItems?.filter(item => selectedItems.includes(item.id))
+      .map(item => ({ id: item.id, itemCode: item.item_code })) || [];
+    
+    setItemsToReturn(items);
+    setReturnModalOpen(true);
   };
 
   // Individual item actions
@@ -146,8 +170,10 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     setEditModalOpen(true);
   };
 
-  const handleReturnSingleItem = (itemId: string) => {
-    returnToServiceMutation.mutate([itemId]);
+  const handleReturnSingleItem = (itemId: string, itemCode: string) => {
+    const items = [{ id: itemId, itemCode }];
+    setItemsToReturn(items);
+    setReturnModalOpen(true);
   };
 
   const getStorageLocationName = (locationId: string | null) => {
@@ -159,6 +185,10 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const handleReturnConfirm = (itemsWithConditions: Array<{ id: string; itemCode: string; condition: ItemCondition }>) => {
+    returnToServiceMutation.mutate(itemsWithConditions);
   };
 
   if (isLoading) {
@@ -301,7 +331,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                       onEditMaintenance={() => handleEditMaintenance(item)}
                       onAddUpdate={() => { /* unified modal handles updates */ }}
                       onViewHistory={() => { /* unified modal shows history */ }}
-                      onReturnToService={() => handleReturnSingleItem(item.id)}
+                      onReturnToService={() => handleReturnSingleItem(item.id, item.item_code)}
                     />
                   </TableCell>
                 </TableRow>,
@@ -425,6 +455,14 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
           storageLocations={storageLocations}
         />
       )}
+
+      <ReturnToServiceModal
+        open={returnModalOpen}
+        onOpenChange={setReturnModalOpen}
+        items={itemsToReturn}
+        onConfirm={handleReturnConfirm}
+        isLoading={returnToServiceMutation.isPending}
+      />
     </div>
   );
 };
