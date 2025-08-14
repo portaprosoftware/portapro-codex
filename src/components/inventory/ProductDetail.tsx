@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ProductOverview } from "./ProductOverview";
 import { IndividualUnitsTab } from "./IndividualUnitsTab";
 import { ProductAttributesTab } from "./ProductAttributesTab";
@@ -25,6 +27,7 @@ interface ProductDetailProps {
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind }) => {
   const [activeTab, setActiveTab] = useState(toolNumberToFind ? "units" : "overview");
+  const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   
   const { data: product, isLoading } = useQuery({
@@ -107,6 +110,48 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
     );
   }
 
+  // Tab configuration
+  const tabs = [
+    {
+      value: "overview",
+      label: "Overview",
+      icon: Settings,
+      badge: null
+    },
+    {
+      value: "locations",
+      label: "Site Stock", 
+      icon: Building,
+      badge: null
+    },
+    {
+      value: "units",
+      label: "Tracked Units",
+      icon: QrCode,
+      badge: individualUnitsCount
+    },
+    {
+      value: "compliance",
+      label: "Compliance",
+      icon: ShieldCheck,
+      badge: null
+    },
+    {
+      value: "maintenance",
+      label: "Maintenance",
+      icon: Wrench,
+      badge: maintenanceCount && maintenanceCount > 0 ? maintenanceCount : null
+    },
+    {
+      value: "attributes",
+      label: "Variations",
+      icon: Palette,
+      badge: null
+    }
+  ];
+
+  const activeTabData = tabs.find(tab => tab.value === activeTab);
+
   return (
     <div className="p-6 space-y-6 font-inter">
       {/* Breadcrumb */}
@@ -129,46 +174,82 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="locations" className="flex items-center gap-2">
-            <Building className="w-4 h-4" />
-            Site Stock
-          </TabsTrigger>
-          <TabsTrigger value="units" className="flex items-center gap-2 flex-wrap">
-            <QrCode className="w-4 h-4 flex-shrink-0" />
-            <span className="break-words">Tracked Units</span>
-            {individualUnitsCount !== undefined && (
-              <Badge 
-                className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800"
+        {/* Desktop/Tablet Tabs */}
+        <TabsList className={cn(
+          "grid w-full",
+          "hidden sm:grid",
+          "grid-cols-6 lg:grid-cols-6 md:grid-cols-3"
+        )}>
+          {tabs.map((tab) => {
+            const IconComponent = tab.icon;
+            return (
+              <TabsTrigger 
+                key={tab.value} 
+                value={tab.value} 
+                className="flex items-center gap-2 flex-wrap"
               >
-                {individualUnitsCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="compliance" className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" />
-            Compliance
-          </TabsTrigger>
-          <TabsTrigger value="maintenance" className="flex items-center gap-2">
-            <Wrench className="w-4 h-4" />
-            Maintenance
-            {maintenanceCount !== undefined && maintenanceCount > 0 && (
-              <Badge 
-                className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800"
-              >
-                {maintenanceCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="attributes" className="flex items-center gap-2">
-            <Palette className="w-4 h-4" />
-            Variations
-          </TabsTrigger>
+                <IconComponent className="w-4 h-4 flex-shrink-0" />
+                <span className="break-words">{tab.label}</span>
+                {tab.badge !== null && tab.badge !== undefined && (
+                  <Badge className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800">
+                    {tab.badge}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
+
+        {/* Mobile Dropdown */}
+        <div className="block sm:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full justify-between bg-white"
+              >
+                <div className="flex items-center gap-2">
+                  {activeTabData && (
+                    <>
+                      <activeTabData.icon className="w-4 h-4" />
+                      <span>{activeTabData.label}</span>
+                      {activeTabData.badge !== null && activeTabData.badge !== undefined && (
+                        <Badge className="ml-1 border-0 font-bold bg-gray-200 text-gray-800">
+                          {activeTabData.badge}
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </div>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-full bg-white border border-gray-200 shadow-lg z-50">
+              {tabs.map((tab) => {
+                const IconComponent = tab.icon;
+                return (
+                  <DropdownMenuItem
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer px-4 py-2",
+                      "hover:bg-gray-100 focus:bg-gray-100",
+                      activeTab === tab.value && "bg-blue-50 text-blue-700"
+                    )}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                    {tab.badge !== null && tab.badge !== undefined && (
+                      <Badge className="ml-auto border-0 font-bold bg-gray-200 text-gray-800">
+                        {tab.badge}
+                      </Badge>
+                    )}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         <TabsContent value="overview" className="mt-6">
           <ProductOverview product={product} onDeleted={onBack} />
