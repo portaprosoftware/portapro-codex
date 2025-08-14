@@ -524,14 +524,14 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 {/* Recent updates timeline */}
                 <div className="bg-white border rounded-xl p-4">
                   <h4 className="font-medium mb-3">Recent Updates</h4>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
                     {(updates || []).length === 0 ? (
                       <div className="text-sm text-muted-foreground text-center py-8">
                         No maintenance updates yet
                       </div>
                      ) : (
                        (updates || []).map((update: any) => (
-                         <div key={update.id} className="border rounded-lg p-4 relative min-h-[120px] flex flex-col justify-between">
+                         <div key={update.id} className="border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between">
                            <Button
                              variant="ghost"
                              size="sm"
