@@ -52,8 +52,8 @@ export const ConsumablesShowcase: React.FC = () => {
 
             {/* New uploaded image under highlights */}
             <img 
-              src="/lovable-uploads/5ed26d4b-b480-456b-8b46-8e016f5927a5.png" 
-              alt="Product form interface for adding consumables with name, category, SKU and quantity fields"
+              src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
+              alt="Add Consumable form interface with name, category, SKU and quantity fields"
               className="w-full h-auto rounded-2xl"
             />
           </div>
