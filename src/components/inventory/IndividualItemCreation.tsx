@@ -93,6 +93,11 @@ export function IndividualItemCreation({
         throw new Error("Please select storage location and valid quantity");
       }
       
+      // Validate storage location for maintenance status
+      if (formData.status === "maintenance" && !storageLocationId) {
+        throw new Error("Storage location is required when creating items with maintenance status");
+      }
+      
       // Check for category - either default or selected
       const categoryToUse = product?.default_item_code_category || selectedCategory;
       
@@ -326,12 +331,15 @@ export function IndividualItemCreation({
               </div>
 
               <div className="space-y-2">
-                <Label>Storage Location *</Label>
+                <Label>Storage Location *{formData.status === "maintenance" ? " (Required for maintenance)" : ""}</Label>
                 <StorageLocationSelector
                   value={storageLocationId}
                   onValueChange={setStorageLocationId}
-                  placeholder="Select where these items will be stored"
+                  placeholder={formData.status === "maintenance" ? "Storage location required for maintenance" : "Select where these items will be stored"}
                 />
+                {formData.status === "maintenance" && !storageLocationId && (
+                  <p className="text-xs text-red-600">Storage location is mandatory when creating maintenance items</p>
+                )}
               </div>
             </div>
 

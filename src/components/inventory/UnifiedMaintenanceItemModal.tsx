@@ -96,6 +96,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
   const updateItemMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // Validate that storage location is provided for maintenance items
+      if (!data.current_storage_location_id) {
+        throw new Error("Storage location is required for maintenance items");
+      }
+      
       const { error } = await supabase
         .from("product_items")
         .update({
@@ -103,7 +108,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           maintenance_notes: data.maintenance_notes,
           expected_return_date: data.expected_return_date || null,
           maintenance_priority: data.maintenance_priority,
-          current_storage_location_id: data.current_storage_location_id || null,
+          current_storage_location_id: data.current_storage_location_id,
           condition: data.condition || null,
         })
         .eq("id", item.id);
@@ -315,24 +320,27 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     <MapPin className="w-4 h-4" />
                     <h4 className="font-medium">Location Info</h4>
                   </div>
-                  <div className="space-y-3">
-                    <div>
-                      <Label>Storage Location</Label>
-                      <Select
-                        value={formData.current_storage_location_id || ""}
-                        onValueChange={(v) => setFormData((p) => ({ ...p, current_storage_location_id: v || null }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a storage location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {(storageLocations || []).map((loc) => (
-                            <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                   <div className="space-y-3">
+                     <div>
+                       <Label>Storage Location (Required)</Label>
+                       <Select
+                         value={formData.current_storage_location_id || ""}
+                         onValueChange={(v) => setFormData((p) => ({ ...p, current_storage_location_id: v || null }))}
+                       >
+                         <SelectTrigger className={!formData.current_storage_location_id ? "border-red-300" : ""}>
+                           <SelectValue placeholder="Storage location required" />
+                         </SelectTrigger>
+                         <SelectContent>
+                           {(storageLocations || []).map((loc) => (
+                             <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
+                           ))}
+                         </SelectContent>
+                       </Select>
+                       {!formData.current_storage_location_id && (
+                         <p className="text-xs text-red-600">Storage location is mandatory for maintenance items</p>
+                       )}
+                     </div>
+                   </div>
                 </div>
 
                 <div className="bg-white border rounded-xl p-4">

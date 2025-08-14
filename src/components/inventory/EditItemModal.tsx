@@ -151,6 +151,11 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
 
   const updateMutation = useMutation({
     mutationFn: async (updateData: typeof formData) => {
+      // Validate storage location for maintenance status
+      if (updateData.status === "maintenance" && !updateData.current_storage_location_id) {
+        throw new Error("Storage location is required when setting status to maintenance");
+      }
+
       // Validate required attributes
       const requiredAttributes = productAttributes.filter(attr => attr.is_required);
       const validationErrors: Record<string, string> = {};
@@ -329,12 +334,17 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="storage_location">Storage Location</Label>
+            <Label htmlFor="storage_location">
+              Storage Location {formData.status === "maintenance" ? "(Required for maintenance)" : ""}
+            </Label>
             <StorageLocationSelector
               value={formData.current_storage_location_id}
               onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
-              placeholder="Select storage location"
+              placeholder={formData.status === "maintenance" ? "Storage location required" : "Select storage location"}
             />
+            {formData.status === "maintenance" && !formData.current_storage_location_id && (
+              <p className="text-xs text-red-600">Storage location is mandatory for maintenance items</p>
+            )}
           </div>
 
           {/* Maintenance Fields - only show if status is maintenance */}
