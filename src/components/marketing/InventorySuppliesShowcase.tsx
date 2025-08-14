@@ -269,7 +269,7 @@ export function InventorySuppliesShowcase() {
                 <li>Bulk, individual, and hybrid tracking in one system</li>
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
-                <li>Padlock detection and overdue padlock alerts</li>
+                <li>Padlock and zip-tie drop-off notations</li>
                 <li>Instant clarity on status — available, assigned, service</li>
                 <li>Offline scans attach to units and sync later</li>
               </ul>
