@@ -405,7 +405,7 @@ export const Landing: React.FC = () => {
                   <Calendar className="w-4 h-4 ml-2" />
                 </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                  Watch 60-second tour
+                  Watch Preview
                   <Play className="w-4 h-4 ml-2" />
                 </Button>
               </div>
@@ -414,10 +414,27 @@ export const Landing: React.FC = () => {
                 <div className="flex items-center gap-6 flex-wrap opacity-90">
                   <span className="text-white/80 text-sm">Trusted by operators across North America</span>
                 </div>
-                <div className="flex flex-wrap gap-6 pt-2 text-sm text-white/80">
-                  <span className="font-bold text-base">• Full Support Included</span>
-                  <span className="font-bold text-base">• Cancel Anytime</span>
-                  <span className="font-bold text-base">• 14 Day Free Trial</span>
+                
+                {/* 6 Badges */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl mx-auto">
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    14 Day Free Trial
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    No setup fees - Support included
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    Unlimited users, trucks & units
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    User friendly and easy to learn
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    1:1 onboarding calls
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 justify-center py-2">
+                    Data export anytime
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -471,40 +488,6 @@ export const Landing: React.FC = () => {
               
 
               
-            </div>
-          </div>
-
-          {/* Trust strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>No setup fees</span>
-            <span className="opacity-50">•</span>
-            <span>Unlimited users, trucks & units</span>
-            <span className="opacity-50">•</span>
-            <span>Data export anytime</span>
-          </div>
-
-          {/* Switching is easy */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">Free import assistance</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">1:1 onboarding calls</span>
-            </div>
-            
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">User friendly and easy to understand</span>
             </div>
           </div>
         </div>
