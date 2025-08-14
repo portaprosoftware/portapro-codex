@@ -690,6 +690,39 @@ export const Landing: React.FC = () => {
             <StatCard title="Upcoming Services" value={9} icon={Wrench} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Due in next 7 days</span>} />
           </div>
 
+          {/* General Fleet Tracking */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">General Fleet Tracking</h3>
+              <p className="text-lg text-muted-foreground">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Vehicle profiles with status, location, and availability</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic and manual mileage tracking with history</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Photo documentation for condition and damage tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Document management with expiry alerts and compliance</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Real-time compliance dashboard and status tracking</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-2xl border bg-card p-6 shadow-md">
+              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+            </div>
+          </div>
+
           {/* Vehicle Ops Toolkit */}
           <div className="grid sm:grid-cols-2 gap-4 mb-12">
             <div className="p-5 rounded-xl border bg-card shadow-sm">
