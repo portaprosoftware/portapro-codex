@@ -16,24 +16,8 @@ export const ConsumablesShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Job Wizard setup + Highlights */}
+          {/* Left column: Highlights */}
           <div className="space-y-4">
-            {/* Panel A — Job Wizard setup */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Job Wizard — Consumables Billing</h3>
-                <ClipboardList className="w-4 h-4 text-muted-foreground" />
-              </div>
-
-              {/* Segmented control mock */}
-              <div className="inline-flex rounded-xl border bg-background p-1 text-sm mb-4">
-                <button className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-md">Included (bundled)</button>
-                <button className="px-3 py-1 rounded-lg text-foreground">Itemized actuals</button>
-                <button className="px-3 py-1 rounded-lg text-foreground">Kit fee (+ overage)</button>
-              </div>
-
-            </article>
-
             {/* Highlights card */}
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
