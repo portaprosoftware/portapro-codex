@@ -394,48 +394,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             )}
           </div>
 
-          {/* Maintenance Fields - only show if status is maintenance */}
-          {formData.status === "maintenance" && (
-            <div className="space-y-4 p-4 bg-card border border-border rounded-lg">
-              <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="w-4 h-4 text-foreground" />
-                <Label className="font-medium text-foreground">Maintenance Information</Label>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="maintenance_reason">Maintenance Reason</Label>
-                  <Input
-                    id="maintenance_reason"
-                    value={formData.maintenance_reason}
-                    onChange={(e) => handleInputChange("maintenance_reason", e.target.value)}
-                    placeholder="Reason for maintenance"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="expected_return_date">Expected Return Date</Label>
-                  <Input
-                    id="expected_return_date"
-                    type="date"
-                    value={formData.expected_return_date}
-                    onChange={(e) => handleInputChange("expected_return_date", e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="maintenance_notes">Maintenance Notes</Label>
-                <Textarea
-                  id="maintenance_notes"
-                  value={formData.maintenance_notes}
-                  onChange={(e) => handleInputChange("maintenance_notes", e.target.value)}
-                  placeholder="Additional maintenance details..."
-                  rows={2}
-                />
-              </div>
-            </div>
-          )}
 
           {/* QR Code Section */}
           <div className="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
@@ -572,7 +530,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
               className="bg-blue-600 hover:bg-blue-700 text-white"
               disabled={updateMutation.isPending || Object.keys(attributeErrors).length > 0}
             >
-              {updateMutation.isPending ? "Updating..." : "Update Item"}
+              {updateMutation.isPending ? "Updating Unit..." : "Update Unit"}
             </Button>
           </div>
         </form>
