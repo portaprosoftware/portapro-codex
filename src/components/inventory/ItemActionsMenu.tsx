@@ -35,7 +35,7 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
           <Edit className="mr-2 h-4 w-4" />
-          <span>Edit Item</span>
+          <span>Edit Unit</span>
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />

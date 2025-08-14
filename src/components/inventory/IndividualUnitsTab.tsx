@@ -385,7 +385,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 <Checkbox />
               </TableHead>
               <TableHead className="w-12"></TableHead>
-              <TableHead className="font-medium">Item Code</TableHead>
+              <TableHead className="font-medium">Unit Code</TableHead>
               <TableHead className="font-medium">Status</TableHead>
               <TableHead className="font-medium">Variations</TableHead>
               <TableHead className="font-medium">Tool Number</TableHead>
