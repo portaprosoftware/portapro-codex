@@ -429,83 +429,57 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Proof Bar + Trust strip + Switching is easy - White */}
-      <section id="about" className="py-6 bg-white">
+      {/* Feature Cards Section - White */}
+      <section id="about" className="py-12 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Proof Bar */}
-          <div className="mb-4">
-            <div className="sr-only">Proof Bar</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
+          {/* 3-Column Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <Card className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-md h-full">
+              <CardContent className="p-8 text-left">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                  <Building2 className="h-6 w-6" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
-              </article>
+                <h3 className="text-xl font-bold text-foreground mb-3">Industry-Focused</h3>
+                <p className="text-base text-muted-foreground">Built specifically for portable toilet rentals.</p>
+              </CardContent>
+            </Card>
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
+            <Card className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-md h-full">
+              <CardContent className="p-8 text-left">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                  <DollarSign className="h-6 w-6" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
-              </article>
+                <h3 className="text-xl font-bold text-foreground mb-3">Simple, All-Inclusive Pricing</h3>
+                <p className="text-base text-muted-foreground">One plan. Every feature. No hidden fees.<br />No setup fees • Unlimited users • Data export anytime</p>
+              </CardContent>
+            </Card>
 
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
+            <Card className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 shadow-md h-full">
+              <CardContent className="p-8 text-left">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                  <Heart className="h-6 w-6" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
-              </article>
-
-              
-
-              
-
-              
-            </div>
+                <h3 className="text-xl font-bold text-foreground mb-3">Friendly, Ongoing Support</h3>
+                <p className="text-base text-muted-foreground">1:1 onboarding calls • Free import assistance<br />User-friendly and easy to understand</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Trust strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>
-          </span>
-            <span className="opacity-50">
-          </span>
-            <span>No setup fees</span>
-            <span className="opacity-50">•</span>
-            <span>Unlimited users, trucks & units</span>
-            <span className="opacity-50">•</span>
-            <span>Data export anytime</span>
+          {/* Bullet Text */}
+          <div className="text-center mb-8">
+            <p className="text-lg text-muted-foreground">
+              <span className="font-medium">Full support included</span> • <span className="font-medium">Cancel anytime</span> • <span className="font-medium">14-day free trial</span>
+            </p>
           </div>
 
-          {/* Switching is easy */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">Free import assistance</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">1:1 onboarding calls</span>
-            </div>
-            
-            <div className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 shadow-sm">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="text-foreground">User friendly and easy to understand</span>
-            </div>
+          {/* CTA Section */}
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Ready to ditch the paperwork?</h2>
+            <p className="text-xl text-muted-foreground mb-6">Start your free 14-day trial of PortaPro today.</p>
+            <Button size="lg" className="w-full md:w-auto px-8 py-4 text-lg font-semibold">
+              Start My Free Trial
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
