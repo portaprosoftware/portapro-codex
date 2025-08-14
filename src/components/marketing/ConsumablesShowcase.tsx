@@ -30,15 +30,6 @@ export const ConsumablesShowcase: React.FC = () => {
                 <button className="px-3 py-1 rounded-lg text-foreground">Kit fee (+ overage)</button>
               </div>
 
-              {/* Recipe defaults */}
-              <div className="rounded-xl border bg-background p-3">
-                <div className="text-sm font-medium mb-2 text-foreground">Service recipe defaults</div>
-                <ul className="text-sm space-y-2">
-                  <li className="flex items-center gap-2"><Package className="w-4 h-4 text-muted-foreground" /> Toilet Paper — 2 rolls</li>
-                  <li className="flex items-center gap-2"><Droplet className="w-4 h-4 text-muted-foreground" /> Hand Sanitizer — 10 mL</li>
-                  <li className="flex items-center gap-2"><Droplet className="w-4 h-4 text-muted-foreground" /> Deodorizer — 30 mL</li>
-                </ul>
-              </div>
             </article>
 
             {/* Highlights card moved from right column */}
@@ -55,21 +46,17 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
           </div>
 
-          {/* Right column: Video + What customers love */}
+          {/* Right column: Photos + What customers love */}
           <aside className="space-y-6">
-            <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
-              __html: `
-                <style>
-                  wistia-player[media-id='6qvo6ezwgi']:not(:defined) { 
-                    background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/6qvo6ezwgi/swatch'); 
-                    display: block; 
-                    filter: blur(5px); 
-                    padding-top:51.04%; 
-                  }
-                </style>
-                <wistia-player media-id="6qvo6ezwgi" aspect="1.9591836734693877"></wistia-player>
-              `
-            }} />
+            {/* Space for 2 photos */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="aspect-video rounded-xl bg-muted border border-dashed border-muted-foreground/30 flex items-center justify-center">
+                <span className="text-sm text-muted-foreground">Photo 1</span>
+              </div>
+              <div className="aspect-video rounded-xl bg-muted border border-dashed border-muted-foreground/30 flex items-center justify-center">
+                <span className="text-sm text-muted-foreground">Photo 2</span>
+              </div>
+            </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">What customers love</div>
