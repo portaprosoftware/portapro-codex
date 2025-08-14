@@ -29,90 +29,15 @@ export const DriverAppShowcase: React.FC = () => {
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] items-start">
-        {/* Left: Phone mock with stack of feature screens */}
+        {/* Left: Replaced with supplied mobile app image */}
         <main className="space-y-3">
           <AspectRatio ratio={9/16}>
-            <div className="rounded-[2rem] border bg-card shadow-lg overflow-hidden relative animate-enter">
-              {/* Phone top bar */}
-              <div className="h-6 bg-muted/50" />
-
-              {/* Screen content */}
-              <div className="p-4 space-y-4">
-                {/* Route optimization */}
-                <div className="rounded-xl border bg-background p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                        <Route className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-foreground">Optimized Route</div>
-                        <div className="text-xs text-muted-foreground">Stops reordered to cut drive time</div>
-                      </div>
-                    </div>
-                    <div className="text-xs px-2 py-1 rounded-full bg-muted/60 text-foreground">+18% faster</div>
-                  </div>
-
-                  <ol className="space-y-2 text-sm">
-                    {[ 
-                      'ACME Construction — 1250 Market St',
-                      'City Park North — 4400 E 23rd Ave',
-                      'Riverside Site — 9800 S Platte Canyon Rd'
-                    ].map((stop, i) => (
-                      <li key={stop} className="flex items-center gap-2">
-                        <div className="w-6 h-6 shrink-0 rounded-full bg-primary/10 text-foreground flex items-center justify-center text-[11px] font-semibold">
-                          {i + 1}
-                        </div>
-                        <span className="text-foreground/90">{stop}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-
-                {/* One-tap navigation chooser */}
-                <div className="rounded-xl border bg-background p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                      <Navigation className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-foreground">One‑tap Navigation</div>
-                      <div className="text-xs text-muted-foreground">Choose your preferred maps app</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs">
-                    {['Apple Maps', 'Google Maps', 'Waze'].map((app) => (
-                      <div key={app} className="rounded-lg border bg-muted/30 px-3 py-2 text-center">
-                        {app}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Job-specific satellite pin */}
-                <div className="rounded-xl border bg-background p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-foreground">Precise Drop‑off Pin</div>
-                      <div className="text-xs text-muted-foreground">Satellite pin set by dispatcher</div>
-                    </div>
-                  </div>
-                  <div className="rounded-lg border bg-muted/30 h-28 flex items-center justify-center text-xs text-muted-foreground">
-                    Satellite preview placeholder
-                  </div>
-                </div>
-
-                {/* Offline banner */}
-                <div className="rounded-xl border bg-muted/40 p-3 flex items-center gap-3">
-                  <WifiOff className="w-4 h-4 text-foreground" />
-                  <div className="text-xs text-foreground">
-                    Offline mode active — actions queued. Auto-syncs when back online.
-                  </div>
-                </div>
-              </div>
+            <div className="rounded-[2rem] overflow-hidden relative animate-enter">
+              <img 
+                src="/lovable-uploads/8e39f5c9-93de-444f-8e28-7d03da91b791.png" 
+                alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
+                className="w-full h-full object-cover"
+              />
             </div>
           </AspectRatio>
 
