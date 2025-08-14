@@ -684,9 +684,9 @@ export const Landing: React.FC = () => {
 
           {/* Fleet KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            <StatCard title="Vehicles" value={24} icon={Truck} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">Active + standby</span>} />
-            <StatCard title="Active Drivers" value={12} icon={Users} gradientFrom="hsl(var(--accent))" gradientTo="hsl(var(--accent) / 0.7)" iconBg="hsl(var(--accent))" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
-            <StatCard title="Monthly Fuel Spend" value={"$8,420"} icon={DollarSign} gradientFrom="hsl(var(--secondary))" gradientTo="hsl(var(--secondary) / 0.7)" iconBg="hsl(var(--secondary))" subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>} />
+            <StatCard title="Vehicles" value={12} icon={Truck} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary) / 0.7)" iconBg="hsl(var(--primary))" subtitle={<span className="text-muted-foreground">Active + standby</span>} />
+            <StatCard title="Active Drivers" value={8} icon={Users} gradientFrom="#10B981" gradientTo="#059669" iconBg="#10B981" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
+            <StatCard title="Monthly Fuel Spend" value={"$10,932"} icon={DollarSign} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="#F59E0B" subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>} />
             <StatCard title="Upcoming Services" value={9} icon={Wrench} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Due in next 7 days</span>} />
           </div>
 
