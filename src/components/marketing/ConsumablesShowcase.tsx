@@ -59,7 +59,7 @@ export const ConsumablesShowcase: React.FC = () => {
           </div>
 
           {/* Right column: Storage image + What customers love */}
-          <aside className="space-y-4">
+          <aside className="space-y-6">
             <img 
               src="/lovable-uploads/bedc2be5-1c1d-4884-a05f-2859d68abd99.png" 
               alt="Storage locations interface showing inventory levels across multiple locations"

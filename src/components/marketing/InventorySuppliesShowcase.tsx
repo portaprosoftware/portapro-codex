@@ -213,10 +213,10 @@ export function InventorySuppliesShowcase() {
                   <Sparkles className="w-4 h-4 text-primary" /> Snap Photo to Track Tool Numbers & Other Data in Embossed Plastic
                 </div>
               <div className="grid md:grid-cols-2 gap-4">
-                 {/* Photo of embossed panel */}
+                {/* Photo of embossed panel */}
                  <div className="flex justify-center">
                    <img 
-                     src="/lovable-uploads/a7c73e5d-30a2-450c-9c51-33fba9dc12b9.png"
+                     src="/lovable-uploads/cf4e07bc-0d9b-4a24-a8e7-3db06efc8766.png"
                      alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel"
                      className="max-w-full h-auto rounded-2xl"
                    />
