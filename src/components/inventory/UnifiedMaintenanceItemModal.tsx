@@ -360,12 +360,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <Label>Condition</Label>
+                      <Label>Condition {item?.status === "maintenance" ? "(Auto-locked)" : ""}</Label>
                       <Select
                         value={formData.condition || ""}
                         onValueChange={(v) => setFormData((p) => ({ ...p, condition: v }))}
+                        disabled={item?.status === "maintenance"}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className={item?.status === "maintenance" ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : ""}>
                           <SelectValue placeholder="Select condition" />
                         </SelectTrigger>
                         <SelectContent>
@@ -378,6 +379,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                           <SelectItem value="damaged">Damaged</SelectItem>
                         </SelectContent>
                       </Select>
+                      {item?.status === "maintenance" && (
+                        <p className="text-xs text-muted-foreground mt-1">Condition locked to "Needs Repair" while in maintenance</p>
+                      )}
                     </div>
                   </div>
                 </div>
