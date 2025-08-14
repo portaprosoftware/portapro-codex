@@ -49,7 +49,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
             <img 
               src="/lovable-uploads/cc599aec-84ca-4b67-9575-06eb9d854204.png" 
               alt="Mobile phone camera view of ABC Manufacturing embossed plastic panel showing Tool # T-20788-1A, Vendor ID # 32123"
-              className="max-w-full h-auto"
+              className="w-3/4 h-auto rounded-lg"
             />
           </div>
         </div>
