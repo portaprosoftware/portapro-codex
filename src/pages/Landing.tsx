@@ -395,16 +395,16 @@ export const Landing: React.FC = () => {
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
                     Start Free Trial
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200" onClick={openCalendlyPopup}>
                   Schedule Demo
                   <Calendar className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 border-white/30 text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
                   Watch Preview
                   <Play className="w-4 h-4 ml-2" />
                 </Button>
