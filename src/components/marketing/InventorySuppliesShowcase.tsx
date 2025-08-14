@@ -9,16 +9,16 @@ function PhotoSlider() {
 
   const images = [
     {
-      src: "/lovable-uploads/645512ae-401d-4666-b129-eb1902de53b2.png",
-      alt: "Product inventory list with stock levels and location tracking"
+      src: "/lovable-uploads/bfe824ef-8af0-416c-9cd9-ecd48214dfb1.png",
+      alt: "Standard Porta Potty product card with pricing and availability details"
     },
     {
-      src: "/lovable-uploads/cac0c679-6b7e-4f5e-860c-bf6ec02a5664.png", 
-      alt: "Storage sites management with location analytics"
+      src: "/lovable-uploads/661302df-ce04-4ea6-abcb-987d4352caa3.png", 
+      alt: "Inventory status dashboard showing available individual units, bulk pool, and maintenance status"
     },
     {
-      src: "/lovable-uploads/3b58e3cf-cfc6-42d9-9293-3e41854bb6b9.png",
-      alt: "Individual product tracking with inventory status overview"
+      src: "/lovable-uploads/65a3711f-fa46-4012-9b21-2c03808a58f2.png",
+      alt: "Print QR Codes interface for generating and printing unit tracking codes"
     }
   ];
 
