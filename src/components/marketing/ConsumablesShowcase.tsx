@@ -60,8 +60,6 @@ export const ConsumablesShowcase: React.FC = () => {
             <div className="rounded-2xl border bg-card shadow-md p-6">
               <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
                 __html: `
-                  <script src="https://fast.wistia.com/player.js" async></script>
-                  <script src="https://fast.wistia.com/embed/6qvo6ezwgi.js" async type="module"></script>
                   <style>
                     wistia-player[media-id='6qvo6ezwgi']:not(:defined) { 
                       background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/6qvo6ezwgi/swatch'); 
@@ -69,7 +67,7 @@ export const ConsumablesShowcase: React.FC = () => {
                       filter: blur(5px); 
                       padding-top:51.04%; 
                     }
-                  </style> 
+                  </style>
                   <wistia-player media-id="6qvo6ezwgi" aspect="1.9591836734693877"></wistia-player>
                 `
               }} />
