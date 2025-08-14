@@ -136,7 +136,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           </TabsTrigger>
           <TabsTrigger value="locations" className="flex items-center gap-2">
             <Building className="w-4 h-4" />
-            Storage Site Stock
+            Site Stock
           </TabsTrigger>
           <TabsTrigger value="units" className="flex items-center gap-2 flex-wrap">
             <QrCode className="w-4 h-4 flex-shrink-0" />
