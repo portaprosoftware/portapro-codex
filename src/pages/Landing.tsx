@@ -777,7 +777,7 @@ export const Landing: React.FC = () => {
             <img 
               src="/lovable-uploads/9d865708-b884-4ae8-bebd-bfe16cdf3fd5.png" 
               alt="Maintenance notifications showing past due and due this week tasks"
-              className="w-full h-auto rounded-lg transform scale-110"
+              className="w-full h-auto rounded-lg transform scale-105"
             />
           </div>
 
@@ -828,13 +828,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
-              <img 
-                src="/lovable-uploads/04720576-aad2-4e93-a4e3-82df4ad358c3.png" 
-                alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
-                className="w-full h-auto rounded-lg"
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/04720576-aad2-4e93-a4e3-82df4ad358c3.png" 
+              alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
+              className="w-full h-auto rounded-lg transform scale-110"
+            />
           </div>
 
           {/* Transport & Spill Compliance */}
@@ -857,13 +855,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <img 
-                src="/lovable-uploads/a8858ace-9364-4ad8-9663-00c799a10876.png" 
-                alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
-                className="w-full h-auto rounded-lg"
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/a8858ace-9364-4ad8-9663-00c799a10876.png" 
+              alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
+              className="w-full h-auto rounded-lg transform scale-110"
+            />
           </div>
 
           {/* DVIRs & Maintenance */}
@@ -885,13 +881,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <img 
-                src="/lovable-uploads/410aced4-4fe7-439f-b8db-022b38a721c1.png" 
-                alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
-                className="w-full h-auto rounded-lg"
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/410aced4-4fe7-439f-b8db-022b38a721c1.png" 
+              alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
+              className="w-full h-auto rounded-lg transform scale-110"
+            />
           </div>
         </div>
       </section>
