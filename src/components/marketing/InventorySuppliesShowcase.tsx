@@ -53,10 +53,10 @@ function PhotoSlider() {
           {images.map((_, index) => (
             <div
               key={index}
-              className="relative w-12 h-1 bg-white/30 rounded-full overflow-hidden"
+              className="relative w-12 h-1 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm"
             >
               <div
-                className="absolute top-0 left-0 h-full bg-white transition-all duration-100 ease-linear rounded-full"
+                className="absolute top-0 left-0 h-full bg-primary transition-all duration-100 ease-linear rounded-full"
                 style={{
                   width: index === currentIndex ? `${progress}%` : index < currentIndex ? '100%' : '0%'
                 }}
