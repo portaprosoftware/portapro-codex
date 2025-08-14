@@ -292,7 +292,12 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               <div key={status.label} className="flex items-center gap-3">
                 <span className={`w-3 h-3 rounded-full ${status.color}`}></span>
                 <span className="font-bold text-gray-900">{status.count}</span>
-                <span className={`font-bold ${status.textColor}`}>{status.label}</span>
+                <div className="flex flex-col">
+                  <span className={`font-bold ${status.textColor}`}>{status.label}</span>
+                  {(status.label === "On Job" || status.label === "Maintenance") && (
+                    <span className="text-xs text-muted-foreground">(inventory not available)</span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -302,7 +307,12 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             {statusData.map((status) => (
               <div key={status.label} className="space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span className={status.textColor}>{status.label}</span>
+                  <div className="flex flex-col">
+                    <span className={status.textColor}>{status.label}</span>
+                    {(status.label === "On Job" || status.label === "Maintenance") && (
+                      <span className="text-xs text-muted-foreground">(inventory not available)</span>
+                    )}
+                  </div>
                   <span className="text-gray-600">{status.count}</span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
