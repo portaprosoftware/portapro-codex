@@ -542,7 +542,16 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                            </Button>
                            <div className="pr-8">
                              <div className="flex items-center justify-between mb-3">
-                               <Badge variant="outline" className="text-xs">{update.update_type}</Badge>
+                               <Badge 
+                                 variant="outline" 
+                                 className={`text-xs border-transparent ${
+                                   update.update_type === 'progress' 
+                                     ? 'bg-transparent text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-orange-700 font-semibold' 
+                                     : ''
+                                 }`}
+                               >
+                                 {update.update_type === 'progress' ? 'Progress' : update.update_type}
+                               </Badge>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
                                </div>
