@@ -211,9 +211,10 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Old availability calculation removed - will be replaced with unified stock system
   const getAvailableCount = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    return product ? product.stock_total - product.stock_in_service : 0;
+    // Placeholder - will use unified stock management
+    return 0;
   };
 
   return (

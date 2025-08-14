@@ -42,14 +42,13 @@ export const InventoryDashboard: React.FC = () => {
         throw new Error("Failed to fetch inventory data");
       }
 
+      // Old stock calculations removed - will be replaced with unified stock system
       const totalItems = products.reduce((sum, p) => sum + p.stock_total, 0);
       const assignedItems = products.reduce((sum, p) => sum + p.stock_in_service, 0);
       const availableItems = totalItems - assignedItems;
       
       const maintenanceItems = items.filter(item => item.status === "maintenance").length;
-      const lowStockCount = products.filter(p => 
-        (p.stock_total - p.stock_in_service) <= p.low_stock_threshold
-      ).length;
+      const lowStockCount = 0; // Will be calculated using unified stock system
       
       const utilizationRate = totalItems > 0 ? (assignedItems / totalItems) * 100 : 0;
       const totalValue = products.reduce((sum, p) => sum + (p.stock_total * (p.default_price_per_day || 0)), 0);

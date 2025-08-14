@@ -56,8 +56,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
   const onJobCount = stockData?.individual_items?.assigned || 0;
   
   
-  const isLowStock = availableCount <= product.low_stock_threshold;
-  const isOutOfStock = availableCount <= 0;
+  // Badge logic removed - will be replaced with unified badge system
 
   // Real-time subscription for inventory updates
   useEffect(() => {
@@ -140,40 +139,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
     }
   });
 
-  const getStatusBadge = () => {
-    if (!product.track_inventory) {
-      return (
-        <Badge variant="outline" className="text-gray-600 border-gray-300">
-          Not tracked
-        </Badge>
-      );
-    }
-
-    if (isOutOfStock) {
-      return (
-        <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0">
-          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-          Out of stock
-        </Badge>
-      );
-    }
-
-    if (isLowStock) {
-      return (
-        <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold border-0">
-          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-          Low Stock
-        </Badge>
-      );
-    }
-
-    return (
-      <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
-        <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-        {availableCount}/{product.stock_total}
-      </Badge>
-    );
-  };
+  // Badge function removed - will be replaced with unified badge system
 
   const hasLocations = locationStocks && locationStocks.length > 0;
 
@@ -200,10 +166,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
           <p className="text-blue-600 font-medium">${product.default_price_per_day}/day</p>
         </div>
 
-        {/* Status */}
-        <div className="mr-4 flex items-center justify-center min-w-[120px]">
-          {getStatusBadge()}
-        </div>
+        {/* Status badge removed - will be replaced with unified badge system */}
 
         {/* Quick Stats */}
         {quickStats && (

@@ -127,43 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
   const onJobCount = stockData?.individual_items?.assigned || 0;
   
   
-  const isLowStock = availableCount <= product.low_stock_threshold;
-  const isOutOfStock = availableCount <= 0;
-
-  const getStatusBadge = () => {
-    if (!product.track_inventory) {
-      return (
-        <Badge variant="outline" className="text-gray-600 border-gray-300">
-          Not tracked
-        </Badge>
-      );
-    }
-
-    if (isOutOfStock) {
-      return (
-        <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0">
-          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-          Out of stock
-        </Badge>
-      );
-    }
-
-    if (isLowStock) {
-      return (
-        <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold border-0">
-          <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-          Low Stock
-        </Badge>
-      );
-    }
-
-    return (
-      <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
-        <span className="w-2 h-2 bg-white rounded-full mr-1"></span>
-        {availableCount}/{product.stock_total}
-      </Badge>
-    );
-  };
+  // Badge logic removed - will be replaced with unified badge system
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-200 group">
@@ -291,10 +255,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
         <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
         <p className="text-blue-600 font-semibold">${product.default_price_per_day}/day</p>
         
-        {/* Status Badge */}
-        <div className="flex justify-center">
-          {getStatusBadge()}
-        </div>
+        {/* Status Badge removed - will be replaced with unified badge system */}
 
         {/* Location Information */}
         {product.track_inventory && (

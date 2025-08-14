@@ -73,21 +73,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
 
   const { categories } = useItemCodeCategories();
 
-  // Use unified stock data or fallback to legacy data
-  const displayData = stockData ? {
+  // Use unified stock data only
+  const displayData = {
     availableCount: physicallyAvailable,
     onJobCount: totalReserved,
     maintenanceCount: inMaintenance,
     
     totalStock: masterStock,
     statusData: calculations?.statusBreakdown || []
-  } : {
-    availableCount: product.stock_total - product.stock_in_service,
-    onJobCount: product.stock_in_service,
-    maintenanceCount: 0,
-    
-    totalStock: product.stock_total,
-    statusData: []
   };
 
   const legacyStatusData = [
@@ -107,7 +100,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     })) : 
     legacyStatusData;
 
-  const isLowStock = displayData.availableCount <= product.low_stock_threshold;
+  // Low stock calculation removed - will be handled by unified badge system
 
   const updateTrackingMutation = useMutation({
     mutationFn: async (trackInventory: boolean) => {
@@ -341,7 +334,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
               <span className="text-sm font-medium text-gray-600">Low Stock Threshold</span>
-              <Badge className={`font-bold text-base px-3 py-1 ${isLowStock ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white' : 'bg-gradient-to-r from-gray-500 to-gray-600 text-white'}`}>
+              <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold text-base px-3 py-1">
                 {product.low_stock_threshold}
               </Badge>
             </div>
