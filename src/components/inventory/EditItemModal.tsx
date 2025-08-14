@@ -191,6 +191,12 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       if (cleanUpdateData.current_storage_location_id === "") {
         cleanUpdateData.current_storage_location_id = null;
       }
+      
+      // Clean date fields - convert empty strings to null
+      if (cleanUpdateData.manufacturing_date === "") {
+        cleanUpdateData.manufacturing_date = null;
+      }
+      
       // vendor_id is a text field, not UUID, so we'll leave it as is for now
       
       console.log('Sending update data:', JSON.stringify(cleanUpdateData, null, 2));
