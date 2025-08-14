@@ -15,9 +15,9 @@ export const ConsumablesShowcase: React.FC = () => {
           </p>
         </header>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-6 items-start">
           {/* Left column: Highlights + uploaded image + What customers love */}
-          <div className="pt-4 space-y-4">
+          <div className="space-y-4">
             {/* Highlights card */}
             <div className="rounded-2xl border bg-card p-5 shadow-sm">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
