@@ -38,14 +38,14 @@ export const ConsumablesShowcase: React.FC = () => {
             <img 
               src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
               alt="Add Consumable form interface with name, category, SKU and quantity fields"
-              className="w-full h-auto rounded-2xl -mt-6"
+              className="w-full h-auto rounded-2xl -mt-8"
             />
           </div>
 
           {/* Right column: Storage image + What customers love */}
           <aside className="space-y-4">
             <img 
-              src="/lovable-uploads/6500178f-42ec-4caf-ac33-69938436e2cb.png" 
+              src="/lovable-uploads/e7f37ad9-5e3b-4c1e-b41f-e62b58e50c49.png" 
               alt="Inventory management table showing product locations, quantities, and low stock alerts"
               className="w-full h-auto rounded-2xl"
             />
