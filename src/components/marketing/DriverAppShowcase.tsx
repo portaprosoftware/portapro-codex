@@ -20,7 +20,7 @@ export const DriverAppShowcase: React.FC = () => {
   ];
 
   return (
-    <section aria-label="Driver Mobile App" className="space-y-4 pb-4">
+    <section aria-label="Driver Mobile App" className="space-y-4">
       <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Driver Mobile App — built for the field</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">

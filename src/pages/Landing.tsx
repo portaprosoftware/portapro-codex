@@ -632,6 +632,13 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Section Divider */}
+      <div className="py-4 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
       {/* Driver Mobile App - White */}
       <section id="mobile-app" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
