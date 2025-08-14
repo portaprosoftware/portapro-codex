@@ -25,12 +25,13 @@ interface UnifiedMaintenanceItemModalProps {
 
 interface MaintenanceUpdateForm {
   update_type: "progress" | "repair" | "parts" | "inspection";
+  title: string;
   description: string;
   labor_hours: string;
   labor_cost: string;
   parts_cost: string;
   parts_used: string;
-  technician: string;
+  technician_name: string;
 }
 
 export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalProps> = ({
@@ -89,7 +90,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const totalCost = useMemo(() => {
-    return (updates || []).reduce((sum: number, u: any) => sum + (u.labor_cost || 0) + (u.parts_cost || 0), 0);
+    return (updates || []).reduce((sum: number, u: any) => sum + (u.cost_amount || 0), 0);
   }, [updates]);
 
   const updateItemMutation = useMutation({
@@ -123,28 +124,40 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
   const [updateForm, setUpdateForm] = useState<MaintenanceUpdateForm>({
     update_type: "progress",
+    title: "",
     description: "",
     labor_hours: "",
     labor_cost: "",
     parts_cost: "",
     parts_used: "",
-    technician: "",
+    technician_name: "",
   });
 
   const addUpdateMutation = useMutation({
     mutationFn: async (data: MaintenanceUpdateForm) => {
       if (!itemId) return;
+      
+      // Calculate total cost from labor + parts
+      const laborCost = data.labor_cost ? parseFloat(data.labor_cost) : 0;
+      const partsCost = data.parts_cost ? parseFloat(data.parts_cost) : 0;
+      const totalCost = laborCost + partsCost;
+      
+      // Convert parts_used string to JSONB array
+      const partsUsedArray = data.parts_used ? 
+        data.parts_used.split(',').map(part => part.trim()).filter(part => part) : 
+        [];
+      
       const { error } = await (supabase as any)
         .from("maintenance_updates")
         .insert({
           item_id: itemId,
           update_type: data.update_type,
+          title: data.title,
           description: data.description,
-          labor_hours: data.labor_hours ? parseFloat(data.labor_hours) : null,
-          labor_cost: data.labor_cost ? parseFloat(data.labor_cost) : null,
-          parts_cost: data.parts_cost ? parseFloat(data.parts_cost) : null,
-          parts_used: data.parts_used || null,
-          technician: data.technician || null,
+          labor_hours: data.labor_hours ? parseFloat(data.labor_hours) : 0,
+          cost_amount: totalCost,
+          parts_used: partsUsedArray,
+          technician_name: data.technician_name || null,
         });
       if (error) throw error;
     },
@@ -154,12 +167,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       setUpdateForm({
         update_type: "progress",
+        title: "",
         description: "",
         labor_hours: "",
         labor_cost: "",
         parts_cost: "",
         parts_used: "",
-        technician: "",
+        technician_name: "",
       });
     },
     onError: (err) => {
@@ -379,6 +393,14 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   </Select>
                 </div>
                 <div>
+                  <Label>Title *</Label>
+                  <Input
+                    value={updateForm.title}
+                    onChange={(e) => setUpdateForm((p) => ({ ...p, title: e.target.value }))}
+                    placeholder="Brief title for this update"
+                  />
+                </div>
+                <div>
                   <Label>Description *</Label>
                   <Textarea
                     rows={3}
@@ -388,10 +410,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   />
                 </div>
                 <div>
-                  <Label>Technician</Label>
+                  <Label>Technician Name</Label>
                   <Input
-                    value={updateForm.technician}
-                    onChange={(e) => setUpdateForm((p) => ({ ...p, technician: e.target.value }))}
+                    value={updateForm.technician_name}
+                    onChange={(e) => setUpdateForm((p) => ({ ...p, technician_name: e.target.value }))}
                     placeholder="Who performed this work?"
                   />
                 </div>
@@ -444,6 +466,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   <Button
                     onClick={() => {
                       console.log("Add Update button clicked", updateForm); // Debug log
+                      if (!updateForm.title.trim()) {
+                        toast.error("Title is required");
+                        return;
+                      }
                       if (!updateForm.description.trim()) {
                         toast.error("Description is required");
                         return;
@@ -476,23 +502,26 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                               {new Date(update.created_at).toLocaleDateString()}
                             </div>
                           </div>
-                          <div className="text-sm mb-2">{update.description}</div>
-                          {update.technician && (
-                            <div className="text-xs text-muted-foreground mb-1">
-                              Technician: {update.technician}
-                            </div>
-                          )}
-                          <div className="flex gap-4 text-xs text-muted-foreground">
-                            {update.labor_hours > 0 && (
-                              <span>Labor: {update.labor_hours}h</span>
-                            )}
-                            {update.labor_cost > 0 && (
-                              <span>Labor Cost: ${update.labor_cost}</span>
-                            )}
-                            {update.parts_cost > 0 && (
-                              <span>Parts: ${update.parts_cost}</span>
-                            )}
-                          </div>
+                           {update.title && (
+                             <div className="text-sm font-medium mb-1">{update.title}</div>
+                           )}
+                           <div className="text-sm mb-2">{update.description}</div>
+                           {update.technician_name && (
+                             <div className="text-xs text-muted-foreground mb-1">
+                               Technician: {update.technician_name}
+                             </div>
+                           )}
+                           <div className="flex gap-4 text-xs text-muted-foreground">
+                             {update.labor_hours > 0 && (
+                               <span>Labor: {update.labor_hours}h</span>
+                             )}
+                             {update.cost_amount > 0 && (
+                               <span>Total Cost: ${update.cost_amount}</span>
+                             )}
+                             {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
+                               <span>Parts: {update.parts_used.join(', ')}</span>
+                             )}
+                           </div>
                         </div>
                       ))
                     )}
