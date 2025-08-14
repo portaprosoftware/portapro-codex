@@ -715,13 +715,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
-              <img 
-                src="/lovable-uploads/1a960605-955c-4b3e-8148-c9ba2e7de748.png" 
-                alt="Fleet vehicle tracking interface showing delivery truck details including make, model, type, and availability status"
-                className="w-full h-auto rounded-lg"
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/1a960605-955c-4b3e-8148-c9ba2e7de748.png" 
+              alt="Fleet vehicle tracking interface showing delivery truck details including make, model, type, and availability status"
+              className="w-full h-auto rounded-lg"
+            />
           </div>
 
           {/* Vehicle Ops Toolkit */}
