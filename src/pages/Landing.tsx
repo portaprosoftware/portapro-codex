@@ -88,8 +88,8 @@ const managementFeatures = [{
   icon: Users,
   href: "#team-management"
 }, {
-  title: "Customer Accounts & Portals",
-  description: "Home base for customer data, history, unique contacts (billing, on-site), and full portal navigation.",
+  title: "Accounts & Portals",
+  description: "Accounts: Internal customer account management for your team. Portals: Self-service portals for your customers.",
   icon: Users,
   href: "#customer-portal"
 }, {

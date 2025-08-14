@@ -34,10 +34,10 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-            Customer Accounts & Portals
+            Accounts & Portals
           </h2>
           <p className="text-muted-foreground">
-            Comprehensive internal account management and customer-facing portals for complete relationship oversight and self-service capabilities.
+            <strong>Accounts:</strong> Internal customer account management for your team. <strong>Portals:</strong> Self-service portals for your customers.
           </p>
         </header>
 
