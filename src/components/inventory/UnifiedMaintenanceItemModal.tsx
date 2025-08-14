@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
 
 interface StorageLocation { id: string; name: string }
 
@@ -43,6 +43,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 }) => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("details");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [updateToDelete, setUpdateToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     maintenance_reason: "",
@@ -181,6 +183,39 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       toast.error("Failed to add update");
     },
   });
+
+  // Delete update mutation
+  const deleteUpdateMutation = useMutation({
+    mutationFn: async (updateId: string) => {
+      const { error } = await supabase
+        .from("maintenance_updates")
+        .delete()
+        .eq("id", updateId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Maintenance update deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
+      setDeleteConfirmOpen(false);
+      setUpdateToDelete(null);
+    },
+    onError: (error) => {
+      console.error("Error deleting maintenance update:", error);
+      toast.error("Failed to delete maintenance update");
+    },
+  });
+
+  const handleDeleteUpdate = (updateId: string) => {
+    setUpdateToDelete(updateId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (updateToDelete) {
+      deleteUpdateMutation.mutate(updateToDelete);
+    }
+  };
 
   const handleItemSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -493,15 +528,23 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       <div className="text-sm text-muted-foreground text-center py-8">
                         No maintenance updates yet
                       </div>
-                    ) : (
-                      (updates || []).map((update: any) => (
-                        <div key={update.id} className="border rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <Badge variant="outline">{update.update_type}</Badge>
-                            <div className="text-xs text-muted-foreground">
-                              {new Date(update.created_at).toLocaleDateString()}
-                            </div>
-                          </div>
+                     ) : (
+                       (updates || []).map((update: any) => (
+                         <div key={update.id} className="border rounded-lg p-3 relative">
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => handleDeleteUpdate(update.id)}
+                             className="absolute top-2 right-2 h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                           >
+                             <Trash2 className="h-3 w-3" />
+                           </Button>
+                           <div className="flex items-center justify-between mb-2 pr-8">
+                             <Badge variant="outline">{update.update_type}</Badge>
+                             <div className="text-xs text-muted-foreground">
+                               {new Date(update.created_at).toLocaleDateString()}
+                             </div>
+                           </div>
                            {update.title && (
                              <div className="text-sm font-medium mb-1">{update.title}</div>
                            )}
@@ -532,6 +575,18 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </Tabs>
         </div>
       </DialogContent>
+      
+      <DeleteConfirmationDialog
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setUpdateToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Maintenance Update"
+        description="Are you sure you want to delete this maintenance update? This action cannot be undone."
+        isLoading={deleteUpdateMutation.isPending}
+      />
     </Dialog>
   );
 };
