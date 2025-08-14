@@ -68,16 +68,6 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
           </aside>
         </div>
-
-        {/* CTA Block */}
-        <div className="mt-12 text-center bg-white rounded-2xl border p-8 max-w-2xl mx-auto shadow-md">
-          <h3 className="text-2xl font-bold text-foreground mb-2">
-            Ready to ditch the paperwork?
-          </h3>
-          <p className="text-muted-foreground text-lg">
-            Start your free 14-day trial of PortaPro today.
-          </p>
-        </div>
       </div>
     </section>
   );

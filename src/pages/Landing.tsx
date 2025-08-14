@@ -496,6 +496,13 @@ export const Landing: React.FC = () => {
 
               
             </div>
+            
+            {/* CTA Text */}
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground">
+                Ready to ditch the paperwork? Start your free 14-day trial of PortaPro today.
+              </p>
+            </div>
           </div>
         </div>
       </section>
