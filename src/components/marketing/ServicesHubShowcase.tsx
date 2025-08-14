@@ -86,36 +86,6 @@ export const ServicesHubShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* C) Build a template (intuitive & fast) */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Build a new template — intuitive & fast</h3>
-                <Sparkles className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="rounded-xl border bg-background p-4 space-y-3">
-                  <div className="text-sm font-medium text-foreground">Add section</div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <button className="rounded-lg bg-primary/10 text-primary px-3 py-2 inline-flex items-center gap-2"><ClipboardList className="w-4 h-4" /> Checklist</button>
-                    <button className="rounded-lg bg-primary/10 text-primary px-3 py-2 inline-flex items-center gap-2"><Camera className="w-4 h-4" /> Photos</button>
-                    <button className="rounded-lg bg-primary/10 text-primary px-3 py-2 inline-flex items-center gap-2"><Signature className="w-4 h-4" /> Signatures</button>
-                    <button className="rounded-lg bg-primary/10 text-primary px-3 py-2 inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Notes</button>
-                  </div>
-                </div>
-                <div className="rounded-xl border bg-background p-4">
-                  <div className="text-sm font-medium text-foreground mb-2">Live preview</div>
-                  <div className="rounded-lg border bg-card p-3 space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-foreground"><ClipboardList className="w-4 h-4" /> Cleaning Checklist</div>
-                    <div className="flex items-center gap-2 text-foreground"><Camera className="w-4 h-4" /> Add up to 6 photos</div>
-                    <div className="flex items-center gap-2 text-foreground"><Signature className="w-4 h-4" /> Customer signature</div>
-                  </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <Button size="sm" className="bg-gradient-blue text-white">Preview & Save</Button>
-                    <span className="text-xs rounded-md bg-muted px-2 py-1 text-muted-foreground">Versioned updates</span>
-                  </div>
-                </div>
-              </div>
-            </article>
 
             {/* D) Driver completes in the field */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
@@ -143,13 +113,19 @@ export const ServicesHubShowcase: React.FC = () => {
 
           {/* Right column: KPIs + highlights + CTAs */}
           <aside className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <StatCard title="Reports submitted/mo" value={2800} icon={ClipboardList} animateValue gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Avg submission time" value="3m 40s" icon={Route} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Photo coverage" value="96%" icon={Camera} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Signatures captured" value="99.2%" icon={Signature} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Offline jobs synced" value="100%" icon={CloudOff} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="First‑time pass rate" value="98%" icon={CheckCircle} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
+            <div className="rounded-2xl border bg-card shadow-md p-6">
+              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
+              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm">Video player placeholder</p>
+                  <p className="text-xs mt-1">Upload your mp4 video here</p>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
