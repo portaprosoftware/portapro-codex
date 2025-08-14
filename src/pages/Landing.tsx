@@ -413,6 +413,20 @@ export const Landing: React.FC = () => {
               <div className="space-y-6 mt-8">
                 <div className="flex items-center gap-6 flex-wrap opacity-90">
                   <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                  <span className="text-white/60">•</span>
+                  <button 
+                    onClick={() => {
+                      if (isMobile) {
+                        setFeaturesSheetOpen(true);
+                      } else {
+                        featuresMegaMenuRef.current?.triggerOpen();
+                      }
+                    }}
+                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-colors underline hover:no-underline"
+                  >
+                    <Eye className="w-4 h-4" />
+                    Explore All Features
+                  </button>
                 </div>
                 
                 {/* 3 Badges - REMOVED */}
@@ -486,7 +500,7 @@ export const Landing: React.FC = () => {
             {/* CTA Text */}
             <div className="text-center mt-6">
               <p className="text-sm text-muted-foreground">
-                Ready to ditch the paperwork? Start your free 14-day trial of PortaPro today.
+                <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
               </p>
             </div>
           </div>
