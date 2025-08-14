@@ -56,8 +56,9 @@ export const AIPanelScanningShowcase: React.FC = () => {
         {/* After - Clean extracted data */}
         <div className="space-y-4">
           <h3 className="text-xl font-semibold text-foreground text-center">2. Get clean data</h3>
-          <div className="aspect-square rounded-2xl border bg-card p-6 shadow-lg">
-            <div className="space-y-4">
+          <div className="space-y-4">
+            {/* Data extraction card */}
+            <div className="rounded-2xl border bg-card p-6 shadow-lg">
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                   <span className="text-xs sm:text-sm text-muted-foreground">Manufacturer</span>
@@ -81,12 +82,35 @@ export const AIPanelScanningShowcase: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-center pt-2">
+              <div className="text-center pt-3">
                 <span className="inline-flex items-center gap-2 text-sm text-primary">
                   <CheckCircle className="w-5 h-5" />
                   Linked to fleet automatically
                 </span>
               </div>
+            </div>
+
+            {/* What teams love card */}
+            <div className="rounded-2xl border bg-card p-6 shadow-lg">
+              <div className="text-sm font-semibold text-foreground mb-3">What teams love</div>
+              <ul className="text-sm text-muted-foreground space-y-2">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
+                  No manual typing or data entry
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
+                  Works in any lighting condition
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
+                  Instant inventory updates
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
+                  Reads even weathered panels
+                </li>
+              </ul>
             </div>
           </div>
         </div>
