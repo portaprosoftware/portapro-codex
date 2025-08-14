@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { X, Plus } from 'lucide-react';
 import { JobWizardProvider, useJobWizard } from '@/contexts/JobWizardContext';
 import { WizardNavigation } from './WizardNavigation';
@@ -177,22 +177,22 @@ function WizardContent({ onClose }: { onClose: () => void }) {
   const isFirstStep = state.currentStep === 1;
 
   return (
-    <Card className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
-        <CardTitle className="text-xl font-semibold flex items-center gap-2">
+    <div className="w-full h-[85vh] overflow-hidden flex flex-col">
+      <DrawerHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
+        <DrawerTitle className="text-xl font-semibold flex items-center gap-2">
           <Plus className="h-5 w-5" />
           Create New Job
-        </CardTitle>
-      </CardHeader>
+        </DrawerTitle>
+      </DrawerHeader>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="p-4 border-b">
           <WizardNavigation />
         </div>
 
-        <CardContent className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {renderCurrentStep()}
-        </CardContent>
+        </div>
 
         <div className="p-4 border-t bg-muted/20 flex justify-between">
           <Button
@@ -227,7 +227,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -237,15 +237,15 @@ export function NewJobWizard({ open, onOpenChange }: NewJobWizardProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0" aria-describedby="new-job-wizard-description">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="p-0" aria-describedby="new-job-wizard-description">
         <div id="new-job-wizard-description" className="sr-only">
           Create a new job by following the wizard steps
         </div>
         <JobWizardProvider>
           <WizardContent onClose={handleClose} />
         </JobWizardProvider>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }
