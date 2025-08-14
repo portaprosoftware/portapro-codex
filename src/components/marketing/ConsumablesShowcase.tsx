@@ -57,21 +57,19 @@ export const ConsumablesShowcase: React.FC = () => {
 
           {/* Right column: Video + What customers love */}
           <aside className="space-y-6">
-            <div className="rounded-2xl border bg-card shadow-md p-6">
-              <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
-                __html: `
-                  <style>
-                    wistia-player[media-id='6qvo6ezwgi']:not(:defined) { 
-                      background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/6qvo6ezwgi/swatch'); 
-                      display: block; 
-                      filter: blur(5px); 
-                      padding-top:51.04%; 
-                    }
-                  </style>
-                  <wistia-player media-id="6qvo6ezwgi" aspect="1.9591836734693877"></wistia-player>
-                `
-              }} />
-            </div>
+            <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
+              __html: `
+                <style>
+                  wistia-player[media-id='6qvo6ezwgi']:not(:defined) { 
+                    background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/6qvo6ezwgi/swatch'); 
+                    display: block; 
+                    filter: blur(5px); 
+                    padding-top:51.04%; 
+                  }
+                </style>
+                <wistia-player media-id="6qvo6ezwgi" aspect="1.9591836734693877"></wistia-player>
+              `
+            }} />
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">What customers love</div>
