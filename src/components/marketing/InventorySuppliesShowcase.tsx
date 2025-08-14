@@ -95,37 +95,37 @@ export function InventorySuppliesShowcase() {
 
             {/* Panel C — Track Units with QR Codes */}
             <div className="rounded-2xl bg-white border border-border animate-enter">
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <QrCode className="w-4 h-4 text-primary" /> Track Units with QR Codes Automatically
+                <div className="p-3">
+                  <div className="flex items-center gap-2 text-xs font-medium">
+                    <QrCode className="w-3 h-3 text-primary" /> Track Units with QR Codes Automatically
                   </div>
 
-                  <div className="mt-4 grid sm:grid-cols-2 gap-4 items-center">
-                     <div className="flex flex-col items-center space-y-3">
-                       <div className="w-3/4">
+                  <div className="mt-3 grid sm:grid-cols-2 gap-3 items-center">
+                     <div className="flex flex-col items-center space-y-2">
+                       <div className="w-2/3">
                          <AspectRatio ratio={1/1}>
                            <img
                              src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
                              alt="QR code for Standard Unit 1232"
-                             className="w-full h-full object-cover rounded-xl border border-border"
+                             className="w-full h-full object-cover rounded-lg border border-border"
                              loading="lazy"
                              decoding="async"
                            />
                          </AspectRatio>
                        </div>
-                       <div className="text-sm font-bold text-foreground">1232 • Standard Unit</div>
+                       <div className="text-xs font-bold text-foreground">1232 • Standard Unit</div>
                      </div>
 
-                    <div className="rounded-xl border border-border p-3">
-                      <div className="text-sm font-medium">QR Label</div>
-                       <div className="mt-2 rounded-lg border border-dashed p-3 text-sm">
+                    <div className="rounded-lg border border-border p-2">
+                      <div className="text-xs font-medium">QR Label</div>
+                       <div className="mt-2 rounded-md border border-dashed p-2 text-xs">
                          1232 • Standard Unit
                        </div>
-                      <div className="mt-3 flex gap-2">
-                        <Button size="sm" className="bg-gradient-blue text-white">Generate</Button>
-                        <Button size="sm" variant="outline">Print</Button>
+                      <div className="mt-2 flex gap-2">
+                        <Button size="sm" className="bg-gradient-blue text-white text-xs px-2 py-1">Generate</Button>
+                        <Button size="sm" variant="outline" className="text-xs px-2 py-1">Print</Button>
                       </div>
-                       <div className="mt-3 text-xs text-muted-foreground">
+                       <div className="mt-2 text-xs text-muted-foreground">
                          Works offline — syncs later. Instant attach to units & jobs.
                        </div>
                     </div>
