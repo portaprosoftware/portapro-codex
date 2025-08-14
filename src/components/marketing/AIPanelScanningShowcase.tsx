@@ -4,16 +4,15 @@ import { Camera, Eye, CheckCircle } from 'lucide-react';
 
 export const AIPanelScanningShowcase: React.FC = () => {
   const kpis = [
-    { title: 'Scans this month', value: 2341, icon: Camera },
+    { title: 'Scans this month', value: 328, icon: Camera },
     { title: 'Success rate', value: '98%', icon: Eye },
-    { title: 'Time saved/scan', value: '45 sec', icon: CheckCircle },
   ];
 
   const reads = [
     { title: 'Tool Numbers', subtitle: '(T-20788-1A)' },
     { title: 'Vendor IDs', subtitle: '(ABC Manufacturing)' },
-    { title: 'Serial numbers', subtitle: null },
-    { title: 'Manufacture dates', subtitle: null },
+    { title: 'Plastic type', subtitle: null },
+    { title: 'Manufacturers & dates', subtitle: null },
   ];
 
   return (
@@ -25,7 +24,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
       </header>
 
       {/* KPIs */}
-      <div className="grid sm:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6">
         {kpis.map((k, i) => (
           <StatCard
             key={i}
@@ -95,7 +94,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
 
       {/* What it reads */}
       <div className="text-center space-y-6">
-        <h3 className="text-xl font-semibold text-foreground">What it reads</h3>
+        <h3 className="text-xl font-semibold text-foreground">What the smart panel lens scans:</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {reads.map((item, idx) => (
             <div key={idx} className="flex items-center gap-3 p-4 rounded-xl border bg-card hover-scale">
