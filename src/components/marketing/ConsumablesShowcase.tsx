@@ -31,19 +31,13 @@ export const ConsumablesShowcase: React.FC = () => {
               </div>
 
               {/* Recipe defaults */}
-              <div className="rounded-xl border bg-background p-4">
+              <div className="rounded-xl border bg-background p-3">
                 <div className="text-sm font-medium mb-2 text-foreground">Service recipe defaults</div>
                 <ul className="text-sm space-y-2">
                   <li className="flex items-center gap-2"><Package className="w-4 h-4 text-muted-foreground" /> Toilet Paper — 2 rolls</li>
                   <li className="flex items-center gap-2"><Droplet className="w-4 h-4 text-muted-foreground" /> Hand Sanitizer — 10 mL</li>
                   <li className="flex items-center gap-2"><Droplet className="w-4 h-4 text-muted-foreground" /> Deodorizer — 30 mL</li>
                 </ul>
-
-                <div className="mt-3 grid sm:grid-cols-3 gap-2 text-xs">
-                  <div className="rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold px-3 py-2 shadow-md">Included: Hidden on invoice; usage tracked</div>
-                  <div className="rounded-lg bg-secondary/10 text-secondary-foreground px-3 py-2">Itemized: Per unit pricing; tech can adjust</div>
-                  <div className="rounded-lg bg-accent/10 text-accent-foreground px-3 py-2">Kit: Flat fee + auto overage</div>
-                </div>
               </div>
             </article>
 
@@ -106,15 +100,21 @@ export const ConsumablesShowcase: React.FC = () => {
             </article>
           </div>
 
-          {/* Right column: KPIs + highlights */}
+          {/* Right column: Video + highlights */}
           <aside className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <StatCard title="Overages captured/mo" value={140} icon={Package} animateValue gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Itemized accuracy" value="98.5%" icon={Calculator} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Avg margin" value="32%" icon={DollarSign} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Kits adoption" value="65%" icon={ClipboardList} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Time saved/week" value="4h" icon={Clock} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
-              <StatCard title="Ledger cost tracked" value="100%" icon={CheckCircle} gradientFrom="hsl(var(--primary))" gradientTo="hsl(var(--primary))" iconBg="hsl(var(--primary))" />
+            <div className="rounded-2xl border bg-card shadow-md p-6">
+              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
+              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm">Video player placeholder</p>
+                  <p className="text-xs mt-1">Upload your mp4 video here</p>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
