@@ -295,16 +295,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 <Settings className="w-4 h-4 mr-2" />
                 Adjust Stock
               </Button>
-              {!isConsistent && (
-                <Button 
-                  variant="outline" 
-                  className="text-yellow-600 border-yellow-600 hover:bg-yellow-50"
-                  onClick={() => syncStockTotals()}
-                  disabled={isSyncing}
-                >
-                  {isSyncing ? "Syncing..." : "Fix Data"}
-                </Button>
-              )}
             </div>
         </div>
 
