@@ -445,40 +445,36 @@ export const Landing: React.FC = () => {
         <div className="container mx-auto max-w-6xl px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Combined Card - Left Side */}
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                Why operators choose PortaPro
-              </h2>
-              
+            <div>
               <div className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-8 shadow-sm">
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <ClipboardList className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
+                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
+                      <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">Industry-Focused</h3>
-                      <p className="text-muted-foreground">Built specifically for portable toilet rentals.</p>
+                      <h3 className="text-sm font-semibold text-foreground mb-2">Industry-Focused</h3>
+                      <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <DollarSign className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
+                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">Affordable Cost</h3>
-                      <p className="text-muted-foreground">One plan. Every feature. No hidden fees.</p>
+                      <h3 className="text-sm font-semibold text-foreground mb-2">Affordable Cost</h3>
+                      <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
+                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
+                      <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">Friendly Support</h3>
-                      <p className="text-muted-foreground">Complete assistance whenever you need it.</p>
+                      <h3 className="text-sm font-semibold text-foreground mb-2">Friendly Support</h3>
+                      <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
                     </div>
                   </div>
                 </div>
