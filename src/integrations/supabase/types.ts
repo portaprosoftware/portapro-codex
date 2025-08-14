@@ -5404,7 +5404,6 @@ export type Database = {
           pricing_method: string | null
           stock_in_service: number
           stock_total: number
-          supports_padlock: boolean | null
           track_inventory: boolean
           updated_at: string
           variations_allowed: boolean
@@ -5432,7 +5431,6 @@ export type Database = {
           pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
-          supports_padlock?: boolean | null
           track_inventory?: boolean
           updated_at?: string
           variations_allowed?: boolean
@@ -5460,7 +5458,6 @@ export type Database = {
           pricing_method?: string | null
           stock_in_service?: number
           stock_total?: number
-          supports_padlock?: boolean | null
           track_inventory?: boolean
           updated_at?: string
           variations_allowed?: boolean

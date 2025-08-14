@@ -6,7 +6,7 @@ import { ProductListItem } from "./ProductListItem";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductGridProps {
-  filter: "all" | "in_stock" | "low_stock" | "out_of_stock" | "padlocked" | "unlocked" | "overdue_padlocked";
+  filter: "all" | "in_stock" | "low_stock" | "out_of_stock";
   viewType: "grid" | "list";
   hideInactive: boolean;
   searchQuery: string;
@@ -162,17 +162,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             const isLowStock = availableCount <= lowStockThreshold && availableCount > 0;
             const isOutOfStock = availableCount <= 0;
 
-            // Get padlock status from product items
-            const productItems = product.product_items || [];
-            const padlockedItems = productItems.filter((item: any) => item.currently_padlocked);
-            const unlockedItems = productItems.filter((item: any) => !item.currently_padlocked);
-            const overdueItems = productItems.filter((item: any) => {
-              if (!item.currently_padlocked || !item.last_padlock_timestamp) return false;
-              const padlockDate = new Date(item.last_padlock_timestamp);
-              const daysSince = (Date.now() - padlockDate.getTime()) / (1000 * 60 * 60 * 24);
-              return daysSince > 7; // Consider overdue after 7 days
-            });
-
             switch (filter) {
               case "in_stock":
                 return availableCount > 0;
@@ -180,12 +169,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 return isLowStock && !isOutOfStock;
               case "out_of_stock":
                 return isOutOfStock;
-              case "padlocked":
-                return padlockedItems.length > 0;
-              case "unlocked":
-                return unlockedItems.length > 0;
-              case "overdue_padlocked":
-                return overdueItems.length > 0;
               default:
                 return true;
             }
