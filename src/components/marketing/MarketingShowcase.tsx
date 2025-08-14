@@ -36,19 +36,19 @@ export const MarketingShowcase: React.FC = () => {
           {/* Left visuals: template builder → what teams love → schedule & send → segments */}
           <div className="space-y-6">
             {/* A) AI Assistant */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">AI Assistant</h3>
-                <Sparkles className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="rounded-xl border bg-background p-1">
-                <img 
-                  src="/lovable-uploads/eeaa3c75-f275-4bcd-8554-d5212130480b.png" 
-                  alt="AI Assistant interface showing email type selection, tone options including Professional, Friendly, Urgent, and Casual, with a Generate with AI button"
-                  className="w-full h-auto rounded-lg"
-                />
-              </div>
-            </article>
+            <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
+              __html: `
+                <style>
+                  wistia-player[media-id='a2finp2l33']:not(:defined) { 
+                    background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); 
+                    display: block; 
+                    filter: blur(5px); 
+                    padding-top:78.54%; 
+                  }
+                </style>
+                <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
+              `
+            }} />
 
 
             {/* C) Schedule & Send - moved up */}
