@@ -757,7 +757,7 @@ export const Landing: React.FC = () => {
 
           {/* Maintenance Notifications & Scheduling */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+            <div className="space-y-6 order-1 lg:order-2">
               <h3 className="text-2xl font-bold text-foreground">Maintenance Notifications & Scheduling</h3>
               <p className="text-lg text-muted-foreground">Never miss a service with automated alerts and a clean calendar view.</p>
               <ul className="space-y-3">
@@ -775,7 +775,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
               <AutoCarousel media={fleetNotificationsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
@@ -832,7 +832,7 @@ export const Landing: React.FC = () => {
 
           {/* Transport & Spill Compliance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+            <div className="space-y-6 order-1 lg:order-2">
               <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
               <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
               <ul className="space-y-3">
@@ -850,7 +850,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
               <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
@@ -939,7 +939,7 @@ export const Landing: React.FC = () => {
 
           {/* Scheduling & Availability */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+            <div className="space-y-6 order-2 lg:order-1">
               <h3 className="text-2xl font-bold text-foreground">Scheduling & Availability</h3>
               <p className="text-lg text-muted-foreground">Plan faster with draggable shifts and clear daily rollups.</p>
               <ul className="space-y-3">
@@ -957,7 +957,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
               <AutoCarousel media={teamSchedulingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
@@ -996,7 +996,7 @@ export const Landing: React.FC = () => {
 
           {/* Training & Compliance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 order-1 lg:order-2">
               <h3 className="text-2xl font-bold text-foreground">Training & Compliance</h3>
               <p className="text-lg text-muted-foreground">Keep licenses, medical cards, and trainings up to date.</p>
               <ul className="space-y-3">
@@ -1014,7 +1014,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
               <AutoCarousel media={teamTrainingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
