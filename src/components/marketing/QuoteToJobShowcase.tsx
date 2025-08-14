@@ -16,63 +16,8 @@ export const QuoteToJobShowcase: React.FC = () => {
       </header>
 
       <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start">
-        {/* Left: Job card + KPIs and highlights */}
+        {/* Left: Highlights only */}
         <aside className="space-y-6">
-          {/* Job Created moved here */}
-          <AspectRatio ratio={4/3}>
-            <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">
-              <div className="border-b px-4 py-2 bg-muted/40">
-                <h4 className="text-sm font-semibold text-foreground">Job Created from Accepted Quote</h4>
-              </div>
-              <div className="p-4 space-y-3 text-sm">
-                {[ 
-                  ['Job #', 'JB-2984'],
-                  ['Customer', 'ACME Construction'],
-                  ['Location', '1250 Market St, Denver CO'],
-                  ['Delivery', 'Mon Jan 8'],
-                  ['Pickup', 'Fri Jan 12'],
-                  ['Units', '3 Standard, 1 ADA, 1 Handwash'],
-                  ['Services', 'Wed, Fri'],
-                ].map(([k,v]) => (
-                  <div key={k} className="flex items-center justify-between">
-                    <span className="text-muted-foreground">{k}</span>
-                    <span className="font-medium text-foreground">{v}</span>
-                  </div>
-                ))}
-
-                <div className="grid grid-cols-2 gap-2 pt-2">
-                  {[
-                    'Assigned: Driver M. Lopez',
-                    'Vehicle: Truck 12',
-                    'Route: 4',
-                    'Initial invoice created',
-                  ].map((t) => (
-                    <div key={t} className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
-                      <CheckCircle className="w-4 h-4 text-primary" />
-                      <span className="text-xs text-foreground">{t}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </AspectRatio>
-
-          {/* Video placeholder */}
-          <div className="rounded-2xl border bg-card shadow-md p-6">
-            <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
-            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <p className="text-sm">Video player placeholder</p>
-                <p className="text-xs mt-1">Upload your mp4 video here</p>
-              </div>
-            </div>
-          </div>
-
           <ul className="space-y-3" aria-label="Quote-to-job highlights">
             {[
               'Itemized quotes with units, delivery, services, and taxes',
