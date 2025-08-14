@@ -864,7 +864,11 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src="/lovable-uploads/a8858ace-9364-4ad8-9663-00c799a10876.png" 
+                alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
 
