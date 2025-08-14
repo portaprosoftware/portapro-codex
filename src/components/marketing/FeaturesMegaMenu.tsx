@@ -28,7 +28,7 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-gradient-to-b from-muted via-muted to-muted/70 border rounded-xl shadow-lg"
+        className="w-[820px] max-w-[88vw] p-4 md:p-6 bg-gradient-to-b from-muted via-muted to-muted/70 border rounded-xl shadow-lg z-50"
         align="start"
         sideOffset={8}
       >
