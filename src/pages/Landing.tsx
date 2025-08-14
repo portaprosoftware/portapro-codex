@@ -835,7 +835,11 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
-              <AutoCarousel media={driverAssignmentsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <img 
+                src="/lovable-uploads/04720576-aad2-4e93-a4e3-82df4ad358c3.png" 
+                alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </div>
 
