@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   storageLocations,
 }) => {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("details");
 
   const [formData, setFormData] = useState({
     maintenance_reason: "",
@@ -205,8 +207,16 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             </div>
           </div>
 
-          {/* Edit form */}
-          <form onSubmit={handleItemSave} className="space-y-5">
+          {/* Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">Unit Details</TabsTrigger>
+              <TabsTrigger value="update">Add Update</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="details" className="mt-6">
+              {/* Edit form */}
+              <form onSubmit={handleItemSave} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Maintenance Details */}
               <div className="bg-white border rounded-xl p-4">
@@ -335,19 +345,19 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               </div>
             </div>
 
-            {/* Save controls */}
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
-                {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
-          </form>
+                {/* Save controls */}
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
+                    {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+            </TabsContent>
 
-          <Separator />
-
-          {/* Inline Add Update & history */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <TabsContent value="update" className="mt-6">
+              {/* Add Update & history */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="bg-white border rounded-xl p-4">
               <h4 className="font-medium mb-3">Add Maintenance Update</h4>
               <div className="space-y-3">
@@ -434,47 +444,62 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   <Button
                     onClick={() => {
                       if (!updateForm.description.trim()) {
-                        toast.error("Please provide a description");
-                        return;
-                      }
-                      addUpdateMutation.mutate(updateForm);
-                    }}
-                    disabled={addUpdateMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    {addUpdateMutation.isPending ? "Adding..." : "Add Update"}
-                  </Button>
+                      toast.error("Description is required");
+                      return;
+                    }
+                    addUpdateMutation.mutate(updateForm);
+                  }}
+                  disabled={addUpdateMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {addUpdateMutation.isPending ? "Adding..." : "Add Update"}
+                </Button>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white border rounded-xl p-4">
-              <h4 className="font-medium mb-3">Recent Updates</h4>
-              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
-                {(updates || []).length === 0 ? (
-                  <div className="text-sm text-muted-foreground">No updates yet.</div>
-                ) : (
-                  (updates || []).map((u: any) => (
-                    <div key={u.id} className="border rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge variant="secondary" className="capitalize">{u.update_type}</Badge>
-                        <span className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleString()}</span>
+                {/* Recent updates timeline */}
+                <div className="bg-white border rounded-xl p-4">
+                  <h4 className="font-medium mb-3">Recent Updates</h4>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {(updates || []).length === 0 ? (
+                      <div className="text-sm text-muted-foreground text-center py-8">
+                        No maintenance updates yet
                       </div>
-                      <div className="text-sm mb-2">{u.description}</div>
-                      {(u.labor_hours || u.labor_cost || u.parts_cost || u.parts_used) && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-muted-foreground">
-                          {u.labor_hours && <div>Labor: {u.labor_hours}h</div>}
-                          {u.labor_cost && <div>Labor Cost: ${Number(u.labor_cost).toFixed(2)}</div>}
-                          {u.parts_cost && <div>Parts Cost: ${Number(u.parts_cost).toFixed(2)}</div>}
-                          {u.parts_used && <div className="md:col-span-2">Parts Used: {u.parts_used}</div>}
+                    ) : (
+                      (updates || []).map((update: any) => (
+                        <div key={update.id} className="border rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <Badge variant="outline">{update.update_type}</Badge>
+                            <div className="text-xs text-muted-foreground">
+                              {new Date(update.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="text-sm mb-2">{update.description}</div>
+                          {update.technician && (
+                            <div className="text-xs text-muted-foreground mb-1">
+                              Technician: {update.technician}
+                            </div>
+                          )}
+                          <div className="flex gap-4 text-xs text-muted-foreground">
+                            {update.labor_hours > 0 && (
+                              <span>Labor: {update.labor_hours}h</span>
+                            )}
+                            {update.labor_cost > 0 && (
+                              <span>Labor Cost: ${update.labor_cost}</span>
+                            )}
+                            {update.parts_cost > 0 && (
+                              <span>Parts: ${update.parts_cost}</span>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))
-                )}
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </DialogContent>
     </Dialog>
