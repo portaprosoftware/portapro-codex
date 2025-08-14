@@ -23,6 +23,12 @@ export function InventorySuppliesShowcase() {
             {/* Panel A — Unified Stock Modes */}
             <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="px-3 py-1 rounded-full bg-muted text-foreground">Bulk</span>
+                    <span className="px-3 py-1 rounded-full bg-muted/60 text-foreground">Individual</span>
+                    <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground">Hybrid</span>
+                  </div>
+
                   <div className="mt-4 grid md:grid-cols-3 gap-4">
                     {/* Bulk mock */}
                     <div className="rounded-xl border border-border p-3">
@@ -182,15 +188,6 @@ export function InventorySuppliesShowcase() {
 
           {/* Right: Benefits */}
           <aside className="space-y-6 animate-fade-in">
-            {/* Porta Potty Image - Top Right */}
-            <div className="flex justify-center">
-              <img 
-                src="/lovable-uploads/8ecdefcc-49fa-404b-98c0-0212f89aae23.png"
-                alt="Standard Porta Potty inventory card showing pricing and availability"
-                className="max-w-full h-auto rounded-2xl"
-              />
-            </div>
-
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
@@ -203,14 +200,6 @@ export function InventorySuppliesShowcase() {
               </ul>
             </div>
 
-            {/* Chart Image - Above Technical Facts */}
-            <div className="flex justify-center">
-              <img 
-                src="/lovable-uploads/6fb9ebfb-71ef-45a0-a0de-50d0966319c4.png"
-                alt="Inventory stock chart showing available individual, bulk pool, and maintenance status"
-                className="max-w-full h-auto rounded-2xl"
-              />
-            </div>
 
             <div className="rounded-2xl border border-border p-5">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Technical Facts</h4>
