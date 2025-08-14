@@ -110,7 +110,7 @@ const helpSections: HelpSection[] = [
       },
       {
         id: 'adding-units',
-        title: '3.2. Adding Individual Units',
+        title: '3.2. Adding Tracked Units',
         steps: [
           'Click Inventory → Units.',
           'Click "Add Unit".',

@@ -354,7 +354,7 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                       <TableHead className="w-24">Reserved (Accepted)</TableHead>
                       <TableHead className="w-24">Reserved (Pending)</TableHead>
                       <TableHead className="w-24">Available</TableHead>
-                       <TableHead className="w-48">Quantity & Individual Units</TableHead>
+                       <TableHead className="w-48">Quantity & Tracked Units</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -397,7 +397,7 @@ export const InventoryConsumablesStep: React.FC<InventoryConsumablesStepProps> =
                               {selectedQty > 0 && (
                                 <div className="border rounded-lg p-3 bg-muted/30 w-full">
                                   <div className="text-xs text-muted-foreground mb-2">
-                                    Specify individual units (optional):
+                                    Specify tracked units (optional):
                                   </div>
                                   <div className="space-y-2 max-h-32 overflow-y-auto">
                                     {individualUnits

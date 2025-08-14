@@ -256,7 +256,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600 flex items-center gap-1">
                     <Package className="w-3 h-3" />
-                    Individual Units
+                    Tracked Units
                   </span>
                   <span className="font-medium">{quickStats?.totalItems || 0}</span>
                 </div>

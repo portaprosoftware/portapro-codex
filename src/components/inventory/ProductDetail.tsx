@@ -140,7 +140,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           </TabsTrigger>
           <TabsTrigger value="units" className="flex items-center gap-2 flex-wrap">
             <QrCode className="w-4 h-4 flex-shrink-0" />
-            <span className="break-words">Individual Units</span>
+            <span className="break-words">Tracked Units</span>
             {individualUnitsCount !== undefined && (
               <Badge 
                 className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800"

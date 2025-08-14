@@ -151,7 +151,7 @@ export const CodeCategoriesView: React.FC = () => {
               <div className="text-sm text-muted-foreground">
                 <p className="mb-2">
                   <strong>How ID Categories Work:</strong> Each prefix range (1000-1999, 2000-2999, etc.) can have multiple category names. 
-                  New individual units automatically get sequential numbers within their category (e.g., 1001, 1002, 1003...).
+                  New tracked units automatically get sequential numbers within their category (e.g., 1001, 1002, 1003...).
                 </p>
                 <p className="mb-2">
                   Categories created here can be assigned to product types in each product's overview tab for organized inventory management.
@@ -293,7 +293,7 @@ export const CodeCategoriesView: React.FC = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Category</AlertDialogTitle>
               <AlertDialogDescription>
-                Deleting the "{categoryToDelete?.name}" category will remove it from the system. This does not affect any existing ID numbers for individual units that have already been assigned, but this category will no longer be available for newly created individual units.
+                Deleting the "{categoryToDelete?.name}" category will remove it from the system. This does not affect any existing ID numbers for tracked units that have already been assigned, but this category will no longer be available for newly created tracked units.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

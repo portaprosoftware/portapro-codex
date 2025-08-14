@@ -520,7 +520,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
         {(!items || items.length === 0) && (
           <div className="p-8 text-center text-gray-500">
-            No individual units found. Create your first tracked item to get started.
+            No tracked units found. Create your first tracked item to get started.
           </div>
         )}
       </div>

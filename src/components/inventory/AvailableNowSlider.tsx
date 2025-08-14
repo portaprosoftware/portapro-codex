@@ -67,7 +67,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
-            Individual Units Overview
+            Tracked Units Overview
           </SheetTitle>
           <SheetDescription>
             View all products and their individual tracked units with detailed information
@@ -96,7 +96,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">
-                          Total Stock: {product.stock_total} | Individual Units: {product.items.length}
+                          Total Stock: {product.stock_total} | Tracked Units: {product.items.length}
                         </p>
                       </div>
                     </div>
@@ -173,7 +173,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
           {!isLoading && productsWithItems.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p>No individual units found</p>
+              <p>No tracked units found</p>
             </div>
           )}
         </div>
