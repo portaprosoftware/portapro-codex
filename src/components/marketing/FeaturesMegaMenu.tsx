@@ -50,8 +50,8 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
                       aria-label={`${item.label} — ${item.description}`}
                       onClick={() => setOpen(false)} // Close dropdown when item is clicked
                     >
-                      <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg">
-                        <item.icon className="h-5 w-5 text-white" strokeWidth={1.75} aria-hidden="true" />
+                      <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <item.icon className="h-5 w-5" aria-hidden="true" />
                       </span>
                       <span className="min-w-0">
                         <span className="flex items-center gap-2">
