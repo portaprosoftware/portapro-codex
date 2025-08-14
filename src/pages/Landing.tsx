@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -422,9 +422,9 @@ export const Landing: React.FC = () => {
                         featuresMegaMenuRef.current?.triggerOpen();
                       }
                     }}
-                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-colors border border-white/30 rounded-md px-2 py-1 hover:border-white/50"
+                    className="flex items-center gap-2 text-white/80 text-sm hover:text-white transition-all duration-200 border border-white/30 rounded-md px-2 py-1 hover:border-white/50"
                   >
-                    <Eye className="w-4 h-4" />
+                    <Compass className="w-4 h-4 transition-transform duration-200 hover:scale-110 hover:rotate-12" />
                     Explore All Features
                   </button>
                 </div>
