@@ -39,11 +39,14 @@ export const ConsumablesShowcase: React.FC = () => {
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Set billing at job creation: Included, Itemized actuals, or Kit fee (+ overage)</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Pre-built "recipes" per service; techs can adjust in the field</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Cost-plus pricing based on moving average cost</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Works offline — usage syncs later</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Any unit type: per roll, mL, bottle, custom</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> "Scan to add" for fast, error-free logging</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Any unit type of measurement: per case, gallon, etc and custom</li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary mt-0.5" /> 
+                  <div>
+                    "Scan to add" for fast, error-free logging
+                    <div className="text-xs text-muted-foreground mt-1">- scan with a mobile device or any <span className="font-bold">physical barcode scanner</span></div>
+                  </div>
+                </li>
               </ul>
             </div>
 
