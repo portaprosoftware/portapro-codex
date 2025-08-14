@@ -35,7 +35,7 @@ export const MaintenanceItemActions: React.FC<MaintenanceItemActionsProps> = ({
       <DropdownMenuContent align="end" className="w-56 z-[10050] bg-popover bg-background">
         <DropdownMenuItem onClick={onEditMaintenance}>
           <Edit3 className="mr-2 h-4 w-4" />
-          Manage Item
+          Manage Unit
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onReturnToService}>
           <CheckCircle className="mr-2 h-4 w-4" />

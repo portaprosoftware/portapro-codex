@@ -201,7 +201,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         <div className="flex-1 relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search by item code, tool number, maintenance reason, or notes..."
+            placeholder="Search by unit code, tool number, maintenance reason, or notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -222,7 +222,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                   />
                 </TableHead>
                 <TableHead className="w-12"></TableHead>
-                <TableHead className="font-medium">Item Code</TableHead>
+                <TableHead className="font-medium">Unit Code</TableHead>
                 <TableHead className="font-medium">Tool Number</TableHead>
                 <TableHead className="font-medium">Location</TableHead>
                 <TableHead className="font-medium">Maintenance Reason</TableHead>
