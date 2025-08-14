@@ -80,7 +80,7 @@ export function StorageLocationSelector({
       <SelectTrigger className="w-full">
         <SelectValue placeholder={isLoading ? "Loading..." : placeholder} />
       </SelectTrigger>
-      <SelectContent className="bg-white z-50">
+      <SelectContent className="bg-background border border-border shadow-lg z-[99999] min-w-[250px] max-h-[300px] overflow-y-auto">
         {includeAllSites && (
           <SelectItem value="all">
             <div className="flex items-center gap-2">
