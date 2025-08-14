@@ -23,10 +23,8 @@ export function InventorySuppliesShowcase() {
             {/* Panel A — Unified Stock Modes */}
             <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="px-3 py-1 rounded-full bg-muted text-foreground">Bulk</span>
-                    <span className="px-3 py-1 rounded-full bg-muted/60 text-foreground">Individual</span>
-                    <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground">Hybrid</span>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Package className="w-4 h-4 text-primary" /> Inventory Tracked How You Use It
                   </div>
 
                   <div className="mt-4 grid md:grid-cols-3 gap-4">
