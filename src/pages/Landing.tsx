@@ -88,7 +88,7 @@ const managementFeatures = [{
   icon: Users,
   href: "#team-management"
 }, {
-  title: "Customer Dashboard & Portal",
+  title: "Customer Accounts & Portals",
   description: "Home base for customer data, history, unique contacts (billing, on-site), and full portal navigation.",
   icon: Users,
   href: "#customer-portal"
@@ -1028,7 +1028,7 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Customer Dashboard & Portal - White */}
+      {/* Customer Accounts & Portals - White */}
       <CustomerDashboardPortalShowcase />
 
       {/* Section Divider */}
