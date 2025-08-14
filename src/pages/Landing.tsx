@@ -807,7 +807,7 @@ export const Landing: React.FC = () => {
 
           {/* Daily Driver Assignments */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+            <div className="space-y-6 order-2 lg:order-1">
               <h3 className="text-2xl font-bold text-foreground">Daily Driver Assignments</h3>
               <p className="text-lg text-muted-foreground">Simple, clear dispatch—drivers know exactly where to go.</p>
               <ul className="space-y-3">
@@ -825,7 +825,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
               <AutoCarousel media={driverAssignmentsMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
@@ -857,7 +857,7 @@ export const Landing: React.FC = () => {
 
           {/* DVIRs & Maintenance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 order-2 lg:order-1">
               <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -874,7 +874,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md">
+            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
               <AutoCarousel media={fleetManagementMedia} className="w-full" aspectRatio="aspect-[4/3]" />
             </div>
           </div>
@@ -964,7 +964,7 @@ export const Landing: React.FC = () => {
 
           {/* Time Off & Leave Management */}
           <div className="grid lg:grid-cols-2 gap-8 items-start mb-12">
-            <div className="space-y-6">
+            <div className="space-y-6 order-2 lg:order-1">
               <h3 className="text-2xl font-bold text-foreground">Time Off & Leave Management</h3>
               <p className="text-lg text-muted-foreground">Approve requests quickly with a clean, visual calendar.</p>
               <ul className="space-y-3">
@@ -983,7 +983,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             
-            <div className="flex justify-center">
+            <div className="flex justify-center order-1 lg:order-2">
               <div className="w-full max-w-md">
                 <AspectRatio ratio={1}>
                   <div className="h-full">
