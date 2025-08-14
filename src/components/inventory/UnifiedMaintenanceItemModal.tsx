@@ -104,8 +104,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           expected_return_date: data.expected_return_date || null,
           maintenance_priority: data.maintenance_priority,
           current_storage_location_id: data.current_storage_location_id || null,
-          tool_number: data.tool_number || null,
-          vendor_id: data.vendor_id || null,
           condition: data.condition || null,
         })
         .eq("id", item.id);
@@ -344,20 +342,24 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <Label>Tool Number</Label>
+                      <Label>Tool Number (Reference)</Label>
                       <Input
                         value={formData.tool_number || ""}
-                        onChange={(e) => setFormData((p) => ({ ...p, tool_number: e.target.value }))}
-                        placeholder="Optional"
+                        readOnly={true}
+                        className="bg-muted/50 text-muted-foreground cursor-not-allowed"
+                        placeholder="—"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">Use "Edit Item" button to modify</p>
                     </div>
                     <div>
-                      <Label>Vendor ID</Label>
+                      <Label>Vendor ID (Reference)</Label>
                       <Input
                         value={formData.vendor_id || ""}
-                        onChange={(e) => setFormData((p) => ({ ...p, vendor_id: e.target.value }))}
-                        placeholder="Optional"
+                        readOnly={true}
+                        className="bg-muted/50 text-muted-foreground cursor-not-allowed"
+                        placeholder="—"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">Use "Edit Item" button to modify</p>
                     </div>
                     <div className="md:col-span-2">
                       <Label>Condition</Label>
