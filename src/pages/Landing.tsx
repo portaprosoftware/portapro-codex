@@ -637,7 +637,7 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Driver Mobile App - White */}
-      <section id="mobile-app" className="py-2 bg-white">
+      <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <DriverAppShowcase />
         </div>
