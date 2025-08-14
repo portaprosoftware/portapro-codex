@@ -179,13 +179,23 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       const newLocation = updateData.current_storage_location_id;
       const locationChanged = originalLocation !== newLocation;
 
-      // Prepare update data, handling empty date strings properly
+      // Prepare update data, handling empty strings properly for PostgreSQL
       const cleanUpdateData = { ...updateData };
       
       // Convert empty date strings to null for PostgreSQL
       if (cleanUpdateData.expected_return_date === "") {
         cleanUpdateData.expected_return_date = null;
       }
+      
+      // Convert empty UUID strings to null for PostgreSQL
+      if (cleanUpdateData.current_storage_location_id === "") {
+        cleanUpdateData.current_storage_location_id = null;
+      }
+      if (cleanUpdateData.vendor_id === "") {
+        cleanUpdateData.vendor_id = null;
+      }
+      
+      console.log('Sending update data:', cleanUpdateData);
 
       const { error } = await supabase
         .from("product_items")
@@ -252,6 +262,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
+      queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
+      queryClient.invalidateQueries({ queryKey: ["item-attributes", itemId] });
       toast.success("Item updated successfully");
       onClose();
     },
