@@ -40,8 +40,8 @@ export const ServicesHubShowcase: React.FC = () => {
               <div className="rounded-xl border bg-background p-4 space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <div className="font-medium text-foreground">Today’s route</div>
-                  <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 text-primary px-2 py-1 text-xs">
-                    <Zap className="w-3 h-3" /> Route optimize
+                  <span className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-2 py-1 text-xs">
+                    <Zap className="w-3 h-3" /> Route Optimized
                   </span>
                 </div>
                 <ul className="text-sm space-y-2">
@@ -69,7 +69,7 @@ export const ServicesHubShowcase: React.FC = () => {
                 <ClipboardCheck className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="inline-flex rounded-xl border bg-background p-1 text-sm mb-4">
-                <button className="px-3 py-1 rounded-lg bg-primary/10 text-primary font-medium">Automatic</button>
+                <button className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold">Automatic</button>
                 <button className="px-3 py-1 rounded-lg text-foreground">Manual</button>
               </div>
               <div className="rounded-xl border bg-background p-4 space-y-3">
@@ -96,7 +96,7 @@ export const ServicesHubShowcase: React.FC = () => {
               <div className="rounded-xl border bg-background p-4 space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-foreground">Assigned templates</span>
-                  <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 text-xs">5/6 items complete</span>
+                  <span className="rounded-md bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-2 py-0.5 text-xs">5/6 items completed</span>
                 </div>
                 <ul className="text-sm space-y-2">
                   <li className="flex items-center justify-between"><span className="text-foreground">Standard Pump Report</span><span className="text-muted-foreground">Complete</span></li>
@@ -148,10 +148,6 @@ export const ServicesHubShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> PDF + email with your branding</li>
               </ul>
 
-              <div className="pt-2 flex flex-wrap gap-2">
-                <a href="/maintenance-hub?tab=overview"><Button size="sm" className="bg-gradient-blue text-white inline-flex items-center gap-2"><ClipboardList className="w-4 h-4" /> Open Services Hub</Button></a>
-                <a href="/maintenance-hub?tab=templates"><Button size="sm" variant="outline" className="inline-flex items-center gap-2"><FileText className="w-4 h-4" /> Manage Templates</Button></a>
-              </div>
             </div>
           </aside>
         </div>
