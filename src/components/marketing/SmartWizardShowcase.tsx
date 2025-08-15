@@ -7,7 +7,7 @@ export const SmartWizardShowcase: React.FC = () => {
   // Static, believable KPIs for a thriving operation
   const kpis = [
     { title: 'Jobs booked this month', value: 148, icon: ClipboardList },
-    { title: '99% On-time delivery rate', value: 99, icon: Truck },
+    { title: 'On-time delivery rate', value: '99%', icon: Truck },
   ];
 
   const steps = ['Customer', 'Dates', 'Units', 'Assign', 'Review'];
