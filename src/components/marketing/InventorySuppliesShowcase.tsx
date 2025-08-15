@@ -46,7 +46,7 @@ const InventorySlider = () => {
 
   return (
     <div className="relative">
-      <div className="h-64 flex flex-col items-center justify-center p-4">
+      <div className="h-64 flex items-center justify-center p-4">
         <div className="w-full animate-fade-in">
           <img
             src={slides[currentSlide].image}
@@ -58,25 +58,23 @@ const InventorySlider = () => {
         </div>
       </div>
       
-      {/* Progress indicator */}
-      <div className="mt-4">
-        <div className="flex gap-1">
-          {slides.map((_, index) => (
-            <div
-              key={index}
-              className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
-            >
-              <div 
-                className={`h-full transition-all duration-75 ease-linear ${
-                  index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
-                }`}
-                style={{ 
-                  width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
-                }}
-              />
-            </div>
-          ))}
-        </div>
+      {/* Progress indicator moved outside */}
+      <div className="flex gap-1 mt-2">
+        {slides.map((_, index) => (
+          <div
+            key={index}
+            className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
+          >
+            <div 
+              className={`h-full transition-all duration-75 ease-linear ${
+                index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
+              }`}
+              style={{ 
+                width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
+              }}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
