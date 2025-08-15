@@ -383,7 +383,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
   }
 
   return (
-    <Dialog open onOpenChange={onClose}>
+    <Dialog open={!showLocationConfirm} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Edit Item: {item.item_code}</DialogTitle>
