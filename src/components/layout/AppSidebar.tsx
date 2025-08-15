@@ -183,7 +183,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           {title}
         </div>
       )}
-      <ul className="flex w-full min-w-0 flex-col gap-0.5">
+      <ul className="flex w-full min-w-0 flex-col gap-0">
         {items.map((item) => {
           const isActive = activeSection === item.url || location.pathname === item.url
           return (
@@ -196,7 +196,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                   isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold"
                 )}
               >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
+                <item.icon className="h-5 w-5 flex-shrink-0" />
                 <span className="truncate text-sm">{item.title}</span>
                 {item.badge && (
                   <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
