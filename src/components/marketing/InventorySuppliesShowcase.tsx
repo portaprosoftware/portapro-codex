@@ -231,11 +231,9 @@ export function InventorySuppliesShowcase() {
            </div>
 
           {/* Right: Auto-rotating slider + Benefits */}
-          <aside className="space-y-6 animate-fade-in">
+          <aside className="space-y-8 animate-fade-in">
             {/* Auto-rotating slider */}
-            <div>
-              <InventorySlider currentSlide={currentSlide} slides={slides} />
-            </div>
+            <InventorySlider currentSlide={currentSlide} slides={slides} />
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
