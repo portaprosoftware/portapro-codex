@@ -183,7 +183,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           {title}
         </div>
       )}
-      <ul className="flex w-full min-w-0 flex-col space-y-2">
+      <ul className="flex w-full min-w-0 flex-col gap-0.5">
         {items.map((item) => {
           const isActive = activeSection === item.url || location.pathname === item.url
           return (
