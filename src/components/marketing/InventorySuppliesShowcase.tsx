@@ -104,9 +104,9 @@ export function InventorySuppliesShowcase() {
                      <div className="flex flex-col items-center space-y-2">
                        <div className="w-2/3">
                          <AspectRatio ratio={1/1}>
-                           <img
-                             src="/lovable-uploads/a792e7df-6da2-4fc0-826c-d32dcc988d97.png"
-                             alt="QR code for Standard Unit 1232"
+                            <img
+                              src="/lovable-uploads/1410c8e3-cd74-47ef-892c-0d261cfceff6.png"
+                              alt="QR code for Standard Unit 1232"
                              className="w-full h-full object-cover rounded-lg border border-border"
                              loading="lazy"
                              decoding="async"
