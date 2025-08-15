@@ -278,14 +278,19 @@ export function InventorySuppliesShowcase() {
 
 
             <div className="rounded-2xl border border-border p-5">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning & Vision AI — Technical Facts</h4>
-              <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><strong>No signal needed:</strong> Scan brand-new QR codes or snap photos of embossed text/serials; everything saves locally.</li>
-                <li><strong>Smart PortaPro QRs:</strong> On-device decode reveals the unit ID + a signed token, so the app can recognize and create/link records offline.</li>
-                <li><strong>Third-party QRs:</strong> If it's just a web link, we still decode and save it offline; details load once you're online.</li>
-                <li><strong>Auto-sync on reconnect:</strong> We verify the signature, run Google Vision OCR on saved photos, upload images, and update records. (Or tap Sync Now anytime.)</li>
-                <li><strong>Built as a PWA:</strong> App shell is cached for offline use; scans/photos queue safely in IndexedDB with retry logic.</li>
-              </ul>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning Made Easy</h4>
+              <div className="space-y-3 text-sm">
+                <p><strong>No signal? No problem.</strong><br />
+                You can scan new QR codes or take photos of unit serials—everything saves safely to your device.</p>
+                
+                <p>If it's a PortaPro QR, the app instantly knows the unit and links it, even offline.</p>
+                
+                <p>For third-party QR codes, the scan is still saved and updates once you're back online.</p>
+                
+                <p>When you're reconnected, everything syncs automatically—photos, scans, and records. You can also tap Sync Now anytime.</p>
+                
+                <p>The PWA (add to home screen) app is built to work offline and won't lose your data</p>
+              </div>
             </div>
           </aside>
         </div>
