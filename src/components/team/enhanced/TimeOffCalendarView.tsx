@@ -150,19 +150,13 @@ export function TimeOffCalendarView({ compact = false }: { compact?: boolean }) 
                 
                 <div className="space-y-1">
                   {timeOffEvents.length === 0 && Math.random() > 0.7 && (
-                    <div className="text-xs p-1 rounded bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 transition-colors">
-                      <div className="font-medium truncate">Staff Off</div>
-                    </div>
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-red-400 to-red-500"></div>
                   )}
                   {timeOffEvents.length === 0 && Math.random() > 0.8 && (
-                    <div className="text-xs p-1 rounded bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 transition-colors">
-                      <div className="font-medium truncate">Vacation</div>
-                    </div>
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-yellow-400 to-yellow-500"></div>
                   )}
                   {timeOffEvents.length === 0 && Math.random() > 0.85 && (
-                    <div className="text-xs p-1 rounded bg-gradient-to-r from-green-100 to-green-200 text-green-800 transition-colors">
-                      <div className="font-medium truncate">Personal</div>
-                    </div>
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-green-400 to-green-500"></div>
                   )}
                   {timeOffEvents.map(event => (
                     <div
