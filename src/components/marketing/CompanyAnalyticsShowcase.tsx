@@ -121,10 +121,10 @@ export function CompanyAnalyticsShowcase() {
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">Deliveries</span>
-                        <span className="text-xs font-medium text-foreground">142</span>
+                        <span className="text-xs font-medium text-foreground">132</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 w-[85%] rounded-full"></div>
+                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 w-[80%] rounded-full"></div>
                       </div>
                     </div>
                     
@@ -132,10 +132,10 @@ export function CompanyAnalyticsShowcase() {
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">Services</span>
-                        <span className="text-xs font-medium text-foreground">78</span>
+                        <span className="text-xs font-medium text-foreground">72</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[65%] rounded-full"></div>
+                        <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[60%] rounded-full"></div>
                       </div>
                     </div>
                     
@@ -143,10 +143,10 @@ export function CompanyAnalyticsShowcase() {
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">Pickups</span>
-                        <span className="text-xs font-medium text-foreground">54</span>
+                        <span className="text-xs font-medium text-foreground">44</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 w-[45%] rounded-full"></div>
+                        <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 w-[40%] rounded-full"></div>
                       </div>
                     </div>
                   </div>
