@@ -5,12 +5,12 @@ import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCc
 
 const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
   return (
-    <div className="h-64 flex items-center justify-center p-4">
+    <div className="h-64 flex items-center justify-center">
       <div className="w-full animate-fade-in">
         <img
           src={slides[currentSlide].image}
           alt={slides[currentSlide].title}
-          className="w-full h-auto rounded-lg border border-border shadow-sm"
+          className="w-full h-auto rounded-lg shadow-sm"
           loading="lazy"
           decoding="async"
         />
@@ -21,7 +21,6 @@ const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slide
 
 export function InventorySuppliesShowcase() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [progress, setProgress] = useState(0);
 
   const slides = [
     {
@@ -44,19 +43,10 @@ export function InventorySuppliesShowcase() {
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-      setProgress(0);
     }, 4000);
-
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) return 0;
-        return prev + (100 / 400); // 4000ms = 4s, update every 10ms
-      });
-    }, 10);
 
     return () => {
       clearInterval(slideInterval);
-      clearInterval(progressInterval);
     };
   }, [slides.length]);
   return (
@@ -243,26 +233,8 @@ export function InventorySuppliesShowcase() {
           {/* Right: Auto-rotating slider + Benefits */}
           <aside className="space-y-6 animate-fade-in">
             {/* Auto-rotating slider */}
-            <div className="rounded-2xl border border-border bg-card">
+            <div>
               <InventorySlider currentSlide={currentSlide} slides={slides} />
-              {/* Progress indicator below slider */}
-              <div className="flex gap-1 p-4 pt-0">
-                {slides.map((_, index) => (
-                  <div
-                    key={index}
-                    className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
-                  >
-                    <div 
-                      className={`h-full transition-all duration-75 ease-linear ${
-                        index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
-                      }`}
-                      style={{ 
-                        width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
