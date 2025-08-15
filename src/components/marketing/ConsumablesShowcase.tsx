@@ -34,12 +34,6 @@ export const ConsumablesShowcase: React.FC = () => {
               </ul>
             </div>
 
-            {/* New uploaded image under highlights */}
-            <img 
-              src="/lovable-uploads/56e55e90-52ea-491a-bbd8-f4b87b1b53b5.png" 
-              alt="Add Consumable form interface with name, category, SKU and quantity fields"
-              className="w-full h-auto rounded-2xl"
-            />
 
             {/* What customers love card moved here */}
             <div className="rounded-2xl border bg-card p-5 shadow-md">
@@ -93,11 +87,6 @@ export const ConsumablesShowcase: React.FC = () => {
               </div>
             </div>
 
-            <img 
-              src="/lovable-uploads/cc2af9ff-9209-4a8b-8eb8-ff99ab053019.png" 
-              alt="Inventory management table showing product locations, quantities, and low stock alerts"
-              className="w-full h-auto rounded-2xl"
-            />
           </aside>
         </div>
       </div>
