@@ -33,25 +33,9 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left visuals: template builder → what teams love → schedule & send → segments */}
+          {/* Left column: Schedule & Send */}
           <div className="space-y-6">
-            {/* A) AI Assistant */}
-            <div className="aspect-video rounded-xl overflow-hidden" dangerouslySetInnerHTML={{
-              __html: `
-                <style>
-                  wistia-player[media-id='a2finp2l33']:not(:defined) { 
-                    background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); 
-                    display: block; 
-                    filter: blur(5px); 
-                    padding-top:78.54%; 
-                  }
-                </style>
-                <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
-              `
-            }} />
-
-
-            {/* C) Schedule & Send - moved up */}
+            {/* Schedule & Send */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-semibold text-foreground">Schedule & Send</h3>
@@ -85,8 +69,11 @@ export const MarketingShowcase: React.FC = () => {
                 </div>
               </div>
             </article>
+          </div>
 
-            {/* D) Audience & Smart Segments - moved down */}
+          {/* Right column: Audience & Segments + Highlights */}
+          <aside className="space-y-6">
+            {/* Audience & Smart Segments */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-semibold text-foreground">Audience & Segments</h3>
@@ -108,24 +95,6 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
             </article>
-          </div>
-
-          {/* Right column: Video + highlights */}
-          <aside className="space-y-4">
-            <div className="rounded-2xl border bg-card shadow-md p-6">
-              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
-              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                  <p className="text-sm">Video player placeholder</p>
-                  <p className="text-xs mt-1">Upload your mp4 video here</p>
-                </div>
-              </div>
-            </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
