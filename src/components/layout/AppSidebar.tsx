@@ -183,7 +183,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           {title}
         </div>
       )}
-      <ul className="flex w-full min-w-0 flex-col gap-0.5">
+      <ul className="flex w-full min-w-0 flex-col space-y-2">
         {items.map((item) => {
           const isActive = activeSection === item.url || location.pathname === item.url
           return (
@@ -192,8 +192,8 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                 to={item.url}
                 onClick={() => onSectionChange?.(item.url)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-gray-100",
-                  isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-medium"
+                  "flex w-full items-center gap-2 rounded-md p-3 text-left text-sm font-medium hover:bg-gray-100",
+                  isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold"
                 )}
               >
                 <item.icon className="h-4 w-4 flex-shrink-0" />
