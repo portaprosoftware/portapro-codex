@@ -41,8 +41,8 @@ export const SmartWizardShowcase: React.FC = () => {
 
           <div className="aspect-video bg-muted rounded-xl overflow-hidden">
             <img 
-              src="/lovable-uploads/8dc97539-4052-43f9-a9bb-7fb38e588590.png" 
-              alt="Smart Job Wizard interface showing customer selection step with search functionality and customer cards"
+              src="/lovable-uploads/321837e3-92ad-42d0-bf16-48737a913b98.png" 
+              alt="Smart Job Wizard interface showing job DEL-041 with assignment details and schedule information"
               className="w-full h-full object-cover transform scale-125"
             />
           </div>
@@ -51,7 +51,6 @@ export const SmartWizardShowcase: React.FC = () => {
             {[
               'Date-range availability with conflict detection',
               'Auto-assign best-fit crew and vehicle',
-              'AI recommendations based on guests and event hours',
               'One-click review and invoice generation',
             ].map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
