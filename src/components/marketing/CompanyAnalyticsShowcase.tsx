@@ -168,12 +168,12 @@ export function CompanyAnalyticsShowcase() {
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
                     <div className="text-lg font-bold text-foreground">$48.7k</div>
-                    <div className="text-xs text-muted-foreground">18.5%</div>
+                    <div className="text-xs text-green-600 font-medium">+18.5%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
                     <div className="text-lg font-bold text-foreground">86.4%</div>
-                    <div className="text-xs text-muted-foreground">4.2%</div>
+                    <div className="text-xs text-green-600 font-medium">+4.2%</div>
                   </div>
                 </div>
                 
