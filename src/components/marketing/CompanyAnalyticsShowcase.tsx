@@ -63,13 +63,11 @@ export function CompanyAnalyticsShowcase() {
             </Card>
 
             {/* Dashboard Cards Image */}
-            <div className="flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/1223ff1f-0504-4b7e-99b4-6f9e63611ea7.png" 
-                alt="Dashboard analytics cards showing job summary and revenue metrics"
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            </div>
+            <img 
+              src="/lovable-uploads/1223ff1f-0504-4b7e-99b4-6f9e63611ea7.png" 
+              alt="Dashboard analytics cards showing job summary and revenue metrics"
+              className="w-full h-auto rounded-lg shadow-lg"
+            />
           </div>
 
           {/* Rest of the Content */}
