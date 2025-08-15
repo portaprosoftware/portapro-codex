@@ -13,6 +13,18 @@ import {
   CheckCircle,
 } from "lucide-react";
 
+// Declare custom element for TypeScript
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'wistia-player': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'media-id'?: string;
+        aspect?: string;
+      };
+    }
+  }
+}
+
 export const MarketingShowcase: React.FC = () => {
   return (
     <section id="marketing" className="py-6 bg-white">
@@ -33,8 +45,22 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Schedule & Send */}
+          {/* Left column: Schedule & Send + Video */}
           <div className="space-y-6">
+            {/* Video Demo */}
+            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-semibold text-foreground">Marketing Demo</h3>
+                <FileText className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="rounded-xl overflow-hidden">
+                <script src="https://fast.wistia.com/player.js" async></script>
+                <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
+                <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
+                <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
+              </div>
+            </article>
+
             {/* Schedule & Send */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
