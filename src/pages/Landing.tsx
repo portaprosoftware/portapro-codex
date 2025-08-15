@@ -992,7 +992,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center order-2 lg:order-1">
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-xs">
                 <AspectRatio ratio={1}>
                   <div className="h-full">
                     <TimeOffCalendarView compact />

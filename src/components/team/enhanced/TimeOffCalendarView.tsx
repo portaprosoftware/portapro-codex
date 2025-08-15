@@ -149,10 +149,25 @@ export function TimeOffCalendarView({ compact = false }: { compact?: boolean }) 
                 </div>
                 
                 <div className="space-y-1">
+                  {timeOffEvents.length === 0 && Math.random() > 0.7 && (
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 transition-colors">
+                      <div className="font-medium truncate">Staff Off</div>
+                    </div>
+                  )}
+                  {timeOffEvents.length === 0 && Math.random() > 0.8 && (
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 transition-colors">
+                      <div className="font-medium truncate">Vacation</div>
+                    </div>
+                  )}
+                  {timeOffEvents.length === 0 && Math.random() > 0.85 && (
+                    <div className="text-xs p-1 rounded bg-gradient-to-r from-green-100 to-green-200 text-green-800 transition-colors">
+                      <div className="font-medium truncate">Personal</div>
+                    </div>
+                  )}
                   {timeOffEvents.map(event => (
                     <div
                       key={event.id}
-                      className="text-xs p-1 rounded bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
+                      className="text-xs p-1 rounded bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
                       title={`${event.profiles.first_name} ${event.profiles.last_name} - ${event.reason} (${event.time_slot})`}
                     >
                       <div className="font-medium truncate">
