@@ -49,10 +49,6 @@ export const MarketingShowcase: React.FC = () => {
           <div className="space-y-6">
             {/* Video Demo */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Marketing Demo</h3>
-                <FileText className="w-4 h-4 text-muted-foreground" />
-              </div>
               <div className="rounded-xl overflow-hidden">
                 <script src="https://fast.wistia.com/player.js" async></script>
                 <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
