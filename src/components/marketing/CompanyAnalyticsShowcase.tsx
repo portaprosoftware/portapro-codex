@@ -28,14 +28,14 @@ export function CompanyAnalyticsShowcase() {
           <div className="grid grid-cols-2 gap-6 items-stretch mb-4">
             {/* Navigation & Controls Demo - Half Width */}
             <Card className="border border-border bg-card h-full">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <Filter className="w-5 h-5" />
                   Navigation & Controls
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">Persistent date range and filtering across all tabs</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 pb-4">
                 {/* Mock Tab Navigation */}
                 <div className="flex flex-wrap gap-1 p-2 bg-muted/30 rounded-lg">
                   <Badge variant="outline" className="px-3 py-1">Overview</Badge>
