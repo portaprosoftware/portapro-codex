@@ -114,18 +114,12 @@ export const ServicesHubShowcase: React.FC = () => {
           {/* Right column: KPIs + highlights + CTAs */}
           <aside className="space-y-6">
             <div className="rounded-2xl border bg-card shadow-md p-6">
-              <div className="text-base font-semibold mb-4 text-foreground">Demo Video</div>
-              <div className="aspect-video bg-muted rounded-xl flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                  <p className="text-sm">Video player placeholder</p>
-                  <p className="text-xs mt-1">Upload your mp4 video here</p>
-                </div>
-              </div>
+              <div className="text-base font-semibold mb-4 text-foreground">Choose Service</div>
+              <img 
+                src="/lovable-uploads/79b5d2db-b882-4ed0-80e6-e02d8984b7d8.png" 
+                alt="Service selection interface showing Deep Clean Service, Emergency Repair, and Routine Maintenance options"
+                className="w-full h-auto rounded-lg"
+              />
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
