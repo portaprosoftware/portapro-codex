@@ -3,7 +3,23 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
 
-const InventorySlider = () => {
+const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
+  return (
+    <div className="h-64 flex items-center justify-center p-4">
+      <div className="w-full animate-fade-in">
+        <img
+          src={slides[currentSlide].image}
+          alt={slides[currentSlide].title}
+          className="w-full h-auto rounded-lg border border-border shadow-sm"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  );
+};
+
+export function InventorySuppliesShowcase() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -43,44 +59,6 @@ const InventorySlider = () => {
       clearInterval(progressInterval);
     };
   }, [slides.length]);
-
-  return (
-    <div className="relative">
-      <div className="h-64 flex items-center justify-center p-4">
-        <div className="w-full animate-fade-in">
-          <img
-            src={slides[currentSlide].image}
-            alt={slides[currentSlide].title}
-            className="w-full h-auto rounded-lg border border-border shadow-sm"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      </div>
-      
-      {/* Progress indicator moved outside */}
-      <div className="flex gap-1 mt-2">
-        {slides.map((_, index) => (
-          <div
-            key={index}
-            className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
-          >
-            <div 
-              className={`h-full transition-all duration-75 ease-linear ${
-                index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
-              }`}
-              style={{ 
-                width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export function InventorySuppliesShowcase() {
   return (
     <section id="inventory" className="py-12 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
@@ -265,8 +243,26 @@ export function InventorySuppliesShowcase() {
           {/* Right: Auto-rotating slider + Benefits */}
           <aside className="space-y-6 animate-fade-in">
             {/* Auto-rotating slider */}
-            <div className="rounded-2xl border border-border p-4 bg-card">
-              <InventorySlider />
+            <div className="rounded-2xl border border-border bg-card">
+              <InventorySlider currentSlide={currentSlide} slides={slides} />
+              {/* Progress indicator below slider */}
+              <div className="flex gap-1 p-4 pt-0">
+                {slides.map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
+                  >
+                    <div 
+                      className={`h-full transition-all duration-75 ease-linear ${
+                        index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
+                      }`}
+                      style={{ 
+                        width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
