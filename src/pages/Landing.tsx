@@ -1022,9 +1022,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-2 lg:order-1">
-              <AutoCarousel media={teamTrainingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
-            </div>
+            <img 
+              src="/lovable-uploads/06af4053-3df7-4262-af45-e64c805169d2.png" 
+              alt="Training Requirements management interface"
+              className="rounded-2xl shadow-md order-2 lg:order-1 w-full h-auto"
+            />
           </div>
         </div>
       </section>
