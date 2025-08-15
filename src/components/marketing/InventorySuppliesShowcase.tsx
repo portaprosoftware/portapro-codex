@@ -231,10 +231,10 @@ export function InventorySuppliesShowcase() {
            </div>
 
           {/* Right: Auto-rotating slider + Benefits */}
-          <aside className="mt-12 space-y-12 animate-fade-in">
+          <aside className="mt-12 animate-fade-in">
             {/* Auto-rotating slider */}
             <InventorySlider currentSlide={currentSlide} slides={slides} />
-            <div className="rounded-2xl border border-border p-5">
+            <div className="rounded-2xl border border-border p-5 mt-12">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
                 <li>Bulk, individual, and hybrid tracking in one system</li>
@@ -246,7 +246,7 @@ export function InventorySuppliesShowcase() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-border p-5">
+            <div className="rounded-2xl border border-border p-5 mt-6">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning Made Easy</h4>
               <div className="space-y-3 text-sm">
                 <p><strong>No signal? No problem.</strong><br />
