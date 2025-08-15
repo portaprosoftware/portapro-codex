@@ -64,7 +64,7 @@ export function CompanyAnalyticsShowcase() {
 
             {/* Dashboard Cards Image */}
             <img 
-              src="/lovable-uploads/3fd56176-85e5-497a-adac-4f102b6eb618.png" 
+              src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
               alt="Dashboard analytics cards showing job summary and revenue metrics"
               className="w-full h-auto rounded-lg"
             />
