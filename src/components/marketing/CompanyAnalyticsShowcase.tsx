@@ -23,11 +23,11 @@ export function CompanyAnalyticsShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 items-start">
+        <div className="grid grid-cols-1 gap-8 items-start">
           {/* Top Row - Navigation Controls and Dashboard Cards */}
-          <div className="grid grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-2 gap-6 items-stretch mb-4">
             {/* Navigation & Controls Demo - Half Width */}
-            <Card className="border border-border bg-card">
+            <Card className="border border-border bg-card h-full">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <Filter className="w-5 h-5" />
@@ -63,11 +63,13 @@ export function CompanyAnalyticsShowcase() {
             </Card>
 
             {/* Dashboard Cards Image */}
-            <img 
-              src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
-              alt="Dashboard analytics cards showing job summary and revenue metrics"
-              className="w-full h-auto rounded-lg"
-            />
+            <div className="h-full flex items-center">
+              <img 
+                src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
+                alt="Dashboard analytics cards showing job summary and revenue metrics"
+                className="w-full h-auto rounded-lg object-contain"
+              />
+            </div>
           </div>
 
           {/* Rest of the Content */}
