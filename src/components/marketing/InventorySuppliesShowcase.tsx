@@ -9,16 +9,19 @@ const InventorySlider = () => {
 
   const slides = [
     {
-      title: "Bulk Stock Tracking",
-      content: "Track inventory by location with automatic allocation and real-time availability updates."
+      title: "Multi-Location Management",
+      content: "Track inventory across multiple yards and locations with real-time status updates.",
+      image: "/lovable-uploads/68283100-ac4d-4613-bfbf-a9a418dcaab5.png"
     },
     {
-      title: "QR Code Management", 
-      content: "Generate and scan QR codes for instant unit identification and status updates."
+      title: "Hybrid Tracking System", 
+      content: "Combine bulk and individual tracking for complete inventory visibility and control.",
+      image: "/lovable-uploads/93533cb9-5e26-4b8e-9dc6-1539b5beba20.png"
     },
     {
-      title: "Offline Capability",
-      content: "Scan and track units without internet connection. Auto-sync when back online."
+      title: "Real-Time Availability",
+      content: "Instant visibility into available units with automated allocation and status tracking.",
+      image: "/lovable-uploads/1048c86e-2700-4c73-9c4f-1b5c7442323c.png"
     }
   ];
 
@@ -43,7 +46,16 @@ const InventorySlider = () => {
 
   return (
     <div className="relative">
-      <div className="h-32 flex items-center justify-center">
+      <div className="h-64 flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-sm mb-4 animate-fade-in">
+          <img
+            src={slides[currentSlide].image}
+            alt={slides[currentSlide].title}
+            className="w-full h-auto rounded-lg border border-border shadow-sm"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
         <div className="text-center animate-fade-in">
           <h4 className="text-lg font-semibold text-foreground mb-2">
             {slides[currentSlide].title}
