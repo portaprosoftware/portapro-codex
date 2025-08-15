@@ -177,13 +177,13 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const visibleAdminItems = getVisibleItems(adminItems);
 
   const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
-    <div className="py-2">
+    <div className="py-1">
       {title && (
-        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
           {title}
         </div>
       )}
-      <ul className="flex w-full min-w-0 flex-col gap-1">
+      <ul className="flex w-full min-w-0 flex-col gap-0.5">
         {items.map((item) => {
           const isActive = activeSection === item.url || location.pathname === item.url
           return (
@@ -192,14 +192,14 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                 to={item.url}
                 onClick={() => onSectionChange?.(item.url)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-md p-2 text-left text-sm hover:bg-gray-100",
+                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-gray-100",
                   isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-medium"
                 )}
               >
-                <item.icon className="h-5 w-5" />
-                <span className="truncate">{item.title}</span>
+                <item.icon className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate text-sm">{item.title}</span>
                 {item.badge && (
-                  <Badge className="ml-auto border-0 font-bold bg-gray-200 text-gray-800">
+                  <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
                     {item.badge}
                   </Badge>
                 )}
@@ -221,7 +221,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <nav className="px-2 py-3">
+        <nav className="px-2 py-2">
           <NavSection items={visibleCoreItems} />
           {visibleDayToDayItems.length > 0 && (
             <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />
