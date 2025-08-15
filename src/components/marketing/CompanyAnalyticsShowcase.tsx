@@ -113,32 +113,40 @@ export function CompanyAnalyticsShowcase() {
                   </div>
                 </div>
 
-                {/* Mock Stacked Bar Chart (neutral screenshot style) */}
+                {/* Mock Horizontal Bar Charts */}
                 <div className="p-3 bg-card border rounded-lg">
-                  <div className="text-sm font-medium mb-2 text-foreground">Job Volume (7 days)</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-muted rounded"></div>
-                      <span className="text-xs text-muted-foreground">Deliveries</span>
-                    </div>
-                    <div className="h-6 bg-muted/30 rounded overflow-hidden flex">
-                      <div className="bg-muted w-[45%]"></div>
-                      <div className="bg-muted/80 w-[25%]"></div>
-                      <div className="bg-muted/60 w-[20%]"></div>
-                      <div className="bg-muted/40 w-[10%]"></div>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-muted rounded"></div>
-                        <span>Pickups</span>
+                  <div className="text-sm font-medium mb-3 text-foreground">Job Volume (7 days)</div>
+                  <div className="space-y-3">
+                    {/* Deliveries Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground">Deliveries</span>
+                        <span className="text-xs font-medium text-foreground">142</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-muted rounded"></div>
-                        <span>Services</span>
+                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 w-[85%] rounded-full"></div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-muted rounded"></div>
-                        <span>Returns</span>
+                    </div>
+                    
+                    {/* Services Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground">Services</span>
+                        <span className="text-xs font-medium text-foreground">78</span>
+                      </div>
+                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[65%] rounded-full"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Pickups Bar */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground">Pickups</span>
+                        <span className="text-xs font-medium text-foreground">54</span>
+                      </div>
+                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 w-[45%] rounded-full"></div>
                       </div>
                     </div>
                   </div>
