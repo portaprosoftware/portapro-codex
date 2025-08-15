@@ -122,24 +122,14 @@ export const ServicesHubShowcase: React.FC = () => {
               />
             </div>
 
-            <div className="rounded-2xl border bg-card p-5 shadow-md">
-              <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Auto‑assign templates by service, job type, or customer rules</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Assign multiple templates to a single job</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Drivers complete reports offline with photos and signatures</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> One‑click PDF and email to customer</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Intuitive template builder: add, reorder, preview, save</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Live status and audit trail on every service</li>
-              </ul>
-            </div>
-
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
               <div className="text-base font-semibold text-foreground">What teams love</div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Clear checklists prevent missed steps</li>
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Instant proof: photos + signature + timestamp</li>
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> PDF + email with your branding</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Drivers complete reports offline with photos and signatures</li>
+                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Intuitive template builder: add, reorder, preview, save</li>
               </ul>
 
             </div>
