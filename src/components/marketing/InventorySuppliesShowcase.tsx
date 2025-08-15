@@ -231,7 +231,7 @@ export function InventorySuppliesShowcase() {
            </div>
 
           {/* Right: Auto-rotating slider + Benefits */}
-          <aside className="space-y-20 animate-fade-in">
+          <aside className="mt-12 space-y-12 animate-fade-in">
             {/* Auto-rotating slider */}
             <InventorySlider currentSlide={currentSlide} slides={slides} />
             <div className="rounded-2xl border border-border p-5">
@@ -245,7 +245,6 @@ export function InventorySuppliesShowcase() {
                 <li>Offline scans attach to units and sync later</li>
               </ul>
             </div>
-
 
             <div className="rounded-2xl border border-border p-5">
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Offline Scanning Made Easy</h4>
