@@ -5,16 +5,14 @@ import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCc
 
 const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
   return (
-    <div className="h-64 flex items-center justify-center">
-      <div className="w-full animate-fade-in">
-        <img
-          src={slides[currentSlide].image}
-          alt={slides[currentSlide].title}
-          className="w-full h-auto rounded-lg shadow-sm"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
+    <div className="animate-fade-in">
+      <img
+        src={slides[currentSlide].image}
+        alt={slides[currentSlide].title}
+        className="w-full h-auto rounded-lg shadow-sm"
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   );
 };
@@ -234,7 +232,7 @@ export function InventorySuppliesShowcase() {
           <aside className="mt-48 animate-fade-in">
             {/* Auto-rotating slider */}
             <InventorySlider currentSlide={currentSlide} slides={slides} />
-            <div className="rounded-2xl border border-border p-5 mt-24">
+            <div className="rounded-2xl border border-border p-5 mt-6">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
                 <li>Bulk, individual, and hybrid tracking in one system</li>
