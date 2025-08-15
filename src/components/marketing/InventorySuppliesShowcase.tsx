@@ -47,7 +47,7 @@ const InventorySlider = () => {
   return (
     <div className="relative">
       <div className="h-64 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-sm mb-4 animate-fade-in">
+        <div className="w-full animate-fade-in">
           <img
             src={slides[currentSlide].image}
             alt={slides[currentSlide].title}
@@ -56,33 +56,26 @@ const InventorySlider = () => {
             decoding="async"
           />
         </div>
-        <div className="text-center animate-fade-in">
-          <h4 className="text-lg font-semibold text-foreground mb-2">
-            {slides[currentSlide].title}
-          </h4>
-          <p className="text-sm text-muted-foreground">
-            {slides[currentSlide].content}
-          </p>
-        </div>
       </div>
       
       {/* Progress indicator */}
       <div className="mt-4">
-        <div className="flex gap-1 mb-2">
+        <div className="flex gap-1">
           {slides.map((_, index) => (
             <div
               key={index}
-              className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
-                index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
-              }`}
-            />
+              className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden"
+            >
+              <div 
+                className={`h-full transition-all duration-75 ease-linear ${
+                  index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
+                }`}
+                style={{ 
+                  width: index === currentSlide ? `${progress}%` : index < currentSlide ? '100%' : '0%'
+                }}
+              />
+            </div>
           ))}
-        </div>
-        <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-blue-500 transition-all duration-75 ease-linear"
-            style={{ width: `${progress}%` }}
-          />
         </div>
       </div>
     </div>
