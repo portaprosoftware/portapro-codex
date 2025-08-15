@@ -92,24 +92,24 @@ export function CompanyAnalyticsShowcase() {
                     <div className="text-lg font-bold text-foreground">
                       247
                     </div>
-                    <div className="text-xs text-muted-foreground">15.2%</div>
+                    <div className="text-xs text-green-600 font-medium">+15.2%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Collected Revenue</div>
                     <div className="text-lg font-bold text-foreground">
                       $42.1k
                     </div>
-                    <div className="text-xs text-muted-foreground">22.8%</div>
+                    <div className="text-xs text-green-600 font-medium">+22.8%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">On-time Service Rate</div>
                     <div className="text-lg font-bold text-foreground">94.2%</div>
-                    <div className="text-xs text-muted-foreground">3.1%</div>
+                    <div className="text-xs text-green-600 font-medium">+3.1%</div>
                   </div>
                   <div className="p-3 bg-card border rounded-lg">
                     <div className="text-xs text-muted-foreground mb-1">Active Customers</div>
                     <div className="text-lg font-bold text-foreground">156</div>
-                    <div className="text-xs text-muted-foreground">8.7%</div>
+                    <div className="text-xs text-green-600 font-medium">+8.7%</div>
                   </div>
                 </div>
 
@@ -120,7 +120,7 @@ export function CompanyAnalyticsShowcase() {
                     {/* Deliveries Bar */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Deliveries</span>
+                        <span className="text-xs font-bold text-muted-foreground">Deliveries</span>
                         <span className="text-xs font-medium text-foreground">132</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
@@ -131,8 +131,8 @@ export function CompanyAnalyticsShowcase() {
                     {/* Services Bar */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Services</span>
-                        <span className="text-xs font-medium text-foreground">72</span>
+                        <span className="text-xs font-bold text-muted-foreground">Services</span>
+                        <span className="text-xs font-medium text-foreground">71</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[60%] rounded-full"></div>
@@ -142,7 +142,7 @@ export function CompanyAnalyticsShowcase() {
                     {/* Pickups Bar */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Pickups</span>
+                        <span className="text-xs font-bold text-muted-foreground">Pickups</span>
                         <span className="text-xs font-medium text-foreground">44</span>
                       </div>
                       <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
