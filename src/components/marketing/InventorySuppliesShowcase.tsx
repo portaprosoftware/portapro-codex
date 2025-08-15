@@ -3,6 +3,79 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
 
+const InventorySlider = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const slides = [
+    {
+      title: "Bulk Stock Tracking",
+      content: "Track inventory by location with automatic allocation and real-time availability updates."
+    },
+    {
+      title: "QR Code Management", 
+      content: "Generate and scan QR codes for instant unit identification and status updates."
+    },
+    {
+      title: "Offline Capability",
+      content: "Scan and track units without internet connection. Auto-sync when back online."
+    }
+  ];
+
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setProgress(0);
+    }, 4000);
+
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) return 0;
+        return prev + (100 / 400); // 4000ms = 4s, update every 10ms
+      });
+    }, 10);
+
+    return () => {
+      clearInterval(slideInterval);
+      clearInterval(progressInterval);
+    };
+  }, [slides.length]);
+
+  return (
+    <div className="relative">
+      <div className="h-32 flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <h4 className="text-lg font-semibold text-foreground mb-2">
+            {slides[currentSlide].title}
+          </h4>
+          <p className="text-sm text-muted-foreground">
+            {slides[currentSlide].content}
+          </p>
+        </div>
+      </div>
+      
+      {/* Progress indicator */}
+      <div className="mt-4">
+        <div className="flex gap-1 mb-2">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
+                index === currentSlide ? 'bg-blue-500' : 'bg-gray-200'
+              }`}
+            />
+          ))}
+        </div>
+        <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-blue-500 transition-all duration-75 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export function InventorySuppliesShowcase() {
   return (
@@ -186,8 +259,12 @@ export function InventorySuppliesShowcase() {
 
            </div>
 
-          {/* Right: Benefits */}
+          {/* Right: Auto-rotating slider + Benefits */}
           <aside className="space-y-6 animate-fade-in">
+            {/* Auto-rotating slider */}
+            <div className="rounded-2xl border border-border p-4 bg-card">
+              <InventorySlider />
+            </div>
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
