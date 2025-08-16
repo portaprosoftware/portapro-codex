@@ -339,45 +339,45 @@ const FleetManagementShowcase: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transform scale-75 origin-top">
+      {/* Header - Reduced padding */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
-            <p className="text-blue-100">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
+            <h2 className="text-xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
+            <p className="text-blue-100 text-sm">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
           </div>
           <div className="text-right">
-            <Badge className="bg-white/20 text-white border-white/30">
+            <Badge className="bg-white/20 text-white border-white/30 text-xs">
               {mockVehicle.status}
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="p-6 border-b">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Stats Grid - Reduced padding */}
+      <div className="p-4 border-b">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className={`w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
-                <stat.icon className="w-6 h-6 text-white" />
+              <div className={`w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
+                <stat.icon className="w-5 h-5 text-white" />
               </div>
-              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-sm text-gray-600">{stat.title}</p>
+              <p className="text-lg font-bold text-gray-900">{stat.value}</p>
+              <p className="text-xs text-gray-600">{stat.title}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Navigation Pills */}
-      <div className="p-6">
-        <nav className="flex items-center space-x-1 mb-6" aria-label="Vehicle navigation tabs">
+      {/* Navigation Pills - Reduced padding */}
+      <div className="p-4">
+        <nav className="flex items-center space-x-1 mb-4" aria-label="Vehicle navigation tabs">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
-              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 focus:outline-none transform hover:-translate-y-0.5 ${
+              className={`px-3 py-1.5 rounded-full font-medium text-xs transition-all duration-200 font-inter flex items-center gap-2 focus:outline-none transform hover:-translate-y-0.5 ${
                 activeTab === tab.key 
                   ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
                   : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
