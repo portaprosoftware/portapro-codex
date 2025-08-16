@@ -13,7 +13,7 @@ const TrackingSlider = ({ currentSlide, slides }: { currentSlide: number; slides
   const slide = slides[currentSlide];
   
   return (
-    <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in">
+    <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in min-h-[450px]">
       <div className="flex items-center gap-2 text-sm font-medium mb-4">
         <slide.icon className="w-4 h-4 text-primary" /> {slide.title}
       </div>
@@ -70,8 +70,8 @@ export function TrackingMethodsSlideshow() {
       content: (
         <div className="grid sm:grid-cols-2 gap-6 items-center">
           <div className="flex flex-col items-center space-y-2">
-            <div className="w-2/3">
-              <div className="aspect-square">
+            <div className="w-full">
+              <div className="aspect-[3/4]">
                 <img
                   src="/lovable-uploads/c853198b-87f0-4b6c-b9ee-973c78e6c9ca.png"
                   alt="Mobile phone scanning embossed plastic tool number with AI reading results"
@@ -85,7 +85,6 @@ export function TrackingMethodsSlideshow() {
           </div>
 
           <div className="space-y-4">
-            <div className="text-sm font-medium text-muted-foreground">AI Reading Results:</div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Vendor:</span>
@@ -108,7 +107,7 @@ export function TrackingMethodsSlideshow() {
                 <span className="font-medium">HDPE</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-green-50 text-green-700 p-3 rounded-lg">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 text-green-700 p-3 rounded-lg border border-green-200">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm font-medium">Successfully tracked</span>
             </div>
