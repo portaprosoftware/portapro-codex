@@ -689,7 +689,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Fleet Tracking */}
-          <div className="grid lg:grid-cols-3 gap-12 items-start mb-8">
+          <div className="grid lg:grid-cols-3 gap-12 items-center mb-8">
             <div className="lg:col-span-2 space-y-6">
               <h3 className="text-2xl font-bold text-foreground">General Fleet Tracking</h3>
               <p className="text-lg text-muted-foreground">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
@@ -717,8 +717,8 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             
-            {/* Fleet Management Features */}
-            <div className="space-y-4">
+            {/* Fleet Management Features - Centered */}
+            <div className="flex flex-col justify-center space-y-4">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
