@@ -828,7 +828,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/images/driver-assignments.png" 
+              src="/lovable-uploads/0b7accb8-59a2-4da2-9dc3-788ae3549efe.png" 
               alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
               className="w-full h-auto rounded-lg"
             />
