@@ -45,29 +45,8 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Schedule & Send + Video */}
+          {/* Left column: Audience & Segments + Video */}
           <div className="space-y-3">
-            {/* Video Demo */}
-            <div className="rounded-lg overflow-hidden animate-fade-in">
-              <script src="https://fast.wistia.com/player.js" async></script>
-              <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
-              <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
-              <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
-            </div>
-
-            {/* Campaign Creation Interface */}
-            <div className="rounded-lg overflow-hidden animate-fade-in">
-              <img 
-                src="/lovable-uploads/219a5fef-4abd-4e46-8dc0-af3ae94c6c8f.png" 
-                alt="Create New Campaign interface showing scheduling and review options"
-                className="w-full h-auto"
-              />
-            </div>
-
-          </div>
-
-          {/* Right column: Audience & Segments + Highlights */}
-          <aside className="space-y-6">
             {/* Audience & Smart Segments */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
@@ -90,6 +69,27 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
             </article>
+
+            {/* Video Demo */}
+            <div className="rounded-lg overflow-hidden animate-fade-in">
+              <script src="https://fast.wistia.com/player.js" async></script>
+              <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
+              <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
+              <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
+            </div>
+
+          </div>
+
+          {/* Right column: Campaign Creation + Highlights */}
+          <aside className="space-y-6">
+            {/* Campaign Creation Interface */}
+            <div className="rounded-lg overflow-hidden animate-fade-in">
+              <img 
+                src="/lovable-uploads/219a5fef-4abd-4e46-8dc0-af3ae94c6c8f.png" 
+                alt="Create New Campaign interface showing scheduling and review options"
+                className="w-full h-auto"
+              />
+            </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
