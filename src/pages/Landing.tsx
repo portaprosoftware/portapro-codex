@@ -717,12 +717,26 @@ export const Landing: React.FC = () => {
             </div>
             <div className="relative group cursor-pointer rounded-xl border bg-card shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift">
               <img 
-                src="/lovable-uploads/cb8e882f-6706-43c4-ae88-547c569adb3d.png" 
-                alt="Fleet vehicle tracking interface showing Isuzu NPR-HD truck with management tabs and details"
+                src="/lovable-uploads/9f2d85e3-9727-4e34-b353-fd0f5f7ff5a4.png" 
+                alt="General Fleet Tracking features interface with vehicle management and monitoring tools"
                 className="w-full h-auto"
                 onError={(e) => {
                   console.error('Failed to load fleet image:', e);
-                  e.currentTarget.style.display = 'none';
+                  // Show fallback content instead of hiding
+                  const fallback = document.createElement('div');
+                  fallback.className = 'w-full h-64 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center border-2 border-dashed border-muted-foreground/20';
+                  fallback.innerHTML = `
+                    <div class="text-center p-8">
+                      <div class="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                      </div>
+                      <h3 class="text-lg font-semibold text-foreground mb-2">Fleet Management</h3>
+                      <p class="text-sm text-muted-foreground">Vehicle tracking and management interface</p>
+                    </div>
+                  `;
+                  e.currentTarget.parentNode.replaceChild(fallback, e.currentTarget);
                 }}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-end justify-center">
