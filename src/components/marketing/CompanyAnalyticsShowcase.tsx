@@ -24,46 +24,9 @@ export function CompanyAnalyticsShowcase() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 items-start">
-          {/* Top Row - Navigation Controls and Dashboard Cards */}
-          <div className="grid grid-cols-2 gap-6 items-stretch mb-4">
-            {/* Navigation & Controls Demo - Half Width */}
-            <Card className="border border-border bg-card h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Filter className="w-5 h-5" />
-                  Navigation & Controls
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">Persistent date range and filtering across all tabs</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 pb-4">
-                {/* Mock Tab Navigation */}
-                <div className="flex flex-wrap gap-1 p-2 bg-muted/30 rounded-lg">
-                  <Badge variant="outline" className="px-3 py-1">Overview</Badge>
-                  <Badge variant="outline" className="px-3 py-1">Revenue</Badge>
-                  <Badge variant="outline" className="px-3 py-1">Operations</Badge>
-                  <Badge variant="outline" className="px-3 py-1">Customers</Badge>
-                  <Badge variant="outline" className="px-3 py-1">Drivers</Badge>
-                  <Badge variant="outline" className="px-3 py-1">Reports</Badge>
-                </div>
-                
-                {/* Mock Date Range Picker */}
-                <div className="flex items-center gap-3 p-3 bg-card border rounded-lg">
-                  <div className="text-sm text-muted-foreground">Date Range:</div>
-                  <Badge variant="outline">Last 30 Days</Badge>
-                  <Badge variant="outline">Compare to previous period</Badge>
-                </div>
-
-                {/* Mock Active Filters */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-muted-foreground">Active filters:</span>
-                  <Badge variant="outline">Service Type: Deliveries</Badge>
-                  <Badge variant="outline">Route: Zone A</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Dashboard Cards Image */}
-            <div className="h-full flex items-center">
+          {/* Centered Dashboard Cards */}
+          <div className="flex justify-center mb-4">
+            <div className="w-1/2">
               <img 
                 src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
                 alt="Dashboard analytics cards showing job summary and revenue metrics"
