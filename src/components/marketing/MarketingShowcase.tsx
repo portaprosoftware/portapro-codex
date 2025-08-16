@@ -55,6 +55,15 @@ export const MarketingShowcase: React.FC = () => {
               <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
             </div>
 
+            {/* Campaign Creation Interface */}
+            <div className="rounded-lg overflow-hidden animate-fade-in">
+              <img 
+                src="/lovable-uploads/219a5fef-4abd-4e46-8dc0-af3ae94c6c8f.png" 
+                alt="Create New Campaign interface showing scheduling and review options"
+                className="w-full h-auto"
+              />
+            </div>
+
           </div>
 
           {/* Right column: Audience & Segments + Highlights */}
