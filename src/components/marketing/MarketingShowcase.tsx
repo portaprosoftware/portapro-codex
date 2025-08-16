@@ -63,7 +63,7 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="rounded-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/e574b894-8c50-4000-b7bf-5a976cb5758b.png" 
+                  src="/lovable-uploads/0e00793f-8567-4e19-8e86-c3e24c83b28b.png" 
                   alt="Campaign creation interface showing 4-step workflow with scheduling and campaign summary features"
                   className="w-full h-auto object-contain"
                 />
