@@ -4,12 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
 
 const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [displaySlide, setDisplaySlide] = useState(currentSlide);
+
+  useEffect(() => {
+    if (displaySlide !== currentSlide) {
+      setIsTransitioning(true);
+      
+      // Start fade out and scale out
+      setTimeout(() => {
+        setDisplaySlide(currentSlide);
+        setIsTransitioning(false);
+      }, 200); // Half the transition duration
+    }
+  }, [currentSlide, displaySlide]);
+
   return (
-    <div className="animate-fade-in">
+    <div className="relative w-full">
       <img
-        src={slides[currentSlide].image}
-        alt={slides[currentSlide].title}
-        className="w-full h-auto rounded-lg shadow-sm"
+        src={slides[displaySlide].image}
+        alt={slides[displaySlide].title}
+        className={`w-full h-auto rounded-lg transition-all duration-400 ease-out ${
+          isTransitioning 
+            ? 'animate-exit opacity-0 scale-95' 
+            : 'animate-enter opacity-100 scale-100'
+        }`}
         loading="lazy"
         decoding="async"
       />
