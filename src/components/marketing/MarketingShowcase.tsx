@@ -48,7 +48,7 @@ export const MarketingShowcase: React.FC = () => {
           {/* Left column: Schedule & Send + Video */}
           <div className="space-y-6">
             {/* Video Demo */}
-            <article className="rounded-2xl border bg-card shadow-md p-2 animate-fade-in">
+            <article className="rounded-2xl border bg-card shadow-md px-2 py-1 animate-fade-in">
               <div className="rounded-lg overflow-hidden">
                 <script src="https://fast.wistia.com/player.js" async></script>
                 <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
