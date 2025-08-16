@@ -90,73 +90,68 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                 <Users className="w-4 h-4 text-muted-foreground" />
               </div>
 
-              {/* Customer Stats Cards - Matching uploaded image */}
+              {/* Customer Stats Cards - Matching uploaded image style */}
               <div className="grid grid-cols-2 gap-3 mb-6">
-                <Card className="border bg-background">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-4 h-4 text-blue-600" />
-                      <div className="text-xs text-muted-foreground">Total Job History</div>
-                    </div>
-                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.totalJobs}</div>
+                <Card className="border-l-4 border-l-blue-600 bg-background shadow-sm">
+                  <CardContent className="p-4 relative">
+                    <Calendar className="w-4 h-4 text-blue-600 absolute top-3 right-3" />
+                    <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.totalJobs}</div>
+                    <div className="text-sm text-muted-foreground">Total Job History</div>
                   </CardContent>
                 </Card>
-                <Card className="border bg-background">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <DollarSign className="w-4 h-4 text-green-600" />
-                      <div className="text-xs text-muted-foreground">Outstanding Balance</div>
-                    </div>
-                    <div className="text-xl font-semibold text-foreground">${mockCustomerData.stats.outstandingBalance}</div>
+                <Card className="border-l-4 border-l-green-600 bg-background shadow-sm">
+                  <CardContent className="p-4 relative">
+                    <DollarSign className="w-4 h-4 text-green-600 absolute top-3 right-3" />
+                    <div className="text-2xl font-bold text-foreground mb-1">${mockCustomerData.stats.outstandingBalance}</div>
+                    <div className="text-sm text-muted-foreground">Outstanding Balance</div>
                   </CardContent>
                 </Card>
-                <Card className="border bg-background">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <FileText className="w-4 h-4 text-orange-600" />
-                      <div className="text-xs text-muted-foreground">Outstanding Invoices</div>
-                    </div>
-                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.outstandingInvoices}</div>
+                <Card className="border-l-4 border-l-orange-600 bg-background shadow-sm">
+                  <CardContent className="p-4 relative">
+                    <FileText className="w-4 h-4 text-orange-600 absolute top-3 right-3" />
+                    <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.outstandingInvoices}</div>
+                    <div className="text-sm text-muted-foreground">Outstanding Invoices</div>
                   </CardContent>
                 </Card>
-                <Card className="border bg-background">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Truck className="w-4 h-4 text-purple-600" />
-                      <div className="text-xs text-muted-foreground">Next Delivery</div>
-                    </div>
-                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.nextDelivery}</div>
+                <Card className="border-l-4 border-l-purple-600 bg-background shadow-sm">
+                  <CardContent className="p-4 relative">
+                    <Truck className="w-4 h-4 text-purple-600 absolute top-3 right-3" />
+                    <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.nextDelivery}</div>
+                    <div className="text-sm text-muted-foreground">Next Delivery</div>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Navigation Tabs */}
-              <div className="flex flex-wrap gap-1 mb-4">
-                {[
-                  { id: 'overview', label: 'Overview', icon: Home },
-                  { id: 'contacts', label: 'Contacts', icon: Users },
-                  { id: 'locations', label: 'Service Locations', icon: MapPin },
-                  { id: 'jobs', label: 'Jobs', icon: Briefcase },
-                  { id: 'reports', label: 'Service Reports', icon: BarChart3 },
-                  { id: 'financial', label: 'Financial', icon: DollarSign },
-                  { id: 'communication', label: 'Communication', icon: MessageSquare },
-                ].map((tab) => {
-                  const IconComponent = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${
-                        activeTab === tab.id
-                          ? 'bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm'
-                          : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      <IconComponent className="w-3 h-3" />
-                      {tab.label}
-                    </button>
-                  );
-                })}
+              <div className="mb-2">
+                <p className="text-xs text-muted-foreground mb-3">Click the buttons below to navigate between different sections</p>
+                <div className="flex flex-wrap gap-1">
+                  {[
+                    { id: 'overview', label: 'Overview', icon: Home },
+                    { id: 'contacts', label: 'Contacts', icon: Users },
+                    { id: 'locations', label: 'Service Locations', icon: MapPin },
+                    { id: 'jobs', label: 'Jobs', icon: Briefcase },
+                    { id: 'reports', label: 'Service Reports', icon: BarChart3 },
+                    { id: 'financial', label: 'Financial', icon: DollarSign },
+                    { id: 'communication', label: 'Communication', icon: MessageSquare },
+                  ].map((tab) => {
+                    const IconComponent = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${
+                          activeTab === tab.id
+                            ? 'bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm'
+                            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        <IconComponent className="w-3 h-3" />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Tab Content */}
@@ -218,10 +213,10 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                               {job.units} units • Started: {job.startDate}
                             </div>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            job.status === 'Active' ? 'bg-green-100 text-green-700' :
-                            job.status === 'Completed' ? 'bg-gray-100 text-gray-700' :
-                            'bg-blue-100 text-blue-700'
+                          <span className={`px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-sm ${
+                            job.status === 'Active' ? 'bg-gradient-to-r from-green-600 to-green-700' :
+                            job.status === 'Completed' ? 'bg-gradient-to-r from-gray-600 to-gray-700' :
+                            'bg-gradient-to-r from-blue-600 to-blue-700'
                           }`}>
                             {job.status}
                           </span>
