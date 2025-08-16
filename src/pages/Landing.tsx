@@ -444,7 +444,7 @@ export const Landing: React.FC = () => {
         </div>
 
         {/* White divider section for better spacing */}
-        <div className="bg-gradient-to-b from-transparent via-white/10 to-white py-12">
+        <div className="bg-gradient-to-b from-transparent via-white/30 via-white/70 to-white py-8">
           <div className="container mx-auto max-w-6xl px-6">
             {/* Feature badges */}
             <div className="flex flex-wrap justify-center gap-2 mb-6">
