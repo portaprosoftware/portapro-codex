@@ -915,6 +915,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
+            <img 
+              src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" 
+              alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
+              className="w-full h-auto rounded-lg"
+            />
           </div>
         </div>
       </section>
