@@ -7,7 +7,7 @@ export const SchedulingGraphic: React.FC = () => {
   const shifts = ['AM', 'PM', 'EVE'];
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-4 border shadow-sm">
+    <div className="w-full bg-white rounded-xl p-4 border shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -70,12 +70,6 @@ export const SchedulingGraphic: React.FC = () => {
                   )}
                 </div>
 
-                {/* Conflict Indicator */}
-                {driverIndex === 1 && dayIndex === 2 && (
-                  <div className="absolute -top-1 -right-1">
-                    <AlertTriangle className="w-3 h-3 text-amber-500" />
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -97,10 +91,6 @@ export const SchedulingGraphic: React.FC = () => {
             <div className="w-3 h-3 rounded bg-gradient-to-r from-purple-500 to-purple-600"></div>
             <span className="text-xs text-muted-foreground">Evening</span>
           </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <AlertTriangle className="w-3 h-3 text-amber-500" />
-          <span className="text-xs text-muted-foreground">Conflict</span>
         </div>
       </div>
     </div>
