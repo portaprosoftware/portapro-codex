@@ -715,11 +715,20 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/466437b3-13a7-4bbc-9d41-c446f75980c2.png" 
-              alt="Fleet vehicle tracking interface showing Isuzu NPR-HD truck with details including make, model, VIN, year, mileage, and management tabs"
-              className="w-full h-auto rounded-lg"
-            />
+            <div className="relative group cursor-pointer rounded-xl border bg-card shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift">
+              <img 
+                src="/lovable-uploads/fleet-vehicle-detail.png" 
+                alt="Fleet vehicle tracking interface showing Isuzu NPR-HD truck with management tabs and details"
+                className="w-full h-auto"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-end justify-center">
+                <div className="p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <p className="text-white font-medium text-sm bg-black/75 px-3 py-2 rounded-lg">
+                    Click to expand and explore vehicle profiles
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Vehicle Ops Toolkit */}
