@@ -689,7 +689,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Fleet Tracking */}
-          <div className="grid lg:grid-cols-3 gap-12 items-start mb-12">
+          <div className="grid lg:grid-cols-3 gap-12 items-start mb-8">
             <div className="lg:col-span-2 space-y-6">
               <h3 className="text-2xl font-bold text-foreground">General Fleet Tracking</h3>
               <p className="text-lg text-muted-foreground">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
@@ -742,31 +742,34 @@ export const Landing: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <h3 className="font-semibold">Assignments</h3>
-                      <p className="text-sm text-gray-600">Daily driver shifts with vehicle handoffs and checklists.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <h3 className="font-semibold">Compliance Locker</h3>
-                      <p className="text-sm text-gray-600">DOCs, registrations, insurance—alerts before anything expires.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
+          </div>
+
+          {/* Assignments and Compliance Locker Row */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Users className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Assignments</h3>
+                    <p className="text-sm text-gray-600">Daily driver shifts with vehicle handoffs and checklists.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Compliance Locker</h3>
+                    <p className="text-sm text-gray-600">DOCs, registrations, insurance—alerts before anything expires.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Fleet Management Showcase - Full Width */}
