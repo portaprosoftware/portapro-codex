@@ -69,31 +69,19 @@ export function TrackingMethodsSlideshow() {
       icon: Camera,
       content: (
         <div className="grid sm:grid-cols-2 gap-6 items-center">
-          <div className="relative">
-            <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 aspect-[3/4] flex items-center justify-center">
-              <div className="bg-black rounded-3xl p-2 w-48 h-80 relative">
-                <div className="bg-gray-900 rounded-2xl w-full h-full flex flex-col">
-                  <div className="flex-1 bg-gray-800 rounded-t-2xl m-1 p-4 text-white text-xs font-mono">
-                    <div className="space-y-1">
-                      <div>www.ABCManufacturing.com</div>
-                      <div>Vendor: ABC Manufacturing</div>
-                      <div>Tool No: T-207788-1A</div>
-                      <div>Vendor ID: 32123</div>
-                      <div>Mfg Date: January 13, 2016</div>
-                      <div>Plastic: HDPE</div>
-                      <div className="mt-4 text-center">
-                        <div className="text-2xl">♻</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="h-16 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full border-2 border-gray-300"></div>
-                    </div>
-                  </div>
-                </div>
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-2/3">
+              <div className="aspect-square">
+                <img
+                  src="/lovable-uploads/c853198b-87f0-4b6c-b9ee-973c78e6c9ca.png"
+                  alt="Mobile phone scanning embossed plastic tool number with AI reading results"
+                  className="w-full h-full object-cover rounded-lg border border-border"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
             </div>
+            <div className="text-xs font-bold text-foreground">AI Reading Results</div>
           </div>
 
           <div className="space-y-4">
