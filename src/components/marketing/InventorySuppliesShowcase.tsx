@@ -263,7 +263,7 @@ export function InventorySuppliesShowcase() {
            </div>
 
           {/* Right: Auto-rotating slider + Benefits */}
-          <aside className="mt-48 animate-fade-in">
+          <aside className="mt-8 animate-fade-in">
             {/* Auto-rotating slider */}
             <InventorySlider currentSlide={currentSlide} slides={slides} />
             <div className="rounded-2xl border border-border p-5 mt-6">
