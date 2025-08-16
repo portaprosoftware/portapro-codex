@@ -774,7 +774,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/9d865708-b884-4ae8-bebd-bfe16cdf3fd5.png" 
+              src="/lovable-uploads/480161a1-70ec-4f75-8ec7-32d01b58e4df.png" 
               alt="Maintenance notifications showing past due and due this week tasks"
               className="w-full h-auto rounded-lg transform scale-105"
             />
