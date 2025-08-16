@@ -48,63 +48,26 @@ const FleetManagementShowcase: React.FC = () => {
       case 'overview':
         return (
           <div className="space-y-6">
-            {/* Vehicle Image Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  Vehicle Photos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-lg overflow-hidden">
-                  <img 
-                    src="/lovable-uploads/9abe22a2-0d1c-477b-8f9f-e39843ff0748.png"
-                    alt="2019 Isuzu NPR-HD Fleet Vehicle" 
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
+            {/* Vehicle Photos and Current Assignment Side by Side */}
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Vehicle Information
+                    <Camera className="w-5 h-5" />
+                    Vehicle Photos
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-sm text-gray-600">Make</span>
-                      <p className="font-semibold text-lg">{mockVehicle.make}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-600">Model</span>
-                      <p className="font-semibold text-lg">{mockVehicle.model}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-600">Year</span>
-                      <p className="font-semibold">{mockVehicle.year}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-600">License Plate</span>
-                      <p className="font-semibold">{mockVehicle.licensePlate}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">VIN</span>
-                    <p className="font-semibold text-sm">{mockVehicle.vin}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-600">Current Mileage</span>
-                    <p className="font-semibold text-lg">{mockVehicle.mileage.toLocaleString()} miles</p>
+                <CardContent>
+                  <div className="rounded-lg overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/9abe22a2-0d1c-477b-8f9f-e39843ff0748.png" 
+                      alt="2019 Isuzu NPR-HD Fleet Vehicle" 
+                      className="w-full h-48 object-cover object-center"
+                    />
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -132,6 +95,44 @@ const FleetManagementShowcase: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Vehicle Information - Full Width */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  Vehicle Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Make</span>
+                    <p className="font-semibold text-lg">{mockVehicle.make}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Model</span>
+                    <p className="font-semibold text-lg">{mockVehicle.model}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Year</span>
+                    <p className="font-semibold">{mockVehicle.year}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">License Plate</span>
+                    <p className="font-semibold">{mockVehicle.licensePlate}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Current Mileage</span>
+                    <p className="font-semibold">{mockVehicle.mileage.toLocaleString()} miles</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">VIN</span>
+                    <p className="font-semibold text-sm">{mockVehicle.vin}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         );
         
