@@ -507,7 +507,6 @@ export const Landing: React.FC = () => {
               <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
             </p>
           </div>
-          </div>
         </div>
       </section>
 
@@ -2450,6 +2449,6 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>}
-    </div>;
+    </div>
 };
 export default Landing;
