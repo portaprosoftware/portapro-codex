@@ -1,0 +1,144 @@
+import React, { useState, useEffect } from "react";
+import { QrCode, Camera, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface TrackingSlide {
+  id: string;
+  title: string;
+  icon: React.ComponentType<any>;
+  content: React.ReactNode;
+}
+
+const TrackingSlider = ({ currentSlide, slides }: { currentSlide: number; slides: TrackingSlide[] }) => {
+  const slide = slides[currentSlide];
+  
+  return (
+    <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in">
+      <div className="flex items-center gap-2 text-sm font-medium mb-4">
+        <slide.icon className="w-4 h-4 text-primary" /> {slide.title}
+      </div>
+      {slide.content}
+    </div>
+  );
+};
+
+export function TrackingMethodsSlideshow() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides: TrackingSlide[] = [
+    {
+      id: "qr-codes",
+      title: "Track Units with QR Codes Automatically",
+      icon: QrCode,
+      content: (
+        <div className="grid sm:grid-cols-2 gap-4 items-center">
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-2/3">
+              <div className="aspect-square">
+                <img
+                  src="/lovable-uploads/1410c8e3-cd74-47ef-892c-0d261cfceff6.png"
+                  alt="QR code for Standard Unit 1232"
+                  className="w-full h-full object-cover rounded-lg border border-border"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div className="text-xs font-bold text-foreground">1232 • Standard Unit</div>
+          </div>
+
+          <div className="rounded-lg border border-border p-3">
+            <div className="text-xs font-medium">QR Label</div>
+            <div className="mt-2 rounded-md border border-dashed p-2 text-xs">
+              1232 • Standard Unit
+            </div>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1">Generate</Button>
+              <Button size="sm" variant="outline" className="text-xs px-2 py-1">Print</Button>
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Works offline — syncs later. Instant attach to units & jobs.
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "embossed-plastic",
+      title: "Snap & Track Units from Embossed Plastic Tool Numbers",
+      icon: Camera,
+      content: (
+        <div className="grid sm:grid-cols-2 gap-4 items-center">
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-2/3">
+              <div className="aspect-square">
+                <img
+                  src="/lovable-uploads/18cdb9dd-fe23-485e-bfac-d7867476d245.png"
+                  alt="Mobile phone scanning embossed plastic tool number with AI reading results"
+                  className="w-full h-full object-cover rounded-lg border border-border"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div className="text-xs font-bold text-foreground">AI Reading Results</div>
+          </div>
+
+          <div className="rounded-lg border border-border p-3 space-y-2">
+            <div className="text-xs font-medium">AI Reading Results:</div>
+            <div className="space-y-1 text-xs">
+              <div><span className="text-muted-foreground">Vendor:</span> <span className="font-medium">ABC Manufacturing</span></div>
+              <div><span className="text-muted-foreground">Tool No:</span> <span className="font-medium">T-207788-1A</span></div>
+              <div><span className="text-muted-foreground">Vendor ID:</span> <span className="font-medium">32123</span></div>
+              <div><span className="text-muted-foreground">Mfg Date:</span> <span className="font-medium">January 13, 2016</span></div>
+              <div><span className="text-muted-foreground">Plastic:</span> <span className="font-medium">HDPE</span></div>
+            </div>
+            <div className="mt-2 flex items-center gap-1">
+              <CheckCircle className="w-3 h-3 text-green-600" />
+              <span className="text-xs font-medium text-green-600">Successfully tracked</span>
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Works offline — syncs later. Instant attach to units & jobs.
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(slideInterval);
+    };
+  }, [slides.length]);
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-foreground">Advanced Unit Tracking</h3>
+        <p className="text-lg text-muted-foreground">Multiple tracking methods for instant unit identification and job attachments.</p>
+        <ul className="space-y-3">
+          <li className="flex items-start gap-3">
+            <QrCode className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <span className="text-foreground">Generate custom QR labels for individual units</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <span className="text-foreground">AI-powered scanning of embossed plastic numbers</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <span className="text-foreground">Works offline — syncs later when connected</span>
+          </li>
+        </ul>
+      </div>
+      <div className="aspect-video flex items-center justify-center">
+        <TrackingSlider currentSlide={currentSlide} slides={slides} />
+      </div>
+    </div>
+  );
+}
