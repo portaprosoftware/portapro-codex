@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { QrCode, Camera, CheckCircle } from "lucide-react";
+import { QrCode, Camera, CheckCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface TrackingSlide {
@@ -37,8 +37,8 @@ export function TrackingMethodsSlideshow() {
       title: "Track Units with QR Codes Automatically",
       icon: QrCode,
       content: (
-        <div className="grid sm:grid-cols-2 gap-4 items-start">
-          <div className="flex justify-center">
+        <div className="grid sm:grid-cols-2 gap-4 items-center">
+          <div className="flex flex-col items-center">
             <div className="w-48">
               <div className="aspect-square">
                 <img
@@ -72,7 +72,7 @@ export function TrackingMethodsSlideshow() {
     {
       id: "embossed-plastic",
       title: "Snap & Track Units from Embossed Plastic Tool Numbers",
-      icon: "/lovable-uploads/3af96989-f6b4-4649-9808-1c980acda0b7.png",
+      icon: Sparkles,
       content: (
         <div className="grid sm:grid-cols-2 gap-6 items-start">
           <div className="flex justify-center">
@@ -126,23 +126,17 @@ export function TrackingMethodsSlideshow() {
   ];
 
   useEffect(() => {
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-      setProgress(0);
-    }, 5000);
-
-    // Progress timer
-    const progressInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) return 0;
-        return prev + (100 / 50); // 5000ms / 100ms = 50 steps
+        if (prev >= 100) {
+          setCurrentSlide((current) => (current + 1) % slides.length);
+          return 0;
+        }
+        return prev + 2; // 100 steps over 5000ms = 2% every 100ms
       });
     }, 100);
 
-    return () => {
-      clearInterval(slideInterval);
-      clearInterval(progressInterval);
-    };
+    return () => clearInterval(interval);
   }, [slides.length]);
 
   return (
