@@ -146,10 +146,6 @@ export function TrackingMethodsSlideshow() {
       
       {/* Progress Timer */}
       <div className="mt-4 w-full max-w-md">
-        <div className="flex justify-between text-xs text-muted-foreground mb-1">
-          <span>Slide {currentSlide + 1} of {slides.length}</span>
-          <span>Next in {Math.ceil((100 - progress) / 20)}s</span>
-        </div>
         <div className="w-full bg-muted rounded-full h-1">
           <div 
             className="bg-primary h-1 rounded-full transition-all duration-100" 
