@@ -57,38 +57,18 @@ export const MarketingShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* Schedule & Send */}
+            {/* Campaign Creation */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Schedule & Send</h3>
-                <CalendarClock className="w-4 h-4 text-muted-foreground" />
+                <h3 className="text-base font-semibold text-foreground">Campaign Creation</h3>
+                <FileText className="w-4 h-4 text-muted-foreground" />
               </div>
-              <div className="rounded-xl border bg-background p-4 space-y-3">
-                <div className="inline-flex rounded-xl border bg-card p-1 text-sm">
-                  <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold cursor-default">Send now</div>
-                  <div className="px-3 py-1 rounded-lg text-foreground cursor-default">Schedule</div>
-                </div>
-                <div className="grid sm:grid-cols-3 gap-3 text-sm overflow-visible">
-                  <div className="grid gap-1">
-                    <label className="text-muted-foreground">Date</label>
-                    <input className="rounded-lg border bg-card px-3 py-2" placeholder="2025-09-12" readOnly />
-                  </div>
-                  <div className="grid gap-1">
-                    <label className="text-muted-foreground">Time</label>
-                    <input className="rounded-lg border bg-card px-3 py-2" placeholder="09:00 AM" readOnly />
-                  </div>
-                  <div className="grid gap-1 relative">
-                    <label className="text-muted-foreground">Timezone</label>
-                    <input className="rounded-lg border bg-card px-3 py-2 overflow-visible whitespace-nowrap min-w-0" placeholder="Eastern / EDT" readOnly style={{width: 'auto', minWidth: '140px'}} />
-                  </div>
-                </div>
-                <div className="text-sm text-foreground">
-                  Email + SMS • Template: Spring Promo • Segment: Smart: Inactive 90+ days
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground"><Send className="w-3 h-3" /> Respect unsubscribes & quiet hours</span>
-                  <span className="inline-flex items-center gap-1 rounded-md bg-secondary/10 text-secondary-foreground px-2 py-1">Unlimited texts + emails included — $0 add‑ons</span>
-                </div>
+              <div className="rounded-lg overflow-hidden">
+                <img 
+                  src="/lovable-uploads/d1dc9af8-52cd-4c1c-ada5-fb713516b57b.png" 
+                  alt="Campaign creation interface showing workflow and scheduling options"
+                  className="w-full h-auto object-contain"
+                />
               </div>
             </article>
           </div>
