@@ -14,7 +14,7 @@ export function CompanyAnalyticsShowcase() {
   return (
     <section id="company-analytics" className="py-16 bg-white">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="text-center mb-6">
+        <div className="text-center mb-4 md:mb-6">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             Company Analytics — Complete insights across your entire operation
           </h2>
@@ -24,7 +24,7 @@ export function CompanyAnalyticsShowcase() {
         </div>
 
         {/* Two-column layout: Image and One-Click Reports */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
           {/* Dashboard Cards Image */}
           <div className="flex justify-center lg:justify-start">
             <img 
