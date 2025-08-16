@@ -39,11 +39,11 @@ export const SmartWizardShowcase: React.FC = () => {
             ))}
           </div>
 
-          <div className="aspect-video bg-muted rounded-xl overflow-hidden">
+          <div className="aspect-video bg-muted rounded-xl overflow-hidden p-2">
             <img 
               src="/lovable-uploads/321837e3-92ad-42d0-bf16-48737a913b98.png" 
               alt="Smart Job Wizard interface showing job DEL-041 with assignment details and schedule information"
-              className="w-full h-full object-cover transform scale-125"
+              className="w-full h-full object-cover transform scale-110"
             />
           </div>
 
