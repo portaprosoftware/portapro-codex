@@ -11,13 +11,14 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Package, Hash, Sliders } from 'lucide-react';
+import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Package, Hash, Sliders, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
 import { InventoryFilters } from '@/components/inventory/InventoryFilters';
 import { PanelScansView } from '@/components/inventory/PanelScansView';
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
+import { MaintenanceTrackerTab } from '@/components/inventory/MaintenanceTrackerTab';
 import { ProductDetail } from '@/components/inventory/ProductDetail';
 import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
@@ -34,7 +35,7 @@ const Inventory: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'products' | 'location-map' | 'panel-scans' | 'code-categories'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'location-map' | 'panel-scans' | 'code-categories' | 'maintenance'>('products');
   
   // State from original Inventory page
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -58,6 +59,8 @@ const Inventory: React.FC = () => {
       setActiveTab('panel-scans');
     } else if (path.includes('/code-categories')) {
       setActiveTab('code-categories');
+    } else if (path.includes('/maintenance')) {
+      setActiveTab('maintenance');
     } else {
       setActiveTab('products');
     }
@@ -318,6 +321,14 @@ const Inventory: React.FC = () => {
               <span className="h-4 w-4 flex items-center justify-center font-bold text-xs">1001</span>
               Categories
             </TabNav.Item>
+            <TabNav.Item
+              to="/inventory/maintenance"
+              isActive={activeTab === 'maintenance'}
+              onClick={() => navigateToTab('maintenance')}
+            >
+              <Wrench className="h-4 w-4" />
+              Maintenance
+            </TabNav.Item>
           </TabNav>
         </div>
 
@@ -486,6 +497,12 @@ const Inventory: React.FC = () => {
         {activeTab === 'code-categories' && (
           <div className="bg-background rounded-2xl shadow-md p-6">
             <CodeCategoriesView />
+          </div>
+        )}
+
+        {activeTab === 'maintenance' && (
+          <div className="bg-background rounded-2xl shadow-md p-6">
+            <MaintenanceTrackerTab productId="all" />
           </div>
         )}
 
