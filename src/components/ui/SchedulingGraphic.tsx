@@ -14,7 +14,7 @@ export const SchedulingGraphic: React.FC = () => {
           <Users className="w-5 h-5 text-primary" />
           <h4 className="font-semibold text-foreground">Weekly Schedule</h4>
         </div>
-        <div className="text-xs text-muted-foreground">Dec 11-15, 2023</div>
+        <div className="text-xs text-muted-foreground">Dec 11-15, 2025</div>
       </div>
 
       {/* Schedule Grid */}

@@ -1001,7 +1001,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
+            <div className="order-1 lg:order-2">
               <SchedulingGraphic />
             </div>
           </div>
