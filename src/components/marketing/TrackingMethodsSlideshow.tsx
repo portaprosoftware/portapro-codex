@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 interface TrackingSlide {
   id: string;
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<any> | string;
   content: React.ReactNode;
 }
 
@@ -15,7 +15,12 @@ const TrackingSlider = ({ currentSlide, slides }: { currentSlide: number; slides
   return (
     <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in min-h-[400px]">
       <div className="flex items-center gap-2 text-sm font-medium mb-4">
-        <slide.icon className="w-4 h-4 text-primary" /> {slide.title}
+        {typeof slide.icon === 'string' ? (
+          <img src={slide.icon} alt="" className="w-4 h-4" />
+        ) : (
+          <slide.icon className="w-4 h-4 text-primary" />
+        )} 
+        {slide.title}
       </div>
       {slide.content}
     </div>
@@ -67,7 +72,7 @@ export function TrackingMethodsSlideshow() {
     {
       id: "embossed-plastic",
       title: "Snap & Track Units from Embossed Plastic Tool Numbers",
-      icon: Camera,
+      icon: "/lovable-uploads/3af96989-f6b4-4649-9808-1c980acda0b7.png",
       content: (
         <div className="grid sm:grid-cols-2 gap-6 items-start">
           <div className="flex justify-center">
