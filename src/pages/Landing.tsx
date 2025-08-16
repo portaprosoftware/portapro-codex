@@ -443,8 +443,8 @@ export const Landing: React.FC = () => {
           </div>
         </div>
 
-        {/* Seamless transition to cards section */}
-        <div className="bg-gradient-to-b from-transparent via-transparent to-white pb-6">
+        {/* White divider section for better spacing */}
+        <div className="bg-gradient-to-b from-transparent via-white/10 to-white py-12">
           <div className="container mx-auto max-w-6xl px-6">
             {/* Feature badges */}
             <div className="flex flex-wrap justify-center gap-2 mb-6">
