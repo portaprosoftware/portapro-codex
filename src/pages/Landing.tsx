@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -676,9 +676,42 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">QR Scanning Photo</span>
+            {/* Track Units with QR Codes */}
+            <div className="rounded-2xl bg-white border border-border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium mb-4">
+                <QrCode className="w-4 h-4 text-primary" /> Track Units with QR Codes Automatically
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 items-center">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-2/3">
+                    <div className="aspect-square">
+                      <img
+                        src="/lovable-uploads/1410c8e3-cd74-47ef-892c-0d261cfceff6.png"
+                        alt="QR code for Standard Unit 1232"
+                        className="w-full h-full object-cover rounded-lg border border-border"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-xs font-bold text-foreground">1232 • Standard Unit</div>
+                </div>
+
+                <div className="rounded-lg border border-border p-3">
+                  <div className="text-xs font-medium">QR Label</div>
+                  <div className="mt-2 rounded-md border border-dashed p-2 text-xs">
+                    1232 • Standard Unit
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1">Generate</Button>
+                    <Button size="sm" variant="outline" className="text-xs px-2 py-1">Print</Button>
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Works offline — syncs later. Instant attach to units & jobs.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
