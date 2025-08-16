@@ -855,7 +855,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/a8858ace-9364-4ad8-9663-00c799a10876.png" 
+              src="/lovable-uploads/b903fe69-df76-48bc-8997-02f8e75b670a.png" 
               alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
               className="w-full h-auto rounded-lg transform scale-110"
             />
