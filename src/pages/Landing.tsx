@@ -1058,7 +1058,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/06af4053-3df7-4262-af45-e64c805169d2.png" 
+              src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" 
               alt="Training Requirements management interface"
               className="order-2 lg:order-1 w-full h-auto"
             />
