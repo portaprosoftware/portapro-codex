@@ -61,7 +61,7 @@ export const MarketingShowcase: React.FC = () => {
                   "Smart: High value accounts",
                   "Custom: VIP corporate",
                 ].map((chip) => (
-                  <span key={chip} className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1 font-medium">{chip}</span>
+                  <span key={chip} className="rounded-lg bg-muted px-3 py-1 text-muted-foreground">{chip}</span>
                 ))}
               </div>
               <div className="text-sm text-foreground">
