@@ -723,37 +723,6 @@ export const Landing: React.FC = () => {
             <FleetManagementShowcase />
           </div>
 
-          {/* Vehicle Ops Toolkit */}
-          <div className="grid sm:grid-cols-2 gap-4 mb-12">
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <CalendarClock className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Scheduled PMs</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Set mileage or time-based intervals. Auto-create work orders when due.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Parts & Costs</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Users className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Assignments</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Daily driver shifts with vehicle handoffs and checklists.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Shield className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Compliance Locker</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">DOCs, registrations, insurance—alerts before anything expires.</p>
-            </div>
-          </div>
 
           {/* Maintenance Notifications & Scheduling */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">

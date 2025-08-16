@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Camera, TrendingUp, AlertTriangle, MapPin, Clock, Fuel, Settings, Shield, DollarSign, User, FileText, Wrench, Gauge, Eye, Upload, Plus } from 'lucide-react';
+import { Camera, TrendingUp, AlertTriangle, MapPin, Clock, Fuel, Settings, Shield, DollarSign, User, FileText, Wrench, Gauge, Eye, Upload, Plus, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 // Mock data for Isuzu NPR-HD vehicle matching user's screenshot
 const mockVehicle = {
@@ -339,13 +340,12 @@ const FleetManagementShowcase: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transform scale-75 origin-top">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transform scale-90 origin-top">
       {/* Header - Reduced padding */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
-            <p className="text-blue-100 text-sm">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
+            <h2 className="text-xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model} <span className="text-blue-100 text-sm font-normal">• License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</span></h2>
           </div>
           <div className="text-right">
             <Badge className="bg-white/20 text-white border-white/30 text-xs">
@@ -370,9 +370,10 @@ const FleetManagementShowcase: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Pills - Reduced padding */}
+      {/* Navigation Pills - Desktop and Mobile */}
       <div className="p-4">
-        <nav className="flex items-center space-x-1 mb-4" aria-label="Vehicle navigation tabs">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-1 mb-4" aria-label="Vehicle navigation tabs">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -389,6 +390,31 @@ const FleetManagementShowcase: React.FC = () => {
             </button>
           ))}
         </nav>
+
+        {/* Mobile Dropdown Navigation */}
+        <div className="md:hidden mb-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-between bg-white">
+                {tabs.find(tab => tab.key === activeTab)?.label || 'Select Tab'}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              {tabs.map((tab) => (
+                <DropdownMenuItem
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`cursor-pointer px-4 py-2 text-sm hover:bg-gray-100 ${
+                    activeTab === tab.key ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                  }`}
+                >
+                  {tab.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         <div>
           {renderTabContent()}
