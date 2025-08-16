@@ -381,70 +381,70 @@ export const Landing: React.FC = () => {
         </Button>
       </div>
 
-      {/* Hero Section - Blue */}
-      <section className="py-4 md:py-6 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-full px-12 lg:px-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
-            <div className="space-y-4">
+      {/* Hero Section - Blue with seamless transition */}
+      <section className="bg-gradient-blue text-white">
+        <div className="py-4 md:py-6">
+          <div className="container mx-auto max-w-full px-12 lg:px-20">
+            <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
               <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
-                  All-in-one platform for portable toilet rental companies
-                </h1>
-                
-                <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
-                  Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[180px]">
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                    Start Free Trial
-                  </Button>
-                </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Demo
-                </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
-                  <Play className="w-4 h-4 mr-2" />
-                  Watch Preview
-                </Button>
-              </div>
-              
-              <div className="space-y-6 mt-8">
-                <div className="flex items-center gap-6 flex-wrap opacity-90">
-                  <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                  <button
-                    onClick={() => {
-                      if (isMobile) {
-                        setFeaturesSheetOpen(true);
-                      } else {
-                        featuresMegaMenuRef.current?.triggerOpen();
-                      }
-                    }}
-                    className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
-                  >
-                    <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
-                    Explore All Features
-                  </button>
+                <div className="space-y-4">
+                  <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
+                    All-in-one platform for portable toilet rental companies
+                  </h1>
+                  
+                  <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                    Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
+                  </p>
                 </div>
                 
-                {/* 3 Badges - REMOVED */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                    <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[180px]">
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      Start Free Trial
+                    </Button>
+                  </a>
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Schedule Demo
+                  </Button>
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
+                    <Play className="w-4 h-4 mr-2" />
+                    Watch Preview
+                  </Button>
+                </div>
+                
+                <div className="space-y-6 mt-8">
+                  <div className="flex items-center gap-6 flex-wrap opacity-90">
+                    <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                    <button
+                      onClick={() => {
+                        if (isMobile) {
+                          setFeaturesSheetOpen(true);
+                        } else {
+                          featuresMegaMenuRef.current?.triggerOpen();
+                        }
+                      }}
+                      className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
+                    >
+                      <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
+                      Explore All Features
+                    </button>
+                  </div>
+                  
+                  {/* 3 Badges - REMOVED */}
+                </div>
               </div>
-            </div>
-            
-            <div>
-              <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
+              
+              <div>
+                <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Proof Bar + Trust strip + Switching is easy - Blue background extends down */}
-      <section id="about" className="bg-gradient-blue">
-        <div className="bg-gradient-to-b from-transparent to-white pt-6 pb-6">
+        {/* Seamless transition to cards section */}
+        <div className="bg-gradient-to-b from-transparent via-transparent to-white pb-6">
           <div className="container mx-auto max-w-6xl px-6">
             {/* Feature badges */}
             <div className="flex flex-wrap justify-center gap-2 mb-6">
