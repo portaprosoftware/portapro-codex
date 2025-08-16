@@ -458,11 +458,17 @@ export const Landing: React.FC = () => {
               ✓ Unlimited users, trucks & units
             </span>
             </div>
-            
-            {/* Proof Bar */}
-            <div className="mb-4">
-              <div className="sr-only">Proof Bar</div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          </div>
+        </div>
+      </section>
+
+      {/* Pure white divider section with cards and CTA */}
+      <section className="py-8 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          {/* Proof Bar */}
+          <div className="mb-4">
+            <div className="sr-only">Proof Bar</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
@@ -492,21 +498,15 @@ export const Landing: React.FC = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
               </article>
-
-              
-
-              
-
-              
-              </div>
             </div>
-            
-            {/* CTA Text */}
-            <div className="text-center mt-6">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
-              </p>
-            </div>
+          </div>
+          
+          {/* CTA Text */}
+          <div className="text-center mt-6">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
+            </p>
+          </div>
           </div>
         </div>
       </section>
