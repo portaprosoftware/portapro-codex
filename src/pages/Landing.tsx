@@ -717,7 +717,7 @@ export const Landing: React.FC = () => {
             </div>
             <div className="relative group cursor-pointer rounded-xl border bg-card shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift">
               <img 
-                src="/lovable-uploads/e1a9d1f1-8767-47b2-82f7-e7553dadf9c0.png" 
+                src="/lovable-uploads/0e39d75d-cfc2-4996-809b-d7c56e896db7.png" 
                 alt="Fleet vehicle tracking interface showing Isuzu NPR-HD truck with management tabs and details"
                 className="w-full h-auto"
               />
