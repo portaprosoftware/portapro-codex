@@ -68,38 +68,65 @@ export function TrackingMethodsSlideshow() {
       title: "Snap & Track Units from Embossed Plastic Tool Numbers",
       icon: Camera,
       content: (
-        <div className="grid sm:grid-cols-2 gap-4 items-center">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-2/3">
-              <div className="aspect-square">
-                <img
-                  src="/lovable-uploads/18cdb9dd-fe23-485e-bfac-d7867476d245.png"
-                  alt="Mobile phone scanning embossed plastic tool number with AI reading results"
-                  className="w-full h-full object-cover rounded-lg border border-border"
-                  loading="lazy"
-                  decoding="async"
-                />
+        <div className="grid sm:grid-cols-2 gap-6 items-center">
+          <div className="relative">
+            <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 aspect-[3/4] flex items-center justify-center">
+              <div className="bg-black rounded-3xl p-2 w-48 h-80 relative">
+                <div className="bg-gray-900 rounded-2xl w-full h-full flex flex-col">
+                  <div className="flex-1 bg-gray-800 rounded-t-2xl m-1 p-4 text-white text-xs font-mono">
+                    <div className="space-y-1">
+                      <div>www.ABCManufacturing.com</div>
+                      <div>Vendor: ABC Manufacturing</div>
+                      <div>Tool No: T-207788-1A</div>
+                      <div>Vendor ID: 32123</div>
+                      <div>Mfg Date: January 13, 2016</div>
+                      <div>Plastic: HDPE</div>
+                      <div className="mt-4 text-center">
+                        <div className="text-2xl">♻</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-16 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full border-2 border-gray-300"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="text-xs font-bold text-foreground">AI Reading Results</div>
           </div>
 
-          <div className="rounded-lg border border-border p-3 space-y-2">
-            <div className="text-xs font-medium">AI Reading Results:</div>
-            <div className="space-y-1 text-xs">
-              <div><span className="text-muted-foreground">Vendor:</span> <span className="font-medium">ABC Manufacturing</span></div>
-              <div><span className="text-muted-foreground">Tool No:</span> <span className="font-medium">T-207788-1A</span></div>
-              <div><span className="text-muted-foreground">Vendor ID:</span> <span className="font-medium">32123</span></div>
-              <div><span className="text-muted-foreground">Mfg Date:</span> <span className="font-medium">January 13, 2016</span></div>
-              <div><span className="text-muted-foreground">Plastic:</span> <span className="font-medium">HDPE</span></div>
+          <div className="space-y-4">
+            <div className="text-sm font-medium text-muted-foreground">AI Reading Results:</div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Vendor:</span>
+                <span className="font-medium">ABC Manufacturing</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Tool No:</span>
+                <span className="font-medium">T-207788-1A</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Vendor ID:</span>
+                <span className="font-medium">32123</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Mfg Date:</span>
+                <span className="font-medium">January 13, 2016</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Plastic:</span>
+                <span className="font-medium">HDPE</span>
+              </div>
             </div>
-            <div className="mt-2 flex items-center gap-1">
-              <CheckCircle className="w-3 h-3 text-green-600" />
-              <span className="text-xs font-medium text-green-600">Successfully tracked</span>
+            <div className="flex items-center gap-2 bg-green-50 text-green-700 p-3 rounded-lg">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">Successfully tracked</span>
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Works offline — syncs later. Instant attach to units & jobs.
-            </div>
+            </p>
           </div>
         </div>
       )
