@@ -834,6 +834,41 @@ export const Landing: React.FC = () => {
             />
           </div>
 
+          {/* Truck Stock Management */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Truck Stock Management</h3>
+              <p className="text-lg text-muted-foreground">Optimize vehicle loading and track real-time inventory across your fleet.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Vehicle selection and inventory tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <BarChart3 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Route vs truck stock comparison</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Stock readiness validation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Service date planning</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Real-time inventory status</span>
+                </li>
+              </ul>
+            </div>
+            <img 
+              src="/lovable-uploads/d0d94ea5-d504-437f-9fcc-528d05de9b62.png" 
+              alt="Truck stock management interface showing vehicle selection, inventory tracking, and stock readiness validation"
+              className="w-full h-auto rounded-lg transform scale-110"
+            />
+          </div>
+
           {/* Transport & Spill Compliance */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="space-y-6 order-1 lg:order-2">
