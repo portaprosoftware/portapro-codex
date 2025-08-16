@@ -59,7 +59,7 @@ const FleetManagementShowcase: React.FC = () => {
               <CardContent>
                 <div className="rounded-lg overflow-hidden">
                   <img 
-                    src="/lovable-uploads/207ff7b7-ff22-4fe8-9854-f23430555a84.png" 
+                    src="/lovable-uploads/9abe22a2-0d1c-477b-8f9f-e39843ff0748.png"
                     alt="2019 Isuzu NPR-HD Fleet Vehicle" 
                     className="w-full h-48 object-cover"
                   />
@@ -67,7 +67,7 @@ const FleetManagementShowcase: React.FC = () => {
               </CardContent>
             </Card>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -131,57 +131,6 @@ const FleetManagementShowcase: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Fleet Management Features */}
-              <div className="space-y-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <h3 className="font-semibold">Scheduled PMs</h3>
-                        <p className="text-sm text-gray-600">Set mileage or time-based intervals. Auto-create work orders when due.</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <DollarSign className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <h3 className="font-semibold">Parts & Costs</h3>
-                        <p className="text-sm text-gray-600">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <User className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <h3 className="font-semibold">Assignments</h3>
-                        <p className="text-sm text-gray-600">Daily driver shifts with vehicle handoffs and checklists.</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <div>
-                        <h3 className="font-semibold">Compliance Locker</h3>
-                        <p className="text-sm text-gray-600">DOCs, registrations, insurance—alerts before anything expires.</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </div>
         );
