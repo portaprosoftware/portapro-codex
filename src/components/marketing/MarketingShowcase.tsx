@@ -55,13 +55,6 @@ export const MarketingShowcase: React.FC = () => {
               <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
             </div>
 
-            {/* Campaign Creation */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Campaign Creation</h3>
-                <FileText className="w-4 h-4 text-muted-foreground" />
-              </div>
-            </article>
           </div>
 
           {/* Right column: Audience & Segments + Highlights */}
