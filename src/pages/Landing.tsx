@@ -717,14 +717,18 @@ export const Landing: React.FC = () => {
             </div>
             <div className="relative group cursor-pointer rounded-xl border bg-card shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover-lift">
               <img 
-                src="/lovable-uploads/0e39d75d-cfc2-4996-809b-d7c56e896db7.png" 
+                src="/lovable-uploads/cb8e882f-6706-43c4-ae88-547c569adb3d.png" 
                 alt="Fleet vehicle tracking interface showing Isuzu NPR-HD truck with management tabs and details"
                 className="w-full h-auto"
+                onError={(e) => {
+                  console.error('Failed to load fleet image:', e);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-end justify-center">
                 <div className="p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <p className="text-white font-medium text-sm bg-black/75 px-3 py-2 rounded-lg">
-                    Click to expand and explore vehicle profiles
+                    Fleet Management Interface
                   </p>
                 </div>
               </div>
