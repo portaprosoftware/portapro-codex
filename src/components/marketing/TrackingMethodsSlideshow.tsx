@@ -85,7 +85,7 @@ export function TrackingMethodsSlideshow() {
           </div>
 
           <div className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2 text-center">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Vendor:</span>
                 <span className="font-medium">ABC Manufacturing</span>
@@ -107,7 +107,7 @@ export function TrackingMethodsSlideshow() {
                 <span className="font-medium">HDPE</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-lg">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white p-2 rounded-lg">
               <CheckCircle className="w-4 h-4" />
               <span className="text-sm font-bold">Successfully tracked</span>
             </div>
