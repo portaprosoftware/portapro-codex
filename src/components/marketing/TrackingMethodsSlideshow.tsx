@@ -117,28 +117,8 @@ export function TrackingMethodsSlideshow() {
   }, [slides.length]);
 
   return (
-    <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-      <div className="space-y-6">
-        <h3 className="text-2xl font-bold text-foreground">Advanced Unit Tracking</h3>
-        <p className="text-lg text-muted-foreground">Multiple tracking methods for instant unit identification and job attachments.</p>
-        <ul className="space-y-3">
-          <li className="flex items-start gap-3">
-            <QrCode className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-foreground">Generate custom QR labels for individual units</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-foreground">AI-powered scanning of embossed plastic numbers</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-foreground">Works offline — syncs later when connected</span>
-          </li>
-        </ul>
-      </div>
-      <div className="aspect-video flex items-center justify-center">
-        <TrackingSlider currentSlide={currentSlide} slides={slides} />
-      </div>
+    <div className="aspect-video flex items-center justify-center">
+      <TrackingSlider currentSlide={currentSlide} slides={slides} />
     </div>
   );
 }
