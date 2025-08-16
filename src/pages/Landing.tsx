@@ -773,11 +773,6 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/480161a1-70ec-4f75-8ec7-32d01b58e4df.png" 
-              alt="Maintenance notifications showing past due and due this week tasks"
-              className="w-full h-auto rounded-lg transform scale-105"
-            />
           </div>
 
           {/* Fuel Logs & Cost Tracking */}
@@ -915,11 +910,6 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/d0d94ea5-d504-437f-9fcc-528d05de9b62.png" 
-              alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
-              className="w-full h-auto rounded-lg transform scale-110"
-            />
           </div>
         </div>
       </section>
