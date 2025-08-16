@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Camera, TrendingUp, AlertTriangle, MapPin, Clock, Fuel, Settings, Shield, DollarSign, User, FileText, Wrench, Gauge, Eye, Upload, Plus, ChevronDown } from 'lucide-react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,33 +34,6 @@ const mockVehicle = {
 const FleetManagementShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const stats = [
-    {
-      title: "Total Mileage",
-      value: mockVehicle.mileage.toLocaleString(),
-      icon: Gauge,
-      color: "from-blue-600 to-blue-700"
-    },
-    {
-      title: "Fuel Level", 
-      value: `${mockVehicle.fuelLevel}%`,
-      icon: Fuel,
-      color: "from-green-600 to-green-700"
-    },
-    {
-      title: "This Month Cost",
-      value: `$${(mockVehicle.maintenanceCost + mockVehicle.fuelCost).toLocaleString()}`,
-      icon: DollarSign,
-      color: "from-purple-600 to-purple-700"
-    },
-    {
-      title: "Status",
-      value: mockVehicle.status,
-      icon: Shield,
-      color: "from-emerald-600 to-emerald-700"
-    }
-  ];
-
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'maintenance', label: 'Maintenance' },
@@ -83,13 +57,18 @@ const FleetManagementShowcase: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
-                  <Camera className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600 mb-4">Add vehicle photos to track condition over time</p>
-                  <Button variant="outline" className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    Choose Photo
-                  </Button>
+                <div className="rounded-lg overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/207ff7b7-ff22-4fe8-9854-f23430555a84.png" 
+                    alt="2019 Isuzu NPR-HD Fleet Vehicle" 
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="p-4 bg-gray-50 text-center">
+                    <Button variant="outline" className="gap-2">
+                      <Plus className="w-4 h-4" />
+                      Add More Photos
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -174,26 +153,26 @@ const FleetManagementShowcase: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-red-50 border border-red-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Oil Change & Filter</p>
                       <p className="text-sm text-gray-600">Last: {mockVehicle.lastService} • Due: {mockVehicle.nextService}</p>
                     </div>
-                    <Badge className="bg-red-600 text-white">Overdue</Badge>
+                    <Badge variant="destructive">Overdue</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Tire Rotation</p>
                       <p className="text-sm text-gray-600">Last: 2024-01-10 • Due: 2024-03-10</p>
                     </div>
-                    <Badge className="bg-yellow-600 text-white">Due Soon</Badge>
+                    <Badge variant="secondary">Due Soon</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">DOT Inspection</p>
                       <p className="text-sm text-gray-600">Last: 2023-12-15 • Due: 2024-12-15</p>
                     </div>
-                    <Badge className="bg-green-600 text-white">Current</Badge>
+                    <Badge variant="default">Current</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -213,17 +192,17 @@ const FleetManagementShowcase: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-6 mb-6">
-                  <div className="text-center p-4 rounded-lg bg-blue-50">
-                    <p className="text-3xl font-bold text-blue-600">{mockVehicle.fuelLevel}%</p>
+                  <div className="text-center p-4 rounded-lg bg-white border border-gray-200">
+                    <p className="text-3xl font-bold">{mockVehicle.fuelLevel}%</p>
                     <p className="text-sm text-gray-600">Current Fuel Level</p>
                   </div>
-                  <div className="text-center p-4 rounded-lg bg-green-50">
-                    <p className="text-3xl font-bold text-green-600">{mockVehicle.averageMpg}</p>
+                  <div className="text-center p-4 rounded-lg bg-white border border-gray-200">
+                    <p className="text-3xl font-bold">{mockVehicle.averageMpg}</p>
                     <p className="text-sm text-gray-600">Average MPG</p>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="p-3 rounded-lg bg-gray-50">
+                  <div className="p-3 rounded-lg bg-white border border-gray-200">
                     <p className="font-semibold">This Month: {mockVehicle.totalFuelThisMonth} gallons</p>
                     <p className="text-sm text-gray-600">Cost: ${mockVehicle.fuelCost}</p>
                   </div>
@@ -245,13 +224,13 @@ const FleetManagementShowcase: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className="p-4 rounded-lg bg-white border border-gray-200">
                     <p className="font-semibold">Current Assignment</p>
                     <p className="text-sm text-gray-600">Driver: {mockVehicle.driver}</p>
                     <p className="text-sm text-gray-600">Route: {mockVehicle.assignedRoute}</p>
                     <p className="text-sm text-gray-600">Start Time: 7:00 AM</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-gray-50">
+                  <div className="p-3 rounded-lg bg-white border border-gray-200">
                     <p className="font-semibold">Previous Assignment</p>
                     <p className="text-sm text-gray-600">Driver: Sarah Wilson • Route: Industrial Zone - Afternoon</p>
                   </div>
@@ -273,19 +252,19 @@ const FleetManagementShowcase: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-orange-50 border border-orange-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Minor Dent - Rear Panel</p>
                       <p className="text-sm text-gray-600">Reported: 2024-01-20 • Driver: Mike Johnson</p>
                     </div>
-                    <Badge className="bg-orange-600 text-white">Pending Repair</Badge>
+                    <Badge variant="secondary">Pending Repair</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Scratched Bumper</p>
                       <p className="text-sm text-gray-600">Reported: 2024-01-10 • Driver: Sarah Wilson</p>
                     </div>
-                    <Badge className="bg-green-600 text-white">Repaired</Badge>
+                    <Badge variant="default">Repaired</Badge>
                   </div>
                   <p className="text-sm text-gray-600">Total Reports: {mockVehicle.damageReports}</p>
                 </div>
@@ -306,26 +285,26 @@ const FleetManagementShowcase: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Registration</p>
                       <p className="text-sm text-gray-600">Expires: 2024-12-31</p>
                     </div>
-                    <Badge className="bg-green-600 text-white">Valid</Badge>
+                    <Badge variant="default">Valid</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">Insurance Policy</p>
                       <p className="text-sm text-gray-600">Expires: 2024-08-15</p>
                     </div>
-                    <Badge className="bg-green-600 text-white">Valid</Badge>
+                    <Badge variant="default">Valid</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
                     <div>
                       <p className="font-semibold">DOT Medical Card</p>
                       <p className="text-sm text-gray-600">Expires: 2024-03-30</p>
                     </div>
-                    <Badge className="bg-yellow-600 text-white">Expiring Soon</Badge>
+                    <Badge variant="secondary">Expiring Soon</Badge>
                   </div>
                   <p className="text-sm text-gray-600">Total Documents: {mockVehicle.documentsCount}</p>
                 </div>
@@ -348,27 +327,13 @@ const FleetManagementShowcase: React.FC = () => {
             <h2 className="text-xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model} <span className="text-blue-100 text-sm font-normal">• License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</span></h2>
           </div>
           <div className="text-right">
-            <Badge className="bg-white/20 text-white border-white/30 text-xs">
+            <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0 text-xs">
               {mockVehicle.status}
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid - Reduced padding */}
-      <div className="p-4 border-b">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className={`w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
-                <stat.icon className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-lg font-bold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-600">{stat.title}</p>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Navigation Pills - Desktop and Mobile */}
       <div className="p-4">
