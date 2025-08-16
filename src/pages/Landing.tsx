@@ -381,73 +381,72 @@ export const Landing: React.FC = () => {
         </Button>
       </div>
 
-      {/* Hero Section - Blue with seamless transition */}
-      <section className="bg-gradient-blue text-white">
-        <div className="py-4 md:py-6">
-          <div className="container mx-auto max-w-full px-12 lg:px-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
+      {/* Hero Section - Blue */}
+      <section className="py-4 md:py-6 bg-gradient-blue text-white">
+        <div className="container mx-auto max-w-full px-12 lg:px-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
+            <div className="space-y-4">
               <div className="space-y-4">
-                <div className="space-y-4">
-                  <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
-                    All-in-one platform for portable toilet rental companies
-                  </h1>
-                  
-                  <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
-                    Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
-                  </p>
-                </div>
+                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
+                  All-in-one platform for portable toilet rental companies
+                </h1>
                 
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                    <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[180px]">
-                      <ArrowRight className="w-4 h-4 mr-2" />
-                      Start Free Trial
-                    </Button>
-                  </a>
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Schedule Demo
-                  </Button>
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
-                    <Play className="w-4 h-4 mr-2" />
-                    Watch Preview
-                  </Button>
-                </div>
-                
-                <div className="space-y-6 mt-8">
-                  <div className="flex items-center gap-6 flex-wrap opacity-90">
-                    <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                    <button
-                      onClick={() => {
-                        if (isMobile) {
-                          setFeaturesSheetOpen(true);
-                        } else {
-                          featuresMegaMenuRef.current?.triggerOpen();
-                        }
-                      }}
-                      className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
-                    >
-                      <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
-                      Explore All Features
-                    </button>
-                  </div>
-                  
-                  {/* 3 Badges - REMOVED */}
-                </div>
+                <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                  Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
+                </p>
               </div>
               
-              <div>
-                <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[180px]">
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                    Start Free Trial
+                  </Button>
+                </a>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Schedule Demo
+                </Button>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
+                  <Play className="w-4 h-4 mr-2" />
+                  Watch Preview
+                </Button>
               </div>
+              
+              <div className="space-y-6 mt-8">
+                <div className="flex items-center gap-6 flex-wrap opacity-90">
+                  <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                  <button
+                    onClick={() => {
+                      if (isMobile) {
+                        setFeaturesSheetOpen(true);
+                      } else {
+                        featuresMegaMenuRef.current?.triggerOpen();
+                      }
+                    }}
+                    className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
+                  >
+                    <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
+                    Explore All Features
+                  </button>
+                </div>
+                
+                {/* 3 Badges - REMOVED */}
+              </div>
+            </div>
+            
+            <div>
+              <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
             </div>
           </div>
         </div>
+      </section>
 
-        {/* White divider section for better spacing */}
-        <div className="bg-gradient-to-b from-transparent via-white/30 via-white/70 to-white py-8">
-          <div className="container mx-auto max-w-6xl px-6">
-            {/* Feature badges */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
+      {/* Proof Bar + Trust strip + Switching is easy - White */}
+      <section id="about" className="py-6 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          {/* Feature badges */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
               ✓ 14 Day Free Trial
             </span>
@@ -457,14 +456,8 @@ export const Landing: React.FC = () => {
             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
               ✓ Unlimited users, trucks & units
             </span>
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Pure white divider section with cards and CTA */}
-      <section className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
+          
           {/* Proof Bar */}
           <div className="mb-4">
             <div className="sr-only">Proof Bar</div>
@@ -498,20 +491,23 @@ export const Landing: React.FC = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
               </article>
+
+              
+
+              
+
+              
             </div>
-          </div>
-          
-          {/* CTA Text */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
-            </p>
+            
+            {/* CTA Text */}
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
+              </p>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Pure white divider section */}
-      <section className="py-8 bg-white"></section>
 
       {/* Group 1: Operations Features - Blue */}
       <div id="operations-features" />
@@ -2449,6 +2445,6 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>}
-    </div>
+    </div>;
 };
 export default Landing;
