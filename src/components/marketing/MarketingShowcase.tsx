@@ -1,4 +1,5 @@
 import React from "react";
+import campaignCreationInterface from "@/assets/campaign-creation-interface.jpg";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,7 +64,7 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="rounded-lg overflow-hidden">
                 <img 
-                  src="/lovable-uploads/d1dc9af8-52cd-4c1c-ada5-fb713516b57b.png" 
+                  src={campaignCreationInterface} 
                   alt="Campaign creation interface showing workflow and scheduling options"
                   className="w-full h-auto object-contain"
                 />
