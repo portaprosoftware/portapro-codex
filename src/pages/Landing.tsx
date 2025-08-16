@@ -32,6 +32,7 @@ import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'luc
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { SimpleQRCode } from '@/components/inventory/SimpleQRCode';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -656,29 +657,13 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* QR & Photo Scanning & Supply Management Row */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
-              <p className="text-lg text-muted-foreground">Instant unit identification and documentation with mobile scanning capabilities.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Mobile QR code scanning for units</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Photo documentation for condition tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
-                </li>
-              </ul>
+          {/* AI Panel & QR Components Row */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
+            <div>
+              <AIPanelScanningShowcase />
             </div>
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">QR Scanning Photo</span>
+            <div className="flex items-center justify-center p-8">
+              <SimpleQRCode itemCode="1232 • Standard Unit" showAsButton={false} />
             </div>
           </div>
 
