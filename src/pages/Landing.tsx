@@ -720,30 +720,6 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center order-1 lg:order-2">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Supply Management Photo</span>
-            </div>
-            <div className="space-y-6 order-2 lg:order-1">
-              <h3 className="text-2xl font-bold text-foreground">Supply Management</h3>
-              <p className="text-lg text-muted-foreground">Complete consumables and supplies tracking with automated reorder management.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Package className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Consumables inventory management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automated reorder point calculations</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Supplier management and purchase orders</span>
-                </li>
-              </ul>
-            </div>
-          </div>
 
           {/* Unit Maintenance & History Row */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
