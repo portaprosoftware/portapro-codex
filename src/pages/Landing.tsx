@@ -689,64 +689,38 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Fleet Tracking */}
-          <div className="grid lg:grid-cols-3 gap-12 items-center mb-8">
-            <div className="lg:col-span-2 space-y-6">
+          {/* General Fleet Tracking - Centered */}
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="max-w-4xl space-y-6">
               <h3 className="text-2xl font-bold text-foreground">General Fleet Tracking</h3>
               <p className="text-lg text-muted-foreground">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
+              <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
+                <div className="flex items-start gap-3 text-left">
                   <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Vehicle profiles with status, location, and availability</span>
-                </li>
-                <li className="flex items-start gap-3">
+                </div>
+                <div className="flex items-start gap-3 text-left">
                   <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Automatic and manual mileage tracking with history</span>
-                </li>
-                <li className="flex items-start gap-3">
+                </div>
+                <div className="flex items-start gap-3 text-left">
                   <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Photo documentation for condition and damage tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
+                </div>
+                <div className="flex items-start gap-3 text-left">
                   <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Document management with expiry alerts and compliance</span>
-                </li>
-                <li className="flex items-start gap-3">
+                </div>
+                <div className="flex items-start gap-3 text-left md:col-span-2 md:justify-center">
                   <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Real-time compliance dashboard and status tracking</span>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Fleet Management Features - Centered */}
-            <div className="flex flex-col justify-center space-y-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <h3 className="font-semibold">Scheduled PMs</h3>
-                      <p className="text-sm text-gray-600">Set mileage or time-based intervals. Auto-create work orders when due.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="w-5 h-5 text-blue-600" />
-                    <div>
-                      <h3 className="font-semibold">Parts & Costs</h3>
-                      <p className="text-sm text-gray-600">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Assignments and Compliance Locker Row */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
@@ -766,6 +740,33 @@ export const Landing: React.FC = () => {
                   <div>
                     <h3 className="font-semibold">Compliance Locker</h3>
                     <p className="text-sm text-gray-600">DOCs, registrations, insurance—alerts before anything expires.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Scheduled PMs and Parts & Costs Row */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Scheduled PMs</h3>
+                    <p className="text-sm text-gray-600">Set mileage or time-based intervals. Auto-create work orders when due.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Parts & Costs</h3>
+                    <p className="text-sm text-gray-600">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
                   </div>
                 </div>
               </CardContent>
