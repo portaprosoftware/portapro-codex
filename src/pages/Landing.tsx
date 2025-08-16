@@ -625,9 +625,14 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Stock Tracking Photo</span>
+            <div className="aspect-video rounded-lg overflow-hidden">
+              <img
+                src="/lovable-uploads/12d7d79a-93d6-4131-85c4-ea2474c55421.png"
+                alt="Stock tracking interface showing 250-Gallon Waste Tank with hybrid tracking, available individual units, and bulk pool inventory"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
 
