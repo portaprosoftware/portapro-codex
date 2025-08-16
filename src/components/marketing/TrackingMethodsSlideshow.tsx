@@ -24,6 +24,7 @@ const TrackingSlider = ({ currentSlide, slides }: { currentSlide: number; slides
 
 export function TrackingMethodsSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   const slides: TrackingSlide[] = [
     {
@@ -122,16 +123,40 @@ export function TrackingMethodsSlideshow() {
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setProgress(0);
     }, 5000);
+
+    // Progress timer
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) return 0;
+        return prev + (100 / 50); // 5000ms / 100ms = 50 steps
+      });
+    }, 100);
 
     return () => {
       clearInterval(slideInterval);
+      clearInterval(progressInterval);
     };
   }, [slides.length]);
 
   return (
-    <div className="aspect-video flex items-center justify-center">
+    <div className="aspect-video flex flex-col items-center justify-center">
       <TrackingSlider currentSlide={currentSlide} slides={slides} />
+      
+      {/* Progress Timer */}
+      <div className="mt-4 w-full max-w-md">
+        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+          <span>Slide {currentSlide + 1} of {slides.length}</span>
+          <span>Next in {Math.ceil((100 - progress) / 20)}s</span>
+        </div>
+        <div className="w-full bg-muted rounded-full h-1">
+          <div 
+            className="bg-primary h-1 rounded-full transition-all duration-100" 
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
