@@ -90,31 +90,12 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* Account Management Tools */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-base font-semibold text-foreground">Account Management</h4>
-                <Settings className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><UserPlus className="w-4 h-4" /> Customer Onboarding</div>
-                  <div className="text-xs text-muted-foreground">Setup wizard • Contract templates</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Users className="w-4 h-4" /> Contact Management</div>
-                  <div className="text-xs text-muted-foreground">Billing • On-site • AP contacts</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><Bell className="w-4 h-4" /> Account Alerts</div>
-                  <div className="text-xs text-muted-foreground">Payment • Service • Compliance</div>
-                </div>
-                <div className="rounded-lg border bg-background p-3">
-                  <div className="flex items-center gap-2 text-foreground"><History className="w-4 h-4" /> Account Timeline</div>
-                  <div className="text-xs text-muted-foreground">Jobs • Calls • Notes • Changes</div>
-                </div>
-              </div>
-            </article>
+            {/* Customer Categories Image */}
+            <img 
+              src="/lovable-uploads/213d74b8-6e18-487c-b677-35d561a43f41.png" 
+              alt="Customer categories and types interface showing different customer segments"
+              className="w-full h-auto object-contain animate-fade-in"
+            />
           </div>
 
           {/* Right Column: Customer Portals (Customer-Facing) */}
