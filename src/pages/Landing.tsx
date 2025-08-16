@@ -716,6 +716,10 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
+          </div>
+
+          {/* Fleet Management Showcase - Full Width */}
+          <div className="col-span-full mt-8">
             <FleetManagementShowcase />
           </div>
 

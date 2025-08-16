@@ -1,78 +1,71 @@
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Camera, TrendingUp, AlertTriangle, MapPin, Clock, Fuel, Settings, Shield, DollarSign, User, FileText, Wrench, Gauge, Eye, Upload, Plus } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Truck, 
-  MapPin, 
-  CheckCircle,
-  Calendar,
-  FileText,
-  BarChart3,
-  Fuel,
-  Wrench,
-  Route,
-  Shield,
-  DollarSign
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-// Mock vehicle data for demonstration
-const mockVehicleData = {
-  vehicleInfo: {
-    id: 'VH-001',
-    licensePlate: 'ABC-1234',
-    make: 'Ford',
-    model: 'F-350',
-    year: 2022,
-    type: 'Service Truck',
-    status: 'Active',
-    driver: 'John Smith',
-    currentLocation: 'Downtown Route 45',
-    mileage: 45678,
-    fuelLevel: 75,
-    lastService: '2024-01-15',
-    nextServiceDue: '2024-03-15'
-  },
-  stats: [
-    {
-      title: 'Current Mileage',
-      value: '45,678',
-      icon: MapPin,
-      color: 'blue',
-      subtitle: 'Miles driven'
-    },
-    {
-      title: 'Last Service',
-      value: '30 days',
-      icon: Wrench,
-      color: 'green',
-      subtitle: 'Days ago'
-    },
-    {
-      title: 'Fuel Level',
-      value: '75%',
-      icon: Fuel,
-      color: 'yellow',
-      subtitle: 'Tank capacity'
-    },
-    {
-      title: 'Status',
-      value: 'Active',
-      icon: CheckCircle,
-      color: 'green',
-      subtitle: 'Currently on route'
-    }
-  ]
+// Mock data for Isuzu NPR-HD vehicle matching user's screenshot
+const mockVehicle = {
+  id: "V001",
+  make: "Isuzu",
+  model: "NPR-HD",
+  year: 2019,
+  vin: "JALC4W167K7004583",
+  licensePlate: "FL-7583",
+  mileage: 137500,
+  fuelLevel: 68,
+  lastService: "2024-01-15",
+  nextService: "2024-02-15",
+  status: "Active",
+  driver: "Mike Johnson",
+  location: "Route 12 - Commercial District",
+  dailyMiles: 127,
+  averageMpg: 12.8,
+  maintenanceCost: 1240,
+  fuelCost: 890,
+  assignedRoute: "Commercial District - Morning",
+  totalFuelThisMonth: 245.6,
+  damageReports: 2,
+  documentsCount: 14
 };
 
-export const FleetManagementShowcase: React.FC = () => {
+const FleetManagementShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
+  const stats = [
+    {
+      title: "Total Mileage",
+      value: mockVehicle.mileage.toLocaleString(),
+      icon: Gauge,
+      color: "from-blue-600 to-blue-700"
+    },
+    {
+      title: "Fuel Level", 
+      value: `${mockVehicle.fuelLevel}%`,
+      icon: Fuel,
+      color: "from-green-600 to-green-700"
+    },
+    {
+      title: "This Month Cost",
+      value: `$${(mockVehicle.maintenanceCost + mockVehicle.fuelCost).toLocaleString()}`,
+      icon: DollarSign,
+      color: "from-purple-600 to-purple-700"
+    },
+    {
+      title: "Status",
+      value: mockVehicle.status,
+      icon: Shield,
+      color: "from-emerald-600 to-emerald-700"
+    }
+  ];
+
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'maintenance', label: 'Maintenance' },
-    { id: 'routes', label: 'Route History' },
-    { id: 'compliance', label: 'Compliance' },
-    { id: 'performance', label: 'Performance' }
+    { key: 'overview', label: 'Overview' },
+    { key: 'maintenance', label: 'Maintenance' },
+    { key: 'fuel', label: 'Fuel' },
+    { key: 'assignments', label: 'Assignments' },
+    { key: 'damage', label: 'Damage Log' },
+    { key: 'documents', label: 'Documents' }
   ];
 
   const renderTabContent = () => {
@@ -80,231 +73,329 @@ export const FleetManagementShowcase: React.FC = () => {
       case 'overview':
         return (
           <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">Vehicle Details</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600">Make/Model:</span>
-                  <span className="ml-2 font-medium">{mockVehicleData.vehicleInfo.make} {mockVehicleData.vehicleInfo.model}</span>
+            {/* Vehicle Image Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="w-5 h-5" />
+                  Vehicle Photos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-gray-50">
+                  <Camera className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600 mb-4">Add vehicle photos to track condition over time</p>
+                  <Button variant="outline" className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Choose Photo
+                  </Button>
                 </div>
-                <div>
-                  <span className="text-gray-600">Year:</span>
-                  <span className="ml-2 font-medium">{mockVehicleData.vehicleInfo.year}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Type:</span>
-                  <span className="ml-2 font-medium">{mockVehicleData.vehicleInfo.type}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Driver:</span>
-                  <span className="ml-2 font-medium">{mockVehicleData.vehicleInfo.driver}</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">Current Location</h4>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-blue-600" />
-                <span>{mockVehicleData.vehicleInfo.currentLocation}</span>
-              </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    Vehicle Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-sm text-gray-600">Make</span>
+                      <p className="font-semibold text-lg">{mockVehicle.make}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Model</span>
+                      <p className="font-semibold text-lg">{mockVehicle.model}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">Year</span>
+                      <p className="font-semibold">{mockVehicle.year}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">License Plate</span>
+                      <p className="font-semibold">{mockVehicle.licensePlate}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">VIN</span>
+                    <p className="font-semibold text-sm">{mockVehicle.vin}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Current Mileage</span>
+                    <p className="font-semibold text-lg">{mockVehicle.mileage.toLocaleString()} miles</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    Current Assignment
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Assigned Driver</span>
+                    <p className="font-semibold text-lg">{mockVehicle.driver}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Current Route</span>
+                    <p className="font-semibold">{mockVehicle.assignedRoute}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Location</span>
+                    <p className="font-semibold">{mockVehicle.location}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Daily Miles (Today)</span>
+                    <p className="font-semibold">{mockVehicle.dailyMiles} miles</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         );
+        
       case 'maintenance':
         return (
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">Service History</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Wrench className="h-5 w-5 text-green-600" />
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wrench className="w-5 h-5" />
+                  Maintenance Schedule & History
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-red-50 border border-red-200">
                     <div>
-                      <p className="font-medium">Oil Change & Filter</p>
-                      <p className="text-sm text-gray-600">January 15, 2024</p>
+                      <p className="font-semibold">Oil Change & Filter</p>
+                      <p className="text-sm text-gray-600">Last: {mockVehicle.lastService} • Due: {mockVehicle.nextService}</p>
                     </div>
+                    <Badge className="bg-red-600 text-white">Overdue</Badge>
                   </div>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Completed</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-yellow-50 border border-yellow-200">
                     <div>
-                      <p className="font-medium">Brake Inspection</p>
-                      <p className="text-sm text-gray-600">March 15, 2024</p>
+                      <p className="font-semibold">Tire Rotation</p>
+                      <p className="text-sm text-gray-600">Last: 2024-01-10 • Due: 2024-03-10</p>
                     </div>
+                    <Badge className="bg-yellow-600 text-white">Due Soon</Badge>
                   </div>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Scheduled</Badge>
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                    <div>
+                      <p className="font-semibold">DOT Inspection</p>
+                      <p className="text-sm text-gray-600">Last: 2023-12-15 • Due: 2024-12-15</p>
+                    </div>
+                    <Badge className="bg-green-600 text-white">Current</Badge>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         );
-      case 'routes':
+        
+      case 'fuel':
         return (
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">Recent Routes</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Route className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium">Downtown Route 45</p>
-                      <p className="text-sm text-gray-600">Today, 8:30 AM - 3:45 PM</p>
-                    </div>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Fuel className="w-5 h-5" />
+                  Fuel Tracking & Economy
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  <div className="text-center p-4 rounded-lg bg-blue-50">
+                    <p className="text-3xl font-bold text-blue-600">{mockVehicle.fuelLevel}%</p>
+                    <p className="text-sm text-gray-600">Current Fuel Level</p>
                   </div>
-                  <div className="text-right text-sm">
-                    <p className="font-medium">127 miles</p>
-                    <p className="text-gray-600">7.2 hours</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Route className="h-5 w-5 text-green-600" />
-                    <div>
-                      <p className="font-medium">North Industrial Route</p>
-                      <p className="text-sm text-gray-600">Yesterday, 9:00 AM - 4:30 PM</p>
-                    </div>
-                  </div>
-                  <div className="text-right text-sm">
-                    <p className="font-medium">156 miles</p>
-                    <p className="text-gray-600">7.5 hours</p>
+                  <div className="text-center p-4 rounded-lg bg-green-50">
+                    <p className="text-3xl font-bold text-green-600">{mockVehicle.averageMpg}</p>
+                    <p className="text-sm text-gray-600">Average MPG</p>
                   </div>
                 </div>
-              </div>
-            </div>
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg bg-gray-50">
+                    <p className="font-semibold">This Month: {mockVehicle.totalFuelThisMonth} gallons</p>
+                    <p className="text-sm text-gray-600">Cost: ${mockVehicle.fuelCost}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         );
-      case 'compliance':
+        
+      case 'assignments':
         return (
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">DOT Compliance Status</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                  <div className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-green-600" />
-                    <div>
-                      <p className="font-medium">Vehicle Registration</p>
-                      <p className="text-sm text-gray-600">Expires: December 2024</p>
-                    </div>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Driver Assignments & Routes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                    <p className="font-semibold">Current Assignment</p>
+                    <p className="text-sm text-gray-600">Driver: {mockVehicle.driver}</p>
+                    <p className="text-sm text-gray-600">Route: {mockVehicle.assignedRoute}</p>
+                    <p className="text-sm text-gray-600">Start Time: 7:00 AM</p>
                   </div>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Valid</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-green-600" />
-                    <div>
-                      <p className="font-medium">Insurance Policy</p>
-                      <p className="text-sm text-gray-600">Expires: August 2024</p>
-                    </div>
+                  <div className="p-3 rounded-lg bg-gray-50">
+                    <p className="font-semibold">Previous Assignment</p>
+                    <p className="text-sm text-gray-600">Driver: Sarah Wilson • Route: Industrial Zone - Afternoon</p>
                   </div>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Valid</Badge>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         );
-      case 'performance':
+        
+      case 'damage':
         return (
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">Performance Metrics</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Fuel className="h-5 w-5 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-900">Fuel Efficiency</span>
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  Damage Reports & Incidents
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-orange-50 border border-orange-200">
+                    <div>
+                      <p className="font-semibold">Minor Dent - Rear Panel</p>
+                      <p className="text-sm text-gray-600">Reported: 2024-01-20 • Driver: Mike Johnson</p>
+                    </div>
+                    <Badge className="bg-orange-600 text-white">Pending Repair</Badge>
                   </div>
-                  <p className="text-2xl font-bold text-blue-900">12.5 MPG</p>
-                  <p className="text-sm text-blue-700">+0.8 vs last month</p>
-                </div>
-                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BarChart3 className="h-5 w-5 text-purple-600" />
-                    <span className="text-sm font-medium text-purple-900">Driver Score</span>
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                    <div>
+                      <p className="font-semibold">Scratched Bumper</p>
+                      <p className="text-sm text-gray-600">Reported: 2024-01-10 • Driver: Sarah Wilson</p>
+                    </div>
+                    <Badge className="bg-green-600 text-white">Repaired</Badge>
                   </div>
-                  <p className="text-2xl font-bold text-purple-900">87/100</p>
-                  <p className="text-sm text-purple-700">Excellent rating</p>
+                  <p className="text-sm text-gray-600">Total Reports: {mockVehicle.damageReports}</p>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         );
+        
+      case 'documents':
+        return (
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Vehicle Documents & Compliance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                    <div>
+                      <p className="font-semibold">Registration</p>
+                      <p className="text-sm text-gray-600">Expires: 2024-12-31</p>
+                    </div>
+                    <Badge className="bg-green-600 text-white">Valid</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-green-50 border border-green-200">
+                    <div>
+                      <p className="font-semibold">Insurance Policy</p>
+                      <p className="text-sm text-gray-600">Expires: 2024-08-15</p>
+                    </div>
+                    <Badge className="bg-green-600 text-white">Valid</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                    <div>
+                      <p className="font-semibold">DOT Medical Card</p>
+                      <p className="text-sm text-gray-600">Expires: 2024-03-30</p>
+                    </div>
+                    <Badge className="bg-yellow-600 text-white">Expiring Soon</Badge>
+                  </div>
+                  <p className="text-sm text-gray-600">Total Documents: {mockVehicle.documentsCount}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+        
       default:
-        return <div>Select a tab to view content</div>;
+        return null;
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-8">
-      {/* Vehicle Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <Truck className="h-8 w-8 text-white" />
-          </div>
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">{mockVehicleData.vehicleInfo.licensePlate}</h3>
-            <p className="text-gray-600">{mockVehicleData.vehicleInfo.make} {mockVehicleData.vehicleInfo.model} • {mockVehicleData.vehicleInfo.type}</p>
+            <h2 className="text-2xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
+            <p className="text-blue-100">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
+          </div>
+          <div className="text-right">
+            <Badge className="bg-white/20 text-white border-white/30">
+              {mockVehicle.status}
+            </Badge>
           </div>
         </div>
-        <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-          {mockVehicleData.vehicleInfo.status}
-        </Badge>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {mockVehicleData.stats.map((stat, index) => (
-          <Card key={index} className="relative overflow-hidden">
-            <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-              stat.color === 'blue' ? 'bg-gradient-to-b from-blue-400 to-blue-600' :
-              stat.color === 'green' ? 'bg-gradient-to-b from-green-400 to-green-600' :
-              stat.color === 'yellow' ? 'bg-gradient-to-b from-yellow-400 to-yellow-600' :
-              'bg-gradient-to-b from-gray-400 to-gray-600'
-            }`}></div>
-            <CardContent className="p-4 pl-6">
-              <div className="flex items-center justify-between mb-2">
-                <stat.icon className={`h-5 w-5 ${
-                  stat.color === 'blue' ? 'text-blue-600' :
-                  stat.color === 'green' ? 'text-green-600' :
-                  stat.color === 'yellow' ? 'text-yellow-600' :
-                  'text-gray-600'
-                }`} />
+      {/* Stats Grid */}
+      <div className="p-6 border-b">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat, index) => (
+            <div key={index} className="text-center">
+              <div className={`w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
+                <stat.icon className="w-6 h-6 text-white" />
               </div>
-              <div className="space-y-1">
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm font-medium text-gray-900">{stat.title}</p>
-                <p className="text-xs text-gray-600">{stat.subtitle}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-600">{stat.title}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex gap-2 mb-6">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Content */}
-      <div className="min-h-[300px]">
-        {renderTabContent()}
+      {/* Navigation Pills */}
+      <div className="p-6">
+        <nav className="flex items-center space-x-1 mb-6" aria-label="Vehicle navigation tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 focus:outline-none transform hover:-translate-y-0.5 ${
+                activeTab === tab.key 
+                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
+                  : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+              }`}
+              onClick={() => setActiveTab(tab.key)}
+              aria-current={activeTab === tab.key ? "page" : undefined}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+        
+        <div>
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   );
 };
+
+export { FleetManagementShowcase };
