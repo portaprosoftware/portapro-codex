@@ -46,7 +46,7 @@ export const MarketingShowcase: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
           {/* Left column: Schedule & Send + Video */}
-          <div className="space-y-6">
+          <div className="space-y-3">
             {/* Video Demo */}
             <div className="rounded-lg overflow-hidden animate-fade-in">
               <script src="https://fast.wistia.com/player.js" async></script>
