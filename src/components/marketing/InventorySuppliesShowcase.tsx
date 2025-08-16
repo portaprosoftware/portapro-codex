@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
-import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock } from "lucide-react";
+import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock, Wrench, AlertTriangle, User, DollarSign } from "lucide-react";
 
 const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -260,6 +260,85 @@ export function InventorySuppliesShowcase() {
 
            </div>
 
+            {/* Panel E — Maintenance Tracking */}
+            <div className="rounded-2xl bg-white border border-border animate-enter">
+                <div className="p-4">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Wrench className="w-4 h-4 text-primary" /> Maintenance Work Orders & Service History
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {/* Work Order Dashboard */}
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm font-medium">Active Work Orders</div>
+                        <div className="text-lg font-bold text-primary">7</div>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-2">
+                            <AlertTriangle className="w-3 h-3 text-yellow-500" />
+                            <span>WO-2024-003</span>
+                          </span>
+                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-medium">In Progress</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-2">
+                            <Wrench className="w-3 h-3 text-blue-500" />
+                            <span>WO-2024-004</span>
+                          </span>
+                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">Scheduled</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-2">
+                            <Clock className="w-3 h-3 text-red-500" />
+                            <span>WO-2024-002</span>
+                          </span>
+                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">Overdue</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Technician & Cost Tracking */}
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="rounded-xl border border-border p-3">
+                        <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                          <User className="w-4 h-4 text-primary" /> Technician Hours
+                        </div>
+                        <div className="text-xs text-muted-foreground">Today: 18.5 hrs</div>
+                        <div className="text-xs text-muted-foreground">This Week: 127 hrs</div>
+                      </div>
+                      <div className="rounded-xl border border-border p-3">
+                        <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                          <DollarSign className="w-4 h-4 text-primary" /> Parts Cost
+                        </div>
+                        <div className="text-xs text-muted-foreground">This Month: $2,840</div>
+                        <div className="text-xs text-muted-foreground">YTD: $18,560</div>
+                      </div>
+                    </div>
+
+                    {/* Service History */}
+                    <div className="rounded-xl border border-border p-3">
+                      <div className="text-sm font-medium mb-2">Recent Service History</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span>PT-1234 • Deep Clean</span>
+                          <span className="text-green-600 font-medium">Completed</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>PT-1267 • Pump Repair</span>
+                          <span className="text-green-600 font-medium">Completed</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>PT-1298 • Tank Replacement</span>
+                          <span className="text-yellow-600 font-medium">In Progress</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
            </div>
 
           {/* Right: Auto-rotating slider + Benefits */}
@@ -272,6 +351,8 @@ export function InventorySuppliesShowcase() {
                 <li>Bulk, individual, and hybrid tracking in one system</li>
                 <li>Date‑range availability with per‑location allocation</li>
                 <li>QR codes and embossed‑plastic AI reading</li>
+                <li>Maintenance work orders with technician & cost tracking</li>
+                <li>Service history and automated scheduling</li>
                 <li>Padlock and zip-tie drop-off notations</li>
                 <li>Instant clarity on status — available, assigned, service</li>
                 <li>Offline scans attach to units and sync later</li>
