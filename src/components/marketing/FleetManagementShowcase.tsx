@@ -300,7 +300,7 @@ const FleetManagementShowcase: React.FC = () => {
                       <p className="font-semibold">DOT Medical Card</p>
                       <p className="text-sm text-gray-600">Expires: 2024-03-30</p>
                     </div>
-                    <Badge variant="secondary">Expiring Soon</Badge>
+                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">Expiring Soon</Badge>
                   </div>
                   <p className="text-sm text-gray-600">Total Documents: {mockVehicle.documentsCount}</p>
                 </div>
