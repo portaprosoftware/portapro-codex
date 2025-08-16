@@ -155,7 +155,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </div>
 
               {/* Tab Content */}
-              <div className="min-h-[200px]">
+              <div className={`${activeTab === 'reports' ? 'min-h-[100px]' : 'min-h-[200px]'}`}>
                 {activeTab === 'overview' && (
                   <div className="space-y-3">
                     <h5 className="font-medium text-foreground">Account Summary</h5>
@@ -274,12 +274,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* Customer Categories Image */}
-            <img 
-              src="/lovable-uploads/213d74b8-6e18-487c-b677-35d561a43f41.png" 
-              alt="Customer categories and types interface showing different customer segments"
-              className="w-full h-auto object-contain animate-fade-in"
-            />
           </div>
 
           {/* Right Column: Customer Portals (Customer-Facing) */}
