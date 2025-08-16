@@ -881,7 +881,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/410aced4-4fe7-439f-b8db-022b38a721c1.png" 
+              src="/lovable-uploads/d0d94ea5-d504-437f-9fcc-528d05de9b62.png" 
               alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
               className="w-full h-auto rounded-lg transform scale-110"
             />
