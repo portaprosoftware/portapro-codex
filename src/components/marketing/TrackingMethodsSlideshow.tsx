@@ -36,7 +36,7 @@ export function TrackingMethodsSlideshow() {
             <div className="w-48">
               <div className="aspect-square">
                 <img
-                  src="/lovable-uploads/1410c8e3-cd74-47ef-892c-0d261cfceff6.png"
+                  src="/lovable-uploads/bb5d9cd1-f40b-41b3-87e2-5d83dfa7d3a8.png"
                   alt="QR code for Standard Unit 1232"
                   className="w-full h-full object-cover rounded-lg border border-border"
                   loading="lazy"
@@ -73,7 +73,7 @@ export function TrackingMethodsSlideshow() {
             <div className="w-full">
               <div className="aspect-[3/4]">
                 <img
-                  src="/lovable-uploads/c853198b-87f0-4b6c-b9ee-973c78e6c9ca.png"
+                  src="/lovable-uploads/da7aff95-16a3-491e-bb6b-80f87067ff7c.png"
                   alt="Mobile phone scanning embossed plastic tool number with AI reading results"
                   className="w-full h-full object-cover rounded-lg border border-border"
                   loading="lazy"
