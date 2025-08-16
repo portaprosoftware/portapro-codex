@@ -48,8 +48,8 @@ export const MarketingShowcase: React.FC = () => {
           {/* Left column: Schedule & Send + Video */}
           <div className="space-y-6">
             {/* Video Demo */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="rounded-xl overflow-hidden">
+            <article className="rounded-2xl border bg-card shadow-md p-2 animate-fade-in">
+              <div className="rounded-lg overflow-hidden">
                 <script src="https://fast.wistia.com/player.js" async></script>
                 <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
                 <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
