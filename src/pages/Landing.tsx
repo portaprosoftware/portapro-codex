@@ -429,8 +429,6 @@ export const Landing: React.FC = () => {
                     Explore All Features
                   </button>
                 </div>
-                
-                {/* 3 Badges - REMOVED */}
               </div>
             </div>
             
@@ -439,27 +437,24 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Proof Bar + Trust strip + Switching is easy - White */}
-      <section id="about" className="py-6 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          {/* Feature badges */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ 14 Day Free Trial
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ No setup fees • Support included
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ Unlimited users, trucks & units
-            </span>
-          </div>
-          
-          {/* Proof Bar */}
-          <div className="mb-4">
-            <div className="sr-only">Proof Bar</div>
+        
+        {/* Extended Blue Section with Badges and Cards */}
+        <div className="bg-gradient-blue pb-8">
+          <div className="container mx-auto max-w-6xl px-6">
+            {/* Feature badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 text-black text-xs font-bold">
+                ✓ 14 Day Free Trial
+              </span>
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 text-black text-xs font-bold">
+                ✓ No setup fees • Support included
+              </span>
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-gray-400 to-gray-500 text-black text-xs font-bold">
+                ✓ Unlimited users, trucks & units
+              </span>
+            </div>
+            
+            {/* Proof Bar Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                 <div className="flex items-center gap-3 mb-2">
@@ -490,20 +485,19 @@ export const Landing: React.FC = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
               </article>
-
-              
-
-              
-
-              
             </div>
-            
-            {/* CTA Text */}
-            <div className="text-center mt-6">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
-              </p>
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* White Section with CTA Text */}
+      <section id="about" className="py-12 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          {/* CTA Text */}
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
+            </p>
           </div>
         </div>
       </section>
