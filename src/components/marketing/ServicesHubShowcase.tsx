@@ -56,11 +56,11 @@ export const ServicesHubShowcase: React.FC = () => {
   const slides = [
     {
       title: "Service Categories",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop"
+      image: "/lovable-uploads/bdb10ee2-c799-4472-ab92-6d659b480864.png"
     },
     {
       title: "Report Templates", 
-      image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=600&fit=crop"
+      image: "/lovable-uploads/a2614646-c595-46d9-a67b-0be88225c1b5.png"
     }
   ];
 
