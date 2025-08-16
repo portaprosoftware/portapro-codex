@@ -151,50 +151,22 @@ export function CompanyAnalyticsShowcase() {
             </CardContent>
           </Card>
 
-          {/* Revenue Deep-dive */}
+          {/* Campaign Creation Interface */}
           <Card className="border border-border bg-card">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
-                Revenue Analytics
+                <FileText className="w-5 h-5" />
+                Campaign Management
               </CardTitle>
-              <CardDescription className="text-muted-foreground">Financial performance with A/R aging and collection rates</CardDescription>
+              <CardDescription className="text-muted-foreground">Complete campaign creation workflow with scheduling and review</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-card border rounded-lg">
-                  <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
-                  <div className="text-lg font-bold text-foreground">$48.7k</div>
-                  <div className="text-xs text-green-600 font-medium">+18.5%</div>
-                </div>
-                <div className="p-3 bg-card border rounded-lg">
-                  <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
-                  <div className="text-lg font-bold text-foreground">86.4%</div>
-                  <div className="text-xs text-green-600 font-medium">+4.2%</div>
-                </div>
-              </div>
-              
-              {/* A/R Aging Preview (neutral) */}
-              <div className="p-3 bg-card border rounded-lg">
-                <div className="text-sm font-medium mb-2 text-foreground">A/R Aging Breakdown</div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>0-30 days</span>
-                    <span className="font-medium text-foreground">$4.2k (64%)</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>31-60 days</span>
-                    <span className="font-medium text-foreground">$1.8k (27%)</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>61-90 days</span>
-                    <span className="font-medium text-foreground">$0.4k (6%)</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>90+ days</span>
-                    <span className="font-medium text-foreground">$0.2k (3%)</span>
-                  </div>
-                </div>
+            <CardContent>
+              <div className="flex justify-center">
+                <img 
+                  src="/lovable-uploads/8e357f68-0488-4bb4-aac3-4e8708b4407c.png" 
+                  alt="Campaign creation interface showing 4-step workflow and scheduling options"
+                  className="w-full h-auto rounded-lg object-contain max-w-2xl"
+                />
               </div>
             </CardContent>
           </Card>
