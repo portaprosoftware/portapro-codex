@@ -745,6 +745,32 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
+          {/* Unit Maintenance & History Row */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Unit Maintenance & History</h3>
+              <p className="text-lg text-muted-foreground">Comprehensive maintenance tracking with automated work order management.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Mobile maintenance work order management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Complete service history and condition monitoring</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automated scheduling and technician assignments</span>
+                </li>
+              </ul>
+            </div>
+            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+              <Camera className="w-12 h-12 text-muted-foreground" />
+              <span className="ml-2 text-muted-foreground">Unit Maintenance Photo</span>
+            </div>
+          </div>
+
           {/* Full-width InventorySuppliesShowcase component */}
           <div className="col-span-full mt-8">
             <InventorySuppliesShowcase />
