@@ -61,13 +61,6 @@ export const MarketingShowcase: React.FC = () => {
                 <h3 className="text-base font-semibold text-foreground">Campaign Creation</h3>
                 <FileText className="w-4 h-4 text-muted-foreground" />
               </div>
-              <div className="rounded-lg overflow-hidden">
-                <img 
-                  src="/lovable-uploads/0e00793f-8567-4e19-8e86-c3e24c83b28b.png" 
-                  alt="Campaign creation interface showing 4-step workflow with scheduling and campaign summary features"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
             </article>
           </div>
 
