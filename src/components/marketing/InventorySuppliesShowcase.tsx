@@ -40,6 +40,16 @@ export function InventorySuppliesShowcase() {
       title: "Product Variations",
       content: "Create and manage product variations like colors and features for individual inventory items.",
       image: "/lovable-uploads/57dd64d3-c193-410c-8253-e191cb2682e4.png"
+    },
+    {
+      title: "Maintenance Updates",
+      content: "Track maintenance work with technician details, labor hours, parts costs, and progress updates.",
+      image: "/lovable-uploads/423b165e-d86d-47b2-8ee6-c6fc94159817.png"
+    },
+    {
+      title: "Unit Management",
+      content: "Manage individual units with maintenance details, location tracking, and service scheduling.",
+      image: "/lovable-uploads/f63d0c20-6dec-4f93-a5ff-04f120b1d177.png"
     }
   ];
 
@@ -235,33 +245,6 @@ export function InventorySuppliesShowcase() {
 
           {/* Right: Auto-rotating slider + Benefits */}
           <aside className="mt-48 animate-fade-in">
-            {/* Inventory Maintenance Card */}
-            <div className="rounded-2xl bg-white border border-border p-4 mb-6 animate-enter">
-              <div className="flex items-center gap-2 text-sm font-medium mb-4">
-                <Package className="w-4 h-4 text-primary" /> Inventory Maintenance
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <img
-                    src="/lovable-uploads/2dee82a9-a64e-46ad-b51c-5a041c169d6f.png"
-                    alt="Maintenance update form showing technician name, labor hours, labor cost, parts cost and parts used fields"
-                    className="w-full h-auto rounded-lg border border-border"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div>
-                  <img
-                    src="/lovable-uploads/095c31af-1df3-4b42-a244-2d70633cec88.png"
-                    alt="Unit management interface showing maintenance details for Unit 1001 with broken seat repair"
-                    className="w-full h-auto rounded-lg border border-border"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Auto-rotating slider */}
             <InventorySlider currentSlide={currentSlide} slides={slides} />
             <div className="rounded-2xl border border-border p-5 mt-6">
