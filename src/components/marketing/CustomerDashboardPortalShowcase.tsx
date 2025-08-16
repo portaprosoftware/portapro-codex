@@ -232,12 +232,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                     <p className="text-sm text-muted-foreground">
                       View and manage service reports, compliance documentation, and maintenance records.
                     </p>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>This Month: 24 services</div>
-                      <div>Compliance Rate: 100%</div>
-                      <div>Avg Response: 2.1 hrs</div>
-                      <div>Customer Rating: 4.8/5</div>
-                    </div>
                   </div>
                 )}
 
