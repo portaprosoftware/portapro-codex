@@ -773,6 +773,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
+            <img 
+              src="/lovable-uploads/9d80fc9b-a26b-4daa-92af-1c965d64ff86.png" 
+              alt="Maintenance notifications showing past due and due this week tasks"
+              className="w-full h-auto rounded-lg"
+            />
           </div>
 
           {/* Fuel Logs & Cost Tracking */}
