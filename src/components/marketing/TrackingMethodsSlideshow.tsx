@@ -13,7 +13,7 @@ const TrackingSlider = ({ currentSlide, slides }: { currentSlide: number; slides
   const slide = slides[currentSlide];
   
   return (
-    <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in min-h-[450px]">
+    <div className="rounded-2xl bg-white border border-border p-4 transition-all duration-500 animate-fade-in min-h-[400px]">
       <div className="flex items-center gap-2 text-sm font-medium mb-4">
         <slide.icon className="w-4 h-4 text-primary" /> {slide.title}
       </div>
@@ -31,9 +31,9 @@ export function TrackingMethodsSlideshow() {
       title: "Track Units with QR Codes Automatically",
       icon: QrCode,
       content: (
-        <div className="grid sm:grid-cols-2 gap-4 items-center">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-2/3">
+        <div className="grid sm:grid-cols-2 gap-4 items-start">
+          <div className="flex justify-center">
+            <div className="w-48">
               <div className="aspect-square">
                 <img
                   src="/lovable-uploads/1410c8e3-cd74-47ef-892c-0d261cfceff6.png"
@@ -43,8 +43,8 @@ export function TrackingMethodsSlideshow() {
                   decoding="async"
                 />
               </div>
+              <div className="text-xs font-bold text-foreground text-center mt-2">1232 • Standard Unit</div>
             </div>
-            <div className="text-xs font-bold text-foreground">1232 • Standard Unit</div>
           </div>
 
           <div className="rounded-lg border border-border p-3">
@@ -68,8 +68,8 @@ export function TrackingMethodsSlideshow() {
       title: "Snap & Track Units from Embossed Plastic Tool Numbers",
       icon: Camera,
       content: (
-        <div className="grid sm:grid-cols-2 gap-6 items-center">
-          <div className="flex flex-col items-center space-y-2">
+        <div className="grid sm:grid-cols-2 gap-6 items-start">
+          <div className="flex justify-center">
             <div className="w-full">
               <div className="aspect-[3/4]">
                 <img
@@ -81,7 +81,6 @@ export function TrackingMethodsSlideshow() {
                 />
               </div>
             </div>
-            <div className="text-xs font-bold text-foreground">AI Reading Results</div>
           </div>
 
           <div className="space-y-4">
