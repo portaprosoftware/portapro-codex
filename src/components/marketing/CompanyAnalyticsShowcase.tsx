@@ -23,183 +23,181 @@ export function CompanyAnalyticsShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 items-start">
-          {/* Centered Dashboard Cards */}
-          <div className="flex justify-center">
-            <div className="w-1/2">
-              <img 
-                src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
-                alt="Dashboard analytics cards showing job summary and revenue metrics"
-                className="w-full h-auto rounded-lg object-contain"
-              />
-            </div>
+        {/* Two-column layout: Image and One-Click Reports */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Dashboard Cards Image */}
+          <div className="flex justify-center lg:justify-start">
+            <img 
+              src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
+              alt="Dashboard analytics cards showing job summary and revenue metrics"
+              className="w-full h-auto rounded-lg object-contain"
+            />
           </div>
 
-          {/* Rest of the Content */}
-          <div className="space-y-4">
-
-            {/* Overview Dashboard Demo */}
-            <Card className="border border-border bg-card">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
-                  Overview Dashboard
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">Real-time KPIs with sparklines and delta indicators</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Mock KPI Cards Grid */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">Jobs Completed</div>
-                    <div className="text-lg font-bold text-foreground">
-                      247
+          {/* One-Click Reports Card */}
+          <Card className="border border-border bg-card h-fit">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                One-Click Reports
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">Ready-to-use reports instead of blank builders</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                {[
+                  { name: "Daily Ops Summary", desc: "Route/driver stops, on-time %, photos" },
+                  { name: "Weekly Service KPI", desc: "Jobs by type, missed/late, top sites" },
+                  { name: "Revenue & AR", desc: "Invoiced, collected, aging table" },
+                  { name: "Customer Service Pack", desc: "Service logs & photos by customer/date" }
+                ].map((report, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded">
+                    <div>
+                      <div className="text-sm font-medium text-foreground">{report.name}</div>
+                      <div className="text-xs text-muted-foreground">{report.desc}</div>
                     </div>
-                    <div className="text-xs text-green-600 font-medium">+15.2%</div>
-                  </div>
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">Collected Revenue</div>
-                    <div className="text-lg font-bold text-foreground">
-                      $42.1k
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="outline" className="text-xs px-2 py-1">
+                        <Download className="w-3 h-3 mr-1" />
+                        CSV
+                      </Button>
+                      <Button size="sm" variant="outline" className="text-xs px-2 py-1">PDF</Button>
                     </div>
-                    <div className="text-xs text-green-600 font-medium">+22.8%</div>
                   </div>
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">On-time Service Rate</div>
-                    <div className="text-lg font-bold text-foreground">94.2%</div>
-                    <div className="text-xs text-green-600 font-medium">+3.1%</div>
-                  </div>
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">Active Customers</div>
-                    <div className="text-lg font-bold text-foreground">156</div>
-                    <div className="text-xs text-green-600 font-medium">+8.7%</div>
-                  </div>
-                </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-                {/* Mock Horizontal Bar Charts */}
+        {/* Remaining Analytics Cards */}
+        <div className="space-y-4">
+          {/* Overview Dashboard Demo */}
+          <Card className="border border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Overview Dashboard
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">Real-time KPIs with sparklines and delta indicators</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Mock KPI Cards Grid */}
+              <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-card border rounded-lg">
-                  <div className="text-sm font-medium mb-3 text-foreground">Job Volume (7 days)</div>
-                  <div className="space-y-3">
-                    {/* Deliveries Bar */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-muted-foreground">Deliveries</span>
-                        <span className="text-xs font-medium text-foreground">132</span>
-                      </div>
-                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 w-[80%] rounded-full"></div>
-                      </div>
-                    </div>
-                    
-                    {/* Services Bar */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-muted-foreground">Services</span>
-                        <span className="text-xs font-medium text-foreground">71</span>
-                      </div>
-                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[60%] rounded-full"></div>
-                      </div>
-                    </div>
-                    
-                    {/* Pickups Bar */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-muted-foreground">Pickups</span>
-                        <span className="text-xs font-medium text-foreground">44</span>
-                      </div>
-                      <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 w-[40%] rounded-full"></div>
-                      </div>
-                    </div>
+                  <div className="text-xs text-muted-foreground mb-1">Jobs Completed</div>
+                  <div className="text-lg font-bold text-foreground">
+                    247
                   </div>
+                  <div className="text-xs text-green-600 font-medium">+15.2%</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Revenue Deep-dive */}
-            <Card className="border border-border bg-card">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Revenue Analytics
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">Financial performance with A/R aging and collection rates</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
-                    <div className="text-lg font-bold text-foreground">$48.7k</div>
-                    <div className="text-xs text-green-600 font-medium">+18.5%</div>
-                  </div>
-                  <div className="p-3 bg-card border rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
-                    <div className="text-lg font-bold text-foreground">86.4%</div>
-                    <div className="text-xs text-green-600 font-medium">+4.2%</div>
-                  </div>
-                </div>
-                
-                {/* A/R Aging Preview (neutral) */}
                 <div className="p-3 bg-card border rounded-lg">
-                  <div className="text-sm font-medium mb-2 text-foreground">A/R Aging Breakdown</div>
+                  <div className="text-xs text-muted-foreground mb-1">Collected Revenue</div>
+                  <div className="text-lg font-bold text-foreground">
+                    $42.1k
+                  </div>
+                  <div className="text-xs text-green-600 font-medium">+22.8%</div>
+                </div>
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">On-time Service Rate</div>
+                  <div className="text-lg font-bold text-foreground">94.2%</div>
+                  <div className="text-xs text-green-600 font-medium">+3.1%</div>
+                </div>
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Active Customers</div>
+                  <div className="text-lg font-bold text-foreground">156</div>
+                  <div className="text-xs text-green-600 font-medium">+8.7%</div>
+                </div>
+              </div>
+
+              {/* Mock Horizontal Bar Charts */}
+              <div className="p-3 bg-card border rounded-lg">
+                <div className="text-sm font-medium mb-3 text-foreground">Job Volume (7 days)</div>
+                <div className="space-y-3">
+                  {/* Deliveries Bar */}
                   <div className="space-y-1">
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>0-30 days</span>
-                      <span className="font-medium text-foreground">$4.2k (64%)</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-muted-foreground">Deliveries</span>
+                      <span className="text-xs font-medium text-foreground">132</span>
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>31-60 days</span>
-                      <span className="font-medium text-foreground">$1.8k (27%)</span>
+                    <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 w-[80%] rounded-full"></div>
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>61-90 days</span>
-                      <span className="font-medium text-foreground">$0.4k (6%)</span>
+                  </div>
+                  
+                  {/* Services Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-muted-foreground">Services</span>
+                      <span className="text-xs font-medium text-foreground">71</span>
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>90+ days</span>
-                      <span className="font-medium text-foreground">$0.2k (3%)</span>
+                    <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-red-800 to-red-900 w-[60%] rounded-full"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Pickups Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-muted-foreground">Pickups</span>
+                      <span className="text-xs font-medium text-foreground">44</span>
+                    </div>
+                    <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 w-[40%] rounded-full"></div>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Reports Hub */}
-            <Card className="border border-border bg-card">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  One-Click Reports
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">Ready-to-use reports instead of blank builders</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  {[
-                    { name: "Daily Ops Summary", desc: "Route/driver stops, on-time %, photos" },
-                    { name: "Weekly Service KPI", desc: "Jobs by type, missed/late, top sites" },
-                    { name: "Revenue & AR", desc: "Invoiced, collected, aging table" },
-                    { name: "Customer Service Pack", desc: "Service logs & photos by customer/date" }
-                  ].map((report, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-2 bg-card border rounded">
-                      <div>
-                        <div className="text-sm font-medium text-foreground">{report.name}</div>
-                        <div className="text-xs text-muted-foreground">{report.desc}</div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button size="sm" variant="outline" className="text-xs px-2 py-1">
-                          <Download className="w-3 h-3 mr-1" />
-                          CSV
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-xs px-2 py-1">PDF</Button>
-                      </div>
-                    </div>
-                  ))}
+          {/* Revenue Deep-dive */}
+          <Card className="border border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
+                Revenue Analytics
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">Financial performance with A/R aging and collection rates</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Total Invoiced</div>
+                  <div className="text-lg font-bold text-foreground">$48.7k</div>
+                  <div className="text-xs text-green-600 font-medium">+18.5%</div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="p-3 bg-card border rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Collection Rate</div>
+                  <div className="text-lg font-bold text-foreground">86.4%</div>
+                  <div className="text-xs text-green-600 font-medium">+4.2%</div>
+                </div>
+              </div>
+              
+              {/* A/R Aging Preview (neutral) */}
+              <div className="p-3 bg-card border rounded-lg">
+                <div className="text-sm font-medium mb-2 text-foreground">A/R Aging Breakdown</div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>0-30 days</span>
+                    <span className="font-medium text-foreground">$4.2k (64%)</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>31-60 days</span>
+                    <span className="font-medium text-foreground">$1.8k (27%)</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>61-90 days</span>
+                    <span className="font-medium text-foreground">$0.4k (6%)</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>90+ days</span>
+                    <span className="font-medium text-foreground">$0.2k (3%)</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
