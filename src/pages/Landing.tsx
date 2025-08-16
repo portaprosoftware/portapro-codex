@@ -8,6 +8,7 @@ import { LandingLogo } from '@/components/ui/landing-logo';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { BlogSlider } from '@/components/BlogSlider';
 import { AutoCarousel } from '@/components/ui/AutoCarousel';
+import { SchedulingGraphic } from '@/components/ui/SchedulingGraphic';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { StatCard } from '@/components/ui/StatCard';
 import { useQuery } from '@tanstack/react-query';
@@ -1001,7 +1002,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="rounded-2xl border bg-card p-6 shadow-md order-1 lg:order-2">
-              <AutoCarousel media={teamSchedulingMedia} className="w-full" aspectRatio="aspect-[4/3]" />
+              <SchedulingGraphic />
             </div>
           </div>
 
