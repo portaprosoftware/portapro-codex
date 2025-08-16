@@ -35,6 +35,11 @@ export function InventorySuppliesShowcase() {
       title: "Real-Time Availability",
       content: "Instant visibility into available units with automated allocation and status tracking.",
       image: "/lovable-uploads/1048c86e-2700-4c73-9c4f-1b5c7442323c.png"
+    },
+    {
+      title: "Product Variations",
+      content: "Create and manage product variations like colors and features for individual inventory items.",
+      image: "/lovable-uploads/57dd64d3-c193-410c-8253-e191cb2682e4.png"
     }
   ];
 
