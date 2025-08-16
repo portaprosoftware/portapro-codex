@@ -14,7 +14,7 @@ export function CompanyAnalyticsShowcase() {
   return (
     <section id="company-analytics" className="py-16 bg-white">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             Company Analytics — Complete insights across your entire operation
           </h2>
