@@ -803,7 +803,7 @@ export const Landing: React.FC = () => {
             <img 
               src="/lovable-uploads/f2ba74fb-be8b-4aab-acf7-30dd16ab5f3c.png" 
               alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics"
-              className="w-full h-auto rounded-lg transform scale-115"
+              className="w-full h-auto rounded-lg"
             />
           </div>
 
@@ -830,7 +830,7 @@ export const Landing: React.FC = () => {
             <img 
               src="/lovable-uploads/fd26a75b-a912-4209-b2bd-3269637a38d0.png" 
               alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
-              className="w-full h-auto rounded-lg transform scale-110"
+              className="w-full h-auto rounded-lg"
             />
           </div>
 
@@ -865,7 +865,7 @@ export const Landing: React.FC = () => {
             <img 
               src="/lovable-uploads/477a9701-2d50-4182-849d-b8ae365ad232.png" 
               alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker"
-              className="w-full h-auto rounded-lg transform scale-110"
+              className="w-full h-auto rounded-lg"
             />
           </div>
 
@@ -892,7 +892,7 @@ export const Landing: React.FC = () => {
             <img 
               src="/lovable-uploads/b903fe69-df76-48bc-8997-02f8e75b670a.png" 
               alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
-              className="w-full h-auto rounded-lg transform scale-110"
+              className="w-full h-auto rounded-lg"
             />
           </div>
 
