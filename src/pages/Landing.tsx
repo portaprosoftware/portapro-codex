@@ -511,6 +511,9 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Pure white divider section */}
+      <section className="py-8 bg-white"></section>
+
       {/* Group 1: Operations Features - Blue */}
       <div id="operations-features" />
       <section id="features" className="py-8 bg-gradient-blue">
