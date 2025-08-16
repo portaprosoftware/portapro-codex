@@ -23,9 +23,9 @@ export function CompanyAnalyticsShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 items-start">
+        <div className="grid grid-cols-1 gap-4 items-start">
           {/* Centered Dashboard Cards */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center">
             <div className="w-1/2">
               <img 
                 src="/lovable-uploads/75b97a9e-a16a-4dbf-b7d1-3b65d35fb9cb.png" 
@@ -36,7 +36,7 @@ export function CompanyAnalyticsShowcase() {
           </div>
 
           {/* Rest of the Content */}
-          <div className="space-y-8">
+          <div className="space-y-4">
 
             {/* Overview Dashboard Demo */}
             <Card className="border border-border bg-card">
