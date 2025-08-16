@@ -166,9 +166,7 @@ export const ServicesHubShowcase: React.FC = () => {
 
           {/* Right column: KPIs + highlights + CTAs */}
           <aside className="space-y-6">
-            <div className="rounded-2xl border bg-card shadow-md p-6">
-              <ServicesSlider currentSlide={currentSlide} slides={slides} />
-            </div>
+            <ServicesSlider currentSlide={currentSlide} slides={slides} />
 
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
               <div className="text-base font-semibold text-foreground">What teams love</div>
