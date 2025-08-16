@@ -105,7 +105,7 @@ const FleetManagementShowcase: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   <div>
                     <span className="text-sm text-gray-600">Make</span>
                     <p className="font-semibold text-lg">{mockVehicle.make}</p>
@@ -126,10 +126,11 @@ const FleetManagementShowcase: React.FC = () => {
                     <span className="text-sm text-gray-600">Current Mileage</span>
                     <p className="font-semibold">{mockVehicle.mileage.toLocaleString()} miles</p>
                   </div>
-                  <div>
-                    <span className="text-sm text-gray-600">VIN</span>
-                    <p className="font-semibold text-sm">{mockVehicle.vin}</p>
-                  </div>
+                </div>
+                {/* VIN on its own row for mobile compatibility */}
+                <div className="mt-4">
+                  <span className="text-sm text-gray-600">VIN</span>
+                  <p className="font-semibold text-sm">{mockVehicle.vin}</p>
                 </div>
               </CardContent>
             </Card>
