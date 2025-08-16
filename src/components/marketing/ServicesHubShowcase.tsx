@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,60 @@ import {
   Sparkles
 } from "lucide-react";
 
+const ServicesSlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [displaySlide, setDisplaySlide] = useState(currentSlide);
+
+  useEffect(() => {
+    if (displaySlide !== currentSlide) {
+      setIsTransitioning(true);
+      
+      // Start fade out and scale out
+      setTimeout(() => {
+        setDisplaySlide(currentSlide);
+        setIsTransitioning(false);
+      }, 200); // Half the transition duration
+    }
+  }, [currentSlide, displaySlide]);
+
+  return (
+    <div className="relative w-full">
+      <img
+        src={slides[displaySlide].image}
+        alt={slides[displaySlide].title}
+        className={`w-full h-auto rounded-lg transition-all duration-400 ease-out ${
+          isTransitioning 
+            ? 'animate-exit opacity-0 scale-95' 
+            : 'animate-enter opacity-100 scale-100'
+        }`}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  );
+};
+
 export const ServicesHubShowcase: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slides = [
+    {
+      title: "Service Categories",
+      image: "/lovable-uploads/7db68a4f-fd38-4fda-a392-48f40bedf84f.png"
+    },
+    {
+      title: "Report Templates", 
+      image: "/lovable-uploads/4c98d52b-c298-4449-8cff-1eb43c3dbe94.png"
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
   return (
     <section id="services-hub" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
@@ -113,20 +166,8 @@ export const ServicesHubShowcase: React.FC = () => {
 
           {/* Right column: KPIs + highlights + CTAs */}
           <aside className="space-y-6">
-            <div className="rounded-2xl border bg-card shadow-md p-6 space-y-4">
-              <div className="text-base font-semibold text-foreground">Service Categories</div>
-              <img 
-                src="/lovable-uploads/5b5fbf1d-e033-43cc-8ffd-072461cb0b20.png" 
-                alt="Service categories interface showing Deep Clean Service, Emergency Repair, Routine Maintenance, and Safety Inspection options"
-                className="w-full h-auto rounded-lg"
-              />
-              
-              <div className="text-base font-semibold text-foreground">Report Templates</div>
-              <img 
-                src="/lovable-uploads/71e651f6-0375-45e7-a820-6e00c11f4fb2.png" 
-                alt="Create Report Template interface with form builder options like text input, photo capture, and digital signature"
-                className="w-full h-auto rounded-lg"
-              />
+            <div className="rounded-2xl border bg-card shadow-md p-6">
+              <ServicesSlider currentSlide={currentSlide} slides={slides} />
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
