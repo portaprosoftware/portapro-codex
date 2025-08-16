@@ -801,7 +801,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/images/fuel-logs.png" 
+              src="/lovable-uploads/a133d807-54c7-49e6-a9b3-a5fd12dbda2c.png" 
               alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics"
               className="w-full h-auto rounded-lg"
             />
