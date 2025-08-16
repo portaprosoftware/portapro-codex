@@ -689,11 +689,11 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Fleet Tracking */}
-          {/* General Fleet Tracking - Centered */}
-          <div className="flex flex-col items-center text-center mb-8">
+          {/* General Fleet Tracking - Left Aligned Header */}
+          <div className="flex flex-col mb-8">
             <div className="max-w-4xl space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">General Fleet Tracking</h3>
-              <p className="text-lg text-muted-foreground">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
+              <h3 className="text-2xl font-bold text-foreground text-left">General Fleet Tracking</h3>
+              <p className="text-lg text-muted-foreground text-left">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
               <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
                 <div className="flex items-start gap-3 text-left">
                   <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -710,10 +710,6 @@ export const Landing: React.FC = () => {
                 <div className="flex items-start gap-3 text-left">
                   <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Document management with expiry alerts and compliance</span>
-                </div>
-                <div className="flex items-start gap-3 text-left md:col-span-2 md:justify-center">
-                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Real-time compliance dashboard and status tracking</span>
                 </div>
               </div>
             </div>
