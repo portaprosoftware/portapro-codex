@@ -442,11 +442,12 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Proof Bar + Trust strip + Switching is easy - White */}
-      <section id="about" className="py-6 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          {/* Feature badges */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
+      {/* Proof Bar + Trust strip + Switching is easy - Blue background extends down */}
+      <section id="about" className="bg-gradient-blue">
+        <div className="bg-gradient-to-b from-transparent to-white pt-6 pb-6">
+          <div className="container mx-auto max-w-6xl px-6">
+            {/* Feature badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
               ✓ 14 Day Free Trial
             </span>
@@ -456,12 +457,12 @@ export const Landing: React.FC = () => {
             <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
               ✓ Unlimited users, trucks & units
             </span>
-          </div>
-          
-          {/* Proof Bar */}
-          <div className="mb-4">
-            <div className="sr-only">Proof Bar</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+            </div>
+            
+            {/* Proof Bar */}
+            <div className="mb-4">
+              <div className="sr-only">Proof Bar</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
@@ -497,6 +498,7 @@ export const Landing: React.FC = () => {
               
 
               
+              </div>
             </div>
             
             {/* CTA Text */}
