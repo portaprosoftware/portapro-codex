@@ -113,11 +113,18 @@ export const ServicesHubShowcase: React.FC = () => {
 
           {/* Right column: KPIs + highlights + CTAs */}
           <aside className="space-y-6">
-            <div className="rounded-2xl border bg-card shadow-md p-6">
-              <div className="text-base font-semibold mb-4 text-foreground">Choose Service</div>
+            <div className="rounded-2xl border bg-card shadow-md p-6 space-y-4">
+              <div className="text-base font-semibold text-foreground">Service Categories</div>
               <img 
-                src="/lovable-uploads/79b5d2db-b882-4ed0-80e6-e02d8984b7d8.png" 
-                alt="Service selection interface showing Deep Clean Service, Emergency Repair, and Routine Maintenance options"
+                src="/lovable-uploads/5b5fbf1d-e033-43cc-8ffd-072461cb0b20.png" 
+                alt="Service categories interface showing Deep Clean Service, Emergency Repair, Routine Maintenance, and Safety Inspection options"
+                className="w-full h-auto rounded-lg"
+              />
+              
+              <div className="text-base font-semibold text-foreground">Report Templates</div>
+              <img 
+                src="/lovable-uploads/71e651f6-0375-45e7-a820-6e00c11f4fb2.png" 
+                alt="Create Report Template interface with form builder options like text input, photo capture, and digital signature"
                 className="w-full h-auto rounded-lg"
               />
             </div>
