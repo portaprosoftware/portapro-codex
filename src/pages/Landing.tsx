@@ -863,8 +863,8 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/d0d94ea5-d504-437f-9fcc-528d05de9b62.png" 
-              alt="Truck stock management interface showing vehicle selection, inventory tracking, and stock readiness validation"
+              src="/lovable-uploads/477a9701-2d50-4182-849d-b8ae365ad232.png" 
+              alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker"
               className="w-full h-auto rounded-lg transform scale-110"
             />
           </div>
