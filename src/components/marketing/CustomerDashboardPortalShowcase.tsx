@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -26,9 +26,40 @@ import {
   Palette,
   Monitor,
   Smartphone,
+  Calendar,
+  DollarSign,
+  Truck,
+  Clock,
+  Briefcase,
 } from "lucide-react";
 
+// Mock customer data
+const mockCustomerData = {
+  name: "ABC Construction Co.",
+  stats: {
+    totalJobs: 18,
+    outstandingBalance: 0,
+    outstandingInvoices: 0,
+    nextDelivery: "8/22/2025",
+  },
+  contacts: [
+    { name: "John Smith", role: "Project Manager", phone: "(555) 123-4567", email: "john@abcconstruction.com" },
+    { name: "Sarah Johnson", role: "Site Supervisor", phone: "(555) 987-6543", email: "sarah@abcconstruction.com" },
+  ],
+  jobs: [
+    { id: "JOB-001", site: "Downtown Office Build", status: "Active", units: 8, startDate: "2024-01-15", nextService: "Tomorrow" },
+    { id: "JOB-002", site: "Residential Complex", status: "Completed", units: 12, startDate: "2023-11-20", completedDate: "2024-01-10" },
+    { id: "JOB-003", site: "Shopping Center Renovation", status: "Scheduled", units: 6, startDate: "2024-02-01", nextService: "Next Week" },
+  ],
+  locations: [
+    { name: "Main Office", address: "123 Business Ave, City, ST 12345", type: "Corporate HQ" },
+    { name: "Construction Site A", address: "456 Build St, City, ST 12345", type: "Active Job Site" },
+    { name: "Warehouse", address: "789 Storage Rd, City, ST 12345", type: "Storage Facility" },
+  ]
+};
+
 export const CustomerDashboardPortalShowcase: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('overview');
   return (
     <section id="customer-portal" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
@@ -52,41 +83,205 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               <p className="text-sm text-muted-foreground">Internal account management for your rental company</p>
             </div>
 
-            {/* Account Overview Dashboard */}
+            {/* Interactive Customer Account Management */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-base font-semibold text-foreground">Account Overview Dashboard</h4>
-                <Home className="w-4 h-4 text-muted-foreground" />
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-base font-semibold text-foreground">{mockCustomerData.name}</h4>
+                <Users className="w-4 h-4 text-muted-foreground" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              {/* Customer Stats Cards - Matching uploaded image */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <Card className="border bg-background">
                   <CardContent className="p-4">
-                    <div className="text-xs text-muted-foreground">Units on site</div>
-                    <div className="text-xl font-semibold text-foreground">38</div>
-                    <div className="text-xs text-muted-foreground">Next service: Thu</div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Calendar className="w-4 h-4 text-blue-600" />
+                      <div className="text-xs text-muted-foreground">Total Job History</div>
+                    </div>
+                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.totalJobs}</div>
                   </CardContent>
                 </Card>
                 <Card className="border bg-background">
                   <CardContent className="p-4">
-                    <div className="text-xs text-muted-foreground">Open requests</div>
-                    <div className="text-xl font-semibold text-foreground">7</div>
-                    <div className="text-xs text-muted-foreground">2 urgent</div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <div className="text-xs text-muted-foreground">Outstanding Balance</div>
+                    </div>
+                    <div className="text-xl font-semibold text-foreground">${mockCustomerData.stats.outstandingBalance}</div>
                   </CardContent>
                 </Card>
                 <Card className="border bg-background">
                   <CardContent className="p-4">
-                    <div className="text-xs text-muted-foreground">Balance due</div>
-                    <div className="text-xl font-semibold text-foreground">$2,184.00</div>
-                    <div className="text-xs text-muted-foreground">3 invoices</div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <FileText className="w-4 h-4 text-orange-600" />
+                      <div className="text-xs text-muted-foreground">Outstanding Invoices</div>
+                    </div>
+                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.outstandingInvoices}</div>
                   </CardContent>
                 </Card>
                 <Card className="border bg-background">
                   <CardContent className="p-4">
-                    <div className="text-xs text-muted-foreground">Account health</div>
-                    <div className="text-xl font-semibold text-green-600">Good</div>
-                    <div className="text-xs text-muted-foreground">Payment history</div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Truck className="w-4 h-4 text-purple-600" />
+                      <div className="text-xs text-muted-foreground">Next Delivery</div>
+                    </div>
+                    <div className="text-xl font-semibold text-foreground">{mockCustomerData.stats.nextDelivery}</div>
                   </CardContent>
                 </Card>
+              </div>
+
+              {/* Navigation Tabs */}
+              <div className="flex flex-wrap gap-1 mb-4">
+                {[
+                  { id: 'overview', label: 'Overview', icon: Home },
+                  { id: 'contacts', label: 'Contacts', icon: Users },
+                  { id: 'locations', label: 'Service Locations', icon: MapPin },
+                  { id: 'jobs', label: 'Jobs', icon: Briefcase },
+                  { id: 'reports', label: 'Service Reports', icon: BarChart3 },
+                  { id: 'financial', label: 'Financial', icon: DollarSign },
+                  { id: 'communication', label: 'Communication', icon: MessageSquare },
+                ].map((tab) => {
+                  const IconComponent = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                        activeTab === tab.id
+                          ? 'bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm'
+                          : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <IconComponent className="w-3 h-3" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tab Content */}
+              <div className="min-h-[200px]">
+                {activeTab === 'overview' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Account Summary</h5>
+                    <p className="text-sm text-muted-foreground">
+                      Active customer since 2023. Current service level: Premium. 
+                      Last payment: On time. Account status: Good standing.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>Active Jobs: 2</div>
+                      <div>Total Units: 26</div>
+                      <div>Service Frequency: Weekly</div>
+                      <div>Payment Terms: Net 30</div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'contacts' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Contact Information</h5>
+                    {mockCustomerData.contacts.map((contact, index) => (
+                      <div key={index} className="border rounded-lg p-3 bg-background">
+                        <div className="font-medium text-sm">{contact.name}</div>
+                        <div className="text-xs text-muted-foreground">{contact.role}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {contact.phone} • {contact.email}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'locations' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Service Locations</h5>
+                    {mockCustomerData.locations.map((location, index) => (
+                      <div key={index} className="border rounded-lg p-3 bg-background">
+                        <div className="font-medium text-sm">{location.name}</div>
+                        <div className="text-xs text-muted-foreground">{location.type}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{location.address}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'jobs' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Job Management</h5>
+                    {mockCustomerData.jobs.map((job, index) => (
+                      <div key={index} className="border rounded-lg p-3 bg-background">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-medium text-sm">{job.id}</div>
+                            <div className="text-xs text-muted-foreground">{job.site}</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {job.units} units • Started: {job.startDate}
+                            </div>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            job.status === 'Active' ? 'bg-green-100 text-green-700' :
+                            job.status === 'Completed' ? 'bg-gray-100 text-gray-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {job.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'reports' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Service Reports</h5>
+                    <p className="text-sm text-muted-foreground">
+                      View and manage service reports, compliance documentation, and maintenance records.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>This Month: 24 services</div>
+                      <div>Compliance Rate: 100%</div>
+                      <div>Avg Response: 2.1 hrs</div>
+                      <div>Customer Rating: 4.8/5</div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'financial' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Financial Overview</h5>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="border rounded-lg p-3 bg-background">
+                        <div className="text-xs text-muted-foreground">Monthly Revenue</div>
+                        <div className="text-lg font-semibold">$3,240</div>
+                      </div>
+                      <div className="border rounded-lg p-3 bg-background">
+                        <div className="text-xs text-muted-foreground">YTD Revenue</div>
+                        <div className="text-lg font-semibold">$28,650</div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Payment method: ACH • Autopay enabled</p>
+                  </div>
+                )}
+
+                {activeTab === 'communication' && (
+                  <div className="space-y-3">
+                    <h5 className="font-medium text-foreground">Communication Log</h5>
+                    <div className="space-y-2">
+                      <div className="border rounded-lg p-3 bg-background">
+                        <div className="text-xs text-muted-foreground">Yesterday 2:30 PM</div>
+                        <div className="text-sm">Service confirmation call - spoke with John Smith</div>
+                      </div>
+                      <div className="border rounded-lg p-3 bg-background">
+                        <div className="text-xs text-muted-foreground">3 days ago</div>
+                        <div className="text-sm">Email: Invoice #INV-2024-0156 sent</div>
+                      </div>
+                      <div className="border rounded-lg p-3 bg-background">
+                        <div className="text-xs text-muted-foreground">1 week ago</div>
+                        <div className="text-sm">SMS: Service reminder sent to site contact</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </article>
 
