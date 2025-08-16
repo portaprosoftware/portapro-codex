@@ -106,9 +106,9 @@ export function TrackingMethodsSlideshow() {
                 <span className="font-medium">HDPE</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-green-50 to-green-100 text-green-700 p-3 rounded-lg border border-green-200">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-lg">
               <CheckCircle className="w-4 h-4" />
-              <span className="text-sm font-medium">Successfully tracked</span>
+              <span className="text-sm font-bold">Successfully tracked</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Works offline — syncs later. Instant attach to units & jobs.
