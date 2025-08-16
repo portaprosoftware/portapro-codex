@@ -807,10 +807,10 @@ export const Landing: React.FC = () => {
             />
           </div>
 
-          {/* Daily Driver Assignments */}
+          {/* Driver Assignments */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="space-y-6 order-2 lg:order-1">
-              <h3 className="text-2xl font-bold text-foreground">Daily Driver Assignments</h3>
+              <h3 className="text-2xl font-bold text-foreground">Driver Assignments</h3>
               <p className="text-lg text-muted-foreground">Simple, clear dispatch—drivers know exactly where to go.</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -828,7 +828,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <img 
-              src="/lovable-uploads/04720576-aad2-4e93-a4e3-82df4ad358c3.png" 
+              src="/lovable-uploads/fd26a75b-a912-4209-b2bd-3269637a38d0.png" 
               alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
               className="w-full h-auto rounded-lg transform scale-110"
             />
