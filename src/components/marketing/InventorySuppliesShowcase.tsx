@@ -169,7 +169,40 @@ export function InventorySuppliesShowcase() {
                 </div>
             </div>
 
-            {/* Panel C — Track Units with QR Codes */}
+            {/* Panel C — Unit Maintenance & History */}
+            <div className="rounded-2xl bg-white border border-border animate-enter">
+                <div className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground text-base mb-1">Unit Maintenance & History</h3>
+                      <p className="text-sm text-muted-foreground mb-4">Maintenance Work Orders & Service History</p>
+                      
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                          <span className="text-sm text-foreground leading-relaxed">Mobile maintenance work order management with real-time updates and photo documentation</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                          <span className="text-sm text-foreground leading-relaxed">Complete service history tracking for condition monitoring and compliance reporting</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                          <span className="text-sm text-foreground leading-relaxed">Automated preventive maintenance scheduling with technician assignments and parts tracking</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="ml-6 flex-shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                        <Wrench className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            {/* Panel D — Track Units with QR Codes */}
             <div className="rounded-2xl bg-white border border-border animate-enter">
                 <div className="p-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
@@ -209,7 +242,7 @@ export function InventorySuppliesShowcase() {
                 </div>
             </div>
 
-            {/* Panel D — Photo Scanning */}
+            {/* Panel E — Photo Scanning */}
             <div className="rounded-2xl bg-white border border-border p-4 animate-enter">
                 <div className="flex items-center gap-2 text-sm font-medium mb-2">
                   <Sparkles className="w-4 h-4 text-primary" /> Snap & Track Units from Embossed Plastic Tool Numbers
@@ -259,85 +292,6 @@ export function InventorySuppliesShowcase() {
             </div>
 
            </div>
-
-            {/* Panel E — Maintenance Tracking */}
-            <div className="rounded-2xl bg-white border border-border animate-enter">
-                <div className="p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Wrench className="w-4 h-4 text-primary" /> Maintenance Work Orders & Service History
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    {/* Work Order Dashboard */}
-                    <div className="rounded-xl border border-border p-3">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-sm font-medium">Active Work Orders</div>
-                        <div className="text-lg font-bold text-primary">7</div>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-2">
-                            <AlertTriangle className="w-3 h-3 text-yellow-500" />
-                            <span>WO-2024-003</span>
-                          </span>
-                          <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-medium">In Progress</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-2">
-                            <Wrench className="w-3 h-3 text-blue-500" />
-                            <span>WO-2024-004</span>
-                          </span>
-                          <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">Scheduled</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-2">
-                            <Clock className="w-3 h-3 text-red-500" />
-                            <span>WO-2024-002</span>
-                          </span>
-                          <span className="px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium">Overdue</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Technician & Cost Tracking */}
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <div className="rounded-xl border border-border p-3">
-                        <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                          <User className="w-4 h-4 text-primary" /> Technician Hours
-                        </div>
-                        <div className="text-xs text-muted-foreground">Today: 18.5 hrs</div>
-                        <div className="text-xs text-muted-foreground">This Week: 127 hrs</div>
-                      </div>
-                      <div className="rounded-xl border border-border p-3">
-                        <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                          <DollarSign className="w-4 h-4 text-primary" /> Parts Cost
-                        </div>
-                        <div className="text-xs text-muted-foreground">This Month: $2,840</div>
-                        <div className="text-xs text-muted-foreground">YTD: $18,560</div>
-                      </div>
-                    </div>
-
-                    {/* Service History */}
-                    <div className="rounded-xl border border-border p-3">
-                      <div className="text-sm font-medium mb-2">Recent Service History</div>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex justify-between">
-                          <span>PT-1234 • Deep Clean</span>
-                          <span className="text-green-600 font-medium">Completed</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>PT-1267 • Pump Repair</span>
-                          <span className="text-green-600 font-medium">Completed</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>PT-1298 • Tank Replacement</span>
-                          <span className="text-yellow-600 font-medium">In Progress</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
 
            </div>
 
