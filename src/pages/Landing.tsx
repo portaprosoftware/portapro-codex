@@ -212,6 +212,7 @@ export const Landing: React.FC = () => {
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
+  const [calendlyModalOpen, setCalendlyModalOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
   const isMobile = useIsMobile();
@@ -403,7 +404,7 @@ export const Landing: React.FC = () => {
                     Start Free Trial
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={() => setCalendlyModalOpen(true)}>
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
                 </Button>
@@ -2437,6 +2438,32 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>}
+
+      {/* Calendly Demo Modal */}
+      {calendlyModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm">
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="min-h-full flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg w-full max-w-4xl mx-auto relative shadow-2xl">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h2 className="text-xl font-semibold text-gray-900">Schedule a Demo</h2>
+                  <button
+                    onClick={() => setCalendlyModalOpen(false)}
+                    className="rounded-sm opacity-70 hover:opacity-100 transition-opacity p-1 hover:bg-gray-100"
+                  >
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close</span>
+                  </button>
+                </div>
+                <div className="calendly-inline-widget" 
+                     data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" 
+                     style={{minWidth: '320px', height: '700px'}}>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 };
 export default Landing;
