@@ -291,6 +291,9 @@ export const InventoryMapView: React.FC = () => {
           <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600">No inventory locations found</p>
           <p className="text-sm text-gray-500">Equipment locations will appear here when items are assigned to jobs with addresses</p>
+          <p className="text-xs text-gray-400 mt-2">
+            To see locations on the map: Create jobs → Assign products to jobs → Add customer addresses with GPS coordinates
+          </p>
         </div>
       </div>
     );
