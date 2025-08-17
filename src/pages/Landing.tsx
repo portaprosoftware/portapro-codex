@@ -212,7 +212,6 @@ export const Landing: React.FC = () => {
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
-  const [calendlyModalOpen, setCalendlyModalOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
   const isMobile = useIsMobile();
@@ -220,34 +219,9 @@ export const Landing: React.FC = () => {
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // Load Calendly widget
-  useEffect(() => {
-    // Add Calendly CSS
-    const link = document.createElement('link');
-    link.href = 'https://assets.calendly.com/assets/external/widget.css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-
-    // Add Calendly JS
-    const script = document.createElement('script');
-    script.src = 'https://assets.calendly.com/assets/external/widget.js';
-    script.async = true;
-    document.head.appendChild(script);
-    
-    return () => {
-      // Cleanup
-      if (document.head.contains(link)) document.head.removeChild(link);
-      if (document.head.contains(script)) document.head.removeChild(script);
-    };
-  }, []);
-
-  // Handle Calendly popup
-  const handleScheduleDemo = () => {
-    if ((window as any).Calendly) {
-      (window as any).Calendly.initPopupWidget({
-        url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1'
-      });
-    }
+  // Handle questions form
+  const handleRequestInfo = () => {
+    setQuestionsFormOpen(true);
   };
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
@@ -400,9 +374,9 @@ export const Landing: React.FC = () => {
                     Start Free Trial
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={() => setCalendlyModalOpen(true)}>
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Demo
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={() => setQuestionsFormOpen(true)}>
+                  <Phone className="w-4 h-4 mr-2" />
+                  Request More Info
                 </Button>
               </div>
               
@@ -2435,40 +2409,15 @@ export const Landing: React.FC = () => {
           </div>
         </div>}
 
-      {/* Calendly Demo Modal */}
-      {calendlyModalOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm">
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="min-h-full flex items-center justify-center p-4">
-              <div className="bg-white rounded-lg w-full max-w-4xl mx-auto relative shadow-2xl">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="text-xl font-semibold text-gray-900">Schedule a Demo</h2>
-                  <button
-                    onClick={() => setCalendlyModalOpen(false)}
-                    className="rounded-sm opacity-70 hover:opacity-100 transition-opacity p-1 hover:bg-gray-100"
-                  >
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close</span>
-                  </button>
-                </div>
-                <div className="calendly-inline-widget" 
-                     data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" 
-                     style={{minWidth: '320px', height: '700px', width: '100%'}}>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Custom Schedule Demo Floating Button */}
+      {/* Custom Request More Info Floating Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button 
-          onClick={handleScheduleDemo} 
+          onClick={handleRequestInfo} 
           className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
-          <Laptop className="w-4 h-4 mr-2" />
-          Schedule Demo
+          <Phone className="w-4 h-4 mr-2" />
+          Request More Info
         </Button>
       </div>
     </div>;
