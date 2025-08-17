@@ -407,10 +407,6 @@ export const Landing: React.FC = () => {
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule Demo
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
-                  <Play className="w-4 h-4 mr-2" />
-                  Watch Preview
-                </Button>
               </div>
               
               <div className="space-y-6 mt-8">
@@ -439,7 +435,7 @@ export const Landing: React.FC = () => {
           </div>
           
           {/* Feature badges - moved to blue background */}
-          <div className="container mx-auto max-w-6xl px-6 mt-12">
+          <div className="container mx-auto max-w-6xl px-6 mt-6">
             <div className="flex flex-wrap justify-center gap-2 mb-6">
               <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
                 ✓ 14 Day Free Trial
