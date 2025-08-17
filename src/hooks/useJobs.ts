@@ -177,6 +177,9 @@ export function useCreateJob() {
           break;
       }
 
+      console.log('Creating job with full jobData:', jobData);
+      console.log('Job items to process:', jobData.items);
+      
       // Calculate service metadata
       const hasServices = jobData.servicesData && jobData.servicesData.selectedServices?.length > 0;
       const totalPrice = hasServices ? jobData.servicesData.servicesSubtotal || 0 : null;
@@ -228,8 +231,11 @@ export function useCreateJob() {
       }
 
       // Process inventory items if present
+      console.log('Processing inventory items:', jobData.items);
       if (jobData.items && jobData.items.length > 0) {
+        console.log('Found', jobData.items.length, 'items to process');
         for (const item of jobData.items) {
+          console.log('Processing item:', item);
           // Create equipment assignments based on selection strategy
           if (item.strategy === 'specific' && item.specific_item_ids) {
             // Handle specific unit assignments

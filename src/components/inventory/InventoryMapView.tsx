@@ -73,6 +73,7 @@ export const InventoryMapView: React.FC = () => {
   const { data: inventoryLocations, isLoading } = useQuery({
     queryKey: ['inventory-locations'],
     queryFn: async (): Promise<InventoryLocation[]> => {
+      console.log('Fetching inventory locations from equipment assignments...');
       // Query equipment_assignments with all related data
       const { data: assignments, error } = await supabase
         .from('equipment_assignments')
@@ -121,6 +122,8 @@ export const InventoryMapView: React.FC = () => {
         console.error('Error fetching equipment assignments:', error);
         return [];
       }
+
+      console.log('Equipment assignments found:', assignments);
 
       if (!assignments) return [];
 
