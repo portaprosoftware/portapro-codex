@@ -441,13 +441,13 @@ export const Landing: React.FC = () => {
           {/* Feature badges - moved to blue background */}
           <div className="container mx-auto max-w-6xl px-6 mt-12">
             <div className="flex flex-wrap justify-center gap-2 mb-6">
-              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
                 ✓ 14 Day Free Trial
               </span>
-              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
                 ✓ No setup fees • Support included
               </span>
-              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
                 ✓ Unlimited users, trucks & units
               </span>
             </div>
@@ -456,34 +456,34 @@ export const Landing: React.FC = () => {
             <div>
               <div className="sr-only">Proof Bar</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-blue text-white flex items-center justify-center">
                       <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
-                    <h3 className="text-sm font-semibold text-white">Industry-Focused</h3>
+                    <h3 className="text-sm font-semibold">Industry-Focused</h3>
                   </div>
-                  <p className="text-sm text-white/80">Built specifically for portable toilet rentals.</p>
+                  <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
                 </article>
 
-                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-green text-white flex items-center justify-center">
                       <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
-                    <h3 className="text-sm font-semibold text-white">Affordable Cost</h3>
+                    <h3 className="text-sm font-semibold">Affordable Cost</h3>
                   </div>
-                  <p className="text-sm text-white/80">One plan. Every feature. No hidden fees.</p>
+                  <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
                 </article>
 
-                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-orange text-white flex items-center justify-center">
                       <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                     </div>
-                    <h3 className="text-sm font-semibold text-white">Friendly Support</h3>
+                    <h3 className="text-sm font-semibold">Friendly Support</h3>
                   </div>
-                  <p className="text-sm text-white/80">Complete assistance whenever you need it.</p>
+                  <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
                 </article>
               </div>
             </div>
