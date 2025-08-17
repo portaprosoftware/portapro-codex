@@ -232,25 +232,23 @@ export const Landing: React.FC = () => {
     const script = document.createElement('script');
     script.src = 'https://assets.calendly.com/assets/external/widget.js';
     script.async = true;
-    script.onload = () => {
-      // Initialize Calendly badge widget
-      if ((window as any).Calendly) {
-        (window as any).Calendly.initBadgeWidget({
-          url: 'https://calendly.com/portapro/portapro-software-demo',
-          text: 'Schedule Demo',
-          color: '#0069ff',
-          textColor: '#ffffff',
-          branding: false
-        });
-      }
-    };
     document.head.appendChild(script);
+    
     return () => {
       // Cleanup
       document.head.removeChild(link);
       document.head.removeChild(script);
     };
   }, []);
+
+  // Handle Calendly popup
+  const handleScheduleDemo = () => {
+    if ((window as any).Calendly) {
+      (window as any).Calendly.initPopupWidget({
+        url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1'
+      });
+    }
+  };
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
@@ -2462,6 +2460,17 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Custom Schedule Demo Floating Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button 
+          onClick={handleScheduleDemo} 
+          className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          Schedule Demo
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
     </div>;
 };
 export default Landing;
