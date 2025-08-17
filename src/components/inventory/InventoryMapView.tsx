@@ -69,87 +69,111 @@ export const InventoryMapView: React.FC = () => {
     fetchMapboxToken();
   }, []);
 
-  // Fetch inventory locations
+  // Fetch inventory locations from active jobs
   const { data: inventoryLocations, isLoading } = useQuery({
     queryKey: ['inventory-locations'],
     queryFn: async (): Promise<InventoryLocation[]> => {
-      const { data: assignments } = await supabase
-        .from('equipment_assignments')
+      // First, get jobs with customers and their service locations
+      const { data: jobs } = await supabase
+        .from('jobs')
         .select(`
           id,
-          product_id,
-          product_item_id,
-          quantity,
+          job_type,
+          scheduled_date,
           status,
-          jobs (
+          customer_id,
+          customers (
             id,
-            job_type,
-            scheduled_date,
-            customers (
+            name,
+            phone,
+            customer_service_locations (
               id,
-              name,
-              service_street,
-              service_city,
-              service_state,
-              service_zip,
-              phone,
-              customer_service_locations (
-                id,
-                gps_coordinates,
-                service_location_coordinates (
-                  latitude,
-                  longitude,
-                  is_primary
-                )
-              )
+              location_name,
+              street,
+              city,
+              state,
+              zip,
+              gps_coordinates
             )
-          ),
-          products (
-            name
-          ),
-          product_items (
-            item_code
           )
         `)
-        .in('status', ['assigned', 'delivered', 'in_service']);
+        .in('status', ['assigned', 'in_progress', 'delivered']);
 
-      if (!assignments) return [];
+      if (!jobs) return [];
 
-      return assignments
-        .filter(assignment => assignment.jobs && assignment.jobs.customers)
-        .map(assignment => {
-          const job = assignment.jobs;
-          const customer = job.customers;
-          const serviceLocation = customer.customer_service_locations?.[0];
-          const coordinates = (serviceLocation && typeof serviceLocation === 'object') 
-            ? ((serviceLocation as any)?.service_location_coordinates?.find?.((coord: any) => coord.is_primary) || 
-               (serviceLocation as any)?.service_location_coordinates?.[0])
-            : null;
+      // Get job items for these jobs
+      const jobIds = jobs.map(job => job.id);
+      const { data: jobItems } = await supabase
+        .from('job_items')
+        .select('id, job_id, product_id, quantity')
+        .in('job_id', jobIds);
+
+      if (!jobItems) return [];
+
+      // Get product details for the job items
+      const productIds = [...new Set(jobItems.map(item => item.product_id).filter(Boolean))];
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name')
+        .in('id', productIds);
+
+      const locations: InventoryLocation[] = [];
+
+      // Create maps for easy lookup
+      const jobsMap = new Map(jobs.map(job => [job.id, job]));
+      const productsMap = new Map(products?.map(product => [product.id, product]) || []);
+
+      jobItems.forEach(item => {
+        const job = jobsMap.get(item.job_id);
+        if (!job) return;
+
+        const product = productsMap.get(item.product_id);
+        const customer = job.customers;
+        const serviceLocations = customer?.customer_service_locations || [];
+        
+        // For each service location with coordinates
+        serviceLocations.forEach(location => {
+          let latitude: number | undefined;
+          let longitude: number | undefined;
+          
+          // Extract coordinates from gps_coordinates (PostgreSQL point type)
+          if (location.gps_coordinates) {
+            const coords = location.gps_coordinates as any;
+            // Point type in PostgreSQL returns {x: longitude, y: latitude}
+            if (coords.x !== undefined && coords.y !== undefined) {
+              longitude = coords.x;
+              latitude = coords.y;
+            }
+          }
           
           // Build address string
           const addressParts = [
-            customer.service_street,
-            customer.service_city,
-            customer.service_state,
-            customer.service_zip
+            location.street,
+            location.city,
+            location.state,
+            location.zip
           ].filter(Boolean);
           
-          return {
-            id: assignment.id,
-            product_name: assignment.products?.name || 'Unknown Product',
-            item_code: assignment.product_items?.item_code || `Bulk (${assignment.quantity})`,
-            status: assignment.status,
-            customer_name: customer.name,
-            customer_address: addressParts.join(', '),
-            latitude: coordinates?.latitude,
-            longitude: coordinates?.longitude,
-            job_type: job.job_type,
-            scheduled_date: job.scheduled_date,
-            customer_phone: customer.phone,
-            quantity: assignment.quantity
-          };
-        })
-        .filter(location => location.latitude && location.longitude);
+          if (latitude && longitude) {
+            locations.push({
+              id: `${job.id}-${item.id}-${location.id}`,
+              product_name: product?.name || 'Unknown Product',
+              item_code: `${job.job_type} - Qty: ${item.quantity}`,
+              status: job.status === 'delivered' ? 'delivered' : 'assigned',
+              customer_name: customer?.name || 'Unknown Customer',
+              customer_address: addressParts.join(', ') || location.location_name || 'No address',
+              latitude,
+              longitude,
+              job_type: job.job_type,
+              scheduled_date: job.scheduled_date,
+              customer_phone: customer?.phone,
+              quantity: item.quantity || 1
+            });
+          }
+        });
+      });
+
+      return locations;
     }
   });
 
