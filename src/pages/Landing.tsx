@@ -403,10 +403,12 @@ export const Landing: React.FC = () => {
                     Start Free Trial
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Demo
-                </Button>
+                {/* Calendly inline widget */}
+                <div 
+                  className="calendly-inline-widget w-full sm:w-auto min-w-[320px] h-[700px] rounded-lg bg-white shadow-lg" 
+                  data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1"
+                ></div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
               </div>
               
               <div className="space-y-6 mt-8">
