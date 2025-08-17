@@ -2229,211 +2229,25 @@ export const Landing: React.FC = () => {
 
       {/* Contact Form Popup */}
       {contactFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-2xl font-bold text-foreground">Contact Support</h2>
+              <h2 className="text-2xl font-bold text-foreground">Schedule a Demo</h2>
               <button onClick={() => setContactFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-6">
-                <div className="text-center space-y-2">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                    <Mail className="w-8 h-8 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    Have a question or need help? Reach out to our support team.
-                  </p>
-                </div>
-
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Name *
-                    </label>
-                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your full name" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Email *
-                    </label>
-                    <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="your@email.com" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Company (Optional)
-                    </label>
-                    <input type="text" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your company name" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Subject *
-                    </label>
-                    <select required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                      <option value="">Select a topic</option>
-                      <option value="general">General Question</option>
-                      <option value="technical">Technical Support</option>
-                      <option value="billing">Billing & Pricing</option>
-                      <option value="demo">Request a Demo</option>
-                      <option value="feature">Feature Request</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Message *
-                    </label>
-                    <textarea required rows={4} className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="How can we help you?"></textarea>
-                  </div>
-
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3">
-                    Send Message
-                  </Button>
-                </form>
-
-                <div className="text-center pt-4 border-t">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Or contact us directly:
-                  </p>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">
-                      📧 support@portaprosoftware.com
-                    </p>
-                    <p className="text-sm font-medium">
-                      📞 (216) 412-3239
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>}
-
-      {/* Questions Form Popup */}
-      {questionsFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Have Questions?</h2>
-                <p className="text-muted-foreground">Tell us about your needs and we'll get in touch</p>
-              </div>
-              <button onClick={() => setQuestionsFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <form className="space-y-4" onSubmit={e => {
-            e.preventDefault();
-            alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
-            setQuestionsFormOpen(false);
-          }}>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      First Name *
-                    </label>
-                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Last Name *
-                    </label>
-                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email *
-                  </label>
-                  <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone Number (Optional)
-                  </label>
-                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Company Name *
-                  </label>
-                  <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    How many units are in your fleet?
-                  </label>
-                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="">Select fleet size</option>
-                    <option value="1-25">1-25 units</option>
-                    <option value="26-50">26-50 units</option>
-                    <option value="51-100">51-100 units</option>
-                    <option value="101-250">101-250 units</option>
-                    <option value="251-500">251-500 units</option>
-                    <option value="500+">500+ units</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    What's your biggest challenge right now?
-                  </label>
-                  <textarea rows={3} className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tell us about your current pain points, scheduling issues, inventory tracking needs, etc."></textarea>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Preferred contact method
-                  </label>
-                  <div className="flex gap-4">
-                    <label className="flex items-center">
-                      <input type="radio" name="contact" value="email" className="mr-2" defaultChecked />
-                      Email
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name="contact" value="phone" className="mr-2" />
-                      Phone
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name="contact" value="either" className="mr-2" />
-                      Either
-                    </label>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-900 mb-2">🚀 What's next?</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• We'll review your information and reach out within 24 hours</li>
-                    <li>• Schedule a personalized demo based on your fleet size</li>
-                    <li>• Discuss your specific challenges and how PortaPro can help</li>
-                    <li>• Answer all your questions about features, pricing, and implementation</li>
-                  </ul>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1">
-                    Maybe Later
-                  </Button>
-                  <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
-                    Send My Questions
-                  </Button>
-                </div>
-              </form>
+            <div className="flex-1 overflow-hidden p-6">
+              {/* Calendly inline widget begin */}
+              <div 
+                className="calendly-inline-widget" 
+                data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" 
+                style={{minWidth: '320px', height: '700px'}}
+              ></div>
+              <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+              {/* Calendly inline widget end */}
             </div>
           </div>
         </div>}
