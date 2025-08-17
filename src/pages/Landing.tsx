@@ -435,15 +435,15 @@ export const Landing: React.FC = () => {
           </div>
           
           {/* Feature badges - moved to blue background */}
-          <div className="container mx-auto max-w-6xl px-6 mt-12">
+          <div className="container mx-auto max-w-6xl px-6 mt-6">
             <div className="flex flex-wrap justify-center gap-2 mb-6">
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold border border-black">
                 ✓ 14 Day Free Trial
               </span>
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold border border-black">
                 ✓ No setup fees • Support included
               </span>
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold border border-black">
                 ✓ Unlimited users, trucks & units
               </span>
             </div>
