@@ -430,8 +430,6 @@ export const Landing: React.FC = () => {
                     Explore All Features
                   </button>
                 </div>
-                
-                {/* 3 Badges - REMOVED */}
               </div>
             </div>
             
@@ -439,72 +437,67 @@ export const Landing: React.FC = () => {
               <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
             </div>
           </div>
+          
+          {/* Feature badges - moved to blue background */}
+          <div className="container mx-auto max-w-6xl px-6 mt-12">
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+                ✓ 14 Day Free Trial
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+                ✓ No setup fees • Support included
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold">
+                ✓ Unlimited users, trucks & units
+              </span>
+            </div>
+            
+            {/* Proof Bar - moved to blue background */}
+            <div>
+              <div className="sr-only">Proof Bar</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                      <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">Industry-Focused</h3>
+                  </div>
+                  <p className="text-sm text-white/80">Built specifically for portable toilet rentals.</p>
+                </article>
+
+                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                      <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">Affordable Cost</h3>
+                  </div>
+                  <p className="text-sm text-white/80">One plan. Every feature. No hidden fees.</p>
+                </article>
+
+                <article className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm text-white p-6 shadow-sm h-full">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center">
+                      <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">Friendly Support</h3>
+                  </div>
+                  <p className="text-sm text-white/80">Complete assistance whenever you need it.</p>
+                </article>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Proof Bar + Trust strip + Switching is easy - White */}
+      {/* CTA Section - White */}
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          {/* Feature badges */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ 14 Day Free Trial
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ No setup fees • Support included
-            </span>
-            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold">
-              ✓ Unlimited users, trucks & units
-            </span>
-          </div>
-          
-          {/* Proof Bar */}
-          <div className="mb-4">
-            <div className="sr-only">Proof Bar</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <ClipboardList className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Industry-Focused</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Built specifically for portable toilet rentals.</p>
-              </article>
-
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <DollarSign className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Affordable Cost</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">One plan. Every feature. No hidden fees.</p>
-              </article>
-
-              <article className="rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                    <Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Friendly Support</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
-              </article>
-
-              
-
-              
-
-              
-            </div>
-            
-            {/* CTA Text */}
-            <div className="text-center mt-6">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
-              </p>
-            </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
+            </p>
           </div>
         </div>
       </section>
