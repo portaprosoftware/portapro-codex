@@ -239,13 +239,19 @@ export const Landing: React.FC = () => {
       document.head.removeChild(script);
     };
   }, []);
-  const openCalendlyPopup = () => {
-    if ((window as any).Calendly) {
-      (window as any).Calendly.initPopupWidget({
-        url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1'
-      });
+
+  // Initialize Calendly widget when modal opens
+  useEffect(() => {
+    if (calendlyModalOpen && (window as any).Calendly) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        (window as any).Calendly.initInlineWidget({
+          url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1',
+          parentElement: document.querySelector('.calendly-inline-widget')
+        });
+      }, 100);
     }
-  };
+  }, [calendlyModalOpen]);
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
@@ -2457,7 +2463,7 @@ export const Landing: React.FC = () => {
                 </div>
                 <div className="calendly-inline-widget" 
                      data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" 
-                     style={{minWidth: '320px', height: '700px'}}>
+                     style={{minWidth: '320px', height: '700px', width: '100%'}}>
                 </div>
               </div>
             </div>
