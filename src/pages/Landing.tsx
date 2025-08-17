@@ -236,8 +236,8 @@ export const Landing: React.FC = () => {
     
     return () => {
       // Cleanup
-      document.head.removeChild(link);
-      document.head.removeChild(script);
+      if (document.head.contains(link)) document.head.removeChild(link);
+      if (document.head.contains(script)) document.head.removeChild(script);
     };
   }, []);
 
