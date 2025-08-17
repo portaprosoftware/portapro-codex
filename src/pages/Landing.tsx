@@ -387,29 +387,25 @@ export const Landing: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
             <div className="space-y-4">
               <div className="space-y-4">
-                <h1 className="text-4xl lg:text-6xl font-bold text-white leading-tight">
+                <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight">
                   All-in-one platform for portable toilet rental companies
                 </h1>
                 
-                <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
+                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed">
                   Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
                 </p>
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[180px]">
-                    <ArrowRight className="w-4 h-4 mr-2" />
+                  <Button variant="outline" size="default" className="font-medium px-7 py-3.5 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[190px] text-base">
+                    <ArrowRight className="w-5 h-5 mr-2" />
                     Start Free Trial
                   </Button>
                 </a>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]" onClick={openCalendlyPopup}>
-                  <Calendar className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="default" className="font-medium px-7 py-3.5 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[190px] text-base" onClick={openCalendlyPopup}>
+                  <Calendar className="w-5 h-5 mr-2" />
                   Schedule Demo
-                </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[180px]">
-                  <Play className="w-4 h-4 mr-2" />
-                  Watch Preview
                 </Button>
               </div>
               
@@ -434,7 +430,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div>
-              <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
+              <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.063]" />
             </div>
           </div>
           
