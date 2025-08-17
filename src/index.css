@@ -647,6 +647,16 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
   }
+  
+  /* Shimmer animation for shiny text */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
 }
 
 /* Mapbox GL JS styling and z-index fixes */

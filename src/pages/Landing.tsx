@@ -494,8 +494,8 @@ export const Landing: React.FC = () => {
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-bold">Ready to ditch the paperwork?</span> Start your free 14-day trial of PortaPro today.
+            <p className="text-sm">
+              <span className="font-bold bg-gradient-to-r from-gray-900 via-black to-gray-800 bg-clip-text text-transparent bg-[length:200%_200%] animate-[shimmer_2s_ease-in-out_infinite] drop-shadow-sm">Ready to ditch the paperwork?</span> <span className="bg-gradient-to-r from-gray-900 via-black to-gray-800 bg-clip-text text-transparent bg-[length:200%_200%] animate-[shimmer_2s_ease-in-out_infinite] drop-shadow-sm">Start your free 14-day trial of PortaPro today.</span>
             </p>
           </div>
         </div>
