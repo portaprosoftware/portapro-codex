@@ -441,7 +441,10 @@ export const Landing: React.FC = () => {
                 ✓ 14 Day Free Trial
               </span>
               <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                ✓ No setup fees • Support included
+                ✓ No setup fees
+              </span>
+              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
+                ✓ Support included
               </span>
               <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
                 ✓ Unlimited users, trucks & units
