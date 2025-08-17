@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -2467,8 +2467,8 @@ export const Landing: React.FC = () => {
           onClick={handleScheduleDemo} 
           className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
+          <Laptop className="w-4 h-4 mr-2" />
           Schedule Demo
-          <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
     </div>;
