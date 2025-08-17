@@ -38,21 +38,10 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     if (!validateCurrentStep()) return;
 
     try {
+      console.log('Job wizard calling createJob with data:', state.data);
       const job = await createJobMutation.mutateAsync(state.data);
 
-      // Insert job items if any
-      if (state.data.items && state.data.items.length > 0) {
-        const jobItems = state.data.items.map(it => ({
-          job_id: job.id,
-          product_id: it.product_id,
-          quantity: it.quantity,
-          unit_price: 0,
-          total_price: 0,
-          line_item_type: 'inventory',
-        }));
-        const { error: itemsError } = await supabase.from('job_items').insert(jobItems);
-        if (itemsError) throw itemsError;
-      }
+      // Note: Inventory items are now handled directly in useCreateJob hook
 
       // Insert service job items if any services were selected
       if (state.data.servicesData && state.data.servicesData.selectedServices?.length) {
@@ -84,39 +73,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         if (svcError) throw svcError;
       }
 
-      // After job is created, reserve equipment if any items were selected
-      if (state.data.items && state.data.items.length > 0 && state.data.scheduled_date) {
-        const assignmentDate = state.data.scheduled_date;
-        const returnDate = state.data.return_date || null;
-
-        for (const item of state.data.items) {
-          if (item.strategy === 'bulk') {
-            const { data, error } = await supabase.rpc('reserve_equipment_for_job', {
-              job_uuid: job.id,
-              product_uuid: item.product_id,
-              reserve_quantity: item.quantity,
-              assignment_date: assignmentDate,
-              return_date: returnDate
-            });
-            if (error) {
-              throw new Error(error.message || 'Failed to reserve equipment');
-            }
-
-          } else if (item.strategy === 'specific' && item.specific_item_ids?.length) {
-            for (const itemId of item.specific_item_ids) {
-              const { data, error } = await supabase.rpc('reserve_specific_item_for_job', {
-                job_uuid: job.id,
-                item_uuid: itemId,
-                assignment_date: assignmentDate,
-                return_date: returnDate
-              });
-              if (error) {
-                throw new Error(error.message || 'Failed to reserve specific item');
-              }
-            }
-          }
-        }
-      }
+      // Equipment assignments are now handled in useCreateJob hook
       
       // Optionally create daily driver+vehicle assignment
       try {
