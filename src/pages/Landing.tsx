@@ -2363,7 +2363,17 @@ export const Landing: React.FC = () => {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     What's your biggest challenge right now?
                   </label>
-                  <textarea rows={3} className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tell us about your current pain points, scheduling issues, inventory tracking needs, etc."></textarea>
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">Select your main challenge</option>
+                    <option value="scheduling">Scheduling and dispatching</option>
+                    <option value="inventory">Inventory tracking</option>
+                    <option value="customer-management">Customer management</option>
+                    <option value="billing-invoicing">Billing and invoicing</option>
+                    <option value="driver-coordination">Driver coordination</option>
+                    <option value="fleet-maintenance">Fleet maintenance</option>
+                    <option value="reporting">Reporting and analytics</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
                 <div>
@@ -2386,9 +2396,9 @@ export const Landing: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-900 mb-2">🚀 What's next?</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
+                <div className="bg-muted/30 border border-border rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• We'll review your information and reach out within 24 hours</li>
                     <li>• Schedule a personalized demo based on your fleet size</li>
                     <li>• Discuss your specific challenges and how PortaPro can help</li>
