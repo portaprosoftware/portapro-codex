@@ -35,7 +35,7 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {featureGroups.map((group, groupIdx) => (
             <section key={group.key} aria-labelledby={`features-group-${group.key}`}>
-              <h3 id={`features-group-${group.key}`} className="mb-2 text-sm font-semibold text-white">
+              <h3 id={`features-group-${group.key}`} className="mb-2 text-sm font-semibold text-muted-foreground">
                 {group.title}
               </h3>
               <ul className="space-y-1.5">
