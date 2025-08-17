@@ -213,6 +213,7 @@ export const Landing: React.FC = () => {
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
+  const [calendlyOpen, setCalendlyOpen] = useState(false);
   const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
   const isMobile = useIsMobile();
 
@@ -222,6 +223,11 @@ export const Landing: React.FC = () => {
   // Handle questions form
   const handleRequestInfo = () => {
     setQuestionsFormOpen(true);
+  };
+
+  // Handle Calendly popup
+  const handleScheduleDemo = () => {
+    setCalendlyOpen(true);
   };
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
@@ -2420,14 +2426,36 @@ export const Landing: React.FC = () => {
         </div>}
 
 
-      {/* Custom Request More Info Floating Button */}
+      {/* Calendly Popup Widget */}
+      {calendlyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl h-[80vh] mx-4">
+            <button 
+              onClick={() => setCalendlyOpen(false)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <iframe
+              src="https://calendly.com/portapro-demo/30min"
+              width="100%"
+              height="100%"
+              className="rounded-lg"
+              frameBorder="0"
+              title="Schedule Demo"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Demo Floating Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button 
-          onClick={handleRequestInfo} 
+          onClick={handleScheduleDemo} 
           className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
         >
-          <Phone className="w-4 h-4 mr-2" />
-          Request More Info
+          <Laptop className="w-4 h-4 mr-2" />
+          Schedule Demo
         </Button>
       </div>
     </div>;
