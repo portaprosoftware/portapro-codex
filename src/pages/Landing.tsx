@@ -2437,7 +2437,7 @@ export const Landing: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
             <iframe
-              src="https://calendly.com/portapro/portapro-software-demo"
+              src="https://calendly.com/portapro/portapro-software-demo?hide_gdpr_banner=1&hide_event_type_details=1"
               width="100%"
               height="100%"
               className="rounded-lg"
