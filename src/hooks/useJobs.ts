@@ -227,6 +227,40 @@ export function useCreateJob() {
         throw error;
       }
 
+      // Process inventory items if present
+      if (jobData.items && jobData.items.length > 0) {
+        for (const item of jobData.items) {
+          // Create equipment assignments based on selection strategy
+          if (item.strategy === 'specific' && item.specific_item_ids) {
+            // Handle specific unit assignments
+            for (const itemId of item.specific_item_ids) {
+              await supabase.from('equipment_assignments').insert({
+                job_id: newJob.id,
+                product_item_id: itemId,
+                quantity: 1,
+                assigned_date: serializedJobData.scheduled_date,
+                status: 'assigned'
+              });
+
+              // Update specific item status to assigned
+              await supabase
+                .from('product_items')
+                .update({ status: 'assigned' })
+                .eq('id', itemId);
+            }
+          } else {
+            // Handle bulk quantity assignments
+            await supabase.from('equipment_assignments').insert({
+              job_id: newJob.id,
+              product_id: item.product_id,
+              quantity: item.quantity || 1,
+              assigned_date: serializedJobData.scheduled_date,
+              status: 'assigned'
+            });
+          }
+        }
+      }
+
       return newJob;
     },
     onSuccess: (data) => {

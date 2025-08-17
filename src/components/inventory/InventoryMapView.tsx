@@ -69,66 +69,66 @@ export const InventoryMapView: React.FC = () => {
     fetchMapboxToken();
   }, []);
 
-  // Fetch inventory locations from active jobs
+  // Fetch inventory locations from equipment assignments
   const { data: inventoryLocations, isLoading } = useQuery({
     queryKey: ['inventory-locations'],
     queryFn: async (): Promise<InventoryLocation[]> => {
-      // First, get jobs with customers and their service locations
-      const { data: jobs } = await supabase
-        .from('jobs')
+      // Query equipment_assignments with all related data
+      const { data: assignments, error } = await supabase
+        .from('equipment_assignments')
         .select(`
           id,
-          job_type,
-          scheduled_date,
+          job_id,
+          product_id,
+          product_item_id,
+          quantity,
           status,
-          customer_id,
-          customers (
+          assigned_date,
+          jobs!inner(
             id,
-            name,
-            phone,
-            customer_service_locations (
+            job_type,
+            scheduled_date,
+            status,
+            customer_id,
+            customers!inner(
               id,
-              location_name,
-              street,
-              city,
-              state,
-              zip,
-              gps_coordinates
+              name,
+              phone,
+              customer_service_locations!customer_id(
+                id,
+                location_name,
+                street,
+                city,
+                state,
+                zip,
+                gps_coordinates
+              )
             )
+          ),
+          products(
+            id,
+            name
+          ),
+          product_items(
+            id,
+            item_code
           )
         `)
-        .in('status', ['assigned', 'in_progress', 'delivered']);
+        .in('status', ['assigned', 'delivered', 'in_service'])
+        .in('jobs.status', ['assigned', 'in-progress', 'delivered']);
 
-      if (!jobs) return [];
+      if (error) {
+        console.error('Error fetching equipment assignments:', error);
+        return [];
+      }
 
-      // Get job items for these jobs
-      const jobIds = jobs.map(job => job.id);
-      const { data: jobItems } = await supabase
-        .from('job_items')
-        .select('id, job_id, product_id, quantity')
-        .in('job_id', jobIds);
-
-      if (!jobItems) return [];
-
-      // Get product details for the job items
-      const productIds = [...new Set(jobItems.map(item => item.product_id).filter(Boolean))];
-      const { data: products } = await supabase
-        .from('products')
-        .select('id, name')
-        .in('id', productIds);
+      if (!assignments) return [];
 
       const locations: InventoryLocation[] = [];
 
-      // Create maps for easy lookup
-      const jobsMap = new Map(jobs.map(job => [job.id, job]));
-      const productsMap = new Map(products?.map(product => [product.id, product]) || []);
-
-      jobItems.forEach(item => {
-        const job = jobsMap.get(item.job_id);
-        if (!job) return;
-
-        const product = productsMap.get(item.product_id);
-        const customer = job.customers;
+      assignments.forEach(assignment => {
+        const job = assignment.jobs;
+        const customer = job?.customers;
         const serviceLocations = customer?.customer_service_locations || [];
         
         // For each service location with coordinates
@@ -154,12 +154,16 @@ export const InventoryMapView: React.FC = () => {
             location.zip
           ].filter(Boolean);
           
-          if (latitude && longitude) {
+          // Get product info
+          const product = assignment.products;
+          const itemCode = assignment.product_items?.item_code || `${job.job_type} - Qty: ${assignment.quantity}`;
+          
+          if (latitude && longitude && product) {
             locations.push({
-              id: `${job.id}-${item.id}-${location.id}`,
-              product_name: product?.name || 'Unknown Product',
-              item_code: `${job.job_type} - Qty: ${item.quantity}`,
-              status: job.status === 'delivered' ? 'delivered' : 'assigned',
+              id: `${assignment.id}-${location.id}`,
+              product_name: product.name,
+              item_code: itemCode,
+              status: assignment.status,
               customer_name: customer?.name || 'Unknown Customer',
               customer_address: addressParts.join(', ') || location.location_name || 'No address',
               latitude,
@@ -167,7 +171,7 @@ export const InventoryMapView: React.FC = () => {
               job_type: job.job_type,
               scheduled_date: job.scheduled_date,
               customer_phone: customer?.phone,
-              quantity: item.quantity || 1
+              quantity: assignment.quantity || 1
             });
           }
         });
