@@ -2429,7 +2429,7 @@ export const Landing: React.FC = () => {
       {/* Calendly Popup Widget */}
       {calendlyOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl h-[80vh] mx-4">
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl h-[80vh] mx-4">
             <button 
               onClick={() => setCalendlyOpen(false)}
               className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
