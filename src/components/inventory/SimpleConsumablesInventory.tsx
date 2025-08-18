@@ -420,7 +420,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                                 className="h-auto p-1 hover:bg-gray-100"
                               >
                                 <div className="flex items-center gap-1">
-                                  <span className="text-sm font-medium">Usage Analytics</span>
+                                  <span className="text-sm font-medium">Usage</span>
                                   {showAduColumns ? (
                                     <ChevronDown className="w-4 h-4" />
                                   ) : (
