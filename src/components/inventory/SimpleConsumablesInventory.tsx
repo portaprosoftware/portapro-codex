@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { CategorySelect } from '@/components/ui/category-select';
 import { ConsumableCategoryManager } from './ConsumableCategoryManager';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Consumable {
   id: string;
@@ -50,7 +51,18 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortField, setSortField] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [showAduColumns, setShowAduColumns] = useState(() => {
+    const saved = localStorage.getItem('consumables-show-adu-columns');
+    return saved ? JSON.parse(saved) : false;
+  });
   const queryClient = useQueryClient();
+
+  // Save ADU columns preference to localStorage
+  const toggleAduColumns = () => {
+    const newState = !showAduColumns;
+    setShowAduColumns(newState);
+    localStorage.setItem('consumables-show-adu-columns', JSON.stringify(newState));
+  };
 
   // Fetch consumables
   const { data: consumables, isLoading } = useQuery({
@@ -397,9 +409,39 @@ export const SimpleConsumablesInventory: React.FC = () => {
                           {getSortIcon('on_hand_qty')}
                         </div>
                       </TableHead>
-                      <TableHead className="hidden xl:table-cell">ADU 7</TableHead>
-                      <TableHead className="hidden xl:table-cell">ADU 30</TableHead>
-                      <TableHead className="hidden xl:table-cell">ADU 90</TableHead>
+                      <TableHead className="hidden xl:table-cell">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={toggleAduColumns}
+                                className="h-auto p-1 hover:bg-gray-100"
+                              >
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm font-medium">Usage Analytics</span>
+                                  {showAduColumns ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                  ) : (
+                                    <ChevronRight className="w-4 h-4" />
+                                  )}
+                                </div>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Average Daily Usage (ADU) for 7, 30, and 90 day periods</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </TableHead>
+                      {showAduColumns && (
+                        <>
+                          <TableHead className="hidden xl:table-cell">ADU 7</TableHead>
+                          <TableHead className="hidden xl:table-cell">ADU 30</TableHead>
+                          <TableHead className="hidden xl:table-cell">ADU 90</TableHead>
+                        </>
+                      )}
                       <TableHead className="hidden lg:table-cell">Est. Services</TableHead>
                       <TableHead className="hidden md:table-cell">Locations</TableHead>
                       <TableHead className="w-16">Actions</TableHead>
@@ -427,10 +469,17 @@ export const SimpleConsumablesInventory: React.FC = () => {
                       <TableCell className="hidden lg:table-cell">{consumable.sku || '-'}</TableCell>
                       <TableCell className="hidden lg:table-cell">${consumable.unit_cost.toFixed(2)}</TableCell>
                       <TableCell className="hidden lg:table-cell">${consumable.unit_price.toFixed(2)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
-                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
-                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
-                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
+                       <TableCell className="hidden md:table-cell">{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
+                       <TableCell className="hidden xl:table-cell">
+                         {/* Empty cell for the Usage Analytics header */}
+                       </TableCell>
+                       {showAduColumns && (
+                         <>
+                           <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
+                           <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
+                           <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
+                         </>
+                       )}
                       <TableCell className="hidden lg:table-cell">{estimatedServices ? `${estimatedServices}` : '-'}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         {consumable.location_stock?.length > 0 ? (
