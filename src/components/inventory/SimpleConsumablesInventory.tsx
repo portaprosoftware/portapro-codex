@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { EnhancedAddConsumableModal } from './EnhancedAddConsumableModal';
@@ -553,31 +554,39 @@ export const SimpleConsumablesInventory: React.FC = () => {
                          <TableHead className="hidden lg:table-cell">
                            <div className="flex items-center gap-1">
                              {getServicesColumnHeader()}
-                             <TooltipProvider>
-                               <Tooltip>
-                                 <TooltipTrigger asChild>
-                                   <button 
-                                     onClick={(e) => e.stopPropagation()}
-                                     className="ml-1 p-0.5 hover:bg-gray-100 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                   >
-                                     <Info className="w-3 h-3 text-gray-400 hover:text-gray-600" />
-                                   </button>
-                                 </TooltipTrigger>
-                                 <TooltipContent className="max-w-sm p-3 bg-white border shadow-lg z-50" side="bottom" align="start">
+                             <Popover>
+                               <PopoverTrigger asChild>
+                                 <button 
+                                   onClick={(e) => e.stopPropagation()}
+                                   className="ml-1 p-0.5 hover:bg-gray-100 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                 >
+                                   <Info className="w-3 h-3 text-gray-400 hover:text-gray-600" />
+                                 </button>
+                               </PopoverTrigger>
+                               <PopoverContent className="w-80 p-4 bg-white border shadow-lg z-50" side="bottom" align="start">
+                                 <div className="space-y-3">
+                                   <h4 className="font-semibold text-sm">How Est. Services Works</h4>
+                                   <p className="text-sm text-gray-700">
+                                     This shows how many service visits can be completed with current stock.
+                                   </p>
                                    <div className="space-y-2 text-sm">
-                                     <p className="font-medium">How Est. Services Works:</p>
-                                     <p>This shows how many service visits can be completed with current stock.</p>
-                                     <div className="space-y-1">
-                                       <p><strong>(R)</strong> = Real data from actual usage history</p>
-                                       <p><strong>(E)</strong> = Estimated based on target days supply</p>
+                                     <div className="flex items-start gap-2">
+                                       <span className="font-medium text-green-600">(R)</span>
+                                       <span>Real data from actual usage history</span>
                                      </div>
+                                     <div className="flex items-start gap-2">
+                                       <span className="font-medium text-blue-600">(E)</span>
+                                       <span>Estimated based on target days supply</span>
+                                     </div>
+                                   </div>
+                                   <div className="pt-2 border-t border-gray-200">
                                      <p className="text-xs text-gray-600">
-                                       Calculation: Current Stock ÷ Daily Usage Rate = Services Remaining
+                                       <strong>Calculation:</strong> Current Stock ÷ Daily Usage Rate = Services Remaining
                                      </p>
                                    </div>
-                                 </TooltipContent>
-                               </Tooltip>
-                             </TooltipProvider>
+                                 </div>
+                               </PopoverContent>
+                             </Popover>
                            </div>
                          </TableHead>
                         <TableHead className="hidden md:table-cell">Locations</TableHead>
