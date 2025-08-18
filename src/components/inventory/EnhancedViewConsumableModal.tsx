@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
+import { useConsumableAnalytics } from '@/hooks/useConsumableAnalytics';
 import { 
   Package, 
   MapPin, 
@@ -79,6 +80,7 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const { data: analytics, isLoading: analyticsLoading } = useConsumableAnalytics(consumable?.id || '', consumable);
 
   if (!consumable) return null;
 
@@ -128,15 +130,13 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
   const complianceStatus = getComplianceStatus();
 
   const calculateDaysOfSupply = () => {
-    if (consumable.on_hand_qty <= 0) return 0;
-    // Mock calculation - in real app would use consumption data
-    const averageDailyUsage = consumable.on_hand_qty / (consumable.target_days_supply || 14);
-    return Math.round(consumable.on_hand_qty / averageDailyUsage);
+    if (!analytics) return 0;
+    return analytics.daysOfSupply;
   };
 
   const calculateReorderPoint = () => {
-    const leadTimeDemand = consumable.lead_time_days * (consumable.on_hand_qty / (consumable.target_days_supply || 14));
-    return Math.ceil(leadTimeDemand);
+    if (!analytics) return 0;
+    return analytics.reorderPoint;
   };
 
   const handleSDSView = () => {
@@ -627,12 +627,11 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Inventory Status</label>
+                      <label className="text-sm font-medium text-muted-foreground">Stock Status</label>
                       <div className="mt-2">
-                        {calculateDaysOfSupply() < consumable.target_days_supply ? (
-                          <Badge variant="destructive">Below Target Supply</Badge>
-                        ) : (
-                          <Badge variant="default">Adequate Supply</Badge>
+                        <Badge className={stockStatus.className}>{stockStatus.label}</Badge>
+                        {analytics && !analytics.hasRealData && (
+                          <p className="text-xs text-muted-foreground mt-1">* Based on estimated usage</p>
                         )}
                       </div>
                     </div>
@@ -647,22 +646,45 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Estimated Daily Usage</label>
-                      <p className="text-lg">{(consumable.on_hand_qty / (consumable.target_days_supply || 14)).toFixed(2)} units/day</p>
-                    </div>
+                    {analyticsLoading ? (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-muted-foreground">Loading usage metrics...</p>
+                      </div>
+                    ) : analytics ? (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">
+                            {analytics.hasRealData ? 'Actual Daily Usage' : 'Estimated Daily Usage'}
+                          </label>
+                          <p className="text-lg">{analytics.dailyUsageRate.toFixed(2)} units/day</p>
+                          {!analytics.hasRealData && (
+                            <p className="text-xs text-muted-foreground">Based on target days supply</p>
+                          )}
+                        </div>
 
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Monthly Consumption Value</label>
-                      <p className="text-lg font-medium">
-                        {formatCurrency((consumable.on_hand_qty / (consumable.target_days_supply || 14)) * 30 * consumable.unit_cost)}
-                      </p>
-                    </div>
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">Monthly Consumption Value</label>
+                          <p className="text-lg font-medium">
+                            {formatCurrency(analytics.monthlyConsumptionValue)}
+                          </p>
+                        </div>
 
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Turnover Rate</label>
-                      <p className="text-lg">{(365 / (consumable.target_days_supply || 14)).toFixed(1)}x per year</p>
-                    </div>
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">Turnover Rate</label>
+                          <p className="text-lg">{analytics.turnoverRate.toFixed(1)}x per year</p>
+                        </div>
+
+                        {analytics.hasRealData && (
+                          <div className="pt-2 border-t">
+                            <p className="text-xs text-green-600 font-medium">✓ Based on actual consumption data (90 days)</p>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-muted-foreground">Unable to load usage metrics</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
