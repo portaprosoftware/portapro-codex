@@ -32,11 +32,13 @@ interface VelocityStats {
 interface SimpleConsumablesAnalyticsProps {
   searchTerm?: string;
   categoryFilter?: string;
+  onViewConsumable?: (consumable: Consumable) => void;
 }
 
 export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProps> = ({
   searchTerm = '',
-  categoryFilter = ''
+  categoryFilter = '',
+  onViewConsumable
 }) => {
   const [showCostPrice, setShowCostPrice] = useState(false);
   const { data: consumables, isLoading } = useQuery({
@@ -264,16 +266,22 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
+                   <TableHead>Value</TableHead>
+                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredConsumables.map((consumable) => {
                   const analytics = getConsumableAnalytics(consumable);
                   return (
                     <TableRow key={consumable.id}>
-                      <TableCell className="font-medium">{consumable.name}</TableCell>
+                       <TableCell className="font-medium">
+                         <button
+                           onClick={() => onViewConsumable?.(consumable)}
+                           className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                         >
+                           {consumable.name}
+                         </button>
+                       </TableCell>
                       <TableCell>{formatCategoryDisplay(consumable.category)}</TableCell>
                       <TableCell>{consumable.on_hand_qty}</TableCell>
                       <TableCell>{analytics.daysSupply} days</TableCell>
@@ -301,22 +309,9 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                             Click header to expand
                           </div>
                         )}
-                      </TableCell>
-                      <TableCell>${analytics.inventoryValue.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          className={
-                            analytics.stockStatus === 'Out of Stock' 
-                              ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0'
-                              : analytics.stockStatus === 'Low Stock'
-                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0'
-                              : 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0'
-                          }
-                        >
-                          {analytics.stockStatus}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
+                       </TableCell>
+                       <TableCell>${analytics.inventoryValue.toFixed(2)}</TableCell>
+                     </TableRow>
                   );
                 })}
               </TableBody>

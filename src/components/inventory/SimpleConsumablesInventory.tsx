@@ -640,6 +640,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
           <SimpleConsumablesAnalytics 
             searchTerm={searchTerm}
             categoryFilter={categoryFilter}
+            onViewConsumable={handleView}
           />
         )}
 
