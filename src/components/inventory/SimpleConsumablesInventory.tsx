@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
 import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
+import { ViewConsumableModal } from './ViewConsumableModal';
 import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
@@ -45,6 +46,7 @@ interface LocationStockItem {
 export const SimpleConsumablesInventory: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedConsumable, setSelectedConsumable] = useState<Consumable | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
@@ -157,6 +159,11 @@ export const SimpleConsumablesInventory: React.FC = () => {
     setShowEditModal(true);
   };
 
+  const handleView = (consumable: Consumable) => {
+    setSelectedConsumable(consumable);
+    setShowViewModal(true);
+  };
+
   const handleDeleteClick = (consumable: Consumable) => {
     setSelectedConsumable(consumable);
     setShowDeleteDialog(true);
@@ -172,6 +179,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
+    setShowViewModal(false);
     setShowDeleteDialog(false);
     setSelectedConsumable(null);
   };
@@ -459,7 +467,12 @@ export const SimpleConsumablesInventory: React.FC = () => {
                        <TableRow key={consumable.id}>
                       <TableCell className="font-medium">
                         <div>
-                          <div className="font-medium">{consumable.name}</div>
+                          <button 
+                            onClick={() => handleView(consumable)}
+                            className="font-medium text-left hover:text-blue-600 hover:underline cursor-pointer"
+                          >
+                            {consumable.name}
+                          </button>
                           <div className="text-sm text-gray-500 md:hidden">
                             {formatCategoryDisplay(consumable.category)} • {consumable.on_hand_qty} {consumable.base_unit || 'units'}
                           </div>
@@ -521,6 +534,13 @@ export const SimpleConsumablesInventory: React.FC = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="bg-white z-50">
                             <DropdownMenuItem
+                              onClick={() => handleView(consumable)}
+                              className="cursor-pointer"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               onClick={() => handleEdit(consumable)}
                               className="cursor-pointer"
                             >
@@ -556,6 +576,12 @@ export const SimpleConsumablesInventory: React.FC = () => {
 
         <SimpleEditConsumableModal 
           isOpen={showEditModal}
+          consumable={selectedConsumable}
+          onClose={handleModalClose}
+        />
+
+        <ViewConsumableModal 
+          isOpen={showViewModal}
           consumable={selectedConsumable}
           onClose={handleModalClose}
         />
