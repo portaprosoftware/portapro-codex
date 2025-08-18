@@ -513,7 +513,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                          <TableCell className="hidden md:table-cell min-w-[180px]">
                            {consumable.location_stock?.length > 0 ? (
                              <div className="space-y-2">
-                                {consumable.location_stock.slice(0, 2).map((loc, index) => {
+                                {consumable.location_stock.slice(0, 5).map((loc, index) => {
                                   const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
                                   return (
                                     <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-md px-3 py-2 text-sm ${isLowStock ? 'border border-orange-200 bg-orange-50' : ''}`}>
@@ -525,9 +525,9 @@ export const SimpleConsumablesInventory: React.FC = () => {
                                     </div>
                                   );
                                 })}
-                                {consumable.location_stock.length > 2 && (
+                                {consumable.location_stock.length > 5 && (
                                   <div className="text-sm text-gray-500 px-3 py-1 bg-gray-100 rounded-md text-center">
-                                    +{consumable.location_stock.length - 2} more location{consumable.location_stock.length - 2 > 1 ? 's' : ''}
+                                    +{consumable.location_stock.length - 5} more location{consumable.location_stock.length - 5 > 1 ? 's' : ''}
                                   </div>
                                 )}
                              </div>
