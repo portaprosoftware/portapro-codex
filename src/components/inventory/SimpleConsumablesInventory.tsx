@@ -369,9 +369,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
             </TabNav>
           </div>
 
-          {/* Filters - Only show for inventory tab */}
-          {activeTab === 'inventory' && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Filters - Show for both inventory and analytics tabs */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Search</label>
                 <div className="relative flex gap-2">
@@ -427,7 +426,6 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 </div>
               )}
             </div>
-          )}
         </div>
 
         {/* Content based on active tab */}
@@ -639,7 +637,10 @@ export const SimpleConsumablesInventory: React.FC = () => {
             </div>
           </div>
         ) : (
-          <SimpleConsumablesAnalytics />
+          <SimpleConsumablesAnalytics 
+            searchTerm={searchTerm}
+            categoryFilter={categoryFilter}
+          />
         )}
 
         {/* Modals */}

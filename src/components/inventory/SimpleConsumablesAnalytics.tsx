@@ -29,9 +29,16 @@ interface VelocityStats {
   adu_7?: number;
 }
 
-export const SimpleConsumablesAnalytics: React.FC = () => {
+interface SimpleConsumablesAnalyticsProps {
+  searchTerm?: string;
+  categoryFilter?: string;
+}
+
+export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProps> = ({
+  searchTerm = '',
+  categoryFilter = ''
+}) => {
   const [showCostPrice, setShowCostPrice] = useState(false);
-  // Fetch consumables data
   const { data: consumables, isLoading } = useQuery({
     queryKey: ['simple-consumables-analytics'],
     queryFn: async () => {
@@ -160,11 +167,22 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
     );
   }
 
-  // Calculate summary metrics
-  const totalItems = consumables.length;
-  const lowStockItems = consumables.filter(c => c.on_hand_qty <= c.reorder_threshold).length;
-  const outOfStockItems = consumables.filter(c => c.on_hand_qty <= 0).length;
-  const totalValue = consumables.reduce((sum, c) => sum + (c.on_hand_qty * c.unit_cost), 0);
+  // Filter consumables based on search term and category
+  const filteredConsumables = consumables?.filter(consumable => {
+    const matchesSearch = !searchTerm.trim() || 
+      consumable.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      consumable.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = !categoryFilter || consumable.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  }) || [];
+
+  // Use filtered consumables for calculations
+  const totalItems = filteredConsumables.length;
+  const lowStockItems = filteredConsumables.filter(c => c.on_hand_qty <= c.reorder_threshold).length;
+  const outOfStockItems = filteredConsumables.filter(c => c.on_hand_qty <= 0).length;
+  const totalValue = filteredConsumables.reduce((sum, c) => sum + (c.on_hand_qty * c.unit_cost), 0);
 
   return (
     <div className="space-y-6">
@@ -251,7 +269,7 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {consumables.map((consumable) => {
+                {filteredConsumables.map((consumable) => {
                   const analytics = getConsumableAnalytics(consumable);
                   return (
                     <TableRow key={consumable.id}>
