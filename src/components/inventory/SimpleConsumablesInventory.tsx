@@ -553,28 +553,29 @@ export const SimpleConsumablesInventory: React.FC = () => {
                          <TableHead className="hidden lg:table-cell">
                            <div className="flex items-center gap-1">
                              {getServicesColumnHeader()}
-                             <TooltipProvider>
-                               <Tooltip>
-                                 <TooltipTrigger asChild>
-                                   <button className="ml-1 p-0.5 hover:bg-gray-100 rounded">
-                                     <Info className="w-3 h-3 text-gray-400" />
-                                   </button>
-                                 </TooltipTrigger>
-                                 <TooltipContent className="max-w-sm p-3">
-                                   <div className="space-y-2 text-sm">
-                                     <p className="font-medium">How Est. Services Works:</p>
-                                     <p>This shows how many service visits can be completed with current stock.</p>
-                                     <div className="space-y-1">
-                                       <p><strong>(R)</strong> = Real data from actual usage history</p>
-                                       <p><strong>(E)</strong> = Estimated based on target days supply</p>
-                                     </div>
-                                     <p className="text-xs text-gray-600">
-                                       Calculation: Current Stock ÷ Daily Usage Rate = Services Remaining
-                                     </p>
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <button 
+                                   onClick={(e) => e.stopPropagation()}
+                                   className="ml-1 p-0.5 hover:bg-gray-100 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                 >
+                                   <Info className="w-3 h-3 text-gray-400 hover:text-gray-600" />
+                                 </button>
+                               </TooltipTrigger>
+                               <TooltipContent className="max-w-sm p-3" side="bottom" align="start">
+                                 <div className="space-y-2 text-sm">
+                                   <p className="font-medium">How Est. Services Works:</p>
+                                   <p>This shows how many service visits can be completed with current stock.</p>
+                                   <div className="space-y-1">
+                                     <p><strong>(R)</strong> = Real data from actual usage history</p>
+                                     <p><strong>(E)</strong> = Estimated based on target days supply</p>
                                    </div>
-                                 </TooltipContent>
-                               </Tooltip>
-                             </TooltipProvider>
+                                   <p className="text-xs text-gray-600">
+                                     Calculation: Current Stock ÷ Daily Usage Rate = Services Remaining
+                                   </p>
+                                 </div>
+                               </TooltipContent>
+                             </Tooltip>
                            </div>
                          </TableHead>
                         <TableHead className="hidden md:table-cell">Locations</TableHead>
