@@ -430,7 +430,39 @@ export const SimpleConsumablesInventory: React.FC = () => {
 
         {/* Content based on active tab */}
         {activeTab === 'inventory' ? (
-          <div className="bg-white rounded-lg border shadow-sm">
+          <div className="space-y-6">
+            {/* Low Stock Alert Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg border shadow-sm p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Low Stock Alerts</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {filteredConsumables.filter(c => c.on_hand_qty <= c.reorder_threshold && c.on_hand_qty > 0).length}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-6 h-6 text-orange-600" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg border shadow-sm p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Out of Stock</p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {filteredConsumables.filter(c => c.on_hand_qty <= 0).length}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <AlertTriangle className="w-6 h-6 text-red-600" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border shadow-sm">
             <div className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Inventory</h2>
               
@@ -634,6 +666,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 </Table>
                 </div>
               )}
+            </div>
             </div>
           </div>
         ) : (

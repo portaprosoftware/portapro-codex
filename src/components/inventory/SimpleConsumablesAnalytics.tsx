@@ -40,7 +40,6 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
   categoryFilter = '',
   onViewConsumable
 }) => {
-  const [showCostPrice, setShowCostPrice] = useState(false);
   const { data: consumables, isLoading } = useQuery({
     queryKey: ['simple-consumables-analytics'],
     queryFn: async () => {
@@ -189,40 +188,32 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalItems}</div>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Items</p>
+                <p className="text-2xl font-bold">{totalItems}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Calculator className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Low Stock Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{lowStockItems}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Out of Stock</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{outOfStockItems}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Inventory Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">${totalValue.toFixed(2)}</div>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Inventory Value</p>
+                <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -252,20 +243,8 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                   <TableHead>Days Supply</TableHead>
                   <TableHead>Lead Time</TableHead>
                   <TableHead>Reorder Point</TableHead>
-                  <TableHead>Daily Usage</TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowCostPrice(!showCostPrice)}
-                      className="h-auto p-1 font-medium text-left hover:bg-transparent"
-                    >
-                      <div className="flex items-center gap-1">
-                        {showCostPrice ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                        Cost/Price Per
-                      </div>
-                    </Button>
-                  </TableHead>
+                   <TableHead>Daily Usage</TableHead>
+                   <TableHead>Cost/Price Per Unit</TableHead>
                    <TableHead>Value</TableHead>
                  </TableRow>
               </TableHeader>
@@ -297,18 +276,12 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                             {analytics.hasRealData ? 'Real' : 'Est.'}
                           </Badge>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {showCostPrice ? (
-                          <div className="space-y-1 text-xs">
-                            <div>Cost Per {consumable.base_unit}: ${consumable.unit_cost.toFixed(2)}</div>
-                            <div>Price Per {consumable.base_unit}: ${consumable.unit_price.toFixed(2)}</div>
-                          </div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">
-                            Click header to expand
-                          </div>
-                        )}
+                       </TableCell>
+                       <TableCell>
+                         <div className="space-y-1 text-xs">
+                           <div>Cost: ${consumable.unit_cost.toFixed(2)}</div>
+                           <div>Price: ${consumable.unit_price.toFixed(2)}</div>
+                         </div>
                        </TableCell>
                        <TableCell>${analytics.inventoryValue.toFixed(2)}</TableCell>
                      </TableRow>
