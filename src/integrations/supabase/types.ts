@@ -780,22 +780,37 @@ export type Database = {
       consumables: {
         Row: {
           base_unit: string
+          billable_rule: string | null
+          brand: string | null
+          case_cost: number | null
+          case_quantity: number | null
           category: string
+          cost_per_use: number | null
           created_at: string
           created_by: string | null
           default_storage_location_id: string | null
           description: string | null
+          dilution_ratio: string | null
           examples: string | null
+          expiration_date: string | null
+          fragrance_color_grade: string | null
+          ghs_hazard_flags: Json
+          gtin_barcode: string | null
           id: string
           is_active: boolean
           lead_time_days: number
           location_stock: Json | null
+          lot_batch_number: string | null
+          model_number: string | null
+          mpn: string | null
           name: string
           notes: string | null
           on_hand_qty: number
           reorder_threshold: number
+          sds_link: string | null
           sku: string | null
           supplier_info: Json | null
+          supplier_item_id: string | null
           target_days_supply: number
           unit_cost: number
           unit_price: number
@@ -803,22 +818,37 @@ export type Database = {
         }
         Insert: {
           base_unit?: string
+          billable_rule?: string | null
+          brand?: string | null
+          case_cost?: number | null
+          case_quantity?: number | null
           category: string
+          cost_per_use?: number | null
           created_at?: string
           created_by?: string | null
           default_storage_location_id?: string | null
           description?: string | null
+          dilution_ratio?: string | null
           examples?: string | null
+          expiration_date?: string | null
+          fragrance_color_grade?: string | null
+          ghs_hazard_flags?: Json
+          gtin_barcode?: string | null
           id?: string
           is_active?: boolean
           lead_time_days?: number
           location_stock?: Json | null
+          lot_batch_number?: string | null
+          model_number?: string | null
+          mpn?: string | null
           name: string
           notes?: string | null
           on_hand_qty?: number
           reorder_threshold?: number
+          sds_link?: string | null
           sku?: string | null
           supplier_info?: Json | null
+          supplier_item_id?: string | null
           target_days_supply?: number
           unit_cost?: number
           unit_price?: number
@@ -826,22 +856,37 @@ export type Database = {
         }
         Update: {
           base_unit?: string
+          billable_rule?: string | null
+          brand?: string | null
+          case_cost?: number | null
+          case_quantity?: number | null
           category?: string
+          cost_per_use?: number | null
           created_at?: string
           created_by?: string | null
           default_storage_location_id?: string | null
           description?: string | null
+          dilution_ratio?: string | null
           examples?: string | null
+          expiration_date?: string | null
+          fragrance_color_grade?: string | null
+          ghs_hazard_flags?: Json
+          gtin_barcode?: string | null
           id?: string
           is_active?: boolean
           lead_time_days?: number
           location_stock?: Json | null
+          lot_batch_number?: string | null
+          model_number?: string | null
+          mpn?: string | null
           name?: string
           notes?: string | null
           on_hand_qty?: number
           reorder_threshold?: number
+          sds_link?: string | null
           sku?: string | null
           supplier_info?: Json | null
+          supplier_item_id?: string | null
           target_days_supply?: number
           unit_cost?: number
           unit_price?: number
@@ -1052,6 +1097,71 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      customer_contracts: {
+        Row: {
+          contract_end_date: string | null
+          contract_start_date: string | null
+          contract_value: number | null
+          created_at: string | null
+          customer_id: string
+          document_category: string | null
+          document_name: string
+          document_type: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_value?: number | null
+          created_at?: string | null
+          customer_id: string
+          document_category?: string | null
+          document_name: string
+          document_type?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_value?: number | null
+          created_at?: string | null
+          customer_id?: string
+          document_category?: string | null
+          document_name?: string
+          document_type?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_contracts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customer_interaction_logs: {
         Row: {
