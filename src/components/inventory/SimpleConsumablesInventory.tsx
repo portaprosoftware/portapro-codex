@@ -131,6 +131,39 @@ export const SimpleConsumablesInventory: React.FC = () => {
     return map;
   }, [velocityStats]);
 
+  // Calculate services for a consumable using real data when available
+  const getServicesData = (consumable: Consumable) => {
+    const velocity = velocityById.get(consumable.id);
+    
+    // Use real usage data if available, fallback to estimated
+    const dailyUsage = velocity?.adu_30 || velocity?.adu_90 || velocity?.adu_7 || 
+                      (consumable.on_hand_qty / (consumable.target_days_supply || 14));
+    
+    const hasRealData = !!(velocity?.adu_30 || velocity?.adu_90 || velocity?.adu_7);
+    
+    // Assume average service uses 1 unit per day of supply for estimation
+    const estimatedServicesPerDay = dailyUsage > 0 ? dailyUsage : 1;
+    const servicesRemaining = estimatedServicesPerDay > 0 ? Math.floor(consumable.on_hand_qty / estimatedServicesPerDay) : 0;
+    
+    return {
+      servicesRemaining,
+      hasRealData
+    };
+  };
+
+  // Determine the column header based on data types
+  const getServicesColumnHeader = () => {
+    if (!filteredConsumables || filteredConsumables.length === 0) return 'Est. Services';
+    
+    const dataTypes = filteredConsumables.map(c => getServicesData(c).hasRealData);
+    const allReal = dataTypes.every(hasReal => hasReal);
+    const allEstimated = dataTypes.every(hasReal => !hasReal);
+    
+    if (allReal) return 'Services Remaining';
+    if (allEstimated) return 'Est. Services';
+    return 'Services (Est./Real)';
+  };
+
   // Delete mutation
   const deleteConsumableMutation = useMutation({
     mutationFn: async (consumableId: string) => {
@@ -468,18 +501,15 @@ export const SimpleConsumablesInventory: React.FC = () => {
                             <TableHead className="hidden xl:table-cell">ADU 90</TableHead>
                           </>
                         )}
-                        <TableHead className="hidden lg:table-cell">Est. Services</TableHead>
+                        <TableHead className="hidden lg:table-cell">{getServicesColumnHeader()}</TableHead>
                         <TableHead className="hidden md:table-cell">Locations</TableHead>
                         <TableHead className="w-16">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredConsumables.map((consumable) => {
-                      // Calculate estimated services remaining
-                      const assumedUsePerService = consumable.supplier_info?.assumed_use_per_service;
-                      const estimatedServices = assumedUsePerService && assumedUsePerService > 0 
-                        ? Math.floor(consumable.on_hand_qty / assumedUsePerService)
-                        : null;
+                     {filteredConsumables.map((consumable) => {
+                       // Get services data using velocity stats
+                       const servicesData = getServicesData(consumable);
                       
                        return (
                          <TableRow key={consumable.id}>
@@ -509,7 +539,13 @@ export const SimpleConsumablesInventory: React.FC = () => {
                              <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
                            </>
                          )}
-                        <TableCell className="hidden lg:table-cell">{estimatedServices ? `${estimatedServices}` : '-'}</TableCell>
+                         <TableCell className="hidden lg:table-cell">
+                           {servicesData.servicesRemaining > 0 ? (
+                             <span>
+                               {servicesData.servicesRemaining} <span className="text-xs text-gray-500">({servicesData.hasRealData ? 'R' : 'E'})</span>
+                             </span>
+                           ) : '-'}
+                         </TableCell>
                          <TableCell className="hidden md:table-cell min-w-[180px]">
                            {consumable.location_stock?.length > 0 ? (
                              <div className="space-y-2">
