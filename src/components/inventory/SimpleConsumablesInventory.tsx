@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { CategorySelect } from '@/components/ui/category-select';
+import { BarcodeScannerModal } from '@/components/ui/barcode-scanner';
 import { ConsumableCategoryManager } from './ConsumableCategoryManager';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TabNav } from '@/components/ui/TabNav';
@@ -65,6 +66,7 @@ interface LocationStockItem {
 
 export const SimpleConsumablesInventory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'analytics'>('inventory');
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -230,6 +232,12 @@ export const SimpleConsumablesInventory: React.FC = () => {
     }
   };
 
+  // Handle barcode scan for search
+  const handleBarcodeScan = (scannedCode: string) => {
+    setSearchTerm(scannedCode);
+    setShowBarcodeScanner(false);
+  };
+
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowEditModal(false);
@@ -366,14 +374,25 @@ export const SimpleConsumablesInventory: React.FC = () => {
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Search</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Search by name, SKU, category..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+                <div className="relative flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search by name, SKU, category..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setShowBarcodeScanner(true)}
+                    className="shrink-0"
+                    title="Scan barcode to search"
+                  >
+                    <ScanLine className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
               <div>
@@ -624,7 +643,13 @@ export const SimpleConsumablesInventory: React.FC = () => {
         )}
 
         {/* Modals */}
-        <EnhancedAddConsumableModal 
+        <BarcodeScannerModal
+          isOpen={showBarcodeScanner}
+          onClose={() => setShowBarcodeScanner(false)}
+          onScanResult={handleBarcodeScan}
+        />
+
+        <EnhancedAddConsumableModal
           isOpen={showAddModal}
           onClose={handleModalClose}
         />
