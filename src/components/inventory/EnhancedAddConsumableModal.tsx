@@ -62,6 +62,11 @@ interface ConsumableFormData {
   cost_per_use?: string;
   billable_rule?: string;
   
+  // Inventory Management
+  lead_time_days: string;
+  target_days_supply: string;
+  reorder_threshold: string;
+  
   // Compliance
   sds_link?: string;
   ghs_hazard_flags: string[];
@@ -108,6 +113,9 @@ export const EnhancedAddConsumableModal: React.FC<EnhancedAddConsumableModalProp
       case_cost: '',
       cost_per_use: '',
       billable_rule: 'included_in_service',
+      lead_time_days: '7',
+      target_days_supply: '14',
+      reorder_threshold: '5',
       base_unit: 'case',
       case_quantity: '',
       fragrance_color_grade: '',
@@ -189,9 +197,13 @@ export const EnhancedAddConsumableModal: React.FC<EnhancedAddConsumableModalProp
           expiration_date: data.expiration_date ? data.expiration_date.toISOString().split('T')[0] : null,
           lot_batch_number: data.lot_batch_number,
           
+          // Inventory Management
+          lead_time_days: data.lead_time_days ? parseInt(data.lead_time_days) : 7,
+          target_days_supply: data.target_days_supply ? parseInt(data.target_days_supply) : 14,
+          reorder_threshold: data.reorder_threshold ? parseInt(data.reorder_threshold) : 0,
+          
           // Legacy fields
           location_stock: JSON.stringify(data.location_stock || []) as any,
-          reorder_threshold: 0,
           supplier_info: JSON.stringify({
             assumed_use_per_service: data.assumed_use_per_service ? parseFloat(data.assumed_use_per_service) : null
           }) as any
@@ -205,6 +217,8 @@ export const EnhancedAddConsumableModal: React.FC<EnhancedAddConsumableModalProp
     onSuccess: () => {
       toast.success('Consumable created successfully');
       queryClient.invalidateQueries({ queryKey: ['simple-consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['simple-consumables-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['consumable-velocity-stats'] });
       form.reset();
       setSdsFile(null);
       setActiveTab('basic');
@@ -594,6 +608,63 @@ export const EnhancedAddConsumableModal: React.FC<EnhancedAddConsumableModalProp
                         <p className="text-xs text-muted-foreground">
                           {form.watch('base_unit')}s used per service (for estimating remaining services)
                         </p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="lead_time_days"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lead Time (Days)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="1"
+                            placeholder="7" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Days from order to delivery</p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="target_days_supply"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Days Supply</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="1"
+                            placeholder="14" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Desired days of inventory to maintain</p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="reorder_threshold"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reorder Threshold</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="0"
+                            placeholder="5" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Quantity that triggers low stock alerts</p>
                       </FormItem>
                     )}
                   />

@@ -45,6 +45,8 @@ interface Consumable {
   billable_rule?: string;
   on_hand_qty: number;
   reorder_threshold: number;
+  lead_time_days: number;
+  target_days_supply: number;
   base_unit?: string;
   case_quantity?: number;
   fragrance_color_grade?: string;
@@ -95,6 +97,11 @@ interface ConsumableFormData {
   case_cost?: string;
   cost_per_use?: string;
   billable_rule?: string;
+  
+  // Inventory Management
+  lead_time_days: string;
+  target_days_supply: string;
+  reorder_threshold: string;
   
   // Compliance
   sds_link?: string;
@@ -162,6 +169,11 @@ export const EnhancedEditConsumableModal: React.FC<EnhancedEditConsumableModalPr
         case_cost: consumable.case_cost?.toString() || '',
         cost_per_use: consumable.cost_per_use?.toString() || '',
         billable_rule: consumable.billable_rule || 'included_in_service',
+        
+        // Inventory Management
+        lead_time_days: consumable.lead_time_days?.toString() || '7',
+        target_days_supply: consumable.target_days_supply?.toString() || '14',
+        reorder_threshold: consumable.reorder_threshold?.toString() || '0',
         
         // Compliance
         sds_link: consumable.sds_link || '',
@@ -244,6 +256,11 @@ export const EnhancedEditConsumableModal: React.FC<EnhancedEditConsumableModalPr
           expiration_date: data.expiration_date ? data.expiration_date.toISOString().split('T')[0] : null,
           lot_batch_number: data.lot_batch_number,
           
+          // Inventory Management
+          lead_time_days: data.lead_time_days ? parseInt(data.lead_time_days) : 7,
+          target_days_supply: data.target_days_supply ? parseInt(data.target_days_supply) : 14,
+          reorder_threshold: data.reorder_threshold ? parseInt(data.reorder_threshold) : 0,
+          
           // Legacy fields
           location_stock: JSON.stringify(data.location_stock || []) as any,
           supplier_info: JSON.stringify({
@@ -258,6 +275,8 @@ export const EnhancedEditConsumableModal: React.FC<EnhancedEditConsumableModalPr
     onSuccess: () => {
       toast.success('Consumable updated successfully');
       queryClient.invalidateQueries({ queryKey: ['simple-consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['simple-consumables-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['consumable-velocity-stats'] });
       onClose();
     },
     onError: (error: any) => {
@@ -754,6 +773,63 @@ export const EnhancedEditConsumableModal: React.FC<EnhancedEditConsumableModalPr
                           </select>
                         </FormControl>
                         <p className="text-xs text-muted-foreground">How this item is charged to customers</p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="lead_time_days"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lead Time (Days)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="1"
+                            placeholder="7" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Days from order to delivery</p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="target_days_supply"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Days Supply</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="1"
+                            placeholder="14" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Desired days of inventory to maintain</p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="reorder_threshold"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reorder Threshold</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="0"
+                            placeholder="5" 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Quantity that triggers low stock alerts</p>
                       </FormItem>
                     )}
                   />

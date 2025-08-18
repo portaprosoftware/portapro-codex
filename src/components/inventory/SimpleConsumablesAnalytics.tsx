@@ -22,6 +22,13 @@ interface Consumable {
   base_unit: string;
 }
 
+interface VelocityStats {
+  consumable_id: string;
+  adu_30?: number;
+  adu_90?: number;
+  adu_7?: number;
+}
+
 export const SimpleConsumablesAnalytics: React.FC = () => {
   // Fetch consumables data
   const { data: consumables, isLoading } = useQuery({
@@ -37,15 +44,35 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
     }
   });
 
-  // Calculate basic analytics for each consumable
+  // Fetch velocity stats for real usage data
+  const { data: velocityStats } = useQuery({
+    queryKey: ['consumable-velocity-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('consumable_velocity_stats')
+        .select('consumable_id, adu_30, adu_90, adu_7');
+      
+      if (error) throw error;
+      return data as VelocityStats[];
+    }
+  });
+
+  // Calculate analytics for each consumable using real data when available
   const getConsumableAnalytics = (consumable: Consumable) => {
-    const daysSupply = consumable.on_hand_qty > 0 
-      ? Math.round(consumable.on_hand_qty / (consumable.on_hand_qty / (consumable.target_days_supply || 14)))
-      : 0;
+    // Get velocity stats for this consumable
+    const velocity = velocityStats?.find(v => v.consumable_id === consumable.id);
     
-    const reorderPoint = Math.ceil(consumable.lead_time_days * (consumable.on_hand_qty / (consumable.target_days_supply || 14)));
+    // Use real usage data if available, fallback to estimated
+    const dailyUsage = velocity?.adu_30 || velocity?.adu_90 || velocity?.adu_7 || 
+                      (consumable.on_hand_qty / (consumable.target_days_supply || 14));
     
-    const dailyUsage = consumable.on_hand_qty / (consumable.target_days_supply || 14);
+    const hasRealData = !!(velocity?.adu_30 || velocity?.adu_90 || velocity?.adu_7);
+    
+    const daysSupply = dailyUsage > 0 ? Math.round(consumable.on_hand_qty / dailyUsage) : 0;
+    
+    // Safety stock of 3 days to match the modal hook
+    const safetyStockDays = 3;
+    const reorderPoint = Math.ceil(dailyUsage * (consumable.lead_time_days + safetyStockDays));
     
     const inventoryValue = consumable.on_hand_qty * consumable.unit_cost;
     
@@ -58,7 +85,8 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
       reorderPoint,
       dailyUsage,
       inventoryValue,
-      stockStatus
+      stockStatus,
+      hasRealData
     };
   };
 
@@ -74,6 +102,7 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
       'Lead Time (Days)',
       'Reorder Point',
       'Daily Usage Rate',
+      'Data Type',
       'Inventory Value',
       'Stock Status'
     ];
@@ -88,6 +117,7 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
         consumable.lead_time_days,
         analytics.reorderPoint,
         analytics.dailyUsage.toFixed(2),
+        analytics.hasRealData ? 'Real' : 'Est.',
         `$${analytics.inventoryValue.toFixed(2)}`,
         analytics.stockStatus
       ];
@@ -213,7 +243,17 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
                       <TableCell>{analytics.daysSupply} days</TableCell>
                       <TableCell>{consumable.lead_time_days} days</TableCell>
                       <TableCell>{analytics.reorderPoint}</TableCell>
-                      <TableCell>{analytics.dailyUsage.toFixed(2)}/{consumable.base_unit}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {analytics.dailyUsage.toFixed(2)}/{consumable.base_unit}
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs"
+                          >
+                            {analytics.hasRealData ? 'Real' : 'Est.'}
+                          </Badge>
+                        </div>
+                      </TableCell>
                       <TableCell>${analytics.inventoryValue.toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge 
