@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
+import { CustomerImportModal } from "@/components/customers/CustomerImportModal";
 import { formatCategoryDisplay } from "@/lib/categoryUtils";
 import { formatPhoneNumber } from "@/lib/utils";
 
@@ -81,6 +82,7 @@ const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isEngagementDialogOpen, setIsEngagementDialogOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
@@ -293,7 +295,12 @@ const CustomerHub: React.FC = () => {
             <p className="text-base text-gray-600 font-inter mt-1">Manage all your customer data in one place</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setIsImportModalOpen(true)}
+            >
               <Upload className="w-4 h-4" />
               Import CSV
             </Button>
@@ -524,6 +531,14 @@ const CustomerHub: React.FC = () => {
       <SimpleCustomerModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+
+      <CustomerImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={() => {
+          console.log('Customer import completed successfully');
+        }}
       />
     </div>
   );
