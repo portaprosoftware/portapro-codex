@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, Calculator, TrendingUp, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
+import { Package, AlertTriangle, DollarSign, Calculator, TrendingUp, ChevronDown, ChevronRight, Info, Download } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
 
 interface Consumable {
@@ -243,7 +244,41 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                   <TableHead>Days Supply</TableHead>
                   <TableHead>Lead Time</TableHead>
                   <TableHead>Reorder Point</TableHead>
-                   <TableHead>Daily Usage</TableHead>
+                   <TableHead>Daily Usage
+                     <Popover>
+                       <PopoverTrigger asChild>
+                         <button 
+                           onClick={(e) => e.stopPropagation()}
+                           className="ml-1 p-0.5 hover:bg-gray-100 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 inline-flex"
+                         >
+                           <Info className="w-3 h-3 text-gray-400 hover:text-gray-600" />
+                         </button>
+                       </PopoverTrigger>
+                       <PopoverContent className="w-80 p-4 bg-white border shadow-lg z-50" side="bottom" align="start">
+                         <div className="space-y-3">
+                           <h4 className="font-semibold text-sm">How Daily Usage Works</h4>
+                           <p className="text-sm text-gray-700">
+                             Shows the average amount consumed per day based on available data.
+                           </p>
+                           <div className="space-y-2 text-sm">
+                             <div className="flex items-start gap-2">
+                               <span className="font-medium text-green-600">(R)</span>
+                               <span>Real data from actual consumption history (ADU 30/90/7 day averages)</span>
+                             </div>
+                             <div className="flex items-start gap-2">
+                               <span className="font-medium text-blue-600">(E)</span>
+                               <span>Estimated based on on-hand quantity ÷ target days supply</span>
+                             </div>
+                           </div>
+                           <div className="pt-2 border-t border-gray-200">
+                             <p className="text-xs text-gray-600">
+                               <strong>Priority:</strong> ADU 30 → ADU 90 → ADU 7 → Estimated calculation
+                             </p>
+                           </div>
+                         </div>
+                       </PopoverContent>
+                     </Popover>
+                   </TableHead>
                    <TableHead>Cost/Price Per Unit</TableHead>
                    <TableHead>Value</TableHead>
                  </TableRow>
@@ -266,16 +301,16 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
                       <TableCell>{analytics.daysSupply} days</TableCell>
                       <TableCell>{consumable.lead_time_days} days</TableCell>
                       <TableCell>{analytics.reorderPoint}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {analytics.dailyUsage.toFixed(2)}/{consumable.base_unit}
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs"
-                          >
-                            {analytics.hasRealData ? 'Real' : 'Est.'}
-                          </Badge>
-                        </div>
+                       <TableCell>
+                         <div className="flex items-center gap-2">
+                           {analytics.dailyUsage.toFixed(2)}/{consumable.base_unit}
+                           <Badge 
+                             variant="outline" 
+                             className={`text-xs ${analytics.hasRealData ? 'text-green-600 border-green-200' : 'text-blue-600 border-blue-200'}`}
+                           >
+                             {analytics.hasRealData ? 'R' : 'E'}
+                           </Badge>
+                         </div>
                        </TableCell>
                        <TableCell>
                          <div className="space-y-1 text-xs">
