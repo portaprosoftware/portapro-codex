@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, Calculator, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Download, Calculator, TrendingUp, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { toast } from 'sonner';
 
@@ -30,6 +30,7 @@ interface VelocityStats {
 }
 
 export const SimpleConsumablesAnalytics: React.FC = () => {
+  const [showCostPrice, setShowCostPrice] = useState(false);
   // Fetch consumables data
   const { data: consumables, isLoading } = useQuery({
     queryKey: ['simple-consumables-analytics'],
@@ -104,6 +105,8 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
       'Daily Usage Rate',
       'Data Type',
       'Inventory Value',
+      'Cost Per Unit',
+      'Price Per Unit',
       'Stock Status'
     ];
 
@@ -119,6 +122,8 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
         analytics.dailyUsage.toFixed(2),
         analytics.hasRealData ? 'Real' : 'Est.',
         `$${analytics.inventoryValue.toFixed(2)}`,
+        `$${consumable.unit_cost.toFixed(2)}`,
+        `$${consumable.unit_price.toFixed(2)}`,
         analytics.stockStatus
       ];
     });
@@ -228,6 +233,19 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
                   <TableHead>Lead Time</TableHead>
                   <TableHead>Reorder Point</TableHead>
                   <TableHead>Daily Usage</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowCostPrice(!showCostPrice)}
+                      className="h-auto p-1 font-medium text-left hover:bg-transparent"
+                    >
+                      <div className="flex items-center gap-1">
+                        {showCostPrice ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                        Cost/Price Per
+                      </div>
+                    </Button>
+                  </TableHead>
                   <TableHead>Value</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -253,6 +271,18 @@ export const SimpleConsumablesAnalytics: React.FC = () => {
                             {analytics.hasRealData ? 'Real' : 'Est.'}
                           </Badge>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        {showCostPrice ? (
+                          <div className="space-y-1 text-xs">
+                            <div>Cost Per {consumable.base_unit}: ${consumable.unit_cost.toFixed(2)}</div>
+                            <div>Price Per {consumable.base_unit}: ${consumable.unit_price.toFixed(2)}</div>
+                          </div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            Click header to expand
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell>${analytics.inventoryValue.toFixed(2)}</TableCell>
                       <TableCell>
