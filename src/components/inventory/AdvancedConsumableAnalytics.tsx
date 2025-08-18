@@ -25,43 +25,179 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
   const { data: analyticsData, isLoading, refetch } = useQuery({
     queryKey: ['advanced-consumable-analytics', dateRange],
     queryFn: async () => {
-      // Mock advanced analytics data - in production, this would be calculated from actual data
-      const mockData: AdvancedAnalyticsData = {
-        usageByCategory: [
-          { category: 'Cleaning Supplies', value: 245, cost: 1234.50 },
-          { category: 'Safety Equipment', value: 156, cost: 987.25 },
-          { category: 'Paper Products', value: 189, cost: 543.75 },
-          { category: 'Chemicals', value: 87, cost: 2156.80 }
+      // Get real analytics data from Supabase
+      const startDate = dateRange.from.toISOString().split('T')[0];
+      const endDate = dateRange.to.toISOString().split('T')[0];
+
+      // 1. Usage by Category - aggregate consumables by category
+      const { data: consumables } = await supabase
+        .from('consumables')
+        .select('category, on_hand_qty, unit_cost, unit_price, reorder_threshold');
+
+      const categoryData = consumables?.reduce((acc, item) => {
+        const category = item.category || 'Uncategorized';
+        if (!acc[category]) {
+          acc[category] = { category, value: 0, cost: 0 };
+        }
+        acc[category].value += item.on_hand_qty || 0;
+        acc[category].cost += (item.on_hand_qty || 0) * (item.unit_cost || 0);
+        return acc;
+      }, {} as Record<string, { category: string; value: number; cost: number }>) || {};
+
+      const usageByCategory = Object.values(categoryData);
+
+      // 2. Stock Adjustments for trends (last 30 days)
+      const { data: stockAdjustments } = await supabase
+        .from('consumable_stock_adjustments')
+        .select('created_at, quantity_change, consumable_id, consumables(unit_cost)')
+        .gte('created_at', startDate)
+        .lte('created_at', endDate)
+        .order('created_at');
+
+      // Group adjustments by date
+      const adjustmentsByDate = stockAdjustments?.reduce((acc, adj) => {
+        const date = adj.created_at.split('T')[0];
+        if (!acc[date]) {
+          acc[date] = { date, stock_value: 0, usage_cost: 0 };
+        }
+        const unitCost = (adj.consumables as any)?.unit_cost || 0;
+        const costChange = Math.abs(adj.quantity_change) * unitCost;
+        acc[date].usage_cost += costChange;
+        return acc;
+      }, {} as Record<string, { date: string; stock_value: number; usage_cost: number }>) || {};
+
+      // Calculate current stock value for trend baseline
+      const currentStockValue = consumables?.reduce((total, item) => 
+        total + (item.on_hand_qty || 0) * (item.unit_cost || 0), 0) || 0;
+
+      const stockTrends = Object.values(adjustmentsByDate).map(trend => ({
+        ...trend,
+        stock_value: currentStockValue // Simplified - could track daily balances
+      }));
+
+      // 3. Top Consumables by usage (based on stock adjustments)
+      const consumableUsage = stockAdjustments?.reduce((acc, adj) => {
+        if (!acc[adj.consumable_id]) {
+          acc[adj.consumable_id] = { quantity: 0, cost: 0 };
+        }
+        const unitCost = (adj.consumables as any)?.unit_cost || 0;
+        acc[adj.consumable_id].quantity += Math.abs(adj.quantity_change);
+        acc[adj.consumable_id].cost += Math.abs(adj.quantity_change) * unitCost;
+        return acc;
+      }, {} as Record<string, { quantity: number; cost: number }>) || {};
+
+      const { data: consumableNames } = await supabase
+        .from('consumables')
+        .select('id, name')
+        .in('id', Object.keys(consumableUsage));
+
+      const topConsumables = Object.entries(consumableUsage)
+        .map(([id, usage]) => {
+          const consumable = consumableNames?.find(c => c.id === id);
+          return {
+            name: consumable?.name || 'Unknown',
+            quantity: usage.quantity,
+            cost: usage.cost
+          };
+        })
+        .sort((a, b) => b.cost - a.cost)
+        .slice(0, 10);
+
+      // 4. Wastage Analysis (negative adjustments with 'adjustment' type)
+      const { data: wastageData } = await supabase
+        .from('consumable_stock_adjustments')
+        .select('consumable_id, quantity_change, consumables(name, unit_cost)')
+        .eq('adjustment_type', 'adjustment')
+        .lt('quantity_change', 0)
+        .gte('created_at', startDate)
+        .lte('created_at', endDate);
+
+      const wastageAnalysis = wastageData?.reduce((acc, waste) => {
+        const consumable = waste.consumables as any;
+        const existingWaste = acc.find(w => w.item === consumable?.name);
+        const wastedQty = Math.abs(waste.quantity_change);
+        const wastedCost = wastedQty * (consumable?.unit_cost || 0);
+        
+        if (existingWaste) {
+          existingWaste.wasted += wastedQty;
+          existingWaste.cost += wastedCost;
+        } else {
+          acc.push({
+            item: consumable?.name || 'Unknown',
+            wasted: wastedQty,
+            cost: wastedCost
+          });
+        }
+        return acc;
+      }, [] as Array<{ item: string; wasted: number; cost: number }>) || [];
+
+      // 5. Predictive Reorder using velocity stats
+      const { data: velocityStats } = await supabase
+        .from('consumable_velocity_stats')
+        .select('consumable_id, adu_30, on_hand_qty, lead_time_days, recommended_order_qty, consumables(name)');
+
+      const predictiveReorder = velocityStats
+        ?.filter(stat => stat.adu_30 && stat.adu_30 > 0)
+        .map(stat => {
+          const daysRemaining = Math.floor((stat.on_hand_qty || 0) / stat.adu_30);
+          const runoutDate = new Date();
+          runoutDate.setDate(runoutDate.getDate() + daysRemaining);
+          
+          return {
+            item: (stat.consumables as any)?.name || 'Unknown',
+            predicted_runout: runoutDate.toISOString().split('T')[0],
+            recommended_order: stat.recommended_order_qty || 0
+          };
+        })
+        .filter(item => item.recommended_order > 0)
+        .sort((a, b) => new Date(a.predicted_runout).getTime() - new Date(b.predicted_runout).getTime())
+        .slice(0, 10) || [];
+
+      // 6. Usage by Job Type (simplified - using stock adjustments with job references)
+      const { data: jobUsage } = await supabase
+        .from('consumable_stock_ledger')
+        .select('type, qty, unit_cost, job_id')
+        .gte('occurred_at', startDate)
+        .lte('occurred_at', endDate)
+        .not('job_id', 'is', null);
+
+      const usageByJobType = jobUsage?.reduce((acc, usage) => {
+        // Map stock ledger types to job types
+        const jobType = usage.type === 'consumed' ? 'service' : 
+                       usage.type === 'added' ? 'delivery' : 'other';
+        
+        if (!acc[jobType]) {
+          acc[jobType] = { job_type: jobType, usage: 0, cost: 0 };
+        }
+        acc[jobType].usage += Math.abs(usage.qty);
+        acc[jobType].cost += Math.abs(usage.qty) * (usage.unit_cost || 0);
+        return acc;
+      }, {} as Record<string, { job_type: string; usage: number; cost: number }>) || {};
+
+      const usageByJob = Object.values(usageByJobType);
+
+      const analyticsData: AdvancedAnalyticsData = {
+        usageByCategory: usageByCategory.length > 0 ? usageByCategory : [
+          { category: 'No Data', value: 0, cost: 0 }
         ],
-        usageByJob: [
-          { job_type: 'delivery', usage: 145, cost: 678.30 },
-          { job_type: 'service', usage: 234, cost: 1245.75 },
-          { job_type: 'pickup', usage: 98, cost: 456.20 },
-          { job_type: 'cleaning', usage: 167, cost: 892.45 }
+        usageByJob: usageByJob.length > 0 ? usageByJob : [
+          { job_type: 'No Data', usage: 0, cost: 0 }
         ],
-        stockTrends: Array.from({ length: 30 }, (_, i) => ({
-          date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          stock_value: 15000 + Math.random() * 5000,
-          usage_cost: 200 + Math.random() * 400
-        })),
-        topConsumables: [
-          { name: 'Toilet Paper', quantity: 456, cost: 1234.56 },
-          { name: 'Hand Sanitizer', quantity: 234, cost: 987.34 },
-          { name: 'Paper Towels', quantity: 345, cost: 678.90 },
-          { name: 'Cleaning Spray', quantity: 123, cost: 543.21 }
+        stockTrends: stockTrends.length > 0 ? stockTrends : [
+          { date: new Date().toISOString().split('T')[0], stock_value: currentStockValue, usage_cost: 0 }
         ],
-        wastageAnalysis: [
-          { item: 'Toilet Paper', wasted: 23, cost: 45.67 },
-          { item: 'Paper Towels', wasted: 12, cost: 23.45 },
-          { item: 'Hand Soap', wasted: 8, cost: 15.32 }
+        topConsumables: topConsumables.length > 0 ? topConsumables : [
+          { name: 'No Usage Data', quantity: 0, cost: 0 }
         ],
-        predictiveReorder: [
-          { item: 'Toilet Paper', predicted_runout: '2024-02-15', recommended_order: 100 },
-          { item: 'Hand Sanitizer', predicted_runout: '2024-02-20', recommended_order: 50 },
-          { item: 'Paper Towels', predicted_runout: '2024-02-25', recommended_order: 75 }
+        wastageAnalysis: wastageAnalysis.length > 0 ? wastageAnalysis : [
+          { item: 'No Wastage Data', wasted: 0, cost: 0 }
+        ],
+        predictiveReorder: predictiveReorder.length > 0 ? predictiveReorder : [
+          { item: 'No Prediction Data', predicted_runout: new Date().toISOString().split('T')[0], recommended_order: 0 }
         ]
       };
-      return mockData;
+
+      return analyticsData;
     }
   });
 
