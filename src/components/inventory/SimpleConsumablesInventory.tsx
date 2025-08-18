@@ -17,7 +17,7 @@ import { CategorySelect } from '@/components/ui/category-select';
 import { ConsumableCategoryManager } from './ConsumableCategoryManager';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TabNav } from '@/components/ui/TabNav';
-import { AdvancedConsumableAnalytics } from './AdvancedConsumableAnalytics';
+import { SimpleConsumablesAnalytics } from './SimpleConsumablesAnalytics';
 
 interface Consumable {
   id: string;
@@ -612,7 +612,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
             </div>
           </div>
         ) : (
-          <AdvancedConsumableAnalytics />
+          <SimpleConsumablesAnalytics />
         )}
 
         {/* Modals */}
