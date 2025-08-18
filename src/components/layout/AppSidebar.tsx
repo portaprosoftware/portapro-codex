@@ -192,7 +192,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                 to={item.url}
                 onClick={() => onSectionChange?.(item.url)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-md p-3 text-left text-sm font-medium hover:bg-gray-100",
+                  "flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm font-medium hover:bg-gray-100",
                   isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold"
                 )}
               >
