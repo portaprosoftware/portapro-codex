@@ -30,6 +30,8 @@ interface Consumable {
   unit_price: number;
   on_hand_qty: number;
   reorder_threshold: number;
+  base_unit?: string;
+  supplier_info?: any;
   is_active: boolean;
   examples?: string;
   notes?: string;
@@ -70,6 +72,7 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
   // Reset form when consumable changes
   useEffect(() => {
     if (consumable) {
+      const supplierInfo = consumable.supplier_info || {};
       form.reset({
         name: consumable.name,
         description: consumable.description || '',
@@ -77,6 +80,8 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
         sku: consumable.sku || '',
         unit_cost: consumable.unit_cost?.toString() || '',
         unit_price: consumable.unit_price?.toString() || '',
+        base_unit: consumable.base_unit || 'case',
+        assumed_use_per_service: supplierInfo.assumed_use_per_service?.toString() || '',
         location_stock: consumable.location_stock || [],
         is_active: consumable.is_active,
         examples: consumable.examples || '',
@@ -107,10 +112,14 @@ export const SimpleEditConsumableModal: React.FC<SimpleEditConsumableModalProps>
           sku: data.sku,
           unit_cost: unitCost,
           unit_price: unitPrice,
+          base_unit: data.base_unit,
           location_stock: JSON.stringify(data.location_stock || []) as any,
-           is_active: data.is_active,
-           examples: data.examples,
-           notes: data.notes,
+          is_active: data.is_active,
+          examples: data.examples,
+          notes: data.notes,
+          supplier_info: JSON.stringify({
+            assumed_use_per_service: data.assumed_use_per_service ? parseFloat(data.assumed_use_per_service) : null
+          }) as any,
           updated_at: new Date().toISOString()
         })
         .eq('id', consumable.id);

@@ -84,11 +84,15 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
           sku: data.sku,
           unit_cost: unitCost,
           unit_price: unitPrice,
+          base_unit: data.base_unit,
           location_stock: JSON.stringify(data.location_stock || []) as any,
           reorder_threshold: 0,
           is_active: data.is_active,
           examples: data.examples,
-          notes: data.notes
+          notes: data.notes,
+          supplier_info: JSON.stringify({
+            assumed_use_per_service: data.assumed_use_per_service ? parseFloat(data.assumed_use_per_service) : null
+          }) as any
         })
         .select()
         .single();
@@ -106,6 +110,8 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
         sku: '',
         unit_cost: '',
         unit_price: '',
+        base_unit: 'case',
+        assumed_use_per_service: '',
         location_stock: [],
         is_active: true,
         examples: '',
