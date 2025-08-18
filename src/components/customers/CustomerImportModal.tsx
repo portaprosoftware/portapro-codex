@@ -464,19 +464,18 @@ export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImpo
 
         <div className="space-y-6">
           {/* Download Template Section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-card border rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
+              <FileText className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-medium text-blue-900 mb-1">Download Template First</h3>
-                <p className="text-sm text-blue-700 mb-3">
+                <h3 className="font-medium text-foreground mb-1">Download Template First</h3>
+                <p className="text-sm text-muted-foreground mb-3">
                   Get our CSV template with all supported fields including customer data, contacts, and service locations.
                 </p>
                 <Button 
                   onClick={downloadTemplate}
                   variant="outline"
                   size="sm"
-                  className="border-blue-300 text-blue-700 hover:bg-blue-100"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download Template
@@ -486,9 +485,9 @@ export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImpo
           </div>
 
           {/* Import Features */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="font-medium text-green-900 mb-2">Import Features</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-700">
+          <div className="bg-card border rounded-lg p-4">
+            <h3 className="font-medium text-foreground mb-2">Import Features</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>Automatic duplicate detection</span>
