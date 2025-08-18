@@ -254,8 +254,8 @@ export const SimpleConsumablesInventory: React.FC = () => {
   }, [consumables, categoryFilter, searchTerm, sortField, sortDirection]);
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      <div className="max-w-full px-6 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-4 md:px-6 py-6 space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-lg border shadow-sm p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -340,11 +340,11 @@ export const SimpleConsumablesInventory: React.FC = () => {
               </div>
             ) : (
               <div className="overflow-x-auto border rounded-lg">
-                <Table className="min-w-[1200px]">
+                <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[120px]"
+                        className="cursor-pointer select-none hover:bg-gray-50"
                         onClick={() => handleSort('name')}
                       >
                         <div className="flex items-center">
@@ -353,7 +353,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[120px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 hidden md:table-cell"
                         onClick={() => handleSort('category')}
                       >
                         <div className="flex items-center">
@@ -362,7 +362,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[80px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 hidden lg:table-cell"
                         onClick={() => handleSort('sku')}
                       >
                         <div className="flex items-center">
@@ -371,7 +371,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 hidden lg:table-cell"
                         onClick={() => handleSort('unit_cost')}
                       >
                         <div className="flex items-center">
@@ -380,7 +380,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 hidden lg:table-cell"
                         onClick={() => handleSort('unit_price')}
                       >
                         <div className="flex items-center">
@@ -389,19 +389,19 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
+                        className="cursor-pointer select-none hover:bg-gray-50"
                         onClick={() => handleSort('on_hand_qty')}
                       >
                         <div className="flex items-center">
-                          On Hand ({consumables?.[0]?.base_unit || 'cases'})
+                          On Hand
                           {getSortIcon('on_hand_qty')}
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[70px]">ADU 7</TableHead>
-                      <TableHead className="min-w-[70px]">ADU 30</TableHead>
-                      <TableHead className="min-w-[70px]">ADU 90</TableHead>
-                      <TableHead className="min-w-[120px]">Est. Services Remaining</TableHead>
-                      <TableHead className="min-w-[250px]">Locations</TableHead>
+                      <TableHead className="hidden xl:table-cell">ADU 7</TableHead>
+                      <TableHead className="hidden xl:table-cell">ADU 30</TableHead>
+                      <TableHead className="hidden xl:table-cell">ADU 90</TableHead>
+                      <TableHead className="hidden lg:table-cell">Est. Services</TableHead>
+                      <TableHead className="hidden md:table-cell">Locations</TableHead>
                       <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -415,48 +415,47 @@ export const SimpleConsumablesInventory: React.FC = () => {
                     
                      return (
                        <TableRow key={consumable.id}>
-                      <TableCell className="font-medium">{consumable.name}</TableCell>
-                      <TableCell>{formatCategoryDisplay(consumable.category)}</TableCell>
-                      <TableCell>{consumable.sku || '-'}</TableCell>
-                      <TableCell>${consumable.unit_cost.toFixed(2)}</TableCell>
-                      <TableCell>${consumable.unit_price.toFixed(2)}</TableCell>
-                      <TableCell>{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
-                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
-                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
-                      <TableCell>{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
-                      <TableCell>{estimatedServices ? `${estimatedServices} services` : '-'}</TableCell>
-                      <TableCell className="w-80">
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="font-medium">{consumable.name}</div>
+                          <div className="text-sm text-gray-500 md:hidden">
+                            {formatCategoryDisplay(consumable.category)} • {consumable.on_hand_qty} {consumable.base_unit || 'units'}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{formatCategoryDisplay(consumable.category)}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{consumable.sku || '-'}</TableCell>
+                      <TableCell className="hidden lg:table-cell">${consumable.unit_cost.toFixed(2)}</TableCell>
+                      <TableCell className="hidden lg:table-cell">${consumable.unit_price.toFixed(2)}</TableCell>
+                      <TableCell className="hidden md:table-cell">{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
+                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
+                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
+                      <TableCell className="hidden xl:table-cell">{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{estimatedServices ? `${estimatedServices}` : '-'}</TableCell>
+                      <TableCell className="hidden md:table-cell">
                         {consumable.location_stock?.length > 0 ? (
-                          <div className="space-y-2">
-                             {consumable.location_stock.map((loc, index) => {
+                          <div className="space-y-1">
+                             {consumable.location_stock.slice(0, 2).map((loc, index) => {
                                const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
                                return (
-                                 <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border ${isLowStock ? 'border-orange-200 bg-orange-50' : ''}`}>
-                                   <div className="flex flex-col">
-                                     <div className="flex items-center gap-2">
-                                       <span className="font-medium text-sm text-gray-900">{loc.locationName}</span>
-                                       {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
-                                     </div>
-                                     <div className="flex items-center gap-1">
-                                       <span className="text-xs text-gray-500">Location</span>
-                                        {isLowStock && (
-                                          <span className="text-xs text-orange-600 font-medium">Low Stock</span>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                      <span className={`font-semibold text-sm ${isLowStock ? 'text-orange-600' : 'text-gray-900'}`}>
-                                       {loc.quantity}
-                                     </span>
-                                     <span className="text-xs text-gray-500">qty</span>
+                                 <div key={index} className={`flex items-center justify-between bg-gray-50 rounded px-2 py-1 text-xs ${isLowStock ? 'border border-orange-200 bg-orange-50' : ''}`}>
+                                   <span className="text-gray-700 truncate max-w-[100px]">{loc.locationName}</span>
+                                   <div className="flex items-center gap-1">
+                                     <span className="font-medium">{loc.quantity}</span>
+                                     {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
                                    </div>
                                  </div>
                                );
                              })}
+                             {consumable.location_stock.length > 2 && (
+                               <div className="text-xs text-gray-500 px-2">
+                                 +{consumable.location_stock.length - 2} more
+                               </div>
+                             )}
                           </div>
                         ) : (
-                          <div className="text-center py-4">
-                            <span className="text-gray-400 text-sm">No locations assigned</span>
+                          <div className="text-center py-2">
+                            <span className="text-gray-400 text-xs">No locations</span>
                           </div>
                         )}
                       </TableCell>
