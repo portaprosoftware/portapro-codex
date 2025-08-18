@@ -197,7 +197,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                 )}
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate text-xs">{item.title}</span>
+                <span className="truncate">{item.title}</span>
                 {item.badge && (
                   <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
                     {item.badge}
