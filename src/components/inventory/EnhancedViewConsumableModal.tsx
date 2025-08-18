@@ -443,26 +443,29 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {consumable.case_quantity && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Case Quantity</label>
-                        <p className="text-base">{consumable.case_quantity} units per case</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Case Quantity</label>
+                      <p className="text-base">
+                        {consumable.case_quantity 
+                          ? `${consumable.case_quantity} units per case`
+                          : <span className="text-muted-foreground italic">Not specified</span>
+                        }
+                      </p>
+                    </div>
 
-                    {consumable.fragrance_color_grade && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Fragrance/Color/Grade</label>
-                        <p className="text-base">{consumable.fragrance_color_grade}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Fragrance/Color/Grade</label>
+                      <p className="text-base">
+                        {consumable.fragrance_color_grade || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
 
-                    {consumable.dilution_ratio && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Dilution Ratio</label>
-                        <p className="text-base">{consumable.dilution_ratio}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Dilution Ratio</label>
+                      <p className="text-base">
+                        {consumable.dilution_ratio || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -474,19 +477,22 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {consumable.lot_batch_number && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Lot/Batch Number</label>
-                        <p className="text-base font-mono">{consumable.lot_batch_number}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Lot/Batch Number</label>
+                      <p className="text-base font-mono">
+                        {consumable.lot_batch_number || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
 
-                    {consumable.expiration_date && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Expiration Date</label>
-                        <p className="text-base">{formatDate(consumable.expiration_date)}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Expiration Date</label>
+                      <p className="text-base">
+                        {consumable.expiration_date 
+                          ? formatDate(consumable.expiration_date)
+                          : <span className="text-muted-foreground italic">Not specified</span>
+                        }
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -507,9 +513,9 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                       <Badge variant={complianceStatus.variant}>{complianceStatus.label}</Badge>
                     </div>
 
-                    {consumable.ghs_hazard_flags && consumable.ghs_hazard_flags.length > 0 && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">GHS Hazard Classifications</label>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">GHS Hazard Classifications</label>
+                      {consumable.ghs_hazard_flags && consumable.ghs_hazard_flags.length > 0 ? (
                         <div className="flex flex-wrap gap-2 mt-2">
                           {consumable.ghs_hazard_flags.map((flag, index) => (
                             <Badge key={index} variant="outline" className="text-xs">
@@ -517,12 +523,14 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                             </Badge>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic mt-1">No hazard classifications</p>
+                      )}
+                    </div>
 
-                    {consumable.sds_link && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Safety Data Sheet</label>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Safety Data Sheet</label>
+                      {consumable.sds_link ? (
                         <div className="flex gap-2 mt-2">
                           <Button size="sm" variant="outline" onClick={handleSDSView}>
                             <Eye className="w-4 h-4 mr-2" />
@@ -533,8 +541,20 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                             Download
                           </Button>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex gap-2 mt-2">
+                          <Button size="sm" variant="outline" disabled>
+                            <Eye className="w-4 h-4 mr-2" />
+                            View SDS
+                          </Button>
+                          <Button size="sm" variant="outline" disabled>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
+                          <p className="text-xs text-muted-foreground ml-2 self-center">No SDS document available</p>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
 
