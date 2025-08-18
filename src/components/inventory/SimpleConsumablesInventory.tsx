@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -550,7 +550,33 @@ export const SimpleConsumablesInventory: React.FC = () => {
                             <TableHead className="hidden xl:table-cell">ADU 90</TableHead>
                           </>
                         )}
-                        <TableHead className="hidden lg:table-cell">{getServicesColumnHeader()}</TableHead>
+                         <TableHead className="hidden lg:table-cell">
+                           <div className="flex items-center gap-1">
+                             {getServicesColumnHeader()}
+                             <TooltipProvider>
+                               <Tooltip>
+                                 <TooltipTrigger asChild>
+                                   <button className="ml-1 p-0.5 hover:bg-gray-100 rounded">
+                                     <Info className="w-3 h-3 text-gray-400" />
+                                   </button>
+                                 </TooltipTrigger>
+                                 <TooltipContent className="max-w-sm p-3">
+                                   <div className="space-y-2 text-sm">
+                                     <p className="font-medium">How Est. Services Works:</p>
+                                     <p>This shows how many service visits can be completed with current stock.</p>
+                                     <div className="space-y-1">
+                                       <p><strong>(R)</strong> = Real data from actual usage history</p>
+                                       <p><strong>(E)</strong> = Estimated based on target days supply</p>
+                                     </div>
+                                     <p className="text-xs text-gray-600">
+                                       Calculation: Current Stock ÷ Daily Usage Rate = Services Remaining
+                                     </p>
+                                   </div>
+                                 </TooltipContent>
+                               </Tooltip>
+                             </TooltipProvider>
+                           </div>
+                         </TableHead>
                         <TableHead className="hidden md:table-cell">Locations</TableHead>
                         <TableHead className="w-16">Actions</TableHead>
                     </TableRow>
