@@ -7,8 +7,8 @@ import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDo
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { SimpleAddConsumableModal } from './SimpleAddConsumableModal';
-import { SimpleEditConsumableModal } from './SimpleEditConsumableModal';
+import { EnhancedAddConsumableModal } from './EnhancedAddConsumableModal';
+import { EnhancedEditConsumableModal } from './EnhancedEditConsumableModal';
 import { ViewConsumableModal } from './ViewConsumableModal';
 import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -587,12 +587,12 @@ export const SimpleConsumablesInventory: React.FC = () => {
         </div>
 
         {/* Modals */}
-        <SimpleAddConsumableModal 
+        <EnhancedAddConsumableModal 
           isOpen={showAddModal}
           onClose={handleModalClose}
         />
 
-        <SimpleEditConsumableModal 
+        <EnhancedEditConsumableModal 
           isOpen={showEditModal}
           consumable={selectedConsumable}
           onClose={handleModalClose}
