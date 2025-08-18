@@ -51,9 +51,21 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
   });
 
   const getStockStatus = (quantity: number, lowStockThreshold?: number) => {
-    if (quantity === 0) return { status: 'out', color: 'destructive', text: 'Out of Stock' };
-    if (lowStockThreshold && quantity <= lowStockThreshold) return { status: 'low', color: 'warning', text: 'Low Stock' };
-    return { status: 'good', color: 'default', text: 'Good Stock' };
+    if (quantity === 0) return { 
+      status: 'out', 
+      text: 'Out of Stock',
+      className: 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-semibold'
+    };
+    if (lowStockThreshold && quantity <= lowStockThreshold) return { 
+      status: 'low', 
+      text: 'Low Stock',
+      className: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 font-semibold'
+    };
+    return { 
+      status: 'good', 
+      text: 'Good Stock',
+      className: 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-semibold'
+    };
   };
 
   return (
@@ -128,11 +140,7 @@ export const ConsumableLocationBreakdown: React.FC<ConsumableLocationBreakdownPr
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge 
-                            variant={status.color as any}
-                            className={cn(
-                              status.status === 'low' && "bg-amber-100 text-amber-800 border-amber-200",
-                              status.status === 'out' && "bg-orange-100 text-orange-800 border-orange-200"
-                            )}
+                            className={status.className}
                           >
                             {status.text}
                           </Badge>

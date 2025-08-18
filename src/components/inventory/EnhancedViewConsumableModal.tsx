@@ -100,9 +100,18 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
   };
 
   const getStockStatus = () => {
-    if (consumable.on_hand_qty <= 0) return { label: 'Out of Stock', variant: 'destructive' as const };
-    if (consumable.on_hand_qty <= consumable.reorder_threshold) return { label: 'Low Stock', variant: 'secondary' as const };
-    return { label: 'In Stock', variant: 'default' as const };
+    if (consumable.on_hand_qty <= 0) return { 
+      label: 'Out of Stock', 
+      className: 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-semibold'
+    };
+    if (consumable.on_hand_qty <= consumable.reorder_threshold) return { 
+      label: 'Low Stock', 
+      className: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 font-semibold'
+    };
+    return { 
+      label: 'In Stock', 
+      className: 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-semibold'
+    };
   };
 
   const stockStatus = getStockStatus();
@@ -154,10 +163,7 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 {consumable.name}
-                <Badge variant={stockStatus.variant}>{stockStatus.label}</Badge>
-                <Badge variant={consumable.is_active ? "default" : "secondary"}>
-                  {consumable.is_active ? 'Active' : 'Inactive'}
-                </Badge>
+                <Badge className={stockStatus.className}>{stockStatus.label}</Badge>
               </div>
               {consumable.brand && (
                 <p className="text-sm text-muted-foreground font-normal">by {consumable.brand}</p>

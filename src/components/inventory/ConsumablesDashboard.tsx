@@ -182,9 +182,7 @@ export const ConsumablesDashboard: React.FC<ConsumablesDashboardProps> = ({
                     </td>
                     <td className="p-2">${consumable.unit_cost.toFixed(2)}</td>
                     <td className="p-2">
-                      <Badge variant={consumable.is_active ? 'success' : 'secondary'}>
-                        {consumable.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
+                      {/* Active/Inactive badge removed as requested */}
                     </td>
                     <td className="p-2">
                       <DropdownMenu>
