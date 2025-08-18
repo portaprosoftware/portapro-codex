@@ -1,5 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Input } from './input';
+import { Button } from './button';
+import { ScanLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DesktopBarcodeInputProps extends React.ComponentProps<typeof Input> {
@@ -30,6 +32,18 @@ export const DesktopBarcodeInput = forwardRef<HTMLInputElement, DesktopBarcodeIn
               className={cn("transition-all duration-200", className)}
             />
           </div>
+          {onCameraScan && (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={onCameraScan}
+              className="shrink-0"
+              title="Scan barcode with camera"
+            >
+              <ScanLine className="w-4 h-4" />
+            </Button>
+          )}
         </div>
         
         {scannerEnabled && (
