@@ -97,7 +97,7 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
             <TableHeader>
               <TableRow>
                 <TableHead>Location</TableHead>
-                <TableHead>Quantity</TableHead>
+                <TableHead>Quantity (cases/gal)</TableHead>
                 <TableHead>Low Stock Alert</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -179,7 +179,7 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
           <div className="pt-2 border-t">
             <div className="flex justify-between items-center text-sm font-medium">
               <span>Total Quantity:</span>
-              <span>{totalQuantity}</span>
+              <span>{totalQuantity} cases/gal</span>
             </div>
           </div>
         )}

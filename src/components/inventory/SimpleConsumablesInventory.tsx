@@ -27,6 +27,8 @@ interface Consumable {
   reorder_threshold: number;
   is_active: boolean;
   notes?: string;
+  base_unit: string;
+  supplier_info: any;
   location_stock: LocationStockItem[];
   created_at: string;
   updated_at: string;
@@ -369,53 +371,60 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[90px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
                         onClick={() => handleSort('unit_cost')}
                       >
                         <div className="flex items-center">
-                          Unit Cost
+                          Cost per {consumables?.[0]?.base_unit || 'case'}
                           {getSortIcon('unit_cost')}
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[90px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
                         onClick={() => handleSort('unit_price')}
                       >
                         <div className="flex items-center">
-                          Unit Price
+                          Price per {consumables?.[0]?.base_unit || 'case'}
                           {getSortIcon('unit_price')}
                         </div>
                       </TableHead>
                       <TableHead 
-                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[80px]"
+                        className="cursor-pointer select-none hover:bg-gray-50 min-w-[100px]"
                         onClick={() => handleSort('on_hand_qty')}
                       >
                         <div className="flex items-center">
-                          On Hand
+                          On Hand ({consumables?.[0]?.base_unit || 'cases'})
                           {getSortIcon('on_hand_qty')}
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[70px]">ADU 7</TableHead>
                       <TableHead className="min-w-[70px]">ADU 30</TableHead>
                       <TableHead className="min-w-[70px]">ADU 90</TableHead>
-                      <TableHead className="min-w-[100px]">Days of Supply</TableHead>
+                      <TableHead className="min-w-[120px]">Est. Services Remaining</TableHead>
                       <TableHead className="min-w-[250px]">Locations</TableHead>
                       <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredConsumables.map((consumable) => (
-                    <TableRow key={consumable.id}>
+                  {filteredConsumables.map((consumable) => {
+                    // Calculate estimated services remaining
+                    const assumedUsePerService = consumable.supplier_info?.assumed_use_per_service;
+                    const estimatedServices = assumedUsePerService && assumedUsePerService > 0 
+                      ? Math.floor(consumable.on_hand_qty / assumedUsePerService)
+                      : null;
+                    
+                     return (
+                       <TableRow key={consumable.id}>
                       <TableCell className="font-medium">{consumable.name}</TableCell>
                       <TableCell>{formatCategoryDisplay(consumable.category)}</TableCell>
                       <TableCell>{consumable.sku || '-'}</TableCell>
                       <TableCell>${consumable.unit_cost.toFixed(2)}</TableCell>
                       <TableCell>${consumable.unit_price.toFixed(2)}</TableCell>
-                      <TableCell>{consumable.on_hand_qty}</TableCell>
+                      <TableCell>{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
                       <TableCell>{fmt(velocityById.get(consumable.id)?.adu_7)}</TableCell>
                       <TableCell>{fmt(velocityById.get(consumable.id)?.adu_30)}</TableCell>
                       <TableCell>{fmt(velocityById.get(consumable.id)?.adu_90)}</TableCell>
-                      <TableCell>{fmt(velocityById.get(consumable.id)?.days_of_supply)}</TableCell>
+                      <TableCell>{estimatedServices ? `${estimatedServices} services` : '-'}</TableCell>
                       <TableCell className="w-80">
                         {consumable.location_stock?.length > 0 ? (
                           <div className="space-y-2">
@@ -481,9 +490,10 @@ export const SimpleConsumablesInventory: React.FC = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                       </TableRow>
+                     );
+                   })}
+                 </TableBody>
               </Table>
               </div>
             )}

@@ -32,6 +32,8 @@ interface ConsumableFormData {
   sku?: string;
   unit_cost: string;
   unit_price: string;
+  base_unit: string;
+  assumed_use_per_service?: string;
   location_stock: LocationStockItem[];
   is_active: boolean;
   examples?: string;
@@ -53,6 +55,8 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
       sku: '',
       unit_cost: '',
       unit_price: '',
+      base_unit: 'case',
+      assumed_use_per_service: '',
       location_stock: [],
       is_active: true,
       examples: '',
@@ -202,11 +206,33 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
               />
               <FormField
                 control={form.control}
+                name="base_unit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Base Unit</FormLabel>
+                    <FormControl>
+                      <select 
+                        {...field}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="case">Case</option>
+                        <option value="gallon">Gallon</option>
+                        <option value="box">Box</option>
+                        <option value="pack">Pack</option>
+                        <option value="unit">Unit</option>
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="unit_cost"
                 rules={{ required: 'Unit cost is required' }}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Cost *</FormLabel>
+                    <FormLabel>Cost per {form.watch('base_unit') || 'case'} *</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -227,7 +253,7 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
                 rules={{ required: 'Unit price is required' }}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Price *</FormLabel>
+                    <FormLabel>Price per {form.watch('base_unit') || 'case'} *</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -238,6 +264,27 @@ export const SimpleAddConsumableModal: React.FC<SimpleAddConsumableModalProps> =
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="assumed_use_per_service"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assumed Use per Service (optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        step="0.01"
+                        placeholder="e.g., 0.02 (cases per service)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500">
+                      For calculating estimated services remaining. Example: If 1 case services 50 toilets, enter 0.02
+                    </div>
                   </FormItem>
                 )}
               />
