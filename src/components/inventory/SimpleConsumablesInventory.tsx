@@ -266,14 +266,6 @@ export const SimpleConsumablesInventory: React.FC = () => {
           aValue = a.sku?.toLowerCase() || '';
           bValue = b.sku?.toLowerCase() || '';
           break;
-        case 'unit_cost':
-          aValue = a.unit_cost;
-          bValue = b.unit_cost;
-          break;
-        case 'unit_price':
-          aValue = a.unit_price;
-          bValue = b.unit_price;
-          break;
         case 'on_hand_qty':
           aValue = a.on_hand_qty;
           bValue = b.on_hand_qty;
@@ -435,24 +427,6 @@ export const SimpleConsumablesInventory: React.FC = () => {
                           </div>
                         </TableHead>
                         <TableHead 
-                          className="cursor-pointer select-none hover:bg-gray-50 hidden lg:table-cell"
-                          onClick={() => handleSort('unit_cost')}
-                        >
-                          <div className="flex items-center">
-                            Cost per {consumables?.[0]?.base_unit || 'case'}
-                            {getSortIcon('unit_cost')}
-                          </div>
-                        </TableHead>
-                        <TableHead 
-                          className="cursor-pointer select-none hover:bg-gray-50 hidden lg:table-cell"
-                          onClick={() => handleSort('unit_price')}
-                        >
-                          <div className="flex items-center">
-                            Price per {consumables?.[0]?.base_unit || 'case'}
-                            {getSortIcon('unit_price')}
-                          </div>
-                        </TableHead>
-                        <TableHead 
                           className="cursor-pointer select-none hover:bg-gray-50"
                           onClick={() => handleSort('on_hand_qty')}
                         >
@@ -524,9 +498,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                         </TableCell>
                         <TableCell className="hidden md:table-cell">{formatCategoryDisplay(consumable.category)}</TableCell>
                         <TableCell className="hidden lg:table-cell">{consumable.sku || '-'}</TableCell>
-                        <TableCell className="hidden lg:table-cell">${consumable.unit_cost.toFixed(2)}</TableCell>
-                        <TableCell className="hidden lg:table-cell">${consumable.unit_price.toFixed(2)}</TableCell>
-                         <TableCell className="hidden md:table-cell">{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
+                         <TableCell>{consumable.on_hand_qty} {consumable.base_unit || 'units'}</TableCell>
                          <TableCell className="hidden xl:table-cell">
                            {/* Empty cell for the Usage Analytics header */}
                          </TableCell>
