@@ -34,6 +34,24 @@ interface Consumable {
   location_stock: LocationStockItem[];
   created_at: string;
   updated_at: string;
+  // New fields from Phase 2
+  mpn?: string;
+  model_number?: string;
+  gtin_barcode?: string;
+  supplier_item_id?: string;
+  brand?: string;
+  case_quantity?: number;
+  fragrance_color_grade?: string;
+  dilution_ratio?: string;
+  sds_link?: string;
+  ghs_hazard_flags: string[];
+  expiration_date?: string;
+  lot_batch_number?: string;
+  case_cost?: number;
+  cost_per_use?: number;
+  billable_rule?: string;
+  target_days_supply: number;
+  lead_time_days: number;
 }
 
 interface LocationStockItem {
