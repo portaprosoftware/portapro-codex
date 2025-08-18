@@ -369,19 +369,33 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {consumable.sku && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">SKU</label>
-                        <p className="text-sm font-mono bg-muted px-2 py-1 rounded">{consumable.sku}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">SKU</label>
+                      <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                        {consumable.sku || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
 
-                    {consumable.mpn && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Manufacturer Part Number</label>
-                        <p className="text-sm font-mono bg-muted px-2 py-1 rounded">{consumable.mpn}</p>
-                      </div>
-                    )}
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Manufacturer Part Number</label>
+                      <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                        {consumable.mpn || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">GTIN/Barcode</label>
+                      <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                        {consumable.gtin_barcode || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Supplier Item ID</label>
+                      <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                        {consumable.supplier_item_id || <span className="text-muted-foreground italic">Not specified</span>}
+                      </p>
+                    </div>
 
                     {consumable.model_number && (
                       <div>
@@ -390,17 +404,10 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
                       </div>
                     )}
 
-                    {consumable.gtin_barcode && (
+                    {consumable.brand && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">GTIN/Barcode</label>
-                        <p className="text-sm font-mono bg-muted px-2 py-1 rounded">{consumable.gtin_barcode}</p>
-                      </div>
-                    )}
-
-                    {consumable.supplier_item_id && (
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Supplier Item ID</label>
-                        <p className="text-sm font-mono bg-muted px-2 py-1 rounded">{consumable.supplier_item_id}</p>
+                        <label className="text-sm font-medium text-muted-foreground">Brand</label>
+                        <p className="text-sm">{consumable.brand}</p>
                       </div>
                     )}
                   </CardContent>
