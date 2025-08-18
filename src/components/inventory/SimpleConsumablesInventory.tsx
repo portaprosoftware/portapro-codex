@@ -510,33 +510,33 @@ export const SimpleConsumablesInventory: React.FC = () => {
                            </>
                          )}
                         <TableCell className="hidden lg:table-cell">{estimatedServices ? `${estimatedServices}` : '-'}</TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {consumable.location_stock?.length > 0 ? (
-                            <div className="space-y-1">
-                               {consumable.location_stock.slice(0, 2).map((loc, index) => {
-                                 const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
-                                 return (
-                                   <div key={index} className={`flex items-center justify-between bg-gray-50 rounded px-2 py-1 text-xs ${isLowStock ? 'border border-orange-200 bg-orange-50' : ''}`}>
-                                     <span className="text-gray-700 truncate max-w-[100px]">{loc.locationName}</span>
-                                     <div className="flex items-center gap-1">
-                                       <span className="font-medium">{loc.quantity}</span>
-                                       {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
-                                     </div>
-                                   </div>
-                                 );
-                               })}
-                               {consumable.location_stock.length > 2 && (
-                                 <div className="text-xs text-gray-500 px-2">
-                                   +{consumable.location_stock.length - 2} more
-                                 </div>
-                               )}
-                            </div>
-                          ) : (
-                            <div className="text-center py-2">
-                              <span className="text-gray-400 text-xs">No locations</span>
-                            </div>
-                          )}
-                        </TableCell>
+                         <TableCell className="hidden md:table-cell min-w-[180px]">
+                           {consumable.location_stock?.length > 0 ? (
+                             <div className="space-y-2">
+                                {consumable.location_stock.slice(0, 2).map((loc, index) => {
+                                  const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
+                                  return (
+                                    <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-md px-3 py-2 text-sm ${isLowStock ? 'border border-orange-200 bg-orange-50' : ''}`}>
+                                      <span className="text-gray-700 truncate flex-1 mr-2" title={loc.locationName}>{loc.locationName}</span>
+                                      <div className="flex items-center gap-1 flex-shrink-0">
+                                        <span className="font-medium text-gray-900">{loc.quantity}</span>
+                                        {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                {consumable.location_stock.length > 2 && (
+                                  <div className="text-sm text-gray-500 px-3 py-1 bg-gray-100 rounded-md text-center">
+                                    +{consumable.location_stock.length - 2} more location{consumable.location_stock.length - 2 > 1 ? 's' : ''}
+                                  </div>
+                                )}
+                             </div>
+                           ) : (
+                             <div className="text-center py-3">
+                               <span className="text-gray-400 text-sm">No locations</span>
+                             </div>
+                           )}
+                         </TableCell>
                         <TableCell className="w-16">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
