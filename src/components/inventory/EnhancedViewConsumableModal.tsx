@@ -147,7 +147,7 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-xl">
             <Package className="w-6 h-6 text-blue-600" />
@@ -166,8 +166,8 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="grid w-full grid-cols-5 shrink-0">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
               Overview
@@ -190,7 +190,7 @@ export const EnhancedViewConsumableModal: React.FC<EnhancedViewConsumableModalPr
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-y-auto mt-4">
+          <div className="flex-1 overflow-y-auto mt-4 min-h-0">
             <TabsContent value="overview" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Basic Information */}
