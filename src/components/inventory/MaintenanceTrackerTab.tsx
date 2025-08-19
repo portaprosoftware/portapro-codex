@@ -372,48 +372,38 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                   <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <TableCell colSpan={productId === "all" ? 10 : 9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Combined Maintenance & Location Details */}
-                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                            <h4 className="font-medium text-gray-900 mb-3 flex items-center">
-                              <AlertTriangle className="w-4 h-4 mr-2" />
-                              Maintenance & Location Details
-                            </h4>
-                            <div className="space-y-3">
-                              <div>
-                                <span className="font-medium text-gray-700">Reason:</span>
-                                <p className="text-gray-600 mt-1">{item.maintenance_reason || "No reason specified"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-700">Notes:</span>
-                                <p className="text-gray-600 mt-1">{item.maintenance_notes || "No notes provided"}</p>
-                              </div>
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <span className="font-medium text-gray-700">Started:</span>
-                                  <p className="text-gray-600 mt-1 flex items-center">
-                                    <Clock className="w-3 h-3 mr-1" />
-                                    {formatDate(item.maintenance_start_date)}
-                                  </p>
-                                </div>
-                                <div>
-                                  <span className="font-medium text-gray-700">Expected Return:</span>
-                                  <p className="text-gray-600 mt-1 flex items-center">
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    {formatDate(item.expected_return_date)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
-                                <div>
-                                  <span className="font-medium text-gray-700">Storage Location:</span>
-                                  <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
-                                </div>
-                                <div>
-                                  <span className="font-medium text-gray-700">Last Location:</span>
-                                  <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
-                                </div>
-                              </div>
+                        <div className="py-2">
+                          {/* Simple text list format */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm">
+                            <div>
+                              <span className="font-medium text-gray-700">Reason:</span>
+                              <span className="text-gray-600 ml-2">{item.maintenance_reason || "No reason specified"}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Notes:</span>
+                              <span className="text-gray-600 ml-2">{item.maintenance_notes || "No notes provided"}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Started:</span>
+                              <span className="text-gray-600 ml-2 flex items-center">
+                                <Clock className="w-3 h-3 mr-1" />
+                                {formatDate(item.maintenance_start_date)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Expected Return:</span>
+                              <span className="text-gray-600 ml-2 flex items-center">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                {formatDate(item.expected_return_date)}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Storage Location:</span>
+                              <span className="text-gray-600 ml-2">{getStorageLocationName(item.current_storage_location_id)}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-700">Last Location:</span>
+                              <span className="text-gray-600 ml-2">{item.location || "Not specified"}</span>
                             </div>
                           </div>
                         </div>
