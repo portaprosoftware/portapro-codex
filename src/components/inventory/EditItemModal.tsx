@@ -289,7 +289,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     const newLocation = formData.current_storage_location_id;
     const locationChanged = originalLocation !== newLocation;
     
-    if (locationChanged) {
+    // Skip location confirmation dialog when setting status to maintenance
+    if (locationChanged && formData.status !== "maintenance") {
       // Fetch location names for the confirmation dialog
       try {
         const locations = [];
@@ -324,8 +325,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         setShowLocationConfirm(true);
       }
     } else {
-      // No location change, proceed directly
-      updateMutation.mutate({ updateData: formData, recordTransfer: false });
+      // No location change or maintenance status, proceed directly
+      const recordTransfer = locationChanged && formData.status === "maintenance";
+      updateMutation.mutate({ updateData: formData, recordTransfer });
     }
   };
 

@@ -31,15 +31,19 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [itemsToReturn, setItemsToReturn] = useState<Array<{ id: string; itemCode: string }>>([]);
 
-  // Fetch items in maintenance for this product
+  // Fetch items in maintenance for this product or all products
   const { data: maintenanceItems, isLoading } = useQuery({
     queryKey: ["maintenance-items", productId, searchQuery],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
-        .select("*, tool_number, vendor_id, maintenance_start_date, maintenance_reason, expected_return_date, maintenance_notes")
-        .eq("product_id", productId)
+        .select("*, tool_number, vendor_id, maintenance_start_date, maintenance_reason, expected_return_date, maintenance_notes, products(name)")
         .eq("status", "maintenance");
+
+      // If productId is "all", don't filter by product_id
+      if (productId !== "all") {
+        query = query.eq("product_id", productId);
+      }
 
       if (searchQuery) {
         query = query.or(`item_code.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,maintenance_notes.ilike.%${searchQuery}%,maintenance_reason.ilike.%${searchQuery}%`);
@@ -51,10 +55,12 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     }
   });
 
-  // Fetch available items for moving to maintenance
+  // Fetch available items for moving to maintenance (only when viewing specific product)
   const { data: availableItems } = useQuery({
     queryKey: ["available-items", productId],
     queryFn: async () => {
+      if (productId === "all") return [];
+      
       const { data, error } = await supabase
         .from("product_items")
         .select("id, item_code")
@@ -64,7 +70,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: productId !== "all"
   });
 
   // Fetch storage locations for display
@@ -276,6 +283,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 </TableHead>
                 <TableHead className="w-12"></TableHead>
                 <TableHead className="font-medium">Unit Code</TableHead>
+                {productId === "all" && <TableHead className="font-medium">Product</TableHead>}
                 <TableHead className="font-medium">Tool Number</TableHead>
                 <TableHead className="font-medium">Location</TableHead>
                 <TableHead className="font-medium">Maintenance Reason</TableHead>
@@ -316,6 +324,11 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                        {item.item_code}
                      </Button>
                    </TableCell>
+                   {productId === "all" && (
+                     <TableCell className="text-gray-600">
+                       {item.products?.name || "Unknown Product"}
+                     </TableCell>
+                   )}
                   <TableCell className="font-mono text-xs text-gray-600">
                     {item.tool_number || "—"}
                   </TableCell>
@@ -349,7 +362,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 // Expanded Row Details
                 expandedRows.includes(item.id) ? (
                   <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={9} className="border-t">
+                    <TableCell colSpan={productId === "all" ? 10 : 9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {/* Maintenance Details */}
