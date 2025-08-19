@@ -486,17 +486,19 @@ const ProductItemDetail: React.FC = () => {
                <CardTitle>Actions</CardTitle>
              </CardHeader>
              <CardContent className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => {
-                    setMaintenanceModalTab("update");
-                    setShowMaintenanceModal(true);
-                  }}
-                >
-                  <Wrench className="w-4 h-4 mr-2" />
-                  Add Maintenance Update
-                </Button>
+                {item.status === 'maintenance' && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      setMaintenanceModalTab("update");
+                      setShowMaintenanceModal(true);
+                    }}
+                  >
+                    <Wrench className="w-4 h-4 mr-2" />
+                    Add Maintenance Update
+                  </Button>
+                )}
                 <Button 
                   variant="outline" 
                   className="w-full"
