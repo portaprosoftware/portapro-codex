@@ -187,33 +187,57 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         <span className="text-gray-900 font-medium">{product.name}</span>
       </div>
 
-      {/* Tabs */}
+      {/* Gradient Pill Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Desktop/Tablet Tabs */}
-        <TabsList className={cn(
-          "grid w-full",
-          "hidden sm:grid",
-          "grid-cols-6 lg:grid-cols-6 md:grid-cols-3"
-        )}>
-          {tabs.map((tab) => {
-            const IconComponent = tab.icon;
-            return (
-              <TabsTrigger 
-                key={tab.value} 
-                value={tab.value} 
-                className="flex items-center gap-2 flex-wrap"
-              >
-                <IconComponent className="w-4 h-4 flex-shrink-0" />
-                <span className="break-words">{tab.label}</span>
-                {tab.badge !== null && tab.badge !== undefined && (
-                  <Badge className="ml-1 flex-shrink-0 border-0 font-bold bg-gray-200 text-gray-800">
-                    {tab.badge}
-                  </Badge>
-                )}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+        {/* Desktop/Tablet - 2x3 Grid of Gradient Pills */}
+        <div className="hidden sm:block mb-6">
+          <div className="grid grid-cols-3 gap-3 max-w-4xl">
+            {tabs.map((tab) => {
+              const IconComponent = tab.icon;
+              const isActive = activeTab === tab.value;
+              
+              // Define gradient colors for each tab
+              const getGradientClass = (value: string) => {
+                switch (value) {
+                  case 'overview':
+                    return 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700';
+                  case 'locations':
+                    return 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700';
+                  case 'units':
+                    return 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700';
+                  case 'compliance':
+                    return 'bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700';
+                  case 'maintenance':
+                    return 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700';
+                  case 'attributes':
+                    return 'bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700';
+                  default:
+                    return 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700';
+                }
+              };
+              
+              return (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={cn(
+                    "flex items-center justify-center gap-3 px-6 py-4 rounded-full transition-all duration-200 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-[1.02]",
+                    getGradientClass(tab.value),
+                    isActive && "ring-2 ring-white ring-offset-2 shadow-xl scale-[1.02]"
+                  )}
+                >
+                  <IconComponent className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-semibold">{tab.label}</span>
+                  {tab.badge !== null && tab.badge !== undefined && (
+                    <Badge className="ml-2 flex-shrink-0 bg-white/20 text-white border-white/30 text-xs px-2 py-1">
+                      {tab.badge}
+                    </Badge>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Mobile Dropdown */}
         <div className="block sm:hidden">
