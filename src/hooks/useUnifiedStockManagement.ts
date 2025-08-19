@@ -294,7 +294,7 @@ export const useUnifiedStockManagement = (productId: string) => {
     masterStock: stockData?.master_stock || 0,
     physicallyAvailable: stockData?.totals.physically_available || 0,
     inMaintenance: stockData?.totals.in_maintenance || 0,
-    trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid Tracking' : stockData?.tracking_method || 'none',
+    trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid' : stockData?.tracking_method || 'none',
     
     // Status checks
     isConsistent: !calculations?.hasInconsistency,
