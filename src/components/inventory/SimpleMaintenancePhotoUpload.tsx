@@ -133,7 +133,15 @@ export const SimpleMaintenancePhotoUpload: React.FC<SimpleMaintenancePhotoUpload
                   src={photo.photo_url}
                   alt={photo.caption || 'Maintenance photo'}
                   className="w-full h-24 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => onPhotoClick?.(existingPhotos, index)}
+                  onClick={() => {
+                    // Convert photo_url to url format for ImageViewerModal
+                    const formattedPhotos = existingPhotos.map(p => ({
+                      url: p.photo_url,
+                      caption: p.caption,
+                      type: 'photo'
+                    }));
+                    onPhotoClick?.(formattedPhotos, index);
+                  }}
                 />
                 {photo.caption && (
                   <p className="text-xs text-muted-foreground mt-1 truncate">{photo.caption}</p>
@@ -150,7 +158,18 @@ export const SimpleMaintenancePhotoUpload: React.FC<SimpleMaintenancePhotoUpload
           <p className="text-sm text-muted-foreground mb-2">New Photos (will be saved when form is submitted):</p>
           <div className="grid grid-cols-2 gap-3">
             {photos.map((photo, index) => {
-              const allPhotos = [...existingPhotos, ...photos.map(p => ({ photo_url: p.preview, caption: p.caption }))];
+              // Format all photos for ImageViewerModal
+              const formattedExistingPhotos = existingPhotos.map(p => ({
+                url: p.photo_url,
+                caption: p.caption,
+                type: 'photo'
+              }));
+              const formattedNewPhotos = photos.map(p => ({
+                url: p.preview,
+                caption: p.caption,
+                type: 'photo'
+              }));
+              const allFormattedPhotos = [...formattedExistingPhotos, ...formattedNewPhotos];
               const photoIndex = existingPhotos.length + index;
               
               return (
@@ -159,7 +178,7 @@ export const SimpleMaintenancePhotoUpload: React.FC<SimpleMaintenancePhotoUpload
                     src={photo.preview}
                     alt={`New photo ${index + 1}`}
                     className="w-full h-20 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => onPhotoClick?.(allPhotos, photoIndex)}
+                    onClick={() => onPhotoClick?.(allFormattedPhotos, photoIndex)}
                   />
                   <Button
                     size="sm"
