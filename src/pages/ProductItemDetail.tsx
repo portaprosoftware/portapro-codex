@@ -124,6 +124,8 @@ const ProductItemDetail: React.FC = () => {
         return "warning";
       case "poor":
         return "warning";
+      case "needs_repair":
+        return "cancelled"; // Red gradient for needs repair
       case "damaged":
         return "cancelled";
       default:
@@ -266,14 +268,6 @@ const ProductItemDetail: React.FC = () => {
                   <p className="text-base text-gray-900">{item.products.description || "No description"}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Tool Number</label>
-                  <p className="text-base font-mono text-gray-900">{item.tool_number || "Not assigned"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Item Code</label>
-                  <p className="text-base font-mono text-gray-900">{item.item_code}</p>
-                </div>
-                <div>
                   <label className="text-sm font-medium text-gray-500">Rental Price</label>
                   <p className="text-base font-medium text-gray-900">${item.products.default_price_per_day}/day</p>
                 </div>
@@ -308,6 +302,10 @@ const ProductItemDetail: React.FC = () => {
                 <div>
                   <label className="text-sm font-medium text-gray-500">Tool Number</label>
                   <p className="text-base font-mono text-gray-900">{item.tool_number || "Not assigned"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Item Code</label>
+                  <p className="text-base font-mono text-gray-900">{item.item_code}</p>
                 </div>
                 {item.vendor_id && (
                   <div>
