@@ -342,7 +342,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             <Button 
               variant="outline" 
               className="text-purple-600 border-purple-600 hover:bg-purple-50"
-              onClick={() => navigate(`/inventory/products/${product.id}?tab=units`)}
+              onClick={() => navigate(`/inventory/products?selectedProduct=${product.id}&tab=units`)}
             >
               <Settings className="w-4 h-4 mr-2" />
               View Tracked Units
