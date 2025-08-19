@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
-import { MaintenancePhotoUpload } from "./MaintenancePhotoUpload";
+import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
 
@@ -117,6 +117,40 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         throw new Error("Storage location is required for maintenance items");
       }
       
+      // Upload maintenance photos first if any
+      if (maintenancePhotos.length > 0) {
+        const photoPromises = maintenancePhotos.map(async (photo, index) => {
+          const fileExt = photo.file.name.split('.').pop();
+          const fileName = `maintenance-${itemId}-${Date.now()}-${index}.${fileExt}`;
+          const filePath = `unit-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('unit-photos')
+            .upload(filePath, photo.file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('unit-photos')
+            .getPublicUrl(filePath);
+
+          // Save to database
+          const { error: dbError } = await supabase
+            .from('product_item_photos')
+            .insert({
+              product_item_id: itemId,
+              photo_url: publicUrl,
+              caption: photo.caption || null,
+              display_order: index,
+            });
+
+          if (dbError) throw dbError;
+          return publicUrl;
+        });
+
+        await Promise.all(photoPromises);
+      }
+      
       const { error } = await supabase
         .from("product_items")
         .update({
@@ -135,6 +169,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-item", item.id] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-photos", itemId] });
+      setMaintenancePhotos([]);
       onClose();
     },
     onError: (err) => {
@@ -155,6 +191,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [updatePhotos, setUpdatePhotos] = useState<UpdatePhoto[]>([]);
+  const [maintenancePhotos, setMaintenancePhotos] = useState<UpdatePhoto[]>([]);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<any[]>([]);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
@@ -368,7 +405,12 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
                   {/* Maintenance Photos Section */}
                   <div className="mt-4 pt-4 border-t">
-                    <MaintenancePhotoUpload itemId={item?.id} />
+                    <SimpleMaintenancePhotoUpload 
+                      itemId={item?.id} 
+                      photos={maintenancePhotos}
+                      onPhotosChange={setMaintenancePhotos}
+                      maxPhotos={5}
+                    />
                   </div>
                 </div>
               </div>
