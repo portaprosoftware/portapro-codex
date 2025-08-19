@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
 import { MaintenanceHistoryModal } from "@/components/inventory/MaintenanceHistoryModal";
+import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
+import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
 
 const ProductItemDetail: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -18,6 +20,7 @@ const ProductItemDetail: React.FC = () => {
   
   // Modal states
   const [showMaintenanceHistory, setShowMaintenanceHistory] = useState(false);
+  const [showPhotoCapture, setShowPhotoCapture] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ["product-item", itemId],
@@ -41,6 +44,7 @@ const ProductItemDetail: React.FC = () => {
           ocr_confidence_score,
           ocr_raw_data,
           verification_status,
+          tracking_photo_url,
           current_storage_location_id,
           product_id,
           products!inner(
@@ -72,6 +76,12 @@ const ProductItemDetail: React.FC = () => {
     enabled: !!itemId,
     staleTime: 30 * 1000, // Cache for 30 seconds only
   });
+
+  // Helper function to capitalize first letter
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   const getStatusVariant = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -196,11 +206,11 @@ const ProductItemDetail: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={getStatusVariant(item.status)}>
-              {item.status || "Unknown"}
+              {capitalizeFirstLetter(item.status || "Unknown")}
             </Badge>
             {item.condition && (
               <Badge variant={getConditionVariant(item.condition)}>
-                {item.condition}
+                {capitalizeFirstLetter(item.condition)}
               </Badge>
             )}
           </div>
@@ -248,7 +258,7 @@ const ProductItemDetail: React.FC = () => {
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Status</label>
                   <Badge variant={getStatusVariant(item.status)}>
-                    {item.status || "Unknown"}
+                    {capitalizeFirstLetter(item.status || "Unknown")}
                   </Badge>
                 </div>
               </div>
@@ -323,7 +333,7 @@ const ProductItemDetail: React.FC = () => {
                   <div>
                     <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
                     <Badge variant={getConditionVariant(item.condition)}>
-                      {item.condition}
+                      {capitalizeFirstLetter(item.condition)}
                     </Badge>
                   </div>
                 )}
@@ -338,7 +348,13 @@ const ProductItemDetail: React.FC = () => {
           <Card>
             <CardContent className="p-6">
               <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-                {item.products.image_url ? (
+                {item.tracking_photo_url ? (
+                  <img 
+                    src={item.tracking_photo_url} 
+                    alt={`${item.products.name} - Unit ${item.tool_number || item.item_code}`}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : item.products.image_url ? (
                   <img 
                     src={item.products.image_url} 
                     alt={item.products.name}
@@ -359,9 +375,10 @@ const ProductItemDetail: React.FC = () => {
                   <span className="text-sm font-medium text-gray-700">QR Code</span>
                   <QrCode className="w-4 h-4 text-gray-500" />
                 </div>
-                <Button variant="outline" size="sm" className="w-full">
-                  View QR Code
-                </Button>
+                <SimpleQRCode 
+                  itemCode={item.tool_number || item.item_code}
+                  showAsButton={true}
+                />
               </div>
             </CardContent>
           </Card>
@@ -411,10 +428,14 @@ const ProductItemDetail: React.FC = () => {
                  <Edit className="w-4 h-4 mr-2" />
                  Edit Item Details
                </Button>
-               <Button variant="outline" className="w-full">
-                 <Camera className="w-4 h-4 mr-2" />
-                 Take Photo
-               </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setShowPhotoCapture(true)}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Take Photo
+                </Button>
              </CardContent>
            </Card>
          </div>
@@ -427,6 +448,15 @@ const ProductItemDetail: React.FC = () => {
            onClose={() => setShowMaintenanceHistory(false)}
            itemId={itemId!}
            itemCode={item.tool_number || item.item_code}
+         />
+       )}
+
+       {/* Photo Capture Modal */}
+       {showPhotoCapture && (
+         <UnitPhotoCapture
+           open={showPhotoCapture}
+           onClose={() => setShowPhotoCapture(false)}
+           itemId={itemId!}
          />
        )}
      </div>
