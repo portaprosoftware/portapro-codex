@@ -516,7 +516,7 @@ const ProductItemDetail: React.FC = () => {
                   onClick={() => setShowPhotoCapture(true)}
                 >
                   <Camera className="w-4 h-4 mr-2" />
-                  Take Photo
+                  Profile Photo
                 </Button>
                 <Button 
                   variant="outline" 
