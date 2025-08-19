@@ -495,7 +495,7 @@ const ProductItemDetail: React.FC = () => {
                   }}
                 >
                   <History className="w-4 h-4 mr-2" />
-                  View Maintenance History
+                  View Maintenance Details
                 </Button>
                 <Button 
                   variant="outline" 
