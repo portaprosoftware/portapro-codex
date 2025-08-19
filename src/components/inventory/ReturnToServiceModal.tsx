@@ -179,6 +179,85 @@ export const ReturnToServiceModal: React.FC<ReturnToServiceModalProps> = ({
             ))}
           </div>
 
+          {/* Completion Photos Section */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium">Completion Photos (Optional)</h4>
+            <p className="text-xs text-muted-foreground">Add up to 5 photos showing the completed repair work.</p>
+            
+            {completionPhotos.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {completionPhotos.map((photo, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={photo.preview}
+                      alt={`Completion photo ${index + 1}`}
+                      className="w-full h-20 object-cover rounded-lg border"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-1 right-1 h-5 w-5 p-0"
+                      onClick={() => removeCompletionPhoto(index)}
+                      type="button"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {completionPhotos.length < 5 && (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.capture = 'environment';
+                    input.onchange = (e) => handlePhotoFiles((e.target as HTMLInputElement).files);
+                    input.click();
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Camera
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.accept = 'image/*';
+                    input.onchange = (e) => handlePhotoFiles((e.target as HTMLInputElement).files);
+                    input.click();
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Repair Summary Section */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium">Repair Summary (Optional)</h4>
+            <Textarea
+              placeholder="Describe the work completed, parts replaced, or any notes about the repair..."
+              value={completionSummary}
+              onChange={(e) => setCompletionSummary(e.target.value)}
+              rows={3}
+            />
+          </div>
+
           <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
             <strong>Note:</strong> "Needs Repair" is disabled since these items are coming out of maintenance.
             If an item still needs repair, keep it in maintenance status instead.

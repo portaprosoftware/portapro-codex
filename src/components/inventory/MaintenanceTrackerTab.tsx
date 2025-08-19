@@ -14,6 +14,7 @@ import { MaintenanceItemActions } from "./MaintenanceItemActions";
 import { UnifiedMaintenanceItemModal } from "./UnifiedMaintenanceItemModal";
 import { ReturnToServiceModal, type ItemCondition } from "./ReturnToServiceModal";
 import { UnitNavigationDialog } from "./UnitNavigationDialog";
+import { MaintenanceHistorySection } from "./MaintenanceHistorySection";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -502,6 +503,9 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
           </div>
         )}
       </div>
+
+      {/* Maintenance History Section */}
+      <MaintenanceHistorySection productId={productId} />
 
       {/* Modal */}
       {selectedItem && (
