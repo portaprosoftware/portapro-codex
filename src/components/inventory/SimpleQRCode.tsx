@@ -133,8 +133,7 @@ export const SimpleQRCode: React.FC<SimpleQRCodeProps> = ({
               </div>
               
               <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Item Code: {itemCode}</p>
-                <p className="text-xs text-gray-500">QR Data: {qrData}</p>
+                <p className="text-sm text-gray-600">Unit Code: {itemCode}</p>
               </div>
 
               <Button 
@@ -164,8 +163,7 @@ export const SimpleQRCode: React.FC<SimpleQRCodeProps> = ({
       </div>
       
       <div className="text-center">
-        <p className="text-sm text-gray-600 mb-2">Item Code: {itemCode}</p>
-        <p className="text-xs text-gray-500">QR Data: {qrData}</p>
+        <p className="text-sm text-gray-600">Unit Code: {itemCode}</p>
       </div>
 
       <Button 
