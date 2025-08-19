@@ -153,11 +153,26 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     }
   }, [itemAttributes]);
 
+  // Auto-set condition to "needs_repair" when status is set to "maintenance"
+  React.useEffect(() => {
+    if (formData.status === "maintenance" && formData.condition !== "needs_repair") {
+      setFormData(prev => ({ ...prev, condition: "needs_repair" }));
+      toast.info("Condition automatically set to 'Needs Repair' for maintenance items");
+    }
+  }, [formData.status]);
+
   const updateMutation = useMutation({
     mutationFn: async (data: { updateData: typeof formData; recordTransfer?: boolean; transferNotes?: string }) => {
       const { updateData, recordTransfer, transferNotes } = data;
       
-      // Note: Storage location validation removed for maintenance status per user request
+      console.log('EditItemModal mutation starting with data:', {
+        updateData,
+        recordTransfer,
+        transferNotes,
+        status: updateData.status
+      });
+      
+      // Storage location is optional for maintenance status
 
       // Validate required attributes
       const requiredAttributes = productAttributes.filter(attr => attr.is_required);
@@ -295,8 +310,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       formData
     });
     
-    // Skip location confirmation dialog when setting status to maintenance
-    if (locationChanged && formData.status !== "maintenance") {
+    // Skip location confirmation dialog when setting status to maintenance or when no actual location change required
+    if (locationChanged && formData.status !== "maintenance" && formData.current_storage_location_id) {
       // Fetch location names for the confirmation dialog
       try {
         const locations = [];
@@ -332,7 +347,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       }
     } else {
       // No location change or maintenance status, proceed directly
-      const recordTransfer = locationChanged && formData.status === "maintenance";
+      // For maintenance status, storage location is optional
+      const recordTransfer = locationChanged && formData.status === "maintenance" && !!formData.current_storage_location_id;
       updateMutation.mutate({ updateData: formData, recordTransfer });
     }
   };
@@ -401,13 +417,12 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           {/* Basic Information */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="status">Status {formData.status === "maintenance" ? "(Auto-locked)" : ""}</Label>
+              <Label htmlFor="status">Status</Label>
               <Select 
                 value={formData.status} 
                 onValueChange={(value) => handleInputChange("status", value)}
-                disabled={formData.status === "maintenance"}
               >
-                <SelectTrigger className={formData.status === "maintenance" ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : ""}>
+                <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -417,13 +432,15 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   <SelectItem value="out_of_service">Permanently Retired</SelectItem>
                 </SelectContent>
               </Select>
-              {formData.status === "maintenance" && (
-                <p className="text-xs text-muted-foreground mt-1">Status locked while unit is in maintenance</p>
-              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="condition">Condition {formData.status === "maintenance" ? "(Auto-locked)" : ""}</Label>
+              <Label htmlFor="condition">
+                Condition 
+                {formData.status === "maintenance" && (
+                  <Badge variant="secondary" className="ml-2 text-xs">Auto-set for maintenance</Badge>
+                )}
+              </Label>
               <Select 
                 value={formData.condition} 
                 onValueChange={(value) => handleInputChange("condition", value)}
@@ -441,20 +458,25 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                 </SelectContent>
               </Select>
               {formData.status === "maintenance" && (
-                <p className="text-xs text-muted-foreground mt-1">Condition locked while unit is in maintenance</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Condition automatically set to "Needs Repair" for maintenance items
+                </p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="storage_location">
-              Storage Location {formData.status === "maintenance" ? "(Locked - update from maintenance tracker)" : ""}
+              Storage Location 
+              {formData.status === "maintenance" && (
+                <Badge variant="outline" className="ml-2 text-xs">Optional for maintenance</Badge>
+              )}
             </Label>
             <StorageLocationSelector
               value={formData.current_storage_location_id}
               onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
-              placeholder={formData.status === "maintenance" ? "Locked during maintenance" : "Select storage location"}
-              disabled={formData.status === "maintenance"}
+              placeholder={formData.status === "maintenance" ? "Optional for maintenance items" : "Select storage location"}
+              disabled={false}
             />
             {formData.status === "maintenance" && (
               <p className="text-xs text-muted-foreground">Storage location is locked during maintenance. Update from the maintenance tracker to change location.</p>
