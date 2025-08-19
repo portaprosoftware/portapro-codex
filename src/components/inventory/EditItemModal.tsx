@@ -157,10 +157,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     mutationFn: async (data: { updateData: typeof formData; recordTransfer?: boolean; transferNotes?: string }) => {
       const { updateData, recordTransfer, transferNotes } = data;
       
-      // Validate storage location for maintenance status
-      if (updateData.status === "maintenance" && !updateData.current_storage_location_id) {
-        throw new Error("Storage location is required when setting status to maintenance");
-      }
+      // Note: Storage location validation removed for maintenance status per user request
 
       // Validate required attributes
       const requiredAttributes = productAttributes.filter(attr => attr.is_required);
@@ -288,6 +285,15 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     const originalLocation = item?.current_storage_location_id;
     const newLocation = formData.current_storage_location_id;
     const locationChanged = originalLocation !== newLocation;
+    
+    console.log('EditItemModal handleSubmit:', {
+      originalLocation,
+      newLocation,
+      locationChanged,
+      currentStatus: item?.status,
+      newStatus: formData.status,
+      formData
+    });
     
     // Skip location confirmation dialog when setting status to maintenance
     if (locationChanged && formData.status !== "maintenance") {
