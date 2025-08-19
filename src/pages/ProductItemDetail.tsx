@@ -169,9 +169,9 @@ const ProductItemDetail: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units`)}
+              onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units&toolNumberToFind=${item.tool_number || item.item_code}`)}
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-1" />
               Back to Product
             </Button>
             <div>
@@ -189,7 +189,7 @@ const ProductItemDetail: React.FC = () => {
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-blue-600 hover:text-blue-800"
-                  onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units`)}
+                  onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units&toolNumberToFind=${item.tool_number || item.item_code}`)}
                 >
                   {item.products.name}
                 </Button>
