@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package, Images, X } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package, Images, X, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
@@ -103,43 +102,8 @@ const ProductItemDetail: React.FC = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  // Helper function to update condition
-  const handleConditionChange = async (newCondition: string) => {
-    try {
-      const { error } = await supabase
-        .from('product_items')
-        .update({ condition: newCondition })
-        .eq('id', itemId);
-      
-      if (error) throw error;
-      
-      // Invalidate query to refresh data
-      queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
-      
-      toast({
-        title: "Condition Updated",
-        description: `Unit condition changed to ${capitalizeFirstLetter(newCondition)}`,
-      });
-    } catch (error) {
-      console.error('Update error:', error);
-      toast({
-        title: "Update Failed",
-        description: "Failed to update condition. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Condition options - matching UnifiedMaintenanceItemModal exactly
-  const conditionOptions = [
-    { value: "new", label: "New" },
-    { value: "excellent", label: "Excellent" },
-    { value: "good", label: "Good" },
-    { value: "fair", label: "Fair" },
-    { value: "poor", label: "Poor" },
-    { value: "needs_repair", label: "Needs Repair" },
-    { value: "damaged", label: "Damaged" }
-  ];
+  // Check if any OCR tracking data exists
+  const hasTrackingData = item?.tool_number || item?.vendor_id || item?.plastic_code || item?.manufacturing_date || item?.mold_cavity;
 
   const getStatusVariant = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -330,6 +294,70 @@ const ProductItemDetail: React.FC = () => {
             </CardContent>
           </Card>
 
+          {/* Tool Tracking Information Card - Read Only */}
+          {hasTrackingData && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Tool Tracking Information
+                  {item.tool_number && (
+                    <Badge variant="outline" className="ml-2">
+                      {item.tool_number}
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Tool Number</label>
+                    <p className="text-base font-mono text-gray-900 mt-1">
+                      {item.tool_number || "Not detected"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Vendor ID</label>
+                    <p className="text-base font-mono text-gray-900 mt-1">
+                      {item.vendor_id || "Not detected"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Plastic Code</label>
+                    <p className="text-base text-gray-900 mt-1">
+                      {item.plastic_code || "Not detected"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Mfg Date</label>
+                    <p className="text-base text-gray-900 mt-1">
+                      {item.manufacturing_date 
+                        ? new Date(item.manufacturing_date).toLocaleDateString()
+                        : "Not detected"
+                      }
+                    </p>
+                  </div>
+                  {item.mold_cavity && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Mold Cavity</label>
+                      <p className="text-base text-gray-900 mt-1">{item.mold_cavity}</p>
+                    </div>
+                  )}
+                </div>
+                
+                {item.ocr_confidence_score && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-500">OCR Confidence:</label>
+                      <Badge variant={item.ocr_confidence_score >= 80 ? "completed" : item.ocr_confidence_score >= 60 ? "warning" : "pending"}>
+                        {item.ocr_confidence_score}%
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Unit Details */}
           <Card>
@@ -350,23 +378,14 @@ const ProductItemDetail: React.FC = () => {
                   <p className="text-base font-mono text-gray-900">{item.item_code}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Vendor ID</label>
-                  <p className="text-base font-mono text-gray-900">{item.vendor_id || "Not assigned"}</p>
+                  <label className="text-sm font-medium text-gray-500">Current Location</label>
+                  <p className="text-base text-gray-900">{item.storage_location_name}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
-                  <Select value={item.condition || ""} onValueChange={handleConditionChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select condition" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {conditionOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Badge variant={getConditionVariant(item.condition)}>
+                    {capitalizeFirstLetter(item.condition || "Unknown")}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
