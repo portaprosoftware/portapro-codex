@@ -120,23 +120,9 @@ const ProductItemDetail: React.FC = () => {
     }
   };
 
-  const getConditionVariant = (condition: string) => {
-    switch (condition?.toLowerCase()) {
-      case "excellent":
-        return "completed";
-      case "good":
-        return "assigned";
-      case "fair":
-        return "warning";
-      case "poor":
-        return "warning";
-      case "needs_repair":
-        return "cancelled"; // Red gradient for needs repair
-      case "damaged":
-        return "cancelled";
-      default:
-        return "pending";
-    }
+  const getConditionVariant = (condition: string): "assigned" => {
+    // All condition badges use consistent gradient blue with bold white text
+    return "assigned"; // This uses bg-gradient-blue text-white
   };
 
   if (isLoading) {
