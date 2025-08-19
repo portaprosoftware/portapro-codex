@@ -294,6 +294,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
               <li>Ensure the unit is tracked (not bulk)</li>
               <li>Edit the unit, select "Maintenance", and save</li>
               <li>The unit will now appear on the Maintenance list and be excluded from active inventory counts</li>
+              <li>You can add updates, photos, track labor hours/costs, parts and more as maintenance progresses</li>
             </ul>
           </div>
         </div>
