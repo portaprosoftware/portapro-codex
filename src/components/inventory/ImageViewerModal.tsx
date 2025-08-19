@@ -88,7 +88,7 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-4xl w-full h-[90vh] p-0 bg-black/95"
+        className="max-w-4xl w-full h-[90vh] p-0 bg-black"
         hideTitle={true}
         hideCloseButton={true}
       >
