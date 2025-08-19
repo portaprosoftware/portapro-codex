@@ -129,6 +129,13 @@ export function LocationSelectionStep() {
     return newLocation.street && newLocation.city && newLocation.state && newLocation.zip;
   };
 
+  const getCustomAddress = () => {
+    if (state.data.special_instructions?.startsWith('Address: ')) {
+      return state.data.special_instructions.replace('Address: ', '');
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -331,7 +338,13 @@ export function LocationSelectionStep() {
                 <p>Using saved location: {serviceLocations.find(l => l.id === state.data.selected_coordinate_ids[0])?.location_name}</p>
               )}
               {state.data.selected_coordinate_ids.includes('new') && (
-                <p>New address location</p>
+                <div className="space-y-1">
+                  <p className="font-medium">Custom Address:</p>
+                  <p className="text-muted-foreground flex items-center gap-2">
+                    <MapPin className="h-3 w-3" />
+                    {getCustomAddress() || 'New address location'}
+                  </p>
+                </div>
               )}
             </div>
           </CardContent>
