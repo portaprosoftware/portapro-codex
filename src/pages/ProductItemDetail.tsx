@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
@@ -101,6 +102,43 @@ const ProductItemDetail: React.FC = () => {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
+
+  // Helper function to update condition
+  const handleConditionChange = async (newCondition: string) => {
+    try {
+      const { error } = await supabase
+        .from('product_items')
+        .update({ condition: newCondition })
+        .eq('id', itemId);
+      
+      if (error) throw error;
+      
+      // Invalidate query to refresh data
+      queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
+      
+      toast({
+        title: "Condition Updated",
+        description: `Unit condition changed to ${capitalizeFirstLetter(newCondition)}`,
+      });
+    } catch (error) {
+      console.error('Update error:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update condition. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Condition options
+  const conditionOptions = [
+    { value: "excellent", label: "Excellent" },
+    { value: "good", label: "Good" },
+    { value: "fair", label: "Fair" },
+    { value: "poor", label: "Poor" },
+    { value: "needs_repair", label: "Needs Repair" },
+    { value: "damaged", label: "Damaged" }
+  ];
 
   const getStatusVariant = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -310,20 +348,25 @@ const ProductItemDetail: React.FC = () => {
                   <label className="text-sm font-medium text-gray-500">Item Code</label>
                   <p className="text-base font-mono text-gray-900">{item.item_code}</p>
                 </div>
-                {item.vendor_id && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Vendor ID</label>
-                    <p className="text-base font-mono text-gray-900">{item.vendor_id}</p>
-                  </div>
-                )}
-                {item.condition && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
-                    <Badge variant={getConditionVariant(item.condition)}>
-                      {capitalizeFirstLetter(item.condition)}
-                    </Badge>
-                  </div>
-                )}
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Vendor ID</label>
+                  <p className="text-base font-mono text-gray-900">{item.vendor_id || "Not assigned"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
+                  <Select value={item.condition || ""} onValueChange={handleConditionChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {conditionOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
