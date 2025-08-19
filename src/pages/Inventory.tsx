@@ -74,12 +74,13 @@ const Inventory: React.FC = () => {
     }
   }, [location.pathname, location.search]);
 
-  // Redirect /inventory to /inventory/products
+  // Redirect /inventory to /inventory/products while preserving search params
   useEffect(() => {
     if (location.pathname === '/inventory') {
-      navigate('/inventory/products', { replace: true });
+      const searchParams = location.search;
+      navigate(`/inventory/products${searchParams}`, { replace: true });
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, location.search, navigate]);
 
   // Fetch count of inactive products (those with track_inventory = false)
   const { data: inactiveProductsCount = 0 } = useQuery({
