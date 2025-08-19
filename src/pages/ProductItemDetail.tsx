@@ -130,8 +130,9 @@ const ProductItemDetail: React.FC = () => {
     }
   };
 
-  // Condition options
+  // Condition options - matching UnifiedMaintenanceItemModal exactly
   const conditionOptions = [
+    { value: "new", label: "New" },
     { value: "excellent", label: "Excellent" },
     { value: "good", label: "Good" },
     { value: "fair", label: "Fair" },
