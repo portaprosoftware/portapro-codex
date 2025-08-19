@@ -28,6 +28,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     if (validateCurrentStep()) {
       nextStep();
     }
+    // Errors are already set in validateCurrentStep
   };
 
   const handlePrevious = () => {
@@ -151,36 +152,63 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           {renderCurrentStep()}
         </div>
 
-        <div className="p-4 border-t bg-muted/20 flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={isFirstStep}
-          >
-            Previous
-          </Button>
-
-          <div className="flex gap-2">
+        <div className="p-4 border-t bg-muted/20 flex flex-col">
+          {/* Validation errors above buttons */}
+          {Object.keys(state.errors).length > 0 && (
+            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-destructive text-xs font-medium">!</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-destructive mb-1">
+                    Please complete the following:
+                  </p>
+                  <ul className="text-sm text-destructive/80 space-y-1">
+                    {Object.entries(state.errors).map(([field, message]) => (
+                      <li key={field} className="flex items-start gap-2">
+                        <span className="w-1 h-1 rounded-full bg-destructive/60 flex-shrink-0 mt-2"></span>
+                        {message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Navigation buttons */}
+          <div className="flex justify-between">
             <Button
               variant="outline"
-              onClick={onClose}
+              onClick={handlePrevious}
+              disabled={isFirstStep}
             >
-              Cancel
+              Previous
             </Button>
-            
-            {isLastStep ? (
+
+            <div className="flex gap-2">
               <Button
-                onClick={handleCreateJob}
-                disabled={createJobMutation.isPending}
-                className="min-w-[120px]"
+                variant="outline"
+                onClick={onClose}
               >
-                {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
+                Cancel
               </Button>
-            ) : (
-              <Button onClick={handleNext}>
-                Next
-              </Button>
-            )}
+              
+              {isLastStep ? (
+                <Button
+                  onClick={handleCreateJob}
+                  disabled={createJobMutation.isPending}
+                  className="min-w-[120px]"
+                >
+                  {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
+                </Button>
+              ) : (
+                <Button onClick={handleNext}>
+                  Next
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
