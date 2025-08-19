@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
 import { MaintenancePhotoUpload } from "./MaintenancePhotoUpload";
+import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 
 interface StorageLocation { id: string; name: string }
 
@@ -34,6 +35,12 @@ interface MaintenanceUpdateForm {
   parts_cost: string;
   parts_used: string;
   technician_name: string;
+}
+
+interface UpdatePhoto {
+  file: File;
+  preview: string;
+  caption: string;
 }
 
 export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalProps> = ({
@@ -146,9 +153,40 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     technician_name: "",
   });
 
+  const [updatePhotos, setUpdatePhotos] = useState<UpdatePhoto[]>([]);
+
   const addUpdateMutation = useMutation({
     mutationFn: async (data: MaintenanceUpdateForm) => {
       if (!itemId) return;
+      
+      // Upload photos first if any
+      let attachments: any[] = [];
+      if (updatePhotos.length > 0) {
+        const photoPromises = updatePhotos.map(async (photo, index) => {
+          const fileExt = photo.file.name.split('.').pop();
+          const fileName = `update-${itemId}-${Date.now()}-${index}.${fileExt}`;
+          const filePath = `unit-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('unit-photos')
+            .upload(filePath, photo.file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('unit-photos')
+            .getPublicUrl(filePath);
+
+          return {
+            type: 'photo',
+            url: publicUrl,
+            caption: photo.caption || null,
+            filename: photo.file.name
+          };
+        });
+
+        attachments = await Promise.all(photoPromises);
+      }
       
       // Calculate total cost from labor + parts
       const laborCost = data.labor_cost ? parseFloat(data.labor_cost) : 0;
@@ -171,6 +209,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           cost_amount: totalCost,
           parts_used: partsUsedArray,
           technician_name: data.technician_name || null,
+          attachments: attachments.length > 0 ? attachments : null,
         });
       if (error) throw error;
     },
@@ -188,6 +227,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         parts_used: "",
         technician_name: "",
       });
+      setUpdatePhotos([]);
     },
     onError: (err) => {
       console.error(err);
@@ -513,7 +553,17 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     />
                   </div>
                 </div>
-                <div className="flex justify-end">
+                
+                {/* Photo Upload Section */}
+                <div className="pt-3 border-t">
+                  <MaintenanceUpdatePhotos 
+                    photos={updatePhotos}
+                    onPhotosChange={setUpdatePhotos}
+                    maxPhotos={2}
+                  />
+                </div>
+
+                <div className="flex justify-end pt-3">
                   <Button
                     onClick={() => {
                       console.log("Add Update button clicked", updateForm); // Debug log
@@ -577,6 +627,27 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                <div className="text-sm font-medium mb-2">{update.title}</div>
                              )}
                              <div className="text-sm mb-3 line-clamp-2">{update.description}</div>
+                             
+                             {/* Display attached photos */}
+                             {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
+                               <div className="flex gap-2 mb-3">
+                                 {update.attachments.filter((att: any) => att.type === 'photo').map((photo: any, index: number) => (
+                                   <div key={index} className="relative">
+                                     <img
+                                       src={photo.url}
+                                       alt={photo.caption || `Update photo ${index + 1}`}
+                                       className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80"
+                                       onClick={() => window.open(photo.url, '_blank')}
+                                     />
+                                     {photo.caption && (
+                                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b truncate">
+                                         {photo.caption}
+                                       </div>
+                                     )}
+                                   </div>
+                                 ))}
+                               </div>
+                             )}
                            </div>
                            <div className="space-y-1">
                              {update.technician_name && (
