@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package, Images, X, Target } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package, Images, X, Target, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { EditItemModal } from "@/components/inventory/EditItemModal";
 import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
 import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
 import { UnitPhotoGallery } from "@/components/inventory/UnitPhotoGallery";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const ProductItemDetail: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -27,6 +28,7 @@ const ProductItemDetail: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showPhotoGallery, setShowPhotoGallery] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ["product-item", itemId],
@@ -447,10 +449,14 @@ const ProductItemDetail: React.FC = () => {
                   <span className="text-sm font-medium text-gray-700">QR Code</span>
                   <QrCode className="w-4 h-4 text-gray-500" />
                 </div>
-                <SimpleQRCode 
-                  itemCode={item.tool_number || item.item_code}
-                  showAsButton={true}
-                />
+                <Button
+                  variant="outline"
+                  onClick={() => setShowQRCode(true)}
+                  className="w-full flex items-center gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  View QR Code
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -568,6 +574,23 @@ const ProductItemDetail: React.FC = () => {
             itemId={itemId!}
             itemCode={item.tool_number || item.item_code}
           />
+        )}
+
+        {/* QR Code Modal */}
+        {showQRCode && (
+          <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>QR Code - {item.tool_number || item.item_code}</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center p-6">
+                <SimpleQRCode 
+                  itemCode={item.tool_number || item.item_code}
+                  showAsButton={false}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
      </div>
    );
