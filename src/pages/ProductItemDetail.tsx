@@ -279,42 +279,6 @@ const ProductItemDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Technical Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Technical Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                {item.vendor_id && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Vendor ID</label>
-                    <p className="text-base font-mono text-gray-900">{item.vendor_id}</p>
-                  </div>
-                )}
-                {item.plastic_code && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Plastic Code</label>
-                    <p className="text-base font-mono text-gray-900">{item.plastic_code}</p>
-                  </div>
-                )}
-                {item.manufacturing_date && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Manufacturing Date</label>
-                    <p className="text-base text-gray-900">
-                      {new Date(item.manufacturing_date).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
-                {item.mold_cavity && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Mold Cavity</label>
-                    <p className="text-base font-mono text-gray-900">{item.mold_cavity}</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Unit Details */}
           <Card>

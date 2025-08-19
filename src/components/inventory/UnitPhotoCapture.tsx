@@ -110,16 +110,11 @@ export const UnitPhotoCapture: React.FC<UnitPhotoCaptureProps> = ({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Take Unit Photo</span>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle>Take Unit Photo</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Hidden file input */}
+          {/* Hidden file inputs */}
           <Input
             ref={fileInputRef}
             type="file"
@@ -127,6 +122,13 @@ export const UnitPhotoCapture: React.FC<UnitPhotoCaptureProps> = ({
             capture="environment"
             onChange={handleFileSelect}
             className="hidden"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+            id="upload-input"
           />
 
           {/* Photo preview or camera trigger */}
@@ -173,14 +175,29 @@ export const UnitPhotoCapture: React.FC<UnitPhotoCaptureProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              <div 
-                onClick={triggerFileInput}
-                className="w-full h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
-              >
+              <div className="w-full h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center">
                 <Camera className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="text-sm text-muted-foreground text-center">
-                  Tap to take photo of this unit
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Take photo of this unit
                 </p>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={triggerFileInput}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Camera className="w-4 h-4" />
+                    Take Photo
+                  </Button>
+                  <Button 
+                    onClick={() => document.getElementById('upload-input')?.click()}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload
+                  </Button>
+                </div>
               </div>
             </div>
           )}
