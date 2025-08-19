@@ -514,14 +514,17 @@ const ProductItemDetail: React.FC = () => {
                   <Wrench className="w-4 h-4 mr-2" />
                   Add Maintenance Update
                 </Button>
-               <Button variant="outline" className="w-full">
-                 <MoveRight className="w-4 h-4 mr-2" />
-                 Transfer Location
-               </Button>
-               <Button variant="outline" className="w-full">
-                 <Edit className="w-4 h-4 mr-2" />
-                 Edit Item Details
-               </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setMaintenanceModalTab("details");
+                    setShowMaintenanceModal(true);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Update Details & Location
+                </Button>
                 <Button 
                   variant="outline" 
                   className="w-full"
