@@ -200,7 +200,7 @@ const ProductItemDetail: React.FC = () => {
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-blue-600 hover:text-blue-800"
-                  onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}&tab=units&toolNumberToFind=${item.tool_number || item.item_code}`)}
+                  onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}`)}
                 >
                   {item.products.name}
                 </Button>
