@@ -119,8 +119,9 @@ export const SimpleMaintenancePhotoUpload: React.FC<SimpleMaintenancePhotoUpload
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Image className="w-4 h-4" />
-        <h4 className="font-medium">Maintenance Photos ({totalPhotos}/{maxPhotos})</h4>
+        <h4 className="font-medium">Initial Repair Photos ({totalPhotos}/{maxPhotos})</h4>
       </div>
+      <p className="text-sm text-muted-foreground">Add up to 5 images of the initial damage.</p>
 
       {/* Existing Saved Photos (Read-only) */}
       {existingPhotos.length > 0 && (
