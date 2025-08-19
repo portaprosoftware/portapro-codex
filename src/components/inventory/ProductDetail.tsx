@@ -192,7 +192,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         {/* Desktop/Tablet - 2 rows of 3 pills */}
         <div className="hidden sm:block mb-6">
           <div className="space-y-3">
-            {/* First Row */}
+            {/* First Row: Overview, Site Stock, Tracked Units */}
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
               {tabs.slice(0, 3).map((tab) => {
                 const IconComponent = tab.icon;
@@ -205,7 +205,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
                     <IconComponent className="w-4 h-4 flex-shrink-0" />
                     <span>{tab.label}</span>
                     {tab.badge !== null && tab.badge !== undefined && (
-                      <Badge className="ml-1 flex-shrink-0 bg-white/20 text-white border-white/30 text-xs px-2 py-1">
+                      <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
                         {tab.badge}
                       </Badge>
                     )}
@@ -214,7 +214,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
               })}
             </TabsList>
             
-            {/* Second Row */}
+            {/* Second Row: Compliance, Maintenance, Variations */}
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
               {tabs.slice(3, 6).map((tab) => {
                 const IconComponent = tab.icon;
@@ -227,7 +227,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
                     <IconComponent className="w-4 h-4 flex-shrink-0" />
                     <span>{tab.label}</span>
                     {tab.badge !== null && tab.badge !== undefined && (
-                      <Badge className="ml-1 flex-shrink-0 bg-white/20 text-white border-white/30 text-xs px-2 py-1">
+                      <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
                         {tab.badge}
                       </Badge>
                     )}
