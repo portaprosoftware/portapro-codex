@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
@@ -14,6 +14,7 @@ import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ProductsServicesStep } from './steps/ProductsServicesStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
 import { supabase } from '@/integrations/supabase/client';
+import { JobExitConfirmation } from './JobExitConfirmation';
 
 interface NewJobWizardProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface NewJobWizardProps {
 function WizardContent({ onClose }: { onClose: () => void }) {
   const { state, nextStep, previousStep, validateCurrentStep, reset } = useJobWizard();
   const createJobMutation = useCreateJob();
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
   const handleNext = () => {
     if (validateCurrentStep()) {
@@ -190,7 +192,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={onClose}
+                onClick={() => setShowExitConfirmation(true)}
               >
                 Cancel
               </Button>
@@ -212,6 +214,15 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
+      
+      <JobExitConfirmation
+        isOpen={showExitConfirmation}
+        onClose={() => setShowExitConfirmation(false)}
+        onConfirm={() => {
+          reset();
+          onClose();
+        }}
+      />
     </div>
   );
 }
