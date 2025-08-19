@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 interface AddFuelLogModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  preselectedVehicleId?: string;
 }
 
 interface Vehicle {
@@ -39,10 +40,11 @@ interface FuelStation {
 
 export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   open,
-  onOpenChange
+  onOpenChange,
+  preselectedVehicleId = ""
 }) => {
   const [formData, setFormData] = useState({
-    vehicle_id: '',
+    vehicle_id: preselectedVehicleId,
     driver_id: '',
     log_date: new Date(),
     odometer_reading: '',
@@ -153,7 +155,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
       queryClient.invalidateQueries({ queryKey: ['recent-fuel-logs'] });
       onOpenChange(false);
       setFormData({
-        vehicle_id: '',
+        vehicle_id: preselectedVehicleId,
         driver_id: '',
         log_date: new Date(),
         odometer_reading: '',

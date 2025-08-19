@@ -26,6 +26,7 @@ interface AddWorkOrderDrawerProps {
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   defaultDueDate?: string;
+  preselectedAssetId?: string;
 }
 
 interface WorkOrderForm {
@@ -48,13 +49,14 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   open,
   onOpenChange,
   onSuccess,
-  defaultDueDate
+  defaultDueDate,
+  preselectedAssetId = ""
 }) => {
   const { toast } = useToast();
   
   const [form, setForm] = useState<WorkOrderForm>({
     source: 'breakdown',
-    asset_id: '',
+    asset_id: preselectedAssetId,
     asset_type: 'vehicle',
     priority: 'normal',
     assignee_id: '',
@@ -137,7 +139,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       // Reset form
       setForm({
         source: 'breakdown',
-        asset_id: '',
+        asset_id: preselectedAssetId,
         asset_type: 'vehicle',
         priority: 'normal',
         assignee_id: '',

@@ -23,8 +23,13 @@ import {
   X,
   AlertTriangle,
   Camera,
-  Trash2
+  Trash2,
+  Plus
 } from "lucide-react";
+import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
+import { AddFuelLogModal } from "./fuel/AddFuelLogModal";
+import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
+import { DocumentUploadModal } from "./DocumentUploadModal";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -62,6 +67,13 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
   const [damageDescription, setDamageDescription] = useState("");
   const [damageSeverity, setDamageSeverity] = useState("minor");
   const [isUploadingDamage, setIsUploadingDamage] = useState(false);
+  
+  // Modal states for add functionality
+  const [addMaintenanceOpen, setAddMaintenanceOpen] = useState(false);
+  const [addFuelLogOpen, setAddFuelLogOpen] = useState(false);
+  const [addWorkOrderOpen, setAddWorkOrderOpen] = useState(false);
+  const [addDocumentOpen, setAddDocumentOpen] = useState(false);
+  
   const queryClient = useQueryClient();
 
   // Query damage logs
@@ -651,11 +663,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
 
           <TabsContent value="maintenance">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Wrench className="w-5 h-5" />
                   Maintenance History
                 </CardTitle>
+                <Button
+                  onClick={() => setAddMaintenanceOpen(true)}
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Maintenance
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-500 text-center py-8">No maintenance records found</p>
@@ -665,11 +685,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
 
           <TabsContent value="fuel">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Fuel className="w-5 h-5" />
                   Fuel Logs
                 </CardTitle>
+                <Button
+                  onClick={() => setAddFuelLogOpen(true)}
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Fuel Log
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-500 text-center py-8">No fuel logs found</p>
@@ -679,11 +707,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
 
           <TabsContent value="assignments">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
                   Daily Assignments
                 </CardTitle>
+                <Button
+                  onClick={() => setAddWorkOrderOpen(true)}
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Work Order
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-500 text-center py-8">No assignments found</p>
@@ -823,11 +859,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
 
           <TabsContent value="documents">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   Compliance Documents
                 </CardTitle>
+                <Button
+                  onClick={() => setAddDocumentOpen(true)}
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Upload Documents
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-500 text-center py-8">No documents found</p>
@@ -836,6 +880,48 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
           </TabsContent>
         </Tabs>
       </DialogContent>
+      
+      {/* Add functionality modals */}
+      <AddMaintenanceRecordModal
+        open={addMaintenanceOpen}
+        onOpenChange={setAddMaintenanceOpen}
+        preselectedVehicleId={vehicle.id}
+      />
+      
+      <AddFuelLogModal
+        open={addFuelLogOpen}
+        onOpenChange={setAddFuelLogOpen}
+        preselectedVehicleId={vehicle.id}
+      />
+      
+      <AddWorkOrderDrawer
+        open={addWorkOrderOpen}
+        onOpenChange={setAddWorkOrderOpen}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["work-orders"] });
+          queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+        }}
+        preselectedAssetId={vehicle.id}
+      />
+      
+      {addDocumentOpen && (
+        <DocumentUploadModal
+          vehicles={[{ id: vehicle.id, license_plate: vehicle.license_plate, make: vehicle.make || "", model: vehicle.model || "" }]}
+          categories={[
+            { name: "Insurance", icon: "shield", color: "#3b82f6", description: "Insurance documents" },
+            { name: "Registration", icon: "file-text", color: "#10b981", description: "Vehicle registration" },
+            { name: "Inspection", icon: "search", color: "#f59e0b", description: "Safety inspections" },
+            { name: "Maintenance", icon: "wrench", color: "#ef4444", description: "Maintenance records" }
+          ]}
+          trigger={
+            <div style={{ display: 'none' }}>
+              <Button onClick={() => setAddDocumentOpen(false)}>
+                Close
+              </Button>
+            </div>
+          }
+        />
+      )}
     </Dialog>
   );
 };

@@ -17,13 +17,15 @@ import { toast } from "sonner";
 interface AddMaintenanceRecordModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  preselectedVehicleId?: string;
 }
 
 export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps> = ({
   open,
   onOpenChange,
+  preselectedVehicleId = "",
 }) => {
-  const [vehicleId, setVehicleId] = useState("");
+  const [vehicleId, setVehicleId] = useState(preselectedVehicleId);
   const [taskTypeId, setTaskTypeId] = useState("");
   const [vendorId, setVendorId] = useState("");
   const [description, setDescription] = useState("");
@@ -99,7 +101,7 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
   });
 
   const resetForm = () => {
-    setVehicleId("");
+    setVehicleId(preselectedVehicleId);
     setTaskTypeId("");
     setVendorId("");
     setDescription("");
