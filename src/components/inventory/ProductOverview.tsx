@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -45,6 +46,7 @@ interface ProductOverviewProps {
 
 export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDeleted }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   // Use unified stock management system
   const {
@@ -326,14 +328,24 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          <Button 
-            variant="outline" 
-            className="text-blue-600 border-blue-600 hover:bg-blue-50"
-            onClick={() => setShowStockHistory(true)}
-          >
-            <History className="w-4 h-4 mr-2" />
-            View Stock History
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              onClick={() => setShowStockHistory(true)}
+            >
+              <History className="w-4 h-4 mr-2" />
+              View Stock History
+            </Button>
+            <Button 
+              variant="outline" 
+              className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              onClick={() => navigate(`/inventory/products/${product.id}?tab=units`)}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              View Individual Units
+            </Button>
+          </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
               <span className="text-sm font-medium text-gray-600">Master Total Stock</span>

@@ -1,18 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
+import { MaintenanceHistoryModal } from "@/components/inventory/MaintenanceHistoryModal";
 
 const ProductItemDetail: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Modal states
+  const [showMaintenanceHistory, setShowMaintenanceHistory] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ["product-item", itemId],
@@ -151,12 +156,34 @@ const ProductItemDetail: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate("/inventory")}
+              onClick={() => navigate(`/inventory/products/${item.product_id}`)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Inventory
+              Back to Product
             </Button>
             <div>
+              {/* Breadcrumb */}
+              <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-blue-600 hover:text-blue-800"
+                  onClick={() => navigate("/inventory")}
+                >
+                  <Home className="w-3 h-3 mr-1" />
+                  Inventory
+                </Button>
+                <ChevronRight className="w-3 h-3" />
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-blue-600 hover:text-blue-800"
+                  onClick={() => navigate(`/inventory/products/${item.product_id}`)}
+                >
+                  {item.products.name}
+                </Button>
+                <ChevronRight className="w-3 h-3" />
+                <span className="text-gray-700 font-medium">Individual Unit</span>
+              </div>
+              
               <h1 className="text-2xl font-semibold text-gray-900 font-inter">
                 {item.products.name}
               </h1>
@@ -181,6 +208,11 @@ const ProductItemDetail: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Details */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Activity Timeline */}
+          <UnitActivityTimeline 
+            itemId={itemId!} 
+            itemCode={item.tool_number || item.item_code} 
+          />
           {/* Product Information */}
           <Card>
             <CardHeader>
@@ -347,30 +379,52 @@ const ProductItemDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full">
-                <Calendar className="w-4 h-4 mr-2" />
-                View History
-              </Button>
-              <Button variant="outline" className="w-full">
-                <Settings className="w-4 h-4 mr-2" />
-                Edit Details
-              </Button>
-              <Button variant="outline" className="w-full">
-                <Camera className="w-4 h-4 mr-2" />
-                Take Photo
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-};
+           {/* Actions */}
+           <Card>
+             <CardHeader>
+               <CardTitle>Actions</CardTitle>
+             </CardHeader>
+             <CardContent className="space-y-3">
+               <Button 
+                 variant="outline" 
+                 className="w-full"
+                 onClick={() => setShowMaintenanceHistory(true)}
+               >
+                 <History className="w-4 h-4 mr-2" />
+                 View Maintenance History
+               </Button>
+               <Button variant="outline" className="w-full">
+                 <Wrench className="w-4 h-4 mr-2" />
+                 Add Maintenance Update
+               </Button>
+               <Button variant="outline" className="w-full">
+                 <MoveRight className="w-4 h-4 mr-2" />
+                 Transfer Location
+               </Button>
+               <Button variant="outline" className="w-full">
+                 <Edit className="w-4 h-4 mr-2" />
+                 Edit Item Details
+               </Button>
+               <Button variant="outline" className="w-full">
+                 <Camera className="w-4 h-4 mr-2" />
+                 Take Photo
+               </Button>
+             </CardContent>
+           </Card>
+         </div>
+       </div>
+
+       {/* Maintenance History Modal */}
+       {showMaintenanceHistory && (
+         <MaintenanceHistoryModal
+           isOpen={showMaintenanceHistory}
+           onClose={() => setShowMaintenanceHistory(false)}
+           itemId={itemId!}
+           itemCode={item.tool_number || item.item_code}
+         />
+       )}
+     </div>
+   );
+ };
 
 export default ProductItemDetail;

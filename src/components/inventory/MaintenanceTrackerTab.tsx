@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface MaintenanceTrackerTabProps {
 
 export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ productId }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
@@ -305,7 +307,15 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                       )}
                     </Button>
                   </TableCell>
-                  <TableCell className="font-medium">{item.item_code}</TableCell>
+                   <TableCell>
+                     <Button 
+                       variant="link" 
+                       className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
+                       onClick={() => navigate(`/inventory/items/${item.id}`)}
+                     >
+                       {item.item_code}
+                     </Button>
+                   </TableCell>
                   <TableCell className="font-mono text-xs text-gray-600">
                     {item.tool_number || "—"}
                   </TableCell>

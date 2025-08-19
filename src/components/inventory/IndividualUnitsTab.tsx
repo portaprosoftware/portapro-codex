@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ interface IndividualUnitsTabProps {
 
 export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId, toolNumberToFind }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -416,7 +418,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                       )}
                     </Button>
                   </TableCell>
-                  <TableCell className="font-medium">{item.item_code}</TableCell>
+                   <TableCell>
+                     <Button 
+                       variant="link" 
+                       className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
+                       onClick={() => navigate(`/inventory/items/${item.id}`)}
+                     >
+                       {item.item_code}
+                     </Button>
+                   </TableCell>
                   <TableCell>{getStatusBadge(item.status)}</TableCell>
                   <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
                   <TableCell className="text-gray-600 font-mono text-xs">
