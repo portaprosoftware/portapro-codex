@@ -27,16 +27,23 @@ interface ProductDetailProps {
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind, initialTab }) => {
-  const [activeTab, setActiveTab] = useState(initialTab || (toolNumberToFind ? "units" : "overview"));
+  // Prioritize units tab when returning from unit detail or when explicitly set
+  const determineInitialTab = () => {
+    if (initialTab) return initialTab;
+    if (toolNumberToFind) return "units";
+    return "overview";
+  };
+  
+  const [activeTab, setActiveTab] = useState(determineInitialTab());
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   
-  // Update active tab when initialTab prop changes
+  // Update active tab when props change
   useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    }
-  }, [initialTab]);
+    const newTab = determineInitialTab();
+    console.log("ProductDetail: Setting tab to:", newTab, { initialTab, toolNumberToFind });
+    setActiveTab(newTab);
+  }, [initialTab, toolNumberToFind]);
   
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
