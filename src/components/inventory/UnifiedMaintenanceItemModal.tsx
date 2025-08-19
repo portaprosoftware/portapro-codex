@@ -352,11 +352,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               {/* Edit form */}
               <form onSubmit={handleItemSave} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Maintenance Details */}
+              {/* Repair Details */}
               <div className="bg-white border rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Wrench className="w-4 h-4" />
-                  <h4 className="font-medium">Maintenance Details</h4>
+                  <h4 className="font-medium">Repair Details</h4>
                 </div>
 
                 <div className="space-y-3">
