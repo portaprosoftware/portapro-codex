@@ -88,20 +88,20 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-4xl w-full h-[90vh] p-0 bg-black"
+        className="max-w-4xl w-full h-[90vh] p-0 bg-card"
         hideTitle={true}
         hideCloseButton={true}
       >
         <div className="relative w-full h-full flex flex-col">
           {/* Header with controls */}
-          <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/50 to-transparent p-4">
+          <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-background/90 to-transparent p-4">
             <div className="flex justify-between items-center">
-              <div className="text-white">
+              <div className="text-foreground">
                 <span className="text-sm">
                   {currentIndex + 1} of {photos.length}
                 </span>
                 {currentPhoto.caption && (
-                  <div className="text-sm text-gray-200 mt-1">
+                  <div className="text-sm text-muted-foreground mt-1">
                     {currentPhoto.caption}
                   </div>
                 )}
@@ -111,7 +111,7 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={handleDownload}
-                  className="text-white hover:bg-white/20"
+                  className="text-foreground hover:bg-accent"
                 >
                   <Download className="w-4 h-4" />
                 </Button>
@@ -119,7 +119,7 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  className="text-white hover:bg-white/20"
+                  className="text-foreground hover:bg-accent"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -144,7 +144,7 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={goToPrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-2"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground hover:bg-accent p-2"
               >
                 <ChevronLeft className="w-6 h-6" />
               </Button>
@@ -152,7 +152,7 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={goToNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground hover:bg-accent p-2"
               >
                 <ChevronRight className="w-6 h-6" />
               </Button>
@@ -161,14 +161,14 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
 
           {/* Thumbnail strip */}
           {photos.length > 1 && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-4">
               <div className="flex justify-center gap-2 overflow-x-auto">
                 {photos.map((photo, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
                     className={`flex-shrink-0 w-12 h-12 rounded border-2 overflow-hidden ${
-                      index === currentIndex ? 'border-white' : 'border-gray-400'
+                      index === currentIndex ? 'border-primary' : 'border-border'
                     }`}
                   >
                     <img
