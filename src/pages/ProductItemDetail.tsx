@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
-import { MaintenanceHistoryModal } from "@/components/inventory/MaintenanceHistoryModal";
+import { UnifiedMaintenanceItemModal } from "@/components/inventory/UnifiedMaintenanceItemModal";
 import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
 import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
 
@@ -19,7 +19,8 @@ const ProductItemDetail: React.FC = () => {
   const { toast } = useToast();
   
   // Modal states
-  const [showMaintenanceHistory, setShowMaintenanceHistory] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+  const [maintenanceModalTab, setMaintenanceModalTab] = useState<"details" | "update">("details");
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
@@ -76,6 +77,20 @@ const ProductItemDetail: React.FC = () => {
     },
     enabled: !!itemId,
     staleTime: 30 * 1000, // Cache for 30 seconds only
+  });
+
+  // Fetch storage locations for the maintenance modal
+  const { data: storageLocations } = useQuery({
+    queryKey: ["storage-locations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("storage_locations")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
   });
 
   // Helper function to capitalize first letter
@@ -379,18 +394,28 @@ const ProductItemDetail: React.FC = () => {
                <CardTitle>Actions</CardTitle>
              </CardHeader>
              <CardContent className="space-y-3">
-               <Button 
-                 variant="outline" 
-                 className="w-full"
-                 onClick={() => setShowMaintenanceHistory(true)}
-               >
-                 <History className="w-4 h-4 mr-2" />
-                 View Maintenance History
-               </Button>
-               <Button variant="outline" className="w-full">
-                 <Wrench className="w-4 h-4 mr-2" />
-                 Add Maintenance Update
-               </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setMaintenanceModalTab("details");
+                    setShowMaintenanceModal(true);
+                  }}
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  View Maintenance History
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setMaintenanceModalTab("update");
+                    setShowMaintenanceModal(true);
+                  }}
+                >
+                  <Wrench className="w-4 h-4 mr-2" />
+                  Add Maintenance Update
+                </Button>
                <Button variant="outline" className="w-full">
                  <MoveRight className="w-4 h-4 mr-2" />
                  Transfer Location
@@ -412,13 +437,15 @@ const ProductItemDetail: React.FC = () => {
          </div>
        </div>
 
-       {/* Maintenance History Modal */}
-       {showMaintenanceHistory && (
-         <MaintenanceHistoryModal
-           isOpen={showMaintenanceHistory}
-           onClose={() => setShowMaintenanceHistory(false)}
-           itemId={itemId!}
-           itemCode={item.tool_number || item.item_code}
+       {/* Unified Maintenance Modal */}
+       {showMaintenanceModal && (
+         <UnifiedMaintenanceItemModal
+           isOpen={showMaintenanceModal}
+           onClose={() => setShowMaintenanceModal(false)}
+           item={item}
+           productId={item.product_id}
+           storageLocations={storageLocations}
+           activeTab={maintenanceModalTab}
          />
        )}
 

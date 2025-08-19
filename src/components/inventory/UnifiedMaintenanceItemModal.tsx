@@ -21,6 +21,7 @@ interface UnifiedMaintenanceItemModalProps {
   item: any;
   productId: string;
   storageLocations: StorageLocation[] | undefined;
+  activeTab?: "details" | "update";
 }
 
 interface MaintenanceUpdateForm {
@@ -40,9 +41,15 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   item,
   productId,
   storageLocations,
+  activeTab: initialActiveTab = "details",
 }) => {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("details");
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
+
+  // Update active tab when initialActiveTab changes
+  useEffect(() => {
+    setActiveTab(initialActiveTab);
+  }, [initialActiveTab]);
 
   const [formData, setFormData] = useState({
     maintenance_reason: "",
@@ -251,7 +258,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "update")} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
               <TabsTrigger value="update">Add / View Progress Updates</TabsTrigger>
