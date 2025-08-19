@@ -49,7 +49,7 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
             <div className="text-left">
               <div className="font-medium">View Unit Profile</div>
               <div className="text-sm text-blue-700 opacity-80">
-                View detailed information, history, and specifications
+                View detailed information and history
               </div>
             </div>
           </Button>
@@ -63,7 +63,7 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
             <div className="text-left">
               <div className="font-medium">Edit Unit Details</div>
               <div className="text-sm text-green-700 opacity-80">
-                Modify status, condition, location, and other properties
+                Modify status, condition, and location
               </div>
             </div>
           </Button>
