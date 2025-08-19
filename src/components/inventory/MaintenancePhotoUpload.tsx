@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Camera, Upload, X, Plus, Trash2, Edit, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -206,20 +206,15 @@ export const MaintenancePhotoUpload: React.FC<MaintenancePhotoUploadProps> = ({
   };
 
   const handleCameraCapture = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files) {
-        handleFileSelect({ target } as any);
-      }
-    };
-    input.click();
+    console.log('Camera capture button clicked');
+    const input = document.getElementById(`maintenance-camera-${itemId}`) as HTMLInputElement;
+    if (input) {
+      input.click();
+    }
   };
 
   const handleUpload = () => {
+    console.log('Add Update button clicked', { selectedFiles, captions });
     if (selectedFiles.length === 0) return;
     uploadPhotosMutation.mutate({ files: selectedFiles, captions });
   };
@@ -309,7 +304,10 @@ export const MaintenancePhotoUpload: React.FC<MaintenancePhotoUploadProps> = ({
               Camera
             </Button>
             <Button
-              onClick={() => document.getElementById(`maintenance-upload-${itemId}`)?.click()}
+              onClick={() => {
+                console.log('Upload button clicked');
+                document.getElementById(`maintenance-upload-${itemId}`)?.click();
+              }}
               variant="outline"
               size="sm"
               className="flex-1"
@@ -319,6 +317,16 @@ export const MaintenancePhotoUpload: React.FC<MaintenancePhotoUploadProps> = ({
             </Button>
           </div>
 
+          {/* Hidden file inputs */}
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileSelect}
+            className="hidden"
+            id={`maintenance-camera-${itemId}`}
+          />
+          
           <input
             type="file"
             multiple
@@ -384,6 +392,9 @@ export const MaintenancePhotoUpload: React.FC<MaintenancePhotoUploadProps> = ({
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Photo Caption</DialogTitle>
+              <DialogDescription>
+                Update the caption for this maintenance photo
+              </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">

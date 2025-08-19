@@ -199,20 +199,20 @@ const ProductItemDetail: React.FC = () => {
                   Inventory
                 </Button>
                 <ChevronRight className="w-3 h-3" />
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto text-blue-600 hover:text-blue-800"
-                  onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}`)}
-                >
-                  {item.products.name}
-                </Button>
+                 <Button 
+                   variant="link" 
+                   className="p-0 h-auto text-blue-600 hover:text-blue-800"
+                   onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}`)}
+                 >
+                   {item.products?.name || 'Unknown Product'}
+                 </Button>
                 <ChevronRight className="w-3 h-3" />
                 <span className="text-gray-700 font-medium">Individual Unit</span>
               </div>
               
-              <h1 className="text-2xl font-semibold text-gray-900 font-inter">
-                {item.products.name}
-              </h1>
+               <h1 className="text-2xl font-semibold text-gray-900 font-inter">
+                 {item.products?.name || 'Unknown Product'}
+               </h1>
               <div className="flex items-center gap-4 mt-1">
                 <p className="text-base text-gray-600 font-inter">
                   Individual Unit: {item.tool_number || item.item_code}
@@ -255,18 +255,18 @@ const ProductItemDetail: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Product Name</label>
-                  <p className="text-base font-medium text-gray-900">{item.products.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Description</label>
-                  <p className="text-base text-gray-900">{item.products.description || "No description"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Rental Price</label>
-                  <p className="text-base font-medium text-gray-900">${item.products.default_price_per_day}/day</p>
-                </div>
+                 <div>
+                   <label className="text-sm font-medium text-gray-500">Product Name</label>
+                   <p className="text-base font-medium text-gray-900">{item.products?.name || 'Unknown Product'}</p>
+                 </div>
+                 <div>
+                   <label className="text-sm font-medium text-gray-500">Description</label>
+                   <p className="text-base text-gray-900">{item.products?.description || "No description"}</p>
+                 </div>
+                 <div>
+                   <label className="text-sm font-medium text-gray-500">Rental Price</label>
+                   <p className="text-base font-medium text-gray-900">${item.products?.default_price_per_day || 0}/day</p>
+                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Status</label>
                   <Badge variant={getStatusVariant(item.status)}>
@@ -390,11 +390,11 @@ const ProductItemDetail: React.FC = () => {
               <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative">
                 {item.tracking_photo_url ? (
                   <>
-                    <img 
-                      src={item.tracking_photo_url} 
-                      alt={`${item.products.name} - Unit ${item.tool_number || item.item_code}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
+                     <img 
+                       src={item.tracking_photo_url} 
+                       alt={`${item.products?.name || 'Unit'} - Unit ${item.tool_number || item.item_code}`}
+                       className="w-full h-full object-cover rounded-lg"
+                     />
                     <Button
                       size="sm"
                       variant="destructive"
@@ -428,7 +428,7 @@ const ProductItemDetail: React.FC = () => {
                       <X className="w-4 h-4" />
                     </Button>
                   </>
-                ) : item.products.image_url ? (
+                ) : item.products?.image_url ? (
                   <img 
                     src={item.products.image_url} 
                     alt={item.products.name}

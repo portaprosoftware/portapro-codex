@@ -273,7 +273,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Manage Unit • {item?.item_code}</DialogTitle>
-          <DialogDescription className="sr-only">Manage maintenance item details, location, and updates</DialogDescription>
+          <DialogDescription>
+            Manage maintenance item details, location, and updates for this unit
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
