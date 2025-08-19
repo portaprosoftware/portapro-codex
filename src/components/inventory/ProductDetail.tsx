@@ -31,6 +31,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   
+  // Update active tab when initialTab prop changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+  
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
     queryFn: async () => {
