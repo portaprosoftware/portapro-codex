@@ -215,17 +215,17 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   return (
     <div className="space-y-6">
       {/* Information Banner */}
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <div className="flex-shrink-0 w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
             <Wrench className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h4 className="font-medium text-blue-900 mb-2">Adding a Unit to Maintenance</h4>
-            <p className="text-sm text-blue-800 mb-3">
+            <h4 className="font-medium text-gray-900 mb-2">Adding a Unit to Maintenance</h4>
+            <p className="text-sm text-gray-700 mb-3">
               To add a unit to the maintenance tracker and temporarily remove it from inventory:
             </p>
-            <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
               <li>Ensure the unit is tracked (not bulk)</li>
               <li>Edit the unit, select "Maintenance", and save</li>
               <li>The unit will now appear on the Maintenance list and be excluded from active inventory counts</li>
