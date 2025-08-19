@@ -92,35 +92,93 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
 
   // Return item to service mutation
   const returnToServiceMutation = useMutation({
-    mutationFn: async (itemsWithConditions: Array<{ id: string; condition: ItemCondition }>) => {
-      const updates = itemsWithConditions.map(({ id, condition }) => ({
-        id,
-        status: "available",
-        condition,
-        maintenance_start_date: null,
-        maintenance_reason: null,
-        expected_return_date: null,
-        maintenance_notes: null
-      }));
+    mutationFn: async (payload: {
+      itemsWithConditions: Array<{ id: string; condition: ItemCondition }>;
+      completionSummary: string;
+      completionPhotos: Array<{ file: File; preview: string }>;
+    }) => {
+      const { itemsWithConditions, completionSummary, completionPhotos } = payload;
 
-      for (const update of updates) {
+      for (const { id, condition } of itemsWithConditions) {
+        // 1) Upload completion photos once per item
+        const uploadedUrls: string[] = [];
+        for (let index = 0; index < completionPhotos.length; index++) {
+          const photo = completionPhotos[index];
+          const fileExt = photo.file.name.split('.').pop();
+          const fileName = `completion-${id}-${Date.now()}-${index}.${fileExt}`;
+          const filePath = `unit-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('unit-photos')
+            .upload(filePath, photo.file);
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('unit-photos')
+            .getPublicUrl(filePath);
+          uploadedUrls.push(publicUrl);
+        }
+
+        // 2) Find active maintenance session for this item (if any)
+        const { data: sessions, error: sessionErr } = await (supabase as any)
+          .from('maintenance_sessions')
+          .select('*')
+          .eq('item_id', id)
+          .eq('status', 'active')
+          .order('started_at', { ascending: false })
+          .limit(1);
+        if (sessionErr) throw sessionErr;
+        const activeSession = (sessions && sessions[0]) || null;
+
+        // 3) Create a completion update to preserve history
+        const { error: updErr } = await (supabase as any)
+          .from('maintenance_updates')
+          .insert({
+            item_id: id,
+            title: 'Repair Completed',
+            description: completionSummary || 'Unit returned to service',
+            update_type: 'completion',
+            completion_photos: uploadedUrls.length ? uploadedUrls : null,
+            completion_notes: completionSummary || null,
+            session_status: 'completed',
+            maintenance_session_id: activeSession?.id || null,
+            status_change_from: 'maintenance',
+            status_change_to: 'available',
+          });
+        if (updErr) throw updErr;
+
+        // 4) Mark maintenance session as completed (if exists)
+        if (activeSession?.id) {
+          const { error: sessUpdErr } = await (supabase as any)
+            .from('maintenance_sessions')
+            .update({
+              status: 'completed',
+              completed_at: new Date().toISOString(),
+              final_condition: condition,
+              completion_photos: uploadedUrls.length ? uploadedUrls : null,
+              session_summary: completionSummary || null,
+            })
+            .eq('id', activeSession.id);
+          if (sessUpdErr) throw sessUpdErr;
+        }
+
+        // 5) Return the item to service
         const { error } = await supabase
-          .from("product_items")
+          .from('product_items')
           .update({
-            status: update.status,
-            condition: update.condition,
-            maintenance_start_date: update.maintenance_start_date,
-            maintenance_reason: update.maintenance_reason,
-            expected_return_date: update.expected_return_date,
-            maintenance_notes: update.maintenance_notes
+            status: 'available',
+            condition,
+            maintenance_start_date: null,
+            maintenance_reason: null,
+            expected_return_date: null,
+            maintenance_notes: null,
           })
-          .eq("id", update.id);
-        
+          .eq('id', id);
         if (error) throw error;
       }
     },
-    onSuccess: (_, itemsWithConditions) => {
-      const itemIds = itemsWithConditions.map(item => item.id);
+    onSuccess: (_, payload) => {
+      const itemIds = payload.itemsWithConditions.map((it) => it.id);
       toast.success(`Returned ${itemIds.length} item(s) to service`);
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["available-items", productId] });
@@ -204,8 +262,14 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     return new Date(dateString).toLocaleDateString();
   };
 
-  const handleReturnConfirm = (itemsWithConditions: Array<{ id: string; itemCode: string; condition: ItemCondition }>) => {
-    returnToServiceMutation.mutate(itemsWithConditions);
+  const handleReturnConfirm = (payload: { itemsWithConditions: Array<{ id: string; itemCode: string; condition: ItemCondition }>; completionSummary: string; completionPhotos: Array<{ file: File; preview: string }> }) => {
+    // Strip itemCode (not needed for mutation) and pass through
+    const itemsWithConditions = payload.itemsWithConditions.map(({ id, condition }) => ({ id, condition }));
+    returnToServiceMutation.mutate({
+      itemsWithConditions,
+      completionSummary: payload.completionSummary,
+      completionPhotos: payload.completionPhotos,
+    });
   };
 
   if (isLoading) {

@@ -4306,6 +4306,71 @@ export type Database = {
           },
         ]
       }
+      maintenance_sessions: {
+        Row: {
+          completed_at: string | null
+          completion_photos: Json | null
+          created_at: string
+          final_condition: string | null
+          id: string
+          initial_condition: string | null
+          initial_photos: Json | null
+          item_id: string
+          primary_technician: string | null
+          session_number: number
+          session_summary: string | null
+          started_at: string
+          status: string | null
+          total_cost: number | null
+          total_labor_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_photos?: Json | null
+          created_at?: string
+          final_condition?: string | null
+          id?: string
+          initial_condition?: string | null
+          initial_photos?: Json | null
+          item_id: string
+          primary_technician?: string | null
+          session_number: number
+          session_summary?: string | null
+          started_at?: string
+          status?: string | null
+          total_cost?: number | null
+          total_labor_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completion_photos?: Json | null
+          created_at?: string
+          final_condition?: string | null
+          id?: string
+          initial_condition?: string | null
+          initial_photos?: Json | null
+          item_id?: string
+          primary_technician?: string | null
+          session_number?: number
+          session_summary?: string | null
+          started_at?: string
+          status?: string | null
+          total_cost?: number | null
+          total_labor_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_sessions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maintenance_signatures: {
         Row: {
           created_at: string | null
@@ -4429,6 +4494,8 @@ export type Database = {
       maintenance_updates: {
         Row: {
           attachments: Json | null
+          completion_notes: string | null
+          completion_photos: Json | null
           cost_amount: number | null
           created_at: string
           created_by: string | null
@@ -4436,7 +4503,9 @@ export type Database = {
           id: string
           item_id: string
           labor_hours: number | null
+          maintenance_session_id: string | null
           parts_used: Json | null
+          session_status: string | null
           status_change_from: string | null
           status_change_to: string | null
           technician_name: string | null
@@ -4446,6 +4515,8 @@ export type Database = {
         }
         Insert: {
           attachments?: Json | null
+          completion_notes?: string | null
+          completion_photos?: Json | null
           cost_amount?: number | null
           created_at?: string
           created_by?: string | null
@@ -4453,7 +4524,9 @@ export type Database = {
           id?: string
           item_id: string
           labor_hours?: number | null
+          maintenance_session_id?: string | null
           parts_used?: Json | null
+          session_status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null
@@ -4463,6 +4536,8 @@ export type Database = {
         }
         Update: {
           attachments?: Json | null
+          completion_notes?: string | null
+          completion_photos?: Json | null
           cost_amount?: number | null
           created_at?: string
           created_by?: string | null
@@ -4470,7 +4545,9 @@ export type Database = {
           id?: string
           item_id?: string
           labor_hours?: number | null
+          maintenance_session_id?: string | null
           parts_used?: Json | null
+          session_status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null

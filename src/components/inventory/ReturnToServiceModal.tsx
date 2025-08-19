@@ -16,6 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { X, Upload, Camera } from "lucide-react";
 
 export type ItemCondition = "excellent" | "good" | "fair" | "poor";
 
@@ -25,11 +28,16 @@ interface ReturnToServiceItem {
   condition: ItemCondition;
 }
 
+interface CompletionPhoto {
+  file: File;
+  preview: string;
+}
+
 interface ReturnToServiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   items: Array<{ id: string; itemCode: string }>;
-  onConfirm: (itemsWithConditions: ReturnToServiceItem[]) => void;
+  onConfirm: (payload: { itemsWithConditions: ReturnToServiceItem[]; completionSummary: string; completionPhotos: CompletionPhoto[] }) => void;
   isLoading?: boolean;
 }
 
@@ -56,6 +64,27 @@ export const ReturnToServiceModal: React.FC<ReturnToServiceModalProps> = ({
     return defaultConditions;
   });
 
+  const [completionSummary, setCompletionSummary] = useState("");
+  const [completionPhotos, setCompletionPhotos] = useState<CompletionPhoto[]>([]);
+
+  const handlePhotoFiles = (files: FileList | null) => {
+    if (!files) return;
+    const max = 5;
+    const toAdd = Array.from(files).slice(0, Math.max(0, max - completionPhotos.length));
+    const readers = toAdd.map((file) =>
+      new Promise<CompletionPhoto>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve({ file, preview: e.target?.result as string });
+        reader.readAsDataURL(file);
+      })
+    );
+    Promise.all(readers).then((newPhotos) => setCompletionPhotos((prev) => [...prev, ...newPhotos]));
+  };
+
+  const removeCompletionPhoto = (index: number) => {
+    setCompletionPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleConditionChange = (itemId: string, condition: ItemCondition) => {
     setItemConditions(prev => ({
       ...prev,
@@ -77,7 +106,7 @@ export const ReturnToServiceModal: React.FC<ReturnToServiceModalProps> = ({
       itemCode: item.itemCode,
       condition: itemConditions[item.id],
     }));
-    onConfirm(itemsWithConditions);
+    onConfirm({ itemsWithConditions, completionSummary, completionPhotos });
   };
 
   const allConditionsSet = items.every(item => itemConditions[item.id]);
