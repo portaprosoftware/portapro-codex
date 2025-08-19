@@ -502,6 +502,18 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         itemId={selectedUnitForNavigation?.id || ""}
         itemCode={selectedUnitForNavigation?.code || ""}
         showManageOption={true}
+        onEditDetails={() => {
+          if (selectedUnitForNavigation?.id) {
+            setSelectedItem(maintenanceItems?.find(item => item.id === selectedUnitForNavigation.id));
+            setEditModalOpen(true);
+          }
+        }}
+        onManageUnit={() => {
+          if (selectedUnitForNavigation?.id) {
+            setSelectedItem(maintenanceItems?.find(item => item.id === selectedUnitForNavigation.id));
+            setEditModalOpen(true);
+          }
+        }}
       />
     </div>
   );

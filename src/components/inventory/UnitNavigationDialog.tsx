@@ -9,7 +9,9 @@ interface UnitNavigationDialogProps {
   onClose: () => void;
   itemId: string;
   itemCode: string;
-  showManageOption?: boolean; // New prop to show the 3rd option for maintenance tab
+  showManageOption?: boolean;
+  onEditDetails?: () => void; // Callback for opening edit modal
+  onManageUnit?: () => void; // Callback for opening manage unit modal
 }
 
 export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
@@ -17,7 +19,9 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
   onClose,
   itemId,
   itemCode,
-  showManageOption = false
+  showManageOption = false,
+  onEditDetails,
+  onManageUnit
 }) => {
   const navigate = useNavigate();
 
@@ -27,12 +31,20 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
   };
 
   const handleEditDetails = () => {
-    navigate(`/inventory/manage-unit/${itemId}`);
+    if (onEditDetails) {
+      onEditDetails();
+    } else {
+      navigate(`/inventory/manage-unit/${itemId}`);
+    }
     onClose();
   };
 
   const handleManageUnit = () => {
-    navigate(`/inventory/manage-unit/${itemId}`);
+    if (onManageUnit) {
+      onManageUnit();
+    } else {
+      navigate(`/inventory/manage-unit/${itemId}`);
+    }
     onClose();
   };
 
