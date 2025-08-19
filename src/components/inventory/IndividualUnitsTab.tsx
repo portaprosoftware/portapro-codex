@@ -25,6 +25,7 @@ import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
 import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { ItemActionsMenu } from "./ItemActionsMenu";
+import { InventoryLogicPopup } from "./InventoryLogicPopup";
 
 
 interface IndividualUnitsTabProps {
@@ -335,7 +336,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
       {/* Header Controls */}
       <div className="flex items-center gap-4">
-        <Button 
+        <InventoryLogicPopup />
+        <Button
           variant="outline" 
           onClick={() => setShowOCRSearch(true)}
           className="border-purple-600 text-purple-600 hover:bg-purple-50"
