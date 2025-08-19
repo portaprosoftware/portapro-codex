@@ -508,7 +508,7 @@ const ProductItemDetail: React.FC = () => {
                   onClick={() => setShowEditModal(true)}
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  Update Details & Location
+                  Edit Details & Location
                 </Button>
                 <Button 
                   variant="outline" 
