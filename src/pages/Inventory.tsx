@@ -50,9 +50,17 @@ const Inventory: React.FC = () => {
   const [showIndividualUnitsSlider, setShowIndividualUnitsSlider] = useState(false);
   
 
-  // Set active tab based on URL path
+  // Set active tab based on URL path and handle URL parameters
   useEffect(() => {
     const path = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    
+    // Handle selectedProduct parameter
+    const selectedProductParam = searchParams.get('selectedProduct');
+    if (selectedProductParam) {
+      setSelectedProduct(selectedProductParam);
+    }
+    
     if (path.includes('/location-map')) {
       setActiveTab('location-map');
     } else if (path.includes('/panel-scans')) {
@@ -64,7 +72,7 @@ const Inventory: React.FC = () => {
     } else {
       setActiveTab('products');
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   // Redirect /inventory to /inventory/products
   useEffect(() => {
@@ -270,10 +278,17 @@ const Inventory: React.FC = () => {
   ];
 
   if (selectedProduct) {
+    const searchParams = new URLSearchParams(location.search);
+    const toolNumberToFind = searchParams.get('toolNumberToFind');
+    
     return (
       <ProductDetail 
         productId={selectedProduct} 
-        onBack={() => setSelectedProduct(null)}
+        onBack={() => {
+          setSelectedProduct(null);
+          navigate('/inventory');
+        }}
+        toolNumberToFind={toolNumberToFind}
       />
     );
   }
