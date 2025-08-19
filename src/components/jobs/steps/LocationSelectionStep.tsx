@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Building, Phone, User, Navigation } from 'lucide-react';
+import { MapPin, Building, Phone, User, Navigation, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -28,6 +28,7 @@ interface ServiceLocation {
 
 export function LocationSelectionStep() {
   const { state, updateData } = useJobWizard();
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [newLocation, setNewLocation] = useState({
     street: '',
     city: '',
@@ -152,53 +153,78 @@ export function LocationSelectionStep() {
         </div>
       )}
 
-      {/* Simple Address Input */}
+      {/* Collapsible Address Input */}
       <div className="space-y-4">
-        <Label className="text-base font-medium">Or Enter Address</Label>
-        <Card>
-          <CardContent className="p-4 space-y-4">
-            <div>
-              <Label>Street Address</Label>
-              <Input
-                placeholder="Enter street address"
-                value={newLocation.street}
-                onChange={(e) => setNewLocation(prev => ({ ...prev, street: e.target.value }))}
-              />
-            </div>
+        <div className="flex items-center justify-between">
+          <Label className="text-base font-medium">
+            or enter new address manually (if needed for unique one-off job)
+          </Label>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsAddressFormOpen(!isAddressFormOpen)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            {isAddressFormOpen ? (
+              <>
+                <ChevronUp className="h-4 w-4" />
+                Hide form
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4" />
+                Show form
+              </>
+            )}
+          </Button>
+        </div>
+        
+        {isAddressFormOpen && (
+          <Card className="bg-muted/20">
+            <CardContent className="p-4 space-y-4">
+              <div>
+                <Label>Street Address</Label>
+                <Input
+                  placeholder="Enter street address"
+                  value={newLocation.street}
+                  onChange={(e) => setNewLocation(prev => ({ ...prev, street: e.target.value }))}
+                />
+              </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label>City</Label>
-                <Input
-                  value={newLocation.city}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, city: e.target.value }))}
-                />
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>City</Label>
+                  <Input
+                    value={newLocation.city}
+                    onChange={(e) => setNewLocation(prev => ({ ...prev, city: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label>State</Label>
+                  <Input
+                    value={newLocation.state}
+                    onChange={(e) => setNewLocation(prev => ({ ...prev, state: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label>ZIP</Label>
+                  <Input
+                    value={newLocation.zip}
+                    onChange={(e) => setNewLocation(prev => ({ ...prev, zip: e.target.value }))}
+                  />
+                </div>
               </div>
-              <div>
-                <Label>State</Label>
-                <Input
-                  value={newLocation.state}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, state: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label>ZIP</Label>
-                <Input
-                  value={newLocation.zip}
-                  onChange={(e) => setNewLocation(prev => ({ ...prev, zip: e.target.value }))}
-                />
-              </div>
-            </div>
 
-            <Button
-              onClick={handleCreateLocation}
-              disabled={!isNewLocationValid()}
-              className="w-full"
-            >
-              Use This Address
-            </Button>
-          </CardContent>
-        </Card>
+              <Button
+                onClick={handleCreateLocation}
+                disabled={!isNewLocationValid()}
+                className="w-full"
+              >
+                Use This Address
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Special Instructions */}
