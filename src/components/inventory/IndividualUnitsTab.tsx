@@ -612,6 +612,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         onClose={() => setShowNavigationDialog(false)}
         itemId={selectedUnitForNavigation?.id || ""}
         itemCode={selectedUnitForNavigation?.code || ""}
+        showManageOption={false}
+        onEditDetails={() => {
+          if (selectedUnitForNavigation?.id) {
+            setEditingItem(selectedUnitForNavigation.id);
+          }
+        }}
       />
     </div>
   );

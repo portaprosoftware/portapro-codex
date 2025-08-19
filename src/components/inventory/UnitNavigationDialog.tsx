@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { User, Wrench } from "lucide-react";
+import { User, Edit3, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface UnitNavigationDialogProps {
@@ -9,7 +9,8 @@ interface UnitNavigationDialogProps {
   onClose: () => void;
   itemId: string;
   itemCode: string;
-  showManageOption?: boolean;
+  showManageOption?: boolean; // Shows "Manage Maintenance" for maintenance tab
+  onEditDetails?: () => void; // Callback for opening edit modal (tracked units)
   onManageUnit?: () => void; // Callback for opening manage maintenance modal
 }
 
@@ -19,12 +20,22 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
   itemId,
   itemCode,
   showManageOption = false,
+  onEditDetails,
   onManageUnit
 }) => {
   const navigate = useNavigate();
 
   const handleViewProfile = () => {
     navigate(`/inventory/items/${itemId}`);
+    onClose();
+  };
+
+  const handleEditDetails = () => {
+    if (onEditDetails) {
+      onEditDetails();
+    } else {
+      navigate(`/inventory/manage-unit/${itemId}`);
+    }
     onClose();
   };
 
@@ -62,6 +73,24 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
             </div>
           </Button>
 
+          {/* Show Edit Unit Details for tracked units (when showManageOption is false) */}
+          {!showManageOption && (
+            <Button
+              onClick={handleEditDetails}
+              className="w-full justify-start h-auto p-4 bg-green-50 hover:bg-green-100 text-green-900 border border-green-200"
+              variant="outline"
+            >
+              <Edit3 className="w-5 h-5 mr-3" />
+              <div className="text-left">
+                <div className="font-medium">Edit Unit Details</div>
+                <div className="text-sm text-green-700 opacity-80">
+                  Modify status, condition, and location
+                </div>
+              </div>
+            </Button>
+          )}
+
+          {/* Show Manage Maintenance for maintenance tab (when showManageOption is true) */}
           {showManageOption && (
             <Button
               onClick={handleManageUnit}
