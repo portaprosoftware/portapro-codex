@@ -294,6 +294,38 @@ const ProductItemDetail: React.FC = () => {
             </CardContent>
           </Card>
 
+          {/* Unit Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Unit Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Tool Number</label>
+                  <p className="text-base font-mono text-gray-900">{item.tool_number || "Not assigned"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Item Code</label>
+                  <p className="text-base font-mono text-gray-900">{item.item_code}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Current Location</label>
+                  <p className="text-base text-gray-900">{item.storage_location_name}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
+                  <Badge variant={getConditionVariant(item.condition)}>
+                    {capitalizeFirstLetter(item.condition || "Unknown")}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Tool Tracking Information Card - Read Only */}
           {hasTrackingData && (
             <Card>
@@ -358,38 +390,6 @@ const ProductItemDetail: React.FC = () => {
               </CardContent>
             </Card>
           )}
-
-          {/* Unit Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                Unit Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Tool Number</label>
-                  <p className="text-base font-mono text-gray-900">{item.tool_number || "Not assigned"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Item Code</label>
-                  <p className="text-base font-mono text-gray-900">{item.item_code}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Current Location</label>
-                  <p className="text-base text-gray-900">{item.storage_location_name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
-                  <Badge variant={getConditionVariant(item.condition)}>
-                    {capitalizeFirstLetter(item.condition || "Unknown")}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Sidebar */}
