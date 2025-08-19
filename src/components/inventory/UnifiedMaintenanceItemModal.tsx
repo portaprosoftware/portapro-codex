@@ -410,6 +410,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       photos={maintenancePhotos}
                       onPhotosChange={setMaintenancePhotos}
                       maxPhotos={5}
+                      onPhotoClick={(photos, index) => {
+                        setSelectedPhotos(photos);
+                        setSelectedPhotoIndex(index);
+                        setImageViewerOpen(true);
+                      }}
                     />
                   </div>
                 </div>
