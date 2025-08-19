@@ -317,12 +317,6 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium text-gray-900">{activity.title}</h4>
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs"
-                          >
-                            {activity.type}
-                          </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
                         <div className="text-xs text-gray-500 flex items-center gap-1">
