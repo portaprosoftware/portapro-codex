@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
+import { MaintenancePhotoUpload } from "./MaintenancePhotoUpload";
 
 interface StorageLocation { id: string; name: string }
 
@@ -317,6 +318,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
                       placeholder="Additional notes..."
                     />
+                  </div>
+
+                  {/* Maintenance Photos Section */}
+                  <div className="mt-4 pt-4 border-t">
+                    <MaintenancePhotoUpload itemId={item?.id} />
                   </div>
                 </div>
               </div>
