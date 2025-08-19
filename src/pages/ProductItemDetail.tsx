@@ -102,8 +102,8 @@ const ProductItemDetail: React.FC = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  // Check if any OCR tracking data exists
-  const hasTrackingData = item?.tool_number || item?.vendor_id || item?.plastic_code || item?.manufacturing_date || item?.mold_cavity;
+  // Always show the Tool Tracking Information card (like in edit module)
+  const hasTrackingData = true; // Always show the card
 
   const getStatusVariant = (status: string) => {
     switch (status?.toLowerCase()) {
