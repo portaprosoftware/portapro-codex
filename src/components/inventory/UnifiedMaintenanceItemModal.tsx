@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
 import { MaintenancePhotoUpload } from "./MaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
+import { ImageViewerModal } from "./ImageViewerModal";
 
 interface StorageLocation { id: string; name: string }
 
@@ -154,6 +155,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [updatePhotos, setUpdatePhotos] = useState<UpdatePhoto[]>([]);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<any[]>([]);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   const addUpdateMutation = useMutation({
     mutationFn: async (data: MaintenanceUpdateForm) => {
@@ -628,26 +632,31 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                              )}
                              <div className="text-sm mb-3 line-clamp-2">{update.description}</div>
                              
-                             {/* Display attached photos */}
-                             {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
-                               <div className="flex gap-2 mb-3">
-                                 {update.attachments.filter((att: any) => att.type === 'photo').map((photo: any, index: number) => (
-                                   <div key={index} className="relative">
-                                     <img
-                                       src={photo.url}
-                                       alt={photo.caption || `Update photo ${index + 1}`}
-                                       className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80"
-                                       onClick={() => window.open(photo.url, '_blank')}
-                                     />
-                                     {photo.caption && (
-                                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b truncate">
-                                         {photo.caption}
-                                       </div>
-                                     )}
-                                   </div>
-                                 ))}
-                               </div>
-                             )}
+                              {/* Display attached photos */}
+                              {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
+                                <div className="flex gap-2 mb-3">
+                                  {update.attachments.filter((att: any) => att.type === 'photo').map((photo: any, index: number) => (
+                                    <div key={index} className="relative">
+                                      <img
+                                        src={photo.url}
+                                        alt={photo.caption || `Update photo ${index + 1}`}
+                                        className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                                        onClick={() => {
+                                          const photos = update.attachments.filter((att: any) => att.type === 'photo');
+                                          setSelectedPhotos(photos);
+                                          setSelectedPhotoIndex(index);
+                                          setImageViewerOpen(true);
+                                        }}
+                                      />
+                                      {photo.caption && (
+                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b truncate">
+                                          {photo.caption}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                            </div>
                            <div className="space-y-1">
                              {update.technician_name && (
@@ -678,6 +687,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         </div>
       </DialogContent>
       
+      {/* Image Viewer Modal */}
+      <ImageViewerModal
+        isOpen={imageViewerOpen}
+        onClose={() => setImageViewerOpen(false)}
+        photos={selectedPhotos}
+        initialIndex={selectedPhotoIndex}
+      />
     </Dialog>
   );
 };
