@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Building, Phone, User, Navigation, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -135,6 +135,16 @@ export function LocationSelectionStep() {
     }
     return null;
   };
+
+  // Auto-select default location when locations are loaded
+  useEffect(() => {
+    if (serviceLocations.length > 0 && state.data.selected_coordinate_ids.length === 0) {
+      const defaultLocation = serviceLocations.find(location => location.is_default);
+      if (defaultLocation) {
+        handleLocationSelect(defaultLocation);
+      }
+    }
+  }, [serviceLocations, state.data.selected_coordinate_ids.length]);
 
   return (
     <div className="space-y-6">
