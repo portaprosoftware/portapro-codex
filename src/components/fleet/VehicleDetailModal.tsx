@@ -360,7 +360,8 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-          <TabsList className="grid w-full grid-cols-6">
+          {/* Desktop Tabs */}
+          <TabsList className="hidden sm:grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="fuel">Fuel</TabsTrigger>
@@ -368,6 +369,23 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
             <TabsTrigger value="damage">Damage Log</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
           </TabsList>
+
+          {/* Mobile Dropdown */}
+          <div className="block sm:hidden mb-4">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full bg-white border-gray-200 shadow-sm">
+                <SelectValue placeholder="Select a tab" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                <SelectItem value="overview">Overview</SelectItem>
+                <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="fuel">Fuel</SelectItem>
+                <SelectItem value="assignments">Assignments</SelectItem>
+                <SelectItem value="damage">Damage Log</SelectItem>
+                <SelectItem value="documents">Documents</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <TabsContent value="overview" className="space-y-4">
             {isEditing ? (
@@ -562,7 +580,27 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({ vehicle,
                       </div>
                       <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 50MB</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    {/* Mobile layout - single column for better mobile experience */}
+                    <div className="block sm:hidden space-y-3 text-sm">
+                      <div>
+                        <p className="font-medium text-gray-500">Make/Model</p>
+                        <p className="font-semibold">{vehicle.make} {vehicle.model}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-500">Year</p>
+                        <p className="font-semibold">{vehicle.year}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-500">VIN</p>
+                        <p className="font-semibold">{vehicle.vin || "Not provided"}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-500">Mileage</p>
+                        <p className="font-semibold">{vehicle.current_mileage?.toLocaleString() || "Unknown"} miles</p>
+                      </div>
+                    </div>
+                    {/* Desktop layout - 2x2 grid */}
+                    <div className="hidden sm:grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="font-medium text-gray-500">Make/Model</p>
                         <p className="font-semibold">{vehicle.make} {vehicle.model}</p>
