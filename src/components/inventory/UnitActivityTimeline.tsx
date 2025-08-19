@@ -40,6 +40,7 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
   itemCode 
 }) => {
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const [activityFilter, setActivityFilter] = useState<string>("all");
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ["unit-activity-timeline", itemId],
@@ -184,8 +185,12 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
     }
   });
 
-  // Filter out creation events to only show operational activities
-  const filteredActivities = activities?.filter(activity => activity.type !== 'creation') || [];
+  // Filter out creation events and apply activity type filter
+  const filteredActivities = activities?.filter(activity => {
+    if (activity.type === 'creation') return false;
+    if (activityFilter === 'all') return true;
+    return activity.type === activityFilter;
+  }) || [];
 
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
@@ -253,6 +258,19 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
             Activity Timeline
           </CardTitle>
           <div className="flex items-center gap-2">
+            <Select value={activityFilter} onValueChange={setActivityFilter}>
+              <SelectTrigger className="w-[140px]">
+                <Filter className="w-4 h-4 mr-1" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Activities</SelectItem>
+                <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="transfer">Transfers</SelectItem>
+                <SelectItem value="assignment">Assignments</SelectItem>
+              </SelectContent>
+            </Select>
+            
             <Button
               variant="outline"
               size="sm"

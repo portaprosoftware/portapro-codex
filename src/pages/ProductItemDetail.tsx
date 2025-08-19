@@ -206,7 +206,7 @@ const ProductItemDetail: React.FC = () => {
                 </p>
                 <span className="text-sm text-gray-500">•</span>
                 <p className="text-sm text-gray-500">
-                  Created: {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString()}
+                  Created: {item.created_at ? `${new Date(item.created_at).toLocaleDateString()} at ${new Date(item.created_at).toLocaleTimeString()}` : 'Date unavailable'}
                 </p>
               </div>
             </div>
