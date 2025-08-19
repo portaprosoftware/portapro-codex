@@ -39,11 +39,10 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
   itemId, 
   itemCode 
 }) => {
-  const [activityFilter, setActivityFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
   const { data: activities, isLoading } = useQuery({
-    queryKey: ["unit-activity-timeline", itemId, activityFilter],
+    queryKey: ["unit-activity-timeline", itemId],
     queryFn: async () => {
       const events: ActivityEvent[] = [];
 
@@ -185,9 +184,8 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
     }
   });
 
-  const filteredActivities = activities?.filter(activity => 
-    activityFilter === "all" || activity.type === activityFilter
-  ) || [];
+  // Filter out creation events to only show operational activities
+  const filteredActivities = activities?.filter(activity => activity.type !== 'creation') || [];
 
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
@@ -255,19 +253,6 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
             Activity Timeline
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Select value={activityFilter} onValueChange={setActivityFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Activity</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="transfer">Transfers</SelectItem>
-                <SelectItem value="assignment">Assignments</SelectItem>
-                <SelectItem value="creation">Creation</SelectItem>
-              </SelectContent>
-            </Select>
-            
             <Button
               variant="outline"
               size="sm"
@@ -294,15 +279,6 @@ export const UnitActivityTimeline: React.FC<UnitActivityTimelineProps> = ({
           <div className="text-center py-8">
             <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600">No activity found for this unit</p>
-            {activityFilter !== "all" && (
-              <Button
-                variant="link"
-                onClick={() => setActivityFilter("all")}
-                className="mt-2"
-              >
-                Show all activity
-              </Button>
-            )}
           </div>
         ) : (
           <div className="relative">

@@ -47,6 +47,7 @@ const ProductItemDetail: React.FC = () => {
           tracking_photo_url,
           current_storage_location_id,
           product_id,
+          created_at,
           products!inner(
             name,
             image_url,
@@ -199,9 +200,15 @@ const ProductItemDetail: React.FC = () => {
               <h1 className="text-2xl font-semibold text-gray-900 font-inter">
                 {item.products.name}
               </h1>
-              <p className="text-base text-gray-600 font-inter mt-1">
-                Individual Unit: {item.tool_number || item.item_code}
-              </p>
+              <div className="flex items-center gap-4 mt-1">
+                <p className="text-base text-gray-600 font-inter">
+                  Individual Unit: {item.tool_number || item.item_code}
+                </p>
+                <span className="text-sm text-gray-500">•</span>
+                <p className="text-sm text-gray-500">
+                  Created: {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString()}
+                </p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
