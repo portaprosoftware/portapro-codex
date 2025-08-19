@@ -73,33 +73,35 @@ const ProductItemDetail: React.FC = () => {
     staleTime: 30 * 1000, // Cache for 30 seconds only
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status?.toLowerCase()) {
       case "available":
-        return "bg-green-100 text-green-800";
+        return "completed";
       case "rented":
-        return "bg-blue-100 text-blue-800";
+        return "assigned";
       case "maintenance":
-        return "bg-red-100 text-red-800";
+        return "cancelled";
       case "damaged":
-        return "bg-orange-100 text-orange-800";
+        return "warning";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "pending";
     }
   };
 
-  const getConditionColor = (condition: string) => {
+  const getConditionVariant = (condition: string) => {
     switch (condition?.toLowerCase()) {
       case "excellent":
-        return "bg-green-100 text-green-800";
+        return "completed";
       case "good":
-        return "bg-blue-100 text-blue-800";
+        return "assigned";
       case "fair":
-        return "bg-yellow-100 text-yellow-800";
+        return "warning";
       case "poor":
-        return "bg-red-100 text-red-800";
+        return "warning";
+      case "damaged":
+        return "cancelled";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "pending";
     }
   };
 
@@ -156,7 +158,7 @@ const ProductItemDetail: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/inventory/products/${item.product_id}`)}
+              onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units`)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Product
@@ -176,7 +178,7 @@ const ProductItemDetail: React.FC = () => {
                 <Button 
                   variant="link" 
                   className="p-0 h-auto text-blue-600 hover:text-blue-800"
-                  onClick={() => navigate(`/inventory/products/${item.product_id}`)}
+                  onClick={() => navigate(`/inventory/products/${item.product_id}?tab=units`)}
                 >
                   {item.products.name}
                 </Button>
@@ -193,11 +195,11 @@ const ProductItemDetail: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className={getStatusColor(item.status)}>
+            <Badge variant={getStatusVariant(item.status)}>
               {item.status || "Unknown"}
             </Badge>
             {item.condition && (
-              <Badge variant="outline" className={getConditionColor(item.condition)}>
+              <Badge variant={getConditionVariant(item.condition)}>
                 {item.condition}
               </Badge>
             )}
@@ -245,7 +247,7 @@ const ProductItemDetail: React.FC = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Status</label>
-                  <Badge className={getStatusColor(item.status)}>
+                  <Badge variant={getStatusVariant(item.status)}>
                     {item.status || "Unknown"}
                   </Badge>
                 </div>
