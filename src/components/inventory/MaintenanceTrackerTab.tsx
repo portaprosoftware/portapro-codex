@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { MaintenanceItemActions } from "./MaintenanceItemActions";
 import { UnifiedMaintenanceItemModal } from "./UnifiedMaintenanceItemModal";
 import { ReturnToServiceModal, type ItemCondition } from "./ReturnToServiceModal";
+import { UnitNavigationDialog } from "./UnitNavigationDialog";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -30,6 +31,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
   const [itemsToReturn, setItemsToReturn] = useState<Array<{ id: string; itemCode: string }>>([]);
+  const [showNavigationDialog, setShowNavigationDialog] = useState(false);
+  const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
 
   // Fetch items in maintenance for this product or all products
   const { data: maintenanceItems, isLoading } = useQuery({
@@ -185,6 +188,11 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     setReturnModalOpen(true);
   };
 
+  const handleUnitCodeClick = (itemId: string, itemCode: string) => {
+    setSelectedUnitForNavigation({ id: itemId, code: itemCode });
+    setShowNavigationDialog(true);
+  };
+
   const getStorageLocationName = (locationId: string | null) => {
     if (!locationId || !storageLocations) return "Not set";
     const location = storageLocations.find(loc => loc.id === locationId);
@@ -319,7 +327,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                      <Button 
                        variant="link" 
                        className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
-                       onClick={() => navigate(`/inventory/manage-unit/${item.id}`)}
+                       onClick={() => handleUnitCodeClick(item.id, item.item_code)}
                      >
                        {item.item_code}
                      </Button>
@@ -485,6 +493,15 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         items={itemsToReturn}
         onConfirm={handleReturnConfirm}
         isLoading={returnToServiceMutation.isPending}
+      />
+
+      {/* Unit Navigation Dialog */}
+      <UnitNavigationDialog
+        isOpen={showNavigationDialog}
+        onClose={() => setShowNavigationDialog(false)}
+        itemId={selectedUnitForNavigation?.id || ""}
+        itemCode={selectedUnitForNavigation?.code || ""}
+        showManageOption={true}
       />
     </div>
   );
