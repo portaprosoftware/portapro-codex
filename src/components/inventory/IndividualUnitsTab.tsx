@@ -26,6 +26,7 @@ import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
 import { DeleteItemDialog } from "./DeleteItemDialog";
 import { ItemActionsMenu } from "./ItemActionsMenu";
 import { InventoryLogicPopup } from "./InventoryLogicPopup";
+import { UnitNavigationDialog } from "./UnitNavigationDialog";
 
 
 interface IndividualUnitsTabProps {
@@ -52,6 +53,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
+  const [showNavigationDialog, setShowNavigationDialog] = useState(false);
+  const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
   
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
@@ -264,6 +267,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   };
 
+  const handleUnitCodeClick = (itemId: string, itemCode: string) => {
+    setSelectedUnitForNavigation({ id: itemId, code: itemCode });
+    setShowNavigationDialog(true);
+  };
+
   const getStatusBadge = (status: string) => {
     const gradients = {
       available: "bg-gradient-to-r from-green-600 to-green-700 text-white font-bold",
@@ -424,7 +432,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                      <Button 
                        variant="link" 
                        className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
-                       onClick={() => navigate(`/inventory/items/${item.id}`)}
+                       onClick={() => handleUnitCodeClick(item.id, item.item_code)}
                      >
                        {item.item_code}
                      </Button>
@@ -596,6 +604,14 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         isOpen={showPrintQRModal}
         onClose={() => setShowPrintQRModal(false)}
         productId={productId}
+      />
+
+      {/* Unit Navigation Dialog */}
+      <UnitNavigationDialog
+        isOpen={showNavigationDialog}
+        onClose={() => setShowNavigationDialog(false)}
+        itemId={selectedUnitForNavigation?.id || ""}
+        itemCode={selectedUnitForNavigation?.code || ""}
       />
     </div>
   );
