@@ -490,17 +490,6 @@ const ProductItemDetail: React.FC = () => {
                   variant="outline" 
                   className="w-full"
                   onClick={() => {
-                    setMaintenanceModalTab("details");
-                    setShowMaintenanceModal(true);
-                  }}
-                >
-                  <History className="w-4 h-4 mr-2" />
-                  View Maintenance Details
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => {
                     setMaintenanceModalTab("update");
                     setShowMaintenanceModal(true);
                   }}
@@ -514,7 +503,7 @@ const ProductItemDetail: React.FC = () => {
                   onClick={() => setShowEditModal(true)}
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  Edit Details & Location
+                  Edit Details
                 </Button>
                 <Button 
                   variant="outline" 
