@@ -7,7 +7,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Camera, Edit, Trash2, QrCode } from 'lucide-react';
+import { MoreHorizontal, Camera, Edit, Trash2, QrCode, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ItemActionsMenuProps {
   itemId: string;
@@ -24,6 +25,7 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
   onDelete,
   qrCodeData
 }) => {
+  const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,6 +35,16 @@ export const ItemActionsMenu: React.FC<ItemActionsMenuProps> = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem 
+          onClick={() => navigate(`/inventory/items/${itemId}`)}
+          className="cursor-pointer"
+        >
+          <User className="mr-2 h-4 w-4" />
+          <span>View Unit Profile</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
         <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
           <Edit className="mr-2 h-4 w-4" />
           <span>Edit Unit</span>
