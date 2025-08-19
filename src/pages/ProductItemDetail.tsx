@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, MapPin, Calendar, Settings, Camera, QrCode, History, Edit, MoveRight, Wrench, ChevronRight, Home, Package, Images, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,16 +12,19 @@ import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimelin
 import { UnifiedMaintenanceItemModal } from "@/components/inventory/UnifiedMaintenanceItemModal";
 import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
 import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
+import { UnitPhotoGallery } from "@/components/inventory/UnitPhotoGallery";
 
 const ProductItemDetail: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   
   // Modal states
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [maintenanceModalTab, setMaintenanceModalTab] = useState<"details" | "update">("details");
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
+  const [showPhotoGallery, setShowPhotoGallery] = useState(false);
 
   const { data: item, isLoading, error } = useQuery({
     queryKey: ["product-item", itemId],
@@ -331,13 +334,47 @@ const ProductItemDetail: React.FC = () => {
           {/* Product Image */}
           <Card>
             <CardContent className="p-6">
-              <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center mb-4 relative">
                 {item.tracking_photo_url ? (
-                  <img 
-                    src={item.tracking_photo_url} 
-                    alt={`${item.products.name} - Unit ${item.tool_number || item.item_code}`}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
+                  <>
+                    <img 
+                      src={item.tracking_photo_url} 
+                      alt={`${item.products.name} - Unit ${item.tool_number || item.item_code}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-2 right-2"
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase
+                            .from('product_items')
+                            .update({ tracking_photo_url: null })
+                            .eq('id', itemId);
+                          
+                          if (error) throw error;
+                          
+                          // Invalidate query to refresh data
+                          queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
+                          
+                          toast({
+                            title: "Photo Deleted",
+                            description: "Main photo has been removed successfully",
+                          });
+                        } catch (error) {
+                          console.error('Delete error:', error);
+                          toast({
+                            title: "Delete Failed",
+                            description: "Failed to delete photo. Please try again.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </>
                 ) : item.products.image_url ? (
                   <img 
                     src={item.products.image_url} 
@@ -430,31 +467,49 @@ const ProductItemDetail: React.FC = () => {
                   <Camera className="w-4 h-4 mr-2" />
                   Take Photo
                 </Button>
-             </CardContent>
-           </Card>
-         </div>
-       </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setShowPhotoGallery(true)}
+                >
+                  <Images className="w-4 h-4 mr-2" />
+                  Add / View Additional Photos
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
-       {/* Unified Maintenance Modal */}
-       {showMaintenanceModal && (
-         <UnifiedMaintenanceItemModal
-           isOpen={showMaintenanceModal}
-           onClose={() => setShowMaintenanceModal(false)}
-           item={item}
-           productId={item.product_id}
-           storageLocations={storageLocations}
-           activeTab={maintenanceModalTab}
-         />
-       )}
+        {/* Unified Maintenance Modal */}
+        {showMaintenanceModal && (
+          <UnifiedMaintenanceItemModal
+            isOpen={showMaintenanceModal}
+            onClose={() => setShowMaintenanceModal(false)}
+            item={item}
+            productId={item.product_id}
+            storageLocations={storageLocations}
+            activeTab={maintenanceModalTab}
+          />
+        )}
 
-       {/* Photo Capture Modal */}
-       {showPhotoCapture && (
-         <UnitPhotoCapture
-           open={showPhotoCapture}
-           onClose={() => setShowPhotoCapture(false)}
-           itemId={itemId!}
-         />
-       )}
+        {/* Photo Capture Modal */}
+        {showPhotoCapture && (
+          <UnitPhotoCapture
+            open={showPhotoCapture}
+            onClose={() => setShowPhotoCapture(false)}
+            itemId={itemId!}
+          />
+        )}
+
+        {/* Photo Gallery Modal */}
+        {showPhotoGallery && (
+          <UnitPhotoGallery
+            open={showPhotoGallery}
+            onClose={() => setShowPhotoGallery(false)}
+            itemId={itemId!}
+            itemCode={item.tool_number || item.item_code}
+          />
+        )}
      </div>
    );
  };
