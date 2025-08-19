@@ -138,8 +138,8 @@ export function JobTypeSchedulingStep() {
         {/* Date Selection - Left side */}
         <div className="lg:col-span-2 space-y-4">
           <Label className="text-base font-medium">Scheduled Date</Label>
-          <Card>
-            <CardContent className="p-4 flex justify-center">
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
               <CalendarComponent
                 mode="single"
                 selected={state.data.scheduled_date ? (() => {
@@ -148,7 +148,20 @@ export function JobTypeSchedulingStep() {
                 })() : undefined}
                 onSelect={handleDateSelect}
                 disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                className="rounded-md font-semibold text-base [&_.rdp-day]:font-semibold [&_.rdp-day]:text-base [&_.rdp-caption]:font-bold [&_.rdp-caption]:text-lg [&_.rdp-nav_button]:font-semibold [&_.rdp-weekday]:font-semibold [&_.rdp-weekday]:text-sm"
+                className="w-full rounded-none border-0 
+                  [&_.rdp-months]:w-full
+                  [&_.rdp-month]:w-full
+                  [&_.rdp-table]:w-full
+                  [&_.rdp-caption]:text-xl [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-4 [&_.rdp-caption]:px-6
+                  [&_.rdp-nav]:gap-2 [&_.rdp-nav_button]:h-10 [&_.rdp-nav_button]:w-10 [&_.rdp-nav_button]:rounded-lg [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
+                  [&_.rdp-head_cell]:p-3 [&_.rdp-head_cell]:text-base [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground
+                  [&_.rdp-cell]:p-1
+                  [&_.rdp-day]:h-12 [&_.rdp-day]:w-full [&_.rdp-day]:text-base [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-lg [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
+                  [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-primary [&_.rdp-day_selected]:to-primary-variant [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl
+                  [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
+                  [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
+                  [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent [&_.rdp-day_disabled]:hover:scale-100
+                  p-6"
               />
             </CardContent>
           </Card>
