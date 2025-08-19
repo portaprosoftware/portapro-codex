@@ -280,6 +280,7 @@ const Inventory: React.FC = () => {
   if (selectedProduct) {
     const searchParams = new URLSearchParams(location.search);
     const toolNumberToFind = searchParams.get('toolNumberToFind');
+    const tab = searchParams.get('tab');
     
     return (
       <ProductDetail 
@@ -289,6 +290,7 @@ const Inventory: React.FC = () => {
           navigate('/inventory');
         }}
         toolNumberToFind={toolNumberToFind}
+        initialTab={tab || undefined}
       />
     );
   }

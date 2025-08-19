@@ -23,10 +23,11 @@ interface ProductDetailProps {
   productId: string;
   onBack: () => void;
   toolNumberToFind?: string | null;
+  initialTab?: string;
 }
 
-export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind }) => {
-  const [activeTab, setActiveTab] = useState(toolNumberToFind ? "units" : "overview");
+export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack, toolNumberToFind, initialTab }) => {
+  const [activeTab, setActiveTab] = useState(initialTab || (toolNumberToFind ? "units" : "overview"));
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   

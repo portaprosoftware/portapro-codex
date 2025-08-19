@@ -185,7 +185,7 @@ const ProductItemDetail: React.FC = () => {
               onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}&tab=units&toolNumberToFind=${item.tool_number || item.item_code}`)}
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to Product
+              Back to Units
             </Button>
             <div>
               {/* Breadcrumb */}
