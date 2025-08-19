@@ -80,7 +80,7 @@ const ProductItemDetail: React.FC = () => {
       case "rented":
         return "assigned";
       case "maintenance":
-        return "cancelled";
+        return "warning";
       case "damaged":
         return "warning";
       default:
@@ -246,7 +246,7 @@ const ProductItemDetail: React.FC = () => {
                   <p className="text-base font-medium text-gray-900">${item.products.default_price_per_day}/day</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Status</label>
+                  <label className="text-sm font-medium text-gray-500 mb-2 block">Status</label>
                   <Badge variant={getStatusVariant(item.status)}>
                     {item.status || "Unknown"}
                   </Badge>
@@ -299,33 +299,37 @@ const ProductItemDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* OCR Information */}
-          {item.ocr_raw_data && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  OCR Detection Data
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {item.ocr_confidence_score && (
+          {/* Unit Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Unit Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Tool Number</label>
+                  <p className="text-base font-mono text-gray-900">{item.tool_number || "Not assigned"}</p>
+                </div>
+                {item.vendor_id && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Confidence Score</label>
-                    <p className="text-base text-gray-900">
-                      {Math.round(item.ocr_confidence_score * 100)}%
-                    </p>
+                    <label className="text-sm font-medium text-gray-500">Vendor ID</label>
+                    <p className="text-base font-mono text-gray-900">{item.vendor_id}</p>
                   </div>
                 )}
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Verification Status</label>
-                  <Badge variant="outline" className="ml-2">
-                    {item.verification_status || "Not verified"}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                {item.condition && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
+                    <Badge variant={getConditionVariant(item.condition)}>
+                      {item.condition}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Sidebar */}
