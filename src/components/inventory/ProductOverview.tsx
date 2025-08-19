@@ -295,7 +295,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               <div key={status.label} className="flex items-center gap-3">
                 <span className={`w-3 h-3 rounded-full ${status.color}`}></span>
                 <span className="font-bold text-gray-900">{status.count}</span>
-                <div className="flex flex-col">
+                <div className="flex items-center gap-2">
                   <span className={`font-bold ${status.textColor}`}>{status.label}</span>
                   {(status.label === "On Job" || status.label === "Maintenance") && (
                     <span className="text-xs text-muted-foreground">(inventory not available)</span>
