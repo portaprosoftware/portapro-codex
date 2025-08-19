@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { UnitActivityTimeline } from "@/components/inventory/UnitActivityTimeline";
 import { UnifiedMaintenanceItemModal } from "@/components/inventory/UnifiedMaintenanceItemModal";
+import { EditItemModal } from "@/components/inventory/EditItemModal";
 import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
 import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
 import { UnitPhotoGallery } from "@/components/inventory/UnitPhotoGallery";
@@ -23,6 +24,7 @@ const ProductItemDetail: React.FC = () => {
   // Modal states
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [maintenanceModalTab, setMaintenanceModalTab] = useState<"details" | "update">("details");
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showPhotoGallery, setShowPhotoGallery] = useState(false);
 
@@ -503,10 +505,7 @@ const ProductItemDetail: React.FC = () => {
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => {
-                    setMaintenanceModalTab("details");
-                    setShowMaintenanceModal(true);
-                  }}
+                  onClick={() => setShowEditModal(true)}
                 >
                   <Edit className="w-4 h-4 mr-2" />
                   Update Details & Location
@@ -541,6 +540,14 @@ const ProductItemDetail: React.FC = () => {
             productId={item.product_id}
             storageLocations={storageLocations}
             activeTab={maintenanceModalTab}
+          />
+        )}
+
+        {/* Edit Item Modal */}
+        {showEditModal && itemId && (
+          <EditItemModal
+            itemId={itemId}
+            onClose={() => setShowEditModal(false)}
           />
         )}
 
