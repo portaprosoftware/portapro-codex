@@ -491,12 +491,12 @@ const ProductItemDetail: React.FC = () => {
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      setMaintenanceModalTab("update");
+                      setMaintenanceModalTab("details");
                       setShowMaintenanceModal(true);
                     }}
                   >
                     <Wrench className="w-4 h-4 mr-2" />
-                    Add Maintenance Update
+                    Maintenance Updates
                   </Button>
                 )}
                 <Button 
