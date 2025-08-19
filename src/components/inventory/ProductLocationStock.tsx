@@ -177,7 +177,7 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
           </p>
           <div className="mt-2 p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              💡 To add new stock, use the main inventory creation process from other tabs, then transfer items here as needed.
+              💡 To add new bulk stock, add new inventory from the overview tab, then transfer items here as needed. Tracked units can be edited from their individual profiles.
             </p>
           </div>
         </div>
