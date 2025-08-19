@@ -372,14 +372,14 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                   <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <TableCell colSpan={productId === "all" ? 10 : 9} className="border-t">
                       <div className="py-4 space-y-4 text-sm">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {/* Maintenance Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Combined Maintenance & Location Details */}
                           <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                            <h4 className="font-medium text-gray-900 mb-3 flex items-center">
                               <AlertTriangle className="w-4 h-4 mr-2" />
-                              Maintenance Details
+                              Maintenance & Location Details
                             </h4>
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               <div>
                                 <span className="font-medium text-gray-700">Reason:</span>
                                 <p className="text-gray-600 mt-1">{item.maintenance_reason || "No reason specified"}</p>
@@ -388,55 +388,31 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                                 <span className="font-medium text-gray-700">Notes:</span>
                                 <p className="text-gray-600 mt-1">{item.maintenance_notes || "No notes provided"}</p>
                               </div>
-                              <div>
-                                <span className="font-medium text-gray-700">Started:</span>
-                                <p className="text-gray-600 mt-1 flex items-center">
-                                  <Clock className="w-3 h-3 mr-1" />
-                                  {formatDate(item.maintenance_start_date)}
-                                </p>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <span className="font-medium text-gray-700">Started:</span>
+                                  <p className="text-gray-600 mt-1 flex items-center">
+                                    <Clock className="w-3 h-3 mr-1" />
+                                    {formatDate(item.maintenance_start_date)}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-gray-700">Expected Return:</span>
+                                  <p className="text-gray-600 mt-1 flex items-center">
+                                    <Calendar className="w-3 h-3 mr-1" />
+                                    {formatDate(item.expected_return_date)}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <span className="font-medium text-gray-700">Expected Return:</span>
-                                <p className="text-gray-600 mt-1 flex items-center">
-                                  <Calendar className="w-3 h-3 mr-1" />
-                                  {formatDate(item.expected_return_date)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Location Information */}
-                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                              <MapPin className="w-4 h-4 mr-2" />
-                              Location Info
-                            </h4>
-                            <div className="space-y-2">
-                              <div>
-                                <span className="font-medium text-gray-700">Storage Location:</span>
-                                <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-700">Last Location:</span>
-                                <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Item Details */}
-                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                              <Settings className="w-4 h-4 mr-2" />
-                              Item Details
-                            </h4>
-                            <div className="space-y-2">
-                              <div>
-                                <span className="font-medium text-gray-700">Condition:</span>
-                                <p className="text-gray-600 mt-1">{item.condition || "Not specified"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-700">Vendor ID:</span>
-                                <p className="text-gray-600 mt-1 font-mono text-xs">{item.vendor_id || "—"}</p>
+                              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                                <div>
+                                  <span className="font-medium text-gray-700">Storage Location:</span>
+                                  <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-gray-700">Last Location:</span>
+                                  <p className="text-gray-600 mt-1">{item.location || "Not specified"}</p>
+                                </div>
                               </div>
                             </div>
                           </div>
