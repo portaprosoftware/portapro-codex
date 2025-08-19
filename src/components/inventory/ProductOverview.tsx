@@ -345,7 +345,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               onClick={() => navigate(`/inventory/products/${product.id}?tab=units`)}
             >
               <Settings className="w-4 h-4 mr-2" />
-              View Individual Units
+              View Tracked Units
             </Button>
           </div>
           <div className="flex items-center gap-4">

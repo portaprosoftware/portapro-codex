@@ -247,7 +247,7 @@ export const useUnifiedStockManagement = (productId: string) => {
       // Breakdown display - always show all statuses
       statusBreakdown: [
         { 
-          label: 'Available Individual', 
+          label: 'Available Tracked (Individual)', 
           count: individual_items.available, 
           color: 'bg-green-500',
           description: 'Individual items ready for assignment'
