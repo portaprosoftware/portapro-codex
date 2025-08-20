@@ -112,16 +112,13 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         console.log('SimpleWeatherRadar: Tile URL:', tileUrl);
 
         try {
-          // Add source with proper bounds to prevent tile overflow
+          // Add source
           if (!map.getSource(layerId)) {
             console.log('SimpleWeatherRadar: Adding source for:', layerId);
             map.addSource(layerId, {
               type: 'raster',
               tiles: [tileUrl],
               tileSize: 256,
-              minzoom: 0,
-              maxzoom: 12,
-              bounds: [-180, -85.05112877980659, 180, 85.05112877980659], // World bounds to prevent overflow
               attribution: '© RainViewer'
             });
             console.log('SimpleWeatherRadar: ✓ Source added for:', layerId);
