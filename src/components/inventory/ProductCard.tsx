@@ -237,12 +237,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
 
       {/* Product Image */}
       <div className="flex justify-center mb-4">
-        <div className="w-52 h-52 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+        <div className="w-52 h-52 bg-white border rounded-lg flex items-center justify-center overflow-hidden">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="w-24 h-24 bg-gray-300 rounded"></div>

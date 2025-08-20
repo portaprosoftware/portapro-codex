@@ -148,12 +148,12 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
       {/* Main row */}
       <div className="flex items-center p-4">
         {/* Product Image */}
-        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden mr-4">
+        <div className="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden mr-4">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="w-8 h-8 bg-gray-300 rounded"></div>

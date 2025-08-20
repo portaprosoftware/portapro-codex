@@ -49,12 +49,12 @@ export const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
     <div className="space-y-2">
       <Label className="text-foreground">{label}</Label>
       <div className="flex items-start gap-4">
-        <div className="w-28 h-28 rounded-xl border bg-background overflow-hidden flex items-center justify-center">
+        <div className="w-28 h-28 rounded-xl border bg-white overflow-hidden flex items-center justify-center">
           {previewUrl ? (
             <img
               src={previewUrl}
               alt="Product"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
               }}

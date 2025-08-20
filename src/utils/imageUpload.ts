@@ -11,6 +11,7 @@ export const compressImage = async (file: File, quality: number = 0.82): Promise
       const maxSize = 1600; // keep images reasonably sized
       let { width, height } = img;
 
+      // Calculate dimensions to maintain aspect ratio
       if (width > height && width > maxSize) {
         height = (height * maxSize) / width;
         width = maxSize;
@@ -29,7 +30,13 @@ export const compressImage = async (file: File, quality: number = 0.82): Promise
         return reject(new Error("Could not get canvas context"));
       }
 
+      // Fill with white background to eliminate black borders
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw the image centered
       ctx.drawImage(img, 0, 0, width, height);
+      
       canvas.toBlob(
         (blob) => {
           URL.revokeObjectURL(url);
