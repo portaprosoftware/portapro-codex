@@ -353,11 +353,6 @@ const Inventory: React.FC = () => {
 
             {/* Card 3: Status Filters and Controls */}
             <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
-              {/* Info Text */}
-              <div className="text-sm text-muted-foreground mb-4">
-                Scan QR or snap a photo of the molded tool number to search
-              </div>
-
               {/* Action Buttons - Moved to top left */}
               <div className="flex flex-wrap gap-2">
                 <Button 
@@ -391,6 +386,11 @@ const Inventory: React.FC = () => {
                   <Plus className="h-4 w-4" />
                   Add Inventory
                 </Button>
+              </div>
+
+              {/* Info Text */}
+              <div className="text-sm text-muted-foreground">
+                Scan QR or snap a photo of the molded tool number to search
               </div>
 
               {/* View Controls and Hide Inactive */}
