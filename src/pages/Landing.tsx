@@ -581,7 +581,7 @@ export const Landing: React.FC = () => {
               <img 
                 src="/lovable-uploads/66b9876b-be61-4d09-ba28-60907047f8aa.png" 
                 alt="Standard Porta Potty inventory item showing pricing and availability tracking"
-                className="w-full max-w-md h-auto rounded-lg shadow-lg"
+                className="w-full max-w-md h-auto"
               />
             </div>
           </div>
