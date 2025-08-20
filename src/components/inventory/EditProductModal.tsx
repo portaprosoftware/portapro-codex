@@ -6,11 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProductImageUploader } from "./ProductImageUploader";
 import { uploadProductImage, deleteProductImageByUrl } from "@/utils/imageUpload";
+import { PRODUCT_TYPES, getProductTypeLabel, type ProductType } from "@/lib/productTypes";
+import type { Database } from "@/integrations/supabase/types";
 
 interface EditProductModalProps {
   productId: string;
@@ -27,7 +30,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
     manufacturer: "",
     description: "",
     default_price_per_day: 0,
-    low_stock_threshold: 0
+    low_stock_threshold: 0,
+    product_type: "" as ProductType | "",
+    product_variant: ""
   });
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
@@ -52,7 +57,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
         manufacturer: product.manufacturer || "",
         description: product.description || "",
         default_price_per_day: product.default_price_per_day || 0,
-        low_stock_threshold: product.low_stock_threshold || 0
+        low_stock_threshold: product.low_stock_threshold || 0,
+        product_type: (product.product_type || "") as ProductType | "",
+        product_variant: product.product_variant || ""
       });
       setNewImageFile(null);
       setRemoveImage(false);
@@ -61,10 +68,17 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
 
   const updateMutation = useMutation({
     mutationFn: async (updateData: typeof formData) => {
+      // Prepare the update data, filtering out empty product_type
+      const cleanedData = {
+        ...updateData,
+        product_type: updateData.product_type || null,
+        product_variant: updateData.product_variant || null
+      };
+
       // update non-image fields first
       const { error } = await supabase
         .from("products")
-        .update(updateData)
+        .update(cleanedData)
         .eq("id", productId);
       if (error) throw error;
 
@@ -243,6 +257,37 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
                   onChange={(e) => handleInputChange("manufacturer", e.target.value)}
                   placeholder="Manufacturer (optional)"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="product_type">Product Type</Label>
+                  <Select
+                    value={formData.product_type}
+                    onValueChange={(value) => handleInputChange("product_type", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select product type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRODUCT_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="product_variant">Product Variant</Label>
+                  <Input
+                    id="product_variant"
+                    value={formData.product_variant}
+                    onChange={(e) => handleInputChange("product_variant", e.target.value)}
+                    placeholder="e.g., Luxury, Standard (optional)"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
