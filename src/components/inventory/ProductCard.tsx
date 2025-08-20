@@ -14,7 +14,7 @@ interface Product {
   id: string;
   name: string;
   default_price_per_day: number;
-  base_image?: string;
+  image_url?: string;
   stock_total: number;
   stock_in_service: number;
   low_stock_threshold: number;
@@ -238,9 +238,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       {/* Product Image */}
       <div className="flex justify-center mb-4">
         <div className="w-52 h-52 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-          {product.base_image ? (
+          {product.image_url ? (
             <img
-              src={product.base_image}
+              src={product.image_url}
               alt={product.name}
               className="w-full h-full object-cover"
             />
