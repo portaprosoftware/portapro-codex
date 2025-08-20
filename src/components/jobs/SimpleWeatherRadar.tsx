@@ -293,8 +293,8 @@ export const TimestampDisplay: React.FC<TimestampDisplayProps> = ({
   return (
     <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-xl shadow-lg border border-green-200">
       <div className="flex items-center gap-2">
-        <span className="font-bold text-green-900 text-sm">Now:</span>
-        <span className="font-bold text-green-700 text-sm">{formatTimestampToAMPM(current.time)}</span>
+        <span className="font-bold text-green-900 text-xs">Now:</span>
+        <span className="font-bold text-green-700 text-xs">{formatTimestampToAMPM(current.time)}</span>
       </div>
       <div className="text-xs font-semibold text-green-600 mt-1">
         Range: {formatTimestampToAMPM(startTime)} - {formatTimestampToAMPM(endTime)}
