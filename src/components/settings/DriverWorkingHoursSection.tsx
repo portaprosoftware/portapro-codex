@@ -63,22 +63,22 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-4">
       {/* Header */}
-      <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
+      <div className="flex items-center justify-between">
+        <Button variant="secondary" size="sm" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Settings
         </Button>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
-          <Clock className="w-6 h-6 text-white" />
+      <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
+          <Clock className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold">Driver Working Hours</h1>
-          <p className="text-muted-foreground">Manage driver schedules and working hours</p>
+          <h1 className="text-2xl font-bold">Driver Working Hours</h1>
+          <p className="text-muted-foreground text-sm">Manage driver schedules and working hours</p>
         </div>
       </div>
 
