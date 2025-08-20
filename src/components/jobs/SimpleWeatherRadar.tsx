@@ -116,13 +116,22 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       setCurrentFrame(0);
       console.log('SimpleWeatherRadar: Loaded', radarFrames.length, 'frames');
       
-      // Critical: Show the first frame immediately after loading
-      setTimeout(() => {
-        if (layerIds.current.length > 0 && map.getLayer(layerIds.current[0])) {
-          map.setPaintProperty(layerIds.current[0], 'raster-opacity', RADAR_OPACITY);
-          console.log('SimpleWeatherRadar: Showing first frame');
+      // CRITICAL FIX: Immediately show the first frame
+      if (layerIds.current.length > 0) {
+        // Hide all layers first
+        layerIds.current.forEach(layerId => {
+          if (map.getLayer(layerId)) {
+            map.setPaintProperty(layerId, 'raster-opacity', 0);
+          }
+        });
+        
+        // Show first frame immediately
+        const firstLayerId = layerIds.current[0];
+        if (firstLayerId && map.getLayer(firstLayerId)) {
+          map.setPaintProperty(firstLayerId, 'raster-opacity', RADAR_OPACITY);
+          console.log('SimpleWeatherRadar: Showing first frame immediately');
         }
-      }, 100);
+      }
       
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
