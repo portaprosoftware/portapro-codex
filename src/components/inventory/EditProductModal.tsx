@@ -24,6 +24,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [formData, setFormData] = useState({
     name: "",
+    manufacturer: "",
     description: "",
     default_price_per_day: 0,
     low_stock_threshold: 0
@@ -48,6 +49,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
     if (product) {
       setFormData({
         name: product.name || "",
+        manufacturer: product.manufacturer || "",
         description: product.description || "",
         default_price_per_day: product.default_price_per_day || 0,
         low_stock_threshold: product.low_stock_threshold || 0
@@ -230,6 +232,16 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   placeholder="Enter product name"
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="manufacturer">Manufacturer</Label>
+                <Input
+                  id="manufacturer"
+                  value={formData.manufacturer}
+                  onChange={(e) => handleInputChange("manufacturer", e.target.value)}
+                  placeholder="Manufacturer (optional)"
                 />
               </div>
 

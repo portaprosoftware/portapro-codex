@@ -5698,6 +5698,7 @@ export type Database = {
           includes_lock: boolean | null
           is_active: boolean
           low_stock_threshold: number
+          manufacturer: string | null
           monthly_rate: number | null
           name: string
           pricing_method: string | null
@@ -5725,6 +5726,7 @@ export type Database = {
           includes_lock?: boolean | null
           is_active?: boolean
           low_stock_threshold?: number
+          manufacturer?: string | null
           monthly_rate?: number | null
           name: string
           pricing_method?: string | null
@@ -5752,6 +5754,7 @@ export type Database = {
           includes_lock?: boolean | null
           is_active?: boolean
           low_stock_threshold?: number
+          manufacturer?: string | null
           monthly_rate?: number | null
           name?: string
           pricing_method?: string | null

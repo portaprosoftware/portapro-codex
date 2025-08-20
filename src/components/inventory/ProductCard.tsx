@@ -13,6 +13,7 @@ import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 interface Product {
   id: string;
   name: string;
+  manufacturer?: string;
   default_price_per_day: number;
   image_url?: string;
   stock_total: number;
@@ -260,6 +261,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       {/* Product Info */}
       <div className="text-center space-y-3">
         <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
+        {product.manufacturer && (
+          <p className="text-xs text-gray-500">
+            by {product.manufacturer}
+          </p>
+        )}
         <p className="text-blue-600 font-semibold">${product.default_price_per_day}/day</p>
         
         {/* Status Badge removed - will be replaced with unified badge system */}

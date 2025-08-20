@@ -28,6 +28,7 @@ interface AddInventoryModalProps {
 
 interface ProductFormData {
   name: string;
+  manufacturer: string;
   description: string;
   defaultPricePerDay: number;
   stockTotal: number;
@@ -45,6 +46,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
+    manufacturer: '',
     description: '',
     defaultPricePerDay: 0,
     stockTotal: 0,
@@ -64,6 +66,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
         .from('products')
         .insert({
           name: data.name,
+          manufacturer: data.manufacturer || null,
           description: data.description,
           default_price_per_day: data.defaultPricePerDay,
           stock_total: data.stockTotal,
@@ -183,6 +186,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   const handleClose = () => {
     setFormData({
       name: '',
+      manufacturer: '',
       description: '',
       defaultPricePerDay: 0,
       stockTotal: 0,
@@ -233,6 +237,16 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
                 onChange={(e) => updateFormData('name', e.target.value)}
                 placeholder="e.g., Standard Porta Potty"
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="manufacturer">Manufacturer</Label>
+              <Input
+                id="manufacturer"
+                value={formData.manufacturer}
+                onChange={(e) => updateFormData('manufacturer', e.target.value)}
+                placeholder="Manufacturer (optional)"
               />
             </div>
 

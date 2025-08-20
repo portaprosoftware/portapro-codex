@@ -11,6 +11,7 @@ import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 interface Product {
   id: string;
   name: string;
+  manufacturer?: string;
   default_price_per_day: number;
   image_url?: string;
   stock_total: number;
@@ -163,6 +164,11 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
         {/* Product Info */}
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
+          {product.manufacturer && (
+            <p className="text-xs text-gray-500 mb-1">
+              by {product.manufacturer}
+            </p>
+          )}
           <p className="text-blue-600 font-medium">${product.default_price_per_day}/day</p>
         </div>
 
