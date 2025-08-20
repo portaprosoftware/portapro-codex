@@ -172,8 +172,8 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="secondary" size="sm" onClick={onClose}>
+              <ArrowLeft className="w-4 h-4 mr-1" />
               Back to Overview
             </Button>
           </div>
