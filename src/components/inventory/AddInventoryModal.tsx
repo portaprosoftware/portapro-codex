@@ -18,6 +18,8 @@ import { StorageLocationSelector } from "./StorageLocationSelector";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { toast } from "sonner";
 import { Package, MapPin, Hash, DollarSign } from "lucide-react";
+import { ProductImageUploader } from "./ProductImageUploader";
+import { uploadProductImage } from "@/utils/imageUpload";
 
 interface AddInventoryModalProps {
   isOpen: boolean;
@@ -35,6 +37,7 @@ interface ProductFormData {
   createIndividualItems: boolean;
   trackingMethod: 'bulk' | 'individual' | 'both';
   selectedCategory: string;
+  imageFile?: File | null;
 }
 
 export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
@@ -50,12 +53,13 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
     locationQuantity: 0,
     createIndividualItems: false,
     trackingMethod: 'bulk',
-    selectedCategory: ''
+    selectedCategory: '',
+    imageFile: null,
   });
 
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
-      // 1. Create the product
+      // 1. Create the product (image_url set later if image uploaded)
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -66,14 +70,29 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           low_stock_threshold: data.lowStockThreshold,
           track_inventory: true,
           default_storage_location_id: data.storageLocationId,
-          default_item_code_category: data.selectedCategory || null
+          default_item_code_category: data.selectedCategory || null,
+          image_url: null
         })
         .select()
         .single();
 
       if (productError) throw productError;
 
-      // 2. Create or update location stock entry
+      // 2. If image selected, upload and update image_url
+      if (data.imageFile) {
+        const uploaded = await uploadProductImage(data.imageFile, {
+          productId: product.id,
+          productName: product.name,
+          subfolder: "products",
+        });
+        const { error: imgErr } = await supabase
+          .from('products')
+          .update({ image_url: uploaded.publicUrl })
+          .eq('id', product.id);
+        if (imgErr) throw imgErr;
+      }
+
+      // 3. Create or update location stock entry
       if (data.storageLocationId && data.locationQuantity > 0) {
         const { error: stockError } = await supabase
           .from('product_location_stock')
@@ -84,11 +103,10 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           }, {
             onConflict: 'product_id,storage_location_id'
           });
-
         if (stockError) throw stockError;
       }
 
-      // 3. Optionally create individual items
+      // 4. Optionally create individual items
       if (data.createIndividualItems && data.locationQuantity > 0) {
         if (!data.selectedCategory) {
           throw new Error('Item code category is required when creating individual items');
@@ -96,12 +114,10 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
         const individualItems = [];
         for (let i = 0; i < data.locationQuantity; i++) {
-          // Generate item code using the category
           const { data: itemCode, error: codeError } = await supabase
             .rpc('generate_item_code_with_category', {
               category_prefix: data.selectedCategory
             });
-
           if (codeError) throw codeError;
 
           individualItems.push({
@@ -115,7 +131,6 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
         const { error: itemsError } = await supabase
           .from('product_items')
           .insert(individualItems);
-
         if (itemsError) throw itemsError;
       }
 
@@ -176,7 +191,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       locationQuantity: 0,
       createIndividualItems: false,
       trackingMethod: 'bulk',
-      selectedCategory: ''
+      selectedCategory: '',
+      imageFile: null,
     });
     onClose();
   };
@@ -202,7 +218,13 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           {/* Basic Product Information */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-foreground">Product Information</h3>
-            
+
+            {/* NEW: Image uploader */}
+            <ProductImageUploader
+              initialUrl={null}
+              onFileChange={(file) => updateFormData('imageFile', file)}
+            />
+
             <div className="space-y-2">
               <Label htmlFor="name">Product Name *</Label>
               <Input
@@ -224,7 +246,6 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
                 rows={3}
               />
             </div>
-
           </div>
 
           <Separator />

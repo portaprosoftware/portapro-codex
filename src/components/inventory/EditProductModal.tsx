@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ProductImageUploader } from "./ProductImageUploader";
+import { uploadProductImage, deleteProductImageByUrl } from "@/utils/imageUpload";
 
 interface EditProductModalProps {
   productId: string;
@@ -26,6 +28,8 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
     default_price_per_day: 0,
     low_stock_threshold: 0
   });
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", productId],
@@ -35,7 +39,6 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
         .select("*")
         .eq("id", productId)
         .single();
-      
       if (error) throw error;
       return data;
     }
@@ -49,17 +52,46 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
         default_price_per_day: product.default_price_per_day || 0,
         low_stock_threshold: product.low_stock_threshold || 0
       });
+      setNewImageFile(null);
+      setRemoveImage(false);
     }
   }, [product]);
 
   const updateMutation = useMutation({
     mutationFn: async (updateData: typeof formData) => {
+      // update non-image fields first
       const { error } = await supabase
         .from("products")
         .update(updateData)
         .eq("id", productId);
-      
       if (error) throw error;
+
+      // handle image removal or replacement
+      if (removeImage && product?.image_url) {
+        await deleteProductImageByUrl(product.image_url as string);
+        const { error: imgNullErr } = await supabase
+          .from("products")
+          .update({ image_url: null })
+          .eq("id", productId);
+        if (imgNullErr) throw imgNullErr;
+      }
+
+      if (newImageFile) {
+        const uploaded = await uploadProductImage(newImageFile, {
+          productId,
+          productName: formData.name,
+        });
+        const { error: imgErr } = await supabase
+          .from("products")
+          .update({ image_url: uploaded.publicUrl })
+          .eq("id", productId);
+        if (imgErr) throw imgErr;
+
+        // If we replaced an existing image, attempt to delete the old one
+        if (product?.image_url) {
+          await deleteProductImageByUrl(product.image_url as string);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product", productId] });
@@ -76,55 +108,44 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
   const deleteMutation = useMutation({
     mutationFn: async () => {
       console.log("Starting product deletion for ID:", productId);
-      
       // First, delete all related records to avoid foreign key constraints
       console.log("Deleting related stock adjustments...");
       const { error: stockAdjustmentError } = await supabase
         .from("stock_adjustments")
         .delete()
         .eq("product_id", productId);
-      
       if (stockAdjustmentError) {
         console.error("Error deleting stock adjustments:", stockAdjustmentError);
         throw new Error(`Failed to delete related stock adjustments: ${stockAdjustmentError.message}`);
       }
-
-      // Delete product location stock
       console.log("Deleting product location stock...");
       const { error: locationStockError } = await supabase
         .from("product_location_stock")
         .delete()
         .eq("product_id", productId);
-      
       if (locationStockError) {
         console.error("Error deleting product location stock:", locationStockError);
         throw new Error(`Failed to delete product location stock: ${locationStockError.message}`);
       }
-
-      // Delete product items
       console.log("Deleting product items...");
       const { error: itemsError } = await supabase
         .from("product_items")
         .delete()
         .eq("product_id", productId);
-      
       if (itemsError) {
         console.error("Error deleting product items:", itemsError);
         throw new Error(`Failed to delete product items: ${itemsError.message}`);
       }
-
       // Finally, delete the product itself
       console.log("Deleting product...");
       const { error: productError } = await supabase
         .from("products")
         .delete()
         .eq("id", productId);
-      
       if (productError) {
         console.error("Error deleting product:", productError);
         throw new Error(`Failed to delete product: ${productError.message}`);
       }
-      
       console.log("Product deletion completed successfully");
     },
     onSuccess: () => {
@@ -135,8 +156,6 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
     },
     onError: (error: any) => {
       console.error('Delete mutation error:', error);
-      
-      // Provide user-friendly error messages
       if (error.message?.includes("foreign key constraint")) {
         toast.error("Cannot delete product: It has related data that must be removed first");
       } else if (error.message?.includes("stock_adjustments")) {
@@ -189,6 +208,20 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({ productId, o
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
+              {/* NEW: Image uploader */}
+              <ProductImageUploader
+                initialUrl={product.image_url}
+                onFileChange={(file) => {
+                  setNewImageFile(file);
+                  if (file) setRemoveImage(false);
+                }}
+                onRemoveImage={() => {
+                  setNewImageFile(null);
+                  setRemoveImage(true);
+                }}
+                disabled={updateMutation.isPending}
+              />
+
               <div className="space-y-2">
                 <Label htmlFor="name">Product Name</Label>
                 <Input
