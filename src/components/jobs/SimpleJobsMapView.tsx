@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from 'lucide-react';
+import { X, Satellite, Map as MapIcon, Users, MapPin as MapPinIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
 
@@ -42,10 +42,6 @@ export function SimpleJobsMapView({
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
-  const [radarEnabled, setRadarEnabled] = useState(false);
-  const [radarResetKey, setRadarResetKey] = useState(0);
-  const [radarFrames, setRadarFrames] = useState<{ path: string; time: number }[]>([]);
-  const [currentRadarFrame, setCurrentRadarFrame] = useState(0);
   
   // Check if selected date is today
   const isToday = (date: Date) => {
@@ -128,12 +124,6 @@ export function SimpleJobsMapView({
   const deduplicatedJobs = deduplicateJobs(allJobs);
   const filteredJobs = filterJobs(deduplicatedJobs);
 
-  // Auto-disable radar when date is not today
-  useEffect(() => {
-    if (!selectedDateIsToday && radarEnabled) {
-      setRadarEnabled(false);
-    }
-  }, [selectedDate, selectedDateIsToday, radarEnabled]);
 
   // Get Mapbox token
   useEffect(() => {
@@ -223,8 +213,6 @@ export function SimpleJobsMapView({
         : 'mapbox://styles/mapbox/satellite-streets-v12';
       map.current.setStyle(styleUrl);
       
-      // Reset radar when map style changes to force reload
-      setRadarResetKey(prev => prev + 1);
     }
   }, [mapStyle, mapboxToken]);
 
@@ -509,36 +497,6 @@ export function SimpleJobsMapView({
           </div>
         )}
 
-        {/* Radar Toggle */}
-        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
-          <div className="flex items-center gap-2">
-            <Radar className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
-            <Switch
-              checked={radarEnabled}
-              onCheckedChange={(checked) => {
-                if (selectedDateIsToday) {
-                  setRadarEnabled(checked);
-                }
-              }}
-              disabled={!selectedDateIsToday}
-            />
-          </div>
-          {!selectedDateIsToday && (
-            <div className="text-xs text-gray-500 mt-1">
-              Radar only available for today's date
-            </div>
-          )}
-        </div>
-        
-        {/* Weather Radar Timestamp Display - positioned directly under toggle */}
-        {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
-          <div className="mt-2">
-            <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
-              Radar disabled
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Multiple Jobs Dialog */}
