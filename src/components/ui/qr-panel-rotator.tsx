@@ -22,7 +22,7 @@ const PanelScanningCard: React.FC = () => {
         
         <div className="space-y-4">
           <div className="space-y-3">
-            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium inline-block">
+            <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
               ✓ Successfully tracked
             </div>
             
