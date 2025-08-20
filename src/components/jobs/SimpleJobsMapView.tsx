@@ -38,6 +38,7 @@ export function SimpleJobsMapView({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const boundsInitialized = useRef(false);
   
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [selectedJobsAtLocation, setSelectedJobsAtLocation] = useState<any[]>([]);
@@ -182,9 +183,9 @@ export function SimpleJobsMapView({
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
-    // Add smooth zoom animation to Cleveland area with different behavior for driver vs standard mode
+    // Only do initial zoom on first load
     setTimeout(() => {
-      if (map.current) {
+      if (map.current && !boundsInitialized.current) {
         if (isDriverMode) {
           // Driver mode: More focused zoom with faster animation
           map.current.flyTo({
@@ -204,6 +205,7 @@ export function SimpleJobsMapView({
             easing: (t) => t * (2 - t) // Ease out animation
           });
         }
+        boundsInitialized.current = true;
       }
     }, 500); // Small delay to let map fully initialize
 
@@ -214,6 +216,7 @@ export function SimpleJobsMapView({
         map.current.remove();
         map.current = null;
       }
+      boundsInitialized.current = false;
     };
   }, [mapboxToken, isDriverMode]);
 
@@ -395,8 +398,8 @@ export function SimpleJobsMapView({
       markersRef.current.push(marker);
     });
 
-    // Improved bounds handling to prevent extreme zoom
-    if (hasCoordinates && jobsByLocation.size > 0) {
+    // Only auto-fit bounds on first load, then preserve user interactions
+    if (hasCoordinates && jobsByLocation.size > 0 && !boundsInitialized.current) {
       setTimeout(() => {
         if (map.current) {
           // For single location, use moderate zoom instead of fitBounds
@@ -405,17 +408,18 @@ export function SimpleJobsMapView({
             const [lng, lat] = locations[0].split(',').map(Number);
             map.current.flyTo({
               center: [lng, lat],
-              zoom: Math.min(14, map.current.getZoom()), // Cap at zoom 14 for single locations
+              zoom: 14,
               duration: 800
             });
           } else {
             // Multiple locations: use fitBounds with better padding
             map.current.fitBounds(bounds, { 
               padding: 80,
-              maxZoom: 16, // Prevent excessive zoom
+              maxZoom: 16,
               duration: 800
             });
           }
+          boundsInitialized.current = true;
         }
       }, 100);
     }
