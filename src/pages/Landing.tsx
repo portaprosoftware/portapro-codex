@@ -579,7 +579,7 @@ export const Landing: React.FC = () => {
             
             <div className="flex justify-center">
               <img 
-                src="/lovable-uploads/66b9876b-be61-4d09-ba28-60907047f8aa.png" 
+                src="/lovable-uploads/49fd5d94-e6e4-487c-af68-6fe976e72d29.png" 
                 alt="Standard Porta Potty inventory item showing pricing and availability tracking"
                 className="w-full max-w-md h-auto"
               />
