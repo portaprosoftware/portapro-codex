@@ -458,7 +458,7 @@ export function SimpleJobsMapView({
               variant={mapStyle === 'streets' ? "default" : "ghost"}
               size="sm"
               onClick={() => setMapStyle('streets')}
-              className="h-8 px-3 text-sm font-bold"
+              className="h-8 px-3 text-sm font-medium"
             >
               <MapIcon className="w-4 h-4 mr-1.5" />
               Streets
@@ -467,7 +467,7 @@ export function SimpleJobsMapView({
               variant={mapStyle === 'satellite' ? "default" : "ghost"}
               size="sm"
               onClick={() => setMapStyle('satellite')}
-              className="h-8 px-3 text-sm font-bold"
+              className="h-8 px-3 text-sm font-medium"
             >
               <Satellite className="w-4 h-4 mr-1.5" />
               Satellite
@@ -487,7 +487,7 @@ export function SimpleJobsMapView({
 
         {/* Map Status */}
         {filteredJobs.length > 0 && (
-          <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-sm font-semibold text-gray-600">
+          <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
             Jobs for {format(selectedDate, 'MMM d, yyyy')}: {filteredJobs.length}
           </div>
         )}
@@ -496,7 +496,7 @@ export function SimpleJobsMapView({
         <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
           <div className="flex items-center gap-2">
             <Radar className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-bold text-gray-700">Weather Radar</span>
+            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
             <Switch
               checked={radarEnabled}
               onCheckedChange={(checked) => {
@@ -508,7 +508,7 @@ export function SimpleJobsMapView({
             />
           </div>
           {!selectedDateIsToday && (
-            <div className="text-sm font-medium text-gray-500 mt-1">
+            <div className="text-xs text-gray-500 mt-1">
               Radar only available for today's date
             </div>
           )}
@@ -542,22 +542,22 @@ export function SimpleJobsMapView({
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="font-bold">{job.job_number}</div>
+                  <div className="font-medium">{job.job_number}</div>
                   <div className="flex gap-2">
-                    <Badge className={getJobTypeColor(job.job_type) + " text-white font-semibold"}>
+                    <Badge className={getJobTypeColor(job.job_type) + " text-white"}>
                       {job.job_type}
                     </Badge>
-                    <Badge className={getStatusBadgeColor(job.status) + " font-semibold"}>
+                    <Badge className={getStatusBadgeColor(job.status)}>
                       {job.status}
                     </Badge>
                   </div>
                 </div>
-                <div className="text-sm font-medium text-gray-600">
+                <div className="text-sm text-gray-600">
                   {job.customers?.name}
       </div>
 
                 {job.scheduled_time && (
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm text-gray-500">
                     {format(new Date(`2000-01-01T${job.scheduled_time}`), 'h:mm a')}
                   </div>
                 )}
