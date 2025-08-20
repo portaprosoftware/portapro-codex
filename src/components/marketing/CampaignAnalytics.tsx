@@ -127,39 +127,6 @@ export const CampaignAnalytics: React.FC = () => {
         ))}
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Campaign Performance */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Campaign Performance</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={campaignPerformanceData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="delivered" fill="#3B82F6" name="Delivered" />
-              <Bar dataKey="opened" fill="#10B981" name="Opened" />
-              <Bar dataKey="clicked" fill="#8B5CF6" name="Clicked" />
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-
-        {/* Monthly Trends */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Monthly Campaign Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="campaigns" stroke="#3B82F6" name="Campaigns" />
-              <Line type="monotone" dataKey="recipients" stroke="#10B981" name="Recipients" />
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
 
       {/* Channel Distribution & Recent Campaigns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
