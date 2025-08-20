@@ -16,66 +16,36 @@ interface TimeStampDisplayProps {
 export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isActive, onFramesUpdate }) => {
   const [frames, setFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isUserInteracting, setIsUserInteracting] = useState(false);
   
   const layerIds = useRef<string[]>([]);
-  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const mountedRef = useRef(true);
   const instanceId = useRef(Math.random().toString(36).substr(2, 9));
-  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Map interaction handlers
-  const handleUserInteractionStart = useCallback(() => {
-    setIsUserInteracting(true);
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-      resumeTimerRef.current = null;
-    }
-  }, []);
-
-  const handleUserInteractionEnd = useCallback(() => {
-    // Debounced resume - wait 1 second after interaction ends
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-    resumeTimerRef.current = setTimeout(() => {
-      setIsUserInteracting(false);
-    }, 1000);
-  }, []);
+  const lastFrameTime = useRef<number>(0);
+  const isAnimatingRef = useRef(false);
+  const originalScrollZoom = useRef<boolean | null>(null);
 
   // Complete cleanup function
   const cleanup = useCallback(() => {
-    console.log('SimpleWeatherRadar: Starting cleanup...');
-    
-    // Stop animation and resume timer
-    if (animationRef.current) {
-      clearInterval(animationRef.current);
-      animationRef.current = null;
+    // Stop animation
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-      resumeTimerRef.current = null;
-    }
-    setIsAnimating(false);
+    isAnimatingRef.current = false;
 
-    // Remove map event listeners
-    if (map) {
-      try {
-        map.off('zoomstart', handleUserInteractionStart);
-        map.off('dragstart', handleUserInteractionStart);
-        map.off('touchstart', handleUserInteractionStart);
-        map.off('zoomend', handleUserInteractionEnd);
-        map.off('dragend', handleUserInteractionEnd);
-        map.off('touchend', handleUserInteractionEnd);
-      } catch (error) {
-        console.warn('Error removing map event listeners:', error);
+    // Restore scroll zoom if it was disabled
+    if (map && originalScrollZoom.current !== null) {
+      if (originalScrollZoom.current) {
+        map.scrollZoom.enable();
       }
+      originalScrollZoom.current = null;
+    }
 
-      // Remove all radar layers and sources
+    // Remove all radar layers and sources
+    if (map) {
       layerIds.current.forEach(layerId => {
         try {
           if (map.getLayer(layerId)) {
@@ -94,25 +64,19 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     layerIds.current = [];
     setFrames([]);
     setCurrentFrame(0);
-    setHasLoaded(false);
     setError(null);
-    setIsUserInteracting(false);
     
     // Generate new instance ID for next load
     instanceId.current = Math.random().toString(36).substr(2, 9);
-    
-    console.log('SimpleWeatherRadar: Cleanup complete');
   }, [map]);
 
   // Load radar frames
   const loadRadarFrames = useCallback(async () => {
-    if (!isActive || !map || !map.isStyleLoaded() || isLoading || hasLoaded) {
-      console.log('Radar: Skipping load - active:', isActive, 'map ready:', map?.isStyleLoaded(), 'loading:', isLoading, 'hasLoaded:', hasLoaded);
+    if (!isActive || !map || !map.isStyleLoaded() || isLoading) {
       return;
     }
 
     try {
-      console.log('SimpleWeatherRadar: Starting to load radar frames...');
       setIsLoading(true);
       setError(null);
       
@@ -121,63 +85,68 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
       if (!mountedRef.current) return;
       
       if (radarFrames.length === 0) {
-        console.warn('SimpleWeatherRadar: No radar frames available');
         setFrames([]);
         setIsLoading(false);
         return;
       }
 
-      console.log('SimpleWeatherRadar: Got', radarFrames.length, 'frames, adding to map...');
+      // Temporarily disable scroll zoom to prevent conflicts
+      if (map.scrollZoom.isEnabled()) {
+        originalScrollZoom.current = true;
+        map.scrollZoom.disable();
+      } else {
+        originalScrollZoom.current = false;
+      }
 
       // Add sources and layers for each frame
-      radarFrames.forEach((frame, index) => {
-        const layerId = `radar-${instanceId.current}-${index}`;
-        const tileUrl = rainViewerService.getTileUrl(frame.path);
+      const batchSize = 3; // Process in smaller batches
+      for (let i = 0; i < radarFrames.length; i += batchSize) {
+        const batch = radarFrames.slice(i, i + batchSize);
+        
+        batch.forEach((frame, batchIndex) => {
+          const index = i + batchIndex;
+          const layerId = `radar-${instanceId.current}-${index}`;
+          const tileUrl = rainViewerService.getTileUrl(frame.path);
 
-        try {
-          // Add source
-          if (!map.getSource(layerId)) {
-            map.addSource(layerId, {
-              type: 'raster',
-              tiles: [tileUrl],
-              tileSize: 256,
-              maxzoom: 12
-            });
+          try {
+            // Add source
+            if (!map.getSource(layerId)) {
+              map.addSource(layerId, {
+                type: 'raster',
+                tiles: [tileUrl],
+                tileSize: 256,
+                maxzoom: 12
+              });
+            }
+
+            // Add layer with visibility instead of opacity
+            if (!map.getLayer(layerId)) {
+              map.addLayer({
+                id: layerId,
+                type: 'raster',
+                source: layerId,
+                layout: {
+                  visibility: index === 0 ? 'visible' : 'none'
+                },
+                paint: {
+                  'raster-opacity': 0.6,
+                  'raster-fade-duration': 0
+                }
+              });
+            }
+
+            layerIds.current.push(layerId);
+          } catch (error) {
+            console.error('Radar: Error adding layer', layerId, error);
           }
+        });
 
-          // Add layer
-          if (!map.getLayer(layerId)) {
-            map.addLayer({
-              id: layerId,
-              type: 'raster',
-              source: layerId,
-              paint: {
-                'raster-opacity': index === 0 ? 0.6 : 0, // Only first frame visible initially
-                'raster-fade-duration': 100
-              }
-            });
-          }
-
-          layerIds.current.push(layerId);
-        } catch (error) {
-          console.error('Radar: Error adding layer', layerId, error);
-        }
-      });
+        // Small delay between batches to prevent overwhelming the map
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
 
       setFrames(radarFrames);
       setCurrentFrame(0);
-      setHasLoaded(true);
-      console.log('SimpleWeatherRadar: Radar frames loaded successfully');
-
-      // Set up map event listeners for interaction detection
-      if (map) {
-        map.on('zoomstart', handleUserInteractionStart);
-        map.on('dragstart', handleUserInteractionStart);
-        map.on('touchstart', handleUserInteractionStart);
-        map.on('zoomend', handleUserInteractionEnd);
-        map.on('dragend', handleUserInteractionEnd);
-        map.on('touchend', handleUserInteractionEnd);
-      }
       
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
@@ -186,75 +155,75 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     } finally {
       setIsLoading(false);
     }
-  }, [isActive, map, isLoading, hasLoaded, handleUserInteractionStart, handleUserInteractionEnd]);
+  }, [isActive, map, isLoading]);
 
-  // Update frame visibility
+  // Update frame visibility using layout property
   const updateFrame = useCallback((frameIndex: number) => {
-    if (!map || layerIds.current.length === 0 || isUserInteracting) return;
+    if (!map || layerIds.current.length === 0) return;
     
     try {
-      // Hide all layers first
-      layerIds.current.forEach(layerId => {
+      // Batch visibility updates
+      const updates: Array<{ layerId: string; visible: boolean }> = [];
+      
+      layerIds.current.forEach((layerId, index) => {
+        updates.push({
+          layerId,
+          visible: index === frameIndex
+        });
+      });
+
+      // Apply all updates at once
+      updates.forEach(({ layerId, visible }) => {
         if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'raster-opacity', 0);
+          map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
         }
       });
-      
-      // Show current frame
-      const currentLayerId = layerIds.current[frameIndex];
-      if (currentLayerId && map.getLayer(currentLayerId)) {
-        map.setPaintProperty(currentLayerId, 'raster-opacity', 0.6);
-      }
     } catch (error) {
       console.warn('Error updating frame:', error);
     }
-  }, [map, isUserInteracting]);
+  }, [map]);
+
+  // Animation loop using requestAnimationFrame
+  const animate = useCallback((timestamp: number) => {
+    if (!mountedRef.current || !isAnimatingRef.current || frames.length <= 1) {
+      return;
+    }
+
+    // Control animation speed (500ms per frame)
+    if (timestamp - lastFrameTime.current >= 500) {
+      setCurrentFrame(prev => {
+        const next = (prev + 1) % frames.length;
+        updateFrame(next);
+        return next;
+      });
+      lastFrameTime.current = timestamp;
+    }
+
+    // Continue animation
+    if (isAnimatingRef.current) {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }
+  }, [frames.length, updateFrame]);
 
   // Start animation
   const startAnimation = useCallback(() => {
-    if (animationRef.current || isAnimating || isUserInteracting) {
-      console.log('Radar: Animation already running or user interacting');
+    if (isAnimatingRef.current || frames.length <= 1) {
       return;
     }
     
-    if (frames.length <= 1) {
-      console.log('Radar: Insufficient frames for animation:', frames.length);
-      return;
-    }
-    
-    console.log('SimpleWeatherRadar: Starting animation...');
-    setIsAnimating(true);
-    
-    animationRef.current = setInterval(() => {
-      if (mountedRef.current && !isUserInteracting) {
-        setCurrentFrame(prev => {
-          const next = (prev + 1) % frames.length;
-          updateFrame(next);
-          return next;
-        });
-      }
-    }, 200); // Smoother animation - 200ms per frame
-  }, [isAnimating, frames.length, updateFrame, isUserInteracting]);
+    isAnimatingRef.current = true;
+    lastFrameTime.current = 0;
+    animationFrameRef.current = requestAnimationFrame(animate);
+  }, [frames.length, animate]);
 
   // Stop animation
   const stopAnimation = useCallback(() => {
-    if (animationRef.current) {
-      clearInterval(animationRef.current);
-      animationRef.current = null;
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
-    setIsAnimating(false);
+    isAnimatingRef.current = false;
   }, []);
-
-  // Update frame when currentFrame changes
-  useEffect(() => {
-    if (isActive && frames.length > 0) {
-      console.log('Radar: Updating to frame', currentFrame);
-      updateFrame(currentFrame);
-      
-      // Notify parent component about frame updates
-      onFramesUpdate?.(frames, currentFrame);
-    }
-  }, [currentFrame, frames.length, isActive, updateFrame, onFramesUpdate]);
 
   // Effect to handle active state changes
   useEffect(() => {
@@ -265,39 +234,39 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     }
   }, [isActive, map, loadRadarFrames, cleanup]);
 
-  // Auto-start animation when frames are loaded and user is not interacting
+  // Auto-start animation when frames are loaded
   useEffect(() => {
-    if (frames.length > 0 && !isAnimating && isActive && hasLoaded && !isUserInteracting) {
+    if (frames.length > 0 && isActive && !isLoading) {
       // Notify parent about initial frames
       onFramesUpdate?.(frames, currentFrame);
       
-      const timer = setTimeout(() => {
-        startAnimation();
-      }, 100); // Small delay to ensure layers are ready
+      // Re-enable scroll zoom after a short delay
+      const enableZoomTimer = setTimeout(() => {
+        if (map && originalScrollZoom.current === true) {
+          map.scrollZoom.enable();
+          originalScrollZoom.current = null;
+        }
+      }, 1000);
       
-      return () => clearTimeout(timer);
-    }
-  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation, onFramesUpdate, currentFrame, isUserInteracting]);
-
-  // Stop animation when user starts interacting
-  useEffect(() => {
-    if (isUserInteracting && isAnimating) {
-      console.log('Radar: Pausing animation due to user interaction');
-      stopAnimation();
-    }
-  }, [isUserInteracting, isAnimating, stopAnimation]);
-
-  // Resume animation when user stops interacting
-  useEffect(() => {
-    if (!isUserInteracting && !isAnimating && frames.length > 0 && isActive && hasLoaded) {
-      console.log('Radar: Resuming animation after user interaction');
-      const timer = setTimeout(() => {
+      // Start animation
+      const animationTimer = setTimeout(() => {
         startAnimation();
       }, 100);
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(enableZoomTimer);
+        clearTimeout(animationTimer);
+      };
     }
-  }, [isUserInteracting, isAnimating, frames.length, isActive, hasLoaded, startAnimation]);
+  }, [frames.length, isActive, isLoading, startAnimation, onFramesUpdate, currentFrame, map]);
+
+  // Update frame display when currentFrame changes
+  useEffect(() => {
+    if (isActive && frames.length > 0) {
+      updateFrame(currentFrame);
+      onFramesUpdate?.(frames, currentFrame);
+    }
+  }, [currentFrame, frames.length, isActive, updateFrame, onFramesUpdate]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -305,11 +274,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     
     return () => {
       mountedRef.current = false;
+      stopAnimation();
       cleanup();
     };
-  }, [cleanup]);
+  }, [cleanup, stopAnimation]);
 
-  return null; // No longer rendering timestamp display here
+  return null;
 };
 
 // Timestamp display component
