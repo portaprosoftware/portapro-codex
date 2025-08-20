@@ -20,25 +20,62 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
   
   const layerIds = useRef<string[]>([]);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const mountedRef = useRef(true);
   const instanceId = useRef(Math.random().toString(36).substr(2, 9));
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Map interaction handlers
+  const handleUserInteractionStart = useCallback(() => {
+    setIsUserInteracting(true);
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
+  }, []);
+
+  const handleUserInteractionEnd = useCallback(() => {
+    // Debounced resume - wait 1 second after interaction ends
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+    }
+    resumeTimerRef.current = setTimeout(() => {
+      setIsUserInteracting(false);
+    }, 1000);
+  }, []);
 
   // Complete cleanup function
   const cleanup = useCallback(() => {
     console.log('SimpleWeatherRadar: Starting cleanup...');
     
-    // Stop animation
+    // Stop animation and resume timer
     if (animationRef.current) {
       clearInterval(animationRef.current);
       animationRef.current = null;
     }
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
     setIsAnimating(false);
 
-    // Remove all radar layers and sources
+    // Remove map event listeners
     if (map) {
+      try {
+        map.off('zoomstart', handleUserInteractionStart);
+        map.off('dragstart', handleUserInteractionStart);
+        map.off('touchstart', handleUserInteractionStart);
+        map.off('zoomend', handleUserInteractionEnd);
+        map.off('dragend', handleUserInteractionEnd);
+        map.off('touchend', handleUserInteractionEnd);
+      } catch (error) {
+        console.warn('Error removing map event listeners:', error);
+      }
+
+      // Remove all radar layers and sources
       layerIds.current.forEach(layerId => {
         try {
           if (map.getLayer(layerId)) {
@@ -59,6 +96,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     setCurrentFrame(0);
     setHasLoaded(false);
     setError(null);
+    setIsUserInteracting(false);
     
     // Generate new instance ID for next load
     instanceId.current = Math.random().toString(36).substr(2, 9);
@@ -130,6 +168,16 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
       setCurrentFrame(0);
       setHasLoaded(true);
       console.log('SimpleWeatherRadar: Radar frames loaded successfully');
+
+      // Set up map event listeners for interaction detection
+      if (map) {
+        map.on('zoomstart', handleUserInteractionStart);
+        map.on('dragstart', handleUserInteractionStart);
+        map.on('touchstart', handleUserInteractionStart);
+        map.on('zoomend', handleUserInteractionEnd);
+        map.on('dragend', handleUserInteractionEnd);
+        map.on('touchend', handleUserInteractionEnd);
+      }
       
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
@@ -138,11 +186,11 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     } finally {
       setIsLoading(false);
     }
-  }, [isActive, map, isLoading, hasLoaded]);
+  }, [isActive, map, isLoading, hasLoaded, handleUserInteractionStart, handleUserInteractionEnd]);
 
   // Update frame visibility
   const updateFrame = useCallback((frameIndex: number) => {
-    if (!map || layerIds.current.length === 0) return;
+    if (!map || layerIds.current.length === 0 || isUserInteracting) return;
     
     try {
       // Hide all layers first
@@ -160,12 +208,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     } catch (error) {
       console.warn('Error updating frame:', error);
     }
-  }, [map]);
+  }, [map, isUserInteracting]);
 
   // Start animation
   const startAnimation = useCallback(() => {
-    if (animationRef.current || isAnimating) {
-      console.log('Radar: Animation already running');
+    if (animationRef.current || isAnimating || isUserInteracting) {
+      console.log('Radar: Animation already running or user interacting');
       return;
     }
     
@@ -178,7 +226,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     setIsAnimating(true);
     
     animationRef.current = setInterval(() => {
-      if (mountedRef.current) {
+      if (mountedRef.current && !isUserInteracting) {
         setCurrentFrame(prev => {
           const next = (prev + 1) % frames.length;
           updateFrame(next);
@@ -186,7 +234,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
         });
       }
     }, 200); // Smoother animation - 200ms per frame
-  }, [isAnimating, frames.length, updateFrame]);
+  }, [isAnimating, frames.length, updateFrame, isUserInteracting]);
 
   // Stop animation
   const stopAnimation = useCallback(() => {
@@ -217,9 +265,9 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     }
   }, [isActive, map, loadRadarFrames, cleanup]);
 
-  // Auto-start animation when frames are loaded
+  // Auto-start animation when frames are loaded and user is not interacting
   useEffect(() => {
-    if (frames.length > 0 && !isAnimating && isActive && hasLoaded) {
+    if (frames.length > 0 && !isAnimating && isActive && hasLoaded && !isUserInteracting) {
       // Notify parent about initial frames
       onFramesUpdate?.(frames, currentFrame);
       
@@ -229,7 +277,27 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
       
       return () => clearTimeout(timer);
     }
-  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation, onFramesUpdate, currentFrame]);
+  }, [frames.length, isAnimating, isActive, hasLoaded, startAnimation, onFramesUpdate, currentFrame, isUserInteracting]);
+
+  // Stop animation when user starts interacting
+  useEffect(() => {
+    if (isUserInteracting && isAnimating) {
+      console.log('Radar: Pausing animation due to user interaction');
+      stopAnimation();
+    }
+  }, [isUserInteracting, isAnimating, stopAnimation]);
+
+  // Resume animation when user stops interacting
+  useEffect(() => {
+    if (!isUserInteracting && !isAnimating && frames.length > 0 && isActive && hasLoaded) {
+      console.log('Radar: Resuming animation after user interaction');
+      const timer = setTimeout(() => {
+        startAnimation();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isUserInteracting, isAnimating, frames.length, isActive, hasLoaded, startAnimation]);
 
   // Cleanup on unmount
   useEffect(() => {
