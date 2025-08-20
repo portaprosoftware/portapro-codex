@@ -3,6 +3,8 @@ import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AttributeFiltersProps {
   filters: {
@@ -21,6 +23,43 @@ export const AttributeFilters: React.FC<AttributeFiltersProps> = ({
   onClearFilters
 }) => {
   const hasActiveFilters = Object.values(filters).some(value => value && value !== "all");
+
+  // Fetch dynamic attribute options from product_properties
+  const { data: attributeOptions = { color: [], size: [], material: [], condition: [] } } = useQuery({
+    queryKey: ['attribute-options'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('attribute_name, attribute_value')
+        .not('attribute_value', 'is', null);
+      
+      if (error) throw error;
+      
+      // Group by attribute type
+      const options: Record<string, string[]> = {
+        color: [],
+        size: [],
+        material: [],
+        condition: []
+      };
+      
+      data?.forEach(item => {
+        const attrName = item.attribute_name.toLowerCase();
+        const attrValue = item.attribute_value;
+        
+        if (attrValue && options[attrName] && !options[attrName].includes(attrValue)) {
+          options[attrName].push(attrValue);
+        }
+      });
+      
+      // Sort each array
+      Object.keys(options).forEach(key => {
+        options[key].sort();
+      });
+      
+      return options;
+    },
+  });
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -48,11 +87,11 @@ export const AttributeFilters: React.FC<AttributeFiltersProps> = ({
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Any Color</SelectItem>
-              <SelectItem value="blue">Blue</SelectItem>
-              <SelectItem value="green">Green</SelectItem>
-              <SelectItem value="tan">Tan</SelectItem>
-              <SelectItem value="gray">Gray</SelectItem>
-              <SelectItem value="white">White</SelectItem>
+              {attributeOptions.color.map((color) => (
+                <SelectItem key={color} value={color}>
+                  {color}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -65,9 +104,11 @@ export const AttributeFilters: React.FC<AttributeFiltersProps> = ({
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Any Size</SelectItem>
-              <SelectItem value="standard">Standard</SelectItem>
-              <SelectItem value="large">Large</SelectItem>
-              <SelectItem value="ada">ADA Compliant</SelectItem>
+              {attributeOptions.size.map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -80,9 +121,11 @@ export const AttributeFilters: React.FC<AttributeFiltersProps> = ({
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Any Material</SelectItem>
-              <SelectItem value="plastic">Plastic</SelectItem>
-              <SelectItem value="fiberglass">Fiberglass</SelectItem>
-              <SelectItem value="metal">Metal</SelectItem>
+              {attributeOptions.material.map((material) => (
+                <SelectItem key={material} value={material}>
+                  {material}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -95,11 +138,11 @@ export const AttributeFilters: React.FC<AttributeFiltersProps> = ({
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="all">Any Condition</SelectItem>
-              <SelectItem value="excellent">Excellent</SelectItem>
-              <SelectItem value="good">Good</SelectItem>
-              <SelectItem value="fair">Fair</SelectItem>
-              <SelectItem value="poor">Poor</SelectItem>
-              <SelectItem value="needs_repair">Needs Repair</SelectItem>
+              {attributeOptions.condition.map((condition) => (
+                <SelectItem key={condition} value={condition}>
+                  {condition}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
