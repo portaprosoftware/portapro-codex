@@ -38,7 +38,6 @@ export function SimpleJobsMapView({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const boundsInitialized = useRef(false);
   
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [selectedJobsAtLocation, setSelectedJobsAtLocation] = useState<any[]>([]);
@@ -183,31 +182,6 @@ export function SimpleJobsMapView({
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
-    // Only do initial zoom on first load
-    setTimeout(() => {
-      if (map.current && !boundsInitialized.current) {
-        if (isDriverMode) {
-          // Driver mode: More focused zoom with faster animation
-          map.current.flyTo({
-            center: [-81.6944, 41.4993], // Cleveland, Ohio
-            zoom: 11,
-            duration: 1500, // 1.5 second animation
-            curve: 1.2, // More aggressive curve
-            easing: (t) => 1 - Math.pow(1 - t, 3) // Ease out cubic
-          });
-        } else {
-          // Standard mode: Broader view with smooth animation
-          map.current.flyTo({
-            center: [-81.6944, 41.4993], // Cleveland, Ohio
-            zoom: 10,
-            duration: 2000, // 2 second animation
-            curve: 1.42, // Smooth curve
-            easing: (t) => t * (2 - t) // Ease out animation
-          });
-        }
-        boundsInitialized.current = true;
-      }
-    }, 500); // Small delay to let map fully initialize
 
     return () => {
       markersRef.current.forEach(marker => marker.remove());
@@ -216,7 +190,6 @@ export function SimpleJobsMapView({
         map.current.remove();
         map.current = null;
       }
-      boundsInitialized.current = false;
     };
   }, [mapboxToken, isDriverMode]);
 
@@ -398,31 +371,6 @@ export function SimpleJobsMapView({
       markersRef.current.push(marker);
     });
 
-    // Only auto-fit bounds on first load, then preserve user interactions
-    if (hasCoordinates && jobsByLocation.size > 0 && !boundsInitialized.current) {
-      setTimeout(() => {
-        if (map.current) {
-          // For single location, use moderate zoom instead of fitBounds
-          if (jobsByLocation.size === 1) {
-            const locations = Array.from(jobsByLocation.keys());
-            const [lng, lat] = locations[0].split(',').map(Number);
-            map.current.flyTo({
-              center: [lng, lat],
-              zoom: 14,
-              duration: 800
-            });
-          } else {
-            // Multiple locations: use fitBounds with better padding
-            map.current.fitBounds(bounds, { 
-              padding: 80,
-              maxZoom: 16,
-              duration: 800
-            });
-          }
-          boundsInitialized.current = true;
-        }
-      }, 100);
-    }
   }, [filteredJobs, mapStyle]);
 
   const getStatusColor = (status: string) => {
