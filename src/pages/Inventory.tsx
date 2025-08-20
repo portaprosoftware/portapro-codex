@@ -327,7 +327,7 @@ const Inventory: React.FC = () => {
               onClick={() => navigateToTab('code-categories')}
             >
               <span className="text-xs font-mono">####</span>
-              Categories
+              Codes
             </TabNav.Item>
             <TabNav.Item
               to="/inventory/maintenance"
