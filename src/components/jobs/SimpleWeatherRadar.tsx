@@ -24,14 +24,12 @@ interface TimestampDisplayProps {
   isActive: boolean;
 }
 
-// Simple timestamp to AM/PM formatting
+import { formatTimestampToAMPMInTimezone } from '@/lib/dateUtils';
+import { getCompanyTimezone } from '@/lib/timezoneUtils';
+
+// Simple timestamp to AM/PM formatting in company timezone
 export function formatTimestampToAMPM(timestamp: number): string {
-  const date = new Date(timestamp * 1000); // RainViewer uses seconds
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  return formatTimestampToAMPMInTimezone(timestamp, getCompanyTimezone());
 }
 
 export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ 

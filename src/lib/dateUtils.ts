@@ -3,6 +3,10 @@
  * Ensures dates are formatted consistently and avoids timezone issues
  */
 
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+import { isSameDay } from 'date-fns';
+import { getCompanyTimezone } from '@/lib/timezoneUtils';
+
 /**
  * Formats a Date object to YYYY-MM-DD string using local date components
  * This avoids timezone issues that can occur with format() from date-fns
@@ -85,4 +89,30 @@ export const formatDateSafe = (dateString: string, formatType: 'short' | 'long' 
   }
   
   return `${monthNames[month - 1]} ${day}`;
+};
+
+/**
+ * Check if two dates are the same day in a specific timezone
+ * This ensures date comparison respects the company's timezone (EDT)
+ */
+export const isSameDayInTimeZone = (date1: Date, date2: Date, timezone: string): boolean => {
+  const zonedDate1 = toZonedTime(date1, timezone);
+  const zonedDate2 = toZonedTime(date2, timezone);
+  return isSameDay(zonedDate1, zonedDate2);
+};
+
+/**
+ * Get current date in company timezone
+ */
+export const getCurrentDateInCompanyTimezone = (): Date => {
+  const companyTimezone = getCompanyTimezone();
+  return toZonedTime(new Date(), companyTimezone);
+};
+
+/**
+ * Format timestamp to AM/PM format in company timezone
+ */
+export const formatTimestampToAMPMInTimezone = (timestamp: number, timezone?: string): string => {
+  const tz = timezone || getCompanyTimezone();
+  return formatInTimeZone(new Date(timestamp * 1000), tz, 'h:mm a');
 };

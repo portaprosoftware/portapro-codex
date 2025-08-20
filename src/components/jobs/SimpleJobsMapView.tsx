@@ -9,7 +9,8 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { formatDateForQuery } from '@/lib/dateUtils';
+import { formatDateForQuery, isSameDayInTimeZone, getCurrentDateInCompanyTimezone } from '@/lib/dateUtils';
+import { getCompanyTimezone } from '@/lib/timezoneUtils';
 import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
 
 
@@ -47,15 +48,17 @@ export function SimpleJobsMapView({
   const [radarFrames, setRadarFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentRadarFrame, setCurrentRadarFrame] = useState(0);
   
-  // Check if selected date is today
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear();
-  };
-
-  const selectedDateIsToday = isToday(selectedDate);
+  // Check if selected date is today in company timezone (EDT)
+  const companyTimezone = getCompanyTimezone();
+  const currentDateInTimezone = getCurrentDateInCompanyTimezone();
+  const selectedDateIsToday = isSameDayInTimeZone(selectedDate, currentDateInTimezone, companyTimezone);
+  
+  console.log('SimpleJobsMapView: Timezone check', {
+    selectedDate: selectedDate.toISOString(),
+    currentDateInTimezone: currentDateInTimezone.toISOString(),
+    companyTimezone,
+    selectedDateIsToday
+  });
   
 
   // Get jobs data
@@ -476,6 +479,18 @@ export function SimpleJobsMapView({
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       
+      {/* Weather Radar - Moved to root level, outside dialogs */}
+      {map.current && radarEnabled && selectedDateIsToday && (
+        <SimpleWeatherRadar 
+          map={map.current} 
+          enabled={radarEnabled}
+          onFramesUpdate={(frames, currentFrame) => {
+            setRadarFrames(frames);
+            setCurrentRadarFrame(currentFrame);
+          }}
+        />
+      )}
+      
       {/* Control Panel - Top Left */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {/* Map Style Toggle */}
@@ -583,17 +598,6 @@ export function SimpleJobsMapView({
                   {job.customers?.name}
       </div>
 
-      {/* Weather Radar */}
-      {map.current && radarEnabled && selectedDateIsToday && (
-        <SimpleWeatherRadar 
-          map={map.current} 
-          enabled={radarEnabled}
-          onFramesUpdate={(frames, currentFrame) => {
-            setRadarFrames(frames);
-            setCurrentRadarFrame(currentFrame);
-          }}
-        />
-      )}
                 {job.scheduled_time && (
                   <div className="text-sm text-gray-500">
                     {format(new Date(`2000-01-01T${job.scheduled_time}`), 'h:mm a')}
