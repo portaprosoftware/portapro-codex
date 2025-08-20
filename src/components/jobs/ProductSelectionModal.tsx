@@ -132,6 +132,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSelected,
   onSelect
 }) => {
+  const getMethodDisplayText = (method: string) => {
+    switch (method) {
+      case 'stock_total':
+        return 'Total Stock';
+      case 'individual_tracking':
+        return 'Individual Units';
+      case 'availability_check':
+        return 'Real-time Check';
+      default:
+        return method;
+    }
+  };
+
   const availability = useAvailabilityEngine(
     product.id,
     startDate,
@@ -161,10 +174,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={product.image_url}
             alt={product.name}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              // Hide image and show fallback icon if image fails to load
+              e.currentTarget.style.display = 'none';
+              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'flex';
+            }}
           />
-        ) : (
-          <Package className="h-12 w-12 text-muted-foreground" />
-        )}
+        ) : null}
+        <Package className="h-12 w-12 text-muted-foreground" style={{ display: product.image_url ? 'none' : 'flex' }} />
       </div>
 
       {/* Product Info */}
@@ -189,9 +207,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Badge>
           )}
           
-          {availability.data?.method && (
+          {availability.data?.method && availability.data.method !== 'stock_total' && (
             <div className="text-xs text-muted-foreground">
-              Method: {availability.data.method}
+              {getMethodDisplayText(availability.data.method)}
             </div>
           )}
         </div>
