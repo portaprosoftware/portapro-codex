@@ -20,6 +20,7 @@ import FleetLoadsPage from './pages/FleetLoadsPage';
 import Marketing from './pages/Marketing';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
+import MaintenancePage from "./pages/MaintenancePage";
 import Settings from "./pages/Settings";
 import FleetAnalyticsPage from './pages/FleetAnalyticsPage';
 import FleetCapacityPage from './pages/FleetCapacityPage';
@@ -276,6 +277,12 @@ const App = () => {
           <Route path="/maintenance-hub" element={
             <>
               <SignedIn><Layout><MaintenanceHub /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/maintenance" element={
+            <>
+              <SignedIn><Layout><MaintenancePage /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
