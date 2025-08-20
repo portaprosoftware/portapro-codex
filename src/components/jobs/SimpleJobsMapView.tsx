@@ -395,17 +395,25 @@ export function SimpleJobsMapView({
       markersRef.current.push(marker);
     });
 
-    // Fit bounds without auto-zoom animation
+    // Improved bounds handling to prevent extreme zoom
     if (hasCoordinates && jobsByLocation.size > 0) {
       setTimeout(() => {
         if (map.current) {
-          // Only fit bounds if we have more than one location or this is the initial load
-          const shouldFitBounds = jobsByLocation.size > 1 || markersRef.current.length === 0;
-          
-          if (shouldFitBounds) {
+          // For single location, use moderate zoom instead of fitBounds
+          if (jobsByLocation.size === 1) {
+            const locations = Array.from(jobsByLocation.keys());
+            const [lng, lat] = locations[0].split(',').map(Number);
+            map.current.flyTo({
+              center: [lng, lat],
+              zoom: Math.min(14, map.current.getZoom()), // Cap at zoom 14 for single locations
+              duration: 800
+            });
+          } else {
+            // Multiple locations: use fitBounds with better padding
             map.current.fitBounds(bounds, { 
-              padding: 50,
-              duration: 0 // No animation
+              padding: 80,
+              maxZoom: 16, // Prevent excessive zoom
+              duration: 800
             });
           }
         }
