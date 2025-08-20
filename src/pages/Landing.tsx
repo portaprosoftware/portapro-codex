@@ -618,9 +618,14 @@ export const Landing: React.FC = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center order-1 lg:order-2">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Location Management Photo</span>
+            <div className="flex justify-center order-1 lg:order-2">
+              <img
+                src="/lovable-uploads/6be592f8-871d-4e96-80d4-aa356de5da9f.png"
+                alt="Location Transfer History showing transfers between North Yard and South Yard with search and date filtering capabilities"
+                className="w-full max-w-lg h-auto"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div className="space-y-6 order-2 lg:order-1">
               <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
