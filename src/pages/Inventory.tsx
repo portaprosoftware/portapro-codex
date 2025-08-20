@@ -326,7 +326,7 @@ const Inventory: React.FC = () => {
               isActive={activeTab === 'code-categories'}
               onClick={() => navigateToTab('code-categories')}
             >
-              <span className="h-4 w-4 flex items-center justify-center font-bold text-xs">1001</span>
+              <span className="text-xs font-mono">####</span>
               Categories
             </TabNav.Item>
             <TabNav.Item
