@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
-import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
+
 
 
 
@@ -534,27 +534,12 @@ export function SimpleJobsMapView({
         {/* Weather Radar Timestamp Display - positioned directly under toggle */}
         {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
           <div className="mt-2">
-            <TimestampDisplay 
-              frames={radarFrames} 
-              currentFrame={currentRadarFrame} 
-              isActive={radarEnabled} 
-            />
+            <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
+              Radar disabled
+            </div>
           </div>
         )}
       </div>
-
-      {/* Weather Radar */}
-      {map.current && radarEnabled && selectedDateIsToday && (
-        <SimpleWeatherRadar 
-          key={radarResetKey}
-          map={map.current} 
-          isActive={radarEnabled}
-          onFramesUpdate={(frames, currentFrame) => {
-            setRadarFrames(frames);
-            setCurrentRadarFrame(currentFrame);
-          }}
-        />
-      )}
 
       {/* Multiple Jobs Dialog */}
       <Dialog open={selectedJobsAtLocation.length > 0} onOpenChange={() => setSelectedJobsAtLocation([])}>
