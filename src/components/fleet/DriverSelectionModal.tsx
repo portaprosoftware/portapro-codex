@@ -174,7 +174,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0">
+      <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-xl font-semibold">Select Driver</DialogTitle>
           <Button
@@ -250,11 +250,11 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                   >
                     <div className="flex items-start space-x-4">
                       {/* Avatar */}
-                      <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                          {getDriverInitials(driver)}
-                        </AvatarFallback>
-                      </Avatar>
+                       <Avatar className="w-12 h-12">
+                         <AvatarFallback className="bg-primary text-white font-semibold">
+                           {getDriverInitials(driver)}
+                         </AvatarFallback>
+                       </Avatar>
 
                       {/* Driver Info */}
                       <div className="flex-1 min-w-0">

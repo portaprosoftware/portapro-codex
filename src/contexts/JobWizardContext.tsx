@@ -153,10 +153,7 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         // Optional: validate location/coordinates here
         break;
       case 4:
-        // Require at least a driver or a vehicle selection
-        if (!state.data.driver_id && !state.data.vehicle_id) {
-          errors.assignment = 'Please select a driver or a vehicle';
-        }
+        // Driver and vehicle selection is now optional
         break;
       case 5:
         // Products & services optional (service-only jobs allowed)
