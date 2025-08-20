@@ -551,29 +551,39 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Inventory Management */}
-          <div className="space-y-6 mb-12">
-            <div className="text-left">
-              <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
-              <p className="text-lg text-muted-foreground mb-6">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <div className="text-left">
+                <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
+                <p className="text-lg text-muted-foreground mb-6">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Unified tracking system for all inventory types</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Multi-location stock allocation and transfers</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Date-range availability checking and reservations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
+                </li>
+              </ul>
             </div>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-foreground">Unified tracking system for all inventory types</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-foreground">Multi-location stock allocation and transfers</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-foreground">Date-range availability checking and reservations</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
-              </li>
-            </ul>
+            
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/66b9876b-be61-4d09-ba28-60907047f8aa.png" 
+                alt="Standard Porta Potty inventory item showing pricing and availability tracking"
+                className="w-full max-w-md h-auto rounded-lg shadow-lg"
+              />
+            </div>
           </div>
 
           {/* Stock Tracking & Location Management Row */}
