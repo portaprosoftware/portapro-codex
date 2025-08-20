@@ -1,15 +1,19 @@
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Mail, MessageSquare, Users, Eye, MousePointer } from 'lucide-react';
+import { startOfYear, startOfMonth } from 'date-fns';
 
 export const CampaignAnalytics: React.FC = () => {
+  const [dateRange, setDateRange] = useState<'YTD' | 'MTD'>('YTD');
+
   // Fetch campaigns
   const { data: campaigns = [] } = useQuery({
     queryKey: ['marketing-campaigns'],
@@ -23,6 +27,17 @@ export const CampaignAnalytics: React.FC = () => {
       return data;
     }
   });
+
+  // Filter campaigns based on date range
+  const filteredCampaigns = useMemo(() => {
+    const now = new Date();
+    const startDate = dateRange === 'YTD' ? startOfYear(now) : startOfMonth(now);
+    
+    return campaigns.filter(campaign => {
+      const campaignDate = new Date(campaign.sent_at || campaign.created_at);
+      return campaignDate >= startDate;
+    });
+  }, [campaigns, dateRange]);
 
   // Calculate summary stats
   const totalCampaigns = campaigns.length;
@@ -56,9 +71,9 @@ export const CampaignAnalytics: React.FC = () => {
   ];
 
   const channelData = [
-    { name: 'Email', value: campaigns.filter(c => c.campaign_type === 'email').length, color: '#3B82F6' },
-    { name: 'SMS', value: campaigns.filter(c => c.campaign_type === 'sms').length, color: '#10B981' },
-    { name: 'Both', value: campaigns.filter(c => c.campaign_type === 'both').length, color: '#8B5CF6' }
+    { name: 'Email', value: filteredCampaigns.filter(c => c.campaign_type === 'email').length, color: '#3B82F6' },
+    { name: 'SMS', value: filteredCampaigns.filter(c => c.campaign_type === 'sms').length, color: '#10B981' },
+    { name: 'Both', value: filteredCampaigns.filter(c => c.campaign_type === 'both').length, color: '#8B5CF6' }
   ];
 
   const summaryCards = [
@@ -150,7 +165,25 @@ export const CampaignAnalytics: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Channel Distribution */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Campaign Channels</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Campaign Channels {dateRange}</h3>
+            <div className="flex gap-1">
+              <Button
+                variant={dateRange === 'YTD' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setDateRange('YTD')}
+              >
+                YTD
+              </Button>
+              <Button
+                variant={dateRange === 'MTD' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setDateRange('MTD')}
+              >
+                MTD
+              </Button>
+            </div>
+          </div>
           <div className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
