@@ -65,14 +65,11 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
   return (
     <div className="p-6 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3">
         <Button variant="secondary" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Settings
         </Button>
-      </div>
-
-      <div className="flex items-center space-x-3">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600">
           <Clock className="w-5 h-5 text-white" />
         </div>
