@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
 import { InventoryFilters } from '@/components/inventory/InventoryFilters';
-import { PanelScansView } from '@/components/inventory/PanelScansView';
+
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
 import { MaintenanceTrackerTab } from '@/components/inventory/MaintenanceTrackerTab';
 import { ProductDetail } from '@/components/inventory/ProductDetail';
@@ -35,7 +35,7 @@ const Inventory: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'products' | 'location-map' | 'panel-scans' | 'code-categories' | 'maintenance'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'location-map' | 'code-categories' | 'maintenance'>('products');
   
   // State from original Inventory page
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
@@ -63,8 +63,6 @@ const Inventory: React.FC = () => {
     
     if (path.includes('/location-map')) {
       setActiveTab('location-map');
-    } else if (path.includes('/panel-scans')) {
-      setActiveTab('panel-scans');
     } else if (path.includes('/code-categories')) {
       setActiveTab('code-categories');
     } else if (path.includes('/maintenance')) {
@@ -324,14 +322,6 @@ const Inventory: React.FC = () => {
               Location Map
             </TabNav.Item>
             <TabNav.Item
-              to="/inventory/panel-scans"
-              isActive={activeTab === 'panel-scans'}
-              onClick={() => navigateToTab('panel-scans')}
-            >
-              <Camera className="h-4 w-4" />
-              Panel Review
-            </TabNav.Item>
-            <TabNav.Item
               to="/inventory/code-categories"
               isActive={activeTab === 'code-categories'}
               onClick={() => navigateToTab('code-categories')}
@@ -506,11 +496,6 @@ const Inventory: React.FC = () => {
           </>
         )}
 
-        {activeTab === 'panel-scans' && (
-          <div className="bg-background rounded-2xl shadow-md p-6">
-            <PanelScansView />
-          </div>
-        )}
 
         {activeTab === 'code-categories' && (
           <div className="bg-background rounded-2xl shadow-md p-6">

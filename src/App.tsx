@@ -148,12 +148,6 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          <Route path="/inventory/panel-scans" element={
-            <>
-              <SignedIn><Layout><Inventory /></Layout></SignedIn>
-              <SignedOut><Auth /></SignedOut>
-            </>
-          } />
           <Route path="/inventory/code-categories" element={
             <>
               <SignedIn><Layout><Inventory /></Layout></SignedIn>
