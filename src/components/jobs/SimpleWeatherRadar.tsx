@@ -42,18 +42,17 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 }) => {
   const [frames, setFrames] = useState<RadarFrame[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   
   const mountedRef = useRef(true);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const layerIds = useRef<string[]>([]);
 
-  // Load radar frames - stable reference with no problematic dependencies
+  // Load radar frames - using your exact working pattern
   const loadRadarFrames = useCallback(async () => {
     if (!map || !enabled) return;
 
     try {
-      setIsLoading(true);
+      console.log('SimpleWeatherRadar: Loading radar frames...');
       
       const radarFrames = await rainViewerService.getRadarFrames();
       
@@ -62,7 +61,6 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       if (radarFrames.length === 0) {
         console.warn('No radar frames available');
         setFrames([]);
-        setIsLoading(false);
         return;
       }
 
@@ -118,14 +116,13 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 
       setFrames(radarFrames);
       setCurrentFrame(0);
+      console.log('SimpleWeatherRadar: Loaded', radarFrames.length, 'frames');
       
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
       setFrames([]);
-    } finally {
-      setIsLoading(false);
     }
-  }, [map, enabled]); // REMOVED onError to prevent dependency loops
+  }, [map, enabled]);
 
   // Frame update logic - hide all, then show current
   const updateFrame = useCallback(() => {
@@ -149,7 +146,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     }
   }, [map, frames.length, currentFrame]);
 
-  // Animation loop
+  // Animation loop - your exact working pattern
   useEffect(() => {
     if (!enabled || !frames.length) {
       if (animationRef.current) {
@@ -183,12 +180,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     onFramesUpdate?.(frames, currentFrame);
   }, [updateFrame, frames, currentFrame, onFramesUpdate]);
 
-  // Load frames when enabled - no loadRadarFrames dependency to prevent loops
+  // Load frames when enabled
   useEffect(() => {
     if (enabled && map) {
       loadRadarFrames();
     }
-  }, [enabled, map]); // STABLE dependencies only
+  }, [enabled, map, loadRadarFrames]);
 
   // Cleanup on unmount
   useEffect(() => {

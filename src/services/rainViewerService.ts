@@ -86,7 +86,6 @@ class RainViewerService {
       console.log('RainViewer: Fetching radar data...');
       const data = await this.getRadarData();
       
-      // Use getCombinedRadarFrames for proper frame selection (8 past + 4 future)
       const combinedFrames = this.getCombinedRadarFrames(data);
       console.log('RainViewer: Got', combinedFrames.length, 'radar frames (8 past + 4 future)');
       
