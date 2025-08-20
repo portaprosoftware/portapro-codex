@@ -116,6 +116,14 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       setCurrentFrame(0);
       console.log('SimpleWeatherRadar: Loaded', radarFrames.length, 'frames');
       
+      // Critical: Show the first frame immediately after loading
+      setTimeout(() => {
+        if (layerIds.current.length > 0 && map.getLayer(layerIds.current[0])) {
+          map.setPaintProperty(layerIds.current[0], 'raster-opacity', RADAR_OPACITY);
+          console.log('SimpleWeatherRadar: Showing first frame');
+        }
+      }, 100);
+      
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
       setFrames([]);
