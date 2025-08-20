@@ -606,11 +606,11 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="aspect-video rounded-lg overflow-hidden">
+            <div className="flex justify-center">
               <img
-                src="/lovable-uploads/12d7d79a-93d6-4131-85c4-ea2474c55421.png"
-                alt="Stock tracking interface showing 250-Gallon Waste Tank with hybrid tracking, available individual units, and bulk pool inventory"
-                className="w-full h-full object-cover"
+                src="/lovable-uploads/0d1b13bc-c6c7-4e2e-b361-c9eb4d187eec.png"
+                alt="Inventory status interface showing hybrid tracking with available tracked units, bulk pool inventory, and stock allocation across different categories"
+                className="w-full max-w-lg h-auto"
                 loading="lazy"
                 decoding="async"
               />
