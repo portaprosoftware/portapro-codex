@@ -213,12 +213,11 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
               <div className="md:col-span-2">
                 <Card>
                   <CardContent className="py-4 text-sm">
-                    <div className="flex flex-wrap items-center gap-4">
-                      <div>
-                        <span className="font-medium">Availability:</span>{' '}
-                        {availability.isLoading ? 'Loading…' : `${availability.data?.available ?? 0} of ${availability.data?.total ?? 0}`}
-                      </div>
-                      <div className="text-muted-foreground">Method: {availability.data?.method || '—'}</div>
+                     <div className="flex flex-wrap items-center gap-4">
+                       <div>
+                         <span className="font-medium">Availability:</span>{' '}
+                         {availability.isLoading ? 'Loading…' : `${availability.data?.available ?? 0} of ${availability.data?.total ?? 0}`}
+                       </div>
                       <div className="ml-auto">
                         <Button onClick={upsertBulk} disabled={!availability.data || qty <= 0 || qty > (availability.data?.available ?? 0)}>
                           Add/Update

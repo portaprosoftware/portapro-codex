@@ -168,21 +168,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onClick={onSelect}
     >
       {/* Product Image */}
-      <div className="aspect-square w-full mb-3 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="aspect-square w-full mb-3 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
             className="w-full h-full object-cover"
             onError={(e) => {
-              // Hide image and show fallback icon if image fails to load
               e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'flex';
             }}
           />
         ) : null}
-        <Package className="h-12 w-12 text-muted-foreground" style={{ display: product.image_url ? 'none' : 'flex' }} />
+        {!product.image_url && (
+          <Package className="h-12 w-12 text-muted-foreground" />
+        )}
       </div>
 
       {/* Product Info */}
