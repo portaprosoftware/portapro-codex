@@ -23,7 +23,7 @@ import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { TrackingMethodsSlideshow } from '@/components/marketing/TrackingMethodsSlideshow';
-import { QRGenerator } from '@/components/ui/qr-generator';
+import { QRPanelRotator } from '@/components/ui/qr-panel-rotator';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
@@ -652,8 +652,8 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            {/* QR Code Generator */}
-            <QRGenerator />
+            {/* QR Code Generator & Panel Scanning Rotator */}
+            <QRPanelRotator />
           </div>
 
 
