@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductType } from "@/lib/productTypes";
 
 interface ProductGridProps {
   filter: "all" | "in_stock" | "low_stock" | "out_of_stock";
@@ -11,6 +12,7 @@ interface ProductGridProps {
   hideInactive: boolean;
   searchQuery: string;
   selectedLocationId?: string;
+  selectedProductType?: string;
   onProductSelect: (productId: string) => void;
 }
 
@@ -20,6 +22,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   hideInactive,
   searchQuery,
   selectedLocationId = "all",
+  selectedProductType = "all",
   onProductSelect
 }) => {
   const queryClient = useQueryClient();
@@ -52,7 +55,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     };
   }, [queryClient]);
   const { data: products, isLoading, error } = useQuery({
-    queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId],
+    queryKey: ["products", filter, hideInactive, searchQuery, selectedLocationId, selectedProductType],
     queryFn: async () => {
       try {
         let data = [];
@@ -72,6 +75,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
         if (searchQuery) {
           nameQuery = nameQuery.or(`name.ilike.%${searchQuery}%,manufacturer.ilike.%${searchQuery}%`);
+        }
+
+        if (selectedProductType && selectedProductType !== "all") {
+          nameQuery = nameQuery.eq("product_type", selectedProductType as ProductType);
         }
 
         // Don't filter by location at query level - do it after retrieval
@@ -109,6 +116,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
             if (hideInactive) {
               toolQuery = toolQuery.eq("track_inventory", true);
+            }
+
+            if (selectedProductType && selectedProductType !== "all") {
+              toolQuery = toolQuery.eq("product_type", selectedProductType as ProductType);
             }
 
             // Don't filter by location at query level - do it after retrieval

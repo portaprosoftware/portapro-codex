@@ -7,6 +7,7 @@ interface ProductsViewProps {
   hideInactive: boolean;
   searchQuery: string;
   selectedLocationId: string;
+  selectedProductType: string;
   onProductSelect: (productId: string) => void;
 }
 
@@ -16,6 +17,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   hideInactive,
   searchQuery,
   selectedLocationId,
+  selectedProductType,
   onProductSelect,
 }) => {
   return (
@@ -25,6 +27,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
       hideInactive={hideInactive}
       searchQuery={searchQuery}
       selectedLocationId={selectedLocationId}
+      selectedProductType={selectedProductType}
       onProductSelect={onProductSelect}
     />
   );

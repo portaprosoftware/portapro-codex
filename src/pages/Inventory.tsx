@@ -44,6 +44,7 @@ const Inventory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState<string>("all");
+  const [selectedProductType, setSelectedProductType] = useState<string>("all");
   const [addInventoryModalOpen, setAddInventoryModalOpen] = useState(false);
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
@@ -344,11 +345,13 @@ const Inventory: React.FC = () => {
         {activeTab === 'products' && (
           <>
             {/* Card 2: Search and Filters */}
-            <InventoryFilters
+            <InventoryFilters 
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               selectedLocationId={selectedLocationId}
               onLocationChange={setSelectedLocationId}
+              selectedProductType={selectedProductType}
+              onProductTypeChange={setSelectedProductType}
             />
 
             {/* Card 3: Status Filters and Controls */}
@@ -478,6 +481,7 @@ const Inventory: React.FC = () => {
                 hideInactive={hideInactive}
                 searchQuery={searchQuery}
                 selectedLocationId={selectedLocationId}
+                selectedProductType={selectedProductType}
                 onProductSelect={(productId) => setSelectedProduct(productId)}
               />
             </div>
@@ -492,6 +496,8 @@ const Inventory: React.FC = () => {
               onSearchChange={setSearchQuery}
               selectedLocationId={selectedLocationId}
               onLocationChange={setSelectedLocationId}
+              selectedProductType={selectedProductType}
+              onProductTypeChange={setSelectedProductType}
             />
             
             {/* Card 3: Location Map */}

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
+import { getProductTypeLabel, ProductType } from "@/lib/productTypes";
 
 interface Product {
   id: string;
@@ -20,6 +21,8 @@ interface Product {
   stock_in_service: number;
   low_stock_threshold: number;
   track_inventory: boolean;
+  product_type?: ProductType;
+  product_variant?: string;
 }
 
 interface ProductCardProps {
@@ -261,6 +264,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       {/* Product Info */}
       <div className="text-center space-y-3">
         <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
+        {product.product_type && (
+          <div className="flex justify-center">
+            <Badge variant="outline" className="text-xs">
+              {getProductTypeLabel(product.product_type)}
+              {product.product_variant && ` - ${product.product_variant}`}
+            </Badge>
+          </div>
+        )}
         {product.manufacturer && (
           <p className="text-xs text-gray-500">
             by {product.manufacturer}

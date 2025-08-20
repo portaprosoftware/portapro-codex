@@ -14,12 +14,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { toast } from "sonner";
 import { Package, MapPin, Hash, DollarSign } from "lucide-react";
 import { ProductImageUploader } from "./ProductImageUploader";
 import { uploadProductImage } from "@/utils/imageUpload";
+import { PRODUCT_TYPES, ProductType } from "@/lib/productTypes";
 
 interface AddInventoryModalProps {
   isOpen: boolean;
@@ -38,6 +40,8 @@ interface ProductFormData {
   createIndividualItems: boolean;
   trackingMethod: 'bulk' | 'individual' | 'both';
   selectedCategory: string;
+  productType: ProductType;
+  productVariant: string;
   imageFile?: File | null;
 }
 
@@ -56,6 +60,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
     createIndividualItems: false,
     trackingMethod: 'bulk',
     selectedCategory: '',
+    productType: 'standard_toilet' as ProductType,
+    productVariant: '',
     imageFile: null,
   });
 
@@ -74,6 +80,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           track_inventory: true,
           default_storage_location_id: data.storageLocationId,
           default_item_code_category: data.selectedCategory || null,
+          product_type: data.productType,
+          product_variant: data.productVariant || null,
           image_url: null
         })
         .select()
@@ -196,6 +204,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       createIndividualItems: false,
       trackingMethod: 'bulk',
       selectedCategory: '',
+      productType: 'standard_toilet' as ProductType,
+      productVariant: '',
       imageFile: null,
     });
     onClose();
@@ -259,6 +269,34 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
                 placeholder="Optional product description..."
                 rows={3}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="productType">Product Type *</Label>
+                <Select value={formData.productType} onValueChange={(value) => updateFormData('productType', value as ProductType)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select product type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRODUCT_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="productVariant">Product Variant</Label>
+                <Input
+                  id="productVariant"
+                  value={formData.productVariant}
+                  onChange={(e) => updateFormData('productVariant', e.target.value)}
+                  placeholder="e.g., Foot Pump, Luxury"
+                />
+              </div>
             </div>
           </div>
 

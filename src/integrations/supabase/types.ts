@@ -5702,6 +5702,8 @@ export type Database = {
           monthly_rate: number | null
           name: string
           pricing_method: string | null
+          product_type: Database["public"]["Enums"]["product_type"] | null
+          product_variant: string | null
           stock_in_service: number
           stock_total: number
           track_inventory: boolean
@@ -5730,6 +5732,8 @@ export type Database = {
           monthly_rate?: number | null
           name: string
           pricing_method?: string | null
+          product_type?: Database["public"]["Enums"]["product_type"] | null
+          product_variant?: string | null
           stock_in_service?: number
           stock_total?: number
           track_inventory?: boolean
@@ -5758,6 +5762,8 @@ export type Database = {
           monthly_rate?: number | null
           name?: string
           pricing_method?: string | null
+          product_type?: Database["public"]["Enums"]["product_type"] | null
+          product_variant?: string | null
           stock_in_service?: number
           stock_total?: number
           track_inventory?: boolean
@@ -9750,6 +9756,20 @@ export type Database = {
         | "verified"
         | "rejected"
       pm_target_type: "vehicle" | "trailer" | "group"
+      product_type:
+        | "standard_toilet"
+        | "ada_toilet"
+        | "deluxe_toilet"
+        | "high_rise_toilet"
+        | "handwashing_station_single"
+        | "handwashing_station_double"
+        | "restroom_trailer"
+        | "shower_trailer"
+        | "holding_tank"
+        | "urinal_stand"
+        | "sanitizer_stand"
+        | "accessories"
+        | "custom"
       work_order_priority: "low" | "normal" | "high" | "critical"
       work_order_source:
         | "dvir_defect"
@@ -9930,6 +9950,21 @@ export const Constants = {
         "rejected",
       ],
       pm_target_type: ["vehicle", "trailer", "group"],
+      product_type: [
+        "standard_toilet",
+        "ada_toilet",
+        "deluxe_toilet",
+        "high_rise_toilet",
+        "handwashing_station_single",
+        "handwashing_station_double",
+        "restroom_trailer",
+        "shower_trailer",
+        "holding_tank",
+        "urinal_stand",
+        "sanitizer_stand",
+        "accessories",
+        "custom",
+      ],
       work_order_priority: ["low", "normal", "high", "critical"],
       work_order_source: [
         "dvir_defect",
