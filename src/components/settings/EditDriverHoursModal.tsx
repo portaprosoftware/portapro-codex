@@ -10,7 +10,7 @@ import { ArrowLeft, Clock, Copy } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
+import { useDriverWorkingHours } from "@/hooks/useDriverWorkingHours";
 interface EditDriverHoursModalProps {
   driverId: string;
   onClose: () => void;
@@ -47,39 +47,34 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
 
   const { data: driver, isLoading } = useQuery({
     queryKey: ['driver-details', driverId],
+    enabled: !!driverId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          driver_working_hours(*)
-        `)
+        .select('id, first_name, last_name')
         .eq('id', driverId)
         .single();
-      
       if (error) throw error;
       return data;
     },
   });
 
-  // Initialize schedule when data loads
+  const { data: hours, isLoading: hoursLoading } = useDriverWorkingHours(driverId);
+
+  // Initialize schedule when hours load
   React.useEffect(() => {
-    if (driver && Array.isArray(driver.driver_working_hours)) {
-      const existingHours = driver.driver_working_hours;
-      const initialSchedule = DAYS.map(day => {
-        const existing = existingHours.find((h: any) => h.day_of_week === day.key);
-        return existing || {
-          day_of_week: day.key,
-          is_active: false,
-          start_time: '09:00',
-          end_time: '17:00'
-        };
-      });
-      setSchedule(initialSchedule);
-    }
-  }, [driver]);
+    const existingHours = Array.isArray(hours) ? hours : [];
+    const initialSchedule = DAYS.map(day => {
+      const existing = existingHours.find((h: any) => h.day_of_week === day.key);
+      return existing || {
+        day_of_week: day.key,
+        is_active: false,
+        start_time: '09:00',
+        end_time: '17:00'
+      };
+    });
+    setSchedule(initialSchedule);
+  }, [hours, driverId]);
 
   const updateScheduleMutation = useMutation({
     mutationFn: async (updatedSchedule: DaySchedule[]) => {
@@ -106,7 +101,9 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
         title: "Success",
         description: "Driver working hours updated successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ['drivers-for-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['driver-working-hours', driverId] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
       queryClient.invalidateQueries({ queryKey: ['driver-details', driverId] });
       onClose();
     },
@@ -150,10 +147,13 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
     updateScheduleMutation.mutate(schedule);
   };
 
-  if (isLoading) {
+  if (isLoading || hoursLoading) {
     return (
       <Dialog open onOpenChange={onClose}>
         <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Loading Working Hours</DialogTitle>
+          </DialogHeader>
           <div className="animate-pulse space-y-4">
             <div className="h-6 bg-muted rounded w-1/3"></div>
             <div className="space-y-3">
