@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -765,12 +765,84 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Full-width InventorySuppliesShowcase component */}
-          <div className="col-span-full mt-8">
-            <InventorySuppliesShowcase />
+          {/* Inventory Tracking Cards */}
+          <div className="grid lg:grid-cols-2 gap-8 mt-12">
+            {/* Inventory Tracked How You Use It Card */}
+            <div className="rounded-2xl bg-white border border-border">
+              <div className="p-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Package className="w-4 h-4 text-primary" /> Inventory Tracked How You Use It
+                </div>
+
+                <div className="mt-4 grid md:grid-cols-3 gap-4">
+                  {/* Bulk mock */}
+                  <div className="rounded-xl border border-border p-3">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <Package className="w-4 h-4 text-primary" /> Bulk Stock
+                    </div>
+                    <ul className="mt-3 space-y-2 text-sm">
+                      <li className="flex items-center justify-between"><span>Yard A</span><span className="font-semibold">48</span></li>
+                      <li className="flex items-center justify-between"><span>Yard B</span><span className="font-semibold">14</span></li>
+                      <li className="flex items-center justify-between"><span>Warehouse</span><span className="font-semibold">20</span></li>
+                    </ul>
+                  </div>
+
+                  {/* Individual mock */}
+                  <div className="rounded-xl border border-border p-3">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <QrCode className="w-4 h-4 text-primary" /> Units
+                    </div>
+                    <ul className="mt-3 space-y-2 text-sm">
+                      <li className="flex items-center justify-between"><span>PT-1234</span><span className="font-medium text-foreground">Available</span></li>
+                      <li className="flex items-center justify-between"><span>PT-1235</span><span className="font-medium text-foreground">Assigned</span></li>
+                      <li className="flex items-center justify-between"><span>PT-1236</span><span className="font-medium text-foreground">Service</span></li>
+                    </ul>
+                  </div>
+
+                  {/* Hybrid mock */}
+                  <div className="rounded-xl border border-border p-3">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <RefreshCcw className="w-4 h-4 text-primary" /> Hybrid Roll‑Up
+                    </div>
+                    <ul className="mt-3 space-y-2 text-sm">
+                      <li className="flex items-center justify-between"><span>Master Total</span><span className="font-semibold">82</span></li>
+                      <li className="flex items-center justify-between"><span>Tracked Units</span><span className="font-semibold">62</span></li>
+                      <li className="flex items-center justify-between"><span>Bulk Remainder</span><span className="font-semibold">20</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Availability by date Card */}
+            <div className="rounded-2xl bg-white border border-border">
+              <div className="p-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Calendar className="w-4 h-4 text-primary" /> Availability by date
+                </div>
+
+                <div className="mt-4 grid sm:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-border p-3">
+                    <div className="text-sm font-medium">Range: 8/20/2025 → +7d</div>
+                    <div className="mt-2 text-2xl font-bold">45 of 62 available</div>
+                    <div className="text-xs text-muted-foreground mt-1">Auto‑holds for scheduled jobs</div>
+                  </div>
+                  <div className="rounded-xl border border-border p-3">
+                    <div className="text-sm font-medium flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Locations</div>
+                    <div className="mt-2 flex flex-wrap gap-2 text-sm">
+                      <span className="px-2 py-1 rounded-full bg-muted">Yard A 28</span>
+                      <span className="px-2 py-1 rounded-full bg-muted">Yard B 14</span>
+                      <span className="px-2 py-1 rounded-full bg-muted">Warehouse 20</span>
+                    </div>
+                    <div className="text-xs text-green-700 mt-2">Auto‑allocate to jobs</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
