@@ -112,13 +112,16 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         console.log('SimpleWeatherRadar: Tile URL:', tileUrl);
 
         try {
-          // Add source
+          // Add source with proper bounds to prevent tile overflow
           if (!map.getSource(layerId)) {
             console.log('SimpleWeatherRadar: Adding source for:', layerId);
             map.addSource(layerId, {
               type: 'raster',
               tiles: [tileUrl],
               tileSize: 256,
+              minzoom: 0,
+              maxzoom: 12,
+              bounds: [-180, -85.05112877980659, 180, 85.05112877980659], // World bounds to prevent overflow
               attribution: '© RainViewer'
             });
             console.log('SimpleWeatherRadar: ✓ Source added for:', layerId);
@@ -126,7 +129,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
             console.log('SimpleWeatherRadar: Source already exists for:', layerId);
           }
 
-          // Raster layer configuration for smooth transitions
+          // Raster layer configuration with clipping for smooth transitions
           if (!map.getLayer(layerId)) {
             console.log('SimpleWeatherRadar: Adding layer for:', layerId);
             map.addLayer({
@@ -135,7 +138,11 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
               source: layerId,
               paint: {
                 'raster-opacity': 0,
-                'raster-fade-duration': RASTER_FADE_DURATION  // Key: shorter than animation interval
+                'raster-fade-duration': RASTER_FADE_DURATION,  // Key: shorter than animation interval
+                'raster-resampling': 'linear' // Smoother rendering
+              },
+              layout: {
+                'visibility': 'visible'
               }
             });
             console.log('SimpleWeatherRadar: ✓ Layer added for:', layerId);
