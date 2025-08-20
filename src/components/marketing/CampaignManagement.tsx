@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { CampaignCreation } from './CampaignCreation';
 import { CampaignAnalytics } from './CampaignAnalytics';
 import { Badge } from '@/components/ui/badge';
@@ -73,29 +75,7 @@ export const CampaignManagement: React.FC = () => {
       </div>
 
       {/* Customer Types Overview */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Customer Types</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="purple" className="font-semibold">Events & Festivals</Badge>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="info" className="font-semibold">Construction</Badge>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="success" className="font-semibold">Municipal & Government</Badge>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="gradient" className="font-semibold">Private Events & Weddings</Badge>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="warning" className="font-semibold">Sports & Recreation</Badge>
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Badge variant="destructive" className="font-semibold">Emergency & Disaster Relief</Badge>
-          </div>
-        </div>
-      </div>
+      <CustomerTypesOverview />
 
       {/* Simple Exit Confirmation */}
       <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
@@ -112,6 +92,59 @@ export const CampaignManagement: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+};
+
+const CustomerTypesOverview: React.FC = () => {
+  // Fetch customer type counts
+  const { data: customerTypes = [] } = useQuery({
+    queryKey: ['customer-type-counts'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_customer_type_counts');
+      if (error) {
+        console.error('Error fetching customer type counts:', error);
+        return [];
+      }
+      return data || [];
+    }
+  });
+
+  const getTypeGradient = (type: string) => {
+    const typeGradients = {
+      'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600',
+      'sports_recreation': 'bg-gradient-to-r from-green-500 to-green-600', 
+      'municipal_government': 'bg-gradient-to-r from-blue-500 to-blue-600',
+      'commercial': 'bg-gradient-to-r from-slate-600 to-slate-700',
+      'construction': 'bg-gradient-to-r from-orange-500 to-orange-600',
+      'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600',
+      'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600',
+      'bars_restaurants': 'bg-gradient-to-r from-indigo-500 to-indigo-600',
+      'retail': 'bg-gradient-to-r from-yellow-500 to-yellow-600',
+      'other': 'bg-gradient-to-r from-gray-500 to-gray-600'
+    } as const;
+    return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600';
+  };
+
+  const formatTypeName = (type: string) => {
+    return type.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  return (
+    <div className="bg-white rounded-lg border shadow-sm p-6">
+      <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Customer Types</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {customerTypes.map((type) => (
+          <div key={type.customer_type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <Badge className={`${getTypeGradient(type.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full text-xs`}>
+              {formatTypeName(type.customer_type)}
+            </Badge>
+            <span className="text-sm font-semibold text-gray-700 ml-2">
+              ({type.total_count})
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
