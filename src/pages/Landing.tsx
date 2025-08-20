@@ -692,9 +692,14 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-              <Camera className="w-12 h-12 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Unit Maintenance Photo</span>
+            <div className="flex justify-center">
+              <img
+                src="/lovable-uploads/98c5b0d3-bf3b-492f-8cf9-f5afd3c1932f.png"
+                alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date"
+                className="w-full max-w-lg h-auto"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
 
