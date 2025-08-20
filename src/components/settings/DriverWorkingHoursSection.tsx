@@ -63,7 +63,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-3">
       {/* Header */}
       <div className="flex items-center space-x-3">
         <Button variant="secondary" size="sm" onClick={onBack}>
