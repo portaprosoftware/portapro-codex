@@ -353,25 +353,39 @@ const Inventory: React.FC = () => {
 
             {/* Card 3: Status Filters and Controls */}
             <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
-              {/* Status Filter Buttons */}
-              <div className="flex flex-wrap gap-3">
-                {filters.map((filter) => (
-                  <button
-                    key={filter.key}
-                    onClick={() => handleFilterClick(filter.key)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
-                      getFilterStyle(filter.key)
-                    )}
-                  >
-                    {filter.label}
-                    {filter.count !== null && (
-                      <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
-                        {filter.count}
-                      </Badge>
-                    )}
-                  </button>
-                ))}
+              {/* Action Buttons - Moved to top left */}
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowOCRSearch(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  Capture Panel
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowQRScanner(true)}
+                  className="flex items-center gap-2"
+                >
+                  <QrCode className="h-4 w-4" />
+                  Scan QR
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowIndividualUnitsSlider(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Sliders className="h-4 w-4" />
+                  All Units
+                </Button>
+                <Button 
+                  onClick={() => setAddInventoryModalOpen(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Inventory
+                </Button>
               </div>
 
               {/* View Controls and Hide Inactive */}
@@ -399,7 +413,7 @@ const Inventory: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Hide Inactive Switch and Action Buttons */}
+                {/* Hide Inactive Switch and Status Filter Buttons - Moved to bottom right */}
                 <div className="flex items-center gap-4">
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -427,39 +441,25 @@ const Inventory: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowOCRSearch(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Camera className="h-4 w-4" />
-                      Capture Panel
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowQRScanner(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <QrCode className="h-4 w-4" />
-                      Scan QR
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowIndividualUnitsSlider(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Sliders className="h-4 w-4" />
-                      All Units
-                    </Button>
-                    <Button 
-                      onClick={() => setAddInventoryModalOpen(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Inventory
-                    </Button>
+                  {/* Status Filter Buttons - Moved to bottom right */}
+                  <div className="flex flex-wrap gap-3">
+                    {filters.map((filter) => (
+                      <button
+                        key={filter.key}
+                        onClick={() => handleFilterClick(filter.key)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+                          getFilterStyle(filter.key)
+                        )}
+                      >
+                        {filter.label}
+                        {filter.count !== null && (
+                          <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
+                            {filter.count}
+                          </Badge>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
