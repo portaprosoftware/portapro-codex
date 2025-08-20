@@ -20,28 +20,15 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
   const [error, setError] = useState<string | null>(null);
   
   const layerIds = useRef<string[]>([]);
-  const animationFrameRef = useRef<number | null>(null);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
   const mountedRef = useRef(true);
-  const instanceId = useRef(Math.random().toString(36).substr(2, 9));
-  const lastFrameTime = useRef<number>(0);
-  const isAnimatingRef = useRef(false);
-  const originalScrollZoom = useRef<boolean | null>(null);
 
   // Complete cleanup function
   const cleanup = useCallback(() => {
     // Stop animation
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
-    isAnimatingRef.current = false;
-
-    // Restore scroll zoom if it was disabled
-    if (map && originalScrollZoom.current !== null) {
-      if (originalScrollZoom.current) {
-        map.scrollZoom.enable();
-      }
-      originalScrollZoom.current = null;
+    if (animationRef.current) {
+      clearInterval(animationRef.current);
+      animationRef.current = null;
     }
 
     // Remove all radar layers and sources
@@ -65,9 +52,6 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     setFrames([]);
     setCurrentFrame(0);
     setError(null);
-    
-    // Generate new instance ID for next load
-    instanceId.current = Math.random().toString(36).substr(2, 9);
   }, [map]);
 
   // Load radar frames
@@ -90,60 +74,40 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
         return;
       }
 
-      // Temporarily disable scroll zoom to prevent conflicts
-      if (map.scrollZoom.isEnabled()) {
-        originalScrollZoom.current = true;
-        map.scrollZoom.disable();
-      } else {
-        originalScrollZoom.current = false;
-      }
-
       // Add sources and layers for each frame
-      const batchSize = 3; // Process in smaller batches
-      for (let i = 0; i < radarFrames.length; i += batchSize) {
-        const batch = radarFrames.slice(i, i + batchSize);
-        
-        batch.forEach((frame, batchIndex) => {
-          const index = i + batchIndex;
-          const layerId = `radar-${instanceId.current}-${index}`;
-          const tileUrl = rainViewerService.getTileUrl(frame.path);
+      radarFrames.forEach((frame, index) => {
+        const layerId = `radar-layer-${index}`;
+        const tileUrl = rainViewerService.getTileUrl(frame.path);
 
-          try {
-            // Add source
-            if (!map.getSource(layerId)) {
-              map.addSource(layerId, {
-                type: 'raster',
-                tiles: [tileUrl],
-                tileSize: 256,
-                maxzoom: 12
-              });
-            }
-
-            // Add layer with visibility instead of opacity
-            if (!map.getLayer(layerId)) {
-              map.addLayer({
-                id: layerId,
-                type: 'raster',
-                source: layerId,
-                layout: {
-                  visibility: index === 0 ? 'visible' : 'none'
-                },
-                paint: {
-                  'raster-opacity': 0.6,
-                  'raster-fade-duration': 0
-                }
-              });
-            }
-
-            layerIds.current.push(layerId);
-          } catch (error) {
-            console.error('Radar: Error adding layer', layerId, error);
+        try {
+          // Add source
+          if (!map.getSource(layerId)) {
+            map.addSource(layerId, {
+              type: 'raster',
+              tiles: [tileUrl],
+              tileSize: 256,
+              maxzoom: 12
+            });
           }
-        });
 
-        // Small delay between batches to prevent overwhelming the map
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
+          // Add layer with opacity control for smooth transitions
+          if (!map.getLayer(layerId)) {
+            map.addLayer({
+              id: layerId,
+              type: 'raster',
+              source: layerId,
+              paint: {
+                'raster-opacity': 0,
+                'raster-fade-duration': 200  // Key: shorter than animation interval
+              }
+            });
+          }
+
+          layerIds.current.push(layerId);
+        } catch (error) {
+          console.error('Radar: Error adding layer', layerId, error);
+        }
+      });
 
       setFrames(radarFrames);
       setCurrentFrame(0);
@@ -157,73 +121,27 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     }
   }, [isActive, map, isLoading]);
 
-  // Update frame visibility using layout property
-  const updateFrame = useCallback((frameIndex: number) => {
-    if (!map || layerIds.current.length === 0) return;
-    
-    try {
-      // Batch visibility updates
-      const updates: Array<{ layerId: string; visible: boolean }> = [];
-      
-      layerIds.current.forEach((layerId, index) => {
-        updates.push({
-          layerId,
-          visible: index === frameIndex
-        });
-      });
+  // Frame update logic - hide all, then show current
+  const updateFrame = useCallback(() => {
+    if (!map || !frames.length || !layerIds.current.length) return;
 
-      // Apply all updates at once
-      updates.forEach(({ layerId, visible }) => {
+    try {
+      // Hide all layers first
+      layerIds.current.forEach(layerId => {
         if (map.getLayer(layerId)) {
-          map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+          map.setPaintProperty(layerId, 'raster-opacity', 0);
         }
       });
+
+      // Show current frame
+      const currentLayerId = layerIds.current[currentFrame];
+      if (currentLayerId && map.getLayer(currentLayerId)) {
+        map.setPaintProperty(currentLayerId, 'raster-opacity', 0.7);
+      }
     } catch (error) {
-      console.warn('Error updating frame:', error);
+      console.error('Error updating frame:', error);
     }
-  }, [map]);
-
-  // Animation loop using requestAnimationFrame
-  const animate = useCallback((timestamp: number) => {
-    if (!mountedRef.current || !isAnimatingRef.current || frames.length <= 1) {
-      return;
-    }
-
-    // Control animation speed (500ms per frame)
-    if (timestamp - lastFrameTime.current >= 500) {
-      setCurrentFrame(prev => {
-        const next = (prev + 1) % frames.length;
-        updateFrame(next);
-        return next;
-      });
-      lastFrameTime.current = timestamp;
-    }
-
-    // Continue animation
-    if (isAnimatingRef.current) {
-      animationFrameRef.current = requestAnimationFrame(animate);
-    }
-  }, [frames.length, updateFrame]);
-
-  // Start animation
-  const startAnimation = useCallback(() => {
-    if (isAnimatingRef.current || frames.length <= 1) {
-      return;
-    }
-    
-    isAnimatingRef.current = true;
-    lastFrameTime.current = 0;
-    animationFrameRef.current = requestAnimationFrame(animate);
-  }, [frames.length, animate]);
-
-  // Stop animation
-  const stopAnimation = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
-    isAnimatingRef.current = false;
-  }, []);
+  }, [map, frames.length, currentFrame]);
 
   // Effect to handle active state changes
   useEffect(() => {
@@ -234,36 +152,32 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     }
   }, [isActive, map, loadRadarFrames, cleanup]);
 
-  // Auto-start animation when frames are loaded
+  // Start animation when frames are loaded
   useEffect(() => {
     if (frames.length > 0 && isActive && !isLoading) {
-      // Notify parent about initial frames
-      onFramesUpdate?.(frames, currentFrame);
-      
-      // Re-enable scroll zoom after a short delay
-      const enableZoomTimer = setTimeout(() => {
-        if (map && originalScrollZoom.current === true) {
-          map.scrollZoom.enable();
-          originalScrollZoom.current = null;
+      // Core animation timing - this is what makes it smooth
+      animationRef.current = setInterval(() => {
+        if (mountedRef.current) {
+          setCurrentFrame(prev => {
+            const next = (prev + 1) % frames.length;
+            return next;
+          });
         }
-      }, 1000);
-      
-      // Start animation
-      const animationTimer = setTimeout(() => {
-        startAnimation();
-      }, 100);
-      
+      }, 300); // 300ms interval
+
       return () => {
-        clearTimeout(enableZoomTimer);
-        clearTimeout(animationTimer);
+        if (animationRef.current) {
+          clearInterval(animationRef.current);
+          animationRef.current = null;
+        }
       };
     }
-  }, [frames.length, isActive, isLoading, startAnimation, onFramesUpdate, currentFrame, map]);
+  }, [frames.length, isActive, isLoading]);
 
   // Update frame display when currentFrame changes
   useEffect(() => {
     if (isActive && frames.length > 0) {
-      updateFrame(currentFrame);
+      updateFrame();
       onFramesUpdate?.(frames, currentFrame);
     }
   }, [currentFrame, frames.length, isActive, updateFrame, onFramesUpdate]);
@@ -274,10 +188,9 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({ map, isA
     
     return () => {
       mountedRef.current = false;
-      stopAnimation();
       cleanup();
     };
-  }, [cleanup, stopAnimation]);
+  }, [cleanup]);
 
   return null;
 };
