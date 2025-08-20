@@ -47,54 +47,88 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 
   // Load radar frames - using your exact working pattern
   const loadRadarFrames = useCallback(async () => {
-    if (!map || !enabled) return;
+    if (!map || !enabled) {
+      console.log('SimpleWeatherRadar: Skipping load - map:', !!map, 'enabled:', enabled);
+      return;
+    }
 
     try {
       console.log('SimpleWeatherRadar: Loading radar frames...');
+      console.log('SimpleWeatherRadar: Map loaded state:', map.loaded());
+      console.log('SimpleWeatherRadar: Map style loaded state:', map.isStyleLoaded());
       
       const radarFrames = await rainViewerService.getRadarFrames();
       
-      if (!mountedRef.current) return;
+      if (!mountedRef.current) {
+        console.log('SimpleWeatherRadar: Component unmounted, aborting');
+        return;
+      }
       
       if (radarFrames.length === 0) {
-        console.warn('No radar frames available');
+        console.warn('SimpleWeatherRadar: No radar frames available');
         setFrames([]);
         return;
       }
 
+      console.log('SimpleWeatherRadar: Processing', radarFrames.length, 'radar frames');
+
       // Clear existing layers
+      console.log('SimpleWeatherRadar: Clearing', layerIds.current.length, 'existing layers');
       layerIds.current.forEach(layerId => {
         try {
           if (map.getLayer(layerId)) {
             map.removeLayer(layerId);
+            console.log('SimpleWeatherRadar: Removed layer:', layerId);
           }
           if (map.getSource(layerId)) {
             map.removeSource(layerId);
+            console.log('SimpleWeatherRadar: Removed source:', layerId);
           }
         } catch (error) {
-          console.warn('Error removing layer:', error);
+          console.warn('SimpleWeatherRadar: Error removing layer:', layerId, error);
         }
       });
       layerIds.current = [];
 
+      // Wait for map to be ready if needed
+      if (!map.isStyleLoaded()) {
+        console.log('SimpleWeatherRadar: Waiting for map style to load...');
+        await new Promise(resolve => {
+          if (map.isStyleLoaded()) {
+            resolve(true);
+          } else {
+            map.once('styledata', resolve);
+          }
+        });
+      }
+
+      console.log('SimpleWeatherRadar: Adding sources and layers...');
       // Add sources and layers for each frame
       radarFrames.forEach((frame, index) => {
         const layerId = `radar-layer-${frame.time}-${index}`;
         const tileUrl = rainViewerService.getTileUrl(frame.path);
 
+        console.log(`SimpleWeatherRadar: Creating layer ${index + 1}/${radarFrames.length}:`, layerId);
+        console.log('SimpleWeatherRadar: Tile URL:', tileUrl);
+
         try {
           // Add source
           if (!map.getSource(layerId)) {
+            console.log('SimpleWeatherRadar: Adding source for:', layerId);
             map.addSource(layerId, {
               type: 'raster',
               tiles: [tileUrl],
               tileSize: 256,
               attribution: '© RainViewer'
             });
+            console.log('SimpleWeatherRadar: ✓ Source added for:', layerId);
+          } else {
+            console.log('SimpleWeatherRadar: Source already exists for:', layerId);
           }
 
           // Raster layer configuration for smooth transitions
           if (!map.getLayer(layerId)) {
+            console.log('SimpleWeatherRadar: Adding layer for:', layerId);
             map.addLayer({
               id: layerId,
               type: 'raster',
@@ -104,24 +138,32 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
                 'raster-fade-duration': RASTER_FADE_DURATION  // Key: shorter than animation interval
               }
             });
+            console.log('SimpleWeatherRadar: ✓ Layer added for:', layerId);
+          } else {
+            console.log('SimpleWeatherRadar: Layer already exists for:', layerId);
           }
 
           layerIds.current.push(layerId);
+          console.log('SimpleWeatherRadar: ✓ Layer ID stored:', layerId);
         } catch (error) {
-          console.error('Error adding radar layer:', error);
+          console.error('SimpleWeatherRadar: ✗ Error adding layer:', layerId, error);
         }
       });
 
+      console.log('SimpleWeatherRadar: Created', layerIds.current.length, 'layers total');
       setFrames(radarFrames);
       setCurrentFrame(0);
-      console.log('SimpleWeatherRadar: Loaded', radarFrames.length, 'frames');
+      console.log('SimpleWeatherRadar: ✓ Loaded', radarFrames.length, 'frames');
       
       // CRITICAL FIX: Immediately show the first frame
       if (layerIds.current.length > 0) {
+        console.log('SimpleWeatherRadar: Setting up initial frame display...');
+        
         // Hide all layers first
-        layerIds.current.forEach(layerId => {
+        layerIds.current.forEach((layerId, idx) => {
           if (map.getLayer(layerId)) {
             map.setPaintProperty(layerId, 'raster-opacity', 0);
+            console.log(`SimpleWeatherRadar: Hidden layer ${idx}:`, layerId);
           }
         });
         
@@ -129,12 +171,16 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         const firstLayerId = layerIds.current[0];
         if (firstLayerId && map.getLayer(firstLayerId)) {
           map.setPaintProperty(firstLayerId, 'raster-opacity', RADAR_OPACITY);
-          console.log('SimpleWeatherRadar: Showing first frame immediately');
+          console.log('SimpleWeatherRadar: ✓ First frame visible:', firstLayerId, 'opacity:', RADAR_OPACITY);
+        } else {
+          console.error('SimpleWeatherRadar: ✗ Failed to show first frame - layer not found:', firstLayerId);
         }
+      } else {
+        console.error('SimpleWeatherRadar: ✗ No layers created - cannot show radar');
       }
       
     } catch (error) {
-      console.error('SimpleWeatherRadar: Error loading radar frames:', error);
+      console.error('SimpleWeatherRadar: ✗ Error loading radar frames:', error);
       setFrames([]);
     }
   }, [map, enabled]);
