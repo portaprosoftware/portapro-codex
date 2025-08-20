@@ -202,12 +202,16 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                   asChild 
                   isActive={isActive}
                   className={cn(
-                    isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-900"
+                    isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-900 [&_*]:text-white [&_*]:font-bold"
                   )}
                 >
                   <NavLink
                     to={item.url}
                     onClick={() => onSectionChange?.(item.url)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 text-sm transition-colors",
+                      isActive && "text-white [&_*]:text-white"
+                    )}
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
                     <span className="truncate">{item.title}</span>
