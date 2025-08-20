@@ -476,49 +476,43 @@ export function SimpleJobsMapView({
 
         {/* Map Status */}
         {filteredJobs.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-xl shadow-lg border border-blue-200">
-            <div className="flex items-center gap-2">
-              <MapPinIcon className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-bold text-blue-900">
-                Jobs for {format(selectedDate, 'MMM d, yyyy')}: {filteredJobs.length}
-              </span>
-            </div>
+          <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
+            Jobs for {format(selectedDate, 'MMM d, yyyy')}: {filteredJobs.length}
           </div>
         )}
 
-        {/* Second Row: Radar Toggle and Timestamp */}
-        <div className="flex gap-3 items-start">
-          {/* Radar Toggle */}
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-xl shadow-lg border border-purple-200">
-            <div className="flex items-center gap-2">
-              <Radar className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-bold text-purple-900">Weather Radar</span>
-              <Switch
-                checked={radarEnabled}
-                onCheckedChange={(checked) => {
-                  if (selectedDateIsToday) {
-                    setRadarEnabled(checked);
-                  }
-                }}
-                disabled={!selectedDateIsToday}
-              />
-            </div>
-            {!selectedDateIsToday && (
-              <div className="text-xs font-semibold text-purple-600 mt-1">
-                Radar only available for today's date
-              </div>
-            )}
+        {/* Radar Toggle */}
+        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
+          <div className="flex items-center gap-2">
+            <Radar className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
+            <Switch
+              checked={radarEnabled}
+              onCheckedChange={(checked) => {
+                if (selectedDateIsToday) {
+                  setRadarEnabled(checked);
+                }
+              }}
+              disabled={!selectedDateIsToday}
+            />
           </div>
-          
-          {/* Weather Radar Timestamp Display - Now positioned to the right */}
-          {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
+          {!selectedDateIsToday && (
+            <div className="text-xs text-gray-500 mt-1">
+              Radar only available for today's date
+            </div>
+          )}
+        </div>
+        
+        {/* Weather Radar Timestamp Display */}
+        {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
+          <div className="mt-2">
             <TimestampDisplay 
               frames={radarFrames} 
               currentFrame={currentRadarFrame} 
               isActive={radarEnabled} 
             />
-          )}
-        </div>
+          </div>
+        )}
 
       </div>
 
