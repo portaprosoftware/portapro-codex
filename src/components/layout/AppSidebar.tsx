@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +25,20 @@ import { UserButton, useUser } from '@clerk/clerk-react';
 import { Logo } from '@/components/ui/logo';
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuBadge,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 interface NavigationItem {
   title: string;
@@ -69,7 +82,6 @@ const dayToDayItems: NavigationItem[] = [
     permission: 'staff'
   },
 ];
-
 
 const inventoryItems: NavigationItem[] = [
   { 
@@ -138,6 +150,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
   const { user } = useUser();
   const location = useLocation();
+  const { state } = useSidebar();
 
   // Fetch today's jobs count for badge
   const { data: todaysJobsCount } = useQuery({
@@ -177,69 +190,62 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const visibleAdminItems = getVisibleItems(adminItems);
 
   const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
-    <div className="py-1">
-      {title && (
-        <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
-          {title}
-        </div>
-      )}
-      <ul className="flex w-full min-w-0 flex-col gap-0">
-        {items.map((item) => {
-          const isActive = activeSection === item.url || location.pathname === item.url
-          return (
-            <li key={item.title} className="group/menu-item relative">
-              <NavLink
-                to={item.url}
-                onClick={() => onSectionChange?.(item.url)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm font-medium hover:bg-gray-100",
-                  isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold"
-                )}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate">{item.title}</span>
-                {item.badge && (
-                  <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
-                    {item.badge}
-                  </Badge>
-                )}
-              </NavLink>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
-  )
+    <SidebarGroup>
+      {title && <SidebarGroupLabel className="text-xs font-medium text-sidebar-foreground/70 uppercase tracking-wide">{title}</SidebarGroupLabel>}
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => {
+            const isActive = activeSection === item.url || location.pathname === item.url;
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={isActive}
+                  className={cn(
+                    isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-900"
+                  )}
+                >
+                  <NavLink
+                    to={item.url}
+                    onClick={() => onSectionChange?.(item.url)}
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    <span className="truncate">{item.title}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
 
   return (
-    <aside className="w-64 border-r bg-white flex h-screen flex-col fixed left-0 top-0 z-30">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+    <Sidebar collapsible="icon" className="border-r bg-white">
+      <SidebarHeader className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-start">
-          <Logo showText={false} />
+          <Logo showText={state === "expanded"} />
         </div>
-      </div>
+      </SidebarHeader>
 
-      <div className="flex-1 overflow-y-auto">
-        <nav className="px-2 py-2">
-          <NavSection items={visibleCoreItems} />
-          {visibleDayToDayItems.length > 0 && (
-            <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />
-          )}
-          {visibleInventoryItems.length > 0 && (
-            <NavSection title="INVENTORY" items={visibleInventoryItems} />
-          )}
-          {visibleManagementItems.length > 0 && (
-            <NavSection title="MANAGEMENT" items={visibleManagementItems} />
-          )}
-          {visibleAdminItems.length > 0 && (
-            <NavSection title="ADMIN" items={visibleAdminItems} />
-          )}
-        </nav>
-      </div>
+      <SidebarContent className="px-2 py-2">
+        <NavSection items={visibleCoreItems} />
+        {visibleDayToDayItems.length > 0 && (
+          <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />
+        )}
+        {visibleInventoryItems.length > 0 && (
+          <NavSection title="INVENTORY" items={visibleInventoryItems} />
+        )}
+        {visibleManagementItems.length > 0 && (
+          <NavSection title="MANAGEMENT" items={visibleManagementItems} />
+        )}
+        {visibleAdminItems.length > 0 && (
+          <NavSection title="ADMIN" items={visibleAdminItems} />
+        )}
+      </SidebarContent>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200 mt-auto">
+      <SidebarFooter className="p-4 border-t border-gray-200 mt-auto">
         <div className="flex items-center gap-3">
           <UserButton 
             appearance={{
@@ -249,11 +255,13 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
               }
             }}
           />
-          <div className="text-sm text-gray-600">
-            {user?.firstName || user?.emailAddresses?.[0]?.emailAddress || 'User'}
-          </div>
+          {state === "expanded" && (
+            <div className="text-sm text-gray-600 truncate">
+              {user?.firstName || user?.emailAddresses?.[0]?.emailAddress || 'User'}
+            </div>
+          )}
         </div>
-      </div>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   );
 }
