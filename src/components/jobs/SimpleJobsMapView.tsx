@@ -48,15 +48,13 @@ export function SimpleJobsMapView({
   const [radarFrames, setRadarFrames] = useState<{ path: string; time: number }[]>([]);
   const [currentRadarFrame, setCurrentRadarFrame] = useState(0);
   
-  // Check if selected date is today in company timezone (EDT)
-  const companyTimezone = getCompanyTimezone();
-  const currentDateInTimezone = getCurrentDateInCompanyTimezone();
-  const selectedDateIsToday = isSameDayInTimeZone(selectedDate, currentDateInTimezone, companyTimezone);
+  // FIXED: Simple today check - bypassing complex timezone logic
+  const today = new Date();
+  const selectedDateIsToday = selectedDate.toDateString() === today.toDateString();
   
-  console.log('SimpleJobsMapView: Timezone check', {
-    selectedDate: selectedDate.toISOString(),
-    currentDateInTimezone: currentDateInTimezone.toISOString(),
-    companyTimezone,
+  console.log('SimpleJobsMapView: Fixed today check', {
+    selectedDate: selectedDate.toDateString(),
+    today: today.toDateString(),
     selectedDateIsToday
   });
   
