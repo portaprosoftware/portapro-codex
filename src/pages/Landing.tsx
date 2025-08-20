@@ -764,6 +764,28 @@ export const Landing: React.FC = () => {
       <section id="job-wizard" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <SmartWizardShowcase />
+          
+          {/* Jobs: Calendar, Dispatch, Drag-Drop & Map Section */}
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-center mb-8">Jobs: Calendar, Dispatch, Drag-Drop & Map</h2>
+            <div className="flex justify-center">
+              <div className="w-full max-w-4xl">
+                <script src="https://fast.wistia.com/player.js" async></script>
+                <script src="https://fast.wistia.com/embed/7fdf1aomkc.js" async type="module"></script>
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    wistia-player[media-id='7fdf1aomkc']:not(:defined) { 
+                      background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7fdf1aomkc/swatch'); 
+                      display: block; 
+                      filter: blur(5px); 
+                      padding-top:50.42%; 
+                    }
+                  `
+                }} />
+                <wistia-player media-id="7fdf1aomkc" aspect="1.9834710743801653"></wistia-player>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
