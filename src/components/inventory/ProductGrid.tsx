@@ -71,7 +71,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         }
 
         if (searchQuery) {
-          nameQuery = nameQuery.ilike("name", `%${searchQuery}%`);
+          nameQuery = nameQuery.or(`name.ilike.%${searchQuery}%,manufacturer.ilike.%${searchQuery}%`);
         }
 
         // Don't filter by location at query level - do it after retrieval
