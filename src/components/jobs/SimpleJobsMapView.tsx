@@ -451,26 +451,37 @@ export function SimpleJobsMapView({
       
       {/* Control Panel - Top Left */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        {/* Map Style Toggle */}
-        <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
-          <Button
-            variant={mapStyle === 'streets' ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setMapStyle('streets')}
-            className="h-8 px-3 text-sm font-medium"
-          >
-            <MapIcon className="w-4 h-4 mr-1.5" />
-            Streets
-          </Button>
-          <Button
-            variant={mapStyle === 'satellite' ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setMapStyle('satellite')}
-            className="h-8 px-3 text-sm font-medium"
-          >
-            <Satellite className="w-4 h-4 mr-1.5" />
-            Satellite
-          </Button>
+        {/* Map Style Toggle and Radar Timestamp in horizontal layout */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
+            <Button
+              variant={mapStyle === 'streets' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setMapStyle('streets')}
+              className="h-8 px-3 text-sm font-medium"
+            >
+              <MapIcon className="w-4 h-4 mr-1.5" />
+              Streets
+            </Button>
+            <Button
+              variant={mapStyle === 'satellite' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setMapStyle('satellite')}
+              className="h-8 px-3 text-sm font-medium"
+            >
+              <Satellite className="w-4 h-4 mr-1.5" />
+              Satellite
+            </Button>
+          </div>
+          
+          {/* Weather Radar Timestamp Display - Positioned to the right */}
+          {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
+            <TimestampDisplay 
+              frames={radarFrames} 
+              currentFrame={currentRadarFrame} 
+              isActive={radarEnabled} 
+            />
+          )}
         </div>
 
 
@@ -502,17 +513,6 @@ export function SimpleJobsMapView({
             </div>
           )}
         </div>
-        
-        {/* Weather Radar Timestamp Display */}
-        {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
-          <div className="mt-2">
-            <TimestampDisplay 
-              frames={radarFrames} 
-              currentFrame={currentRadarFrame} 
-              isActive={radarEnabled} 
-            />
-          </div>
-        )}
 
       </div>
 
