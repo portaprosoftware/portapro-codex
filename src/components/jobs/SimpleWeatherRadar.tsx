@@ -48,7 +48,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const layerIds = useRef<string[]>([]);
 
-  // Load radar frames
+  // Load radar frames - stable reference with no problematic dependencies
   const loadRadarFrames = useCallback(async () => {
     if (!map || !enabled) return;
 
@@ -60,7 +60,10 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       if (!mountedRef.current) return;
       
       if (radarFrames.length === 0) {
-        throw new Error('No radar frames available');
+        console.warn('No radar frames available');
+        setFrames([]);
+        setIsLoading(false);
+        return;
       }
 
       // Clear existing layers
@@ -118,12 +121,11 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       
     } catch (error) {
       console.error('SimpleWeatherRadar: Error loading radar frames:', error);
-      onError?.('Failed to load radar data');
       setFrames([]);
     } finally {
       setIsLoading(false);
     }
-  }, [map, enabled, onError]);
+  }, [map, enabled]); // REMOVED onError to prevent dependency loops
 
   // Frame update logic - hide all, then show current
   const updateFrame = useCallback(() => {
@@ -181,12 +183,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     onFramesUpdate?.(frames, currentFrame);
   }, [updateFrame, frames, currentFrame, onFramesUpdate]);
 
-  // Load frames when enabled
+  // Load frames when enabled - no loadRadarFrames dependency to prevent loops
   useEffect(() => {
-    if (enabled) {
+    if (enabled && map) {
       loadRadarFrames();
     }
-  }, [enabled, loadRadarFrames]);
+  }, [enabled, map]); // STABLE dependencies only
 
   // Cleanup on unmount
   useEffect(() => {
