@@ -23,6 +23,7 @@ import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { TrackingMethodsSlideshow } from '@/components/marketing/TrackingMethodsSlideshow';
+import { QRGenerator } from '@/components/ui/qr-generator';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
@@ -651,8 +652,8 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            {/* Advanced Unit Tracking - Rotating Slideshow */}
-            <TrackingMethodsSlideshow />
+            {/* QR Code Generator */}
+            <QRGenerator />
           </div>
 
 
