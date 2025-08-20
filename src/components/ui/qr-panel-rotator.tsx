@@ -11,24 +11,12 @@ const PanelScanningCard: React.FC = () => {
       
       <div className="grid md:grid-cols-2 gap-6 items-center">
         <div className="flex flex-col items-center space-y-4">
-          <div className="bg-gray-900 rounded-lg p-4 relative">
-            <div className="w-48 h-64 bg-black rounded-lg flex items-center justify-center relative overflow-hidden">
-              {/* Phone mockup */}
-              <div className="absolute inset-2 bg-gray-800 rounded-lg flex flex-col">
-                <div className="flex-1 bg-gray-700 m-2 rounded flex items-center justify-center">
-                  <div className="text-white text-xs space-y-1 text-center">
-                    <div>T-207788-1A</div>
-                    <div className="text-gray-400">ABC Manufacturing</div>
-                    <div className="text-gray-400">Vendor ID: 32123</div>
-                    <div className="text-gray-400">January 13, 2016</div>
-                    <div className="text-gray-400">HDPE</div>
-                  </div>
-                </div>
-                <div className="h-12 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-gray-600 border-4 border-gray-500"></div>
-                </div>
-              </div>
-            </div>
+          <div className="rounded-lg overflow-hidden">
+            <img 
+              src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" 
+              alt="Phone scanning embossed plastic text on portable toilet unit"
+              className="w-full max-w-sm h-auto"
+            />
           </div>
         </div>
         
