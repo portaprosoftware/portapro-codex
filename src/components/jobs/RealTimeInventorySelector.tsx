@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
+import { ProductSelectionModal } from './ProductSelectionModal';
+import { Package } from 'lucide-react';
 import type { JobItemSelection } from '@/contexts/JobWizardContext';
 
 interface RealTimeInventorySelectorProps {
@@ -32,6 +34,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
   const [qty, setQty] = useState<number>(1);
   const [mode, setMode] = useState<'bulk' | 'specific'>('bulk');
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+  const [showProductModal, setShowProductModal] = useState(false);
 
   // Attribute filters
   const [color, setColor] = useState('');
@@ -53,6 +56,11 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       return data as { id: string; name: string; stock_total: number }[];
     },
   });
+
+  const selectedProductName = useMemo(() => {
+    const product = products.find(p => p.id === selectedProduct);
+    return product?.name || '';
+  }, [products, selectedProduct]);
 
   const availability = useAvailabilityEngine(selectedProduct, startDate, endDate || undefined, filterAttributes);
 
@@ -135,19 +143,20 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2 md:col-span-2">
           <Label>Product</Label>
-          <select
-            className="h-10 w-full rounded-md border bg-background px-3"
-            value={selectedProduct}
-            onChange={(e) => {
-              setSelectedProduct(e.target.value);
-              setSelectedUnitIds([]);
-            }}
+          <Button
+            variant="outline"
+            className="h-10 w-full justify-start text-left font-normal"
+            onClick={() => setShowProductModal(true)}
           >
-            <option value="">Select a product…</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
+            {selectedProduct ? (
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                <span>{selectedProductName}</span>
+              </div>
+            ) : (
+              <span className="text-muted-foreground">Select a product…</span>
+            )}
+          </Button>
         </div>
         <div className="space-y-2">
           <Label>Mode</Label>
@@ -294,6 +303,20 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       <aside className="text-xs text-muted-foreground">
         Attribute filters are optional and apply to both counts and specific units when set.
       </aside>
+
+      {/* Product Selection Modal */}
+      <ProductSelectionModal
+        open={showProductModal}
+        onOpenChange={setShowProductModal}
+        startDate={startDate}
+        endDate={endDate}
+        filterAttributes={filterAttributes}
+        selectedProductId={selectedProduct}
+        onProductSelect={(productId) => {
+          setSelectedProduct(productId);
+          setSelectedUnitIds([]);
+        }}
+      />
     </div>
   );
 };
