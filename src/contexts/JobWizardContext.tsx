@@ -175,8 +175,25 @@ interface JobWizardContextType {
 
 const JobWizardContext = createContext<JobWizardContextType | undefined>(undefined);
 
-export function JobWizardProvider({ children }: { children: ReactNode }) {
+export function JobWizardProvider({ 
+  children, 
+  initialDraftData 
+}: { 
+  children: ReactNode;
+  initialDraftData?: any;
+}) {
   const [state, dispatch] = useReducer(jobWizardReducer, initialState);
+
+  // Load draft data when provider mounts
+  React.useEffect(() => {
+    if (initialDraftData?.job_data) {
+      console.log('Loading draft data into wizard:', initialDraftData.job_data);
+      dispatch({ 
+        type: 'UPDATE_DATA', 
+        payload: initialDraftData.job_data 
+      });
+    }
+  }, [initialDraftData]);
 
   const goToStep = (step: number) => {
     dispatch({ type: 'SET_STEP', payload: step });

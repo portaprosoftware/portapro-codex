@@ -14,6 +14,7 @@ export const JobDraftManagement: React.FC = () => {
   const [isResumeOpen, setIsResumeOpen] = useState(false);
 
   const handleResumeDraft = (draft: any) => {
+    console.log('Resuming draft:', draft);
     setSelectedDraft(draft);
     setIsResumeOpen(true);
   };
@@ -166,6 +167,7 @@ export const JobDraftManagement: React.FC = () => {
       <NewJobWizard
         open={isResumeOpen}
         onOpenChange={setIsResumeOpen}
+        draftData={selectedDraft}
       />
     </div>
   );

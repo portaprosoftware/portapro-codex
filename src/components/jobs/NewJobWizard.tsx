@@ -21,6 +21,7 @@ import { useJobDrafts } from '@/hooks/useJobDrafts';
 interface NewJobWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  draftData?: any;
 }
 
 function WizardContent({ onClose }: { onClose: () => void }) {
@@ -322,7 +323,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function NewJobWizard({ open, onOpenChange }: NewJobWizardProps) {
+export function NewJobWizard({ open, onOpenChange, draftData }: NewJobWizardProps) {
   const handleClose = () => {
     onOpenChange(false);
   };
@@ -333,7 +334,7 @@ export function NewJobWizard({ open, onOpenChange }: NewJobWizardProps) {
         <div id="new-job-wizard-description" className="sr-only">
           Create a new job by following the wizard steps
         </div>
-        <JobWizardProvider>
+        <JobWizardProvider initialDraftData={draftData}>
           <WizardContent onClose={handleClose} />
         </JobWizardProvider>
       </DrawerContent>
