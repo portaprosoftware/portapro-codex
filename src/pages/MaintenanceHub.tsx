@@ -62,7 +62,7 @@ export default function MaintenanceHub() {
                   isActive={activeTab === 'records'}
                   onClick={() => setActiveTab('records')}
                 >
-                  Records
+                  Completed Records & Reports
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/maintenance-hub?tab=templates" 
