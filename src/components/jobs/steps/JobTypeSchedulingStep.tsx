@@ -371,23 +371,31 @@ export function JobTypeSchedulingStep() {
                           billingType = 'Hourly';
                         }
                         
-                        const formatDateTime = (date: Date) => {
-                          return date.toLocaleDateString('en-US', { 
-                            weekday: 'short', 
-                            month: 'short', 
-                            day: 'numeric' 
-                          }) + ' @ ' + date.toLocaleTimeString('en-US', { 
-                            hour: 'numeric', 
-                            minute: '2-digit',
-                            hour12: true 
-                          });
-                        };
-                        
-                        return (
-                          <p>
-                            <span className="font-medium">Start:</span> {formatDateTime(startDateTime)} → <span className="font-medium">Return:</span> {formatDateTime(returnDateTime)} ({billingType})
-                          </p>
-                        );
+                         const formatDateOnly = (date: Date) => {
+                           return date.toLocaleDateString('en-US', { 
+                             weekday: 'short', 
+                             month: 'short', 
+                             day: 'numeric' 
+                           });
+                         };
+                         
+                         const formatDateTime = (date: Date) => {
+                           return formatDateOnly(date) + ' @ ' + date.toLocaleTimeString('en-US', { 
+                             hour: 'numeric', 
+                             minute: '2-digit',
+                             hour12: true 
+                           });
+                         };
+                         
+                         const hasTimeSelected = !!state.data.scheduled_time;
+                         const formatStart = hasTimeSelected ? formatDateTime(startDateTime) : formatDateOnly(startDateTime);
+                         const formatReturn = hasTimeSelected ? formatDateTime(returnDateTime) : formatDateOnly(returnDateTime);
+                         
+                         return (
+                           <p>
+                             <span className="font-medium">Start:</span> {formatStart} → <span className="font-medium">Return:</span> {formatReturn} ({billingType})
+                           </p>
+                         );
                       })()}
                     </div>
                   )}
