@@ -26,6 +26,15 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
   const [customerName, setCustomerName] = useState<string>('');
   const [driverName, setDriverName] = useState<string>('');
   const [vehicleDetails, setVehicleDetails] = useState<string>('');
+  const [productDetails, setProductDetails] = useState<Record<string, { name: string; price_per_day: number }>>({});
+
+  const startDate = d.scheduled_date || '';
+  const endDate = d.return_date || d.scheduled_date || '';
+  const servicesData = d.servicesData as any | undefined;
+  const services = servicesData?.selectedServices || [];
+  const servicesSubtotal = Number(servicesData?.servicesSubtotal || 0);
+
+  const items = useMemo(() => d.items || [], [d.items]);
 
   // Auto-enable daily assignments when both driver and vehicle are present
   useEffect(() => {
@@ -34,7 +43,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
     }
   }, [d.driver_id, d.vehicle_id, d.create_daily_assignment, updateData]);
 
-  // Fetch readable names
+  // Fetch readable names and product details
   useEffect(() => {
     const fetchNames = async () => {
       // Fetch customer name
@@ -70,19 +79,53 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           setVehicleDetails(`${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.model || ''} (${vehicle.license_plate || 'No Plate'})`.trim());
         }
       }
+
+      // Fetch product details for items
+      if (items.length > 0) {
+        const productIds = [...new Set(items.map(item => item.product_id))];
+        const { data: products } = await supabase
+          .from('products')
+          .select('id, name, default_price_per_day')
+          .in('id', productIds);
+        
+        if (products) {
+          const productMap: Record<string, { name: string; price_per_day: number }> = {};
+          products.forEach(product => {
+            productMap[product.id] = {
+              name: product.name,
+              price_per_day: Number(product.default_price_per_day || 0)
+            };
+          });
+          setProductDetails(productMap);
+        }
+      }
     };
 
     fetchNames();
-  }, [d.customer_id, d.driver_id, d.vehicle_id]);
+  }, [d.customer_id, d.driver_id, d.vehicle_id, items]);
+  
+  // Calculate rental period in days
+  const rentalDays = useMemo(() => {
+    if (!startDate) return 1;
+    if (!endDate || endDate === startDate) return 1;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(diffDays, 1);
+  }, [startDate, endDate]);
 
-  const startDate = d.scheduled_date || '';
-  const endDate = d.return_date || d.scheduled_date || '';
-  const servicesData = d.servicesData as any | undefined;
-  const services = servicesData?.selectedServices || [];
-  const servicesSubtotal = Number(servicesData?.servicesSubtotal || 0);
+  // Calculate items total
+  const itemsTotal = useMemo(() => {
+    return items.reduce((total, item) => {
+      const product = productDetails[item.product_id];
+      if (product) {
+        return total + (product.price_per_day * item.quantity * rentalDays);
+      }
+      return total;
+    }, 0);
+  }, [items, productDetails, rentalDays]);
 
-  const items = useMemo(() => d.items || [], [d.items]);
-  const itemsTotal = 0; // Items don't have pricing in the wizard, just services
   const jobTotal = itemsTotal + servicesSubtotal;
 
   useEffect(() => {
@@ -208,20 +251,27 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Items</h3>
-            <div className="text-xs text-muted-foreground">{checking ? 'Checking…' : hasConflicts ? 'Conflicts detected' : 'All clear'}</div>
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-medium">Subtotal: ${itemsTotal.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground">{checking ? 'Checking…' : hasConflicts ? 'Conflicts detected' : 'All clear'}</div>
+            </div>
           </div>
           {d.items && d.items.length > 0 ? (
             <ul className="list-disc list-inside space-y-1">
               {d.items.map((it, i) => {
                 const conflict = itemConflicts.find((c) => c.product_id === it.product_id && c.type === it.strategy);
+                const product = productDetails[it.product_id];
+                const productName = product?.name || it.product_id;
+                const pricePerDay = product?.price_per_day || 0;
+                const itemCost = pricePerDay * it.quantity * rentalDays;
                 return (
                   <li key={i}>
-                    <span className="font-mono text-xs">{it.product_id}</span> · qty {it.quantity} · {it.strategy}
+                    <span className="font-medium">{productName}</span> × {it.quantity} × {rentalDays} day{rentalDays !== 1 ? 's' : ''} = ${itemCost.toFixed(2)}
                     {it.specific_item_ids && it.specific_item_ids.length > 0 && (
-                      <> · items: {it.specific_item_ids.join(', ')}</>
+                      <div className="text-xs text-muted-foreground ml-4">Units: {it.specific_item_ids.join(', ')}</div>
                     )}
                     {conflict && (
-                      <div className="text-xs text-red-600">{conflict.message}</div>
+                      <div className="text-xs text-red-600 ml-4">{conflict.message}</div>
                     )}
                   </li>
                 );
@@ -246,11 +296,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
                   </li>
                 ))}
               </ul>
-              {services.some((s: any) => s.frequency !== 'one-time') && (
-                <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-                  <strong>Schedule Preview:</strong> Recurring services will be automatically scheduled based on their frequency after initial job completion.
-                </div>
-              )}
             </div>
           ) : (
             <p className="text-muted-foreground">No services selected</p>
@@ -260,8 +305,20 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
 
       {/* Job Total */}
       {jobTotal > 0 && (
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center text-lg font-semibold">
+        <div className="border-t pt-4 space-y-2">
+          {itemsTotal > 0 && (
+            <div className="flex justify-between text-sm">
+              <span>Items:</span>
+              <span>${itemsTotal.toFixed(2)}</span>
+            </div>
+          )}
+          {servicesSubtotal > 0 && (
+            <div className="flex justify-between text-sm">
+              <span>Services:</span>
+              <span>${servicesSubtotal.toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
             <span>Job Total:</span>
             <span>${jobTotal.toFixed(2)}</span>
           </div>
