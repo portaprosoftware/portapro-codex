@@ -153,8 +153,10 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
           errors.scheduled_date = 'Please select a scheduled date';
         }
         if (state.data.job_type === 'delivery') {
-          if (!state.data.rental_duration_days || state.data.rental_duration_days < 1) {
-            errors.rental_duration = 'Please specify rental duration (minimum 1 day)';
+          const days = state.data.rental_duration_days || 0;
+          const hours = state.data.rental_duration_hours || 0;
+          if (days === 0 && hours === 0) {
+            errors.rental_duration = 'Please specify rental duration (minimum 1 hour)';
           }
         }
         break;

@@ -84,11 +84,9 @@ export function JobTypeSchedulingStep() {
       [`rental_duration_${field}`]: Math.max(0, value)
     };
     
-    // Calculate return date if we have scheduled date and duration
-    if (state.data.scheduled_date && field === 'days') {
-      const scheduledDate = new Date(state.data.scheduled_date);
-      const returnDate = addDays(scheduledDate, value);
-      updates.return_date = formatDateForQuery(returnDate);
+    // Auto-set hours to 8 when days is set to 0 and hours is currently 0
+    if (field === 'days' && value === 0 && (state.data.rental_duration_hours || 0) === 0) {
+      updates.rental_duration_hours = 8;
     }
     
     updateData(updates);
@@ -96,12 +94,23 @@ export function JobTypeSchedulingStep() {
 
   // Calculate return date when scheduled date changes
   React.useEffect(() => {
-    if (state.data.scheduled_date && state.data.rental_duration_days && state.data.job_type === 'delivery') {
-      const scheduledDate = new Date(state.data.scheduled_date);
-      const returnDate = addDays(scheduledDate, state.data.rental_duration_days);
-      updateData({ return_date: formatDateForQuery(returnDate) });
+    if (state.data.scheduled_date && state.data.job_type === 'delivery') {
+      const days = state.data.rental_duration_days || 0;
+      const hours = state.data.rental_duration_hours || 0;
+      
+      if (days > 0 || hours > 0) {
+        const scheduledDate = new Date(state.data.scheduled_date);
+        let returnDate = addDays(scheduledDate, days);
+        
+        // Add hours to the return date
+        if (hours > 0) {
+          returnDate = new Date(returnDate.getTime() + (hours * 60 * 60 * 1000));
+        }
+        
+        updateData({ return_date: formatDateForQuery(returnDate) });
+      }
     }
-  }, [state.data.scheduled_date, state.data.rental_duration_days, state.data.job_type, updateData]);
+  }, [state.data.scheduled_date, state.data.rental_duration_days, state.data.rental_duration_hours, state.data.job_type, updateData]);
 
   return (
     <div className="space-y-6">
@@ -271,9 +280,9 @@ export function JobTypeSchedulingStep() {
                       <Label className="text-sm font-medium">Days</Label>
                       <Input
                         type="number"
-                        min="1"
+                        min="0"
                         value={state.data.rental_duration_days || 1}
-                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
+                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 0)}
                         className="text-center"
                       />
                     </div>
@@ -291,15 +300,27 @@ export function JobTypeSchedulingStep() {
                     </div>
                   </div>
                   
-                  {state.data.scheduled_date && state.data.rental_duration_days && (
-                    <div className="pt-2 border-t text-sm text-muted-foreground">
+                  {state.data.return_date && (
+                    <div className="pt-2 border-t text-sm text-muted-foreground space-y-1">
+                      <p>
+                        <span className="font-medium">Duration:</span>{' '}
+                        {(() => {
+                          const days = state.data.rental_duration_days || 0;
+                          const hours = state.data.rental_duration_hours || 0;
+                          
+                          if (days === 0 && hours > 0) {
+                            return `${hours} hour${hours !== 1 ? 's' : ''}`;
+                          } else if (days > 0 && hours === 0) {
+                            return `${days} day${days !== 1 ? 's' : ''}`;
+                          } else if (days > 0 && hours > 0) {
+                            return `${days} day${days !== 1 ? 's' : ''} and ${hours} hour${hours !== 1 ? 's' : ''}`;
+                          }
+                          return '';
+                        })()}
+                      </p>
                       <p>
                         <span className="font-medium">Return Date:</span>{' '}
-                        {(() => {
-                          const scheduledDate = new Date(state.data.scheduled_date);
-                          const returnDate = addDays(scheduledDate, state.data.rental_duration_days);
-                          return formatDateSafe(formatDateForQuery(returnDate), 'long');
-                        })()}
+                        {formatDateSafe(state.data.return_date, 'long')}
                       </p>
                     </div>
                   )}
@@ -351,11 +372,22 @@ export function JobTypeSchedulingStep() {
                    })()}
                  </p>
                )}
-               {state.data.job_type === 'delivery' && state.data.rental_duration_days && (
+               {state.data.job_type === 'delivery' && (state.data.rental_duration_days || state.data.rental_duration_hours) && (
                   <p>
                     <span className="font-medium">Rental Duration:</span>{' '}
-                    {state.data.rental_duration_days} day{state.data.rental_duration_days !== 1 ? 's' : ''}
-                    {state.data.rental_duration_hours ? ` and ${state.data.rental_duration_hours} hour${state.data.rental_duration_hours !== 1 ? 's' : ''}` : ''}
+                    {(() => {
+                      const days = state.data.rental_duration_days || 0;
+                      const hours = state.data.rental_duration_hours || 0;
+                      
+                      if (days === 0 && hours > 0) {
+                        return `${hours} hour${hours !== 1 ? 's' : ''}`;
+                      } else if (days > 0 && hours === 0) {
+                        return `${days} day${days !== 1 ? 's' : ''}`;
+                      } else if (days > 0 && hours > 0) {
+                        return `${days} day${days !== 1 ? 's' : ''} and ${hours} hour${hours !== 1 ? 's' : ''}`;
+                      }
+                      return '';
+                    })()}
                   </p>
                 )}
                 {state.data.return_date && state.data.job_type === 'delivery' && (
