@@ -416,19 +416,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <div className="space-y-1 text-xs text-muted-foreground">
                 <div className="flex items-center justify-between">
                   <span>Available Tracked</span>
-                  <span className="font-medium text-foreground">{availability.data.breakdown.available_tracked ?? 0}</span>
+                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.available_tracked ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Available Bulk</span>
-                  <span className="font-medium text-foreground">{availability.data.breakdown.bulk_pool ?? 0}</span>
+                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.bulk_pool ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>On Job</span>
-                  <span className="font-medium text-foreground">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
+                  <span className="font-medium text-foreground ml-8">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Maintenance</span>
-                  <span className="font-medium text-foreground">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
+                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
                 </div>
               </div>
             )}
