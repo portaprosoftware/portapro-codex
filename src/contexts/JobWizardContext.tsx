@@ -60,7 +60,7 @@ const initialState: JobWizardState = {
     selected_coordinate_ids: [],
     scheduled_time: null,
     return_date: null,
-    rental_duration_days: 1,
+    rental_duration_days: 0,
     rental_duration_hours: 0,
     is_priority: false,
     items: [],

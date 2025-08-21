@@ -281,7 +281,7 @@ export function JobTypeSchedulingStep() {
                       <Input
                         type="number"
                         min="0"
-                        value={state.data.rental_duration_days || 1}
+                        value={state.data.rental_duration_days || 0}
                         onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 0)}
                         className="text-center"
                       />
