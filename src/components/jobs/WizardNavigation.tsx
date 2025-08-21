@@ -46,25 +46,46 @@ export function WizardNavigation() {
   const { state, goToStep } = useJobWizard();
 
   const getStepStatus = (stepNumber: number) => {
-    // For step 5 (Products), handle pickup vs delivery/service jobs differently
+    // For step 5 (Products), handle different job types
     if (stepNumber === 5) {
-      // Pickup jobs: Step 5 is complete when current step > 5 
+      // Service jobs: Skip step 5 entirely, so it's never current
+      if (state.data.job_type === 'service') {
+        return 'upcoming'; // Always show as upcoming/disabled for service jobs
+      }
+      
+      // Pickup jobs: Step 5 is the equipment selection step
       if (state.data.job_type === 'pickup') {
         if (state.currentStep > 5) return 'completed';
         if (state.currentStep === 5) return 'current';
         return 'upcoming';
       }
-      // Delivery/service jobs: Step 5 is current for both steps 5 and 6
+      
+      // Delivery jobs: Step 5 is current for both steps 5 and 6
       if (state.currentStep > 6) return 'completed'; // Past both sub-steps
       if (state.currentStep === 5 || state.currentStep === 6) return 'current'; // In either sub-step
       return 'upcoming';
     }
     
-    // For step 6 (Review), handle pickup vs delivery/service jobs
+    // For step 6 (Review), map to the actual step numbers
     if (stepNumber === 6) {
-      const targetStep = state.data.job_type === 'pickup' ? 7 : 7; // Both go to step 7 but pickup skips step 6
-      if (state.currentStep === targetStep) return 'current';
-      if (state.currentStep > targetStep) return 'completed';
+      // Service jobs: Review at step 7, but user is currently at step 6 (services)
+      if (state.data.job_type === 'service') {
+        if (state.currentStep === 7) return 'current'; // Review step
+        if (state.currentStep > 7) return 'completed';
+        if (state.currentStep === 6) return 'upcoming'; // Services step is active
+        return 'upcoming';
+      }
+      
+      // Pickup jobs: Review at step 7 (skipped services step 6)
+      if (state.data.job_type === 'pickup') {
+        if (state.currentStep === 7) return 'current';
+        if (state.currentStep > 7) return 'completed';
+        return 'upcoming';
+      }
+      
+      // Delivery jobs: Review at step 7
+      if (state.currentStep === 7) return 'current';
+      if (state.currentStep > 7) return 'completed';
       return 'upcoming';
     }
     
@@ -75,13 +96,17 @@ export function WizardNavigation() {
   };
 
   const isStepClickable = (stepNumber: number) => {
-    // Don't allow clicking on step 5 if we're in the services sub-step (step 6) for non-pickup jobs
-    if (stepNumber === 5 && state.currentStep === 6 && state.data.job_type !== 'pickup') return false;
+    // Step 5 (Products): Not clickable for service jobs (they skip this step)
+    if (stepNumber === 5) {
+      if (state.data.job_type === 'service') return false; // Never clickable for service jobs
+      if (state.currentStep === 6 && state.data.job_type !== 'pickup') return false; // Don't allow going back to products during services for delivery jobs
+      return stepNumber <= state.currentStep;
+    }
     
-    // For step 6 (Review), handle pickup vs delivery/service jobs
+    // For step 6 (Review), handle different job types
     if (stepNumber === 6) {
-      const targetStep = state.data.job_type === 'pickup' ? 7 : 7; // Review is always step 7 internally
-      return state.currentStep >= targetStep;
+      // Review is accessible when we reach step 7 internally
+      return state.currentStep >= 7;
     }
     
     // Standard clickability logic

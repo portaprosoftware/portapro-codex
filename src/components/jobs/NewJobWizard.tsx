@@ -177,9 +177,16 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       case 4:
         return <DriverVehicleStep />;
       case 5:
+        // Skip Products & Inventory step for service jobs
+        if (state.data.job_type === 'service') {
+          return <ServicesFrequencyOnlyStep />;
+        }
         return <ProductsServicesStep />;
       case 6:
-        // Skip Services & Frequency step for pickup jobs
+        // Service jobs show services at step 6, pickup jobs skip to review
+        if (state.data.job_type === 'service') {
+          return <ServicesFrequencyOnlyStep />;
+        }
         if (state.data.job_type === 'pickup') {
           return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
         }

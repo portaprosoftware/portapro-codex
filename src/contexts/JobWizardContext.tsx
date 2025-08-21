@@ -186,6 +186,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
     if (validateCurrentStep()) {
       let nextStepNumber = state.currentStep + 1;
       
+      // Skip step 5 (Products & Inventory) for service jobs
+      if (state.currentStep === 4 && state.data.job_type === 'service') {
+        nextStepNumber = 6; // Go directly to Services & Frequency
+      }
+      
       // Skip step 6 (Services & Frequency) for pickup jobs
       if (state.currentStep === 5 && state.data.job_type === 'pickup') {
         nextStepNumber = 7; // Go directly to Review & Confirmation
@@ -197,6 +202,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
 
   const previousStep = () => {
     let prevStepNumber = state.currentStep - 1;
+    
+    // Skip step 5 (Products & Inventory) when going back from step 6 for service jobs
+    if (state.currentStep === 6 && state.data.job_type === 'service') {
+      prevStepNumber = 4; // Go back to Assignment step
+    }
     
     // Skip step 6 (Services & Frequency) when going back from step 7 for pickup jobs  
     if (state.currentStep === 7 && state.data.job_type === 'pickup') {
@@ -257,6 +267,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         // Driver and vehicle selection is now optional
         break;
       case 5:
+        // Skip validation for step 5 if it's a service job (this step is skipped)
+        if (state.data.job_type === 'service') {
+          break;
+        }
+        
         // Products step - no validation here, allow proceeding to services
         // If provided, ensure quantities are positive
         if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
