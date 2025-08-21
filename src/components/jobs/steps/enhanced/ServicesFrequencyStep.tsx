@@ -1712,12 +1712,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
               ) : (
                 // Individual Service View (existing functionality)
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium">Service Schedule</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Select the + icon to override driver/vehicle for any day
-                    </p>
-                  </div>
                   {data.selectedServices.map((service) => {
                   const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
                   const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
@@ -1753,10 +1747,17 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
                   return (
                       <div key={service.id} className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium text-sm text-muted-foreground">
-                            {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
-                          </span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-sm">Service Schedule</span>
+                            <span className="text-sm text-muted-foreground">—</span>
+                            <span className="font-medium text-sm text-muted-foreground">
+                              {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Select the + icon to override driver/vehicle for any day
+                          </p>
                         </div>
                       <div className="space-y-2">
                         {calculation.visits.map((visit, index) => {
