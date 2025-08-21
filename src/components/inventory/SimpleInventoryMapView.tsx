@@ -408,8 +408,8 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                   <span className="text-lg font-bold">{selectedLocation.quantity}</span>
                 </div>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-sm text-muted-foreground">Types:</span>
-                  <span className="text-sm">{selectedLocation.items ? groupProductsByType(selectedLocation.items).length : 1}</span>
+                  <span className="text-sm text-muted-foreground"><span className="font-bold">Product</span> Types:</span>
+                  <span className="text-sm font-bold">{selectedLocation.items ? groupProductsByType(selectedLocation.items).length : 1}</span>
                 </div>
               </div>
 
