@@ -1,25 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useInventoryWithDateRange } from '@/hooks/useInventoryWithDateRange';
+import { useCurrentInventoryLocations } from '@/hooks/useCurrentInventoryLocations';
 import { useInventoryMarkerManager } from '@/hooks/useInventoryMarkerManager';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Map as MapIcon, Satellite } from 'lucide-react';
-import { format } from 'date-fns';
 
 interface SimpleInventoryMapViewProps {
   searchQuery?: string;
   selectedLocationId?: string;
   selectedProductType?: string;
-  selectedDate: Date;
 }
 
 export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   searchQuery = '',
   selectedLocationId = 'all',
-  selectedProductType = 'all',
-  selectedDate
+  selectedProductType = 'all'
 }) => {
   console.log('🟢 SIMPLE MAP VIEW: Component rendering - NEW COMPONENT LOADED!');
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -31,14 +28,8 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
 
-  // Calculate date range (for now, use single day like Jobs)
-  const startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-  const endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59);
-
-  // Fetch inventory data
-  const { data: inventoryLocations = [], isLoading: dataLoading, error: dataError } = useInventoryWithDateRange({
-    startDate,
-    endDate,
+  // Fetch current deployed inventory data
+  const { data: inventoryLocations = [], isLoading: dataLoading, error: dataError } = useCurrentInventoryLocations({
     searchQuery,
     selectedLocationId,
     selectedProductType
@@ -175,14 +166,14 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         {/* Inventory Status */}
         {inventoryLocations.length > 0 && (
           <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
-            Inventory for {format(selectedDate, 'MMM d, yyyy')}: {inventoryLocations.length} locations
+            Current Deployed Inventory: {inventoryLocations.length} locations
           </div>
         )}
 
         {/* Loading indicator */}
         {dataLoading && (
           <div className="bg-white px-3 py-2 rounded-lg shadow-lg border text-xs text-gray-600">
-            Loading inventory data...
+            Loading current inventory...
           </div>
         )}
       </div>
@@ -206,7 +197,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
             <div><strong>Quantity:</strong> {selectedLocation.quantity}</div>
             <div><strong>Address:</strong> {selectedLocation.customer_address}</div>
             <div><strong>Job Type:</strong> {selectedLocation.job_type}</div>
-            <div><strong>Scheduled:</strong> {format(new Date(selectedLocation.scheduled_date), 'MMM d, yyyy')}</div>
+            <div><strong>Deployed:</strong> {new Date(selectedLocation.scheduled_date).toLocaleDateString()}</div>
           </div>
         </div>
       )}

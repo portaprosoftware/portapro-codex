@@ -49,7 +49,7 @@ const Inventory: React.FC = () => {
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showIndividualUnitsSlider, setShowIndividualUnitsSlider] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  
   
 
   // Set active tab based on URL path and handle URL parameters
@@ -501,31 +501,17 @@ const Inventory: React.FC = () => {
               onProductTypeChange={setSelectedProductType}
             />
             
-            {/* Card 3: Date Picker for Location Map */}
-            <div className="bg-background rounded-2xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Inventory Location Map</h3>
-                  <p className="text-sm text-muted-foreground">View inventory assignments by location and date</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="date"
-                    value={selectedDate.toISOString().split('T')[0]}
-                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            {/* Card 4: Location Map */}
+            {/* Card 3: Current Deployed Inventory Map */}
             <div className="bg-background rounded-2xl shadow-md p-6 h-[600px]">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold">Current Deployed Inventory</h3>
+                <p className="text-sm text-muted-foreground">View equipment currently deployed in the field</p>
+              </div>
+              
               <LocationMapView 
                 searchQuery={searchQuery}
                 selectedLocationId={selectedLocationId}
                 selectedProductType={selectedProductType}
-                selectedDate={selectedDate}
               />
             </div>
           </>
