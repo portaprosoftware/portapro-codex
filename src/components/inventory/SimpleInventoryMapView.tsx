@@ -9,6 +9,7 @@ interface SimpleInventoryMapViewProps {
 }
 
 export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = () => {
+  console.log('🟢 SIMPLE MAP VIEW: Component rendering - NEW COMPONENT LOADED!');
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
