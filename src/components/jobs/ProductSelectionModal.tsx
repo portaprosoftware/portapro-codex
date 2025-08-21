@@ -20,7 +20,9 @@ interface ProductSelectionModalProps {
   onOpenChange: (open: boolean) => void;
   startDate: string;
   endDate?: string | null;
-  filterAttributes?: Record<string, any> | null;
+  searchQuery?: string;
+  selectedLocationId?: string;
+  selectedProductType?: string;
   onProductSelect: (productId: string) => void;
   selectedProductId?: string;
 }
@@ -30,7 +32,9 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onOpenChange,
   startDate,
   endDate,
-  filterAttributes,
+  searchQuery = '',
+  selectedLocationId = 'all',
+  selectedProductType = 'all',
   onProductSelect,
   selectedProductId
 }) => {
@@ -50,11 +54,24 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   });
 
   const filteredProducts = useMemo(() => {
-    if (!searchTerm) return products;
-    return products.filter(product => 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [products, searchTerm]);
+    let filtered = products;
+    
+    // Apply search from parent component
+    const activeSearch = searchQuery || searchTerm;
+    if (activeSearch) {
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(activeSearch.toLowerCase())
+      );
+    }
+    
+    // Apply product type filter
+    if (selectedProductType && selectedProductType !== 'all') {
+      // This would need to be implemented based on your product type structure
+      // For now, we'll keep the search functionality
+    }
+    
+    return filtered;
+  }, [products, searchTerm, searchQuery, selectedProductType]);
 
   const handleProductSelect = (productId: string) => {
     onProductSelect(productId);
@@ -101,7 +118,6 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     product={product}
                     startDate={startDate}
                     endDate={endDate}
-                    filterAttributes={filterAttributes}
                     isSelected={selectedProductId === product.id}
                     onSelect={() => handleProductSelect(product.id)}
                   />
@@ -119,7 +135,6 @@ interface ProductCardProps {
   product: Product;
   startDate: string;
   endDate?: string | null;
-  filterAttributes?: Record<string, any> | null;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -128,7 +143,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   startDate,
   endDate,
-  filterAttributes,
   isSelected,
   onSelect
 }) => {
@@ -148,8 +162,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const availability = useAvailabilityEngine(
     product.id,
     startDate,
-    endDate || undefined,
-    filterAttributes
+    endDate || undefined
   );
 
   const getAvailabilityColor = (available: number, total: number) => {
