@@ -63,8 +63,10 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           .select('first_name, last_name')
           .eq('clerk_user_id', d.driver_id)
           .maybeSingle();
-        if (profile) {
-          setDriverName(`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown Driver');
+        if (profile && (profile.first_name || profile.last_name)) {
+          setDriverName(`${profile.first_name || ''} ${profile.last_name || ''}`.trim());
+        } else {
+          setDriverName('Unknown Driver');
         }
       }
 
@@ -114,6 +116,16 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return Math.max(diffDays, 1);
   }, [startDate, endDate]);
+
+  // Format currency with commas
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
 
   // Calculate items total
   const itemsTotal = useMemo(() => {
@@ -243,7 +255,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         </div>
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Assignments</h3>
-          <div>Driver: {driverName || d.driver_id || '—'}</div>
+          <div>Driver: {driverName || 'No driver assigned'}</div>
           {driverConflict && <div className="text-xs text-red-600">{driverConflict}</div>}
           <div>Vehicle: {vehicleDetails || d.vehicle_id || '—'}</div>
           {vehicleConflict && <div className="text-xs text-red-600">{vehicleConflict}</div>}
@@ -252,8 +264,9 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Items</h3>
             <div className="flex items-center gap-2">
-              <div className="text-xs font-medium">Subtotal: ${itemsTotal.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground">{checking ? 'Checking…' : hasConflicts ? 'Conflicts detected' : 'All clear'}</div>
+              <div className="text-xs font-medium">Subtotal: {formatCurrency(itemsTotal)}</div>
+              {checking && <div className="text-xs text-muted-foreground">Checking…</div>}
+              {!checking && hasConflicts && <div className="text-xs text-red-600">Conflicts detected</div>}
             </div>
           </div>
           {d.items && d.items.length > 0 ? (
@@ -266,7 +279,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
                 const itemCost = pricePerDay * it.quantity * rentalDays;
                 return (
                   <li key={i}>
-                    <span className="font-medium">{productName}</span> × {it.quantity} × {rentalDays} day{rentalDays !== 1 ? 's' : ''} = ${itemCost.toFixed(2)}
+                    <span className="font-medium">{productName}</span> × {it.quantity} × {rentalDays} day{rentalDays !== 1 ? 's' : ''} = {formatCurrency(itemCost)}
                     {it.specific_item_ids && it.specific_item_ids.length > 0 && (
                       <div className="text-xs text-muted-foreground ml-4">Units: {it.specific_item_ids.join(', ')}</div>
                     )}
@@ -285,14 +298,14 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Services</h3>
-            <div className="text-xs font-medium">Subtotal: ${servicesSubtotal.toFixed(2)}</div>
+            <div className="text-xs font-medium">Subtotal: {formatCurrency(servicesSubtotal)}</div>
           </div>
           {services.length > 0 ? (
             <div className="space-y-3">
               <ul className="list-disc list-inside space-y-1">
                 {services.map((s: any, i: number) => (
                   <li key={s.id || i}>
-                    <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · ${Number(s.calculated_cost || 0).toFixed(2)}
+                    <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · {formatCurrency(Number(s.calculated_cost || 0))}
                   </li>
                 ))}
               </ul>
@@ -309,18 +322,18 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           {itemsTotal > 0 && (
             <div className="flex justify-between text-sm">
               <span>Items:</span>
-              <span>${itemsTotal.toFixed(2)}</span>
+              <span>{formatCurrency(itemsTotal)}</span>
             </div>
           )}
           {servicesSubtotal > 0 && (
             <div className="flex justify-between text-sm">
               <span>Services:</span>
-              <span>${servicesSubtotal.toFixed(2)}</span>
+              <span>{formatCurrency(servicesSubtotal)}</span>
             </div>
           )}
           <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
             <span>Job Total:</span>
-            <span>${jobTotal.toFixed(2)}</span>
+            <span>{formatCurrency(jobTotal)}</span>
           </div>
         </div>
       )}
