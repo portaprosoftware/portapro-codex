@@ -1,16 +1,17 @@
 import React from 'react';
-import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 
 const jobTypes = [
@@ -77,6 +78,30 @@ export function JobTypeSchedulingStep() {
   const handleTogglePriority = () => {
     updateData({ is_priority: !state.data.is_priority });
   };
+
+  const handleRentalDurationChange = (field: 'days' | 'hours', value: number) => {
+    const updates: any = {
+      [`rental_duration_${field}`]: Math.max(0, value)
+    };
+    
+    // Calculate return date if we have scheduled date and duration
+    if (state.data.scheduled_date && field === 'days') {
+      const scheduledDate = new Date(state.data.scheduled_date);
+      const returnDate = addDays(scheduledDate, value);
+      updates.return_date = formatDateForQuery(returnDate);
+    }
+    
+    updateData(updates);
+  };
+
+  // Calculate return date when scheduled date changes
+  React.useEffect(() => {
+    if (state.data.scheduled_date && state.data.rental_duration_days && state.data.job_type === 'delivery') {
+      const scheduledDate = new Date(state.data.scheduled_date);
+      const returnDate = addDays(scheduledDate, state.data.rental_duration_days);
+      updateData({ return_date: formatDateForQuery(returnDate) });
+    }
+  }, [state.data.scheduled_date, state.data.rental_duration_days, state.data.job_type, updateData]);
 
   return (
     <div className="space-y-6">
@@ -231,6 +256,62 @@ export function JobTypeSchedulingStep() {
             )}
           </div>
 
+          {/* Rental Duration - Only for delivery jobs */}
+          {state.data.job_type === 'delivery' && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-muted-foreground" />
+                <Label className="text-base font-medium">Rental Duration</Label>
+              </div>
+              
+              <Card>
+                <CardContent className="p-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Days</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={state.data.rental_duration_days || 1}
+                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
+                        className="text-center"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Hours</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="23"
+                        value={state.data.rental_duration_hours || 0}
+                        onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 0)}
+                        className="text-center"
+                      />
+                    </div>
+                  </div>
+                  
+                  {state.data.scheduled_date && state.data.rental_duration_days && (
+                    <div className="pt-2 border-t text-sm text-muted-foreground">
+                      <p>
+                        <span className="font-medium">Return Date:</span>{' '}
+                        {(() => {
+                          const scheduledDate = new Date(state.data.scheduled_date);
+                          const returnDate = addDays(scheduledDate, state.data.rental_duration_days);
+                          return formatDateSafe(formatDateForQuery(returnDate), 'long');
+                        })()}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+              
+              {errors.rental_duration && (
+                <p className="text-sm text-destructive">{errors.rental_duration}</p>
+              )}
+            </div>
+          )}
+
           {/* Notes */}
           <div className="space-y-4">
             <Label className="text-base font-medium">Job Notes (Optional)</Label>
@@ -270,16 +351,29 @@ export function JobTypeSchedulingStep() {
                    })()}
                  </p>
                )}
-               {state.data.is_priority && (
-                 <p>
-                   <span className="font-medium">Priority:</span>{' '}
-                   <span className="inline-flex items-center gap-1 text-yellow-600">
-                     <Star className="w-3 h-3" />
-                     High Priority
-                   </span>
-                 </p>
-               )}
-            </div>
+               {state.data.job_type === 'delivery' && state.data.rental_duration_days && (
+                  <p>
+                    <span className="font-medium">Rental Duration:</span>{' '}
+                    {state.data.rental_duration_days} day{state.data.rental_duration_days !== 1 ? 's' : ''}
+                    {state.data.rental_duration_hours ? ` and ${state.data.rental_duration_hours} hour${state.data.rental_duration_hours !== 1 ? 's' : ''}` : ''}
+                  </p>
+                )}
+                {state.data.return_date && state.data.job_type === 'delivery' && (
+                  <p>
+                    <span className="font-medium">Return Date:</span>{' '}
+                    {formatDateSafe(state.data.return_date, 'long')}
+                  </p>
+                )}
+                {state.data.is_priority && (
+                  <p>
+                    <span className="font-medium">Priority:</span>{' '}
+                    <span className="inline-flex items-center gap-1 text-yellow-600">
+                      <Star className="w-3 h-3" />
+                      High Priority
+                    </span>
+                  </p>
+                )}
+             </div>
           </CardContent>
         </Card>
       )}

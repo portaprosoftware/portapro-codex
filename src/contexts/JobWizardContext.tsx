@@ -18,6 +18,8 @@ export interface JobWizardData {
   scheduled_time?: string | null;
   timezone: string;
   return_date?: string | null;
+  rental_duration_days?: number;
+  rental_duration_hours?: number;
   notes?: string;
   is_priority?: boolean;
   
@@ -58,6 +60,8 @@ const initialState: JobWizardState = {
     selected_coordinate_ids: [],
     scheduled_time: null,
     return_date: null,
+    rental_duration_days: 1,
+    rental_duration_hours: 0,
     is_priority: false,
     items: [],
     create_daily_assignment: true,
@@ -147,6 +151,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         if (!state.data.scheduled_date) {
           errors.scheduled_date = 'Please select a scheduled date';
+        }
+        if (state.data.job_type === 'delivery') {
+          if (!state.data.rental_duration_days || state.data.rental_duration_days < 1) {
+            errors.rental_duration = 'Please specify rental duration (minimum 1 day)';
+          }
         }
         break;
       case 3:
