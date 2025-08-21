@@ -78,8 +78,6 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const handleBulkSelect = (product: Product, quantity: number) => {
     if (quantity <= 0) return;
     
-    console.log('handleBulkSelect called with quantity:', quantity);
-    
     const selection: UnitSelection = {
       unitId: 'bulk',
       itemCode: 'BULK',
@@ -88,14 +86,10 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       quantity
     };
     
-    console.log('Created bulk selection:', selection);
-    
     setSelectedUnitsCollection(prev => {
       // Remove any existing BULK selections for this product, but keep specific unit selections
       const filtered = prev.filter(s => !(s.productId === product.id && s.unitId === 'bulk'));
-      const newCollection = [...filtered, selection];
-      console.log('Updated selectedUnitsCollection:', newCollection);
-      return newCollection;
+      return [...filtered, selection];
     });
   };
 
@@ -241,7 +235,11 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           {currentPage === 'main' && selectedUnitsCollection.length > 0 && (
             <div className="border-t bg-muted/30 p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-sm">Selected Units ({selectedUnitsCollection.length})</h3>
+                <h3 className="font-medium text-sm">
+                  Selected Units ({selectedUnitsCollection.reduce((total, selection) => {
+                    return total + selection.quantity;
+                  }, 0)})
+                </h3>
                 <Button
                   onClick={handleAddUnitsToJob}
                   className="font-medium"
