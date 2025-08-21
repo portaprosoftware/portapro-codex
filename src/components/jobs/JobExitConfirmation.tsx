@@ -83,7 +83,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
             className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white w-full"
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Delete Progress
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
