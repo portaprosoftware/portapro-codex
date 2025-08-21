@@ -37,10 +37,15 @@ export const useJobDrafts = () => {
   // Save draft mutation
   const saveDraftMutation = useMutation({
     mutationFn: async ({ name, data, draftId }: { name: string; data: any; draftId?: string }) => {
+      console.log('saveDraftMutation called with:', { name, data, draftId });
       if (!user?.id) throw new Error('User not authenticated');
+
+      console.log('User ID:', user.id);
+      console.log('Draft data:', JSON.stringify(data, null, 2));
 
       if (draftId) {
         // Update existing draft
+        console.log('Updating existing draft:', draftId);
         const { error } = await supabase
           .from('job_drafts')
           .update({
@@ -51,9 +56,14 @@ export const useJobDrafts = () => {
           .eq('id', draftId)
           .eq('created_by', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update draft error:', error);
+          throw error;
+        }
+        console.log('Draft updated successfully');
       } else {
         // Create new draft
+        console.log('Creating new draft');
         const { error } = await supabase
           .from('job_drafts')
           .insert({
@@ -62,7 +72,11 @@ export const useJobDrafts = () => {
             created_by: user.id,
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Create draft error:', error);
+          throw error;
+        }
+        console.log('Draft created successfully');
       }
     },
     onSuccess: () => {

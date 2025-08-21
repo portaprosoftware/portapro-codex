@@ -30,17 +30,21 @@ function WizardContent({ onClose }: { onClose: () => void }) {
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const handleSaveAndExit = async (draftName: string) => {
     try {
+      console.log('Saving job draft with name:', draftName);
+      console.log('Current wizard data:', state.data);
+      
       await saveDraft(draftName, state.data);
       toast.success('Job draft saved successfully');
       reset();
       onClose();
     } catch (error) {
+      console.error('Failed to save draft:', error);
       toast.error('Failed to save draft');
-      console.error('Draft save error:', error);
     }
   };
 
   const handleDeleteAndExit = () => {
+    console.log('Deleting draft and exiting');
     reset();
     onClose();
   };
@@ -266,7 +270,11 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           <div className="flex justify-between">
             <Button
               variant="outline"
-              onClick={() => setShowExitConfirmation(true)}
+              onClick={() => {
+                console.log('Close wizard clicked, current data:', state.data);
+                console.log('Has any data?', Object.keys(state.data).length > 0);
+                setShowExitConfirmation(true);
+              }}
             >
               Close Wizard
             </Button>

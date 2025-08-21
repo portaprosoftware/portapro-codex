@@ -31,6 +31,8 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
 }) => {
   const [draftName, setDraftName] = useState('');
 
+  console.log('JobExitConfirmation isOpen:', isOpen, 'isSaving:', isSaving);
+
   const handleSaveAndExit = () => {
     if (draftName.trim()) {
       onSaveAndExit(draftName.trim());
