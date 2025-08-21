@@ -48,9 +48,9 @@ export function WizardNavigation() {
   const getStepStatus = (stepNumber: number) => {
     // For step 5 (Products), handle different job types
     if (stepNumber === 5) {
-      // Service jobs: Skip step 5 entirely, so it's never current
+      // Service jobs: Skip step 5 entirely, show as completed once past step 4
       if (state.data.job_type === 'service') {
-        return 'upcoming'; // Always show as upcoming/disabled for service jobs
+        return state.currentStep > 4 ? 'completed' : 'upcoming';
       }
       
       // Pickup jobs: Step 5 is the equipment selection step
