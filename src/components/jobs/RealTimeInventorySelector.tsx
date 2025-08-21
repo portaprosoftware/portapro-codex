@@ -32,7 +32,7 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
 }) => {
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [qty, setQty] = useState<number>(1);
-  const [mode, setMode] = useState<'bulk' | 'specific'>('bulk');
+  const [mode] = useState<'bulk' | 'specific'>('bulk'); // Default to bulk mode
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
 
@@ -118,38 +118,22 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2 md:col-span-2">
-          <Label>Product</Label>
-          <Button
-            variant="outline"
-            className="h-10 w-full justify-start text-left font-normal"
-            onClick={() => setShowProductModal(true)}
-          >
-            {selectedProduct ? (
-              <div className="flex items-center gap-2">
-                <Package className="h-4 w-4" />
-                <span>{selectedProductName}</span>
-              </div>
-            ) : (
-              <span className="text-muted-foreground">Select a product…</span>
-            )}
-          </Button>
-        </div>
-        <div className="space-y-2">
-          <Label>Mode</Label>
-          <select
-            className="h-10 w-full rounded-md border bg-background px-3"
-            value={mode}
-            onChange={(e) => {
-              setMode(e.target.value as 'bulk' | 'specific');
-              setSelectedUnitIds([]);
-            }}
-          >
-            <option value="bulk">Bulk (quantity)</option>
-            <option value="specific">Specific items</option>
-          </select>
-        </div>
+      <div className="space-y-2">
+        <Label>Product</Label>
+        <Button
+          variant="outline"
+          className="h-10 w-full justify-start text-left font-normal"
+          onClick={() => setShowProductModal(true)}
+        >
+          {selectedProduct ? (
+            <div className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              <span>{selectedProductName}</span>
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Select a product…</span>
+          )}
+        </Button>
       </div>
 
       {/* Bulk Mode */}
