@@ -324,11 +324,11 @@ export function JobTypeSchedulingStep() {
                           }
                         }}
                       />
-                      <Label className="text-sm font-medium">Track hours (&lt;24h)</Label>
+                      <Label className="text-sm font-medium">Track hours (less than 24 hours)</Label>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Use for short events. If Days ≥ 1, we bill daily and ignore hours.
-                    </p>
+                     <p className="text-xs text-muted-foreground">
+                       Use for short events. If Days greater than or equal to 1 day (24+ hours), we bill daily and ignore hours.
+                     </p>
 
                     {/* Hours input - only shown when toggle is ON */}
                     {trackHours && (
