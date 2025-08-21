@@ -45,6 +45,16 @@ export interface JobWizardData {
   pickup_time?: string | null;
   pickup_notes?: string;
   pickup_is_priority?: boolean;
+  
+  // Partial pickup details (multiple partial pickups between delivery and final pickup)
+  create_partial_pickups?: boolean;
+  partial_pickups?: Array<{
+    id: string;
+    date: string;
+    time?: string | null;
+    notes?: string;
+    is_priority?: boolean;
+  }>;
 }
 
 interface JobWizardState {
@@ -79,6 +89,8 @@ const initialState: JobWizardState = {
     pickup_time: null,
     pickup_notes: '',
     pickup_is_priority: false,
+    create_partial_pickups: false,
+    partial_pickups: [],
   },
   errors: {},
   isLoading: false,

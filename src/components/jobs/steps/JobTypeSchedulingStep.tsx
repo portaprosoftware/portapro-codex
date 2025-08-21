@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays, Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -575,6 +575,200 @@ export function JobTypeSchedulingStep() {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {/* Partial Pickups Section - Only show if pickup job is enabled */}
+          {state.data.create_pickup_job && (
+            <div className="space-y-4 mt-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={state.data.create_partial_pickups || false}
+                  onCheckedChange={(checked) => {
+                    updateData({ 
+                      create_partial_pickups: checked,
+                      partial_pickups: checked ? [{ 
+                        id: crypto.randomUUID(), 
+                        date: '', 
+                        time: null, 
+                        notes: '', 
+                        is_priority: false 
+                      }] : []
+                    });
+                  }}
+                />
+                <Label className="text-base font-medium">
+                  Add Partial Pickups <span className="text-muted-foreground">(pick up some inventory before final pickup)</span>
+                </Label>
+              </div>
+
+              {/* Partial Pickup Details */}
+              {state.data.create_partial_pickups && state.data.partial_pickups && (
+                <Card>
+                  <CardContent className="p-6 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-lg font-semibold">Partial Pickup Schedule</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const currentPartials = state.data.partial_pickups || [];
+                          updateData({
+                            partial_pickups: [
+                              ...currentPartials,
+                              {
+                                id: crypto.randomUUID(),
+                                date: '',
+                                time: null,
+                                notes: '',
+                                is_priority: false
+                              }
+                            ]
+                          });
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Another Partial Pickup
+                      </Button>
+                    </div>
+
+                    {state.data.partial_pickups.map((partial, index) => (
+                      <div key={partial.id} className="border rounded-lg p-4 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-base font-medium">Partial Pickup #{index + 1}</Label>
+                          {state.data.partial_pickups!.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updatedPartials = state.data.partial_pickups!.filter(p => p.id !== partial.id);
+                                updateData({ partial_pickups: updatedPartials });
+                              }}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Partial Pickup Date */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Pickup Date</Label>
+                          <div className="flex justify-center">
+                            <Card className="overflow-hidden w-fit">
+                              <CardContent className="p-3">
+                                <CalendarComponent
+                                  mode="single"
+                                  selected={partial.date ? (() => {
+                                    const [year, month, day] = partial.date.split('-').map(Number);
+                                    return new Date(year, month - 1, day, 12, 0, 0);
+                                  })() : undefined}
+                                  onSelect={(date) => {
+                                    if (date) {
+                                      const formattedDate = formatDateForQuery(date);
+                                      const updatedPartials = state.data.partial_pickups!.map(p => 
+                                        p.id === partial.id ? { ...p, date: formattedDate } : p
+                                      );
+                                      updateData({ partial_pickups: updatedPartials });
+                                    }
+                                  }}
+                                  disabled={(date) => {
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    const deliveryDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : today;
+                                    const pickupDate = state.data.pickup_date ? new Date(state.data.pickup_date) : new Date('2099-12-31');
+                                    return date < today || date < deliveryDate || date >= pickupDate;
+                                  }}
+                                  className="rounded-none border-0 mx-auto pointer-events-auto text-xs
+                                    [&_.rdp-months]:w-fit
+                                    [&_.rdp-month]:w-fit
+                                    [&_.rdp-table]:w-fit
+                                    [&_.rdp-caption]:text-sm [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-2 [&_.rdp-caption]:px-3
+                                    [&_.rdp-nav]:gap-1 [&_.rdp-nav_button]:h-6 [&_.rdp-nav_button]:w-6 [&_.rdp-nav_button]:rounded-md [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
+                                    [&_.rdp-head_cell]:p-1 [&_.rdp-head_cell]:text-xs [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-8
+                                    [&_.rdp-cell]:p-0.5
+                                    [&_.rdp-day]:h-8 [&_.rdp-day]:w-8 [&_.rdp-day]:text-xs [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-md [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent
+                                    [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-orange-500 [&_.rdp-day_selected]:to-orange-600 [&_.rdp-day_selected]:text-white [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-md
+                                    [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
+                                    [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
+                                    [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent"
+                                />
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </div>
+
+                        {/* Partial Pickup Time */}
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              checked={!!partial.time}
+                              onCheckedChange={(enabled) => {
+                                const updatedPartials = state.data.partial_pickups!.map(p => 
+                                  p.id === partial.id ? { ...p, time: enabled ? '09:00' : null } : p
+                                );
+                                updateData({ partial_pickups: updatedPartials });
+                              }}
+                            />
+                            <Label className="text-sm font-medium">Specific Time</Label>
+                          </div>
+
+                          {partial.time !== null && (
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <TimePicker
+                                value={partial.time}
+                                onChange={(time) => {
+                                  const updatedPartials = state.data.partial_pickups!.map(p => 
+                                    p.id === partial.id ? { ...p, time } : p
+                                  );
+                                  updateData({ partial_pickups: updatedPartials });
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Partial Pickup Priority */}
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              checked={partial.is_priority || false}
+                              onCheckedChange={(checked) => {
+                                const updatedPartials = state.data.partial_pickups!.map(p => 
+                                  p.id === partial.id ? { ...p, is_priority: checked } : p
+                                );
+                                updateData({ partial_pickups: updatedPartials });
+                              }}
+                            />
+                            <Label className="text-sm font-medium">Priority</Label>
+                            <Star className="w-3 h-3 text-yellow-500" />
+                          </div>
+                        </div>
+
+                        {/* Partial Pickup Notes */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Notes</Label>
+                          <Textarea
+                            placeholder="Special instructions for this partial pickup..."
+                            value={partial.notes || ''}
+                            onChange={(e) => {
+                              const updatedPartials = state.data.partial_pickups!.map(p => 
+                                p.id === partial.id ? { ...p, notes: e.target.value } : p
+                              );
+                              updateData({ partial_pickups: updatedPartials });
+                            }}
+                            className="min-h-[60px]"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           )}
         </div>
       )}

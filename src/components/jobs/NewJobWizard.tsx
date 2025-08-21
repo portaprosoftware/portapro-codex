@@ -67,6 +67,33 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         pickupJob = await createJobMutation.mutateAsync(pickupJobData);
       }
 
+      // Create partial pickup jobs if requested
+      const partialPickupJobs = [];
+      if (state.data.create_partial_pickups && state.data.partial_pickups) {
+        for (const partialPickup of state.data.partial_pickups) {
+          if (partialPickup.date) {
+            const partialPickupJobData = {
+              customer_id: state.data.customer_id,
+              job_type: 'pickup' as const,
+              scheduled_date: partialPickup.date,
+              scheduled_time: partialPickup.time,
+              timezone: state.data.timezone,
+              notes: partialPickup.notes ? `PARTIAL PICKUP: ${partialPickup.notes}` : 'PARTIAL PICKUP',
+              is_priority: partialPickup.is_priority || false,
+              selected_coordinate_ids: state.data.selected_coordinate_ids,
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              items: state.data.items, // Same items for partial pickup
+              create_daily_assignment: state.data.create_daily_assignment,
+            };
+            
+            console.log('Creating partial pickup job with data:', partialPickupJobData);
+            const partialJob = await createJobMutation.mutateAsync(partialPickupJobData);
+            partialPickupJobs.push(partialJob);
+          }
+        }
+      }
+
       // Note: Inventory items are now handled directly in useCreateJob hook
 
       // Insert service job items if any services were selected
@@ -128,7 +155,8 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         console.warn('Daily assignment step skipped due to error:', e);
       }
 
-      const jobsCreated = pickupJob ? 'Jobs created successfully!' : 'Job created successfully!';
+      const totalJobsCreated = 1 + (pickupJob ? 1 : 0) + partialPickupJobs.length;
+      const jobsCreated = totalJobsCreated > 1 ? `${totalJobsCreated} jobs created successfully!` : 'Job created successfully!';
       toast.success(jobsCreated);
       reset();
       onClose();
