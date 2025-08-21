@@ -9376,6 +9376,17 @@ export type Database = {
           note_type: string
         }[]
       }
+      get_jobs_for_quote: {
+        Args: { quote_uuid: string }
+        Returns: {
+          created_at: string
+          job_id: string
+          job_number: string
+          job_type: string
+          scheduled_date: string
+          status: string
+        }[]
+      }
       get_maintenance_analytics: {
         Args: { days_back?: number }
         Returns: Json
@@ -9598,6 +9609,10 @@ export type Database = {
       preview_next_item_code: {
         Args: { category_prefix: string }
         Returns: string
+      }
+      quote_has_job: {
+        Args: { quote_uuid: string }
+        Returns: boolean
       }
       refresh_revenue_analytics_cache: {
         Args: Record<PropertyKey, never>

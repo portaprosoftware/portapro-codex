@@ -229,8 +229,17 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         status: 'sent'
       });
 
-      // Create job
-      const job = await createJobMutation.mutateAsync(state.data);
+      // Create job - need to handle quote_id separately since it's not in JobWizardData
+      const jobData = { ...state.data };
+      const job = await createJobMutation.mutateAsync(jobData);
+      
+      // Link the job to the quote after creation
+      if (quote.id) {
+        await supabase
+          .from('jobs')
+          .update({ quote_id: quote.id })
+          .eq('id', job.id);
+      }
 
       // Create pickup job if requested
       let pickupJob = null;
