@@ -31,7 +31,7 @@ interface TrackedUnitsPageProps {
   startDate: string;
   endDate?: string | null;
   onUnitsSelect: (units: SelectedUnit[], productName: string) => void;
-  onBulkSelect: (product: Product) => void;
+  onBulkSelect: (product: Product, quantity: number) => void;
   onBack: () => void;
 }
 
@@ -237,7 +237,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   };
 
   const handleBulkSelection = () => {
-    onBulkSelect(product);
+    onBulkSelect(product, 1); // Default quantity of 1 for bulk from tracked units page
     onBack();
   };
 

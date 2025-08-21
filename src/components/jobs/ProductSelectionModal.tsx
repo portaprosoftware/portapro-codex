@@ -29,6 +29,7 @@ interface UnitSelection {
   itemCode: string;
   productId: string;
   productName: string;
+  quantity: number;
   attributes?: Record<string, any>;
 }
 
@@ -37,7 +38,7 @@ interface ProductSelectionModalProps {
   onOpenChange: (open: boolean) => void;
   startDate: string;
   endDate?: string | null;
-  onProductSelect: (selections: UnitSelection[]) => void;
+  onProductSelect: (jobItems: import('@/contexts/JobWizardContext').JobItemSelection[]) => void;
   selectedProductId?: string;
 }
 
@@ -52,6 +53,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const [currentPage, setCurrentPage] = useState<'main' | 'tracked-units'>('main');
   const [selectedProductForTracking, setSelectedProductForTracking] = useState<Product | null>(null);
   const [selectedUnitsCollection, setSelectedUnitsCollection] = useState<UnitSelection[]>([]);
+  const [bulkQuantities, setBulkQuantities] = useState<Record<string, number>>({});
   
   // Reset state when modal closes
   useEffect(() => {
@@ -59,6 +61,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       setCurrentPage('main');
       setSelectedProductForTracking(null);
       setSelectedUnitsCollection([]);
+      setBulkQuantities({});
     }
   }, [open]);
 
@@ -72,12 +75,15 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     setSelectedProductForTracking(null);
   };
 
-  const handleBulkSelect = (product: Product) => {
+  const handleBulkSelect = (product: Product, quantity: number) => {
+    if (quantity <= 0) return;
+    
     const selection: UnitSelection = {
       unitId: 'bulk',
       itemCode: 'BULK',
       productId: product.id,
-      productName: product.name
+      productName: product.name,
+      quantity
     };
     setSelectedUnitsCollection(prev => {
       // Remove any existing selections for this product
@@ -90,6 +96,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     const selections: UnitSelection[] = units.map(unit => ({
       ...unit,
       productName,
+      quantity: 1, // Each specific unit has quantity 1
       attributes: {}
     }));
     
@@ -107,7 +114,16 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   };
 
   const handleAddUnitsToJob = () => {
-    onProductSelect(selectedUnitsCollection);
+    // Convert UnitSelection[] to JobItemSelection[]
+    const jobItems = selectedUnitsCollection.map(selection => ({
+      product_id: selection.productId,
+      quantity: selection.quantity,
+      strategy: (selection.unitId === 'bulk' ? 'bulk' : 'specific') as 'bulk' | 'specific',
+      specific_item_ids: selection.unitId === 'bulk' ? undefined : [selection.unitId],
+      attributes: selection.attributes
+    }));
+    
+    onProductSelect(jobItems);
     onOpenChange(false);
   };
 
@@ -137,6 +153,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               endDate={endDate}
               onBulkSelect={handleBulkSelect}
               onViewTrackedUnits={handleViewTrackedUnits}
+              bulkQuantities={bulkQuantities}
+              onBulkQuantityChange={setBulkQuantities}
             />
           ) : (
             <TrackedUnitsPage
@@ -194,15 +212,19 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 interface ProductListPageProps {
   startDate: string;
   endDate?: string | null;
-  onBulkSelect: (product: Product) => void;
+  onBulkSelect: (product: Product, quantity: number) => void;
   onViewTrackedUnits: (product: Product) => void;
+  bulkQuantities: Record<string, number>;
+  onBulkQuantityChange: (quantities: Record<string, number>) => void;
 }
 
 const ProductListPage: React.FC<ProductListPageProps> = ({
   startDate,
   endDate,
   onBulkSelect,
-  onViewTrackedUnits
+  onViewTrackedUnits,
+  bulkQuantities,
+  onBulkQuantityChange
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState('all');
@@ -341,7 +363,12 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
                 product={product}
                 startDate={startDate}
                 endDate={endDate}
-                onBulkSelect={() => onBulkSelect(product)}
+                quantity={bulkQuantities[product.id] || 1}
+                onQuantityChange={(qty) => onBulkQuantityChange({
+                  ...bulkQuantities,
+                  [product.id]: qty
+                })}
+                onBulkSelect={() => onBulkSelect(product, bulkQuantities[product.id] || 1)}
                 onViewTrackedUnits={() => onViewTrackedUnits(product)}
               />
             ))}
@@ -356,6 +383,8 @@ interface ProductCardProps {
   product: Product;
   startDate: string;
   endDate?: string | null;
+  quantity: number;
+  onQuantityChange: (quantity: number) => void;
   onBulkSelect: () => void;
   onViewTrackedUnits: () => void;
 }
@@ -364,6 +393,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   startDate,
   endDate,
+  quantity,
+  onQuantityChange,
   onBulkSelect,
   onViewTrackedUnits
 }) => {
@@ -460,6 +491,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
+        {/* Quantity Input */}
+        <div className="space-y-2">
+          <label className="text-xs font-medium">Quantity</label>
+          <Input
+            type="number"
+            min={1}
+            max={availability.data?.available || undefined}
+            value={quantity}
+            onChange={(e) => onQuantityChange(parseInt(e.target.value) || 1)}
+            className="h-8 text-xs"
+          />
+        </div>
+
         {/* Action Buttons */}
         <div className="flex flex-col gap-2">
           <Button
@@ -467,9 +511,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             size="sm"
             className="w-full text-xs"
             onClick={onBulkSelect}
+            disabled={!availability.data || quantity <= 0 || quantity > (availability.data?.available ?? 0)}
           >
             <Layers className="h-3 w-3 mr-1" />
-            Select Bulk
+            Add Bulk ({quantity})
           </Button>
           
           {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
