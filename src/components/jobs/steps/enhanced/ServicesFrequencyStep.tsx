@@ -1469,7 +1469,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
             {/* Service Date Assignments */}
             <div className="space-y-4 pt-4">
               <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium">Service Schedule</Label>
                 <p className="text-xs text-muted-foreground">
                   Select the + icon to override driver/vehicle for any day
                 </p>
