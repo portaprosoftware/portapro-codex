@@ -409,7 +409,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                 </div>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-sm text-muted-foreground">Types:</span>
-                  <span className="text-sm">{selectedLocation.items?.length || 1}</span>
+                  <span className="text-sm">{selectedLocation.items ? groupProductsByType(selectedLocation.items).length : 1}</span>
                 </div>
               </div>
 
@@ -420,22 +420,30 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                   {selectedLocation.items && selectedLocation.items.length > 0 ? (
                     groupProductsByType(selectedLocation.items).map((product, index) => (
                       <div key={index} className="border rounded-lg p-3 bg-background">
+                        {/* Product Name - larger font, own row */}
+                        <div className="mb-2">
+                          <h5 className="font-semibold text-base">{product.name}</h5>
+                        </div>
+                        
+                        {/* Total Units Count */}
                         <div className="mb-3">
-                          <span className="font-medium text-sm">
-                            {product.totalQuantity} {product.name}{product.totalQuantity > 1 ? 's' : ''} Total
+                          <span className="text-sm font-medium">
+                            Total Units at Location: {product.totalQuantity}
                           </span>
                         </div>
                         
+                        {/* Bulk Inventory */}
                         {product.bulkQuantity > 0 && (
                           <div className="text-sm mb-2">
-                            <span className="font-medium">{product.bulkQuantity} Bulk</span>
+                            <span className="font-medium">{product.bulkQuantity} Bulk Inventory</span>
                           </div>
                         )}
                         
+                        {/* Tracked Units */}
                         {product.trackedUnits.length > 0 && (
                           <div className="text-sm">
                             <div className="font-medium mb-1">
-                              {product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''}:
+                              {product.trackedUnits.length} Tracked Unit{product.trackedUnits.length > 1 ? 's' : ''}:
                             </div>
                             <div className="space-y-1 pl-2">
                               {product.trackedUnits.map((unit, unitIndex) => (
