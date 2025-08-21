@@ -268,12 +268,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         </div>
       )}
 
-      <div className="flex items-center justify-end gap-2">
-        <Button variant="outline" disabled={checking} onClick={() => {
-          // Force re-run by toggling dependencies via state copy
-          const evt = new Event('recheck');
-          window.dispatchEvent(evt);
-        }}>Recheck</Button>
+      <div className="flex items-center justify-end">
         <Button onClick={onCreateJob} disabled={!!creating || checking || hasConflicts} className="min-w-[140px]">
           {creating ? 'Creating…' : 'Create Job'}
         </Button>
