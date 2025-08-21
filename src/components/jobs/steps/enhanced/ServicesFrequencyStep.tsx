@@ -1746,10 +1746,14 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   if (calculation.visits.length === 0) return null;
 
                   return (
-                    <div key={service.id} className="space-y-3">
-                      <div className="font-medium text-sm text-muted-foreground">
-                        {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
-                      </div>
+                     <div key={service.id} className="space-y-3">
+                       <div className="flex items-center space-x-2">
+                         <span className="font-medium text-sm">Service Schedule</span>
+                         <span className="text-sm text-muted-foreground">—</span>
+                         <span className="font-medium text-sm text-muted-foreground">
+                           {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
+                         </span>
+                       </div>
                       <div className="space-y-2">
                         {calculation.visits.map((visit, index) => {
                           const dateKey = format(visit.date, 'yyyy-MM-dd');
