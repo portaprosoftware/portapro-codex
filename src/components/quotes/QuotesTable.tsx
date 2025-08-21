@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, Plus, Mail, FileText, MoreHorizontal, Download } from "lucide-react";
+import { Eye, Plus, Mail, FileText, MoreHorizontal, Download, BriefcaseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { QuoteCreationWizard } from "./QuoteCreationWizard";
 import { QuoteExportModal } from "./QuoteExportModal";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
+import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -23,6 +23,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
   const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
   const queryClient = useQueryClient();
+  const convertQuoteToJob = useConvertQuoteToJob();
 
   const { data: quotes, isLoading } = useQuery({
     queryKey: ['quotes', searchTerm],
@@ -191,13 +192,22 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                       Send Email
                     </DropdownMenuItem>
                     {quote.status === 'accepted' && (
-                      <DropdownMenuItem 
-                        onClick={() => createInvoiceFromQuote.mutate(quote.id)}
-                        disabled={createInvoiceFromQuote.isPending}
-                      >
-                        <FileText className="mr-2 h-4 w-4" />
-                        Convert to Invoice
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem 
+                          onClick={() => createInvoiceFromQuote.mutate(quote.id)}
+                          disabled={createInvoiceFromQuote.isPending}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          Convert to Invoice
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => convertQuoteToJob.mutate({ quoteId: quote.id })}
+                          disabled={convertQuoteToJob.isPending}
+                        >
+                          <BriefcaseIcon className="mr-2 h-4 w-4" />
+                          {convertQuoteToJob.isPending ? 'Converting...' : 'Convert to Job'}
+                        </DropdownMenuItem>
+                      </>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -213,12 +223,6 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
         </div>
       )}
 
-      {showCreateQuote && (
-        <QuoteCreationWizard
-          isOpen={showCreateQuote}
-          onClose={() => setShowCreateQuote(false)}
-        />
-      )}
 
       {selectedQuoteForInvoice && (
         <InvoiceCreationWizard
