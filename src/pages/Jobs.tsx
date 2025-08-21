@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import { formatDateForQuery, addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -38,12 +38,14 @@ import { useUser } from '@clerk/clerk-react';
 import { DateRange } from 'react-day-picker';
 import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
+import { JobDraftManagement } from '@/components/jobs/JobDraftManagement';
+import { useJobDrafts } from '@/hooks/useJobDrafts';
 
 
 const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map' | 'custom'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map' | 'custom' | 'drafts'>('calendar');
   // Unified date state for all views - using Date objects (converted to string at query boundary)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
@@ -68,6 +70,9 @@ const JobsPage: React.FC = () => {
 
   // Map-specific state
   const [isDriverMode, setIsDriverMode] = useState(false);
+
+  // Job drafts
+  const { drafts } = useJobDrafts();
 
   const updateJobStatusMutation = useUpdateJobStatus();
   const createJobMutation = useCreateJob();
@@ -224,6 +229,8 @@ const JobsPage: React.FC = () => {
       setActiveTab('map');
     } else if (location.pathname.includes('/custom')) {
       setActiveTab('custom');
+    } else if (location.pathname.includes('/drafts')) {
+      setActiveTab('drafts');
     } else if (location.pathname === '/jobs') {
       // Default to calendar view for /jobs route
       setActiveTab('calendar');
@@ -251,7 +258,7 @@ const JobsPage: React.FC = () => {
     }
   }, [activeTab]);
 
-  const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map' | 'custom') => {
+  const navigateToTab = (tab: 'calendar' | 'dispatch' | 'map' | 'custom' | 'drafts') => {
     setActiveTab(tab);
     navigate(`/jobs/${tab}`);
   };
@@ -422,6 +429,19 @@ const JobsPage: React.FC = () => {
                     <Filter className="w-4 h-4" />
                     Advanced Search
                   </TabNav.Item>
+                  <TabNav.Item 
+                    to="/jobs/drafts" 
+                    isActive={activeTab === 'drafts'}
+                    onClick={() => navigateToTab('drafts')}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Drafts
+                    {drafts.length > 0 && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        {drafts.length}
+                      </Badge>
+                    )}
+                  </TabNav.Item>
                 </TabNav>
               </div>
               <Button 
@@ -436,7 +456,7 @@ const JobsPage: React.FC = () => {
         </div>
         
         {/* Conditional Filters Bar */}
-        {activeTab !== 'custom' && (
+        {activeTab !== 'custom' && activeTab !== 'drafts' && (
           <div className="bg-white rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between">
               <InlineFilters
@@ -482,6 +502,12 @@ const JobsPage: React.FC = () => {
 
         {/* Content Area with Enhanced Spacing */}
         <div className="space-y-4">
+          {activeTab === 'drafts' && (
+            <div className="bg-white rounded-lg border shadow-sm p-6">
+              <JobDraftManagement />
+            </div>
+          )}
+
           {activeTab === 'custom' && (
             <div className="space-y-6">
               {customDateRange?.from && customDateRange?.to ? (
