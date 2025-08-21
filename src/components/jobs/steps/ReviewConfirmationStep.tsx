@@ -268,7 +268,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           <div>Time: {d.scheduled_time || '—'} ({formatTimezone(d.timezone)})</div>
         </div>
         <div className="rounded-lg border p-3 space-y-1">
-          <h3 className="font-medium">Assignments</h3>
+          <h3 className="font-medium">Main Job Assignments</h3>
           <div>Driver: {driverName || 'No driver assigned'}</div>
           {driverConflict && <div className="text-xs text-red-600">{driverConflict}</div>}
           <div>Vehicle: {vehicleDetails || d.vehicle_id || '—'}</div>
@@ -334,7 +334,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         {services.length > 0 && (
           <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">Main Job Assignments</h3>
+            <h3 className="font-medium">Service Assignment Schedule</h3>
               <div className="text-xs text-muted-foreground">
                 {servicesData?.groupAssignmentsByDay ? 'Grouped by day' : 'Individual assignments'}
               </div>
