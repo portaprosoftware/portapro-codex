@@ -12,7 +12,7 @@ export const ServicesFrequencyOnlyStep: React.FC = () => {
       {/* Back to Products Navigation */}
       <div className="flex items-center gap-2 pb-4 border-b">
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={previousStep}
           className="flex items-center gap-2"

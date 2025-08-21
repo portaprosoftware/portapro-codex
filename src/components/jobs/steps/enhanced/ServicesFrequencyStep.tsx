@@ -394,182 +394,192 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                         </div>
                       </div>
                       
-                      {/* Frequency Selection - Only show when service is selected */}
-                      {isSelected && selectedService && (
-                        <div className="border-t pt-3 mt-3">
-                          <div className="flex items-center space-x-4">
-                            <div className="flex-1">
-                              <Label htmlFor={`frequency-${service.id}`} className="text-sm font-medium">
-                                Service Frequency <span className="text-destructive">*</span>
-                              </Label>
-                              <Select
-                                value={selectedService.frequency}
-                                onValueChange={(value) => updateServiceFrequency(service.id, value)}
-                              >
-                                <SelectTrigger id={`frequency-${service.id}`} className="mt-1">
-                                  <SelectValue placeholder="Select frequency" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="one-time">One-Time</SelectItem>
-                                  <SelectItem value="daily">Daily</SelectItem>
-                                  <SelectItem value="weekly">Weekly (based on first day of schedule)</SelectItem>
-                                  <SelectItem value="custom">Custom</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            
-                            {selectedService.frequency === 'custom' && (
-                              <div className="w-full mt-3 space-y-3">
-                                <div>
-                                  <Label className="text-sm font-medium">Custom Type</Label>
-                                  <Select
-                                    value={selectedService.custom_type || 'days_interval'}
-                                    onValueChange={(value) => updateCustomType(service.id, value)}
-                                  >
-                                    <SelectTrigger className="mt-1">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="days_interval">Every X Days</SelectItem>
-                                      <SelectItem value="days_of_week">Specific Days of Week</SelectItem>
-                                      <SelectItem value="specific_dates">Specific Dates</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                       {/* Frequency Selection - Only show when service is selected */}
+                       {isSelected && selectedService && (
+                         <div className="border-t pt-3 mt-3">
+                           <div className="space-y-3">
+                             <div>
+                               <Label htmlFor={`frequency-${service.id}`} className="text-sm font-medium">
+                                 Service Frequency <span className="text-destructive">*</span>
+                               </Label>
+                               <Select
+                                 value={selectedService.frequency}
+                                 onValueChange={(value) => updateServiceFrequency(service.id, value)}
+                               >
+                                 <SelectTrigger id={`frequency-${service.id}`} className="mt-1">
+                                   <SelectValue placeholder="Select frequency" />
+                                 </SelectTrigger>
+                                 <SelectContent>
+                                   <SelectItem value="one-time">One-Time</SelectItem>
+                                   <SelectItem value="daily">Daily</SelectItem>
+                                   <SelectItem value="weekly">Weekly (based on first day of schedule)</SelectItem>
+                                   <SelectItem value="custom">Custom</SelectItem>
+                                 </SelectContent>
+                               </Select>
+                             </div>
+                             
+                             {selectedService.frequency === 'custom' && (
+                               <div className="space-y-3">
+                                 <div>
+                                   <Label className="text-sm font-medium">Custom Type</Label>
+                                   <div className="flex flex-wrap gap-2 mt-1">
+                                     <Button
+                                       variant={selectedService.custom_type === 'days_interval' ? 'default' : 'outline'}
+                                       size="sm"
+                                       onClick={() => updateCustomType(service.id, 'days_interval')}
+                                     >
+                                       Every X Days
+                                     </Button>
+                                     <Button
+                                       variant={selectedService.custom_type === 'days_of_week' ? 'default' : 'outline'}
+                                       size="sm"
+                                       onClick={() => updateCustomType(service.id, 'days_of_week')}
+                                     >
+                                       Specific Days of Week
+                                     </Button>
+                                     <Button
+                                       variant={selectedService.custom_type === 'specific_dates' ? 'default' : 'outline'}
+                                       size="sm"
+                                       onClick={() => updateCustomType(service.id, 'specific_dates')}
+                                     >
+                                       Specific Dates
+                                     </Button>
+                                   </div>
+                                 </div>
 
-                                {selectedService.custom_type === 'days_interval' && (
-                                  <div>
-                                    <Label className="text-sm font-medium">Every X Days</Label>
-                                    <Input
-                                      type="number"
-                                      min="1"
-                                      value={selectedService.custom_frequency_days || 1}
-                                      onChange={(e) => updateCustomFrequency(
-                                        service.id, 
-                                        parseInt(e.target.value) || 1
-                                      )}
-                                      className="mt-1"
-                                    />
-                                  </div>
-                                )}
+                                 {selectedService.custom_type === 'days_interval' && (
+                                   <div>
+                                     <Label className="text-sm font-medium">Every X Days</Label>
+                                     <Input
+                                       type="number"
+                                       min="1"
+                                       value={selectedService.custom_frequency_days || 1}
+                                       onChange={(e) => updateCustomFrequency(
+                                         service.id, 
+                                         parseInt(e.target.value) || 1
+                                       )}
+                                       className="mt-1"
+                                     />
+                                   </div>
+                                 )}
 
-                                {selectedService.custom_type === 'days_of_week' && (
-                                  <div>
-                                    <Label className="text-sm font-medium">Select Days of Week</Label>
-                                    <div className="grid grid-cols-2 gap-2 mt-1">
-                                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
-                                        <label key={day} className="flex items-center space-x-2 text-sm">
-                                          <input
-                                            type="checkbox"
-                                            checked={selectedService.custom_days_of_week?.includes(day) || false}
-                                            onChange={(e) => {
-                                              const currentDays = selectedService.custom_days_of_week || [];
-                                              const newDays = e.target.checked
-                                                ? [...currentDays, day]
-                                                : currentDays.filter(d => d !== day);
-                                              updateCustomDaysOfWeek(service.id, newDays);
-                                            }}
-                                            className="rounded"
-                                          />
-                                          <span>{day}</span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
+                                 {selectedService.custom_type === 'days_of_week' && (
+                                   <div>
+                                     <Label className="text-sm font-medium">Select Days of Week</Label>
+                                     <div className="grid grid-cols-2 gap-2 mt-1">
+                                       {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                                         <label key={day} className="flex items-center space-x-2 text-sm">
+                                           <input
+                                             type="checkbox"
+                                             checked={selectedService.custom_days_of_week?.includes(day) || false}
+                                             onChange={(e) => {
+                                               const currentDays = selectedService.custom_days_of_week || [];
+                                               const newDays = e.target.checked
+                                                 ? [...currentDays, day]
+                                                 : currentDays.filter(d => d !== day);
+                                               updateCustomDaysOfWeek(service.id, newDays);
+                                             }}
+                                             className="rounded"
+                                           />
+                                           <span>{day}</span>
+                                         </label>
+                                       ))}
+                                     </div>
+                                   </div>
+                                 )}
 
-                                {selectedService.custom_type === 'specific_dates' && (
-                                  <div>
-                                    <Label className="text-sm font-medium">Select Specific Dates</Label>
-                                    <div className="mt-1 space-y-3">
-                                      <Popover>
-                                        <PopoverTrigger asChild>
-                                          <Button
-                                            variant="outline"
-                                            className={cn(
-                                              "w-full justify-start text-left font-normal",
-                                              "text-muted-foreground"
-                                            )}
-                                          >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Add Date
-                                          </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                          <Calendar
-                                            mode="single"
-                                            onSelect={(date) => {
-                                              if (date) {
-                                                addSpecificDate(service.id, date);
-                                              }
-                                            }}
-                                            className="p-3 pointer-events-auto"
-                                          />
-                                        </PopoverContent>
-                                      </Popover>
-                                      
-                                      {selectedService.custom_specific_dates && selectedService.custom_specific_dates.length > 0 && (
-                                        <div className="space-y-2">
-                                          {selectedService.custom_specific_dates.map((dateDetail, index) => (
-                                            <div key={index} className="p-3 border rounded-lg bg-muted/30">
-                                              <div className="flex items-center justify-between mb-2">
-                                                <span className="font-medium">
-                                                  {format(dateDetail.date, 'PPP')}
-                                                </span>
-                                                <Button
-                                                  variant="ghost"
-                                                  size="sm"
-                                                  onClick={() => removeSpecificDate(service.id, index)}
-                                                  className="h-6 w-6 p-0"
-                                                >
-                                                  <X className="h-3 w-3" />
-                                                </Button>
-                                              </div>
-                                              <div className="grid grid-cols-2 gap-2">
-                                                <div>
-                                                  <Label className="text-xs">Time (optional)</Label>
-                                                  <Input
-                                                    type="time"
-                                                    value={dateDetail.time || ''}
-                                                    onChange={(e) => updateDateDetail(service.id, index, 'time', e.target.value)}
-                                                    className="mt-1 h-8"
-                                                  />
-                                                </div>
-                                                <div>
-                                                  <Label className="text-xs">Notes (optional)</Label>
-                                                  <Input
-                                                    placeholder="Service notes..."
-                                                    value={dateDetail.notes || ''}
-                                                    onChange={(e) => updateDateDetail(service.id, index, 'notes', e.target.value)}
-                                                    className="mt-1 h-8"
-                                                  />
-                                                </div>
-                                              </div>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="text-xs text-muted-foreground mt-2">
-                            Selected frequency: <span className="font-medium">
-                              {getFrequencyLabel(
-                                selectedService.frequency,
-                                selectedService.custom_type,
-                                selectedService.custom_frequency_days,
-                                selectedService.custom_days_of_week,
-                                selectedService.custom_specific_dates
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      )}
+                                 {selectedService.custom_type === 'specific_dates' && (
+                                   <div>
+                                     <Label className="text-sm font-medium">Select Specific Dates</Label>
+                                     <div className="mt-1 space-y-3">
+                                       <Popover>
+                                         <PopoverTrigger asChild>
+                                           <Button
+                                             variant="outline"
+                                             className={cn(
+                                               "w-full justify-start text-left font-normal",
+                                               "text-muted-foreground"
+                                             )}
+                                           >
+                                             <CalendarIcon className="mr-2 h-4 w-4" />
+                                             <Plus className="mr-2 h-4 w-4" />
+                                             Add Date
+                                           </Button>
+                                         </PopoverTrigger>
+                                         <PopoverContent className="w-auto p-0" align="start">
+                                           <Calendar
+                                             mode="single"
+                                             onSelect={(date) => {
+                                               if (date) {
+                                                 addSpecificDate(service.id, date);
+                                               }
+                                             }}
+                                             className="p-3 pointer-events-auto"
+                                           />
+                                         </PopoverContent>
+                                       </Popover>
+                                       
+                                       {selectedService.custom_specific_dates && selectedService.custom_specific_dates.length > 0 && (
+                                         <div className="space-y-2">
+                                           {selectedService.custom_specific_dates.map((dateDetail, index) => (
+                                             <div key={index} className="p-3 border rounded-lg bg-muted/30">
+                                               <div className="flex items-center justify-between mb-2">
+                                                 <span className="font-medium">
+                                                   {format(dateDetail.date, 'PPP')}
+                                                 </span>
+                                                 <Button
+                                                   variant="ghost"
+                                                   size="sm"
+                                                   onClick={() => removeSpecificDate(service.id, index)}
+                                                   className="h-6 w-6 p-0"
+                                                 >
+                                                   <X className="h-3 w-3" />
+                                                 </Button>
+                                               </div>
+                                               <div className="grid grid-cols-2 gap-2">
+                                                 <div>
+                                                   <Label className="text-xs">Time (optional)</Label>
+                                                   <Input
+                                                     type="time"
+                                                     value={dateDetail.time || ''}
+                                                     onChange={(e) => updateDateDetail(service.id, index, 'time', e.target.value)}
+                                                     className="mt-1 h-8"
+                                                   />
+                                                 </div>
+                                                 <div>
+                                                   <Label className="text-xs">Notes (optional)</Label>
+                                                   <Input
+                                                     placeholder="Service notes..."
+                                                     value={dateDetail.notes || ''}
+                                                     onChange={(e) => updateDateDetail(service.id, index, 'notes', e.target.value)}
+                                                     className="mt-1 h-8"
+                                                   />
+                                                 </div>
+                                               </div>
+                                             </div>
+                                           ))}
+                                         </div>
+                                       )}
+                                     </div>
+                                   </div>
+                                 )}
+                               </div>
+                             )}
+                             
+                             <div className="text-xs text-muted-foreground">
+                               Selected frequency: <span className="font-medium">
+                                 {getFrequencyLabel(
+                                   selectedService.frequency,
+                                   selectedService.custom_type,
+                                   selectedService.custom_frequency_days,
+                                   selectedService.custom_days_of_week,
+                                   selectedService.custom_specific_dates
+                                 )}
+                               </span>
+                             </div>
+                           </div>
+                         </div>
+                       )}
                     </div>
                   </div>
                 </div>
