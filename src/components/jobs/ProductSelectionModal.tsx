@@ -86,8 +86,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       quantity
     };
     setSelectedUnitsCollection(prev => {
-      // Remove any existing selections for this product
-      const filtered = prev.filter(s => s.productId !== product.id);
+      // Remove any existing BULK selections for this product, but keep specific unit selections
+      const filtered = prev.filter(s => !(s.productId === product.id && s.unitId === 'bulk'));
       return [...filtered, selection];
     });
   };
@@ -101,8 +101,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     }));
     
     setSelectedUnitsCollection(prev => {
-      // Remove any existing selections for this product
-      const filtered = prev.filter(s => s.productId !== units[0]?.productId);
+      // Remove any existing SPECIFIC unit selections for this product, but keep bulk selections
+      const filtered = prev.filter(s => !(s.productId === units[0]?.productId && s.unitId !== 'bulk'));
       return [...filtered, ...selections];
     });
     
@@ -113,15 +113,65 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     setSelectedUnitsCollection(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleRemoveProductSelections = (productId: string, selectionType: 'bulk' | 'specific') => {
+    setSelectedUnitsCollection(prev => {
+      if (selectionType === 'bulk') {
+        return prev.filter(s => !(s.productId === productId && s.unitId === 'bulk'));
+      } else {
+        return prev.filter(s => !(s.productId === productId && s.unitId !== 'bulk'));
+      }
+    });
+  };
+
   const handleAddUnitsToJob = () => {
-    // Convert UnitSelection[] to JobItemSelection[]
-    const jobItems = selectedUnitsCollection.map(selection => ({
-      product_id: selection.productId,
-      quantity: selection.quantity,
-      strategy: (selection.unitId === 'bulk' ? 'bulk' : 'specific') as 'bulk' | 'specific',
-      specific_item_ids: selection.unitId === 'bulk' ? undefined : [selection.unitId],
-      attributes: selection.attributes
-    }));
+    // Group selections by product and strategy, then convert to JobItemSelection[]
+    const jobItems: any[] = [];
+    const productGroups: Record<string, { bulk?: UnitSelection[], specific?: UnitSelection[] }> = {};
+    
+    // Group selections by product and type
+    selectedUnitsCollection.forEach(selection => {
+      if (!productGroups[selection.productId]) {
+        productGroups[selection.productId] = {};
+      }
+      
+      if (selection.unitId === 'bulk') {
+        if (!productGroups[selection.productId].bulk) {
+          productGroups[selection.productId].bulk = [];
+        }
+        productGroups[selection.productId].bulk!.push(selection);
+      } else {
+        if (!productGroups[selection.productId].specific) {
+          productGroups[selection.productId].specific = [];
+        }
+        productGroups[selection.productId].specific!.push(selection);
+      }
+    });
+
+    // Convert groups to JobItemSelection format
+    Object.entries(productGroups).forEach(([productId, groups]) => {
+      // Add bulk selection if exists
+      if (groups.bulk && groups.bulk.length > 0) {
+        const bulkSelection = groups.bulk[0]; // Should only be one bulk selection per product
+        jobItems.push({
+          product_id: productId,
+          quantity: bulkSelection.quantity,
+          strategy: 'bulk' as const,
+          specific_item_ids: undefined,
+          attributes: bulkSelection.attributes
+        });
+      }
+      
+      // Add specific selections if exist
+      if (groups.specific && groups.specific.length > 0) {
+        jobItems.push({
+          product_id: productId,
+          quantity: groups.specific.length,
+          strategy: 'specific' as const,
+          specific_item_ids: groups.specific.map(s => s.unitId),
+          attributes: groups.specific[0].attributes
+        });
+      }
+    });
     
     onProductSelect(jobItems);
     onOpenChange(false);
@@ -181,22 +231,56 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 </Button>
               </div>
               <div className="space-y-2 max-h-32 overflow-y-auto">
-                {selectedUnitsCollection.map((selection, index) => (
-                  <div key={`${selection.productId}-${selection.unitId}-${index}`} className="flex items-center justify-between bg-background border rounded-lg p-2 text-sm">
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium">{selection.productName}</span>
-                      <span className="text-muted-foreground ml-2">
-                        {selection.unitId === 'bulk' ? '(Bulk Selection)' : `Unit: ${selection.itemCode}`}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveSelection(index)}
-                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                {/* Group selections by product */}
+                {Object.entries(
+                  selectedUnitsCollection.reduce((acc, selection) => {
+                    if (!acc[selection.productId]) {
+                      acc[selection.productId] = {
+                        productName: selection.productName,
+                        bulk: [],
+                        specific: []
+                      };
+                    }
+                    if (selection.unitId === 'bulk') {
+                      acc[selection.productId].bulk.push(selection);
+                    } else {
+                      acc[selection.productId].specific.push(selection);
+                    }
+                    return acc;
+                  }, {} as Record<string, { productName: string; bulk: UnitSelection[]; specific: UnitSelection[] }>)
+                ).map(([productId, group]) => (
+                  <div key={productId} className="bg-background border rounded-lg p-3 space-y-2">
+                    <div className="font-medium text-sm">{group.productName}</div>
+                    {group.bulk.length > 0 && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Bulk Selection: {group.bulk[0].quantity} units
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveProductSelections(productId, 'bulk')}
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                    {group.specific.length > 0 && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveProductSelections(productId, 'specific')}
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
