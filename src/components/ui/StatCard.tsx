@@ -6,7 +6,7 @@ import { useCountUp } from '@/hooks/useCountUp';
 
 interface StatCardProps {
   title: string;
-  value: string | number;
+  value: string | number | React.ReactNode;
   icon: LucideIcon;
   gradientFrom: string;
   gradientTo: string;
@@ -33,10 +33,11 @@ export const StatCard: React.FC<StatCardProps> = ({
   animateValue = true,
   delay = 0
 }) => {
-  // Extract numeric value for animation
-  const numericValue = typeof value === 'string' ? 
+  // Extract numeric value for animation - skip if React element
+  const isReactElement = React.isValidElement(value);
+  const numericValue = !isReactElement && typeof value === 'string' ? 
     parseInt(value.replace(/[^0-9]/g, '')) || 0 : 
-    value;
+    typeof value === 'number' ? value : 0;
   
   const animatedValue = useCountUp({
     end: numericValue,
@@ -45,7 +46,8 @@ export const StatCard: React.FC<StatCardProps> = ({
   });
 
   // Format the animated value back to original format
-  const displayValue = animateValue && typeof value === 'number' ? 
+  const displayValue = isReactElement ? value :
+    animateValue && typeof value === 'number' ? 
     animatedValue : 
     typeof value === 'string' && animateValue ? 
       value.replace(/[0-9,]+/, animatedValue.toLocaleString()) : 
@@ -83,7 +85,10 @@ export const StatCard: React.FC<StatCardProps> = ({
       </div>
       
       {/* Value */}
-      <div className="text-2xl font-bold text-gray-900 leading-none mb-1 font-sans">
+      <div className={cn(
+        "leading-none mb-1 font-sans",
+        isReactElement ? "" : "text-2xl font-bold text-gray-900"
+      )}>
         {displayValue}
       </div>
       

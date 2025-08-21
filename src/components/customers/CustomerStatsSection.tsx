@@ -64,9 +64,14 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
   }
 
   const formatNextJob = () => {
-    if (!stats?.nextJob) return '0';
+    if (!stats?.nextJob) return 'No upcoming jobs';
     const date = new Date(stats.nextJob.scheduled_date);
-    return `${stats.nextJob.job_type} - ${date.toLocaleDateString()}`;
+    return (
+      <div className="flex flex-col">
+        <span className="text-sm font-normal text-gray-700 mb-1">{stats.nextJob.job_type}</span>
+        <span className="text-lg font-semibold">{date.toLocaleDateString()}</span>
+      </div>
+    );
   };
 
   return (
