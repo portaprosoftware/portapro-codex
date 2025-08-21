@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
 import { ProductSelectionModal } from './ProductSelectionModal';
-import { InventoryFilters } from '@/components/inventory/InventoryFilters';
 import { Package } from 'lucide-react';
 import type { JobItemSelection } from '@/contexts/JobWizardContext';
 
@@ -37,10 +36,6 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
 
-  // Inventory filters
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocationId, setSelectedLocationId] = useState('all');
-  const [selectedProductType, setSelectedProductType] = useState('all');
 
   const { data: products = [] } = useQuery({
     queryKey: ['products', 'for-availability'],
@@ -157,16 +152,6 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         </div>
       </div>
 
-      {/* Inventory Filters */}
-      <InventoryFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedLocationId={selectedLocationId}
-        onLocationChange={setSelectedLocationId}
-        selectedProductType={selectedProductType}
-        onProductTypeChange={setSelectedProductType}
-      />
-
       {/* Bulk Mode */}
       {mode === 'bulk' && (
         <>
@@ -276,9 +261,6 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         onOpenChange={setShowProductModal}
         startDate={startDate}
         endDate={endDate}
-        searchQuery={searchQuery}
-        selectedLocationId={selectedLocationId}
-        selectedProductType={selectedProductType}
         selectedProductId={selectedProduct}
         onProductSelect={(productId) => {
           setSelectedProduct(productId);

@@ -5,8 +5,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
 import { Search, Package } from 'lucide-react';
+import { PRODUCT_TYPES } from '@/lib/productTypes';
 
 interface Product {
   id: string;
@@ -20,9 +22,6 @@ interface ProductSelectionModalProps {
   onOpenChange: (open: boolean) => void;
   startDate: string;
   endDate?: string | null;
-  searchQuery?: string;
-  selectedLocationId?: string;
-  selectedProductType?: string;
   onProductSelect: (productId: string) => void;
   selectedProductId?: string;
 }
@@ -32,13 +31,12 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   onOpenChange,
   startDate,
   endDate,
-  searchQuery = '',
-  selectedLocationId = 'all',
-  selectedProductType = 'all',
   onProductSelect,
   selectedProductId
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocationId, setSelectedLocationId] = useState('all');
+  const [selectedProductType, setSelectedProductType] = useState('all');
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products', 'for-selection'],
@@ -56,11 +54,10 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const filteredProducts = useMemo(() => {
     let filtered = products;
     
-    // Apply search from parent component
-    const activeSearch = searchQuery || searchTerm;
-    if (activeSearch) {
+    // Apply search filter
+    if (searchTerm) {
       filtered = filtered.filter(product => 
-        product.name.toLowerCase().includes(activeSearch.toLowerCase())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -71,7 +68,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     }
     
     return filtered;
-  }, [products, searchTerm, searchQuery, selectedProductType]);
+  }, [products, searchTerm, selectedProductType]);
 
   const handleProductSelect = (productId: string) => {
     onProductSelect(productId);
@@ -86,15 +83,46 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         </DialogHeader>
 
         <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          {/* Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Location Filter */}
+            <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Locations" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="yard">Yard</SelectItem>
+                <SelectItem value="field">Field</SelectItem>
+                <SelectItem value="maintenance">Maintenance</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Product Type Filter */}
+            <Select value={selectedProductType} onValueChange={setSelectedProductType}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Product Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Product Types</SelectItem>
+                {PRODUCT_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Products Grid */}
