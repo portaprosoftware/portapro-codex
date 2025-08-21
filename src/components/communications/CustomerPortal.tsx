@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { CustomerPortalDashboard } from '@/components/customer-portal/CustomerPortalDashboard';
 import { ServiceHistoryTab } from '@/components/customer-portal/ServiceHistoryTab';
+import { RequestsTab } from '@/components/customer-portal/RequestsTab';
 import { 
   User, 
   Calendar, 
@@ -158,9 +159,10 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="history">Service History</TabsTrigger>
+          <TabsTrigger value="requests">Requests</TabsTrigger>
           <TabsTrigger value="jobs">My Jobs</TabsTrigger>
           <TabsTrigger value="invoices">Invoices</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -173,6 +175,10 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
 
         <TabsContent value="history" className="space-y-4">
           <ServiceHistoryTab customerId={customerId || ''} />
+        </TabsContent>
+
+        <TabsContent value="requests" className="space-y-4">
+          <RequestsTab customerId={customerId || ''} />
         </TabsContent>
 
         <TabsContent value="jobs" className="space-y-4">
