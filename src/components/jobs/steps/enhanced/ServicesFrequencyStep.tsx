@@ -103,6 +103,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [selectedDateKey, setSelectedDateKey] = useState<string>('');
   const [selectedDayForAssignment, setSelectedDayForAssignment] = useState<string>('');
+  const [overrideType, setOverrideType] = useState<'driver' | 'vehicle'>('driver');
   const [showRemoveOverrideDialog, setShowRemoveOverrideDialog] = useState(false);
   const [overrideToRemove, setOverrideToRemove] = useState<{
     type: 'driver' | 'vehicle';
@@ -682,14 +683,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
-  const hasOverridesForDay = (dateKey: string) => {
-    // Check if there are any individual service overrides for this day
-    const servicesOnDay = data.selectedServices.filter(service => {
-      const assignments = data.individualServiceAssignments?.[service.id]?.[dateKey];
-      return assignments?.driver || assignments?.vehicle;
-    });
-    return servicesOnDay.length > 0;
-  };
+  // Removed hasOverridesForDay function - no longer needed with simplified UI
 
   const confirmRemoveOverride = (type: 'driver' | 'vehicle', serviceId?: string, dateKey?: string, dayKey?: string) => {
     setOverrideToRemove({ type, serviceId, dateKey, dayKey });
@@ -1526,7 +1520,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                       <div className="flex items-center justify-between">
                         <Label className="text-sm font-medium">Service Schedule</Label>
                         <p className="text-xs text-muted-foreground">
-                          Select the + icon to override driver/vehicle for any day
+                          Select driver or vehicle icon to override assignments for any day
                         </p>
                       </div>
                       {sortedDates.map(([dateKey, dateInfo]) => {
@@ -1557,10 +1551,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    onClick={() => openDriverModalForDay(dateKey, dateInfo.date)}
                                  >
                                    <User className="h-3 w-3" />
-                                   <span className={cn(
-                                     "text-xs",
-                                     (dayAssignment?.driver || hasOverridesForDay(dateKey)) && "text-muted-foreground opacity-70"
-                                   )}>
+                                    <span className="text-xs">
                                      {data.useSameDriverForAll && data.scheduledDriverForAll 
                                        ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
                                        : dayAssignment?.driver
@@ -1592,10 +1583,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    onClick={() => openVehicleModalForDay(dateKey, dateInfo.date)}
                                  >
                                    <Truck className="h-3 w-3" />
-                                   <span className={cn(
-                                     "text-xs",
-                                     (dayAssignment?.vehicle || hasOverridesForDay(dateKey)) && "text-muted-foreground opacity-70"
-                                   )}>
+                                    <span className="text-xs">
                                      {data.useSameVehicleForAll && data.scheduledVehicleForAll 
                                        ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
                                        : dayAssignment?.vehicle
@@ -1756,7 +1744,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            Select the + icon to override driver/vehicle for any day
+                            Select driver or vehicle icon to override assignments for any day
                           </p>
                         </div>
                       <div className="space-y-2">
@@ -1780,10 +1768,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    onClick={() => openDriverModalForDate(service.id, visit.date, dateKey)}
                                  >
                                    <User className="h-3 w-3" />
-                                   <span className={cn(
-                                     "text-xs",
-                                     individualAssignment?.driver && "text-muted-foreground opacity-70"
-                                   )}>
+                                    <span className="text-xs">
                                      {data.useSameDriverForAll && data.scheduledDriverForAll 
                                        ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
                                        : individualAssignment?.driver
@@ -1815,10 +1800,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    onClick={() => openVehicleModalForDate(service.id, visit.date, dateKey)}
                                  >
                                    <Truck className="h-3 w-3" />
-                                   <span className={cn(
-                                     "text-xs",
-                                     individualAssignment?.vehicle && "text-muted-foreground opacity-70"
-                                   )}>
+                                    <span className="text-xs">
                                      {data.useSameVehicleForAll && data.scheduledVehicleForAll 
                                        ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
                                        : individualAssignment?.vehicle
