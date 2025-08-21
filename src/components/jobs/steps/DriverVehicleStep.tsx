@@ -42,10 +42,10 @@ export const DriverVehicleStep: React.FC = () => {
   const assignmentTypes = useMemo((): AssignmentType[] => {
     const types: AssignmentType[] = [];
     
-    // Main delivery assignment
+    // Main job assignment
     types.push({
       type: 'delivery',
-      label: 'Main Delivery',
+      label: `Main ${state.data.job_type ? state.data.job_type.charAt(0).toUpperCase() + state.data.job_type.slice(1) : 'Job'}`,
       date: state.data.scheduled_date,
       time: state.data.scheduled_time,
       isPriority: state.data.is_priority
