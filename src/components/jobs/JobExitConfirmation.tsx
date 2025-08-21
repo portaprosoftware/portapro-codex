@@ -65,14 +65,14 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
         </div>
 
         <AlertDialogFooter className="flex flex-col gap-2">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <AlertDialogCancel onClick={onClose}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:justify-between">
+            <AlertDialogCancel onClick={onClose} className="flex-1">
               Continue Editing
             </AlertDialogCancel>
             <Button
               onClick={handleSaveAndExit}
               disabled={isSaving || !draftName.trim()}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white flex-1"
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? 'Saving...' : 'Save as Draft'}
