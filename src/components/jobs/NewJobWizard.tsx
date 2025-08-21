@@ -179,6 +179,10 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       case 5:
         return <ProductsServicesStep />;
       case 6:
+        // Skip Services & Frequency step for pickup jobs
+        if (state.data.job_type === 'pickup') {
+          return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
+        }
         return <ServicesFrequencyOnlyStep />;
       case 7:
         return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;

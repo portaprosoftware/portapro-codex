@@ -46,31 +46,46 @@ export function WizardNavigation() {
   const { state, goToStep } = useJobWizard();
 
   const getStepStatus = (stepNumber: number) => {
-    // For step 5 (Products & Services), only mark complete after both sub-steps are done
+    // For step 5 (Products), handle pickup vs delivery/service jobs differently
     if (stepNumber === 5) {
+      // Pickup jobs: Step 5 is complete when current step > 5 
+      if (state.data.job_type === 'pickup') {
+        if (state.currentStep > 5) return 'completed';
+        if (state.currentStep === 5) return 'current';
+        return 'upcoming';
+      }
+      // Delivery/service jobs: Step 5 is current for both steps 5 and 6
       if (state.currentStep > 6) return 'completed'; // Past both sub-steps
       if (state.currentStep === 5 || state.currentStep === 6) return 'current'; // In either sub-step
       return 'upcoming';
     }
     
-    // Adjust for removed step 6 - step 6 is now Review (was step 7)
-    const adjustedCurrentStep = state.currentStep > 6 ? state.currentStep - 1 : state.currentStep;
-    const adjustedStepNumber = stepNumber === 6 ? 7 : stepNumber; // Review is now step 6 in UI but step 7 in logic
+    // For step 6 (Review), handle pickup vs delivery/service jobs
+    if (stepNumber === 6) {
+      const targetStep = state.data.job_type === 'pickup' ? 7 : 7; // Both go to step 7 but pickup skips step 6
+      if (state.currentStep === targetStep) return 'current';
+      if (state.currentStep > targetStep) return 'completed';
+      return 'upcoming';
+    }
     
-    if (adjustedStepNumber < adjustedCurrentStep) return 'completed';
-    if (adjustedStepNumber === adjustedCurrentStep) return 'current';
+    // Standard step logic for other steps
+    if (stepNumber < state.currentStep) return 'completed';
+    if (stepNumber === state.currentStep) return 'current';
     return 'upcoming';
   };
 
   const isStepClickable = (stepNumber: number) => {
-    // Don't allow clicking on step 5 if we're in the services sub-step (step 6)
-    if (stepNumber === 5 && state.currentStep === 6) return false;
+    // Don't allow clicking on step 5 if we're in the services sub-step (step 6) for non-pickup jobs
+    if (stepNumber === 5 && state.currentStep === 6 && state.data.job_type !== 'pickup') return false;
     
-    // Adjust for step logic - Review (step 6 in UI) is step 7 in logic
-    const adjustedStepNumber = stepNumber === 6 ? 7 : stepNumber;
-    const adjustedCurrentStep = state.currentStep > 6 ? state.currentStep - 1 : state.currentStep;
+    // For step 6 (Review), handle pickup vs delivery/service jobs
+    if (stepNumber === 6) {
+      const targetStep = state.data.job_type === 'pickup' ? 7 : 7; // Review is always step 7 internally
+      return state.currentStep >= targetStep;
+    }
     
-    return adjustedStepNumber <= adjustedCurrentStep;
+    // Standard clickability logic
+    return stepNumber <= state.currentStep;
   };
 
   return (

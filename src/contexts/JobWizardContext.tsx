@@ -184,12 +184,26 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
 
   const nextStep = () => {
     if (validateCurrentStep()) {
-      dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
+      let nextStepNumber = state.currentStep + 1;
+      
+      // Skip step 6 (Services & Frequency) for pickup jobs
+      if (state.currentStep === 5 && state.data.job_type === 'pickup') {
+        nextStepNumber = 7; // Go directly to Review & Confirmation
+      }
+      
+      dispatch({ type: 'SET_STEP', payload: nextStepNumber });
     }
   };
 
   const previousStep = () => {
-    dispatch({ type: 'SET_STEP', payload: Math.max(1, state.currentStep - 1) });
+    let prevStepNumber = state.currentStep - 1;
+    
+    // Skip step 6 (Services & Frequency) when going back from step 7 for pickup jobs  
+    if (state.currentStep === 7 && state.data.job_type === 'pickup') {
+      prevStepNumber = 5; // Go back to Products step
+    }
+    
+    dispatch({ type: 'SET_STEP', payload: Math.max(1, prevStepNumber) });
   };
 
   const updateData = (data: Partial<JobWizardData>) => {
@@ -250,6 +264,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         break;
       case 6:
+        // Skip validation for step 6 if it's a pickup job (this step is skipped)
+        if (state.data.job_type === 'pickup') {
+          break;
+        }
+        
         // Services & Frequency step: validate both products and services together
         // If provided, ensure quantities are positive
         if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
