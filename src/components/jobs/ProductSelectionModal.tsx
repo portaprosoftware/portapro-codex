@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useAvailabilityEngine, type AvailabilityUnit } from '@/hooks/useAvailabilityEngine';
-import { Search, Package, ChevronDown, ChevronUp, Eye, Layers } from 'lucide-react';
-import { TrackedUnitsSelectionModal } from './TrackedUnitsSelectionModal';
+import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
+import { Search, Package, Eye, Layers, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
+import { TrackedUnitsPage } from './TrackedUnitsPage';
 
 interface Product {
   id: string;
@@ -25,12 +24,20 @@ interface SelectedUnit {
   productId: string;
 }
 
+interface UnitSelection {
+  unitId: string;
+  itemCode: string;
+  productId: string;
+  productName: string;
+  attributes?: Record<string, any>;
+}
+
 interface ProductSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   startDate: string;
   endDate?: string | null;
-  onProductSelect: (productId: string, selectedUnit?: SelectedUnit) => void;
+  onProductSelect: (selections: UnitSelection[]) => void;
   selectedProductId?: string;
 }
 
@@ -41,6 +48,161 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   endDate,
   onProductSelect,
   selectedProductId
+}) => {
+  const [currentPage, setCurrentPage] = useState<'main' | 'tracked-units'>('main');
+  const [selectedProductForTracking, setSelectedProductForTracking] = useState<Product | null>(null);
+  const [selectedUnitsCollection, setSelectedUnitsCollection] = useState<UnitSelection[]>([]);
+  
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!open) {
+      setCurrentPage('main');
+      setSelectedProductForTracking(null);
+      setSelectedUnitsCollection([]);
+    }
+  }, [open]);
+
+  const handleViewTrackedUnits = (product: Product) => {
+    setSelectedProductForTracking(product);
+    setCurrentPage('tracked-units');
+  };
+
+  const handleBackToMain = () => {
+    setCurrentPage('main');
+    setSelectedProductForTracking(null);
+  };
+
+  const handleBulkSelect = (product: Product) => {
+    const selection: UnitSelection = {
+      unitId: 'bulk',
+      itemCode: 'BULK',
+      productId: product.id,
+      productName: product.name
+    };
+    setSelectedUnitsCollection(prev => {
+      // Remove any existing selections for this product
+      const filtered = prev.filter(s => s.productId !== product.id);
+      return [...filtered, selection];
+    });
+  };
+
+  const handleUnitsSelect = (units: SelectedUnit[], productName: string) => {
+    const selections: UnitSelection[] = units.map(unit => ({
+      ...unit,
+      productName,
+      attributes: {}
+    }));
+    
+    setSelectedUnitsCollection(prev => {
+      // Remove any existing selections for this product
+      const filtered = prev.filter(s => s.productId !== units[0]?.productId);
+      return [...filtered, ...selections];
+    });
+    
+    handleBackToMain();
+  };
+
+  const handleRemoveSelection = (index: number) => {
+    setSelectedUnitsCollection(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddUnitsToJob = () => {
+    onProductSelect(selectedUnitsCollection);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-full h-full max-w-none md:max-w-5xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
+        <DialogHeader className="p-6 pb-4 border-b">
+          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+            {currentPage === 'tracked-units' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBackToMain}
+                className="p-1 h-8 w-8"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            {currentPage === 'main' ? 'Select Products' : `Select Tracked Units - ${selectedProductForTracking?.name}`}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {currentPage === 'main' ? (
+            <ProductListPage
+              startDate={startDate}
+              endDate={endDate}
+              onBulkSelect={handleBulkSelect}
+              onViewTrackedUnits={handleViewTrackedUnits}
+            />
+          ) : (
+            <TrackedUnitsPage
+              product={selectedProductForTracking!}
+              startDate={startDate}
+              endDate={endDate}
+              onUnitsSelect={handleUnitsSelect}
+              onBulkSelect={handleBulkSelect}
+              onBack={handleBackToMain}
+            />
+          )}
+          
+          {/* Selected Units Summary - only show on main page */}
+          {currentPage === 'main' && selectedUnitsCollection.length > 0 && (
+            <div className="border-t bg-muted/30 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-medium text-sm">Selected Units ({selectedUnitsCollection.length})</h3>
+                <Button
+                  onClick={handleAddUnitsToJob}
+                  className="font-medium"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Units to Job
+                </Button>
+              </div>
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {selectedUnitsCollection.map((selection, index) => (
+                  <div key={`${selection.productId}-${selection.unitId}-${index}`} className="flex items-center justify-between bg-background border rounded-lg p-2 text-sm">
+                    <div className="flex-1 min-w-0">
+                      <span className="font-medium">{selection.productName}</span>
+                      <span className="text-muted-foreground ml-2">
+                        {selection.unitId === 'bulk' ? '(Bulk Selection)' : `Unit: ${selection.itemCode}`}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveSelection(index)}
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Product List Page Component
+interface ProductListPageProps {
+  startDate: string;
+  endDate?: string | null;
+  onBulkSelect: (product: Product) => void;
+  onViewTrackedUnits: (product: Product) => void;
+}
+
+const ProductListPage: React.FC<ProductListPageProps> = ({
+  startDate,
+  endDate,
+  onBulkSelect,
+  onViewTrackedUnits
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState('all');
@@ -114,100 +276,79 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         throw error;
       }
     },
-    enabled: open,
   });
 
-  const filteredProducts = useMemo(() => {
-    // Since we're handling search in the query, just return the products
-    return products;
-  }, [products]);
-
-  const handleProductSelect = (productId: string, selectedUnit?: SelectedUnit) => {
-    onProductSelect(productId, selectedUnit);
-    onOpenChange(false);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
-        <DialogHeader className="p-6 pb-4 border-b">
-          <DialogTitle className="text-xl font-semibold">Select Product</DialogTitle>
-        </DialogHeader>
+    <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          placeholder="Search by name, code, tool number, or manufacturer..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
 
-        <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
-          {/* Search - moved to top */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search by name, code, tool number, or manufacturer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+          <SelectTrigger>
+            <SelectValue placeholder="All Locations" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Locations</SelectItem>
+            <SelectItem value="yard">Yard</SelectItem>
+            <SelectItem value="field">Field</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedProductType} onValueChange={setSelectedProductType}>
+          <SelectTrigger>
+            <SelectValue placeholder="All Product Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Product Types</SelectItem>
+            {PRODUCT_TYPES.map((type) => (
+              <SelectItem key={type.value} value={type.value}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Products Grid */}
+      <div className="flex-1 overflow-auto">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-muted-foreground">Loading products...</div>
           </div>
-
-          {/* Location and Product Type Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Location Filter */}
-            <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Locations" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="yard">Yard</SelectItem>
-                <SelectItem value="field">Field</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Product Type Filter */}
-            <Select value={selectedProductType} onValueChange={setSelectedProductType}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Product Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Product Types</SelectItem>
-                {PRODUCT_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <Package className="h-12 w-12 text-muted-foreground mb-4" />
+            <div className="text-muted-foreground">
+              {searchTerm ? 'No products found matching your search.' : 'No products available.'}
+            </div>
           </div>
-
-          {/* Products Grid */}
-          <div className="flex-1 overflow-auto">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">Loading products...</div>
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <Package className="h-12 w-12 text-muted-foreground mb-4" />
-                <div className="text-muted-foreground">
-                  {searchTerm ? 'No products found matching your search.' : 'No products available.'}
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                 {filteredProducts.map((product) => (
-                   <ProductCard
-                     key={product.id}
-                     product={product}
-                     startDate={startDate}
-                     endDate={endDate}
-                     isSelected={selectedProductId === product.id}
-                     onSelect={(selectedUnit) => handleProductSelect(product.id, selectedUnit)}
-                   />
-                 ))}
-              </div>
-            )}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                startDate={startDate}
+                endDate={endDate}
+                onBulkSelect={() => onBulkSelect(product)}
+                onViewTrackedUnits={() => onViewTrackedUnits(product)}
+              />
+            ))}
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -215,19 +356,17 @@ interface ProductCardProps {
   product: Product;
   startDate: string;
   endDate?: string | null;
-  isSelected: boolean;
-  onSelect: (selectedUnit?: SelectedUnit) => void;
+  onBulkSelect: () => void;
+  onViewTrackedUnits: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   startDate,
   endDate,
-  isSelected,
-  onSelect
+  onBulkSelect,
+  onViewTrackedUnits
 }) => {
-  const [showTrackedUnitsModal, setShowTrackedUnitsModal] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<SelectedUnit | null>(null);
   
   const getMethodDisplayText = (method: string) => {
     switch (method) {
@@ -248,43 +387,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     endDate || undefined
   );
 
-  // Real-time subscription for product items
-  useEffect(() => {
-    if (!showTrackedUnitsModal) return;
-
-    const channel = supabase
-      .channel(`product-items-${product.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'product_items',
-          filter: `product_id=eq.${product.id}`
-        },
-        () => {
-          // Refetch availability when product items change
-          availability.refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'equipment_assignments'
-        },
-        () => {
-          // Refetch availability when assignments change
-          availability.refetch();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [showTrackedUnitsModal, product.id, availability]);
 
   const getAvailabilityColor = (available: number, total: number) => {
     if (available === 0) return 'destructive';
@@ -306,172 +408,83 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const handleUnitsSelect = (units: SelectedUnit[]) => {
-    if (units.length === 1) {
-      // Single unit selected
-      setSelectedUnit(units[0]);
-      onSelect(units[0]);
-    } else if (units.length > 1) {
-      // Multiple units selected - for now, just select the first one
-      // This could be enhanced to handle multiple unit selection
-      setSelectedUnit(units[0]);
-      onSelect(units[0]);
-    }
-  };
-
-  const handleBulkSelect = () => {
-    setSelectedUnit(null);
-    onSelect();
-  };
 
   return (
-    <>
-      <div
-        className={`relative p-4 rounded-lg border-2 transition-all hover:shadow-md ${
-          isSelected 
-            ? 'border-primary bg-primary/5' 
-            : 'border-border hover:border-primary/50'
-        }`}
-      >
-        {/* Product Image */}
-        <div 
-          className="aspect-square w-full mb-3 bg-white rounded-lg flex items-center justify-center overflow-hidden relative cursor-pointer"
-          onClick={handleBulkSelect}
-        >
-          {product.image_url ? (
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          ) : null}
-          {!product.image_url && (
-            <Package className="h-12 w-12 text-muted-foreground" />
+    <div className="relative p-4 rounded-lg border-2 transition-all hover:shadow-md border-border hover:border-primary/50">
+      {/* Product Image */}
+      <div className="aspect-square w-full mb-3 bg-background rounded-lg flex items-center justify-center overflow-hidden">
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        ) : (
+          <Package className="h-12 w-12 text-muted-foreground" />
+        )}
+      </div>
+
+      {/* Product Info */}
+      <div className="space-y-3">
+        <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
+        
+        {/* Availability Badge */}
+        <div className="flex flex-wrap gap-2">
+          {availability.isLoading ? (
+            <Badge variant="outline" className="text-xs">
+              Loading...
+            </Badge>
+          ) : (
+            <>
+              <Badge 
+                variant={getAvailabilityColor(
+                  availability.data?.available ?? 0, 
+                  availability.data?.total ?? 0
+                )}
+                className="text-xs font-bold text-white"
+              >
+                {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
+              </Badge>
+              {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
+                <Badge 
+                  variant="info"
+                  className="text-xs font-bold text-white"
+                >
+                  {getTrackingMethodBadge(availability.data.method)}
+                </Badge>
+              )}
+            </>
           )}
         </div>
 
-        {/* Product Info */}
-        <div className="space-y-3">
-          <div 
-            className="cursor-pointer"
-            onClick={handleBulkSelect}
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
+            onClick={onBulkSelect}
           >
-            <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
-            
-            {/* Availability and Tracking Method Badges */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {availability.isLoading ? (
-                <Badge variant="outline" className="text-xs">
-                  Loading...
-                </Badge>
-              ) : (
-                <>
-                  <Badge 
-                    variant={getAvailabilityColor(
-                      availability.data?.available ?? 0, 
-                      availability.data?.total ?? 0
-                    )}
-                    className="text-xs font-bold text-white"
-                  >
-                    {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
-                  </Badge>
-                  {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
-                    <Badge 
-                      variant="info"
-                      className="text-xs font-bold text-white"
-                    >
-                      {getTrackingMethodBadge(availability.data.method)}
-                    </Badge>
-                  )}
-                </>
-              )}
-
-              {/* Breakdown (works for bulk-only and hybrid tracked products) */}
-              {availability.data?.breakdown && (
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  <div className="flex items-center justify-between">
-                    <span>Available Tracked</span>
-                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.available_tracked ?? 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Available Bulk</span>
-                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.bulk_pool ?? 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>On Job</span>
-                    <span className="font-medium text-foreground ml-8">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Maintenance</span>
-                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2">
+            <Layers className="h-3 w-3 mr-1" />
+            Select Bulk
+          </Button>
+          
+          {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
             <Button
               variant="outline"
               size="sm"
               className="w-full text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleBulkSelect();
-              }}
+              onClick={onViewTrackedUnits}
             >
-              <Layers className="h-3 w-3 mr-1" />
-              Select Bulk
+              <Eye className="h-3 w-3 mr-1" />
+              View Tracked Units ({availability.data.individual_items.length})
             </Button>
-            
-            {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowTrackedUnitsModal(true);
-                }}
-              >
-                <Eye className="h-3 w-3 mr-1" />
-                View Tracked Units ({availability.data.individual_items.length})
-              </Button>
-            )}
-          </div>
+          )}
         </div>
-
-        {/* Selection Indicator */}
-        {isSelected && (
-          <div className="absolute top-2 right-2">
-            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-primary-foreground rounded-full" />
-            </div>
-            {selectedUnit && (
-              <div className="absolute -bottom-1 -right-1 bg-secondary text-secondary-foreground text-xs px-1 rounded text-[10px] font-medium">
-                Unit
-              </div>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* Tracked Units Selection Modal */}
-      <TrackedUnitsSelectionModal
-        open={showTrackedUnitsModal}
-        onOpenChange={setShowTrackedUnitsModal}
-        productName={product.name}
-        productId={product.id}
-        startDate={startDate}
-        endDate={endDate}
-        onUnitsSelect={handleUnitsSelect}
-        onBulkSelect={handleBulkSelect}
-      />
-    </>
+    </div>
   );
 };

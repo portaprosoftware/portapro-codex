@@ -246,8 +246,21 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         startDate={startDate}
         endDate={endDate}
         selectedProductId={selectedProduct}
-        onProductSelect={(productId) => {
-          setSelectedProduct(productId);
+        onProductSelect={(selections) => {
+          // Convert UnitSelection[] to JobItemSelection[]
+          const jobItems: JobItemSelection[] = selections.map(selection => ({
+            product_id: selection.productId,
+            quantity: 1,
+            strategy: selection.unitId === 'bulk' ? 'bulk' : 'specific',
+            specific_item_ids: selection.unitId === 'bulk' ? undefined : [selection.unitId],
+            attributes: selection.attributes
+          }));
+          
+          // Add to existing items
+          const updatedItems = [...(value || []), ...jobItems];
+          onChange?.(updatedItems);
+          
+          setSelectedProduct('');
           setSelectedUnitIds([]);
         }}
       />
