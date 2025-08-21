@@ -1111,12 +1111,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                       id="package-override"
                       checked={data.package_override?.enabled || false}
                       onCheckedChange={(checked) => {
-                        if (checked === true) {
-                          const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
-                          updatePackageOverride(true, calculatedSubtotal);
-                        } else {
-                          updatePackageOverride(false);
-                        }
+                        console.log('Toggle clicked:', checked);
+                        const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
+                        updatePackageOverride(checked, checked ? calculatedSubtotal : undefined);
                       }}
                     />
                     <Label htmlFor="package-override" className="text-sm font-medium">
