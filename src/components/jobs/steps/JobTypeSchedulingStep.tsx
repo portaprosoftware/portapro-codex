@@ -224,6 +224,141 @@ export function JobTypeSchedulingStep() {
           {errors.scheduled_date && (
             <p className="text-sm text-destructive">{errors.scheduled_date}</p>
           )}
+
+          {/* Add Pickup Job Section - Only for delivery jobs */}
+          {state.data.job_type === 'delivery' && (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={state.data.create_pickup_job || false}
+                  onCheckedChange={(checked) => updateData({ create_pickup_job: checked })}
+                />
+                <Label className="text-base font-medium">
+                  Add Pickup Job <span className="text-muted-foreground">(optional, you can add a pickup job at another time)</span>
+                </Label>
+              </div>
+
+              {/* Pickup Job Details */}
+              {state.data.create_pickup_job && (
+                <Card>
+                  <CardContent className="p-6 space-y-6">
+                    {/* Pickup Date */}
+                    <div className="space-y-4">
+                      <Label className="text-base font-medium">Pickup Date</Label>
+                      <div className="flex justify-center">
+                        <Card className="overflow-hidden w-fit">
+                          <CardContent className="p-4">
+                            <CalendarComponent
+                              mode="single"
+                              selected={state.data.pickup_date ? (() => {
+                                const [year, month, day] = state.data.pickup_date.split('-').map(Number);
+                                return new Date(year, month - 1, day, 12, 0, 0);
+                              })() : undefined}
+                              onSelect={(date) => {
+                                if (date) {
+                                  const formattedDate = formatDateForQuery(date);
+                                  updateData({ pickup_date: formattedDate });
+                                }
+                              }}
+                              disabled={(date) => {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                // Disable dates before today and before delivery date
+                                const deliveryDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : today;
+                                return date < today || date < deliveryDate;
+                              }}
+                              className="rounded-none border-0 mx-auto pointer-events-auto
+                                [&_.rdp-months]:w-fit
+                                [&_.rdp-month]:w-fit
+                                [&_.rdp-table]:w-fit
+                                [&_.rdp-caption]:text-lg [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-3 [&_.rdp-caption]:px-4
+                                [&_.rdp-nav]:gap-2 [&_.rdp-nav_button]:h-8 [&_.rdp-nav_button]:w-8 [&_.rdp-nav_button]:rounded-lg [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
+                                [&_.rdp-head_cell]:p-2 [&_.rdp-head_cell]:text-sm [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-10
+                                [&_.rdp-cell]:p-0.5
+                                [&_.rdp-day]:h-10 [&_.rdp-day]:w-10 [&_.rdp-day]:text-sm [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-lg [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
+                                [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-amber-500 [&_.rdp-day_selected]:to-amber-600 [&_.rdp-day_selected]:text-white [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl
+                                [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
+                                [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
+                                [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent [&_.rdp-day_disabled]:hover:scale-100"
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+
+                    {/* Pickup Time */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={!!state.data.pickup_time}
+                            onCheckedChange={(enabled) => {
+                              updateData({ 
+                                pickup_time: enabled ? (state.data.pickup_time || '09:00') : null
+                              });
+                            }}
+                          />
+                          <Label className="text-base font-medium">Specific Pickup Time</Label>
+                        </div>
+                        <Label className="text-sm">Set pickup time</Label>
+                      </div>
+
+                      {state.data.pickup_time !== null && (
+                        <Card>
+                          <CardContent className="p-4 space-y-4">
+                            <TimePresetButtons 
+                              onTimeSelect={(time) => updateData({ pickup_time: time })}
+                              selectedTime={state.data.pickup_time}
+                            />
+                            <div className="flex items-center gap-3">
+                              <Clock className="h-5 w-5 text-muted-foreground" />
+                              <TimePicker
+                                value={state.data.pickup_time}
+                                onChange={(time) => updateData({ pickup_time: time })}
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+
+                    {/* Pickup Priority */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={state.data.pickup_is_priority || false}
+                            onCheckedChange={(checked) => updateData({ pickup_is_priority: checked })}
+                          />
+                          <Label className="text-base font-medium">Pickup Priority</Label>
+                        </div>
+                        <Label className="text-sm flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-500" />
+                          Priority Pickup
+                        </Label>
+                      </div>
+                      {state.data.pickup_is_priority && (
+                        <p className="text-sm text-muted-foreground">
+                          This pickup job will be highlighted for drivers.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Pickup Notes */}
+                    <div className="space-y-4">
+                      <Label className="text-base font-medium">Pickup Notes</Label>
+                      <Textarea
+                        placeholder="Special instructions for pickup (e.g., access requirements, contact information, etc.)"
+                        value={state.data.pickup_notes || ''}
+                        onChange={(e) => updateData({ pickup_notes: e.target.value })}
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Panel - Time Toggle, Priority, and Notes */}
@@ -284,6 +419,21 @@ export function JobTypeSchedulingStep() {
                 This job will be highlighted for drivers.
               </p>
             )}
+          </div>
+
+          {/* Job Notes Section */}
+          <div className="space-y-4">
+            <Label className="text-base font-medium">Job Notes <span className="text-muted-foreground">(optional)</span></Label>
+            <Card>
+              <CardContent className="p-4">
+                <Textarea
+                  placeholder="Add any special instructions or notes for this job..."
+                  value={state.data.notes || ''}
+                  onChange={(e) => handleNotesChange(e.target.value)}
+                  className="min-h-[80px] resize-none"
+                />
+              </CardContent>
+            </Card>
           </div>
 
           {/* Rental Duration - Only for delivery jobs */}
@@ -411,156 +561,6 @@ export function JobTypeSchedulingStep() {
             </div>
           )}
 
-        {/* Add Pickup Job Section - Only for delivery jobs */}
-        {state.data.job_type === 'delivery' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={state.data.create_pickup_job || false}
-                  onCheckedChange={(checked) => updateData({ create_pickup_job: checked })}
-                />
-                <Label className="text-base font-medium">Add Pickup Job</Label>
-              </div>
-              <Label className="text-sm">Schedule return pickup</Label>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Create a pickup job to schedule when equipment should be returned
-            </p>
-
-            {/* Pickup Job Details */}
-            {state.data.create_pickup_job && (
-              <Card>
-                <CardContent className="p-6 space-y-6">
-                  {/* Pickup Date */}
-                  <div className="space-y-4">
-                    <Label className="text-base font-medium">Pickup Date</Label>
-                    <div className="flex justify-center">
-                      <Card className="overflow-hidden w-fit">
-                        <CardContent className="p-4">
-                          <CalendarComponent
-                            mode="single"
-                            selected={state.data.pickup_date ? (() => {
-                              const [year, month, day] = state.data.pickup_date.split('-').map(Number);
-                              return new Date(year, month - 1, day, 12, 0, 0);
-                            })() : undefined}
-                            onSelect={(date) => {
-                              if (date) {
-                                const formattedDate = formatDateForQuery(date);
-                                updateData({ pickup_date: formattedDate });
-                              }
-                            }}
-                            disabled={(date) => {
-                              const today = new Date();
-                              today.setHours(0, 0, 0, 0);
-                              // Disable dates before today and before delivery date
-                              const deliveryDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : today;
-                              return date < today || date < deliveryDate;
-                            }}
-                            className="rounded-none border-0 mx-auto pointer-events-auto
-                              [&_.rdp-months]:w-fit
-                              [&_.rdp-month]:w-fit
-                              [&_.rdp-table]:w-fit
-                              [&_.rdp-caption]:text-lg [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-3 [&_.rdp-caption]:px-4
-                              [&_.rdp-nav]:gap-2 [&_.rdp-nav_button]:h-8 [&_.rdp-nav_button]:w-8 [&_.rdp-nav_button]:rounded-lg [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
-                              [&_.rdp-head_cell]:p-2 [&_.rdp-head_cell]:text-sm [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-10
-                              [&_.rdp-cell]:p-0.5
-                              [&_.rdp-day]:h-10 [&_.rdp-day]:w-10 [&_.rdp-day]:text-sm [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-lg [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
-                              [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-amber-500 [&_.rdp-day_selected]:to-amber-600 [&_.rdp-day_selected]:text-white [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl
-                              [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
-                              [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
-                              [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent [&_.rdp-day_disabled]:hover:scale-100"
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-
-                  {/* Pickup Time */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={!!state.data.pickup_time}
-                          onCheckedChange={(enabled) => {
-                            updateData({ 
-                              pickup_time: enabled ? (state.data.pickup_time || '09:00') : null
-                            });
-                          }}
-                        />
-                        <Label className="text-base font-medium">Specific Pickup Time</Label>
-                      </div>
-                      <Label className="text-sm">Set pickup time</Label>
-                    </div>
-
-                    {state.data.pickup_time !== null && (
-                      <Card>
-                        <CardContent className="p-4 space-y-4">
-                          <TimePresetButtons 
-                            onTimeSelect={(time) => updateData({ pickup_time: time })}
-                            selectedTime={state.data.pickup_time}
-                          />
-                          <div className="flex items-center gap-3">
-                            <Clock className="h-5 w-5 text-muted-foreground" />
-                            <TimePicker
-                              value={state.data.pickup_time}
-                              onChange={(time) => updateData({ pickup_time: time })}
-                            />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-
-                  {/* Pickup Priority */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={state.data.pickup_is_priority || false}
-                          onCheckedChange={(checked) => updateData({ pickup_is_priority: checked })}
-                        />
-                        <Label className="text-base font-medium">Pickup Priority</Label>
-                      </div>
-                      <Label className="text-sm flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-500" />
-                        Priority Pickup
-                      </Label>
-                    </div>
-                    {state.data.pickup_is_priority && (
-                      <p className="text-sm text-muted-foreground">
-                        This pickup job will be highlighted for drivers.
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Pickup Notes */}
-                  <div className="space-y-4">
-                    <Label className="text-base font-medium">Pickup Notes</Label>
-                    <Textarea
-                      placeholder="Special instructions for pickup (e.g., access requirements, contact information, etc.)"
-                      value={state.data.pickup_notes || ''}
-                      onChange={(e) => updateData({ pickup_notes: e.target.value })}
-                      className="min-h-[100px]"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Notes Section */}
-        <div className="space-y-4">
-          <Label className="text-base font-medium">Job Notes (Optional)</Label>
-          <Textarea
-            placeholder="Add special instructions..."
-            value={state.data.notes || ''}
-            onChange={(e) => handleNotesChange(e.target.value)}
-            rows={4}
-            className="resize-none"
-          />
-        </div>
         </div>
       </div>
 
