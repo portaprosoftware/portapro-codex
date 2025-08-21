@@ -15,7 +15,7 @@ interface SimpleInventoryMapViewProps {
 interface GroupedProduct {
   name: string;
   totalQuantity: number;
-  trackedUnits: Array<{ code: string; quantity: number }>;
+  trackedUnits: Array<{ code: string; quantity: number; deliveredDate: string }>;
   bulkQuantity: number;
   deliveredDate: string;
 }
@@ -238,23 +238,24 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         };
       }
       
-      acc[productName].totalQuantity += item.quantity;
-      
-      // If item has an item_code, it's a tracked unit
+      // If item has an item_code and it's not 'BULK', it's a tracked unit
       if (item.item_code && item.item_code !== 'BULK') {
         acc[productName].trackedUnits.push({
           code: item.item_code,
-          quantity: item.quantity
+          quantity: item.quantity,
+          deliveredDate: item.scheduled_date || item.delivery_date
         });
+        acc[productName].totalQuantity += item.quantity;
       } else {
-        // Otherwise it's bulk
+        // Otherwise it's bulk - add all the quantity to bulk
         acc[productName].bulkQuantity += item.quantity;
+        acc[productName].totalQuantity += item.quantity;
       }
       
       return acc;
-    }, {} as Record<string, GroupedProduct>);
+    }, {} as Record<string, any>);
     
-    return Object.values(grouped);
+    return Object.values(grouped) as GroupedProduct[];
   };
 
   if (loading) {
@@ -409,35 +410,32 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                   {selectedLocation.items && selectedLocation.items.length > 0 ? (
                     groupProductsByType(selectedLocation.items).map((product, index) => (
                       <div key={index} className="border rounded-lg p-3 bg-background">
-                        <div className="mb-2">
+                        <div className="mb-3">
                           <span className="font-medium text-sm">
-                            {product.totalQuantity} {product.name}
-                            {product.totalQuantity > 1 ? 's' : ''}
+                            {product.totalQuantity} {product.name}{product.totalQuantity > 1 ? 's' : ''} Total
                           </span>
-                          {(product.bulkQuantity > 0 && product.trackedUnits.length > 0) && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ({product.bulkQuantity} bulk, {product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''})
-                            </span>
-                          )}
-                          {(product.bulkQuantity > 0 && product.trackedUnits.length === 0) && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ({product.bulkQuantity} bulk)
-                            </span>
-                          )}
-                          {(product.bulkQuantity === 0 && product.trackedUnits.length > 0) && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ({product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''})
-                            </span>
-                          )}
                         </div>
-                        {product.trackedUnits.length > 0 && (
-                          <div className="text-xs text-muted-foreground mb-1">
-                            <span className="font-medium">Tracked units:</span> {product.trackedUnits.map(unit => unit.code).join(', ')}
+                        
+                        {product.bulkQuantity > 0 && (
+                          <div className="text-sm mb-2">
+                            <span className="font-medium">{product.bulkQuantity} Bulk</span>
                           </div>
                         )}
-                        <div className="text-xs text-muted-foreground">
-                          <span className="font-medium">Delivered on:</span> {new Date(product.deliveredDate).toLocaleDateString()}
-                        </div>
+                        
+                        {product.trackedUnits.length > 0 && (
+                          <div className="text-sm">
+                            <div className="font-medium mb-1">
+                              {product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''}:
+                            </div>
+                            <div className="space-y-1 pl-2">
+                              {product.trackedUnits.map((unit, unitIndex) => (
+                                <div key={unitIndex} className="text-xs text-muted-foreground">
+                                  {unit.code} - Delivered on: {new Date(unit.deliveredDate).toLocaleDateString()}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
