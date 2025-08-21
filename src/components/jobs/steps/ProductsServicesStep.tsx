@@ -1,7 +1,6 @@
 import React from 'react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { RealTimeInventorySelector } from '@/components/jobs/RealTimeInventorySelector';
-import { ServicesFrequencyStep } from '@/components/jobs/steps/enhanced/ServicesFrequencyStep';
 
 export const ProductsServicesStep: React.FC = () => {
   const { state, updateData } = useJobWizard();
@@ -13,11 +12,6 @@ export const ProductsServicesStep: React.FC = () => {
         endDate={state.data.return_date || null}
         value={state.data.items || []}
         onChange={(items) => updateData({ items })}
-      />
-
-      <ServicesFrequencyStep
-        data={state.data.servicesData || { selectedServices: [], servicesSubtotal: 0 }}
-        onUpdate={(svc) => updateData({ servicesData: svc })}
       />
     </div>
   );

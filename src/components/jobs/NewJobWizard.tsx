@@ -12,6 +12,7 @@ import { useCreateJob } from '@/hooks/useJobs';
 import { toast } from 'sonner';
 import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ProductsServicesStep } from './steps/ProductsServicesStep';
+import { ServicesFrequencyOnlyStep } from './steps/ServicesFrequencyOnlyStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
 import { supabase } from '@/integrations/supabase/client';
 import { JobExitConfirmation } from './JobExitConfirmation';
@@ -127,13 +128,15 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       case 5:
         return <ProductsServicesStep />;
       case 6:
+        return <ServicesFrequencyOnlyStep />;
+      case 7:
         return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
       default:
         return <CustomerSelectionStep />;
     }
   };
 
-  const isLastStep = state.currentStep === 6;
+  const isLastStep = state.currentStep === 7;
   const isFirstStep = state.currentStep === 1;
 
   return (

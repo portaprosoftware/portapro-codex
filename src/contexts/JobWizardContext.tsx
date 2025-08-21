@@ -187,6 +187,9 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         break;
       case 6:
+        // Services & Frequency step: no additional validation (optional)
+        break;
+      case 7:
         // Review step: no additional validation
         break;
     }
