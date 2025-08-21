@@ -192,7 +192,7 @@ export function JobTypeSchedulingStep() {
       </div>
 
       {/* Date Selection and Right Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-full overflow-hidden">
         {/* Date Selection - Left side */}
         <div className="lg:col-span-2 space-y-4">
           <Label className="text-base font-medium">Scheduled Date</Label>
@@ -229,20 +229,6 @@ export function JobTypeSchedulingStep() {
             <p className="text-sm text-destructive">{errors.scheduled_date}</p>
           )}
 
-          {/* Job Notes - Under calendar */}
-          <div className="space-y-4">
-            <Label className="text-base font-medium">Job Notes (optional)</Label>
-            <Card>
-              <CardContent className="p-4">
-                <Textarea
-                  placeholder="Add any special instructions or notes for this job..."
-                  value={state.data.notes || ''}
-                  onChange={(e) => handleNotesChange(e.target.value)}
-                  className="min-h-[100px] border-0 resize-none focus-visible:ring-0 p-0"
-                />
-              </CardContent>
-            </Card>
-          </div>
         </div>
 
         {/* Right Panel - Time Toggle, Priority, and Notes */}
