@@ -104,6 +104,7 @@ interface JobWizardState {
   data: JobWizardData;
   errors: Record<string, string>;
   isLoading: boolean;
+  wizardMode: 'job' | 'quote' | 'job_and_quote';
 }
 
 type JobWizardAction =
@@ -111,6 +112,7 @@ type JobWizardAction =
   | { type: 'UPDATE_DATA'; payload: Partial<JobWizardData> }
   | { type: 'SET_ERRORS'; payload: Record<string, string> }
   | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_WIZARD_MODE'; payload: 'job' | 'quote' | 'job_and_quote' }
   | { type: 'RESET' };
 
 const initialState: JobWizardState = {
@@ -145,6 +147,7 @@ const initialState: JobWizardState = {
   },
   errors: {},
   isLoading: false,
+  wizardMode: 'job',
 };
 
 function jobWizardReducer(state: JobWizardState, action: JobWizardAction): JobWizardState {
@@ -161,6 +164,8 @@ function jobWizardReducer(state: JobWizardState, action: JobWizardAction): JobWi
       return { ...state, errors: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
+    case 'SET_WIZARD_MODE':
+      return { ...state, wizardMode: action.payload };
     case 'RESET':
       return initialState;
     default:
@@ -177,6 +182,7 @@ interface JobWizardContextType {
   updateData: (data: Partial<JobWizardData>) => void;
   setErrors: (errors: Record<string, string>) => void;
   setLoading: (loading: boolean) => void;
+  setWizardMode: (mode: 'job' | 'quote' | 'job_and_quote') => void;
   validateCurrentStep: () => boolean;
   reset: () => void;
 }
@@ -185,12 +191,17 @@ const JobWizardContext = createContext<JobWizardContextType | undefined>(undefin
 
 export function JobWizardProvider({ 
   children, 
-  initialDraftData 
+  initialDraftData,
+  initialMode = 'job'
 }: { 
   children: ReactNode;
   initialDraftData?: any;
+  initialMode?: 'job' | 'quote' | 'job_and_quote';
 }) {
-  const [state, dispatch] = useReducer(jobWizardReducer, initialState);
+  const [state, dispatch] = useReducer(jobWizardReducer, {
+    ...initialState,
+    wizardMode: initialMode
+  });
 
   // Load draft data when provider mounts
   React.useEffect(() => {
@@ -261,6 +272,10 @@ export function JobWizardProvider({
 
   const setLoading = (loading: boolean) => {
     dispatch({ type: 'SET_LOADING', payload: loading });
+  };
+
+  const setWizardMode = (mode: 'job' | 'quote' | 'job_and_quote') => {
+    dispatch({ type: 'SET_WIZARD_MODE', payload: mode });
   };
 
   const validateCurrentStep = (): boolean => {
@@ -377,6 +392,7 @@ export function JobWizardProvider({
     updateData,
     setErrors,
     setLoading,
+    setWizardMode,
     validateCurrentStep,
     reset,
   };

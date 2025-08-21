@@ -1,11 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { FileText, BriefcaseIcon, Package } from 'lucide-react';
 
 interface ReviewConfirmationStepProps {
   onCreateJob: () => void;
+  onCreateQuote: () => void;
+  onCreateJobAndQuote: () => void;
   creating?: boolean;
+  creatingQuote?: boolean;
+  creatingJobAndQuote?: boolean;
 }
 
 interface ItemConflict {
@@ -14,7 +22,14 @@ interface ItemConflict {
   message: string;
 }
 
-export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ onCreateJob, creating }) => {
+export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
+  onCreateJob, 
+  onCreateQuote, 
+  onCreateJobAndQuote, 
+  creating, 
+  creatingQuote, 
+  creatingJobAndQuote 
+}) => {
   const { state, updateData } = useJobWizard();
   const d = state.data;
   const [checking, setChecking] = useState(false);
@@ -334,6 +349,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         return 'One-Time';
     }
   };
+
   const formatTimezone = (timezone: string) => {
     // Remove underscores and add timezone abbreviations
     const cleanTimezone = timezone.replace(/_/g, ' ');
@@ -348,11 +364,21 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
     };
     return timezoneMap[cleanTimezone] || cleanTimezone;
   };
+
+  const isQuoteMode = state.wizardMode === 'quote';
+  const isJobAndQuoteMode = state.wizardMode === 'job_and_quote';
+
   return (
     <div className="space-y-6">
       <section className="space-y-1">
-        <h2 className="text-lg font-semibold">Review</h2>
-        <p className="text-sm text-muted-foreground">We’ll validate availability before creating the job.</p>
+        <h2 className="text-lg font-semibold">Review & Create</h2>
+        {isQuoteMode ? (
+          <p className="text-sm text-muted-foreground">Review your quote details before creating the quote for customer approval.</p>
+        ) : isJobAndQuoteMode ? (
+          <p className="text-sm text-muted-foreground">Choose how to save this job: create a quote for approval, create both a quote and an active job, or create a job directly.</p>
+        ) : (
+          <p className="text-sm text-muted-foreground">We'll validate availability before creating the job.</p>
+        )}
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -405,7 +431,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           )}
         </div>
 
-
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Services</h3>
@@ -433,6 +458,50 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
               <h3 className="font-medium">Pickup Summary</h3>
             </div>
             
+            {/* Partial Pickups */}
+            {d.create_partial_pickups && d.partial_pickups && d.partial_pickups.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Partial Pickups</h4>
+                {d.partial_pickups.map((pickup, index) => (
+                  <div key={pickup.id} className="border rounded-lg p-3">
+                    <div className="font-medium text-sm">
+                      Partial Pickup #{index + 1}: {pickup.date ? new Date(pickup.date).toLocaleDateString() : 'Not set'}
+                    </div>
+                    {pickup.time && (
+                      <div className="text-sm text-muted-foreground">Time: {pickup.time}</div>
+                    )}
+                    {pickup.notes && (
+                      <div className="text-sm text-muted-foreground">Notes: {pickup.notes}</div>
+                    )}
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Driver: {partialPickupAssignments[pickup.id]?.driver || 'No driver assigned'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Vehicle: {partialPickupAssignments[pickup.id]?.vehicle || 'No vehicle assigned'}
+                    </div>
+                    
+                    {/* Partial pickup inventory */}
+                    {d.pickup_inventory_selections?.partial_pickups?.[pickup.id] && (
+                      <div className="mt-2 text-xs">
+                        <div className="font-medium">Inventory to pickup:</div>
+                        <ul className="list-disc list-inside ml-2 space-y-1">
+                          {d.pickup_inventory_selections.partial_pickups[pickup.id].map((item, itemIndex) => {
+                            const product = productDetails[item.product_id];
+                            const productName = product?.name || item.product_id;
+                            return (
+                              <li key={itemIndex}>
+                                {productName} × {item.quantity}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            
             {/* Main Pickup Job */}
             {d.create_pickup_job && (
               <div className="space-y-2">
@@ -442,82 +511,133 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
                     Date: {d.pickup_date ? new Date(d.pickup_date).toLocaleDateString() : 'Not set'}
                   </div>
                   {d.pickup_time && (
-                    <div className="text-xs text-muted-foreground mt-1">Time: {d.pickup_time}</div>
-                  )}
-                  {d.pickup_is_priority && (
-                    <div className="text-xs text-orange-600 font-medium mt-1">Priority Job</div>
+                    <div className="text-sm text-muted-foreground">Time: {d.pickup_time}</div>
                   )}
                   {d.pickup_notes && (
-                    <div className="text-xs text-muted-foreground mt-1">Notes: {d.pickup_notes}</div>
+                    <div className="text-sm text-muted-foreground">Notes: {d.pickup_notes}</div>
                   )}
-                  <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                    <div>Driver: {pickupDriverName || 'No driver assigned'}</div>
-                    <div>Vehicle: {pickupVehicleDetails || 'No vehicle assigned'}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Driver: {pickupDriverName || 'No driver assigned'}
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* Partial Pickups */}
-            {d.create_partial_pickups && d.partial_pickups && d.partial_pickups.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Partial Pickups</h4>
-                <div className="space-y-2">
-                  {d.partial_pickups.map((pickup, index) => {
-                    const assignment = partialPickupAssignments[pickup.id];
-                    return (
-                      <div key={pickup.id} className="border rounded-lg p-3">
-                        <div className="font-medium text-sm">
-                          Partial Pickup #{index + 1}: {new Date(pickup.date).toLocaleDateString()}
-                        </div>
-                        {pickup.time && (
-                          <div className="text-xs text-muted-foreground mt-1">Time: {pickup.time}</div>
-                        )}
-                        {pickup.is_priority && (
-                          <div className="text-xs text-orange-600 font-medium mt-1">Priority</div>
-                        )}
-                        {pickup.notes && (
-                          <div className="text-xs text-muted-foreground mt-1">Notes: {pickup.notes}</div>
-                        )}
-                        {assignment && (
-                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                            <div>Driver: {assignment.driver}</div>
-                            <div>Vehicle: {assignment.vehicle}</div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <div className="text-xs text-muted-foreground">
+                    Vehicle: {pickupVehicleDetails || 'No vehicle assigned'}
+                  </div>
+                  
+                  {/* Main pickup inventory */}
+                  {d.pickup_inventory_selections?.main_pickup && (
+                    <div className="mt-2 text-xs">
+                      <div className="font-medium">Inventory to pickup:</div>
+                      <ul className="list-disc list-inside ml-2 space-y-1">
+                        {d.pickup_inventory_selections.main_pickup.map((item, itemIndex) => {
+                          const product = productDetails[item.product_id];
+                          const productName = product?.name || item.product_id;
+                          return (
+                            <li key={itemIndex}>
+                              {productName} × {item.quantity}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         )}
 
+        <div className="rounded-lg border p-3 space-y-1 md:col-span-2">
+          <h3 className="font-medium">Total</h3>
+          <div className="text-lg font-bold">{formatCurrency(jobTotal)}</div>
+        </div>
       </div>
 
-      {/* Job Total */}
-      {jobTotal > 0 && (
-        <div className="border-t pt-4 space-y-2">
-          {itemsTotal > 0 && (
-            <div className="flex justify-between text-sm">
-              <span>Items:</span>
-              <span>{formatCurrency(itemsTotal)}</span>
-            </div>
-          )}
-          {servicesSubtotal > 0 && (
-            <div className="flex justify-between text-sm">
-              <span>Services:</span>
-              <span>{formatCurrency(servicesSubtotal)}</span>
-            </div>
-          )}
-          <div className="flex justify-between items-center text-lg font-semibold border-t pt-2">
-            <span>Job Total:</span>
-            <span>{formatCurrency(jobTotal)}</span>
+      {/* Action Buttons - Different based on wizard mode */}
+      {!isQuoteMode && !isJobAndQuoteMode ? (
+        /* Regular job creation mode */
+        <div className="flex justify-center">
+          <Button
+            onClick={onCreateJob}
+            disabled={creating}
+            className="min-w-[120px]"
+          >
+            {creating ? 'Creating...' : 'Create Job'}
+          </Button>
+        </div>
+      ) : isQuoteMode ? (
+        /* Quote only mode */
+        <div className="flex justify-center">
+          <Button
+            onClick={onCreateQuote}
+            disabled={creatingQuote}
+            className="min-w-[120px] bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            {creatingQuote ? 'Creating...' : 'Create Quote'}
+          </Button>
+        </div>
+      ) : (
+        /* Three-button mode */
+        <div className="space-y-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              Choose how you'd like to save this job: create a quote for customer approval, create both a quote and an active job, or skip quoting and create a job directly.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 text-center">
+                <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <h3 className="font-medium mb-1">Create Quote</h3>
+                <p className="text-xs text-muted-foreground mb-3">Save as quote only for customer approval</p>
+                <Button
+                  onClick={onCreateQuote}
+                  disabled={creatingQuote}
+                  variant="outline"
+                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  {creatingQuote ? 'Creating...' : 'Quote Only'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 text-center">
+                <div className="flex justify-center mb-2">
+                  <FileText className="h-6 w-6 text-green-600" />
+                  <BriefcaseIcon className="h-6 w-6 text-green-600 -ml-2" />
+                </div>
+                <h3 className="font-medium mb-1">Create Both</h3>
+                <p className="text-xs text-muted-foreground mb-3">Generate quote and create active job</p>
+                <Button
+                  onClick={onCreateJobAndQuote}
+                  disabled={creatingJobAndQuote}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {creatingJobAndQuote ? 'Creating...' : 'Quote + Job'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 text-center">
+                <BriefcaseIcon className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+                <h3 className="font-medium mb-1">Create Job</h3>
+                <p className="text-xs text-muted-foreground mb-3">Skip quoting and create job immediately</p>
+                <Button
+                  onClick={onCreateJob}
+                  disabled={creating}
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                >
+                  {creating ? 'Creating...' : 'Job Only'}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       )}
-
     </div>
   );
 };

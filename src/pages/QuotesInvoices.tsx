@@ -20,7 +20,7 @@ import { QuoteExportModal } from '@/components/quotes/QuoteExportModal';
 import { InvoiceExportModal } from '@/components/quotes/InvoiceExportModal';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
-import { QuoteCreationWizard } from '@/components/quotes/QuoteCreationWizard';
+import { NewJobWizard } from '@/components/jobs/NewJobWizard';
 import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 
 const QuotesInvoices: React.FC = () => {
@@ -324,9 +324,10 @@ const QuotesInvoices: React.FC = () => {
       */}
 
       {/* Creation Wizards */}
-      <QuoteCreationWizard 
-        isOpen={showQuoteWizard} 
-        onClose={() => setShowQuoteWizard(false)} 
+      <NewJobWizard 
+        open={showQuoteWizard} 
+        onOpenChange={setShowQuoteWizard}
+        initialMode="quote"
       />
       <InvoiceCreationWizard 
         isOpen={showInvoiceWizard} 

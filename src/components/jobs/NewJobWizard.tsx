@@ -9,6 +9,7 @@ import { CustomerSelectionStep } from './steps/CustomerSelectionStep';
 import { JobTypeSchedulingStep } from './steps/JobTypeSchedulingStep';
 import { LocationSelectionStep } from './steps/LocationSelectionStep';
 import { useCreateJob } from '@/hooks/useJobs';
+import { useCreateQuote } from '@/hooks/useCreateQuote';
 import { toast } from 'sonner';
 import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ProductsServicesStep } from './steps/ProductsServicesStep';
@@ -22,12 +23,14 @@ interface NewJobWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   draftData?: any;
+  initialMode?: 'job' | 'quote' | 'job_and_quote';
 }
 
 function WizardContent({ onClose }: { onClose: () => void }) {
   const { state, nextStep, previousStep, validateCurrentStep, reset } = useJobWizard();
   const { saveDraft, isSaving } = useJobDrafts();
   const createJobMutation = useCreateJob();
+  const createQuoteMutation = useCreateQuote();
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const handleSaveAndExit = async (draftName: string) => {
     try {
@@ -195,6 +198,157 @@ function WizardContent({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const handleCreateQuote = async () => {
+    if (!validateCurrentStep()) return;
+
+    try {
+      console.log('Creating quote with wizard data:', state.data);
+      const quote = await createQuoteMutation.mutateAsync({
+        wizardData: state.data,
+        status: 'draft'
+      });
+
+      toast.success('Quote created successfully!');
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Error creating quote:', error);
+      toast.error('Failed to create quote. Please try again.');
+    }
+  };
+
+  const handleCreateJobAndQuote = async () => {
+    if (!validateCurrentStep()) return;
+
+    try {
+      console.log('Creating both job and quote with wizard data:', state.data);
+      
+      // Create quote first
+      const quote = await createQuoteMutation.mutateAsync({
+        wizardData: state.data,
+        status: 'sent'
+      });
+
+      // Create job
+      const job = await createJobMutation.mutateAsync(state.data);
+
+      // Create pickup job if requested
+      let pickupJob = null;
+      if (state.data.create_pickup_job && state.data.pickup_date) {
+        const pickupItems = state.data.pickup_inventory_selections?.main_pickup || state.data.items;
+        
+        const pickupJobData = {
+          customer_id: state.data.customer_id,
+          job_type: 'pickup' as const,
+          scheduled_date: state.data.pickup_date,
+          scheduled_time: state.data.pickup_time,
+          timezone: state.data.timezone,
+          notes: state.data.pickup_notes || '',
+          is_priority: state.data.pickup_is_priority || false,
+          selected_coordinate_ids: state.data.selected_coordinate_ids,
+          driver_id: state.data.driver_id,
+          vehicle_id: state.data.vehicle_id,
+          items: pickupItems,
+          create_daily_assignment: state.data.create_daily_assignment,
+        };
+        
+        pickupJob = await createJobMutation.mutateAsync(pickupJobData);
+      }
+
+      // Create partial pickup jobs if requested
+      const partialPickupJobs = [];
+      if (state.data.create_partial_pickups && state.data.partial_pickups) {
+        for (const partialPickup of state.data.partial_pickups) {
+          if (partialPickup.date) {
+            const partialPickupItems = state.data.pickup_inventory_selections?.partial_pickups?.[partialPickup.id] || state.data.items;
+            
+            const partialPickupJobData = {
+              customer_id: state.data.customer_id,
+              job_type: 'pickup' as const,
+              scheduled_date: partialPickup.date,
+              scheduled_time: partialPickup.time,
+              timezone: state.data.timezone,
+              notes: partialPickup.notes ? `PARTIAL PICKUP: ${partialPickup.notes}` : 'PARTIAL PICKUP',
+              is_priority: partialPickup.is_priority || false,
+              selected_coordinate_ids: state.data.selected_coordinate_ids,
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              items: partialPickupItems,
+              create_daily_assignment: state.data.create_daily_assignment,
+            };
+            
+            const partialJob = await createJobMutation.mutateAsync(partialPickupJobData);
+            partialPickupJobs.push(partialJob);
+          }
+        }
+      }
+
+      // Handle services if any
+      if (state.data.servicesData && state.data.servicesData.selectedServices?.length) {
+        const serviceItems = state.data.servicesData.selectedServices.map((s: any) => ({
+          job_id: job.id,
+          line_item_type: 'service',
+          service_id: s.id,
+          service_frequency: s.frequency,
+          service_hours: s.estimated_duration_hours ?? null,
+          service_config: {
+            pricing_method: s.pricing_method,
+            custom_type: s.custom_type,
+            custom_frequency_days: s.custom_frequency_days,
+            custom_days_of_week: s.custom_days_of_week,
+            calculated_cost: s.calculated_cost,
+          },
+          service_custom_dates: Array.isArray(s.custom_specific_dates)
+            ? s.custom_specific_dates.map((d: any) => ({
+                date: d?.date instanceof Date ? d.date.toISOString() : d?.date,
+                time: d?.time || null,
+                notes: d?.notes || null,
+              }))
+            : null,
+          unit_price: Number(s.calculated_cost || 0),
+          total_price: Number(s.calculated_cost || 0),
+          quantity: 1,
+        }));
+        const { error: svcError } = await supabase.from('job_items').insert(serviceItems);
+        if (svcError) throw svcError;
+      }
+
+      // Create daily assignment if needed
+      try {
+        if (state.data.create_daily_assignment && state.data.driver_id && state.data.vehicle_id && state.data.scheduled_date) {
+          const date = state.data.scheduled_date;
+          const { data: existing, error: checkError } = await supabase
+            .from('daily_vehicle_assignments')
+            .select('id')
+            .eq('assignment_date', date)
+            .or(`driver_id.eq.${state.data.driver_id},vehicle_id.eq.${state.data.vehicle_id}`)
+            .maybeSingle();
+          if (!checkError && !existing) {
+            const { error: insertError } = await supabase.from('daily_vehicle_assignments').insert({
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              assignment_date: date,
+              notes: `Auto-assigned for job ${job.id}`,
+            });
+            if (insertError) {
+              console.warn('Daily assignment insert failed:', insertError);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Daily assignment step skipped due to error:', e);
+      }
+
+      const totalJobsCreated = 1 + (pickupJob ? 1 : 0) + partialPickupJobs.length;
+      toast.success(`Quote and ${totalJobsCreated} job${totalJobsCreated > 1 ? 's' : ''} created successfully!`);
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Error creating quote and job:', error);
+      toast.error('Failed to create quote and job. Please try again.');
+    }
+  };
+
   const renderCurrentStep = () => {
     switch (state.currentStep) {
       case 1:
@@ -217,11 +371,29 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           return <ServicesFrequencyOnlyStep />;
         }
         if (state.data.job_type === 'pickup') {
-          return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
+          return (
+            <ReviewConfirmationStep 
+              onCreateJob={handleCreateJob} 
+              onCreateQuote={handleCreateQuote}
+              onCreateJobAndQuote={handleCreateJobAndQuote}
+              creating={createJobMutation.isPending}
+              creatingQuote={createQuoteMutation.isPending}
+              creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
+            />
+          );
         }
         return <ServicesFrequencyOnlyStep />;
       case 7:
-        return <ReviewConfirmationStep onCreateJob={handleCreateJob} creating={createJobMutation.isPending} />;
+        return (
+          <ReviewConfirmationStep 
+            onCreateJob={handleCreateJob} 
+            onCreateQuote={handleCreateQuote}
+            onCreateJobAndQuote={handleCreateJobAndQuote}
+            creating={createJobMutation.isPending}
+            creatingQuote={createQuoteMutation.isPending}
+            creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
+          />
+        );
       default:
         return <CustomerSelectionStep />;
     }
@@ -235,7 +407,9 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       <DrawerHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
         <DrawerTitle className="text-xl font-semibold flex items-center gap-2">
           <Plus className="h-5 w-5" />
-          Create New Job
+          {state.wizardMode === 'quote' ? 'Create New Quote' : 
+           state.wizardMode === 'job_and_quote' ? 'Create Job & Quote' : 
+           'Create New Job'}
         </DrawerTitle>
       </DrawerHeader>
 
@@ -329,7 +503,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function NewJobWizard({ open, onOpenChange, draftData }: NewJobWizardProps) {
+export function NewJobWizard({ open, onOpenChange, draftData, initialMode = 'job' }: NewJobWizardProps) {
   const handleClose = () => {
     onOpenChange(false);
   };
@@ -340,7 +514,7 @@ export function NewJobWizard({ open, onOpenChange, draftData }: NewJobWizardProp
         <div id="new-job-wizard-description" className="sr-only">
           Create a new job by following the wizard steps
         </div>
-        <JobWizardProvider initialDraftData={draftData}>
+        <JobWizardProvider initialDraftData={draftData} initialMode={initialMode}>
           <WizardContent onClose={handleClose} />
         </JobWizardProvider>
       </DrawerContent>
