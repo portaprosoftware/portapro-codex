@@ -22,8 +22,7 @@ type DocRow = {
   customer_id: string;
   document_type: string;
   document_name: string;
-  file_name: string | null;
-  file_path: string | null;
+  file_url: string | null;
   file_size: number | null;
   created_at: string;
   updated_at: string;
@@ -45,7 +44,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
     queryFn: async (): Promise<DocRow[]> => {
       const { data, error } = await supabase
         .from('customer_contracts')
-        .select('id, customer_id, document_type, document_name, file_name, file_path, file_size, created_at, updated_at')
+        .select('id, customer_id, document_type, document_name, file_url, file_size, created_at, updated_at')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -83,8 +82,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
         customer_id: customerId,
         document_type: docType || 'contract',
         document_name: docName || file.name,
-        file_name: file.name,
-        file_path: path,
+        file_url: path,
         file_size: file.size,
         uploaded_by: userId,
       } as any);
@@ -126,7 +124,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
 
   const deleteMutation = useMutation({
     mutationFn: async (row: DocRow) => {
-      if (!row.file_path) {
+      if (!row.file_url) {
         // Still delete the DB row if path is missing
         const { error: delErr } = await supabase.from('customer_contracts').delete().eq('id', row.id);
         if (delErr) throw delErr;
@@ -136,7 +134,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
       if (!token) throw new Error('Missing Clerk session token');
 
       const { error: fnErr } = await supabase.functions.invoke('customer-docs', {
-        body: { action: 'delete_object', payload: { path: row.file_path } },
+        body: { action: 'delete_object', payload: { path: row.file_url } },
         headers: { Authorization: `Bearer ${token}` },
       });
       if (fnErr) throw fnErr;
@@ -241,18 +239,18 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <div className="font-medium truncate">{d.document_name || d.file_name || 'Untitled document'}</div>
+                      <div className="font-medium truncate">{d.document_name || 'Untitled document'}</div>
                       <div className="text-xs text-muted-foreground">
                         {d.document_type || 'document'} • {d.file_size ? `${(Number(d.file_size) / 1024).toFixed(0)} KB` : '—'} • {format(new Date(d.created_at), 'PPp')}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    {d.file_path && (
+                    {d.file_url && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => downloadMutation.mutate(d.file_path!)}
+                        onClick={() => downloadMutation.mutate(d.file_url!)}
                       >
                         <Download className="h-4 w-4 mr-1" />
                         Download
