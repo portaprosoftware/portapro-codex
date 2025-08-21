@@ -17,6 +17,7 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
 import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
 import { useQuery } from '@tanstack/react-query';
+import { calculateServiceVisits } from '@/lib/serviceCalculations';
 
 interface ServiceDateDetail {
   date: Date;
@@ -41,6 +42,10 @@ interface ServiceItem {
   custom_days_of_week?: string[]; // ['monday', 'wednesday', 'friday']
   custom_specific_dates?: ServiceDateDetail[]; // Array of date objects with time and notes
   calculated_cost: number;
+  include_dropoff_service: boolean;
+  include_pickup_service: boolean;
+  visit_count: number;
+  service_dates: string[];
 }
 
 interface ServicesFrequencyData {
@@ -136,7 +141,11 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         custom_type: 'days_interval' as const,
         custom_days_of_week: [],
         custom_specific_dates: [],
-        calculated_cost: 0
+        calculated_cost: 0,
+        include_dropoff_service: false,
+        include_pickup_service: false,
+        visit_count: 0,
+        service_dates: []
       }));
 
       setAvailableServices(services);
@@ -158,36 +167,56 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
-  const calculateServiceCost = (service: ServiceItem): number => {
-    let baseCost = 0;
+  const calculateServiceCost = (service: ServiceItem): ServiceItem => {
+    // Get rental dates from job wizard context
+    const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+    const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
     
+    let perVisitCost = 0;
     switch (service.pricing_method) {
       case 'per_visit':
-        baseCost = service.per_visit_cost || 0;
+        perVisitCost = service.per_visit_cost || 0;
         break;
       case 'per_hour':
-        baseCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+        perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
         break;
       case 'flat_rate':
-        baseCost = service.flat_rate_cost || 0;
+        perVisitCost = service.flat_rate_cost || 0;
         break;
     }
 
-    // For recurring services, this is the per-occurrence cost
-    // The frequency is informational for scheduling
-    return baseCost;
+    // Calculate service visits based on frequency and rental duration
+    const calculation = calculateServiceVisits({
+      startDate,
+      endDate,
+      frequency: service.frequency,
+      customFrequencyDays: service.custom_frequency_days,
+      customDaysOfWeek: service.custom_days_of_week,
+      customSpecificDates: service.custom_specific_dates,
+      includeDropoffService: service.include_dropoff_service,
+      includePickupService: service.include_pickup_service,
+      perVisitCost,
+      serviceTime: '09:00',
+      timezone: 'America/New_York'
+    });
+
+    return {
+      ...service,
+      calculated_cost: calculation.totalCost,
+      visit_count: calculation.visits.length,
+      service_dates: calculation.visits.map(v => v.displayDate)
+    };
   };
 
   const toggleService = (serviceId: string, selected: boolean) => {
     if (selected) {
       const service = availableServices.find(s => s.id === serviceId);
       if (service) {
-        const serviceWithCost = {
+        const serviceWithCost = calculateServiceCost({
           ...service,
           selected: true,
           frequency: 'one-time' as const, // Default frequency when first selected
-          calculated_cost: calculateServiceCost(service)
-        };
+        });
         
         onUpdate({
           ...data,
@@ -205,10 +234,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const updateServiceFrequency = (serviceId: string, frequency: string) => {
     const updatedServices = data.selectedServices.map(service => {
       if (service.id === serviceId) {
-        const updatedService = {
+        let updatedService = {
           ...service,
-          frequency: frequency as ServiceItem['frequency'],
-          calculated_cost: calculateServiceCost(service)
+          frequency: frequency as ServiceItem['frequency']
         };
         
         // Set default custom type when switching to custom
@@ -217,7 +245,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           updatedService.custom_frequency_days = 1;
         }
         
-        return updatedService;
+        return calculateServiceCost(updatedService);
       }
       return service;
     });
@@ -231,10 +259,11 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const updateCustomFrequency = (serviceId: string, days: number) => {
     const updatedServices = data.selectedServices.map(service => {
       if (service.id === serviceId) {
-        return {
+        const updatedService = {
           ...service,
           custom_frequency_days: days
         };
+        return calculateServiceCost(updatedService);
       }
       return service;
     });
@@ -463,11 +492,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                 <span>{service.estimated_duration_hours}h</span>
                               </Badge>
                             )}
-                            {isSelected && (
-                              <Badge className="bg-blue-100 text-blue-800">
-                                ${selectedService?.calculated_cost.toFixed(2)}
-                              </Badge>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -644,17 +668,63 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                </div>
                              )}
                              
-                             <div className="text-xs text-muted-foreground">
-                               Selected frequency: <span className="font-medium">
-                                 {getFrequencyLabel(
-                                   selectedService.frequency,
-                                   selectedService.custom_type,
-                                   selectedService.custom_frequency_days,
-                                   selectedService.custom_days_of_week,
-                                   selectedService.custom_specific_dates
-                                 )}
-                               </span>
-                             </div>
+                              {/* Drop-off and Pickup Day Toggles */}
+                              <div className="space-y-3 pt-3 border-t">
+                                <Label className="text-sm font-medium">Additional Services</Label>
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  Services are billed per visit. Frequency sets how many visits occur while the unit is on site. Use the options below to add a service on delivery or pickup day if needed.
+                                </p>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`dropoff-${service.id}`}
+                                    checked={selectedService.include_dropoff_service}
+                                    onCheckedChange={(checked) => {
+                                      const updatedServices = data.selectedServices.map(s => {
+                                        if (s.id === service.id) {
+                                          const updated = { ...s, include_dropoff_service: checked as boolean };
+                                          return calculateServiceCost(updated);
+                                        }
+                                        return s;
+                                      });
+                                      onUpdate({ ...data, selectedServices: updatedServices });
+                                    }}
+                                  />
+                                  <Label htmlFor={`dropoff-${service.id}`} className="text-sm">
+                                    Include a service on the delivery day (charge applies)
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`pickup-${service.id}`}
+                                    checked={selectedService.include_pickup_service}
+                                    onCheckedChange={(checked) => {
+                                      const updatedServices = data.selectedServices.map(s => {
+                                        if (s.id === service.id) {
+                                          const updated = { ...s, include_pickup_service: checked as boolean };
+                                          return calculateServiceCost(updated);
+                                        }
+                                        return s;
+                                      });
+                                      onUpdate({ ...data, selectedServices: updatedServices });
+                                    }}
+                                  />
+                                  <Label htmlFor={`pickup-${service.id}`} className="text-sm">
+                                    Include a service on the pickup day (charge applies)
+                                  </Label>
+                                </div>
+                              </div>
+
+                              <div className="text-xs text-muted-foreground">
+                                Selected frequency: <span className="font-medium">
+                                  {getFrequencyLabel(
+                                    selectedService.frequency,
+                                    selectedService.custom_type,
+                                    selectedService.custom_frequency_days,
+                                    selectedService.custom_days_of_week,
+                                    selectedService.custom_specific_dates
+                                  )}
+                                </span>
+                              </div>
                            </div>
                          </div>
                        )}
@@ -681,28 +751,50 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.selectedServices.map((service) => (
-                <div key={service.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <div>
-                    <div className="font-medium">{service.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {getFrequencyLabel(
-                        service.frequency,
-                        service.custom_type,
-                        service.custom_frequency_days,
-                        service.custom_days_of_week,
-                        service.custom_specific_dates
-                      )}
-                      {service.frequency === 'custom' && service.custom_type === 'days_interval' && service.custom_frequency_days && 
-                        ` (every ${service.custom_frequency_days} days)`
-                      } • {getPricingDisplay(service)}
+              {data.selectedServices.map((service) => {
+                const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+                const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+                
+                let perVisitCost = 0;
+                switch (service.pricing_method) {
+                  case 'per_visit':
+                    perVisitCost = service.per_visit_cost || 0;
+                    break;
+                  case 'per_hour':
+                    perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+                    break;
+                  case 'flat_rate':
+                    perVisitCost = service.flat_rate_cost || 0;
+                    break;
+                }
+
+                const calculation = calculateServiceVisits({
+                  startDate,
+                  endDate,
+                  frequency: service.frequency,
+                  customFrequencyDays: service.custom_frequency_days,
+                  customDaysOfWeek: service.custom_days_of_week,
+                  customSpecificDates: service.custom_specific_dates,
+                  includeDropoffService: service.include_dropoff_service,
+                  includePickupService: service.include_pickup_service,
+                  perVisitCost,
+                  serviceTime: '09:00',
+                  timezone: 'America/New_York'
+                });
+
+                return (
+                  <div key={service.id} className="p-3 bg-muted/30 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium">{service.name}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {calculation.summary}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800">
-                    ${service.calculated_cost.toFixed(2)}
-                  </Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -825,6 +917,103 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Individual Service Date Assignments */}
+            <div className="space-y-4 pt-6 border-t">
+              <div>
+                <Label className="text-sm font-medium mb-3 block">Service Schedule</Label>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Assign a driver and vehicle for each service date, or use the toggles above to assign the same for all.
+                </p>
+              </div>
+              
+              {data.selectedServices.map((service) => {
+                const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+                const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+                
+                let perVisitCost = 0;
+                switch (service.pricing_method) {
+                  case 'per_visit':
+                    perVisitCost = service.per_visit_cost || 0;
+                    break;
+                  case 'per_hour':
+                    perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+                    break;
+                  case 'flat_rate':
+                    perVisitCost = service.flat_rate_cost || 0;
+                    break;
+                }
+
+                const calculation = calculateServiceVisits({
+                  startDate,
+                  endDate,
+                  frequency: service.frequency,
+                  customFrequencyDays: service.custom_frequency_days,
+                  customDaysOfWeek: service.custom_days_of_week,
+                  customSpecificDates: service.custom_specific_dates,
+                  includeDropoffService: service.include_dropoff_service,
+                  includePickupService: service.include_pickup_service,
+                  perVisitCost,
+                  serviceTime: '09:00',
+                  timezone: 'America/New_York'
+                });
+
+                if (calculation.visits.length === 0) return null;
+
+                return (
+                  <div key={service.id} className="space-y-3">
+                    <div className="font-medium text-sm text-muted-foreground">
+                      {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
+                    </div>
+                    <div className="space-y-2">
+                      {calculation.visits.map((visit, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                          <div className="flex items-center space-x-3">
+                            <div className="text-sm font-medium">{visit.displayDate}</div>
+                            <div className="text-sm text-muted-foreground">—</div>
+                            <div className="text-sm text-muted-foreground">{service.name}</div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 h-8"
+                              disabled={data.useSameDriverForAll}
+                            >
+                              <User className="h-3 w-3" />
+                              <span className="text-xs">
+                                {data.useSameDriverForAll && data.scheduledDriverForAll 
+                                  ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
+                                  : assignedDriver
+                                  ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
+                                  : 'Assign Driver'
+                                }
+                              </span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-1 h-8"
+                              disabled={data.useSameVehicleForAll}
+                            >
+                              <Truck className="h-3 w-3" />
+                              <span className="text-xs">
+                                {data.useSameVehicleForAll && data.scheduledVehicleForAll 
+                                  ? data.scheduledVehicleForAll.license_plate
+                                  : assignedVehicle
+                                  ? assignedVehicle.license_plate
+                                  : 'Assign Vehicle'
+                                }
+                              </span>
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
