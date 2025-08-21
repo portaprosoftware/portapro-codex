@@ -63,8 +63,10 @@ export const PickupInventorySelector: React.FC<PickupInventorySelectorProps> = (
             id,
             job_number,
             customer_id,
-            customer_service_locations (
-              location_name
+            customers (
+              customer_service_locations (
+                location_name
+              )
             )
           )
         `)
@@ -83,7 +85,7 @@ export const PickupInventorySelector: React.FC<PickupInventorySelectorProps> = (
         delivery_date: assignment.assigned_date,
         status: assignment.status,
         quantity: assignment.quantity || 1,
-        location_name: assignment.jobs?.customer_service_locations?.location_name,
+        location_name: assignment.jobs?.customers?.customer_service_locations?.location_name,
         job_id: assignment.job_id,
         job_number: assignment.jobs?.job_number
       }));
