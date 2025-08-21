@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Check, X } from "lucide-react";
 import { AvailabilityUnit } from "@/hooks/useAvailabilityEngine";
 
@@ -33,21 +34,64 @@ export function TrackedUnitsSelectionModal({
 }: TrackedUnitsSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+  const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
 
-  // Filter units based on search term
-  const filteredUnits = useMemo(() => {
-    if (!searchTerm) return units;
+  // Extract available variation types and values from units
+  const availableVariations = useMemo(() => {
+    const variations: Record<string, Set<string>> = {};
     
-    const searchLower = searchTerm.toLowerCase();
-    return units.filter((unit: AvailabilityUnit) => {
-      return (
-        unit.item_code.toLowerCase().includes(searchLower) ||
-        (unit.attributes?.color && unit.attributes.color.toLowerCase().includes(searchLower)) ||
-        (unit.attributes?.size && unit.attributes.size.toLowerCase().includes(searchLower)) ||
-        (unit.attributes?.material && unit.attributes.material.toLowerCase().includes(searchLower))
-      );
+    units.forEach(unit => {
+      if (unit.attributes) {
+        Object.entries(unit.attributes).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && key !== 'winterized') {
+            if (!variations[key]) {
+              variations[key] = new Set();
+            }
+            variations[key].add(String(value));
+          }
+        });
+      }
     });
-  }, [units, searchTerm]);
+    
+    // Convert sets to sorted arrays and capitalize variation names
+    const result: Record<string, string[]> = {};
+    Object.entries(variations).forEach(([key, valueSet]) => {
+      const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      result[capitalizedKey] = Array.from(valueSet).sort();
+    });
+    
+    return result;
+  }, [units]);
+
+  // Filter units based on search term and variation filters
+  const filteredUnits = useMemo(() => {
+    let filtered = units;
+    
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter((unit: AvailabilityUnit) => {
+        return (
+          unit.item_code.toLowerCase().includes(searchLower) ||
+          (unit.attributes?.color && unit.attributes.color.toLowerCase().includes(searchLower)) ||
+          (unit.attributes?.size && unit.attributes.size.toLowerCase().includes(searchLower)) ||
+          (unit.attributes?.material && unit.attributes.material.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+    
+    // Apply variation filters
+    Object.entries(variationFilters).forEach(([variationType, selectedValue]) => {
+      if (selectedValue && selectedValue !== 'all') {
+        const attributeKey = variationType.toLowerCase();
+        filtered = filtered.filter((unit: AvailabilityUnit) => {
+          return unit.attributes?.[attributeKey] === selectedValue;
+        });
+      }
+    });
+    
+    return filtered;
+  }, [units, searchTerm, variationFilters]);
 
   // Available units only
   const availableUnits = filteredUnits.filter(unit => unit.is_available);
@@ -99,9 +143,17 @@ export function TrackedUnitsSelectionModal({
     onOpenChange(false);
   };
 
+  const handleVariationFilterChange = (variationType: string, value: string) => {
+    setVariationFilters(prev => ({
+      ...prev,
+      [variationType]: value
+    }));
+  };
+
   const resetAndClose = () => {
     setSelectedUnits(new Set());
     setSearchTerm('');
+    setVariationFilters({});
     onOpenChange(false);
   };
 
@@ -128,6 +180,35 @@ export function TrackedUnitsSelectionModal({
               className="pl-8"
             />
           </div>
+
+          {/* Variation Filters */}
+          {Object.keys(availableVariations).length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(availableVariations).map(([variationType, values]) => (
+                <div key={variationType} className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground min-w-fit">
+                    {variationType}:
+                  </span>
+                  <Select
+                    value={variationFilters[variationType] || 'all'}
+                    onValueChange={(value) => handleVariationFilterChange(variationType, value)}
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder={`All ${variationType}s`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All {variationType}s</SelectItem>
+                      {values.map((value) => (
+                        <SelectItem key={value} value={value}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Selection Actions */}
           <div className="flex items-center justify-between">
