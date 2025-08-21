@@ -304,10 +304,13 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     ) : (
                       <>
                         {group.bulk.length > 0 && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
+                          <div className="text-sm space-y-1">
+                            <div className="text-muted-foreground">
                               Bulk Selection: {group.bulk[0].quantity} units
-                            </span>
+                            </div>
+                            <div className="font-medium text-primary">
+                              Total: {group.bulk[0].quantity} units
+                            </div>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -319,10 +322,13 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                           </div>
                         )}
                         {group.specific.length > 0 && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
+                          <div className="text-sm space-y-1">
+                            <div className="text-muted-foreground">
                               Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
-                            </span>
+                            </div>
+                            <div className="font-medium text-primary">
+                              Total: {group.specific.length} units
+                            </div>
                             <Button
                               variant="ghost"
                               size="sm"
