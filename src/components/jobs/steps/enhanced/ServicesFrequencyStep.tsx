@@ -13,8 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { useJobWizard } from '@/contexts/JobWizardContext';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
 import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
+import { useQuery } from '@tanstack/react-query';
 
 interface ServiceDateDetail {
   date: Date;
@@ -59,10 +61,47 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   data, 
   onUpdate 
 }) => {
+  const { state } = useJobWizard();
   const [availableServices, setAvailableServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
+
+  // Fetch assigned driver details from step 4
+  const { data: assignedDriver } = useQuery({
+    queryKey: ['assigned-driver', state.data.driver_id],
+    queryFn: async () => {
+      if (!state.data.driver_id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .eq('id', state.data.driver_id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!state.data.driver_id,
+  });
+
+  // Fetch assigned vehicle details from step 4
+  const { data: assignedVehicle } = useQuery({
+    queryKey: ['assigned-vehicle', state.data.vehicle_id],
+    queryFn: async () => {
+      if (!state.data.vehicle_id) return null;
+      
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('id, license_plate, make, model, year, nickname')
+        .eq('id', state.data.vehicle_id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!state.data.vehicle_id,
+  });
 
   useEffect(() => {
     fetchServices();
@@ -708,9 +747,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   />
                   <Label htmlFor="same-driver" className="font-medium">
                     Schedule same driver for all services
-                    {data.scheduledDriverForAll && (
+                    {data.useSameDriverForAll && assignedDriver && (
                       <span className="text-primary font-semibold ml-2">
-                        ({data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name})
+                        ({assignedDriver.first_name} {assignedDriver.last_name})
                       </span>
                     )}
                   </Label>
@@ -752,9 +791,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   />
                   <Label htmlFor="same-vehicle" className="font-medium">
                     Schedule same vehicle for all services
-                    {data.scheduledVehicleForAll && (
+                    {data.useSameVehicleForAll && assignedVehicle && (
                       <span className="text-primary font-semibold ml-2">
-                        ({data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model})
+                        ({assignedVehicle.year} {assignedVehicle.make} {assignedVehicle.model})
                       </span>
                     )}
                   </Label>
