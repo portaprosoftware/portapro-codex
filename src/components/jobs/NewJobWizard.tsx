@@ -237,18 +237,18 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           <div className="flex justify-between">
             <Button
               variant="outline"
-              onClick={handlePrevious}
-              disabled={isFirstStep}
+              onClick={() => setShowExitConfirmation(true)}
             >
-              Previous
+              Close Wizard
             </Button>
 
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => setShowExitConfirmation(true)}
+                onClick={handlePrevious}
+                disabled={isFirstStep}
               >
-                Cancel
+                Previous
               </Button>
               
               {isLastStep ? (
