@@ -124,7 +124,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   };
 
   const handleAddUnitsToJob = () => {
-    // Group selections by product and strategy, then convert to JobItemSelection[]
+    // Group selections by product and combine bulk + specific as total quantity
     const jobItems: any[] = [];
     const productGroups: Record<string, { bulk?: UnitSelection[], specific?: UnitSelection[] }> = {};
     
@@ -149,26 +149,39 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
     // Convert groups to JobItemSelection format
     Object.entries(productGroups).forEach(([productId, groups]) => {
-      // Add bulk selection if exists
-      if (groups.bulk && groups.bulk.length > 0) {
-        const bulkSelection = groups.bulk[0]; // Should only be one bulk selection per product
+      const hasSpecific = groups.specific && groups.specific.length > 0;
+      const hasBulk = groups.bulk && groups.bulk.length > 0;
+      
+      if (hasSpecific && hasBulk) {
+        // Combine specific units + bulk quantity into one job item
+        const bulkQuantity = groups.bulk![0].quantity;
+        const totalQuantity = groups.specific!.length + bulkQuantity;
+        
         jobItems.push({
           product_id: productId,
-          quantity: bulkSelection.quantity,
+          quantity: totalQuantity,
+          strategy: 'specific' as const,
+          specific_item_ids: groups.specific!.map(s => s.unitId),
+          bulk_additional: bulkQuantity, // Track how many additional bulk units
+          attributes: groups.specific![0].attributes
+        });
+      } else if (hasSpecific) {
+        // Only specific units
+        jobItems.push({
+          product_id: productId,
+          quantity: groups.specific!.length,
+          strategy: 'specific' as const,
+          specific_item_ids: groups.specific!.map(s => s.unitId),
+          attributes: groups.specific![0].attributes
+        });
+      } else if (hasBulk) {
+        // Only bulk units
+        jobItems.push({
+          product_id: productId,
+          quantity: groups.bulk![0].quantity,
           strategy: 'bulk' as const,
           specific_item_ids: undefined,
-          attributes: bulkSelection.attributes
-        });
-      }
-      
-      // Add specific selections if exist
-      if (groups.specific && groups.specific.length > 0) {
-        jobItems.push({
-          product_id: productId,
-          quantity: groups.specific.length,
-          strategy: 'specific' as const,
-          specific_item_ids: groups.specific.map(s => s.unitId),
-          attributes: groups.specific[0].attributes
+          attributes: groups.bulk![0].attributes
         });
       }
     });
@@ -251,35 +264,71 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 ).map(([productId, group]) => (
                   <div key={productId} className="bg-background border rounded-lg p-3 space-y-2">
                     <div className="font-medium text-sm">{group.productName}</div>
-                    {group.bulk.length > 0 && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          Bulk Selection: {group.bulk[0].quantity} units
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveProductSelections(productId, 'bulk')}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-                    {group.specific.length > 0 && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
+                    
+                    {/* Show combined selection when both exist */}
+                    {group.bulk.length > 0 && group.specific.length > 0 ? (
+                      <div className="text-sm space-y-1">
+                        <div className="text-muted-foreground">
                           Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveProductSelections(productId, 'specific')}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        </div>
+                        <div className="text-muted-foreground">
+                          + {group.bulk[0].quantity} Additional Bulk Units
+                        </div>
+                        <div className="font-medium text-primary">
+                          Total: {group.specific.length + group.bulk[0].quantity} units
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveProductSelections(productId, 'specific')}
+                            className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
+                          >
+                            Remove Specific
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveProductSelections(productId, 'bulk')}
+                            className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
+                          >
+                            Remove Bulk
+                          </Button>
+                        </div>
                       </div>
+                    ) : (
+                      <>
+                        {group.bulk.length > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Bulk Selection: {group.bulk[0].quantity} units
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveProductSelections(productId, 'bulk')}
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                        {group.specific.length > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveProductSelections(productId, 'specific')}
+                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 ))}
