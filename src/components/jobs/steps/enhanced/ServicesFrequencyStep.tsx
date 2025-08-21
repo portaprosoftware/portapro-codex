@@ -6,12 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X, User, Truck } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
+import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
 
 interface ServiceDateDetail {
   date: Date;
@@ -41,6 +44,10 @@ interface ServiceItem {
 interface ServicesFrequencyData {
   selectedServices: ServiceItem[];
   servicesSubtotal: number;
+  scheduledDriverForAll?: any;
+  scheduledVehicleForAll?: any;
+  useSameDriverForAll: boolean;
+  useSameVehicleForAll: boolean;
 }
 
 interface ServicesFrequencyStepProps {
@@ -54,6 +61,8 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 }) => {
   const [availableServices, setAvailableServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDriverModal, setShowDriverModal] = useState(false);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -279,6 +288,36 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       };
       updateCustomSpecificDates(serviceId, updatedDates);
     }
+  };
+
+  const handleDriverSelect = (driver: any) => {
+    onUpdate({
+      ...data,
+      scheduledDriverForAll: driver
+    });
+  };
+
+  const handleVehicleSelect = (vehicle: any) => {
+    onUpdate({
+      ...data,
+      scheduledVehicleForAll: vehicle
+    });
+  };
+
+  const toggleUseSameDriver = (checked: boolean) => {
+    onUpdate({
+      ...data,
+      useSameDriverForAll: checked,
+      scheduledDriverForAll: checked ? data.scheduledDriverForAll : undefined
+    });
+  };
+
+  const toggleUseSameVehicle = (checked: boolean) => {
+    onUpdate({
+      ...data,
+      useSameVehicleForAll: checked,
+      scheduledVehicleForAll: checked ? data.scheduledVehicleForAll : undefined
+    });
   };
 
   const getPricingDisplay = (service: ServiceItem) => {
@@ -644,6 +683,131 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           </CardHeader>
         </Card>
       )}
+
+      {/* Driver and Vehicle Assignment Section */}
+      {data.selectedServices.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <User className="w-5 h-5" />
+              <span>Driver & Vehicle Assignment</span>
+            </CardTitle>
+            <CardDescription>
+              Configure driver and vehicle assignments for all service jobs
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Driver Assignment */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="same-driver"
+                    checked={data.useSameDriverForAll || false}
+                    onCheckedChange={toggleUseSameDriver}
+                  />
+                  <Label htmlFor="same-driver" className="font-medium">
+                    Schedule same driver for all services
+                    {data.scheduledDriverForAll && (
+                      <span className="text-muted-foreground ml-2">
+                        ({data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name})
+                      </span>
+                    )}
+                  </Label>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDriverModal(true)}
+                  className="flex items-center gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  Schedule Driver Now
+                </Button>
+              </div>
+              
+              {data.scheduledDriverForAll && (
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                      {data.scheduledDriverForAll.first_name?.[0]}{data.scheduledDriverForAll.last_name?.[0]}
+                    </div>
+                    <div>
+                      <p className="font-medium">{data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name}</p>
+                      <p className="text-sm text-muted-foreground">Status: {data.scheduledDriverForAll.status}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Vehicle Assignment */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="same-vehicle"
+                    checked={data.useSameVehicleForAll || false}
+                    onCheckedChange={toggleUseSameVehicle}
+                  />
+                  <Label htmlFor="same-vehicle" className="font-medium">
+                    Schedule same vehicle for all services
+                    {data.scheduledVehicleForAll && (
+                      <span className="text-muted-foreground ml-2">
+                        ({data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model})
+                      </span>
+                    )}
+                  </Label>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowVehicleModal(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Truck className="h-4 w-4" />
+                  Schedule Vehicle Now
+                </Button>
+              </div>
+              
+              {data.scheduledVehicleForAll && (
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <Truck className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{data.scheduledVehicleForAll.license_plate}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model}
+                        {data.scheduledVehicleForAll.nickname && ` "${data.scheduledVehicleForAll.nickname}"`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Driver Selection Modal */}
+      <DriverSelectionModal
+        open={showDriverModal}
+        onOpenChange={setShowDriverModal}
+        selectedDate={new Date()}
+        selectedDriver={data.scheduledDriverForAll}
+        onDriverSelect={handleDriverSelect}
+      />
+
+      {/* Vehicle Selection Modal */}
+      <VehicleSelectionModal
+        open={showVehicleModal}
+        onOpenChange={setShowVehicleModal}
+        selectedDate={new Date()}
+        selectedVehicle={data.scheduledVehicleForAll}
+        onVehicleSelect={handleVehicleSelect}
+      />
     </div>
   );
 };

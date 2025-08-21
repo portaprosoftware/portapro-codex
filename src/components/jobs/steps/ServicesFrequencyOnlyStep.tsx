@@ -27,7 +27,14 @@ export const ServicesFrequencyOnlyStep: React.FC = () => {
 
       {/* Actual Services Functionality */}
       <ServicesFrequencyStep
-        data={state.data.servicesData || { selectedServices: [], servicesSubtotal: 0 }}
+        data={{
+          selectedServices: state.data.servicesData?.selectedServices || [],
+          servicesSubtotal: state.data.servicesData?.servicesSubtotal || 0,
+          useSameDriverForAll: state.data.servicesData?.useSameDriverForAll || false,
+          useSameVehicleForAll: state.data.servicesData?.useSameVehicleForAll || false,
+          scheduledDriverForAll: state.data.servicesData?.scheduledDriverForAll,
+          scheduledVehicleForAll: state.data.servicesData?.scheduledVehicleForAll
+        }}
         onUpdate={(svc) => updateData({ servicesData: svc })}
       />
     </div>

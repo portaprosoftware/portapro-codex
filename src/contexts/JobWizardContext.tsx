@@ -37,6 +37,10 @@ export interface JobWizardData {
   servicesData?: {
     selectedServices: any[];
     servicesSubtotal: number;
+    useSameDriverForAll: boolean;
+    useSameVehicleForAll: boolean;
+    scheduledDriverForAll?: any;
+    scheduledVehicleForAll?: any;
   };
 
   // Pickup job details (when scheduling delivery + pickup)
@@ -83,7 +87,12 @@ const initialState: JobWizardState = {
     is_priority: false,
     items: [],
     create_daily_assignment: true,
-    servicesData: { selectedServices: [], servicesSubtotal: 0 },
+    servicesData: { 
+      selectedServices: [], 
+      servicesSubtotal: 0,
+      useSameDriverForAll: false,
+      useSameVehicleForAll: false
+    },
     create_pickup_job: false,
     pickup_date: null,
     pickup_time: null,
