@@ -89,6 +89,14 @@ export interface JobWizardData {
       vehicle_id?: string | null;
     };
   };
+  
+  // Pickup inventory selections (for delivery jobs with pickups)
+  pickup_inventory_selections?: {
+    main_pickup?: JobItemSelection[];
+    partial_pickups?: {
+      [pickupId: string]: JobItemSelection[];
+    };
+  };
 }
 
 interface JobWizardState {

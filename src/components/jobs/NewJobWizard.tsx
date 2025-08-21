@@ -71,6 +71,9 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       // Create pickup job if requested
       let pickupJob = null;
       if (state.data.create_pickup_job && state.data.pickup_date) {
+        // Use specific pickup inventory selections if available, otherwise use all delivery items
+        const pickupItems = state.data.pickup_inventory_selections?.main_pickup || state.data.items;
+        
         const pickupJobData = {
           customer_id: state.data.customer_id,
           job_type: 'pickup' as const,
@@ -82,7 +85,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
           selected_coordinate_ids: state.data.selected_coordinate_ids,
           driver_id: state.data.driver_id,
           vehicle_id: state.data.vehicle_id,
-          items: state.data.items, // Same items for pickup
+          items: pickupItems,
           create_daily_assignment: state.data.create_daily_assignment,
         };
         
@@ -95,6 +98,9 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       if (state.data.create_partial_pickups && state.data.partial_pickups) {
         for (const partialPickup of state.data.partial_pickups) {
           if (partialPickup.date) {
+            // Use specific partial pickup inventory selections if available, otherwise use all delivery items
+            const partialPickupItems = state.data.pickup_inventory_selections?.partial_pickups?.[partialPickup.id] || state.data.items;
+            
             const partialPickupJobData = {
               customer_id: state.data.customer_id,
               job_type: 'pickup' as const,
@@ -106,7 +112,7 @@ function WizardContent({ onClose }: { onClose: () => void }) {
               selected_coordinate_ids: state.data.selected_coordinate_ids,
               driver_id: state.data.driver_id,
               vehicle_id: state.data.vehicle_id,
-              items: state.data.items, // Same items for partial pickup
+              items: partialPickupItems,
               create_daily_assignment: state.data.create_daily_assignment,
             };
             
