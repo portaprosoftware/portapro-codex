@@ -112,16 +112,17 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       // Check if there are existing bulk selections for this product that need adjustment
       const existingBulk = filtered.find(s => s.productId === productId && s.unitId === 'bulk');
       if (existingBulk) {
-        // Get total available units for this product
-        const productQuery = supabase
-          .from('products')
-          .select('stock_total')
-          .eq('id', productId)
-          .single();
+        // Use availability data instead of stock_total to get actual available units
+        const availabilityQuery = supabase.rpc('get_product_availability_enhanced', {
+          product_type_id: productId,
+          start_date: startDate,
+          end_date: endDate || startDate
+        });
           
-        productQuery.then(({ data: product }) => {
-          if (product) {
-            const totalAvailable = product.stock_total;
+        availabilityQuery.then(({ data: availabilityData }) => {
+          if (availabilityData) {
+            const availability = availabilityData as any;
+            const totalAvailable = Number(availability.available) || 0;
             const specificUnitsCount = selections.length;
             const remainingForBulk = Math.max(0, totalAvailable - specificUnitsCount);
             const currentBulkQuantity = existingBulk.quantity;
