@@ -12,7 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
-import { RequiredAttributesFields } from "./RequiredAttributesFields";
+import { ProductVariationsFields } from "./ProductVariationsFields";
 import { SimpleQRCode } from "./SimpleQRCode";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { LocationTransferConfirmDialog } from "./LocationTransferConfirmDialog";
@@ -504,8 +504,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             )}
           </div>
 
-          {/* Required Attributes */}
-          <RequiredAttributesFields
+          {/* Product Variations */}
+          <ProductVariationsFields
             productId={item?.product_id || ""}
             attributes={productAttributes}
             values={attributeValues}

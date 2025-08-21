@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
-interface RequiredAttributesFieldsProps {
+interface ProductVariationsFieldsProps {
   productId: string;
   attributes: Array<{
     id: string;
@@ -16,7 +16,7 @@ interface RequiredAttributesFieldsProps {
   errors?: Record<string, string>;
 }
 
-export const RequiredAttributesFields: React.FC<RequiredAttributesFieldsProps> = ({
+export const ProductVariationsFields: React.FC<ProductVariationsFieldsProps> = ({
   productId,
   attributes,
   values,
@@ -39,9 +39,10 @@ export const RequiredAttributesFields: React.FC<RequiredAttributesFieldsProps> =
     return acc;
   }, {} as Record<string, { name: string; values: string[]; isRequired: boolean }>);
 
-  const requiredAttributes = Object.values(attributeGroups).filter(attr => attr.isRequired);
+  const allAttributes = Object.values(attributeGroups);
+  const requiredCount = allAttributes.filter(attr => attr.isRequired).length;
 
-  if (requiredAttributes.length === 0) {
+  if (allAttributes.length === 0) {
     return null;
   }
 
@@ -49,13 +50,15 @@ export const RequiredAttributesFields: React.FC<RequiredAttributesFieldsProps> =
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <h3 className="font-medium text-gray-900">Product Variations</h3>
-        <Badge variant="destructive" className="text-xs">
-          {requiredAttributes.length} required
-        </Badge>
+        {requiredCount > 0 && (
+          <Badge variant="destructive" className="text-xs">
+            {requiredCount} required
+          </Badge>
+        )}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {requiredAttributes.map((attribute) => {
+        {allAttributes.map((attribute) => {
           const fieldKey = attribute.name.toLowerCase();
           const hasError = errors[fieldKey];
           
@@ -63,7 +66,7 @@ export const RequiredAttributesFields: React.FC<RequiredAttributesFieldsProps> =
             <div key={attribute.name} className="space-y-2">
               <Label htmlFor={fieldKey} className="flex items-center gap-1">
                 {attribute.name}
-                <span className="text-red-500">*</span>
+                {attribute.isRequired && <span className="text-red-500">*</span>}
               </Label>
               <Select 
                 value={values[fieldKey] || ""} 

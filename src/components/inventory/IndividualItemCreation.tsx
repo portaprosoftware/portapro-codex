@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
-import { RequiredAttributesFields } from "./RequiredAttributesFields";
+import { ProductVariationsFields } from "./ProductVariationsFields";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { toast } from "sonner";
 import { Package, ArrowRight, QrCode, Camera, AlertTriangle } from "lucide-react";
@@ -444,8 +444,8 @@ export function IndividualItemCreation({
             </div>
           )}
 
-          {/* Required Attributes */}
-          <RequiredAttributesFields
+          {/* Product Variations */}
+          <ProductVariationsFields
             productId={productId}
             attributes={productAttributes}
             values={attributeValues}

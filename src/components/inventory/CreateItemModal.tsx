@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
-import { RequiredAttributesFields } from "./RequiredAttributesFields";
+import { ProductVariationsFields } from "./ProductVariationsFields";
 import { StorageLocationSelector } from "./StorageLocationSelector";
 
 interface CreateItemModalProps {
@@ -383,7 +383,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
             </div>
 
             {/* Product Variations */}
-            <RequiredAttributesFields
+            <ProductVariationsFields
               productId={productId}
               attributes={productAttributes || []}
               values={attributeValues}
