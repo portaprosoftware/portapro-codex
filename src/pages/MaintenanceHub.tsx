@@ -12,7 +12,7 @@ import { Calendar } from "lucide-react";
 export default function MaintenanceHub() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('records');
+  const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('catalog');
   const [showLogPastService, setShowLogPastService] = useState(false);
 
   // Set the active tab based on URL params
@@ -51,13 +51,6 @@ export default function MaintenanceHub() {
             <div className="enterprise-tabs">
               <TabNav ariaLabel="Services views">
                 <TabNav.Item 
-                  to="/maintenance-hub?tab=records" 
-                  isActive={activeTab === 'records'}
-                  onClick={() => setActiveTab('records')}
-                >
-                  Records
-                </TabNav.Item>
-                <TabNav.Item 
                   to="/maintenance-hub?tab=catalog" 
                   isActive={activeTab === 'catalog'}
                   onClick={() => setActiveTab('catalog')}
@@ -65,11 +58,18 @@ export default function MaintenanceHub() {
                   Service Catalog
                 </TabNav.Item>
                 <TabNav.Item 
+                  to="/maintenance-hub?tab=records" 
+                  isActive={activeTab === 'records'}
+                  onClick={() => setActiveTab('records')}
+                >
+                  Records
+                </TabNav.Item>
+                <TabNav.Item 
                   to="/maintenance-hub?tab=templates" 
                   isActive={activeTab === 'templates'}
                   onClick={() => setActiveTab('templates')}
                 >
-                  Templates
+                  Report Templates
                 </TabNav.Item>
               </TabNav>
             </div>
