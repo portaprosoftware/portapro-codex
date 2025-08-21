@@ -12,6 +12,7 @@ import {
   Wrench,
   Package
 } from 'lucide-react';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 
 interface CustomerPortalDashboardProps {
   customerId: string;
@@ -111,15 +112,6 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
     return `${capitalizedJobType} - ${date.toLocaleDateString()}`;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-success/20 text-success border-success/20';
-      case 'scheduled': return 'bg-primary/20 text-primary border-primary/20';
-      case 'in_progress': return 'bg-warning/20 text-warning border-warning/20';
-      case 'cancelled': return 'bg-destructive/20 text-destructive border-destructive/20';
-      default: return 'bg-muted text-muted-foreground border-muted';
-    }
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -255,7 +247,7 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge className={getStatusColor(job.status)} variant="outline">
+                      <Badge variant={getStatusBadgeVariant(job.status as any)}>
                         {job.status.replace('_', ' ')}
                       </Badge>
                       <p className="text-xs text-muted-foreground mt-1">{displayDate}</p>

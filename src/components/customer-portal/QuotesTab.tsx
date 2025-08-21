@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -70,14 +71,14 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
     }).format(amount / 100);
   };
 
-  const getQuoteStatusColor = (status: string) => {
+  const getQuoteStatusVariant = (status: string) => {
     switch (status) {
-      case 'accepted': return 'bg-green-100 text-green-800 border-green-200';
-      case 'sent': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'expired': return 'bg-red-100 text-red-800 border-red-200';
-      case 'declined': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'accepted': return 'completed';
+      case 'sent': return 'assigned';
+      case 'draft': return 'draft';
+      case 'expired': return 'overdue';
+      case 'declined': return 'cancelled';
+      default: return 'inactive';
     }
   };
 
@@ -92,10 +93,8 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
     }
   };
 
-  const getContractStatusColor = (isActive: boolean) => {
-    return isActive 
-      ? 'bg-green-100 text-green-800 border-green-200'
-      : 'bg-gray-100 text-gray-800 border-gray-200';
+  const getContractStatusVariant = (isActive: boolean) => {
+    return isActive ? 'active' : 'inactive';
   };
 
   if (quotesLoading || contractsLoading) {
@@ -156,11 +155,11 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                         <div>
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{quote.quote_number}</h5>
-                            <Badge className={cn("text-xs", getQuoteStatusColor(quote.status))}>
+                            <Badge variant={getQuoteStatusVariant(quote.status) as any}>
                               {quote.status}
                             </Badge>
                             {isExpired && (
-                              <Badge className="text-xs bg-red-100 text-red-800 border-red-200">
+                              <Badge variant="overdue">
                                 Expired
                               </Badge>
                             )}
@@ -206,7 +205,7 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                                   </div>
                                   <div>
                                     <label className="text-sm font-medium">Status</label>
-                                    <Badge className={cn("text-xs", getQuoteStatusColor(quote.status))}>
+                                    <Badge variant={getQuoteStatusVariant(quote.status) as any}>
                                       {quote.status}
                                     </Badge>
                                   </div>
@@ -312,7 +311,7 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                       <div>
                         <div className="flex items-center gap-2">
                           <h5 className="font-medium">{contract.document_name}</h5>
-                          <Badge className={cn("text-xs", getContractStatusColor(contract.is_active))}>
+                          <Badge variant={getContractStatusVariant(contract.is_active) as any}>
                             {contract.is_active ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>

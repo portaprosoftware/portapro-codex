@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -94,14 +95,6 @@ export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
     enabled: !!customerId,
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'in_service': return 'bg-green-100 text-green-800 border-green-200';
-      case 'maintenance': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'out_of_service': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
@@ -171,7 +164,7 @@ export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
                     <Package className="h-5 w-5 text-primary" />
                     <CardTitle className="text-base">{unit.unitCode}</CardTitle>
                   </div>
-                  <Badge className={cn("text-xs", getStatusColor(unit.status))}>
+                  <Badge variant={getStatusBadgeVariant(unit.status as any)}>
                     {unit.status.replace('_', ' ')}
                   </Badge>
                 </div>

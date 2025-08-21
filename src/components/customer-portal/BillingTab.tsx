@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -81,13 +82,13 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
     }).format(amount / 100);
   };
 
-  const getInvoiceStatusColor = (status: string) => {
+  const getInvoiceStatusVariant = (status: string) => {
     switch (status) {
-      case 'paid': return 'bg-green-100 text-green-800 border-green-200';
-      case 'unpaid': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'overdue': return 'bg-red-100 text-red-800 border-red-200';
-      case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'paid': return 'completed';
+      case 'unpaid': return 'pending';
+      case 'overdue': return 'overdue';
+      case 'draft': return 'draft';
+      default: return 'inactive';
     }
   };
 
@@ -224,7 +225,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
                         <div>
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{invoice.invoice_number}</h5>
-                            <Badge className={cn("text-xs", getInvoiceStatusColor(invoice.status))}>
+                            <Badge variant={getInvoiceStatusVariant(invoice.status) as any}>
                               {invoice.status}
                             </Badge>
                           </div>
@@ -265,7 +266,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
                                   </div>
                                   <div>
                                     <label className="text-sm font-medium">Status</label>
-                                    <Badge className={cn("text-xs", getInvoiceStatusColor(invoice.status))}>
+                                    <Badge variant={getInvoiceStatusVariant(invoice.status) as any}>
                                       {invoice.status}
                                     </Badge>
                                   </div>

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -129,13 +130,6 @@ export const ServiceHistoryTab: React.FC<ServiceHistoryTabProps> = ({ customerId
     enabled: !!customerId,
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-success/20 text-success border-success/20';
-      case 'cancelled': return 'bg-destructive/20 text-destructive border-destructive/20';
-      default: return 'bg-muted text-muted-foreground border-muted';
-    }
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -337,7 +331,7 @@ export const ServiceHistoryTab: React.FC<ServiceHistoryTabProps> = ({ customerId
                         <h4 className="font-semibold capitalize">
                           {service.job_type.replace('_', ' ')}
                         </h4>
-                        <Badge className={getStatusColor(service.status)} variant="outline">
+                        <Badge variant={getStatusBadgeVariant(service.status as any)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {service.status}
                         </Badge>

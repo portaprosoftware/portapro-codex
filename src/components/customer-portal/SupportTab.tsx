@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -151,13 +152,13 @@ export const SupportTab: React.FC<SupportTabProps> = ({ customerId }) => {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getSupportStatusVariant = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'in_progress': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
-      case 'closed': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'open': return 'assigned';
+      case 'in_progress': return 'in-progress';
+      case 'resolved': return 'completed';
+      case 'closed': return 'inactive';
+      default: return 'inactive';
     }
   };
 
@@ -357,7 +358,7 @@ export const SupportTab: React.FC<SupportTabProps> = ({ customerId }) => {
                         <div>
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{ticket.ticket_number}</h5>
-                            <Badge className={cn("text-xs", getStatusColor(ticket.status))}>
+                            <Badge variant={getSupportStatusVariant(ticket.status) as any}>
                               {ticket.status.replace('_', ' ')}
                             </Badge>
                             <Badge className={cn("text-xs", getPriorityColor(ticket.priority))}>

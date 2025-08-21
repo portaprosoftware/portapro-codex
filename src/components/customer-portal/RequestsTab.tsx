@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -190,17 +191,6 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
     submitRequestMutation.mutate(formData);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'submitted': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-      case 'scheduled': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'in_progress': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'completed': return 'bg-success/20 text-success border-success/20';
-      case 'cancelled': return 'bg-destructive/20 text-destructive border-destructive/20';
-      default: return 'bg-muted text-muted-foreground border-muted';
-    }
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -496,7 +486,7 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
                         </div>
                       </div>
                     </div>
-                    <Badge className={getStatusColor(request.status)} variant="outline">
+                    <Badge variant={getStatusBadgeVariant(request.status as any)}>
                       <StatusIcon className="w-3 h-3 mr-1" />
                       {request.status.replace('_', ' ')}
                     </Badge>
