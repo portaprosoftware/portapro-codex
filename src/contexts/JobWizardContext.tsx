@@ -200,7 +200,14 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         // Driver and vehicle selection is now optional
         break;
       case 5:
-        // Products & services optional (service-only jobs allowed)
+        // Products step - no validation here, allow proceeding to services
+        // If provided, ensure quantities are positive
+        if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
+          errors.items = 'All selected quantities must be greater than 0';
+        }
+        break;
+      case 6:
+        // Services & Frequency step: validate both products and services together
         // If provided, ensure quantities are positive
         if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
           errors.items = 'All selected quantities must be greater than 0';
@@ -209,9 +216,6 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         if (state.data.job_type === 'service' && (!state.data.servicesData || state.data.servicesData.selectedServices.length === 0)) {
           errors.services = 'Please select at least one service for a service job';
         }
-        break;
-      case 6:
-        // Services & Frequency step: no additional validation (optional)
         break;
       case 7:
         // Review step: no additional validation

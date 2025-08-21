@@ -36,12 +36,6 @@ const steps = [
   },
   {
     number: 6,
-    title: 'Services & Frequency',
-    description: 'Select additional services and set their frequency',
-    icon: ClipboardCheck,
-  },
-  {
-    number: 7,
     title: 'Review',
     description: 'Confirm & create',
     icon: ListChecks,
@@ -52,14 +46,31 @@ export function WizardNavigation() {
   const { state, goToStep } = useJobWizard();
 
   const getStepStatus = (stepNumber: number) => {
-    if (stepNumber < state.currentStep) return 'completed';
-    if (stepNumber === state.currentStep) return 'current';
+    // For step 5 (Products & Services), only mark complete after both sub-steps are done
+    if (stepNumber === 5) {
+      if (state.currentStep > 6) return 'completed'; // Past both sub-steps
+      if (state.currentStep === 5 || state.currentStep === 6) return 'current'; // In either sub-step
+      return 'upcoming';
+    }
+    
+    // Adjust for removed step 6 - step 6 is now Review (was step 7)
+    const adjustedCurrentStep = state.currentStep > 6 ? state.currentStep - 1 : state.currentStep;
+    const adjustedStepNumber = stepNumber === 6 ? 7 : stepNumber; // Review is now step 6 in UI but step 7 in logic
+    
+    if (adjustedStepNumber < adjustedCurrentStep) return 'completed';
+    if (adjustedStepNumber === adjustedCurrentStep) return 'current';
     return 'upcoming';
   };
 
   const isStepClickable = (stepNumber: number) => {
-    // Allow clicking on completed steps and current step
-    return stepNumber <= state.currentStep;
+    // Don't allow clicking on step 5 if we're in the services sub-step (step 6)
+    if (stepNumber === 5 && state.currentStep === 6) return false;
+    
+    // Adjust for step logic - Review (step 6 in UI) is step 7 in logic
+    const adjustedStepNumber = stepNumber === 6 ? 7 : stepNumber;
+    const adjustedCurrentStep = state.currentStep > 6 ? state.currentStep - 1 : state.currentStep;
+    
+    return adjustedStepNumber <= adjustedCurrentStep;
   };
 
   return (
@@ -74,7 +85,13 @@ export function WizardNavigation() {
             <li key={step.number} className="flex items-center flex-1">
               <div className="flex items-center">
                 <button
-                  onClick={() => isClickable && goToStep(step.number)}
+                  onClick={() => {
+                    if (isClickable) {
+                      // Handle clicking on step 6 (Review) - go to step 7
+                      const targetStep = step.number === 6 ? 7 : step.number;
+                      goToStep(targetStep);
+                    }
+                  }}
                   disabled={!isClickable}
                   className={cn(
                     "flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors",
