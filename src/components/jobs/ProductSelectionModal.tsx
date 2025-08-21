@@ -40,6 +40,7 @@ interface ProductSelectionModalProps {
   endDate?: string | null;
   onProductSelect: (jobItems: import('@/contexts/JobWizardContext').JobItemSelection[]) => void;
   selectedProductId?: string;
+  existingJobItems?: import('@/contexts/JobWizardContext').JobItemSelection[];
 }
 
 export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
@@ -48,12 +49,18 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   startDate,
   endDate,
   onProductSelect,
-  selectedProductId
+  selectedProductId,
+  existingJobItems = []
 }) => {
   const [currentPage, setCurrentPage] = useState<'main' | 'tracked-units'>('main');
   const [selectedProductForTracking, setSelectedProductForTracking] = useState<Product | null>(null);
   const [selectedUnitsCollection, setSelectedUnitsCollection] = useState<UnitSelection[]>([]);
   const [bulkQuantities, setBulkQuantities] = useState<Record<string, number>>({});
+
+  // Get products that are already in the job to prevent duplicates
+  const existingProductIds = useMemo(() => {
+    return new Set(existingJobItems.map(item => item.product_id));
+  }, [existingJobItems]);
   
   // Reset state when modal closes
   useEffect(() => {
@@ -274,6 +281,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               bulkQuantities={bulkQuantities}
               onBulkQuantityChange={setBulkQuantities}
               selectedUnitsCollection={selectedUnitsCollection}
+              existingProductIds={existingProductIds}
             />
           ) : (
             <TrackedUnitsPage
@@ -417,6 +425,7 @@ interface ProductListPageProps {
   bulkQuantities: Record<string, number>;
   onBulkQuantityChange: (quantities: Record<string, number>) => void;
   selectedUnitsCollection: UnitSelection[];
+  existingProductIds: Set<string>;
 }
 
 const ProductListPage: React.FC<ProductListPageProps> = ({
@@ -426,7 +435,8 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
   onViewTrackedUnits,
   bulkQuantities,
   onBulkQuantityChange,
-  selectedUnitsCollection
+  selectedUnitsCollection,
+  existingProductIds
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState('all');
@@ -573,6 +583,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
                 onBulkSelect={() => onBulkSelect(product, bulkQuantities[product.id] || 1)}
                 onViewTrackedUnits={() => onViewTrackedUnits(product)}
                 selectedUnitsCollection={selectedUnitsCollection}
+                existingProductIds={existingProductIds}
               />
             ))}
           </div>
@@ -591,6 +602,7 @@ interface ProductCardProps {
   onBulkSelect: () => void;
   onViewTrackedUnits: () => void;
   selectedUnitsCollection: UnitSelection[];
+  existingProductIds: Set<string>;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -601,8 +613,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onQuantityChange,
   onBulkSelect,
   onViewTrackedUnits,
-  selectedUnitsCollection
+  selectedUnitsCollection,
+  existingProductIds
 }) => {
+  
+  // Check if this product is already in the job
+  const isAlreadyInJob = existingProductIds.has(product.id);
   
   const getMethodDisplayText = (method: string) => {
     switch (method) {
@@ -654,7 +670,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
 
   return (
-    <div className="relative p-4 rounded-lg border-2 transition-all hover:shadow-md border-border hover:border-primary/50">
+    <div className={`relative p-4 rounded-lg border-2 transition-all ${
+      isAlreadyInJob 
+        ? 'opacity-40 bg-muted/50 cursor-not-allowed border-muted' 
+        : 'hover:shadow-md border-border hover:border-primary/50'
+    }`}>
+      {/* Already in job overlay */}
+      {isAlreadyInJob && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg z-10">
+          <div className="text-center">
+            <div className="text-sm font-medium text-muted-foreground">Already in Job</div>
+            <div className="text-xs text-muted-foreground">Product already selected</div>
+          </div>
+        </div>
+      )}
+      
       {/* Product Image */}
       <div className="aspect-square w-full mb-3 bg-background rounded-lg flex items-center justify-center overflow-hidden">
         {product.image_url ? (
@@ -716,6 +746,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             value={quantity}
             onChange={(e) => onQuantityChange(Math.min(parseInt(e.target.value) || 1, remainingForBulk))}
             className="h-8 text-xs"
+            disabled={isAlreadyInJob}
           />
         </div>
 
@@ -728,7 +759,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               size="sm"
               className="w-full text-xs"
               onClick={onBulkSelect}
-              disabled={!availability.data || quantity <= 0 || quantity > remainingForBulk || remainingForBulk <= 0}
+              disabled={isAlreadyInJob || !availability.data || quantity <= 0 || quantity > remainingForBulk || remainingForBulk <= 0}
             >
               <Layers className="h-3 w-3 mr-1" />
               Add Bulk ({quantity})
@@ -741,6 +772,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               size="sm"
               className="w-full text-xs"
               onClick={onViewTrackedUnits}
+              disabled={isAlreadyInJob}
             >
               <Eye className="h-3 w-3 mr-1" />
               View Tracked Units ({availability.data.individual_items.length})
