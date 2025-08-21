@@ -139,6 +139,13 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">Select Vehicle</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Scheduled date: {selectedDate.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
         </DialogHeader>
 
         <div className="flex-1 flex flex-col overflow-hidden min-h-0">

@@ -1232,13 +1232,15 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                         <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                           <Truck className="h-5 w-5 text-white" />
                         </div>
-                        <div>
-                          <p className="font-medium">{data.scheduledVehicleForAll.license_plate}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model}
-                            {data.scheduledVehicleForAll.nickname && ` "${data.scheduledVehicleForAll.nickname}"`}
-                          </p>
-                        </div>
+                         <div>
+                           <p className="font-medium">
+                             {data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model}
+                             {data.scheduledVehicleForAll.nickname && ` "${data.scheduledVehicleForAll.nickname}"`}
+                           </p>
+                           <p className="text-sm text-muted-foreground">
+                             {data.scheduledVehicleForAll.license_plate}
+                           </p>
+                         </div>
                       </div>
                     </div>
                   )}
@@ -1335,11 +1337,11 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                 <Truck className="h-3 w-3" />
                                 <span className="text-xs">
                                   {data.useSameVehicleForAll && data.scheduledVehicleForAll 
-                                    ? data.scheduledVehicleForAll.license_plate
+                                    ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
                                     : individualAssignment?.vehicle
-                                    ? individualAssignment.vehicle.license_plate
+                                    ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make} ${individualAssignment.vehicle.model}`
                                     : assignedVehicle
-                                    ? assignedVehicle.license_plate
+                                    ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
                                     : 'Assign Vehicle'
                                   }
                                 </span>
