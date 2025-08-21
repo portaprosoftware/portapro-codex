@@ -255,6 +255,9 @@ export const DriverVehicleStep: React.FC = () => {
         <p className="text-muted-foreground">
           Assign drivers and vehicles for delivery, pickup, and partial pickup jobs
         </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Driver and vehicle selections are optional. You can skip this step and add them later.
+        </p>
       </div>
 
       <div className="grid gap-6">
