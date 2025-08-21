@@ -56,28 +56,31 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
             </Label>
             <Input
               id="draft-name"
-              placeholder="Enter a name for this draft..."
+              placeholder="Draft name..."
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
+              className="max-w-xs"
             />
           </div>
         </div>
 
-        <AlertDialogFooter className="flex-col gap-3 sm:flex-row sm:gap-2">
-          <AlertDialogCancel onClick={onClose}>
-            Continue Editing
-          </AlertDialogCancel>
-          <Button
-            onClick={handleSaveAndExit}
-            disabled={isSaving || !draftName.trim()}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? 'Saving...' : 'Save as Draft'}
-          </Button>
+        <AlertDialogFooter className="flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <AlertDialogCancel onClick={onClose}>
+              Continue Editing
+            </AlertDialogCancel>
+            <Button
+              onClick={handleSaveAndExit}
+              disabled={isSaving || !draftName.trim()}
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? 'Saving...' : 'Save as Draft'}
+            </Button>
+          </div>
           <AlertDialogAction
             onClick={onDeleteAndExit}
-            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white w-full"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete Progress
