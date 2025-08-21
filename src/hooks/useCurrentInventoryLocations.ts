@@ -145,8 +145,12 @@ export const useCurrentInventoryLocations = ({
           
           // If no product from direct relation, try to get from product_items
           if (!productName && assignment.product_items?.id) {
-            // We'll need the product name from the product_items relation
             productName = assignment.product_items.item_code || 'Unknown Product';
+          }
+          
+          // Fallback to job type if no product name available
+          if (!productName) {
+            productName = `${job.job_type} Equipment`;
           }
           
           const itemCode = assignment.product_items?.item_code || `${job.job_type} - Qty: ${assignment.quantity}`;
@@ -156,10 +160,13 @@ export const useCurrentInventoryLocations = ({
             hasProducts: !!assignment.products,
             hasProductItems: !!assignment.product_items,
             productName,
-            hasCoords: !!(latitude && longitude)
+            hasCoords: !!(latitude && longitude),
+            customerName: customer?.name,
+            locationName: location.location_name
           });
           
-          if (latitude && longitude && productName) {
+          // Include location if it has valid GPS coordinates, regardless of product info
+          if (latitude && longitude) {
             const inventoryLocation: InventoryLocation = {
               id: `${assignment.id}-${location.id}`,
               product_name: productName,
