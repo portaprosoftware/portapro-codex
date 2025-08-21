@@ -38,7 +38,7 @@ export const DriverVehicleStep: React.FC = () => {
     }
   }, [state.data.scheduled_date]);
 
-  // Generate assignment types based on job configuration
+  // Generate assignment types based on job configuration, sorted by date
   const assignmentTypes = useMemo((): AssignmentType[] => {
     const types: AssignmentType[] = [];
     
@@ -50,18 +50,6 @@ export const DriverVehicleStep: React.FC = () => {
       time: state.data.scheduled_time,
       isPriority: state.data.is_priority
     });
-
-    // Pickup assignment (if enabled)
-    if (state.data.create_pickup_job) {
-      types.push({
-        type: 'pickup',
-        label: 'Final Pickup',
-        date: state.data.pickup_date,
-        time: state.data.pickup_time,
-        notes: state.data.pickup_notes,
-        isPriority: state.data.pickup_is_priority
-      });
-    }
 
     // Partial pickup assignments (if enabled)
     if (state.data.create_partial_pickups && state.data.partial_pickups) {
@@ -78,7 +66,24 @@ export const DriverVehicleStep: React.FC = () => {
       });
     }
 
-    return types;
+    // Pickup assignment (if enabled) - add after partial pickups
+    if (state.data.create_pickup_job) {
+      types.push({
+        type: 'pickup',
+        label: 'Final Pickup',
+        date: state.data.pickup_date,
+        time: state.data.pickup_time,
+        notes: state.data.pickup_notes,
+        isPriority: state.data.pickup_is_priority
+      });
+    }
+
+    // Sort by date to show chronological order
+    return types.sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0;
+      const dateB = b.date ? new Date(b.date).getTime() : 0;
+      return dateA - dateB;
+    });
   }, [state.data]);
 
   // Load driver and vehicle names
