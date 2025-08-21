@@ -132,80 +132,76 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
       {/* Alert Banner for Overdue Jobs */}
       {overdueJobs > 0 && (
-        <Card className="border-destructive bg-destructive/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-              <div>
-                <p className="font-medium text-destructive">
-                  You have {overdueJobs} overdue service{overdueJobs > 1 ? 's' : ''}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Please contact us to reschedule or complete these services.
-                </p>
-              </div>
+        <div className="customer-portal-card border-l-4 border-red-500 bg-red-50/50 p-4">
+          <div className="flex items-center gap-3">
+            <div className="customer-portal-icon red">
+              <AlertCircle className="h-5 w-5" />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <p className="font-medium text-destructive">
+                You have {overdueJobs} overdue service{overdueJobs > 1 ? 's' : ''}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please contact us to reschedule or complete these services.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5" />
-          <CardContent className="relative p-6">
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Units on Site</p>
                 <p className="text-2xl font-bold">{unitsOnSite}</p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Package className="h-6 w-6 text-primary" />
+              <div className="customer-portal-icon blue">
+                <Package className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-warning/10 to-warning/5" />
-          <CardContent className="relative p-6">
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Next Service</p>
                 <p className="text-sm font-semibold leading-tight">{formatNextService()}</p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-warning/10 flex items-center justify-center">
-                <Wrench className="h-6 w-6 text-warning" />
+              <div className="customer-portal-icon orange">
+                <Wrench className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-500/5" />
-          <CardContent className="relative p-6">
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Open Requests</p>
                 <p className="text-2xl font-bold">{openRequests}</p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-blue-600" />
+              <div className="customer-portal-icon blue">
+                <Clock className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-destructive/10 to-destructive/5" />
-          <CardContent className="relative p-6">
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Balance Due</p>
                 <p className="text-2xl font-bold">${balanceDue.toLocaleString()}</p>
               </div>
-              <div className="h-12 w-12 rounded-lg bg-destructive/10 flex items-center justify-center">
-                <CreditCard className="h-6 w-6 text-destructive" />
+              <div className="customer-portal-icon red">
+                <CreditCard className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
@@ -213,17 +209,21 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
       </div>
 
       {/* Recent Activity */}
-      <Card>
+      <Card className="customer-portal-card border-0 shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <div className="customer-portal-icon blue w-8 h-8">
+              <Calendar className="h-4 w-4" />
+            </div>
             Recent Activity
           </CardTitle>
         </CardHeader>
         <CardContent>
           {recentJobs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <div className="customer-portal-icon blue w-12 h-12 mx-auto mb-4">
+                <Calendar className="h-6 w-6" />
+              </div>
               <p>No recent activity</p>
             </div>
           ) : (
@@ -234,10 +234,10 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
                 const displayDate = date ? new Date(date).toLocaleDateString() : 'N/A';
                 
                 return (
-                  <div key={job.id} className="flex items-center justify-between p-3 rounded-lg border">
+                  <div key={job.id} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-muted/30">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <StatusIcon className="h-5 w-5 text-primary" />
+                      <div className="customer-portal-icon green w-10 h-10">
+                        <StatusIcon className="h-5 w-5" />
                       </div>
                       <div>
                         <p className="font-medium capitalize">{job.job_type}</p>

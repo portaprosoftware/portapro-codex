@@ -348,7 +348,7 @@ export const SupportTab: React.FC<SupportTabProps> = ({ customerId }) => {
             {tickets.map((ticket) => {
               const StatusIcon = getStatusIcon(ticket.status);
               return (
-                <Card key={ticket.id} className="hover:shadow-md transition-shadow">
+                <Card key={ticket.id} className="customer-portal-card border-0 shadow-none hover:transform hover:-translate-y-1 transition-all duration-200">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">

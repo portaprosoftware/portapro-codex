@@ -215,7 +215,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
             {invoices.map((invoice) => {
               const StatusIcon = getInvoiceStatusIcon(invoice.status);
               return (
-                <Card key={invoice.id} className="hover:shadow-md transition-shadow">
+                <Card key={invoice.id} className="customer-portal-card border-0 shadow-none hover:transform hover:-translate-y-1 transition-all duration-200">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">

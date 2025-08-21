@@ -157,7 +157,7 @@ export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {unitsData.map((unit) => (
-            <Card key={unit.id} className="hover:shadow-md transition-shadow">
+            <Card key={unit.id} className="customer-portal-card border-0 shadow-none hover:transform hover:-translate-y-1 transition-all duration-200">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
