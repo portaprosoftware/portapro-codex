@@ -57,6 +57,10 @@ export interface JobWizardData {
     expandedDays?: Set<string>;
     scheduledDriverForAll?: any;
     scheduledVehicleForAll?: any;
+    package_override?: {
+      enabled: boolean;
+      amount: number;
+    };
   };
 
   // Pickup job details (when scheduling delivery + pickup)

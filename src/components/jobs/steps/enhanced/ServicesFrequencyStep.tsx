@@ -77,6 +77,11 @@ interface ServicesFrequencyData {
     }
   };
   expandedDays?: Set<string>;
+  // Package override
+  package_override?: {
+    enabled: boolean;
+    amount: number;
+  };
 }
 
 interface ServicesFrequencyStepProps {
@@ -188,9 +193,14 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       sum + service.calculated_cost, 0
     );
     
+    // Use package override if enabled, otherwise use calculated subtotal
+    const finalSubtotal = data.package_override?.enabled 
+      ? data.package_override.amount 
+      : calculatedSubtotal;
+    
     onUpdate({
       ...data,
-      servicesSubtotal: calculatedSubtotal
+      servicesSubtotal: finalSubtotal
     });
   };
 
@@ -637,6 +647,30 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     onUpdate({
       ...data,
       selectedServices: updatedServices
+    });
+  };
+
+  const updatePackageOverride = (enabled: boolean, amount?: number) => {
+    const updatedData = {
+      ...data,
+      package_override: enabled ? {
+        enabled: true,
+        amount: amount || 0
+      } : undefined
+    };
+    
+    // Recalculate subtotal immediately
+    const calculatedSubtotal = data.selectedServices.reduce((sum, service) => 
+      sum + service.calculated_cost, 0
+    );
+    
+    const finalSubtotal = enabled && amount !== undefined
+      ? amount 
+      : calculatedSubtotal;
+    
+    onUpdate({
+      ...updatedData,
+      servicesSubtotal: finalSubtotal
     });
   };
 
@@ -1141,11 +1175,72 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                 <DollarSign className="w-5 h-5" />
                 <span>Services Subtotal</span>
               </span>
-              <span>${data.servicesSubtotal.toFixed(2)}</span>
+              <div className="flex items-center space-x-2">
+                {data.package_override?.enabled && (
+                  <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0">
+                    Package Deal
+                  </Badge>
+                )}
+                <span>${data.servicesSubtotal.toFixed(2)}</span>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Services summary content can go here if needed */}
+            {/* Package Override Controls */}
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-3">
+                    <Switch
+                      id="package-override"
+                      checked={data.package_override?.enabled || false}
+                      onCheckedChange={(checked) => {
+                        const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
+                        updatePackageOverride(checked, checked ? calculatedSubtotal : undefined);
+                      }}
+                    />
+                    <Label htmlFor="package-override" className="text-sm font-medium">
+                      Set package price for all services
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground ml-9">
+                    Override the calculated total with a custom package price. Individual service schedules remain unchanged.
+                  </p>
+                </div>
+              </div>
+              {data.package_override?.enabled && (
+                <div className="ml-6 space-y-3 p-3 bg-muted/30 rounded-lg">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Calculated subtotal:</span>
+                      <span className="line-through">
+                        ${data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="package-amount" className="text-sm font-medium">Package Price</Label>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={data.package_override.amount || 0}
+                          onChange={(e) => {
+                            const newAmount = parseFloat(e.target.value) || 0;
+                            updatePackageOverride(true, newAmount);
+                          }}
+                          className="flex-1"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Replaces calculated line totals. Visits are still scheduled; billing uses this total.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
