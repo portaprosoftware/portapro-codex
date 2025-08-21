@@ -186,7 +186,9 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         startDate={startDate}
         endDate={endDate}
         onProductSelect={(jobItems) => {
-          onChange?.(jobItems);
+          // Merge new selections with existing items instead of replacing
+          const updatedItems = [...(value || []), ...jobItems];
+          onChange?.(updatedItems);
         }}
       />
     </div>
