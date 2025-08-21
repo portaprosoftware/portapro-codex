@@ -9,7 +9,7 @@ interface StorageSitesLayoutProps {
 export const StorageSitesLayout: React.FC<StorageSitesLayoutProps> = ({ children, onAddStorage }) => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 pb-6 max-w-7xl">
+      <div className="max-w-none px-6 py-6 space-y-6">
         <StorageSitesNavigation onAddStorage={onAddStorage} />
         {children}
       </div>

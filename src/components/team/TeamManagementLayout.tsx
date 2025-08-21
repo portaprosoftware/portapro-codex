@@ -7,9 +7,11 @@ interface TeamManagementLayoutProps {
 
 export const TeamManagementLayout: React.FC<TeamManagementLayoutProps> = ({ children }) => {
   return (
-    <div className="max-w-none px-4 md:px-6 py-6 min-h-screen bg-gray-50">
-      <TeamManagementNavigation />
-      {children}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
+        <TeamManagementNavigation />
+        {children}
+      </div>
     </div>
   );
 };
