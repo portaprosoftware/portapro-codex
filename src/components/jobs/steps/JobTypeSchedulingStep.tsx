@@ -198,8 +198,9 @@ export function JobTypeSchedulingStep() {
                 <CalendarComponent
                   mode="single"
                   selected={state.data.scheduled_date ? (() => {
+                    // Create a Date object at noon local time to avoid timezone issues
                     const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
-                    return new Date(year, month - 1, day);
+                    return new Date(year, month - 1, day, 12, 0, 0);
                   })() : undefined}
                   onSelect={handleDateSelect}
                   disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
