@@ -227,42 +227,9 @@ export const PickupInventoryAllocationSelector: React.FC<PickupInventoryAllocati
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {/* Main Pickup Allocation */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Final Pickup</Label>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateMainPickupQuantity(productId, Math.max(0, getMainPickupQuantity(productId) - 1))}
-                      disabled={getMainPickupQuantity(productId) <= 0}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <Input
-                      type="number"
-                      min="0"
-                      max={deliveryQty}
-                      value={getMainPickupQuantity(productId)}
-                      onChange={(e) => updateMainPickupQuantity(productId, parseInt(e.target.value) || 0)}
-                      className="w-20 text-center"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateMainPickupQuantity(productId, getMainPickupQuantity(productId) + 1)}
-                      disabled={remainingQty <= 0 && getMainPickupQuantity(productId) >= deliveryQty}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm text-muted-foreground ml-2">units</span>
-                  </div>
-                </div>
-
-                {/* Partial Pickup Allocations */}
+                {/* Partial Pickup Allocations First (Chronological Order) */}
                 {partialPickups.map((pickup, index) => (
                   <div key={pickup.id} className="space-y-2">
-                    <Separator />
                     <Label className="text-sm font-medium">
                       Partial Pickup #{index + 1}
                       {pickup.date && (
@@ -298,8 +265,44 @@ export const PickupInventoryAllocationSelector: React.FC<PickupInventoryAllocati
                       </Button>
                       <span className="text-sm text-muted-foreground ml-2">units</span>
                     </div>
+                    {index < partialPickups.length - 1 && <Separator />}
                   </div>
                 ))}
+
+                {/* Separator between partial and final pickup if there are partial pickups */}
+                {partialPickups.length > 0 && <Separator />}
+
+                {/* Final Pickup Allocation Last */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Final Pickup</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateMainPickupQuantity(productId, Math.max(0, getMainPickupQuantity(productId) - 1))}
+                      disabled={getMainPickupQuantity(productId) <= 0}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Input
+                      type="number"
+                      min="0"
+                      max={deliveryQty}
+                      value={getMainPickupQuantity(productId)}
+                      onChange={(e) => updateMainPickupQuantity(productId, parseInt(e.target.value) || 0)}
+                      className="w-20 text-center"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateMainPickupQuantity(productId, getMainPickupQuantity(productId) + 1)}
+                      disabled={remainingQty <= 0 && getMainPickupQuantity(productId) >= deliveryQty}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-sm text-muted-foreground ml-2">units</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           );
