@@ -41,7 +41,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader className="space-y-4">
           <AlertDialogTitle>Save Your Job Progress?</AlertDialogTitle>
           <AlertDialogDescription>
