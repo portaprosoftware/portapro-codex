@@ -60,7 +60,7 @@ const initialState: JobWizardState = {
     selected_coordinate_ids: [],
     scheduled_time: null,
     return_date: null,
-    rental_duration_days: 0,
+    rental_duration_days: 1,
     rental_duration_hours: 0,
     is_priority: false,
     items: [],
@@ -154,9 +154,8 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         if (state.data.job_type === 'delivery') {
           const days = state.data.rental_duration_days || 0;
-          const hours = state.data.rental_duration_hours || 0;
-          if (days === 0 && hours === 0) {
-            errors.rental_duration = 'Please specify rental duration (minimum 1 hour)';
+          if (days < 1) {
+            errors.rental_duration = 'Please specify rental duration (minimum 1 day)';
           }
         }
         break;

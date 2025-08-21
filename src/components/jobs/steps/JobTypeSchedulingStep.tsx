@@ -81,13 +81,8 @@ export function JobTypeSchedulingStep() {
 
   const handleRentalDurationChange = (field: 'days' | 'hours', value: number) => {
     const updates: any = {
-      [`rental_duration_${field}`]: Math.max(0, value)
+      [`rental_duration_${field}`]: field === 'days' ? Math.max(1, value) : Math.max(0, value)
     };
-    
-    // Auto-set hours to 8 when days is set to 0 and hours is currently 0
-    if (field === 'days' && value === 0 && (state.data.rental_duration_hours || 0) === 0) {
-      updates.rental_duration_hours = 8;
-    }
     
     updateData(updates);
   };
@@ -275,29 +270,61 @@ export function JobTypeSchedulingStep() {
               
               <Card>
                 <CardContent className="p-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Days</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        value={state.data.rental_duration_days || 0}
-                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 0)}
-                        className="text-center"
+                  {/* Days - Always visible and primary */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Days</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={state.data.rental_duration_days || 1}
+                      onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
+                      className="text-center"
+                    />
+                  </div>
+
+                  {/* Track hours toggle */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={state.data.rental_duration_hours > 0}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            updateData({ rental_duration_hours: 1 });
+                          } else {
+                            updateData({ rental_duration_hours: 0 });
+                          }
+                        }}
                       />
+                      <Label className="text-sm font-medium">Track hours (&lt;24h)</Label>
                     </div>
-                    
+                  </div>
+
+                  {/* Hours input - only shown when toggle is ON */}
+                  {state.data.rental_duration_hours > 0 && (
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Hours</Label>
+                      <Label className="text-sm font-medium">Hours (1-23)</Label>
                       <Input
                         type="number"
-                        min="0"
+                        min="1"
                         max="23"
-                        value={state.data.rental_duration_hours || 0}
-                        onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 0)}
+                        value={state.data.rental_duration_hours || 1}
+                        onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
                         className="text-center"
                       />
                     </div>
+                  )}
+
+                  {/* Pricing helper text */}
+                  <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
+                    <p>
+                      <span className="font-medium">Pricing:</span>{' '}
+                      {state.data.rental_duration_days >= 1 && state.data.rental_duration_hours > 0
+                        ? "Daily rate applies for 1+ days (hours ignored)"
+                        : state.data.rental_duration_days >= 1
+                        ? "Daily rate × days"
+                        : "Hourly rate applies only when days = 0"
+                      }
+                    </p>
                   </div>
                   
                   {state.data.return_date && (
