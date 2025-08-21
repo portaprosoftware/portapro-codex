@@ -334,7 +334,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         {services.length > 0 && (
           <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">Service Assignment Schedule</h3>
+              <h3 className="font-medium">Main Job Assignments</h3>
               <div className="text-xs text-muted-foreground">
                 {servicesData?.groupAssignmentsByDay ? 'Grouped by day' : 'Individual assignments'}
               </div>
@@ -431,63 +431,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           </div>
         )}
 
-        {/* Job Assignments */}
-        {(driverName || vehicleDetails) && (
-          <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
-            <h3 className="font-medium">Initial Job Assignments</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="text-sm font-medium">Driver</div>
-                {driverName && driverName !== 'No driver assigned' && driverName !== 'Unknown Driver' ? (
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                        {driverName.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">{driverName}</p>
-                        <p className="text-xs text-muted-foreground">Assigned</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">No driver assigned</p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <div className="text-sm font-medium">Vehicle</div>
-                {vehicleDetails ? (
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0M15 17a2 2 0 104 0" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">{vehicleDetails}</p>
-                        <p className="text-xs text-muted-foreground">Assigned</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">No vehicle assigned</p>
-                  </div>
-                )}
-              </div>
-            </div>
-            {d.create_daily_assignment && (
-              <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded">
-                <strong>Note:</strong> Daily driver and vehicle assignment will be created automatically for this job date.
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Job Total */}
