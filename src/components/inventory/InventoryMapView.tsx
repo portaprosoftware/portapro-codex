@@ -200,31 +200,15 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
     );
   }
 
-  if (!inventoryLocations?.length) {
-    console.log('🗺️ InventoryMapView: Showing no data screen', {
-      hasInventoryLocations: !!inventoryLocations,
-      inventoryLocationsLength: inventoryLocations?.length,
-      hasMap: !!map,
-      mapLoading,
-      isLoading,
-      dateRange
-    });
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">No inventory locations found</p>
-          <p className="text-sm text-gray-500">Equipment locations will appear here when items are assigned to jobs with addresses</p>
-          <p className="text-xs text-gray-400 mt-2">
-            To see locations on the map: Create jobs → Assign products to jobs → Add customer addresses with GPS coordinates
-          </p>
-          <p className="text-xs mt-2 text-gray-400">
-            Debug: Map={!!map ? 'Ready' : 'Not Ready'}, Data={inventoryLocations?.length || 0} locations
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Always render the map container, show overlay message when no data
+  console.log('🗺️ InventoryMapView: Rendering map container', {
+    hasInventoryLocations: !!inventoryLocations,
+    inventoryLocationsLength: inventoryLocations?.length,
+    hasMap: !!map,
+    mapLoading,
+    isLoading,
+    dateRange
+  });
 
   return (
     <div className="space-y-4">
@@ -290,7 +274,21 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
           ref={mapContainer} 
           className="absolute inset-0 w-full h-full" 
           style={{ minHeight: '384px', minWidth: '100%' }}
-        />
+         />
+
+      {/* No Data Overlay */}
+      {!inventoryLocations?.length && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm">
+          <div className="text-center">
+            <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">No inventory locations found</p>
+            <p className="text-sm text-gray-500 mt-2">Equipment locations will appear here when items are assigned to jobs with addresses</p>
+            <p className="text-xs text-gray-400 mt-2">
+              To see locations: Create jobs → Assign products → Add customer addresses with GPS coordinates
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Equipment Status Legend - Horizontal at bottom */}
       <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3">
@@ -307,7 +305,7 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
             </div>
           </div>
           <p className="text-xs text-gray-500">
-            {inventoryLocations.length} locations
+            {inventoryLocations?.length || 0} locations
           </p>
         </div>
       </div>
