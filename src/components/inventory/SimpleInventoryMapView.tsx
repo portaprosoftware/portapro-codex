@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCurrentInventoryLocations } from '@/hooks/useCurrentInventoryLocations';
-import { useInventoryMapboxInitializer } from '@/hooks/useInventoryMapboxInitializer';
-import { useInventoryMarkerManager, InventoryLocation } from '@/hooks/useInventoryMarkerManager';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Satellite, Map as MapIcon, X, Package } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface SimpleInventoryMapViewProps {
   searchQuery?: string;
@@ -15,34 +13,29 @@ interface SimpleInventoryMapViewProps {
 }
 
 export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
-  searchQuery,
-  selectedLocationId,
-  selectedProductType
+  searchQuery = '',
+  selectedLocationId = 'all',
+  selectedProductType = 'all'
 }) => {
+  console.log('🟢 SIMPLE MAP VIEW: Component rendering');
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  
+  const [mapboxToken, setMapboxToken] = useState<string>('');
+  const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
-  const [selectedLocation, setSelectedLocation] = useState<InventoryLocation | null>(null);
-  
-  const { map, mapContainer, isLoading, error } = useInventoryMapboxInitializer();
-  
-  const { 
-    data: inventoryLocations = [], 
-    isLoading: isLoadingData,
-    error: dataError 
-  } = useCurrentInventoryLocations({
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Fetch current deployed inventory data
+  const { data: inventoryLocations = [], isLoading: dataLoading, error: dataError } = useCurrentInventoryLocations({
     searchQuery,
     selectedLocationId,
     selectedProductType
   });
 
-  console.log('🟢 SIMPLE MAP VIEW: Component rendering');
   console.log('📊 Inventory locations:', inventoryLocations);
-
-  // Use the marker manager hook
-  useInventoryMarkerManager({
-    map,
-    locations: inventoryLocations,
-    onLocationSelect: setSelectedLocation
-  });
 
   // Calculate status counts for legend
   const statusCounts = inventoryLocations.reduce((counts, location) => {
@@ -52,18 +45,166 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
 
   const totalInventory = inventoryLocations.reduce((total, location) => total + location.quantity, 0);
 
+  // Get Mapbox token
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const response = await fetch(`https://unpnuonbndubcuzxfnmg.supabase.co/functions/v1/get-mapbox-token`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucG51b25ibmR1YmN1enhmbm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzkyMjgsImV4cCI6MjA2NDcxNTIyOH0.goME2hFzqxm0tnFdXAB_0evuiueh8wWfGLIY1vvvqmE`
+          }
+        });
+        const data = await response.json();
+        if (data.token) {
+          setMapboxToken(data.token);
+          console.log('🗺️ Mapbox token received');
+        } else {
+          const stored = localStorage.getItem('mapbox-token');
+          if (stored) setMapboxToken(stored);
+        }
+      } catch (error) {
+        console.error('🗺️ Token fetch error:', error);
+        const stored = localStorage.getItem('mapbox-token');
+        if (stored) setMapboxToken(stored);
+      }
+      setLoading(false);
+    };
+    getToken();
+  }, []);
+
+  // Initialize map
+  useEffect(() => {
+    if (!mapboxToken || !mapContainer.current || map.current) return;
+
+    console.log('🗺️ Initializing Mapbox map...');
+    mapboxgl.accessToken = mapboxToken;
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: mapStyle === 'satellite' 
+        ? 'mapbox://styles/mapbox/satellite-v9'
+        : 'mapbox://styles/mapbox/streets-v12',
+      center: [-81.6944, 41.4993], // Cleveland, Ohio coordinates
+      zoom: 9,
+      attributionControl: false
+    });
+
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+
+    map.current.on('load', () => {
+      console.log('🗺️ Map loaded successfully!');
+      setMapLoaded(true);
+    });
+
+    return () => {
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+      setMapLoaded(false);
+    };
+  }, [mapboxToken]);
+
   // Update map style when changed
   useEffect(() => {
-    if (map && mapStyle) {
-      const styleUrl = mapStyle === 'satellite' 
-        ? 'mapbox://styles/mapbox/satellite-v9'
-        : 'mapbox://styles/mapbox/streets-v12';
-      
-      map.setStyle(styleUrl);
+    if (map.current && mapboxToken) {
+      const styleUrl = mapStyle === 'streets' 
+        ? 'mapbox://styles/mapbox/streets-v12' 
+        : 'mapbox://styles/mapbox/satellite-streets-v12';
+      map.current.setStyle(styleUrl);
     }
-  }, [map, mapStyle]);
+  }, [mapStyle, mapboxToken]);
 
-  // Helper function to get status colors (matching useInventoryMarkerManager)
+  // Create markers directly in component (proven approach)
+  useEffect(() => {
+    if (!map.current || !mapLoaded || !inventoryLocations.length) {
+      console.log('📍 Markers: Waiting for map and data...', {
+        hasMap: !!map.current,
+        mapLoaded,
+        locationsCount: inventoryLocations.length
+      });
+      return;
+    }
+
+    console.log('📍 Creating markers for', inventoryLocations.length, 'locations');
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    const statusColors = {
+      assigned: '#3b82f6',
+      delivered: '#10b981', 
+      in_service: '#f59e0b',
+      maintenance: '#ef4444',
+      available: '#6b7280'
+    };
+
+    // Calculate bounds for all locations
+    const bounds = new mapboxgl.LngLatBounds();
+    
+    inventoryLocations.forEach((location, index) => {
+      bounds.extend([location.longitude, location.latitude]);
+      
+      // Create marker element with STATIC approach (proven to work)
+      const pinElement = document.createElement('div');
+      pinElement.style.cssText = `
+        width: 32px;
+        height: 32px;
+        background-color: ${statusColors[location.status as keyof typeof statusColors] || statusColors.available};
+        border: 2px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        user-select: none;
+      `;
+      
+      pinElement.textContent = location.quantity > 1 ? location.quantity.toString() : (index + 1).toString();
+      
+      // Add click handler with stopPropagation (proven pattern)
+      pinElement.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSelectedLocation(location);
+      });
+
+      // Create and add marker with static properties
+      const marker = new mapboxgl.Marker({
+        element: pinElement,
+        anchor: 'center',
+        draggable: false,
+        rotation: 0,
+        rotationAlignment: 'map',
+        pitchAlignment: 'map'
+      })
+      .setLngLat([location.longitude, location.latitude])
+      .addTo(map.current!);
+
+      markersRef.current.push(marker);
+    });
+
+    // Fit map to show all markers with padding
+    if (!bounds.isEmpty()) {
+      map.current.fitBounds(bounds, { 
+        padding: 80,
+        maxZoom: 15
+      });
+    }
+
+    console.log('📍 Created', markersRef.current.length, 'markers successfully');
+
+  }, [map.current, mapLoaded, inventoryLocations]);
+
+  // Helper function to get status colors
   const getStatusColor = (status: string) => {
     const colors = {
       assigned: '#3b82f6',
@@ -75,19 +216,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
     return colors[status as keyof typeof colors] || colors.available;
   };
 
-  // Handle errors
-  if (error) {
-    return (
-      <Card className="p-6">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-destructive">Map Error</h3>
-          <p className="text-muted-foreground">{error}</p>
-        </div>
-      </Card>
-    );
-  }
-
-  if (isLoading) {
+  if (loading) {
     return (
       <Card className="p-6">
         <div className="flex items-center justify-center h-[500px]">
@@ -95,6 +224,28 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading map...</p>
           </div>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!mapboxToken) {
+    return (
+      <Card className="p-6">
+        <div className="flex flex-col items-center justify-center gap-4 h-[500px]">
+          <div>Enter Mapbox Token:</div>
+          <input 
+            type="text" 
+            placeholder="Mapbox token..."
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                const token = (e.target as HTMLInputElement).value;
+                localStorage.setItem('mapbox-token', token);
+                setMapboxToken(token);
+              }
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-md"
+          />
         </div>
       </Card>
     );
@@ -152,7 +303,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
       </div>
       
       {/* Loading overlay */}
-      {isLoadingData && (
+      {dataLoading && (
         <div className="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg flex items-center justify-center z-20">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -206,7 +357,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                 <div>
                   <span className="font-medium">Phone:</span> {selectedLocation.customer_phone}
                 </div>
-              )}
+                )}
             </div>
           </Card>
         </div>
