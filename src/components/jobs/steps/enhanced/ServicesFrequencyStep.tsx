@@ -1362,7 +1362,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   Group Assignments by Day
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {data.groupAssignmentsByDay 
                   ? "Assign drivers and vehicles once per date. All services on that day will use the same assignments. Expand any day to override assignments for specific services."
                   : "Assign drivers and vehicles for each service separately. Use this view if different services on the same day require different assignments."
