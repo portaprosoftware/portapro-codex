@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
-import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText } from 'lucide-react';
+import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File } from 'lucide-react';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
@@ -9,6 +8,7 @@ import { CustomerJobsTab } from './CustomerJobsTab';
 import { CustomerFinancialTab } from './CustomerFinancialTab';
 import { CustomerCommunicationTab } from './CustomerCommunicationTab';
 import { CustomerServiceReportsTab } from './CustomerServiceReportsTab';
+import { CustomerDocumentsTab } from './CustomerDocumentsTab';
 
 interface Customer {
   id: string;
@@ -63,6 +63,8 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
         return <CustomerFinancialTab customerId={customer.id} />;
       case 'communication':
         return <CustomerCommunicationTab customerId={customer.id} />;
+      case 'documents':
+        return <CustomerDocumentsTab customerId={customer.id} />;
       default:
         return <CustomerInfoPanel customer={customer} />;
     }
@@ -128,6 +130,14 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
           >
             <MessageSquare className="w-4 h-4" />
             Communication
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#documents" 
+            isActive={activeTab === 'documents'}
+            onClick={() => setActiveTab('documents')}
+          >
+            <File className="w-4 h-4" />
+            Documents
           </TabNav.Item>
         </TabNav>
       </div>

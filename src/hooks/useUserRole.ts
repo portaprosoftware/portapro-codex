@@ -1,47 +1,22 @@
-import { useUser } from "@clerk/clerk-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { UserRole } from "@/types";
 
-export const useUserRole = () => {
-  const { user, isLoaded } = useUser();
+import { useUser } from '@clerk/clerk-react';
 
-  const { data: roleData, isLoading: roleLoading } = useQuery({
-    queryKey: ['user-role', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('clerk_user_id', user.id)
-        .maybeSingle();
-      
-      return data?.role as UserRole || null;
-    },
-    enabled: !!user?.id && isLoaded,
-  });
+export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | 'unknown';
 
-  const role = roleData;
-  const isAdmin = role === "admin";
-  const isDispatcher = role === "dispatcher";
-  const isDriver = role === "driver";
+export function useUserRole() {
+  const { user } = useUser();
 
-  // Admin level access (admin + dispatcher)
-  const hasAdminAccess = isAdmin || isDispatcher;
+  const role = (user?.publicMetadata?.role as AppRole) || 'unknown';
 
-  // Staff level access (admin + dispatcher + driver)
-  const hasStaffAccess = isAdmin || isDispatcher || isDriver;
+  const isOwner = role === 'owner';
+  const isDispatcher = role === 'dispatcher';
+  const canViewCustomerDocs = isOwner || isDispatcher;
 
   return {
     role,
-    isOwner: isAdmin, // Keep for backward compatibility
-    isAdmin,
+    isOwner,
     isDispatcher,
-    isDriver,
-    hasAdminAccess,
-    hasStaffAccess,
-    user,
-    isLoaded: isLoaded && !roleLoading,
+    canViewCustomerDocs,
+    userId: user?.id || null,
   };
-};
+}

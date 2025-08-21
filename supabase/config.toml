@@ -1,52 +1,8 @@
+
 project_id = "unpnuonbndubcuzxfnmg"
-
-[functions.mapbox-geocoding]
-verify_jwt = false
-
-[functions.get-mapbox-token]
-verify_jwt = false
-
-[functions.generate-enhanced-pdf]
-verify_jwt = true
-
-[functions.run-scheduled-reports]
-verify_jwt = false
-
-[functions.generate-customer-email]
-verify_jwt = false
-
-[functions.send-marketing-campaign]
-verify_jwt = false
-
-[functions.process-scheduled-campaigns]
-verify_jwt = false
-
-[functions.fleet-writes]
-verify_jwt = false
 
 [functions.fleet-docs]
 verify_jwt = false
 
-[functions.check-driver-expirations]
-verify_jwt = false
-
-[functions.validate-document]
-verify_jwt = false
-
-[functions.send-bulk-reminders]
-verify_jwt = false
-
-[functions.export-compliance-data]
-verify_jwt = false
-
-[functions.get-compliance-stats]
-verify_jwt = false
-
-[functions.get-report-filters]
-verify_jwt = false
-
-[functions.generate-custom-report]
-verify_jwt = false
-
-[functions.get-expiration-forecast]
+[functions.customer-docs]
 verify_jwt = false
