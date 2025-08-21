@@ -128,65 +128,65 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
 
       {/* Financial Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-              </div>
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Invoiced</p>
-                <p className="text-lg font-semibold">
+                <p className="text-2xl font-bold">
                   {formatCurrency(financialSummary?.totalInvoiced || 0)}
                 </p>
               </div>
+              <div className="customer-portal-icon blue">
+                <TrendingUp className="h-6 w-6" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              </div>
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Paid</p>
-                <p className="text-lg font-semibold">
+                <p className="text-2xl font-bold">
                   {formatCurrency(financialSummary?.totalPaid || 0)}
                 </p>
               </div>
+              <div className="customer-portal-icon green">
+                <CheckCircle className="h-6 w-6" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-yellow-600" />
-              </div>
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Outstanding</p>
-                <p className="text-lg font-semibold">
+                <p className="text-2xl font-bold">
                   {formatCurrency(financialSummary?.outstanding || 0)}
                 </p>
               </div>
+              <div className="customer-portal-icon orange">
+                <DollarSign className="h-6 w-6" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              </div>
+        <Card className="customer-portal-card border-0 shadow-none">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Overdue</p>
-                <p className="text-lg font-semibold">
+                <p className="text-2xl font-bold">
                   {formatCurrency(financialSummary?.overdue || 0)}
                 </p>
+              </div>
+              <div className="customer-portal-icon red">
+                <AlertCircle className="h-6 w-6" />
               </div>
             </div>
           </CardContent>
