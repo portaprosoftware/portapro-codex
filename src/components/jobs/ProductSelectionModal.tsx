@@ -370,7 +370,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
           
           {/* Availability */}
-          <div className="space-y-1 mt-2">
+          <div className="space-y-2 mt-2">
             {availability.isLoading ? (
               <Badge variant="outline" className="text-xs">
                 Loading...
@@ -386,7 +386,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
               </Badge>
             )}
-            
+
+            {/* Breakdown (works for bulk-only and hybrid tracked products) */}
+            {availability.data?.breakdown && (
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span>Available Tracked</span>
+                  <span className="font-medium text-foreground">{availability.data.breakdown.available_tracked ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Available Bulk Pool</span>
+                  <span className="font-medium text-foreground">{availability.data.breakdown.bulk_pool ?? 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>On Job</span>
+                  <span className="font-medium text-foreground">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Maintenance</span>
+                  <span className="font-medium text-foreground">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
+                </div>
+              </div>
+            )}
+
             {availability.data?.method && availability.data.method !== 'stock_total' && (
               <div className="text-xs text-muted-foreground">
                 {getMethodDisplayText(availability.data.method)}

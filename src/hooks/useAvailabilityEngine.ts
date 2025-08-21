@@ -14,11 +14,22 @@ export interface AvailabilityUnit {
   } | null;
 }
 
+interface AvailabilityBreakdown {
+  bulk_pool: number;
+  available_tracked: number;
+  assigned_tracked: number;
+  maintenance_tracked: number;
+  bulk_assigned: number;
+}
+
 interface AvailabilityResult {
   available: number;
   total: number;
   method: string;
   individual_items?: AvailabilityUnit[];
+  breakdown?: AvailabilityBreakdown;
+  bulk_assigned?: number;
+  specific_assigned?: number;
 }
 
 export function useAvailabilityEngine(
@@ -49,7 +60,10 @@ export function useAvailabilityEngine(
         available: Number(avail.available) || 0,
         total: Number(avail.total) || 0,
         method: String(avail.method || 'stock_total'),
-        individual_items: Array.isArray(avail.individual_items) ? avail.individual_items as AvailabilityUnit[] : [],
+        individual_items: Array.isArray(avail.individual_items) ? (avail.individual_items as AvailabilityUnit[]) : [],
+        breakdown: typeof avail.breakdown === 'object' && avail.breakdown !== null ? (avail.breakdown as AvailabilityBreakdown) : undefined,
+        bulk_assigned: Number(avail.bulk_assigned) || 0,
+        specific_assigned: Number(avail.specific_assigned) || 0,
       };
     },
     enabled: !!productId && !!start,
