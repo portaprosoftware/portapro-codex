@@ -43,11 +43,15 @@ export function TrackedUnitsSelectionModal({
     units.forEach(unit => {
       if (unit.attributes) {
         Object.entries(unit.attributes).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && key !== 'winterized') {
-            if (!variations[key]) {
-              variations[key] = new Set();
+          // Only include non-empty, non-null values and exclude winterized boolean
+          if (value !== null && value !== undefined && value !== '' && key !== 'winterized') {
+            const stringValue = String(value).trim();
+            if (stringValue) { // Ensure the trimmed string is not empty
+              if (!variations[key]) {
+                variations[key] = new Set();
+              }
+              variations[key].add(stringValue);
             }
-            variations[key].add(String(value));
           }
         });
       }
