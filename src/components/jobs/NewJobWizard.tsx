@@ -273,7 +273,9 @@ function WizardContent({ onClose }: { onClose: () => void }) {
               onClick={() => {
                 console.log('Close wizard clicked, current data:', state.data);
                 console.log('Has any data?', Object.keys(state.data).length > 0);
+                console.log('Setting showExitConfirmation to true');
                 setShowExitConfirmation(true);
+                console.log('showExitConfirmation should now be:', true);
               }}
             >
               Close Wizard
@@ -308,7 +310,10 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       
       <JobExitConfirmation
         isOpen={showExitConfirmation}
-        onClose={() => setShowExitConfirmation(false)}
+        onClose={() => {
+          console.log('JobExitConfirmation onClose called');
+          setShowExitConfirmation(false);
+        }}
         onSaveAndExit={handleSaveAndExit}
         onDeleteAndExit={handleDeleteAndExit}
         isSaving={isSaving}
