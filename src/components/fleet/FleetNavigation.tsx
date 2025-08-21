@@ -88,7 +88,7 @@ export const FleetNavigation: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mx-6 mt-6 mb-6">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
