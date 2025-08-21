@@ -330,28 +330,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           )}
         </div>
 
-        {/* Itemized Service Assignments */}
-        {services.length > 0 && (
-          <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium">Itemized Service Assignments</h3>
-            </div>
-            
-            <div className="space-y-2">
-              {services.map((service: any, index: number) => (
-                <div key={service.id || index} className="border rounded-lg p-3">
-                  <div className="font-medium text-sm">{service.name || service.service_code || 'Service'}</div>
-                  {service.frequency && (
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {getFrequencyLabel(service)} • {formatCurrency(Number(service.calculated_cost || 0))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Pickup Summary */}
         {(d.create_pickup_job || d.create_partial_pickups) && (
           <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
