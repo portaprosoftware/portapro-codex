@@ -693,7 +693,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
               <span>Driver & Vehicle Assignment</span>
             </CardTitle>
             <CardDescription>
-              Configure driver and vehicle assignments for all service jobs
+              You can assign a driver and vehicle for service jobs now, or leave this blank and let dispatch schedule later
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -709,7 +709,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   <Label htmlFor="same-driver" className="font-medium">
                     Schedule same driver for all services
                     {data.scheduledDriverForAll && (
-                      <span className="text-muted-foreground ml-2">
+                      <span className="text-primary font-semibold ml-2">
                         ({data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name})
                       </span>
                     )}
@@ -753,7 +753,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   <Label htmlFor="same-vehicle" className="font-medium">
                     Schedule same vehicle for all services
                     {data.scheduledVehicleForAll && (
-                      <span className="text-muted-foreground ml-2">
+                      <span className="text-primary font-semibold ml-2">
                         ({data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model})
                       </span>
                     )}
