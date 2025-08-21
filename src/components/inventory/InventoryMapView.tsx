@@ -284,9 +284,13 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
         />
       </div>
 
-      {/* Map Container */}
-      <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
-        <div ref={mapContainer} className="absolute inset-0" />
+      {/* Map Container - Always render with proper dimensions */}
+      <div className="relative w-full h-96 rounded-lg overflow-hidden bg-gray-100 border">
+        <div 
+          ref={mapContainer} 
+          className="absolute inset-0 w-full h-full" 
+          style={{ minHeight: '384px', minWidth: '100%' }}
+        />
 
       {/* Equipment Status Legend - Horizontal at bottom */}
       <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3">

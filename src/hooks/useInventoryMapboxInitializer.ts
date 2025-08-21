@@ -57,17 +57,18 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
       hasContainer: !!mapContainer.current,
       hasToken: !!mapboxToken,
       showTokenInput,
-      tokenLength: mapboxToken?.length
+      tokenLength: mapboxToken?.length,
+      containerElement: mapContainer.current
     });
 
     if (!mapContainer.current) {
-      console.log('🗺️ useInventoryMapboxInitializer: No map container, skipping initialization');
+      console.log('🗺️ useInventoryMapboxInitializer: No map container, waiting...');
       setIsLoading(false);
       return;
     }
 
     if (!mapboxToken) {
-      console.log('🗺️ useInventoryMapboxInitializer: No mapbox token, skipping initialization');
+      console.log('🗺️ useInventoryMapboxInitializer: No mapbox token, waiting...');
       setIsLoading(false);
       return;
     }
