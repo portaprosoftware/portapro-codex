@@ -65,7 +65,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
         </div>
 
         <AlertDialogFooter className="flex flex-col gap-2">
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <AlertDialogCancel onClick={onClose}>
               Continue Editing
             </AlertDialogCancel>
