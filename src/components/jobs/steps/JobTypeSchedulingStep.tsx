@@ -576,30 +576,6 @@ export function JobTypeSchedulingStep() {
                   <CardContent className="p-6 space-y-6">
                     <div className="flex items-center justify-between">
                       <Label className="text-lg font-semibold">Partial Pickup Schedule</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const currentPartials = state.data.partial_pickups || [];
-                          updateData({
-                            partial_pickups: [
-                              ...currentPartials,
-                              {
-                                id: crypto.randomUUID(),
-                                date: '',
-                                time: null,
-                                notes: '',
-                                is_priority: false
-                              }
-                            ]
-                          });
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add Another Partial Pickup
-                      </Button>
                     </div>
 
                     {state.data.partial_pickups.map((partial, index) => (
@@ -741,6 +717,37 @@ export function JobTypeSchedulingStep() {
           )}
         </div>
       )}
+
+      {/* Add Another Partial Pickup Button - Visible between cards and summary */}
+      {state.data.create_pickup_job && state.data.create_partial_pickups && state.data.partial_pickups && (
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const currentPartials = state.data.partial_pickups || [];
+              updateData({
+                partial_pickups: [
+                  ...currentPartials,
+                  {
+                    id: crypto.randomUUID(),
+                    date: '',
+                    time: null,
+                    notes: '',
+                    is_priority: false
+                  }
+                ]
+              });
+            }}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Another Partial Pickup
+          </Button>
+        </div>
+      )}
+
 
       {/* Summary */}
       {state.data.job_type && state.data.scheduled_date && (
