@@ -435,36 +435,152 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   const handleDriverSelect = (driver: any) => {
     if (selectedDayForAssignment) {
-      // Day-level assignment
+      // Day-level assignment - update day assignments AND individual service assignments for that day
       const currentDayAssignments = data.dayAssignments || {};
-      onUpdate({
-        ...data,
-        dayAssignments: {
-          ...currentDayAssignments,
-          [selectedDayForAssignment]: {
-            ...currentDayAssignments[selectedDayForAssignment],
-            driver
+      const currentIndividualAssignments = data.individualServiceAssignments || {};
+      
+      // Update day assignment
+      const updatedDayAssignments = {
+        ...currentDayAssignments,
+        [selectedDayForAssignment]: {
+          ...currentDayAssignments[selectedDayForAssignment],
+          driver
+        }
+      };
+      
+      // Update individual service assignments for all services on this day
+      const updatedIndividualAssignments = { ...currentIndividualAssignments };
+      
+      // Find all services that have visits on this day
+      data.selectedServices.forEach(service => {
+        const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+        const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+        
+        let perVisitCost = 0;
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+
+        const calculation = calculateServiceVisits({
+          startDate,
+          endDate,
+          frequency: service.frequency,
+          customFrequencyDays: service.custom_frequency_days,
+          customDaysOfWeek: service.custom_days_of_week,
+          customSpecificDates: service.custom_specific_dates,
+          includeDropoffService: service.include_dropoff_service,
+          includePickupService: service.include_pickup_service,
+          perVisitCost,
+          serviceTime: '09:00',
+          timezone: 'America/New_York'
+        });
+
+        // Check if this service has a visit on the selected day
+        const hasVisitOnDay = calculation.visits.some(visit => {
+          const visitDateKey = format(visit.date, 'yyyy-MM-dd');
+          return visitDateKey === selectedDayForAssignment;
+        });
+
+        if (hasVisitOnDay) {
+          if (!updatedIndividualAssignments[service.id]) {
+            updatedIndividualAssignments[service.id] = {};
           }
+          
+          updatedIndividualAssignments[service.id][selectedDayForAssignment] = {
+            ...updatedIndividualAssignments[service.id][selectedDayForAssignment],
+            driver
+          };
         }
       });
-    } else if (selectedServiceId && selectedDateKey) {
-      // Individual service date assignment
-      const currentAssignments = data.individualServiceAssignments || {};
-      const serviceAssignments = currentAssignments[selectedServiceId] || {};
-      const dateAssignment = serviceAssignments[selectedDateKey] || {};
       
       onUpdate({
         ...data,
-        individualServiceAssignments: {
-          ...currentAssignments,
-          [selectedServiceId]: {
-            ...serviceAssignments,
-            [selectedDateKey]: {
-              ...dateAssignment,
-              driver
-            }
+        dayAssignments: updatedDayAssignments,
+        individualServiceAssignments: updatedIndividualAssignments
+      });
+    } else if (selectedServiceId && selectedDateKey) {
+      // Individual service date assignment - update individual assignments and check for day consolidation
+      const currentAssignments = data.individualServiceAssignments || {};
+      const currentDayAssignments = data.dayAssignments || {};
+      const serviceAssignments = currentAssignments[selectedServiceId] || {};
+      const dateAssignment = serviceAssignments[selectedDateKey] || {};
+      
+      const updatedIndividualAssignments = {
+        ...currentAssignments,
+        [selectedServiceId]: {
+          ...serviceAssignments,
+          [selectedDateKey]: {
+            ...dateAssignment,
+            driver
           }
         }
+      };
+
+      // Check if all services on this day now have the same driver assignment
+      const servicesOnDay = data.selectedServices.filter(service => {
+        const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+        const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+        
+        let perVisitCost = 0;
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+
+        const calculation = calculateServiceVisits({
+          startDate,
+          endDate,
+          frequency: service.frequency,
+          customFrequencyDays: service.custom_frequency_days,
+          customDaysOfWeek: service.custom_days_of_week,
+          customSpecificDates: service.custom_specific_dates,
+          includeDropoffService: service.include_dropoff_service,
+          includePickupService: service.include_pickup_service,
+          perVisitCost,
+          serviceTime: '09:00',
+          timezone: 'America/New_York'
+        });
+
+        return calculation.visits.some(visit => {
+          const visitDateKey = format(visit.date, 'yyyy-MM-dd');
+          return visitDateKey === selectedDateKey;
+        });
+      });
+
+      // Check if all services on this day have the same driver
+      const allHaveSameDriver = servicesOnDay.every(service => {
+        const serviceAssignment = updatedIndividualAssignments[service.id]?.[selectedDateKey];
+        return serviceAssignment?.driver?.id === driver.id;
+      });
+
+      let updatedDayAssignments = { ...currentDayAssignments };
+      if (allHaveSameDriver && servicesOnDay.length > 0) {
+        // Consolidate to day-level assignment
+        updatedDayAssignments[selectedDateKey] = {
+          ...updatedDayAssignments[selectedDateKey],
+          driver
+        };
+      }
+      
+      onUpdate({
+        ...data,
+        individualServiceAssignments: updatedIndividualAssignments,
+        dayAssignments: updatedDayAssignments
       });
     } else {
       // Global assignment
@@ -477,36 +593,152 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   const handleVehicleSelect = (vehicle: any) => {
     if (selectedDayForAssignment) {
-      // Day-level assignment
+      // Day-level assignment - update day assignments AND individual service assignments for that day
       const currentDayAssignments = data.dayAssignments || {};
-      onUpdate({
-        ...data,
-        dayAssignments: {
-          ...currentDayAssignments,
-          [selectedDayForAssignment]: {
-            ...currentDayAssignments[selectedDayForAssignment],
-            vehicle
+      const currentIndividualAssignments = data.individualServiceAssignments || {};
+      
+      // Update day assignment
+      const updatedDayAssignments = {
+        ...currentDayAssignments,
+        [selectedDayForAssignment]: {
+          ...currentDayAssignments[selectedDayForAssignment],
+          vehicle
+        }
+      };
+      
+      // Update individual service assignments for all services on this day
+      const updatedIndividualAssignments = { ...currentIndividualAssignments };
+      
+      // Find all services that have visits on this day
+      data.selectedServices.forEach(service => {
+        const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+        const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+        
+        let perVisitCost = 0;
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+
+        const calculation = calculateServiceVisits({
+          startDate,
+          endDate,
+          frequency: service.frequency,
+          customFrequencyDays: service.custom_frequency_days,
+          customDaysOfWeek: service.custom_days_of_week,
+          customSpecificDates: service.custom_specific_dates,
+          includeDropoffService: service.include_dropoff_service,
+          includePickupService: service.include_pickup_service,
+          perVisitCost,
+          serviceTime: '09:00',
+          timezone: 'America/New_York'
+        });
+
+        // Check if this service has a visit on the selected day
+        const hasVisitOnDay = calculation.visits.some(visit => {
+          const visitDateKey = format(visit.date, 'yyyy-MM-dd');
+          return visitDateKey === selectedDayForAssignment;
+        });
+
+        if (hasVisitOnDay) {
+          if (!updatedIndividualAssignments[service.id]) {
+            updatedIndividualAssignments[service.id] = {};
           }
+          
+          updatedIndividualAssignments[service.id][selectedDayForAssignment] = {
+            ...updatedIndividualAssignments[service.id][selectedDayForAssignment],
+            vehicle
+          };
         }
       });
-    } else if (selectedServiceId && selectedDateKey) {
-      // Individual service date assignment
-      const currentAssignments = data.individualServiceAssignments || {};
-      const serviceAssignments = currentAssignments[selectedServiceId] || {};
-      const dateAssignment = serviceAssignments[selectedDateKey] || {};
       
       onUpdate({
         ...data,
-        individualServiceAssignments: {
-          ...currentAssignments,
-          [selectedServiceId]: {
-            ...serviceAssignments,
-            [selectedDateKey]: {
-              ...dateAssignment,
-              vehicle
-            }
+        dayAssignments: updatedDayAssignments,
+        individualServiceAssignments: updatedIndividualAssignments
+      });
+    } else if (selectedServiceId && selectedDateKey) {
+      // Individual service date assignment - update individual assignments and check for day consolidation
+      const currentAssignments = data.individualServiceAssignments || {};
+      const currentDayAssignments = data.dayAssignments || {};
+      const serviceAssignments = currentAssignments[selectedServiceId] || {};
+      const dateAssignment = serviceAssignments[selectedDateKey] || {};
+      
+      const updatedIndividualAssignments = {
+        ...currentAssignments,
+        [selectedServiceId]: {
+          ...serviceAssignments,
+          [selectedDateKey]: {
+            ...dateAssignment,
+            vehicle
           }
         }
+      };
+
+      // Check if all services on this day now have the same vehicle assignment
+      const servicesOnDay = data.selectedServices.filter(service => {
+        const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+        const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+        
+        let perVisitCost = 0;
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+
+        const calculation = calculateServiceVisits({
+          startDate,
+          endDate,
+          frequency: service.frequency,
+          customFrequencyDays: service.custom_frequency_days,
+          customDaysOfWeek: service.custom_days_of_week,
+          customSpecificDates: service.custom_specific_dates,
+          includeDropoffService: service.include_dropoff_service,
+          includePickupService: service.include_pickup_service,
+          perVisitCost,
+          serviceTime: '09:00',
+          timezone: 'America/New_York'
+        });
+
+        return calculation.visits.some(visit => {
+          const visitDateKey = format(visit.date, 'yyyy-MM-dd');
+          return visitDateKey === selectedDateKey;
+        });
+      });
+
+      // Check if all services on this day have the same vehicle
+      const allHaveSameVehicle = servicesOnDay.every(service => {
+        const serviceAssignment = updatedIndividualAssignments[service.id]?.[selectedDateKey];
+        return serviceAssignment?.vehicle?.id === vehicle.id;
+      });
+
+      let updatedDayAssignments = { ...currentDayAssignments };
+      if (allHaveSameVehicle && servicesOnDay.length > 0) {
+        // Consolidate to day-level assignment
+        updatedDayAssignments[selectedDateKey] = {
+          ...updatedDayAssignments[selectedDateKey],
+          vehicle
+        };
+      }
+      
+      onUpdate({
+        ...data,
+        individualServiceAssignments: updatedIndividualAssignments,
+        dayAssignments: updatedDayAssignments
       });
     } else {
       // Global assignment
@@ -682,8 +914,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     const { type, serviceId, dateKey, dayKey } = overrideToRemove;
 
     if (dayKey) {
-      // Remove day-level override
+      // Remove day-level override - also remove from individual service assignments
       const currentDayAssignments = data.dayAssignments || {};
+      const currentIndividualAssignments = data.individualServiceAssignments || {};
       const dayAssignment = currentDayAssignments[dayKey] || {};
       
       const updatedDayAssignment = { ...dayAssignment };
@@ -693,7 +926,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         delete updatedDayAssignment.vehicle;
       }
       
-      // If no assignments left, remove the entire day entry
+      // Update day assignments
       const hasAssignments = updatedDayAssignment.driver || updatedDayAssignment.vehicle;
       const newDayAssignments = { ...currentDayAssignments };
       
@@ -703,13 +936,43 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         delete newDayAssignments[dayKey];
       }
       
+      // Also remove from individual service assignments for all services on this day
+      const updatedIndividualAssignments = { ...currentIndividualAssignments };
+      
+      data.selectedServices.forEach(service => {
+        if (updatedIndividualAssignments[service.id]?.[dayKey]) {
+          const serviceAssignment = { ...updatedIndividualAssignments[service.id][dayKey] };
+          
+          if (type === 'driver') {
+            delete serviceAssignment.driver;
+          } else {
+            delete serviceAssignment.vehicle;
+          }
+          
+          // If no assignments left for this service-date, remove it
+          const hasServiceAssignments = serviceAssignment.driver || serviceAssignment.vehicle;
+          if (hasServiceAssignments) {
+            updatedIndividualAssignments[service.id][dayKey] = serviceAssignment;
+          } else {
+            delete updatedIndividualAssignments[service.id][dayKey];
+            
+            // If no dates left for this service, remove the entire service entry
+            if (Object.keys(updatedIndividualAssignments[service.id]).length === 0) {
+              delete updatedIndividualAssignments[service.id];
+            }
+          }
+        }
+      });
+      
       onUpdate({
         ...data,
-        dayAssignments: newDayAssignments
+        dayAssignments: newDayAssignments,
+        individualServiceAssignments: updatedIndividualAssignments
       });
     } else if (serviceId && dateKey) {
-      // Remove individual service override
+      // Remove individual service override - check if day-level assignment needs to be updated
       const currentAssignments = data.individualServiceAssignments || {};
+      const currentDayAssignments = data.dayAssignments || {};
       const serviceAssignments = currentAssignments[serviceId] || {};
       const dateAssignment = serviceAssignments[dateKey] || {};
       
@@ -720,7 +983,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         delete updatedDateAssignment.vehicle;
       }
       
-      // If no assignments left, remove the entire date entry
+      // Update individual assignments
       const hasAssignments = updatedDateAssignment.driver || updatedDateAssignment.vehicle;
       const newServiceAssignments = { ...serviceAssignments };
       
@@ -740,9 +1003,73 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         delete newIndividualAssignments[serviceId];
       }
       
+      // Check if we need to update day-level assignment
+      // If no services on this day have individual overrides for this type, remove day override
+      const servicesOnDay = data.selectedServices.filter(service => {
+        const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+        const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+        
+        let perVisitCost = 0;
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+
+        const calculation = calculateServiceVisits({
+          startDate,
+          endDate,
+          frequency: service.frequency,
+          customFrequencyDays: service.custom_frequency_days,
+          customDaysOfWeek: service.custom_days_of_week,
+          customSpecificDates: service.custom_specific_dates,
+          includeDropoffService: service.include_dropoff_service,
+          includePickupService: service.include_pickup_service,
+          perVisitCost,
+          serviceTime: '09:00',
+          timezone: 'America/New_York'
+        });
+
+        return calculation.visits.some(visit => {
+          const visitDateKey = format(visit.date, 'yyyy-MM-dd');
+          return visitDateKey === dateKey;
+        });
+      });
+
+      const anyServiceHasOverride = servicesOnDay.some(service => {
+        const serviceAssignment = newIndividualAssignments[service.id]?.[dateKey];
+        return type === 'driver' ? serviceAssignment?.driver : serviceAssignment?.vehicle;
+      });
+
+      let updatedDayAssignments = { ...currentDayAssignments };
+      if (!anyServiceHasOverride && updatedDayAssignments[dateKey]) {
+        // Remove the day-level override for this type
+        const dayAssignment = { ...updatedDayAssignments[dateKey] };
+        if (type === 'driver') {
+          delete dayAssignment.driver;
+        } else {
+          delete dayAssignment.vehicle;
+        }
+        
+        // If no assignments left, remove the entire day entry
+        const hasDayAssignments = dayAssignment.driver || dayAssignment.vehicle;
+        if (hasDayAssignments) {
+          updatedDayAssignments[dateKey] = dayAssignment;
+        } else {
+          delete updatedDayAssignments[dateKey];
+        }
+      }
+      
       onUpdate({
         ...data,
-        individualServiceAssignments: newIndividualAssignments
+        individualServiceAssignments: newIndividualAssignments,
+        dayAssignments: updatedDayAssignments
       });
     }
 
