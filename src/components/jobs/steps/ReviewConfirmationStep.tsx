@@ -352,6 +352,61 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           </div>
         )}
 
+        {/* Pickup Summary */}
+        {(d.create_pickup_job || d.create_partial_pickups) && (
+          <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">Pickup Summary</h3>
+            </div>
+            
+            {/* Main Pickup Job */}
+            {d.create_pickup_job && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Final Pickup</h4>
+                <div className="border rounded-lg p-3">
+                  <div className="font-medium text-sm">
+                    Date: {d.pickup_date ? new Date(d.pickup_date).toLocaleDateString() : 'Not set'}
+                  </div>
+                  {d.pickup_time && (
+                    <div className="text-xs text-muted-foreground mt-1">Time: {d.pickup_time}</div>
+                  )}
+                  {d.pickup_is_priority && (
+                    <div className="text-xs text-orange-600 font-medium mt-1">Priority Job</div>
+                  )}
+                  {d.pickup_notes && (
+                    <div className="text-xs text-muted-foreground mt-1">Notes: {d.pickup_notes}</div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Partial Pickups */}
+            {d.create_partial_pickups && d.partial_pickups && d.partial_pickups.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Partial Pickups</h4>
+                <div className="space-y-2">
+                  {d.partial_pickups.map((pickup, index) => (
+                    <div key={pickup.id} className="border rounded-lg p-3">
+                      <div className="font-medium text-sm">
+                        Partial Pickup #{index + 1}: {new Date(pickup.date).toLocaleDateString()}
+                      </div>
+                      {pickup.time && (
+                        <div className="text-xs text-muted-foreground mt-1">Time: {pickup.time}</div>
+                      )}
+                      {pickup.is_priority && (
+                        <div className="text-xs text-orange-600 font-medium mt-1">Priority</div>
+                      )}
+                      {pickup.notes && (
+                        <div className="text-xs text-muted-foreground mt-1">Notes: {pickup.notes}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
 
       {/* Job Total */}
