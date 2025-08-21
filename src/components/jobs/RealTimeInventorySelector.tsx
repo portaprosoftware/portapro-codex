@@ -156,13 +156,19 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="font-medium">{getProductName(item.product_id)}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {item.strategy === 'bulk' ? (
-                        `Quantity: ${item.quantity} (Bulk Selection)`
-                      ) : (
-                        `${item.quantity} Specific Units: ${getUnitDisplay(item.specific_item_ids || [])}`
-                      )}
-                    </div>
+                     <div className="text-sm text-muted-foreground">
+                       {item.strategy === 'bulk' ? (
+                         `Quantity: ${item.quantity} (Bulk Selection)`
+                       ) : item.bulk_additional ? (
+                         <>
+                           <div>{item.specific_item_ids?.length || 0} Specific Units: {getUnitDisplay(item.specific_item_ids || [])}</div>
+                           <div>+ {item.bulk_additional} Additional Bulk Units</div>
+                           <div className="font-medium text-primary">Total: {item.quantity} units</div>
+                         </>
+                       ) : (
+                         `${item.quantity} Specific Units: ${getUnitDisplay(item.specific_item_ids || [])}`
+                       )}
+                     </div>
                   </div>
                   <Button
                     variant="ghost"

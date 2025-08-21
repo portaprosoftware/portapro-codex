@@ -6,6 +6,7 @@ export interface JobItemSelection {
   strategy: 'bulk' | 'specific';
   specific_item_ids?: string[];
   attributes?: Record<string, string | boolean>;
+  bulk_additional?: number; // Additional bulk units when mixing specific + bulk
 }
 
 export interface JobWizardData {
