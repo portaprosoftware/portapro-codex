@@ -21,6 +21,59 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
   const [itemConflicts, setItemConflicts] = useState<ItemConflict[]>([]);
   const [driverConflict, setDriverConflict] = useState<string | null>(null);
   const [vehicleConflict, setVehicleConflict] = useState<string | null>(null);
+  
+  // State for readable names
+  const [customerName, setCustomerName] = useState<string>('');
+  const [driverName, setDriverName] = useState<string>('');
+  const [vehicleDetails, setVehicleDetails] = useState<string>('');
+
+  // Auto-enable daily assignments when both driver and vehicle are present
+  useEffect(() => {
+    if (d.driver_id && d.vehicle_id && !d.create_daily_assignment) {
+      updateData({ create_daily_assignment: true });
+    }
+  }, [d.driver_id, d.vehicle_id, d.create_daily_assignment, updateData]);
+
+  // Fetch readable names
+  useEffect(() => {
+    const fetchNames = async () => {
+      // Fetch customer name
+      if (d.customer_id) {
+        const { data: customer } = await supabase
+          .from('customers')
+          .select('name')
+          .eq('id', d.customer_id)
+          .maybeSingle();
+        setCustomerName(customer?.name || 'Unknown Customer');
+      }
+
+      // Fetch driver name
+      if (d.driver_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('clerk_user_id', d.driver_id)
+          .maybeSingle();
+        if (profile) {
+          setDriverName(`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Unknown Driver');
+        }
+      }
+
+      // Fetch vehicle details
+      if (d.vehicle_id) {
+        const { data: vehicle } = await supabase
+          .from('vehicles')
+          .select('year, make, model, license_plate')
+          .eq('id', d.vehicle_id)
+          .maybeSingle();
+        if (vehicle) {
+          setVehicleDetails(`${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.model || ''} (${vehicle.license_plate || 'No Plate'})`.trim());
+        }
+      }
+    };
+
+    fetchNames();
+  }, [d.customer_id, d.driver_id, d.vehicle_id]);
 
   const startDate = d.scheduled_date || '';
   const endDate = d.return_date || d.scheduled_date || '';
@@ -140,30 +193,17 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Basics</h3>
-          <div>Customer: <span className="font-mono text-xs">{d.customer_id || '—'}</span></div>
+          <div>Customer: {customerName || d.customer_id || '—'}</div>
           <div>Type: {d.job_type || '—'}</div>
           <div>Date: {d.scheduled_date || '—'}{d.return_date ? ` → ${d.return_date}` : ''}</div>
           <div>Time: {d.scheduled_time || '—'} ({d.timezone})</div>
         </div>
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Assignments</h3>
-          <div>Driver: <span className="font-mono text-xs">{d.driver_id || '—'}</span></div>
+          <div>Driver: {driverName || d.driver_id || '—'}</div>
           {driverConflict && <div className="text-xs text-red-600">{driverConflict}</div>}
-          <div>Vehicle: <span className="font-mono text-xs">{d.vehicle_id || '—'}</span></div>
+          <div>Vehicle: {vehicleDetails || d.vehicle_id || '—'}</div>
           {vehicleConflict && <div className="text-xs text-red-600">{vehicleConflict}</div>}
-        </div>
-        <div className="rounded-lg border p-3 space-y-1 md:col-span-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="h-4 w-4"
-              checked={!!d.create_daily_assignment}
-              onChange={(e) => updateData({ create_daily_assignment: e.currentTarget.checked })}
-              disabled={!d.driver_id || !d.vehicle_id || !!driverConflict || !!vehicleConflict}
-            />
-            <span>Create daily driver + vehicle assignment for {startDate || 'selected date'}</span>
-          </label>
-          <p className="text-xs text-muted-foreground">Prevents double-booking and helps track mileage.</p>
         </div>
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
