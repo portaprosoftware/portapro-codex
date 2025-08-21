@@ -3341,6 +3341,33 @@ export type Database = {
         }
         Relationships: []
       }
+      job_drafts: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          job_data: Json
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          job_data?: Json
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          job_data?: Json
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       job_equipment_assignments: {
         Row: {
           assigned_at: string
