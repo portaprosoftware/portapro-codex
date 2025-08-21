@@ -127,7 +127,11 @@ export function JobTypeSchedulingStep() {
         }
         
         const returnDateString = formatDateForQuery(returnDateTime);
-        updateData({ return_date: returnDateString });
+        updateData({ 
+          return_date: returnDateString,
+          // Automatically set pickup_date to the same as return_date
+          pickup_date: returnDateString
+        });
       }
     }
   }, [state.data.scheduled_date, state.data.scheduled_time, state.data.rental_duration_days, state.data.rental_duration_hours, state.data.job_type, updateData]);
@@ -461,48 +465,27 @@ export function JobTypeSchedulingStep() {
           {state.data.create_pickup_job && (
             <Card>
               <CardContent className="p-6 space-y-6">
-                {/* Pickup Date */}
+                {/* Pickup Date - Auto-calculated */}
                 <div className="space-y-4">
                   <Label className="text-base font-medium">Pickup Date</Label>
-                  <div className="flex justify-center">
-                    <Card className="overflow-hidden w-fit">
-                      <CardContent className="p-4">
-                        <CalendarComponent
-                          mode="single"
-                          selected={state.data.pickup_date ? (() => {
-                            const [year, month, day] = state.data.pickup_date.split('-').map(Number);
-                            return new Date(year, month - 1, day, 12, 0, 0);
-                          })() : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              const formattedDate = formatDateForQuery(date);
-                              updateData({ pickup_date: formattedDate });
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="text-center">
+                        <div className="text-lg font-semibold">
+                          {(() => {
+                            if (state.data.scheduled_date && state.data.return_date) {
+                              const returnDate = new Date(state.data.return_date);
+                              return format(returnDate, 'EEEE, MMMM do, yyyy');
                             }
-                          }}
-                          disabled={(date) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            // Disable dates before today and before delivery date
-                            const deliveryDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : today;
-                            return date < today || date < deliveryDate;
-                          }}
-                          className="rounded-none border-0 mx-auto pointer-events-auto
-                            [&_.rdp-months]:w-fit
-                            [&_.rdp-month]:w-fit
-                            [&_.rdp-table]:w-fit
-                            [&_.rdp-caption]:text-lg [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-3 [&_.rdp-caption]:px-4
-                            [&_.rdp-nav]:gap-2 [&_.rdp-nav_button]:h-8 [&_.rdp-nav_button]:w-8 [&_.rdp-nav_button]:rounded-lg [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
-                            [&_.rdp-head_cell]:p-2 [&_.rdp-head_cell]:text-sm [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-10
-                            [&_.rdp-cell]:p-0.5
-                            [&_.rdp-day]:h-10 [&_.rdp-day]:w-10 [&_.rdp-day]:text-sm [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-lg [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
-                            [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-amber-500 [&_.rdp-day_selected]:to-amber-600 [&_.rdp-day_selected]:text-white [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl
-                            [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
-                            [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
-                            [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent [&_.rdp-day_disabled]:hover:scale-100"
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
+                            return 'Pickup date will be calculated based on delivery date and rental duration';
+                          })()}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Automatically calculated from delivery date + rental duration
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
                 {/* Pickup Time */}
