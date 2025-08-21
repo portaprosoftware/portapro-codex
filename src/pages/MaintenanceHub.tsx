@@ -3,27 +3,24 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TabNav } from "@/components/ui/TabNav";
 import { Button } from "@/components/ui/button";
-import { OverviewTab } from "@/components/maintenance/OverviewTab";
 import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
 import { ReportTemplatesTab } from "@/components/maintenance/ReportTemplatesTab";
 import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
-import { ScheduleServiceModal } from "@/components/maintenance/ScheduleServiceModal";
 import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export default function MaintenanceHub() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'catalog' | 'templates' | 'records'>('overview');
-  const [showScheduleService, setShowScheduleService] = useState(false);
+  const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('records');
   const [showLogPastService, setShowLogPastService] = useState(false);
 
   // Set the active tab based on URL params
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tab = urlParams.get('tab');
-    if (tab && ['overview', 'catalog', 'templates', 'records'].includes(tab)) {
-      setActiveTab(tab as 'overview' | 'catalog' | 'templates' | 'records');
+    if (tab && ['catalog', 'templates', 'records'].includes(tab)) {
+      setActiveTab(tab as 'catalog' | 'templates' | 'records');
     }
   }, [location.search]);
 
@@ -46,13 +43,6 @@ export default function MaintenanceHub() {
                 <Calendar className="w-4 h-4 mr-2" />
                 Log Past Service
               </Button>
-              <Button 
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto"
-                onClick={() => setShowScheduleService(true)}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Schedule Service
-              </Button>
             </div>
           </div>
           
@@ -61,11 +51,11 @@ export default function MaintenanceHub() {
             <div className="enterprise-tabs">
               <TabNav ariaLabel="Services views">
                 <TabNav.Item 
-                  to="/maintenance-hub?tab=overview" 
-                  isActive={activeTab === 'overview'}
-                  onClick={() => setActiveTab('overview')}
+                  to="/maintenance-hub?tab=records" 
+                  isActive={activeTab === 'records'}
+                  onClick={() => setActiveTab('records')}
                 >
-                  Overview
+                  Records
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/maintenance-hub?tab=catalog" 
@@ -81,13 +71,6 @@ export default function MaintenanceHub() {
                 >
                   Templates
                 </TabNav.Item>
-                <TabNav.Item 
-                  to="/maintenance-hub?tab=records" 
-                  isActive={activeTab === 'records'}
-                  onClick={() => setActiveTab('records')}
-                >
-                  Records
-                </TabNav.Item>
               </TabNav>
             </div>
           </div>
@@ -96,13 +79,6 @@ export default function MaintenanceHub() {
 
       {/* Content Area */}
       <div className="space-y-6">
-        {activeTab === 'overview' && (
-          <OverviewTab 
-            onScheduleService={() => setShowScheduleService(true)}
-            onLogPastService={() => setShowLogPastService(true)}
-          />
-        )}
-
         {activeTab === 'catalog' && (
           <ServiceCatalogTab />
         )}
@@ -117,11 +93,6 @@ export default function MaintenanceHub() {
       </div>
 
       {/* Modals */}
-      <ScheduleServiceModal
-        isOpen={showScheduleService}
-        onClose={() => setShowScheduleService(false)}
-      />
-      
       <LogPastServiceModal
         isOpen={showLogPastService}
         onClose={() => setShowLogPastService(false)}
