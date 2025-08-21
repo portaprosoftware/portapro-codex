@@ -1425,18 +1425,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
             <div className="pt-6 border-t space-y-3">
               <div className="flex items-center space-x-2">
                 <Button
-                  variant={!data.groupAssignmentsByDay ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => onUpdate({
-                    ...data,
-                    groupAssignmentsByDay: false,
-                    expandedDays: new Set() // Reset expanded days when toggling
-                  })}
-                  className="w-56"
-                >
-                  Group Assignments by Service
-                </Button>
-                <Button
                   variant={data.groupAssignmentsByDay ? "default" : "outline"}
                   size="sm"
                   onClick={() => onUpdate({
@@ -1447,6 +1435,18 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   className="w-56"
                 >
                   Group Assignments by Day
+                </Button>
+                <Button
+                  variant={!data.groupAssignmentsByDay ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => onUpdate({
+                    ...data,
+                    groupAssignmentsByDay: false,
+                    expandedDays: new Set() // Reset expanded days when toggling
+                  })}
+                  className="w-56"
+                >
+                  Group Assignments by Service
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">

@@ -112,7 +112,7 @@ const initialState: JobWizardState = {
       servicesSubtotal: 0,
       useSameDriverForAll: false,
       useSameVehicleForAll: false,
-      groupAssignmentsByDay: false,
+      groupAssignmentsByDay: true,
       dayAssignments: {},
       individualServiceAssignments: {},
       expandedDays: new Set()
