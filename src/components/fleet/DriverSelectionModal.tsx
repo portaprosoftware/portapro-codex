@@ -135,10 +135,10 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "available": return "bg-green-500/10 text-green-700 border-green-200";
-      case "scheduled": return "bg-yellow-500/10 text-yellow-700 border-yellow-200";
-      case "busy": return "bg-red-500/10 text-red-700 border-red-200";
-      default: return "bg-gray-500/10 text-gray-700 border-gray-200";
+      case "available": return "bg-gradient-to-r from-green-500 to-green-600 text-white border-0";
+      case "scheduled": return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0";
+      case "busy": return "bg-gradient-to-r from-red-500 to-red-600 text-white border-0";
+      default: return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
     }
   };
 
@@ -197,6 +197,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("all")}
+                className={statusFilter === "all" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
               >
                 All ({filteredDrivers.length})
               </Button>
@@ -204,6 +205,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "available" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("available")}
+                className={statusFilter === "available" ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" : ""}
               >
                 Available ({driversWithDetails.filter(d => d.status === "available").length})
               </Button>
@@ -211,6 +213,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "scheduled" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("scheduled")}
+                className={statusFilter === "scheduled" ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0" : ""}
               >
                 Scheduled ({driversWithDetails.filter(d => d.status === "scheduled").length})
               </Button>
@@ -218,6 +221,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "busy" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("busy")}
+                className={statusFilter === "busy" ? "bg-gradient-to-r from-red-500 to-red-600 text-white border-0" : ""}
               >
                 Busy ({driversWithDetails.filter(d => d.status === "busy").length})
               </Button>
@@ -256,7 +260,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                           </h3>
                           <Badge 
                             variant="outline" 
-                            className={`text-xs ${getStatusColor(driver.status)}`}
+                            className={`text-xs font-medium ${getStatusColor(driver.status)}`}
                           >
                             {getStatusText(driver.status)}
                           </Badge>
@@ -270,10 +274,10 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
 
                         {/* Time Slots */}
                         <div className="flex gap-2 mb-3">
-                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                          <Badge variant="outline" className="text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
                             Morning: Available
                           </Badge>
-                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                          <Badge variant="outline" className="text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
                             Afternoon: Available
                           </Badge>
                         </div>
