@@ -309,6 +309,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getTrackingMethodBadge = (method: string) => {
+    console.log('ProductSelectionModal: getTrackingMethodBadge called with method:', method);
     switch (method) {
       case 'hybrid_tracking':
         return 'Hybrid Tracking';
