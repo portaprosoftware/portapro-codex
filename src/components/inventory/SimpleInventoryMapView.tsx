@@ -227,7 +227,17 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   // Helper function to group products by name and type
   const groupProductsByType = (items: any[]): GroupedProduct[] => {
     const grouped = items.reduce((acc, item) => {
-      const productName = item.product_name;
+      let productName = item.product_name;
+      
+      // Special handling: if product_name is just a number (like "3013"), it's likely a tracked unit
+      // that should be grouped with the 250-Gallon Waste Tank
+      if (/^\d{4}$/.test(productName.trim())) {
+        productName = "250-Gallon Waste Tank";
+      }
+      
+      // Clean up product name (remove tabs and extra spaces)
+      productName = productName.replace(/\t/g, '').trim();
+      
       if (!acc[productName]) {
         acc[productName] = {
           name: productName,
@@ -238,8 +248,8 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         };
       }
       
-      // If item has an item_code and it's not 'BULK', it's a tracked unit
-      if (item.item_code && item.item_code !== 'BULK') {
+      // If item code is a 4-digit number, it's a tracked unit
+      if (/^\d{4}$/.test(item.item_code?.trim() || '')) {
         acc[productName].trackedUnits.push({
           code: item.item_code,
           quantity: item.quantity,
