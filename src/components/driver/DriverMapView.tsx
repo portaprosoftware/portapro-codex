@@ -10,8 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Navigation, Phone, MapPin, Clock, Calendar } from 'lucide-react';
 import { formatDateSafe } from '@/lib/dateUtils';
 
-// TODO: Replace with actual Mapbox token
-const MAPBOX_ACCESS_TOKEN = 'pk.YOUR_MAPBOX_TOKEN_HERE';
+// Mapbox access token
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
 
 interface Job {
   id: string;
