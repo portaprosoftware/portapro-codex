@@ -1092,7 +1092,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   id="package-override"
                   checked={data.package_override?.enabled || false}
                   onCheckedChange={(checked) => {
-                    if (checked) {
+                    if (checked === true) {
                       const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
                       updatePackageOverride(true, calculatedSubtotal);
                     } else {
