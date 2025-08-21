@@ -238,6 +238,20 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         return 'One-Time';
     }
   };
+  const formatTimezone = (timezone: string) => {
+    // Remove underscores and add timezone abbreviations
+    const cleanTimezone = timezone.replace(/_/g, ' ');
+    const timezoneMap: Record<string, string> = {
+      'America/New York': 'America/New York (Eastern)',
+      'America/Chicago': 'America/Chicago (Central)', 
+      'America/Denver': 'America/Denver (Mountain)',
+      'America/Los Angeles': 'America/Los Angeles (Pacific)',
+      'America/Phoenix': 'America/Phoenix (Mountain)',
+      'America/Anchorage': 'America/Anchorage (Alaska)',
+      'Pacific/Honolulu': 'Pacific/Honolulu (Hawaii)'
+    };
+    return timezoneMap[cleanTimezone] || cleanTimezone;
+  };
   return (
     <div className="space-y-6">
       <section className="space-y-1">
@@ -251,7 +265,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           <div>Customer: {customerName || d.customer_id || '—'}</div>
           <div>Type: {d.job_type || '—'}</div>
           <div>Date: {d.scheduled_date || '—'}{d.return_date ? ` → ${d.return_date}` : ''}</div>
-          <div>Time: {d.scheduled_time || '—'} ({d.timezone})</div>
+          <div>Time: {d.scheduled_time || '—'} ({formatTimezone(d.timezone)})</div>
         </div>
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Assignments</h3>
@@ -420,11 +434,11 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         {/* Job Assignments */}
         {(driverName || vehicleDetails) && (
           <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
-            <h3 className="font-medium">Job Assignment</h3>
+            <h3 className="font-medium">Initial Job Assignments</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="text-sm font-medium">Driver</div>
-                {driverName && driverName !== 'No driver assigned' ? (
+                {driverName && driverName !== 'No driver assigned' && driverName !== 'Unknown Driver' ? (
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-xs">
