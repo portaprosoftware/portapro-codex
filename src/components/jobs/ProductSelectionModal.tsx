@@ -357,7 +357,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Product Image */}
       <div 
-        className="aspect-square w-full mb-3 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative cursor-pointer"
+        className="aspect-square w-full mb-3 bg-white rounded-lg flex items-center justify-center overflow-hidden relative cursor-pointer"
         onClick={handleBulkSelect}
       >
         {product.image_url ? (
