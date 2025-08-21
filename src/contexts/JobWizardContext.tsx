@@ -38,6 +38,13 @@ export interface JobWizardData {
     selectedServices: any[];
     servicesSubtotal: number;
   };
+
+  // Pickup job details (when scheduling delivery + pickup)
+  create_pickup_job?: boolean;
+  pickup_date?: string | null;
+  pickup_time?: string | null;
+  pickup_notes?: string;
+  pickup_is_priority?: boolean;
 }
 
 interface JobWizardState {
@@ -67,6 +74,11 @@ const initialState: JobWizardState = {
     items: [],
     create_daily_assignment: true,
     servicesData: { selectedServices: [], servicesSubtotal: 0 },
+    create_pickup_job: false,
+    pickup_date: null,
+    pickup_time: null,
+    pickup_notes: '',
+    pickup_is_priority: false,
   },
   errors: {},
   isLoading: false,

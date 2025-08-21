@@ -45,6 +45,28 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       console.log('Job wizard calling createJob with data:', state.data);
       const job = await createJobMutation.mutateAsync(state.data);
 
+      // Create pickup job if requested
+      let pickupJob = null;
+      if (state.data.create_pickup_job && state.data.pickup_date) {
+        const pickupJobData = {
+          customer_id: state.data.customer_id,
+          job_type: 'pickup' as const,
+          scheduled_date: state.data.pickup_date,
+          scheduled_time: state.data.pickup_time,
+          timezone: state.data.timezone,
+          notes: state.data.pickup_notes || '',
+          is_priority: state.data.pickup_is_priority || false,
+          selected_coordinate_ids: state.data.selected_coordinate_ids,
+          driver_id: state.data.driver_id,
+          vehicle_id: state.data.vehicle_id,
+          items: state.data.items, // Same items for pickup
+          create_daily_assignment: state.data.create_daily_assignment,
+        };
+        
+        console.log('Creating pickup job with data:', pickupJobData);
+        pickupJob = await createJobMutation.mutateAsync(pickupJobData);
+      }
+
       // Note: Inventory items are now handled directly in useCreateJob hook
 
       // Insert service job items if any services were selected
@@ -106,7 +128,8 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         console.warn('Daily assignment step skipped due to error:', e);
       }
 
-      toast.success('Job created successfully!');
+      const jobsCreated = pickupJob ? 'Jobs created successfully!' : 'Job created successfully!';
+      toast.success(jobsCreated);
       reset();
       onClose();
     } catch (error) {
