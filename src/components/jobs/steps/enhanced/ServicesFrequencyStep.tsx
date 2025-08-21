@@ -1334,27 +1334,41 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
               </div>
             </div>
 
-            {/* Group by Day Toggle */}
-            <div className="flex items-center space-x-2 pt-6 border-t">
-              <Switch
-                id="group-by-day"
-                checked={data.groupAssignmentsByDay || false}
-                onCheckedChange={(checked) => onUpdate({
-                  ...data,
-                  groupAssignmentsByDay: checked,
-                  expandedDays: new Set() // Reset expanded days when toggling
-                })}
-              />
-              <Label htmlFor="group-by-day" className="text-sm font-medium">
-                Group assignments by day
-              </Label>
+            {/* Group Assignment Toggle Buttons */}
+            <div className="pt-6 border-t space-y-3">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={!data.groupAssignmentsByDay ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => onUpdate({
+                    ...data,
+                    groupAssignmentsByDay: false,
+                    expandedDays: new Set() // Reset expanded days when toggling
+                  })}
+                  className="flex-1"
+                >
+                  Group Assignments by Service
+                </Button>
+                <Button
+                  variant={data.groupAssignmentsByDay ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => onUpdate({
+                    ...data,
+                    groupAssignmentsByDay: true,
+                    expandedDays: new Set() // Reset expanded days when toggling
+                  })}
+                  className="flex-1"
+                >
+                  Group Assignments by Day
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {data.groupAssignmentsByDay 
+                  ? "Assign drivers and vehicles once per date. All services on that day will use the same assignments. Expand any day to override assignments for specific services."
+                  : "Assign drivers and vehicles for each service separately. Use this view if different services on the same day require different assignments."
+                }
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {data.groupAssignmentsByDay 
-                ? "Assign drivers and vehicles once per date. All services on that day will use the same assignments. Expand any day to override assignments for specific services."
-                : "Assign drivers and vehicles for each service separately. Use this view if different services on the same day require different assignments."
-              }
-            </p>
 
             {/* Service Date Assignments */}
             <div className="space-y-4 pt-4">
