@@ -18,6 +18,14 @@ export const useInventoryWithDateRange = ({
   selectedLocationId = 'all',
   selectedProductType = 'all'
 }: UseInventoryWithDateRangeProps) => {
+  console.log('📊 useInventoryWithDateRange: Hook called with params:', {
+    startDate: startDate?.toISOString(),
+    endDate: endDate?.toISOString(),
+    searchQuery,
+    selectedLocationId,
+    selectedProductType
+  });
+
   return useQuery({
     queryKey: ['inventory-locations-with-filters', {
       startDate: formatDateForQuery(startDate),
@@ -27,7 +35,7 @@ export const useInventoryWithDateRange = ({
       selectedProductType
     }],
     queryFn: async (): Promise<InventoryLocation[]> => {
-      console.log('Fetching inventory locations with filters...');
+      console.log('📊 useInventoryWithDateRange: Starting data fetch...');
       
       let query = supabase
         .from('equipment_assignments')
@@ -80,16 +88,27 @@ export const useInventoryWithDateRange = ({
         query = query.lte('jobs.scheduled_date', formatDateForQuery(endDate));
       }
 
+      console.log('📊 useInventoryWithDateRange: Executing query...');
       const { data: assignments, error } = await query;
 
+      console.log('📊 useInventoryWithDateRange: Query result:', { 
+        assignmentsCount: assignments?.length || 0, 
+        error,
+        sampleData: assignments?.slice(0, 2)
+      });
+
       if (error) {
-        console.error('Error fetching equipment assignments:', error);
+        console.error('📊 useInventoryWithDateRange: Query error:', error);
         return [];
       }
 
-      if (!assignments) return [];
+      if (!assignments) {
+        console.log('📊 useInventoryWithDateRange: No assignments returned');
+        return [];
+      }
 
       const locations: InventoryLocation[] = [];
+      console.log('📊 useInventoryWithDateRange: Processing assignments...');
 
       assignments.forEach(assignment => {
         const job = assignment.jobs;
@@ -164,6 +183,11 @@ export const useInventoryWithDateRange = ({
         });
       });
 
+      console.log('📊 useInventoryWithDateRange: Final locations:', {
+        totalLocations: locations.length,
+        sampleLocations: locations.slice(0, 2)
+      });
+      
       return locations;
     },
     enabled: true

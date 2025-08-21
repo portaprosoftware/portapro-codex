@@ -40,6 +40,11 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
   selectedLocationId,
   selectedProductType
 }) => {
+  console.log('🗺️ InventoryMapView: Component rendering with props:', {
+    searchQuery,
+    selectedLocationId,
+    selectedProductType
+  });
   // Date state following proven pattern
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -50,14 +55,29 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
 
   // Initialize mapbox following proven pattern
   const { map, mapContainer, isLoading: mapLoading, error, mapboxToken, showTokenInput } = useInventoryMapboxInitializer();
+  
+  console.log('🗺️ InventoryMapView: Mapbox state:', {
+    hasMap: !!map,
+    mapLoading,
+    error,
+    hasToken: !!mapboxToken,
+    showTokenInput
+  });
 
   // Fetch inventory data with date filtering
-  const { data: inventoryLocations, isLoading } = useInventoryWithDateRange({
+  const { data: inventoryLocations, isLoading, error: dataError } = useInventoryWithDateRange({
     startDate: dateRange?.from,
     endDate: dateRange?.to,
     searchQuery,
     selectedLocationId,
     selectedProductType
+  });
+
+  console.log('🗺️ InventoryMapView: Data state:', {
+    locationsCount: inventoryLocations?.length || 0,
+    isLoading,
+    dataError,
+    sampleLocations: inventoryLocations?.slice(0, 2)
   });
 
   // Use marker manager following proven pattern
@@ -113,6 +133,7 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
   };
 
   if (showTokenInput) {
+    console.log('🗺️ InventoryMapView: Showing token input screen');
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="w-full max-w-md">
@@ -123,6 +144,7 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
             <p className="text-sm text-gray-600">
               To display the inventory map, please configure your Mapbox public token in Supabase Edge Function Secrets.
             </p>
+            <p className="text-xs mt-2 text-gray-400">Debug: showTokenInput = true</p>
           </CardContent>
         </Card>
       </div>
@@ -130,6 +152,7 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
   }
 
   if (error) {
+    console.log('🗺️ InventoryMapView: Showing error screen:', error);
     return (
       <div className="flex items-center justify-center h-96">
         <Card className="w-full max-w-md">
@@ -138,6 +161,24 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600">{error}</p>
+            <p className="text-xs mt-2 text-gray-400">Check console for details</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (dataError) {
+    console.log('🗺️ InventoryMapView: Showing data error screen:', dataError);
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Data Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600">Failed to load inventory data: {dataError.message}</p>
+            <p className="text-xs mt-2 text-gray-400">Check console for details</p>
           </CardContent>
         </Card>
       </div>
@@ -145,17 +186,29 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
   }
 
   if (isLoading || mapLoading) {
+    console.log('🗺️ InventoryMapView: Showing loading screen', { isLoading, mapLoading });
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-2 text-gray-600">Loading inventory locations...</p>
+          <p className="text-xs mt-1 text-gray-400">
+            Map: {mapLoading ? 'Loading...' : 'Ready'} | Data: {isLoading ? 'Loading...' : 'Ready'}
+          </p>
         </div>
       </div>
     );
   }
 
   if (!inventoryLocations?.length) {
+    console.log('🗺️ InventoryMapView: Showing no data screen', {
+      hasInventoryLocations: !!inventoryLocations,
+      inventoryLocationsLength: inventoryLocations?.length,
+      hasMap: !!map,
+      mapLoading,
+      isLoading,
+      dateRange
+    });
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
@@ -164,6 +217,9 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
           <p className="text-sm text-gray-500">Equipment locations will appear here when items are assigned to jobs with addresses</p>
           <p className="text-xs text-gray-400 mt-2">
             To see locations on the map: Create jobs → Assign products to jobs → Add customer addresses with GPS coordinates
+          </p>
+          <p className="text-xs mt-2 text-gray-400">
+            Debug: Map={!!map ? 'Ready' : 'Not Ready'}, Data={inventoryLocations?.length || 0} locations
           </p>
         </div>
       </div>

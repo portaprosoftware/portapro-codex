@@ -21,17 +21,28 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
 
   // Fetch Mapbox token
   useEffect(() => {
+    console.log('🗺️ useInventoryMapboxInitializer: Starting token fetch...');
     const fetchMapboxToken = async () => {
       try {
+        console.log('🗺️ useInventoryMapboxInitializer: Calling supabase.functions.invoke...');
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
+        console.log('🗺️ useInventoryMapboxInitializer: Token response:', { data, error });
+        
+        if (error) {
+          console.error('🗺️ useInventoryMapboxInitializer: Token error:', error);
+          throw error;
+        }
+        
         if (data?.token) {
+          console.log('🗺️ useInventoryMapboxInitializer: Token received, length:', data.token.length);
           setMapboxToken(data.token);
         } else {
+          console.log('🗺️ useInventoryMapboxInitializer: No token in response, showing input');
           setShowTokenInput(true);
         }
       } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
+        console.error('🗺️ useInventoryMapboxInitializer: Error fetching Mapbox token:', error);
+        setError('Failed to fetch Mapbox token: ' + error.message);
         setShowTokenInput(true);
       }
     };
@@ -41,14 +52,37 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
 
   // Initialize map when token is available
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken || showTokenInput) {
+    console.log('🗺️ useInventoryMapboxInitializer: Map initialization effect triggered');
+    console.log('🗺️ useInventoryMapboxInitializer: State check:', {
+      hasContainer: !!mapContainer.current,
+      hasToken: !!mapboxToken,
+      showTokenInput,
+      tokenLength: mapboxToken?.length
+    });
+
+    if (!mapContainer.current) {
+      console.log('🗺️ useInventoryMapboxInitializer: No map container, skipping initialization');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!mapboxToken) {
+      console.log('🗺️ useInventoryMapboxInitializer: No mapbox token, skipping initialization');
+      setIsLoading(false);
+      return;
+    }
+
+    if (showTokenInput) {
+      console.log('🗺️ useInventoryMapboxInitializer: Token input shown, skipping initialization');
       setIsLoading(false);
       return;
     }
 
     try {
+      console.log('🗺️ useInventoryMapboxInitializer: Setting mapbox access token...');
       mapboxgl.accessToken = mapboxToken;
 
+      console.log('🗺️ useInventoryMapboxInitializer: Creating new Mapbox map...');
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
@@ -56,23 +90,28 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
         zoom: 4
       });
 
+      console.log('🗺️ useInventoryMapboxInitializer: Map created, adding controls...');
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
       map.current.on('load', () => {
+        console.log('🗺️ useInventoryMapboxInitializer: Map loaded successfully!');
         setIsLoading(false);
       });
 
       map.current.on('error', (e) => {
-        setError('Failed to load map');
+        console.error('🗺️ useInventoryMapboxInitializer: Map error:', e);
+        setError('Failed to load map: ' + e.error?.message || 'Unknown error');
         setIsLoading(false);
       });
 
     } catch (err) {
-      setError('Failed to initialize map');
+      console.error('🗺️ useInventoryMapboxInitializer: Map initialization error:', err);
+      setError('Failed to initialize map: ' + err.message);
       setIsLoading(false);
     }
 
     return () => {
+      console.log('🗺️ useInventoryMapboxInitializer: Cleaning up map...');
       map.current?.remove();
       map.current = null;
     };
