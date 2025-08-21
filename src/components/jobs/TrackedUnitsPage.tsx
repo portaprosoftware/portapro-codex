@@ -33,6 +33,7 @@ interface TrackedUnitsPageProps {
   onUnitsSelect: (units: SelectedUnit[], productName: string) => void;
   onBulkSelect: (product: Product, quantity: number) => void;
   onBack: () => void;
+  existingSelectedUnits?: SelectedUnit[];
 }
 
 export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
@@ -41,10 +42,13 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   endDate,
   onUnitsSelect,
   onBulkSelect,
-  onBack
+  onBack,
+  existingSelectedUnits = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(
+    new Set(existingSelectedUnits.filter(unit => unit.productId === product.id).map(unit => unit.unitId))
+  );
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
 
   // Fetch units with availability check for date range
@@ -263,7 +267,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
 
       {/* Variation Filters */}
       {Object.keys(availableVariations).length > 0 && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {Object.entries(availableVariations).map(([variationType, values]) => (
             <div key={variationType} className="flex items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground min-w-fit">
@@ -287,6 +291,16 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
               </Select>
             </div>
           ))}
+          {Object.values(variationFilters).some(filter => filter && filter !== 'all') && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setVariationFilters({})}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
       )}
 
@@ -407,28 +421,19 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-between gap-3 pt-4 border-t">
+      <div className="flex justify-end gap-2 pt-4 border-t">
         <Button
           variant="outline"
-          onClick={handleBulkSelection}
+          onClick={onBack}
         >
-          Select Product in Bulk
+          Back to Products
         </Button>
-        
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={onBack}
-          >
-            Back to Products
-          </Button>
-          <Button
-            onClick={handleConfirmSelection}
-            disabled={selectedUnits.size === 0}
-          >
-            Add Selected Units ({selectedUnits.size})
-          </Button>
-        </div>
+        <Button
+          onClick={handleConfirmSelection}
+          disabled={selectedUnits.size === 0}
+        >
+          Add Selected Units ({selectedUnits.size})
+        </Button>
       </div>
     </div>
   );
