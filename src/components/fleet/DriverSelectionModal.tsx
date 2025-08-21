@@ -177,6 +177,13 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
       <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-xl font-semibold">Select Driver</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Scheduled date: {selectedDate.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
         </DialogHeader>
 
         <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
