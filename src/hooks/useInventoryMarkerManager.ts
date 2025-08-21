@@ -14,6 +14,15 @@ export interface InventoryLocation {
   scheduled_date: string;
   customer_phone?: string;
   quantity: number;
+  items?: Array<{
+    id: string;
+    product_name: string;
+    item_code: string;
+    status: string;
+    quantity: number;
+    job_type: string;
+    scheduled_date: string;
+  }>;
 }
 
 interface UseInventoryMarkerManagerProps {

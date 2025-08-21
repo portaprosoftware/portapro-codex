@@ -169,7 +169,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         user-select: none;
       `;
       
-      pinElement.textContent = location.quantity > 1 ? location.quantity.toString() : (index + 1).toString();
+      pinElement.textContent = location.quantity.toString();
       
       // Add click handler with stopPropagation (proven pattern)
       pinElement.addEventListener('click', (e) => {
@@ -312,12 +312,15 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         </div>
       )}
 
-      {/* Popup for selected location */}
+      {/* Inventory Details Popup */}
       {selectedLocation && (
-        <div className="absolute top-4 right-4 z-10 w-80">
+        <div className="absolute top-4 right-4 z-10 w-96 max-h-[450px] overflow-y-auto">
           <Card className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold text-lg">{selectedLocation.product_name}</h3>
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex items-center space-x-2">
+                <Package className="h-5 w-5 text-primary" />
+                <h3 className="font-semibold text-lg">Inventory at Location</h3>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
@@ -327,37 +330,109 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="font-medium">Customer:</span> {selectedLocation.customer_name}
-              </div>
-              <div>
-                <span className="font-medium">Address:</span> {selectedLocation.customer_address}
-              </div>
-              <div>
-                <span className="font-medium">Status:</span>{' '}
-                <span className="px-2 py-1 rounded-full text-xs font-medium" 
-                      style={{
-                        backgroundColor: getStatusColor(selectedLocation.status) + '20',
-                        color: getStatusColor(selectedLocation.status)
-                      }}>
-                  {selectedLocation.status}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Quantity:</span> {selectedLocation.quantity}
-              </div>
-              <div>
-                <span className="font-medium">Job Type:</span> {selectedLocation.job_type}
-              </div>
-              <div>
-                <span className="font-medium">Scheduled:</span> {selectedLocation.scheduled_date}
-              </div>
-              {selectedLocation.customer_phone && (
-                <div>
-                  <span className="font-medium">Phone:</span> {selectedLocation.customer_phone}
+            
+            <div className="space-y-3">
+              {/* Location Info */}
+              <div className="border-b pb-3">
+                <div className="text-sm space-y-1">
+                  <div>
+                    <span className="font-medium">Customer:</span> {selectedLocation.customer_name}
+                  </div>
+                  <div>
+                    <span className="font-medium">Address:</span> {selectedLocation.customer_address}
+                  </div>
+                  {selectedLocation.customer_phone && (
+                    <div>
+                      <span className="font-medium">Phone:</span> {selectedLocation.customer_phone}
+                    </div>
+                  )}
                 </div>
-                )}
+              </div>
+
+              {/* Inventory Summary */}
+              <div className="bg-muted/30 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Total Items:</span>
+                  <span className="text-lg font-bold">{selectedLocation.quantity}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-sm text-muted-foreground">Types:</span>
+                  <span className="text-sm">{selectedLocation.items?.length || 1}</span>
+                </div>
+              </div>
+
+              {/* Individual Items List */}
+              <div>
+                <h4 className="font-medium mb-2">Items at this location:</h4>
+                <div className="space-y-2">
+                  {selectedLocation.items && selectedLocation.items.length > 0 ? (
+                    selectedLocation.items.map((item, index) => (
+                      <div key={item.id} className="border rounded-lg p-3 bg-background">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-medium text-sm">{item.product_name}</span>
+                          <span className="text-xs px-2 py-1 rounded-full font-medium" 
+                                style={{
+                                  backgroundColor: getStatusColor(item.status) + '20',
+                                  color: getStatusColor(item.status)
+                                }}>
+                            {item.status}
+                          </span>
+                        </div>
+                        <div className="space-y-1 text-xs text-muted-foreground">
+                          <div className="flex justify-between">
+                            <span>Item Code:</span>
+                            <span>{item.item_code}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Quantity:</span>
+                            <span className="font-medium">{item.quantity}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Job Type:</span>
+                            <span>{item.job_type}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Scheduled:</span>
+                            <span>{new Date(item.scheduled_date).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    // Single item fallback
+                    <div className="border rounded-lg p-3 bg-background">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-medium text-sm">{selectedLocation.product_name}</span>
+                        <span className="text-xs px-2 py-1 rounded-full font-medium" 
+                              style={{
+                                backgroundColor: getStatusColor(selectedLocation.status) + '20',
+                                color: getStatusColor(selectedLocation.status)
+                              }}>
+                          {selectedLocation.status}
+                        </span>
+                      </div>
+                      <div className="space-y-1 text-xs text-muted-foreground">
+                        <div className="flex justify-between">
+                          <span>Item Code:</span>
+                          <span>{selectedLocation.item_code}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Quantity:</span>
+                          <span className="font-medium">{selectedLocation.quantity}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Job Type:</span>
+                          <span>{selectedLocation.job_type}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Scheduled:</span>
+                          <span>{new Date(selectedLocation.scheduled_date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </Card>
         </div>
