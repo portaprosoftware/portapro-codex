@@ -295,6 +295,27 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           )}
         </div>
 
+
+        <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">Services</h3>
+            <div className="text-xs font-medium">Subtotal: {formatCurrency(servicesSubtotal)}</div>
+          </div>
+          {services.length > 0 ? (
+            <div className="space-y-3">
+              <ul className="list-disc list-inside space-y-1">
+                {services.map((s: any, i: number) => (
+                  <li key={s.id || i}>
+                    <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · {formatCurrency(Number(s.calculated_cost || 0))}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No services selected</p>
+          )}
+        </div>
+
         {/* Driver & Vehicle Assignment Card */}
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <h3 className="font-medium">Driver & Vehicle Assignment</h3>
@@ -348,26 +369,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
             <div className="text-xs text-muted-foreground bg-blue-50 p-2 rounded">
               <strong>Note:</strong> Daily driver and vehicle assignment will be created automatically for this job date.
             </div>
-          )}
-        </div>
-
-        <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Services</h3>
-            <div className="text-xs font-medium">Subtotal: {formatCurrency(servicesSubtotal)}</div>
-          </div>
-          {services.length > 0 ? (
-            <div className="space-y-3">
-              <ul className="list-disc list-inside space-y-1">
-                {services.map((s: any, i: number) => (
-                  <li key={s.id || i}>
-                    <span className="font-medium">{s.name || s.service_code || 'Service'}</span> · {getFrequencyLabel(s)} · {formatCurrency(Number(s.calculated_cost || 0))}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No services selected</p>
           )}
         </div>
       </div>
