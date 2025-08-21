@@ -1336,7 +1336,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
             {/* Group Assignment Toggle Buttons */}
             <div className="pt-6 border-t space-y-3">
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex items-center space-x-2">
                 <Button
                   variant={!data.groupAssignmentsByDay ? "default" : "outline"}
                   size="sm"
@@ -1345,7 +1345,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                     groupAssignmentsByDay: false,
                     expandedDays: new Set() // Reset expanded days when toggling
                   })}
-                  className="w-40"
+                  className="w-56"
                 >
                   Group Assignments by Service
                 </Button>
@@ -1357,7 +1357,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                     groupAssignmentsByDay: true,
                     expandedDays: new Set() // Reset expanded days when toggling
                   })}
-                  className="w-40"
+                  className="w-56"
                 >
                   Group Assignments by Day
                 </Button>
