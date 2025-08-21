@@ -16,6 +16,7 @@ import { ServicesFrequencyOnlyStep } from './steps/ServicesFrequencyOnlyStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
 import { supabase } from '@/integrations/supabase/client';
 import { JobExitConfirmation } from './JobExitConfirmation';
+import { useJobDrafts } from '@/hooks/useJobDrafts';
 
 interface NewJobWizardProps {
   open: boolean;
@@ -24,8 +25,25 @@ interface NewJobWizardProps {
 
 function WizardContent({ onClose }: { onClose: () => void }) {
   const { state, nextStep, previousStep, validateCurrentStep, reset } = useJobWizard();
+  const { saveDraft, isSaving } = useJobDrafts();
   const createJobMutation = useCreateJob();
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const handleSaveAndExit = async (draftName: string) => {
+    try {
+      await saveDraft(draftName, state.data);
+      toast.success('Job draft saved successfully');
+      reset();
+      onClose();
+    } catch (error) {
+      toast.error('Failed to save draft');
+      console.error('Draft save error:', error);
+    }
+  };
+
+  const handleDeleteAndExit = () => {
+    reset();
+    onClose();
+  };
 
   const handleNext = () => {
     if (validateCurrentStep()) {
@@ -283,10 +301,9 @@ function WizardContent({ onClose }: { onClose: () => void }) {
       <JobExitConfirmation
         isOpen={showExitConfirmation}
         onClose={() => setShowExitConfirmation(false)}
-        onConfirm={() => {
-          reset();
-          onClose();
-        }}
+        onSaveAndExit={handleSaveAndExit}
+        onDeleteAndExit={handleDeleteAndExit}
+        isSaving={isSaving}
       />
     </div>
   );
