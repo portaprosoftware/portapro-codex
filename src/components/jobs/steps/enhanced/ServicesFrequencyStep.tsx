@@ -1103,25 +1103,31 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Package Override Controls */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="package-override"
-                  checked={data.package_override?.enabled || false}
-                  onCheckedChange={(checked) => {
-                    if (checked === true) {
-                      const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
-                      updatePackageOverride(true, calculatedSubtotal);
-                    } else {
-                      updatePackageOverride(false);
-                    }
-                  }}
-                />
-                <Label htmlFor="package-override" className="text-sm font-medium">
-                  Set package price for all services
-                </Label>
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-3">
+                    <Switch
+                      id="package-override"
+                      checked={data.package_override?.enabled || false}
+                      onCheckedChange={(checked) => {
+                        if (checked === true) {
+                          const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
+                          updatePackageOverride(true, calculatedSubtotal);
+                        } else {
+                          updatePackageOverride(false);
+                        }
+                      }}
+                    />
+                    <Label htmlFor="package-override" className="text-sm font-medium">
+                      Set package price for all services
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground ml-9">
+                    Override the calculated total with a custom package price. Individual service schedules remain unchanged.
+                  </p>
+                </div>
               </div>
-              
               {data.package_override?.enabled && (
                 <div className="ml-6 space-y-3 p-3 bg-muted/30 rounded-lg">
                   <div className="space-y-2">
