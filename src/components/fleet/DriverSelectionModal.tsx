@@ -344,9 +344,20 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                   {getStatusText(selectedDriver.status)} • {selectedDriver.scheduledJobs.length} scheduled jobs
                 </p>
               </div>
-              <Button onClick={() => onOpenChange(false)}>
-                Confirm Selection
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    onDriverSelect(null as any);
+                    onOpenChange(false);
+                  }}
+                >
+                  Clear
+                </Button>
+                <Button onClick={() => onOpenChange(false)}>
+                  Confirm Selection
+                </Button>
+              </div>
             </div>
           </div>
         )}

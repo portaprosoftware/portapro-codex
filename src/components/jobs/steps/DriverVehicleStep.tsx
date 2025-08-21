@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
 import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
+import { supabase } from '@/integrations/supabase/client';
 
 export const DriverVehicleStep: React.FC = () => {
   const { state, updateData } = useJobWizard();
@@ -13,11 +14,58 @@ export const DriverVehicleStep: React.FC = () => {
 
   const selectedDate = useMemo(() => {
     try {
-      return state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+      if (state.data.scheduled_date) {
+        // Parse date as local date to avoid timezone offset issues
+        const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+        return new Date(year, month - 1, day);
+      }
+      return new Date();
     } catch {
       return new Date();
     }
   }, [state.data.scheduled_date]);
+
+  // Load driver and vehicle names when component mounts or IDs change
+  useEffect(() => {
+    const loadDriverName = async () => {
+      if (state.data.driver_id && !driverSummary) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', state.data.driver_id)
+            .single();
+          
+          if (data && !error) {
+            setDriverSummary(`${data.first_name} ${data.last_name}`);
+          }
+        } catch (error) {
+          console.error('Error loading driver name:', error);
+        }
+      }
+    };
+
+    const loadVehicleName = async () => {
+      if (state.data.vehicle_id && !vehicleSummary) {
+        try {
+          const { data, error } = await supabase
+            .from('vehicles')
+            .select('license_plate')
+            .eq('id', state.data.vehicle_id)
+            .single();
+          
+          if (data && !error) {
+            setVehicleSummary(data.license_plate);
+          }
+        } catch (error) {
+          console.error('Error loading vehicle name:', error);
+        }
+      }
+    };
+
+    loadDriverName();
+    loadVehicleName();
+  }, [state.data.driver_id, state.data.vehicle_id, driverSummary, vehicleSummary]);
 
   return (
     <div className="space-y-6">
@@ -61,8 +109,13 @@ export const DriverVehicleStep: React.FC = () => {
         selectedDate={selectedDate}
         selectedDriver={undefined}
         onDriverSelect={(driver) => {
-          updateData({ driver_id: driver.id });
-          setDriverSummary(`${driver.first_name} ${driver.last_name}`);
+          if (driver) {
+            updateData({ driver_id: driver.id });
+            setDriverSummary(`${driver.first_name} ${driver.last_name}`);
+          } else {
+            updateData({ driver_id: null });
+            setDriverSummary('');
+          }
         }}
       />
 
@@ -72,8 +125,13 @@ export const DriverVehicleStep: React.FC = () => {
         selectedDate={selectedDate}
         selectedVehicle={undefined}
         onVehicleSelect={(vehicle) => {
-          updateData({ vehicle_id: vehicle.id });
-          setVehicleSummary(vehicle.license_plate);
+          if (vehicle) {
+            updateData({ vehicle_id: vehicle.id });
+            setVehicleSummary(vehicle.license_plate);
+          } else {
+            updateData({ vehicle_id: null });
+            setVehicleSummary('');
+          }
         }}
       />
     </div>

@@ -475,14 +475,18 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   const openDriverModalForDate = (serviceId: string, date: Date, dateKey: string) => {
     setSelectedServiceId(serviceId);
-    setSelectedServiceDate(date);
+    // Parse the date properly to avoid timezone offset
+    const properDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    setSelectedServiceDate(properDate);
     setSelectedDateKey(dateKey);
     setShowDriverModal(true);
   };
 
   const openVehicleModalForDate = (serviceId: string, date: Date, dateKey: string) => {
     setSelectedServiceId(serviceId);
-    setSelectedServiceDate(date);
+    // Parse the date properly to avoid timezone offset
+    const properDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    setSelectedServiceDate(properDate);
     setSelectedDateKey(dateKey);
     setShowVehicleModal(true);
   };
@@ -490,14 +494,27 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const openGlobalDriverModal = () => {
     setSelectedServiceId('');
     setSelectedDateKey('');
-    setSelectedServiceDate(new Date());
+    // Use job scheduled date and parse as local date to avoid timezone offset
+    const jobDate = state.data.scheduled_date 
+      ? (() => {
+          const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+          return new Date(year, month - 1, day);
+        })()
+      : new Date();
+    setSelectedServiceDate(jobDate);
     setShowDriverModal(true);
   };
 
   const openGlobalVehicleModal = () => {
     setSelectedServiceId('');
     setSelectedDateKey('');
-    setSelectedServiceDate(new Date());
+    // Use job scheduled date and parse as local date to avoid timezone offset
+    const jobDate = state.data.scheduled_date 
+      ? (() => {
+          const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+          return new Date(year, month - 1, day);
+        })()
+      : new Date();
     setShowVehicleModal(true);
   };
 

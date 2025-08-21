@@ -284,9 +284,20 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                   {selectedVehicle.nickname && ` "${selectedVehicle.nickname}"`}
                 </p>
               </div>
-              <Button onClick={() => onOpenChange(false)}>
-                Confirm Selection
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    onVehicleSelect(null as any);
+                    onOpenChange(false);
+                  }}
+                >
+                  Clear
+                </Button>
+                <Button onClick={() => onOpenChange(false)}>
+                  Confirm Selection
+                </Button>
+              </div>
             </div>
           </div>
         )}
