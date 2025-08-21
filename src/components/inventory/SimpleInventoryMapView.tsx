@@ -213,7 +213,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   }
 
   return (
-    <div className="relative w-full h-[600px]">
+    <div className="relative w-full h-[500px]">
       <div ref={mapContainer} className="w-full h-full rounded-lg" />
       
       {/* Control Panel - Top Left */}

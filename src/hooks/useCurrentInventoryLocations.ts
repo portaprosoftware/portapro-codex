@@ -103,11 +103,33 @@ export const useCurrentInventoryLocations = ({
           let longitude: number | undefined;
           
           if (location.gps_coordinates) {
+            // Handle PostgreSQL POINT format: "(x,y)" where x=longitude, y=latitude
             const coords = location.gps_coordinates as any;
+            
+            // Check for .x/.y properties first (JSON format)
             if (coords.x !== undefined && coords.y !== undefined) {
               longitude = coords.x;
               latitude = coords.y;
             }
+            // Handle PostgreSQL POINT string format "(lng,lat)"
+            else if (typeof coords === 'string') {
+              const match = coords.match(/\(([^,]+),([^)]+)\)/);
+              if (match) {
+                longitude = parseFloat(match[1]);
+                latitude = parseFloat(match[2]);
+              }
+            }
+            // Handle array format [lng, lat]
+            else if (Array.isArray(coords) && coords.length >= 2) {
+              longitude = coords[0];
+              latitude = coords[1];
+            }
+            
+            console.log('📊 GPS parsing:', { 
+              raw: coords, 
+              parsed: { longitude, latitude },
+              location: location.location_name 
+            });
           }
           
           const addressParts = [
@@ -117,13 +139,30 @@ export const useCurrentInventoryLocations = ({
             location.zip
           ].filter(Boolean);
           
-          const product = assignment.products;
+          // Get product info from either products or product_items
+          let product = assignment.products;
+          let productName = product?.name;
+          
+          // If no product from direct relation, try to get from product_items
+          if (!productName && assignment.product_items?.id) {
+            // We'll need the product name from the product_items relation
+            productName = assignment.product_items.item_code || 'Unknown Product';
+          }
+          
           const itemCode = assignment.product_items?.item_code || `${job.job_type} - Qty: ${assignment.quantity}`;
           
-          if (latitude && longitude && product) {
+          console.log('📊 Product data:', { 
+            assignmentId: assignment.id,
+            hasProducts: !!assignment.products,
+            hasProductItems: !!assignment.product_items,
+            productName,
+            hasCoords: !!(latitude && longitude)
+          });
+          
+          if (latitude && longitude && productName) {
             const inventoryLocation: InventoryLocation = {
               id: `${assignment.id}-${location.id}`,
-              product_name: product.name,
+              product_name: productName,
               item_code: itemCode,
               status: assignment.status,
               customer_name: customer?.name || 'Unknown Customer',
