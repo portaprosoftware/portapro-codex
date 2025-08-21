@@ -268,11 +268,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         </div>
       )}
 
-      <div className="flex items-center justify-end">
-        <Button onClick={onCreateJob} disabled={!!creating || checking || hasConflicts} className="min-w-[140px]">
-          {creating ? 'Creating…' : 'Create Job'}
-        </Button>
-      </div>
     </div>
   );
 };
