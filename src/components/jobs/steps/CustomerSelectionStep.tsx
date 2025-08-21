@@ -112,7 +112,7 @@ export function CustomerSelectionStep() {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium">{customer.name}</h3>
                       {customer.customer_type && (
                         <Badge className={getCustomerTypeColor(customer.customer_type)}>
