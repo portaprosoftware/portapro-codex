@@ -352,7 +352,9 @@ export function JobTypeSchedulingStep() {
                     <div className="pt-3 border-t text-sm text-muted-foreground space-y-1">
                       <p className="font-medium text-foreground">Live Preview</p>
                       {(() => {
-                        const scheduledDate = new Date(state.data.scheduled_date);
+                        // Parse date string correctly to avoid timezone issues
+                        const [year, month, day] = state.data.scheduled_date.split('-').map(Number);
+                        const scheduledDate = new Date(year, month - 1, day);
                         const deliveryTime = state.data.scheduled_time || '08:00';
                         const [timeHours, timeMinutes] = deliveryTime.split(':').map(Number);
                         const startDateTime = new Date(scheduledDate);
