@@ -101,10 +101,63 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       attributes: {}
     }));
     
+    const productId = units[0]?.productId;
+    if (!productId) return;
+    
     setSelectedUnitsCollection(prev => {
       // Remove any existing SPECIFIC unit selections for this product, but keep bulk selections
-      const filtered = prev.filter(s => !(s.productId === units[0]?.productId && s.unitId !== 'bulk'));
-      return [...filtered, ...selections];
+      const filtered = prev.filter(s => !(s.productId === productId && s.unitId !== 'bulk'));
+      const newCollection = [...filtered, ...selections];
+      
+      // Check if there are existing bulk selections for this product that need adjustment
+      const existingBulk = filtered.find(s => s.productId === productId && s.unitId === 'bulk');
+      if (existingBulk) {
+        // Get total available units for this product
+        const productQuery = supabase
+          .from('products')
+          .select('stock_total')
+          .eq('id', productId)
+          .single();
+          
+        productQuery.then(({ data: product }) => {
+          if (product) {
+            const totalAvailable = product.stock_total;
+            const specificUnitsCount = selections.length;
+            const remainingForBulk = Math.max(0, totalAvailable - specificUnitsCount);
+            const currentBulkQuantity = existingBulk.quantity;
+            
+            if (currentBulkQuantity > remainingForBulk) {
+              const adjustedQuantity = remainingForBulk;
+              
+              // Update bulk quantities state
+              setBulkQuantities(prev => ({
+                ...prev,
+                [productId]: adjustedQuantity
+              }));
+              
+              // Update the collection with adjusted bulk quantity
+              setSelectedUnitsCollection(current => {
+                return current.map(s => 
+                  s.productId === productId && s.unitId === 'bulk'
+                    ? { ...s, quantity: adjustedQuantity }
+                    : s
+                ).filter(s => !(s.productId === productId && s.unitId === 'bulk' && s.quantity === 0));
+              });
+              
+              // Show notification
+              import('@/hooks/use-toast').then(({ toast }) => {
+                toast({
+                  title: "Bulk quantity adjusted",
+                  description: `Reduced bulk selection from ${currentBulkQuantity} to ${adjustedQuantity} units due to specific unit selections.`,
+                  variant: adjustedQuantity === 0 ? "destructive" : "default"
+                });
+              });
+            }
+          }
+        });
+      }
+      
+      return newCollection;
     });
     
     handleBackToMain();
