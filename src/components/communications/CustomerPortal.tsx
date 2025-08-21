@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { CustomerPortalDashboard } from '@/components/customer-portal/CustomerPortalDashboard';
 import { 
   User, 
   Calendar, 
@@ -31,90 +32,84 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
   const [activeTab, setActiveTab] = useState('overview');
   const [supportMessage, setSupportMessage] = useState('');
 
-  // Mock customer data
-  const mockCustomer = {
-    id: 'customer-1',
-    name: 'ABC Construction Corp',
-    email: 'contact@abcconstruction.com',
-    phone: '(555) 123-4567',
-    address: '123 Construction Ave, City, State 12345',
-    accountStatus: 'active',
-    totalJobs: 42,
-    upcomingJobs: 3,
-    completedJobs: 39,
-    totalSpent: 15750,
-    outstandingBalance: 2500
-  };
-
-  const mockJobs = [
-    {
-      id: 'job-1',
-      type: 'delivery',
-      status: 'scheduled',
-      scheduledDate: '2024-01-25',
-      scheduledTime: '09:00',
-      address: '456 Site Location, City, State',
-      items: ['Portable Toilet x2', 'Hand Wash Station x1'],
-      driver: 'John Smith',
-      estimatedCompletion: '10:00'
-    },
-    {
-      id: 'job-2',
-      type: 'service',
-      status: 'completed',
-      scheduledDate: '2024-01-20',
-      scheduledTime: '14:00',
-      address: '789 Another Site, City, State',
-      items: ['Portable Toilet x3'],
-      driver: 'Sarah Johnson',
-      completedAt: '14:30'
-    }
-  ];
-
-  const mockInvoices = [
-    {
-      id: 'invoice-1',
-      number: 'INV-001',
-      date: '2024-01-15',
-      amount: 850,
-      status: 'paid',
-      dueDate: '2024-01-30',
-      items: ['Weekly Service - 3 units', 'Additional Cleaning']
-    },
-    {
-      id: 'invoice-2',
-      number: 'INV-002',
-      date: '2024-01-22',
-      amount: 1200,
-      status: 'pending',
-      dueDate: '2024-02-05',
-      items: ['Monthly Rental - 5 units', 'Delivery Fee']
-    }
-  ];
-
-  const { data: customer = mockCustomer } = useQuery({
+  // Fetch real customer data
+  const { data: customer, isLoading: customerLoading } = useQuery({
     queryKey: ['customer-portal', customerId],
     queryFn: async () => {
-      // In real implementation, fetch customer data
-      return mockCustomer;
-    }
+      if (!customerId) throw new Error('Customer ID required');
+      
+      const { data, error } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', customerId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!customerId,
   });
 
-  const { data: jobs = mockJobs } = useQuery({
+  // Fetch real jobs data
+  const { data: jobs = [], isLoading: jobsLoading } = useQuery({
     queryKey: ['customer-jobs', customerId],
     queryFn: async () => {
-      // In real implementation, fetch customer jobs
-      return mockJobs;
-    }
+      if (!customerId) return [];
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(`
+          id,
+          job_number,
+          job_type,
+          status,
+          scheduled_date,
+          scheduled_time,
+          actual_completion_time
+        `)
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!customerId,
   });
 
-  const { data: invoices = mockInvoices } = useQuery({
+  // Fetch real invoices data
+  const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
     queryKey: ['customer-invoices', customerId],
     queryFn: async () => {
-      // In real implementation, fetch customer invoices
-      return mockInvoices;
-    }
+      if (!customerId) return [];
+      
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!customerId,
   });
+
+  if (customerLoading) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-1/3"></div>
+          <div className="grid grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-24 bg-muted rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -159,56 +154,6 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
         </div>
       </div>
 
-      {/* Account Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Jobs</p>
-                <p className="text-2xl font-bold">{customer.totalJobs}</p>
-              </div>
-              <Calendar className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Upcoming Jobs</p>
-                <p className="text-2xl font-bold">{customer.upcomingJobs}</p>
-              </div>
-              <Clock className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
-                <p className="text-2xl font-bold">${customer.totalSpent.toLocaleString()}</p>
-              </div>
-              <CreditCard className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Outstanding</p>
-                <p className="text-2xl font-bold">${customer.outstandingBalance.toLocaleString()}</p>
-              </div>
-              <AlertCircle className="w-8 h-8 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -221,78 +166,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Jobs */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Jobs</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {jobs.slice(0, 3).map((job) => {
-                    const StatusIcon = getStatusIcon(job.status);
-                    return (
-                      <div key={job.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium capitalize">{job.type}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {job.scheduledDate} at {job.scheduledTime}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getStatusColor(job.status)}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {job.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Invoices */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Invoices</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {invoices.slice(0, 3).map((invoice) => {
-                    const StatusIcon = getStatusIcon(invoice.status);
-                    return (
-                      <div key={invoice.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-green-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{invoice.number}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Due: {invoice.dueDate}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">${invoice.amount}</p>
-                          <Badge className={getStatusColor(invoice.status)}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {invoice.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <CustomerPortalDashboard customerId={customerId || ''} />
         </TabsContent>
 
         <TabsContent value="jobs" className="space-y-4">
@@ -301,52 +175,67 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
               <CardTitle>All Jobs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {jobs.map((job) => {
-                  const StatusIcon = getStatusIcon(job.status);
-                  return (
-                    <div key={job.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Calendar className="w-6 h-6 text-blue-600" />
+              {jobsLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="animate-pulse border rounded-lg p-4">
+                      <div className="h-4 bg-muted rounded w-1/4 mb-2"></div>
+                      <div className="h-3 bg-muted rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No jobs found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {jobs.map((job) => {
+                    const StatusIcon = getStatusIcon(job.status);
+                    
+                    return (
+                      <div key={job.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                              <Calendar className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium capitalize">{job.job_type?.replace('_', ' ') || 'Service'}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {job.job_number || `Job #${job.id.slice(-8)}`}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium capitalize">{job.type}</p>
+                          <Badge className={getStatusColor(job.status)} variant="outline">
+                            <StatusIcon className="w-3 h-3 mr-1" />
+                            {job.status?.replace('_', ' ') || 'Unknown'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString() : 'Not scheduled'}
+                              {job.scheduled_time && ` at ${job.scheduled_time}`}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {job.actual_completion_time && (
+                          <div className="border-t pt-3">
                             <p className="text-sm text-muted-foreground">
-                              {job.scheduledDate} at {job.scheduledTime}
+                              Completed: {new Date(job.actual_completion_time).toLocaleDateString()}
                             </p>
                           </div>
-                        </div>
-                        <Badge className={getStatusColor(job.status)}>
-                          <StatusIcon className="w-3 h-3 mr-1" />
-                          {job.status}
-                        </Badge>
+                        )}
                       </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{job.address}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">Driver: {job.driver}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="border-t pt-3">
-                        <p className="text-sm font-medium mb-2">Items:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {job.items.map((item, index) => (
-                            <Badge key={index} variant="outline">{item}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -357,45 +246,61 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
               <CardTitle>Invoice History</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {invoices.map((invoice) => {
-                  const StatusIcon = getStatusIcon(invoice.status);
-                  return (
-                    <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+              {invoicesLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="animate-pulse flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                          <FileText className="w-6 h-6 text-green-600" />
-                        </div>
+                        <div className="w-12 h-12 bg-muted rounded-lg"></div>
                         <div>
-                          <p className="font-medium">{invoice.number}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Issued: {invoice.date} | Due: {invoice.dueDate}
-                          </p>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {invoice.items.map((item, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
-                                {item}
-                              </Badge>
-                            ))}
+                          <div className="h-4 bg-muted rounded w-24 mb-2"></div>
+                          <div className="h-3 bg-muted rounded w-32"></div>
+                        </div>
+                      </div>
+                      <div className="h-6 bg-muted rounded w-16"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : invoices.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No invoices found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {invoices.map((invoice) => {
+                    const StatusIcon = getStatusIcon(invoice.status);
+                    return (
+                      <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-success" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{invoice.invoice_number}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Issued: {invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : 'N/A'}
+                              {invoice.due_date && ` | Due: ${new Date(invoice.due_date).toLocaleDateString()}`}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold">${Number(invoice.amount).toLocaleString()}</p>
+                          <Badge className={getStatusColor(invoice.status)} variant="outline">
+                            <StatusIcon className="w-3 h-3 mr-1" />
+                            {invoice.status}
+                          </Badge>
+                          <div className="mt-2">
+                            <Button size="sm" variant="outline">
+                              Download PDF
+                            </Button>
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold">${invoice.amount}</p>
-                        <Badge className={getStatusColor(invoice.status)}>
-                          <StatusIcon className="w-3 h-3 mr-1" />
-                          {invoice.status}
-                        </Badge>
-                        <div className="mt-2">
-                          <Button size="sm" variant="outline">
-                            Download PDF
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -406,32 +311,40 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
               <CardTitle>Account Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Company Name</Label>
-                  <Input value={customer.name} readOnly />
+              {customer && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Company Name</Label>
+                    <Input value={customer.name || ''} readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={customer.email || ''} readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input value={customer.phone || ''} readOnly />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Customer Type</Label>
+                    <Badge variant="outline">
+                      {customer.customer_type?.replace('_', ' ') || 'Standard'}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input value={customer.email} readOnly />
-                </div>
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input value={customer.phone} readOnly />
-                </div>
-                <div className="space-y-2">
-                  <Label>Status</Label>
-                  <Badge className={getStatusColor(customer.accountStatus)}>
-                    {customer.accountStatus}
-                  </Badge>
-                </div>
-              </div>
+              )}
               <div className="space-y-2">
-                <Label>Address</Label>
-                <Input value={customer.address} readOnly />
+                <Label>Service Address</Label>
+                <Input 
+                  value={customer?.service_address || customer?.address || ''} 
+                  readOnly 
+                />
               </div>
               <div className="pt-4">
-                <Button>Update Profile</Button>
+                <Button disabled>Update Profile</Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Contact support to update your profile information
+                </p>
               </div>
             </CardContent>
           </Card>
