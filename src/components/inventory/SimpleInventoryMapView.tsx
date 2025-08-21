@@ -2,9 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useCurrentInventoryLocations } from '@/hooks/useCurrentInventoryLocations';
-import { useInventoryMarkerManager } from '@/hooks/useInventoryMarkerManager';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Map as MapIcon, Satellite } from 'lucide-react';
 
 interface SimpleInventoryMapViewProps {
@@ -18,7 +16,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   selectedLocationId = 'all',
   selectedProductType = 'all'
 }) => {
-  console.log('🟢 SIMPLE MAP VIEW: Component rendering - NEW COMPONENT LOADED!');
+  console.log('🟢 SIMPLE MAP VIEW: Component rendering');
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -27,6 +25,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Fetch current deployed inventory data
   const { data: inventoryLocations = [], isLoading: dataLoading, error: dataError } = useCurrentInventoryLocations({
@@ -65,6 +64,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current || map.current) return;
 
+    console.log('🗺️ Initializing Mapbox map...');
     mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
@@ -80,6 +80,11 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
+    map.current.on('load', () => {
+      console.log('🗺️ Map loaded successfully!');
+      setMapLoaded(true);
+    });
+
     return () => {
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
@@ -87,6 +92,7 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
         map.current.remove();
         map.current = null;
       }
+      setMapLoaded(false);
     };
   }, [mapboxToken]);
 
@@ -100,12 +106,83 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
     }
   }, [mapStyle, mapboxToken]);
 
-  // Use the marker manager hook
-  useInventoryMarkerManager({
-    map: map.current,
-    locations: inventoryLocations,
-    onLocationSelect: setSelectedLocation
-  });
+  // Create markers directly in component (simplified approach)
+  useEffect(() => {
+    if (!map.current || !mapLoaded || !inventoryLocations.length) {
+      console.log('📍 Markers: Waiting for map and data...', {
+        hasMap: !!map.current,
+        mapLoaded,
+        locationsCount: inventoryLocations.length
+      });
+      return;
+    }
+
+    console.log('📍 Creating markers for', inventoryLocations.length, 'locations');
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    const statusColors = {
+      assigned: '#3b82f6',
+      delivered: '#10b981', 
+      in_service: '#f59e0b',
+      maintenance: '#ef4444',
+      available: '#6b7280'
+    };
+
+    // Calculate bounds for all locations
+    const bounds = new mapboxgl.LngLatBounds();
+    
+    inventoryLocations.forEach((location, index) => {
+      bounds.extend([location.longitude, location.latitude]);
+      
+      // Create marker element
+      const el = document.createElement('div');
+      el.style.cssText = `
+        width: 32px;
+        height: 32px;
+        background-color: ${statusColors[location.status as keyof typeof statusColors] || statusColors.available};
+        border: 2px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        user-select: none;
+      `;
+      
+      el.textContent = location.quantity > 1 ? location.quantity.toString() : (index + 1).toString();
+      
+      // Add click handler
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSelectedLocation(location);
+      });
+
+      // Create and add marker
+      const marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([location.longitude, location.latitude])
+        .addTo(map.current!);
+
+      markersRef.current.push(marker);
+    });
+
+    // Fit map to show all markers
+    if (!bounds.isEmpty()) {
+      map.current.fitBounds(bounds, { 
+        padding: 50,
+        maxZoom: 15
+      });
+    }
+
+    console.log('📍 Created', markersRef.current.length, 'markers successfully');
+
+  }, [map.current, mapLoaded, inventoryLocations]);
 
   if (loading) {
     return (
@@ -136,8 +213,8 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={mapContainer} className="w-full h-full min-h-[400px] rounded-lg" />
+    <div className="relative w-full h-[600px]">
+      <div ref={mapContainer} className="w-full h-full rounded-lg" />
       
       {/* Control Panel - Top Left */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
