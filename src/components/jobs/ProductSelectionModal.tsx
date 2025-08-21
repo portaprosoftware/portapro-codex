@@ -127,19 +127,19 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         </DialogHeader>
 
         <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search by name, code, tool number, or manufacturer..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          {/* Search - moved to top */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search by name, code, tool number, or manufacturer..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
 
+          {/* Location and Product Type Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Location Filter */}
             <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
               <SelectTrigger>
