@@ -46,7 +46,13 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   existingSelectedUnits = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+  // Initialize with existing selected units for this product
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(() => {
+    const existingForThisProduct = existingSelectedUnits
+      .filter(unit => unit.productId === product.id && unit.unitId !== 'bulk')
+      .map(unit => unit.unitId);
+    return new Set(existingForThisProduct);
+  });
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
 
   // Get set of already selected unit IDs for this product

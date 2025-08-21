@@ -305,7 +305,18 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               onUnitsSelect={handleUnitsSelect}
               onBulkSelect={handleBulkSelect}
               onBack={handleBackToMain}
-              existingSelectedUnits={selectedUnitsCollection}
+              existingSelectedUnits={[
+                // Include current session selections
+                ...selectedUnitsCollection,
+                // Also include units from existing job items as SelectedUnit objects
+                ...existingJobItems
+                  .filter(item => item.product_id === selectedProductForTracking?.id && item.strategy === 'specific')
+                  .flatMap(item => (item.specific_item_ids || []).map(unitId => ({
+                    unitId,
+                    itemCode: '', // Will be populated by the component
+                    productId: item.product_id
+                  })))
+              ]}
             />
           )}
           
