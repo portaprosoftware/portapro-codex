@@ -481,13 +481,16 @@ function WizardContent({ onClose }: { onClose: () => void }) {
               </Button>
               
               {isLastStep ? (
-                <Button
-                  onClick={handleCreateJob}
-                  disabled={createJobMutation.isPending}
-                  className="min-w-[120px]"
-                >
-                  {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
-                </Button>
+                // In quote mode, ReviewConfirmationStep handles the buttons
+                state.wizardMode === 'quote' ? null : (
+                  <Button
+                    onClick={handleCreateJob}
+                    disabled={createJobMutation.isPending}
+                    className="min-w-[120px]"
+                  >
+                    {createJobMutation.isPending ? 'Creating...' : 'Create Job'}
+                  </Button>
+                )
               ) : (
                 <Button onClick={handleNext}>
                   Next

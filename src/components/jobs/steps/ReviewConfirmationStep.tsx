@@ -565,14 +565,13 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           </Button>
         </div>
       ) : isQuoteMode ? (
-        /* Quote only mode */
-        <div className="flex justify-center">
+        /* Quote only mode - aligned with navigation */
+        <div className="flex justify-end">
           <Button
             onClick={onCreateQuote}
             disabled={creatingQuote}
-            className="min-w-[120px] bg-blue-600 hover:bg-blue-700 text-white"
+            className="min-w-[120px]"
           >
-            <FileText className="h-4 w-4 mr-2" />
             {creatingQuote ? 'Creating...' : 'Create Quote'}
           </Button>
         </div>
