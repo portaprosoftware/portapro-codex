@@ -65,26 +65,26 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
         </div>
 
         <AlertDialogFooter className="flex flex-col gap-2">
-          <div className="flex flex-col sm:flex-row gap-2 sm:justify-between">
-            <AlertDialogCancel onClick={onClose} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <AlertDialogCancel onClick={onClose}>
               Continue Editing
             </AlertDialogCancel>
             <Button
               onClick={handleSaveAndExit}
               disabled={isSaving || !draftName.trim()}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white flex-1"
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? 'Saving...' : 'Save as Draft'}
             </Button>
+            <AlertDialogAction
+              onClick={onDeleteAndExit}
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </AlertDialogAction>
           </div>
-          <AlertDialogAction
-            onClick={onDeleteAndExit}
-            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white w-full"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
