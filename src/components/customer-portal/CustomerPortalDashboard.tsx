@@ -114,12 +114,16 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
   };
 
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return CheckCircle;
-      case 'scheduled': return Calendar;
-      case 'in_progress': return Clock;
-      default: return AlertCircle;
+  const getJobTypeColor = (jobType: string) => {
+    switch (jobType.toLowerCase()) {
+      case 'delivery': return 'bg-blue-500';
+      case 'pickup': return 'bg-orange-700'; // darker orange
+      case 'partial pickup': return 'bg-orange-500';
+      case 'service': return 'bg-purple-500';
+      case 'survey/estimate': 
+      case 'survey':
+      case 'estimate': return 'bg-red-800'; // maroon
+      default: return 'bg-gray-500';
     }
   };
 
@@ -212,10 +216,7 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
       {/* Recent Activity */}
       <Card className="customer-portal-card border-0 shadow-none">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <div className="customer-portal-icon blue w-8 h-8">
-              <Calendar className="h-4 w-4" />
-            </div>
+          <CardTitle>
             Recent Activity
           </CardTitle>
         </CardHeader>
@@ -230,15 +231,15 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
           ) : (
             <div className="space-y-3">
               {recentJobs.map((job) => {
-                const StatusIcon = getStatusIcon(job.status);
                 const date = job.actual_completion_time || job.scheduled_date;
                 const displayDate = date ? new Date(date).toLocaleDateString() : 'N/A';
+                const jobTypeColor = getJobTypeColor(job.job_type);
                 
                 return (
                   <div key={job.id} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-muted/30">
                     <div className="flex items-center gap-3">
-                      <div className="customer-portal-icon green w-10 h-10">
-                        <StatusIcon className="h-5 w-5" />
+                      <div className={`w-10 h-10 rounded-full ${jobTypeColor} flex items-center justify-center`}>
+                        <div className="w-3 h-3 rounded-full bg-white"></div>
                       </div>
                       <div>
                         <p className="font-medium capitalize">{job.job_type}</p>
