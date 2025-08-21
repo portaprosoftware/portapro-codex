@@ -68,9 +68,9 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
     const date = new Date(stats.nextJob.scheduled_date);
     const capitalizedJobType = stats.nextJob.job_type.charAt(0).toUpperCase() + stats.nextJob.job_type.slice(1);
     return (
-      <div className="flex flex-col">
-        <span className="text-sm font-bold text-gray-700 mb-1">{capitalizedJobType}</span>
-        <span className="text-lg font-semibold">{date.toLocaleDateString()}</span>
+      <div className="flex flex-col justify-center h-full">
+        <span className="text-sm font-bold text-gray-700 mb-1 leading-tight">{capitalizedJobType}</span>
+        <span className="text-lg font-semibold leading-tight">{date.toLocaleDateString()}</span>
       </div>
     );
   };
