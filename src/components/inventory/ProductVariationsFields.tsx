@@ -93,3 +93,5 @@ export const ProductVariationsFields: React.FC<ProductVariationsFieldsProps> = (
     </div>
   );
 };
+
+export default ProductVariationsFields;
