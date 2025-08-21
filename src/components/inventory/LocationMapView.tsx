@@ -1,5 +1,5 @@
 import React from 'react';
-import { InventoryMapView } from './InventoryMapView';
+import { SimpleInventoryMapView } from './SimpleInventoryMapView';
 
 interface LocationMapViewProps {
   searchQuery?: string;
@@ -8,6 +8,5 @@ interface LocationMapViewProps {
 }
 
 export const LocationMapView: React.FC<LocationMapViewProps> = (props) => {
-  console.log('🗺️ LocationMapView: Component mounting with props:', props);
-  return <InventoryMapView {...props} />;
+  return <SimpleInventoryMapView {...props} />;
 };
