@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProductSelectionModal } from './ProductSelectionModal';
-import { Package, Edit3 } from 'lucide-react';
+import { Package, Edit3, X } from 'lucide-react';
 import type { JobItemSelection } from '@/contexts/JobWizardContext';
 
 interface UnitDetails {
@@ -124,6 +124,11 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
     }).join(', ');
   };
 
+  const handleDeleteItem = (indexToDelete: number) => {
+    const updatedItems = value.filter((_, index) => index !== indexToDelete);
+    onChange?.(updatedItems);
+  };
+
 
   return (
     <div className="space-y-4">
@@ -169,15 +174,25 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
                          `${item.quantity} Specific Units: ${getUnitDisplay(item.specific_item_ids || [])}`
                        )}
                      </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowProductModal(true)}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Edit3 className="h-4 w-4" />
-                  </Button>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       onClick={() => setShowProductModal(true)}
+                       className="text-muted-foreground hover:text-foreground"
+                     >
+                       <Edit3 className="h-4 w-4" />
+                     </Button>
+                     <Button
+                       variant="ghost"
+                       size="sm"
+                       onClick={() => handleDeleteItem(index)}
+                       className="text-muted-foreground hover:text-destructive"
+                     >
+                       <X className="h-4 w-4" />
+                     </Button>
+                   </div>
                 </div>
               </CardContent>
             </Card>
