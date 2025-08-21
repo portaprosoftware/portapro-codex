@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X, User, Truck } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -102,6 +103,13 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [selectedDateKey, setSelectedDateKey] = useState<string>('');
   const [selectedDayForAssignment, setSelectedDayForAssignment] = useState<string>('');
+  const [showRemoveOverrideDialog, setShowRemoveOverrideDialog] = useState(false);
+  const [overrideToRemove, setOverrideToRemove] = useState<{
+    type: 'driver' | 'vehicle';
+    serviceId?: string;
+    dateKey?: string;
+    dayKey?: string;
+  } | null>(null);
 
   // Fetch assigned driver details from step 4
   const { data: assignedDriver } = useQuery({
@@ -672,6 +680,85 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       ...updatedData,
       servicesSubtotal: finalSubtotal
     });
+  };
+
+  const confirmRemoveOverride = (type: 'driver' | 'vehicle', serviceId?: string, dateKey?: string, dayKey?: string) => {
+    setOverrideToRemove({ type, serviceId, dateKey, dayKey });
+    setShowRemoveOverrideDialog(true);
+  };
+
+  const removeOverride = () => {
+    if (!overrideToRemove) return;
+
+    const { type, serviceId, dateKey, dayKey } = overrideToRemove;
+
+    if (dayKey) {
+      // Remove day-level override
+      const currentDayAssignments = data.dayAssignments || {};
+      const dayAssignment = currentDayAssignments[dayKey] || {};
+      
+      const updatedDayAssignment = { ...dayAssignment };
+      if (type === 'driver') {
+        delete updatedDayAssignment.driver;
+      } else {
+        delete updatedDayAssignment.vehicle;
+      }
+      
+      // If no assignments left, remove the entire day entry
+      const hasAssignments = updatedDayAssignment.driver || updatedDayAssignment.vehicle;
+      const newDayAssignments = { ...currentDayAssignments };
+      
+      if (hasAssignments) {
+        newDayAssignments[dayKey] = updatedDayAssignment;
+      } else {
+        delete newDayAssignments[dayKey];
+      }
+      
+      onUpdate({
+        ...data,
+        dayAssignments: newDayAssignments
+      });
+    } else if (serviceId && dateKey) {
+      // Remove individual service override
+      const currentAssignments = data.individualServiceAssignments || {};
+      const serviceAssignments = currentAssignments[serviceId] || {};
+      const dateAssignment = serviceAssignments[dateKey] || {};
+      
+      const updatedDateAssignment = { ...dateAssignment };
+      if (type === 'driver') {
+        delete updatedDateAssignment.driver;
+      } else {
+        delete updatedDateAssignment.vehicle;
+      }
+      
+      // If no assignments left, remove the entire date entry
+      const hasAssignments = updatedDateAssignment.driver || updatedDateAssignment.vehicle;
+      const newServiceAssignments = { ...serviceAssignments };
+      
+      if (hasAssignments) {
+        newServiceAssignments[dateKey] = updatedDateAssignment;
+      } else {
+        delete newServiceAssignments[dateKey];
+      }
+      
+      // If no dates left for this service, remove the entire service entry
+      const hasServiceAssignments = Object.keys(newServiceAssignments).length > 0;
+      const newIndividualAssignments = { ...currentAssignments };
+      
+      if (hasServiceAssignments) {
+        newIndividualAssignments[serviceId] = newServiceAssignments;
+      } else {
+        delete newIndividualAssignments[serviceId];
+      }
+      
+      onUpdate({
+        ...data,
+        individualServiceAssignments: newIndividualAssignments
+      });
+    }
+
+    setShowRemoveOverrideDialog(false);
+    setOverrideToRemove(null);
   };
 
 
@@ -1450,45 +1537,77 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                   ))}
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-1 h-8"
-                                  disabled={data.useSameDriverForAll}
-                                  onClick={() => openDriverModalForDay(dateKey, dateInfo.date)}
-                                >
-                                  <User className="h-3 w-3" />
-                                  <span className="text-xs">
-                                    {data.useSameDriverForAll && data.scheduledDriverForAll 
-                                      ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
-                                      : dayAssignment?.driver
-                                      ? `${dayAssignment.driver.first_name} ${dayAssignment.driver.last_name}`
-                                      : assignedDriver
-                                      ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
-                                      : 'Assign Driver'
-                                    }
-                                  </span>
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-1 h-8"
-                                  disabled={data.useSameVehicleForAll}
-                                  onClick={() => openVehicleModalForDay(dateKey, dateInfo.date)}
-                                >
-                                  <Truck className="h-3 w-3" />
-                                  <span className="text-xs">
-                                    {data.useSameVehicleForAll && data.scheduledVehicleForAll 
-                                      ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
-                                      : dayAssignment?.vehicle
-                                      ? `${dayAssignment.vehicle.year} ${dayAssignment.vehicle.make} ${dayAssignment.vehicle.model}`
-                                      : assignedVehicle
-                                      ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
-                                      : 'Assign Vehicle'
-                                    }
-                                  </span>
-                                </Button>
+                               <div className="flex items-center space-x-2">
+                                 <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="flex items-center gap-1 h-8"
+                                   disabled={data.useSameDriverForAll}
+                                   onClick={() => openDriverModalForDay(dateKey, dateInfo.date)}
+                                 >
+                                   <User className="h-3 w-3" />
+                                   <span className={cn(
+                                     "text-xs",
+                                     dayAssignment?.driver && "text-muted-foreground opacity-70"
+                                   )}>
+                                     {data.useSameDriverForAll && data.scheduledDriverForAll 
+                                       ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
+                                       : dayAssignment?.driver
+                                       ? `${dayAssignment.driver.first_name} ${dayAssignment.driver.last_name}`
+                                       : assignedDriver
+                                       ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
+                                       : 'Assign Driver'
+                                     }
+                                   </span>
+                                   {dayAssignment?.driver && (
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-4 w-4 p-0 ml-1"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         confirmRemoveOverride('driver', undefined, undefined, dateKey);
+                                       }}
+                                     >
+                                       <X className="h-2 w-2" />
+                                     </Button>
+                                   )}
+                                 </Button>
+                                 <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="flex items-center gap-1 h-8"
+                                   disabled={data.useSameVehicleForAll}
+                                   onClick={() => openVehicleModalForDay(dateKey, dateInfo.date)}
+                                 >
+                                   <Truck className="h-3 w-3" />
+                                   <span className={cn(
+                                     "text-xs",
+                                     dayAssignment?.vehicle && "text-muted-foreground opacity-70"
+                                   )}>
+                                     {data.useSameVehicleForAll && data.scheduledVehicleForAll 
+                                       ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
+                                       : dayAssignment?.vehicle
+                                       ? `${dayAssignment.vehicle.year} ${dayAssignment.vehicle.make} ${dayAssignment.vehicle.model}`
+                                       : assignedVehicle
+                                       ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
+                                       : 'Assign Vehicle'
+                                     }
+                                   </span>
+                                   {dayAssignment?.vehicle && (
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-4 w-4 p-0 ml-1"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         confirmRemoveOverride('vehicle', undefined, undefined, dateKey);
+                                       }}
+                                     >
+                                       <X className="h-2 w-2" />
+                                     </Button>
+                                   )}
+                                 </Button>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -1512,36 +1631,62 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                   return (
                                     <div key={service.id} className="flex items-center justify-between p-2 border rounded bg-muted/30">
                                       <div className="text-sm">{service.name}</div>
-                                      <div className="flex items-center space-x-2">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="flex items-center gap-1 h-7"
-                                          onClick={() => openDriverModalForDate(service.id, dateInfo.date, dateKey)}
-                                        >
-                                          <User className="h-3 w-3" />
-                                          <span className="text-xs">
-                                            {individualAssignment?.driver
-                                              ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
-                                              : 'Override'
-                                            }
-                                          </span>
-                                        </Button>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="flex items-center gap-1 h-7"
-                                          onClick={() => openVehicleModalForDate(service.id, dateInfo.date, dateKey)}
-                                        >
-                                          <Truck className="h-3 w-3" />
-                                          <span className="text-xs">
-                                            {individualAssignment?.vehicle
-                                              ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make}`
-                                              : 'Override'
-                                            }
-                                          </span>
-                                        </Button>
-                                      </div>
+                                       <div className="flex items-center space-x-2">
+                                         <Button
+                                           variant="outline"
+                                           size="sm"
+                                           className="flex items-center gap-1 h-7"
+                                           onClick={() => openDriverModalForDate(service.id, dateInfo.date, dateKey)}
+                                         >
+                                           <User className="h-3 w-3" />
+                                           <span className="text-xs">
+                                             {individualAssignment?.driver
+                                               ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
+                                               : 'Override'
+                                             }
+                                           </span>
+                                           {individualAssignment?.driver && (
+                                             <Button
+                                               variant="ghost"
+                                               size="sm"
+                                               className="h-4 w-4 p-0 ml-1"
+                                               onClick={(e) => {
+                                                 e.stopPropagation();
+                                                 confirmRemoveOverride('driver', service.id, dateKey);
+                                               }}
+                                             >
+                                               <X className="h-2 w-2" />
+                                             </Button>
+                                           )}
+                                         </Button>
+                                         <Button
+                                           variant="outline"
+                                           size="sm"
+                                           className="flex items-center gap-1 h-7"
+                                           onClick={() => openVehicleModalForDate(service.id, dateInfo.date, dateKey)}
+                                         >
+                                           <Truck className="h-3 w-3" />
+                                           <span className="text-xs">
+                                             {individualAssignment?.vehicle
+                                               ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make}`
+                                               : 'Override'
+                                             }
+                                           </span>
+                                           {individualAssignment?.vehicle && (
+                                             <Button
+                                               variant="ghost"
+                                               size="sm"
+                                               className="h-4 w-4 p-0 ml-1"
+                                               onClick={(e) => {
+                                                 e.stopPropagation();
+                                                 confirmRemoveOverride('vehicle', service.id, dateKey);
+                                               }}
+                                             >
+                                               <X className="h-2 w-2" />
+                                             </Button>
+                                           )}
+                                         </Button>
+                                       </div>
                                     </div>
                                   );
                                 })}
@@ -1605,46 +1750,78 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                 <div className="text-sm text-muted-foreground">—</div>
                                 <div className="text-sm text-muted-foreground">{service.name}</div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-1 h-8"
-                                  disabled={data.useSameDriverForAll}
-                                  onClick={() => openDriverModalForDate(service.id, visit.date, dateKey)}
-                                >
-                                  <User className="h-3 w-3" />
-                                  <span className="text-xs">
-                                    {data.useSameDriverForAll && data.scheduledDriverForAll 
-                                      ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
-                                      : individualAssignment?.driver
-                                      ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
-                                      : assignedDriver
-                                      ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
-                                      : 'Assign Driver'
-                                    }
-                                  </span>
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex items-center gap-1 h-8"
-                                  disabled={data.useSameVehicleForAll}
-                                  onClick={() => openVehicleModalForDate(service.id, visit.date, dateKey)}
-                                >
-                                  <Truck className="h-3 w-3" />
-                                  <span className="text-xs">
-                                    {data.useSameVehicleForAll && data.scheduledVehicleForAll 
-                                      ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
-                                      : individualAssignment?.vehicle
-                                      ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make} ${individualAssignment.vehicle.model}`
-                                      : assignedVehicle
-                                      ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
-                                      : 'Assign Vehicle'
-                                    }
-                                  </span>
-                                </Button>
-                              </div>
+                               <div className="flex items-center space-x-2">
+                                 <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="flex items-center gap-1 h-8"
+                                   disabled={data.useSameDriverForAll}
+                                   onClick={() => openDriverModalForDate(service.id, visit.date, dateKey)}
+                                 >
+                                   <User className="h-3 w-3" />
+                                   <span className={cn(
+                                     "text-xs",
+                                     individualAssignment?.driver && "text-muted-foreground opacity-70"
+                                   )}>
+                                     {data.useSameDriverForAll && data.scheduledDriverForAll 
+                                       ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
+                                       : individualAssignment?.driver
+                                       ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
+                                       : assignedDriver
+                                       ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
+                                       : 'Assign Driver'
+                                     }
+                                   </span>
+                                   {individualAssignment?.driver && (
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-4 w-4 p-0 ml-1"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         confirmRemoveOverride('driver', service.id, dateKey);
+                                       }}
+                                     >
+                                       <X className="h-2 w-2" />
+                                     </Button>
+                                   )}
+                                 </Button>
+                                 <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="flex items-center gap-1 h-8"
+                                   disabled={data.useSameVehicleForAll}
+                                   onClick={() => openVehicleModalForDate(service.id, visit.date, dateKey)}
+                                 >
+                                   <Truck className="h-3 w-3" />
+                                   <span className={cn(
+                                     "text-xs",
+                                     individualAssignment?.vehicle && "text-muted-foreground opacity-70"
+                                   )}>
+                                     {data.useSameVehicleForAll && data.scheduledVehicleForAll 
+                                       ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
+                                       : individualAssignment?.vehicle
+                                       ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make} ${individualAssignment.vehicle.model}`
+                                       : assignedVehicle
+                                       ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
+                                       : 'Assign Vehicle'
+                                     }
+                                   </span>
+                                   {individualAssignment?.vehicle && (
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-4 w-4 p-0 ml-1"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         confirmRemoveOverride('vehicle', service.id, dateKey);
+                                       }}
+                                     >
+                                       <X className="h-2 w-2" />
+                                     </Button>
+                                   )}
+                                 </Button>
+                               </div>
                             </div>
                           );
                         })}
@@ -1695,6 +1872,25 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         }
         onVehicleSelect={handleVehicleSelect}
       />
+
+      {/* Remove Override Confirmation Dialog */}
+      <AlertDialog open={showRemoveOverrideDialog} onOpenChange={setShowRemoveOverrideDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Override</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this {overrideToRemove?.type} override? 
+              The assignment will revert to the default or higher-level assignment.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={removeOverride}>
+              Remove Override
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
