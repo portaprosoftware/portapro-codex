@@ -12,6 +12,14 @@ interface SimpleInventoryMapViewProps {
   selectedProductType?: string;
 }
 
+interface GroupedProduct {
+  name: string;
+  totalQuantity: number;
+  trackedUnits: Array<{ code: string; quantity: number }>;
+  bulkQuantity: number;
+  deliveredDate: string;
+}
+
 export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
   searchQuery = '',
   selectedLocationId = 'all',
@@ -216,6 +224,39 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
     return colors[status as keyof typeof colors] || colors.available;
   };
 
+  // Helper function to group products by name and type
+  const groupProductsByType = (items: any[]): GroupedProduct[] => {
+    const grouped = items.reduce((acc, item) => {
+      const productName = item.product_name;
+      if (!acc[productName]) {
+        acc[productName] = {
+          name: productName,
+          totalQuantity: 0,
+          trackedUnits: [],
+          bulkQuantity: 0,
+          deliveredDate: item.scheduled_date || item.delivery_date
+        };
+      }
+      
+      acc[productName].totalQuantity += item.quantity;
+      
+      // If item has an item_code, it's a tracked unit
+      if (item.item_code && item.item_code !== 'BULK') {
+        acc[productName].trackedUnits.push({
+          code: item.item_code,
+          quantity: item.quantity
+        });
+      } else {
+        // Otherwise it's bulk
+        acc[productName].bulkQuantity += item.quantity;
+      }
+      
+      return acc;
+    }, {} as Record<string, GroupedProduct>);
+    
+    return Object.values(grouped);
+  };
+
   if (loading) {
     return (
       <Card className="p-6">
@@ -361,73 +402,70 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                 </div>
               </div>
 
-              {/* Individual Items List */}
+              {/* Grouped Product Summary */}
               <div>
-                <h4 className="font-medium mb-2">Items at this location:</h4>
+                <h4 className="font-medium mb-2">Equipment at this location:</h4>
                 <div className="space-y-2">
                   {selectedLocation.items && selectedLocation.items.length > 0 ? (
-                    selectedLocation.items.map((item, index) => (
-                      <div key={item.id} className="border rounded-lg p-3 bg-background">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-medium text-sm">{item.product_name}</span>
-                          <span className="text-xs px-2 py-1 rounded-full font-medium" 
-                                style={{
-                                  backgroundColor: getStatusColor(item.status) + '20',
-                                  color: getStatusColor(item.status)
-                                }}>
-                            {item.status}
+                    groupProductsByType(selectedLocation.items).map((product, index) => (
+                      <div key={index} className="border rounded-lg p-3 bg-background">
+                        <div className="mb-2">
+                          <span className="font-medium text-sm">
+                            {product.totalQuantity} {product.name}
+                            {product.totalQuantity > 1 ? 's' : ''}
                           </span>
+                          {(product.bulkQuantity > 0 && product.trackedUnits.length > 0) && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              ({product.bulkQuantity} bulk, {product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''})
+                            </span>
+                          )}
+                          {(product.bulkQuantity > 0 && product.trackedUnits.length === 0) && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              ({product.bulkQuantity} bulk)
+                            </span>
+                          )}
+                          {(product.bulkQuantity === 0 && product.trackedUnits.length > 0) && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              ({product.trackedUnits.length} tracked unit{product.trackedUnits.length > 1 ? 's' : ''})
+                            </span>
+                          )}
                         </div>
-                        <div className="space-y-1 text-xs text-muted-foreground">
-                          <div className="flex justify-between">
-                            <span>Item Code:</span>
-                            <span>{item.item_code}</span>
+                        {product.trackedUnits.length > 0 && (
+                          <div className="text-xs text-muted-foreground mb-1">
+                            <span className="font-medium">Tracked units:</span> {product.trackedUnits.map(unit => unit.code).join(', ')}
                           </div>
-                          <div className="flex justify-between">
-                            <span>Quantity:</span>
-                            <span className="font-medium">{item.quantity}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Job Type:</span>
-                            <span>{item.job_type}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Scheduled:</span>
-                            <span>{new Date(item.scheduled_date).toLocaleDateString()}</span>
-                          </div>
+                        )}
+                        <div className="text-xs text-muted-foreground">
+                          <span className="font-medium">Delivered on:</span> {new Date(product.deliveredDate).toLocaleDateString()}
                         </div>
                       </div>
                     ))
                   ) : (
                     // Single item fallback
                     <div className="border rounded-lg p-3 bg-background">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-medium text-sm">{selectedLocation.product_name}</span>
-                        <span className="text-xs px-2 py-1 rounded-full font-medium" 
-                              style={{
-                                backgroundColor: getStatusColor(selectedLocation.status) + '20',
-                                color: getStatusColor(selectedLocation.status)
-                              }}>
-                          {selectedLocation.status}
+                      <div className="mb-2">
+                        <span className="font-medium text-sm">
+                          {selectedLocation.quantity} {selectedLocation.product_name}
+                          {selectedLocation.quantity > 1 ? 's' : ''}
                         </span>
+                        {selectedLocation.item_code && selectedLocation.item_code !== 'BULK' && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            (1 tracked unit)
+                          </span>
+                        )}
+                        {(!selectedLocation.item_code || selectedLocation.item_code === 'BULK') && selectedLocation.quantity > 1 && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            ({selectedLocation.quantity} bulk)
+                          </span>
+                        )}
                       </div>
-                      <div className="space-y-1 text-xs text-muted-foreground">
-                        <div className="flex justify-between">
-                          <span>Item Code:</span>
-                          <span>{selectedLocation.item_code}</span>
+                      {selectedLocation.item_code && selectedLocation.item_code !== 'BULK' && (
+                        <div className="text-xs text-muted-foreground mb-1">
+                          <span className="font-medium">Tracked unit:</span> {selectedLocation.item_code}
                         </div>
-                        <div className="flex justify-between">
-                          <span>Quantity:</span>
-                          <span className="font-medium">{selectedLocation.quantity}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Job Type:</span>
-                          <span>{selectedLocation.job_type}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Scheduled:</span>
-                          <span>{new Date(selectedLocation.scheduled_date).toLocaleDateString()}</span>
-                        </div>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        <span className="font-medium">Delivered on:</span> {new Date(selectedLocation.scheduled_date).toLocaleDateString()}
                       </div>
                     </div>
                   )}
