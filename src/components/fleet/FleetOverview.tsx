@@ -76,8 +76,8 @@ export const FleetOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Page Header with Stats */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
-        {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-card p-4 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Total Vehicles</div>

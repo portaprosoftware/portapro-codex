@@ -32,7 +32,7 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm mt-6 mb-6">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
