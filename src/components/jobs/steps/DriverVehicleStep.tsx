@@ -50,12 +50,12 @@ export const DriverVehicleStep: React.FC = () => {
         try {
           const { data, error } = await supabase
             .from('vehicles')
-            .select('license_plate')
+            .select('license_plate, year, make, model')
             .eq('id', state.data.vehicle_id)
             .single();
           
           if (data && !error) {
-            setVehicleSummary(data.license_plate);
+            setVehicleSummary(`${data.year} ${data.make} ${data.model}\n${data.license_plate}`);
           }
         } catch (error) {
           console.error('Error loading vehicle name:', error);
@@ -89,7 +89,16 @@ export const DriverVehicleStep: React.FC = () => {
         <div className="flex items-center gap-3">
           <Button onClick={() => setVehicleOpen(true)}>Select Vehicle</Button>
           {state.data.vehicle_id ? (
-            <span className="text-sm text-muted-foreground">{vehicleSummary || `ID: ${state.data.vehicle_id}`}</span>
+            <div className="text-sm text-muted-foreground">
+              {vehicleSummary ? (
+                <div>
+                  <div>{vehicleSummary.split('\n')[0]}</div>
+                  <div>{vehicleSummary.split('\n')[1]}</div>
+                </div>
+              ) : (
+                `ID: ${state.data.vehicle_id}`
+              )}
+            </div>
           ) : (
             <span className="text-sm text-muted-foreground">No vehicle selected</span>
           )}
@@ -127,7 +136,7 @@ export const DriverVehicleStep: React.FC = () => {
         onVehicleSelect={(vehicle) => {
           if (vehicle) {
             updateData({ vehicle_id: vehicle.id });
-            setVehicleSummary(vehicle.license_plate);
+            setVehicleSummary(`${vehicle.year} ${vehicle.make} ${vehicle.model}\n${vehicle.license_plate}`);
           } else {
             updateData({ vehicle_id: null });
             setVehicleSummary('');
