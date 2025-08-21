@@ -69,6 +69,8 @@ export interface JobWizardData {
   pickup_time?: string | null;
   pickup_notes?: string;
   pickup_is_priority?: boolean;
+  pickup_driver_id?: string | null;
+  pickup_vehicle_id?: string | null;
   
   // Partial pickup details (multiple partial pickups between delivery and final pickup)
   create_partial_pickups?: boolean;
@@ -79,6 +81,14 @@ export interface JobWizardData {
     notes?: string;
     is_priority?: boolean;
   }>;
+  
+  // Partial pickup driver/vehicle assignments
+  partial_pickup_assignments?: {
+    [pickupId: string]: {
+      driver_id?: string | null;
+      vehicle_id?: string | null;
+    };
+  };
 }
 
 interface JobWizardState {
