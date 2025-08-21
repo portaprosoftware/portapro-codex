@@ -27,15 +27,10 @@ export function PortalLinkModal({ isOpen, onClose, customerId }: PortalLinkModal
   ];
 
   const handleGenerateLink = () => {
-    // Generate a secure portal link
+    // Generate a real portal link using customer ID
     const baseUrl = window.location.origin;
-    const token = generateSecureToken();
-    const link = `${baseUrl}/portal/${token}?type=${linkType}&expires=${expirationDays}`;
+    const link = `${baseUrl}/portal/${customerId}?type=${linkType}&expires=${expirationDays}`;
     setGeneratedLink(link);
-  };
-
-  const generateSecureToken = () => {
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
   };
 
   const handleCopyLink = async () => {

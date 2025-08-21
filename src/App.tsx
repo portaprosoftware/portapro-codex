@@ -44,7 +44,7 @@ import TeamManagement from './pages/TeamManagement';
 import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
-
+import CustomerPortalPage from './pages/CustomerPortalPage';
 
 import Features from './pages/Features';
 
@@ -391,6 +391,20 @@ const App = () => {
           <Route path="/settings" element={
             <>
               <SignedIn><Layout><Settings /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          
+          {/* Customer Portal Route */}
+          <Route path="/portal" element={
+            <>
+              <SignedIn><CustomerPortalPage /></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/portal/:customerId" element={
+            <>
+              <SignedIn><CustomerPortalPage /></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />

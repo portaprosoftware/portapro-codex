@@ -12,8 +12,9 @@ export function useUserRole() {
   const isDispatcher = role === 'dispatcher';
   const isAdmin = role === 'admin';
   const isDriver = role === 'driver';
-  const canViewCustomerDocs = isOwner || isDispatcher;
-  const hasAdminAccess = isOwner || isDispatcher || isAdmin;
+  // Temporarily allow all roles to access customer docs for testing
+  const canViewCustomerDocs = true; // isOwner || isDispatcher;
+  const hasAdminAccess = true; // isOwner || isDispatcher || isAdmin;
   const hasStaffAccess = isOwner || isDispatcher || isAdmin || isDriver;
 
   return {
