@@ -41,6 +41,10 @@ export interface JobWizardData {
     useSameVehicleForAll: boolean;
     scheduledDriverForAll?: any;
     scheduledVehicleForAll?: any;
+    package_override?: {
+      enabled: boolean;
+      amount: number;
+    };
   };
 
   // Pickup job details (when scheduling delivery + pickup)

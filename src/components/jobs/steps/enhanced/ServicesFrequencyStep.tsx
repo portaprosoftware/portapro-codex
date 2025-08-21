@@ -46,6 +46,12 @@ interface ServiceItem {
   include_pickup_service: boolean;
   visit_count: number;
   service_dates: string[];
+  // Pricing override
+  price_override?: {
+    enabled: boolean;
+    method: 'per_visit' | 'flat_for_job';
+    amount: number;
+  };
 }
 
 interface ServicesFrequencyData {
@@ -62,6 +68,11 @@ interface ServicesFrequencyData {
         vehicle?: any;
       }
     }
+  };
+  // Package override
+  package_override?: {
+    enabled: boolean;
+    amount: number;
   };
 }
 
@@ -156,7 +167,8 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         include_dropoff_service: false,
         include_pickup_service: false,
         visit_count: 0,
-        service_dates: []
+        service_dates: [],
+        price_override: undefined
       }));
 
       setAvailableServices(services);
@@ -168,13 +180,18 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   };
 
   const calculateServicesSubtotal = () => {
-    const subtotal = data.selectedServices.reduce((sum, service) => 
+    const calculatedSubtotal = data.selectedServices.reduce((sum, service) => 
       sum + service.calculated_cost, 0
     );
     
+    // Use package override if enabled, otherwise use calculated subtotal
+    const finalSubtotal = data.package_override?.enabled 
+      ? data.package_override.amount 
+      : calculatedSubtotal;
+    
     onUpdate({
       ...data,
-      servicesSubtotal: subtotal
+      servicesSubtotal: finalSubtotal
     });
   };
 
@@ -184,16 +201,38 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
     
     let perVisitCost = 0;
-    switch (service.pricing_method) {
-      case 'per_visit':
-        perVisitCost = service.per_visit_cost || 0;
-        break;
-      case 'per_hour':
-        perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
-        break;
-      case 'flat_rate':
-        perVisitCost = service.flat_rate_cost || 0;
-        break;
+    
+    // Check for pricing override first
+    if (service.price_override?.enabled) {
+      if (service.price_override.method === 'per_visit') {
+        perVisitCost = service.price_override.amount;
+      } else if (service.price_override.method === 'flat_for_job') {
+        // For flat jobs, we'll calculate visits first then override the total
+        switch (service.pricing_method) {
+          case 'per_visit':
+            perVisitCost = service.per_visit_cost || 0;
+            break;
+          case 'per_hour':
+            perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+            break;
+          case 'flat_rate':
+            perVisitCost = service.flat_rate_cost || 0;
+            break;
+        }
+      }
+    } else {
+      // Use standard pricing
+      switch (service.pricing_method) {
+        case 'per_visit':
+          perVisitCost = service.per_visit_cost || 0;
+          break;
+        case 'per_hour':
+          perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+          break;
+        case 'flat_rate':
+          perVisitCost = service.flat_rate_cost || 0;
+          break;
+      }
     }
 
     // Calculate service visits based on frequency and rental duration
@@ -211,9 +250,16 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       timezone: 'America/New_York'
     });
 
+    let finalCost = calculation.totalCost;
+    
+    // Apply flat override if set
+    if (service.price_override?.enabled && service.price_override.method === 'flat_for_job') {
+      finalCost = service.price_override.amount;
+    }
+
     return {
       ...service,
-      calculated_cost: calculation.totalCost,
+      calculated_cost: finalCost,
       visit_count: calculation.visits.length,
       service_dates: calculation.visits.map(v => v.displayDate)
     };
@@ -476,6 +522,14 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   };
 
   const getPricingDisplay = (service: ServiceItem) => {
+    if (service.price_override?.enabled) {
+      if (service.price_override.method === 'per_visit') {
+        return `$${service.price_override.amount.toFixed(2)}/visit (Custom)`;
+      } else {
+        return `$${service.price_override.amount.toFixed(2)} flat (Custom)`;
+      }
+    }
+    
     switch (service.pricing_method) {
       case 'per_visit':
         return `$${service.per_visit_cost?.toFixed(2)}/visit`;
@@ -486,6 +540,38 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       default:
         return 'Contact for pricing';
     }
+  };
+
+  const updateServicePriceOverride = (serviceId: string, enabled: boolean, method?: 'per_visit' | 'flat_for_job', amount?: number) => {
+    const updatedServices = data.selectedServices.map(service => {
+      if (service.id === serviceId) {
+        const updatedService = {
+          ...service,
+          price_override: enabled ? {
+            enabled: true,
+            method: method || 'per_visit',
+            amount: amount || 0
+          } : undefined
+        };
+        return calculateServiceCost(updatedService);
+      }
+      return service;
+    });
+
+    onUpdate({
+      ...data,
+      selectedServices: updatedServices
+    });
+  };
+
+  const updatePackageOverride = (enabled: boolean, amount?: number) => {
+    onUpdate({
+      ...data,
+      package_override: enabled ? {
+        enabled: true,
+        amount: amount || 0
+      } : undefined
+    });
   };
 
   const getFrequencyLabel = (frequency: string, customType?: string, customDays?: number, daysOfWeek?: string[], specificDates?: ServiceDateDetail[]) => {
@@ -575,6 +661,11 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                             <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
                               {getPricingDisplay(service)}
                             </Badge>
+                            {selectedService?.price_override?.enabled && (
+                              <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0">
+                                Custom Price
+                              </Badge>
+                            )}
                             {service.estimated_duration_hours && (
                               <Badge variant="outline" className="flex items-center space-x-1">
                                 <Clock className="w-3 h-3" />
@@ -585,6 +676,91 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                         </div>
                       </div>
                       
+                       {/* Custom Pricing Override - Only show when service is selected */}
+                       {isSelected && selectedService && (
+                         <div className="border-t pt-3 mt-3">
+                           <div className="space-y-3">
+                             <div className="flex items-center space-x-2">
+                               <Checkbox
+                                 id={`custom-price-${service.id}`}
+                                 checked={selectedService.price_override?.enabled || false}
+                                 onCheckedChange={(checked) => {
+                                   if (checked) {
+                                     updateServicePriceOverride(service.id, true, 'per_visit', selectedService.per_visit_cost || 0);
+                                   } else {
+                                     updateServicePriceOverride(service.id, false);
+                                   }
+                                 }}
+                               />
+                               <Label htmlFor={`custom-price-${service.id}`} className="text-sm font-medium">
+                                 Custom pricing for this service
+                               </Label>
+                             </div>
+                             
+                             {selectedService.price_override?.enabled && (
+                               <div className="ml-6 space-y-3 p-3 bg-muted/30 rounded-lg">
+                                 <div className="flex items-center space-x-3">
+                                   <Label className="text-sm">Pricing method:</Label>
+                                   <div className="flex space-x-2">
+                                     <Button
+                                       variant={selectedService.price_override.method === 'per_visit' ? 'default' : 'outline'}
+                                       size="sm"
+                                       onClick={() => updateServicePriceOverride(
+                                         service.id, 
+                                         true, 
+                                         'per_visit', 
+                                         selectedService.price_override?.amount || selectedService.per_visit_cost || 0
+                                       )}
+                                     >
+                                       Per Visit
+                                     </Button>
+                                     <Button
+                                       variant={selectedService.price_override.method === 'flat_for_job' ? 'default' : 'outline'}
+                                       size="sm"
+                                       onClick={() => updateServicePriceOverride(
+                                         service.id, 
+                                         true, 
+                                         'flat_for_job', 
+                                         selectedService.price_override?.amount || (selectedService.per_visit_cost || 0) * (selectedService.visit_count || 1)
+                                       )}
+                                     >
+                                       Flat for Job
+                                     </Button>
+                                   </div>
+                                 </div>
+                                 <div>
+                                   <Label className="text-sm font-medium">
+                                     {selectedService.price_override.method === 'per_visit' ? 'Price per visit' : 'Total flat price'}
+                                   </Label>
+                                   <div className="flex items-center space-x-2 mt-1">
+                                     <span className="text-sm">$</span>
+                                     <Input
+                                       type="number"
+                                       min="0"
+                                       step="0.01"
+                                       value={selectedService.price_override.amount}
+                                       onChange={(e) => updateServicePriceOverride(
+                                         service.id,
+                                         true,
+                                         selectedService.price_override?.method || 'per_visit',
+                                         parseFloat(e.target.value) || 0
+                                       )}
+                                       className="flex-1"
+                                     />
+                                   </div>
+                                   <p className="text-xs text-muted-foreground mt-1">
+                                     {selectedService.price_override.method === 'per_visit' 
+                                       ? 'Enter the custom rate per service visit'
+                                       : 'Enter a flat price for this service regardless of visit count'
+                                     }
+                                   </p>
+                                 </div>
+                               </div>
+                             )}
+                           </div>
+                         </div>
+                       )}
+
                        {/* Frequency Selection - Only show when service is selected */}
                        {isSelected && selectedService && (
                          <div className="border-t pt-3 mt-3">
@@ -898,9 +1074,68 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                 <DollarSign className="w-5 h-5" />
                 <span>Services Subtotal</span>
               </span>
-              <span>${data.servicesSubtotal.toFixed(2)}</span>
+              <div className="flex items-center space-x-2">
+                {data.package_override?.enabled && (
+                  <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0">
+                    Package Deal
+                  </Badge>
+                )}
+                <span>${data.servicesSubtotal.toFixed(2)}</span>
+              </div>
             </CardTitle>
           </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Package Override Controls */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="package-override"
+                  checked={data.package_override?.enabled || false}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      const calculatedSubtotal = data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0);
+                      updatePackageOverride(true, calculatedSubtotal);
+                    } else {
+                      updatePackageOverride(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="package-override" className="text-sm font-medium">
+                  Set package price for all services
+                </Label>
+              </div>
+              
+              {data.package_override?.enabled && (
+                <div className="ml-6 space-y-3 p-3 bg-muted/30 rounded-lg">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>Calculated subtotal:</span>
+                      <span className="line-through">
+                        ${data.selectedServices.reduce((sum, service) => sum + service.calculated_cost, 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Package total</Label>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={data.package_override.amount}
+                          onChange={(e) => updatePackageOverride(true, parseFloat(e.target.value) || 0)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Replaces calculated line totals. Visits are still scheduled; billing uses this total.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
         </Card>
       )}
 
