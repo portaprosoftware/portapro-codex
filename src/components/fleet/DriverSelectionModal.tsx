@@ -269,7 +269,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                         {/* Working Hours */}
                         <div className="flex items-center text-sm text-muted-foreground mb-2">
                           <Clock className="h-4 w-4 mr-1" />
-                          <span>08:00:00 - 17:00:00</span>
+                          <span>8:00 AM - 5:00 PM</span>
                         </div>
 
                         {/* Time Slots */}
