@@ -330,104 +330,25 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
           )}
         </div>
 
-        {/* Service Assignment Schedule */}
+        {/* Itemized Service Assignments */}
         {services.length > 0 && (
           <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
             <div className="flex items-center justify-between">
-            <h3 className="font-medium">Service Assignment Schedule</h3>
-              <div className="text-xs text-muted-foreground">
-                {servicesData?.groupAssignmentsByDay ? 'Grouped by day' : 'Individual assignments'}
-              </div>
+              <h3 className="font-medium">Itemized Service Assignments</h3>
             </div>
             
-            {servicesData?.groupAssignmentsByDay && servicesData?.dayAssignments ? (
-              // Day-based assignments
-              <div className="space-y-3">
-                {Object.entries(servicesData.dayAssignments).map(([dateKey, assignment]) => (
-                  <div key={dateKey} className="border rounded-lg p-3 space-y-2">
-                    <div className="font-medium text-sm">{new Date(dateKey).toLocaleDateString()}</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                          <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                        <span>{(assignment as any)?.driver?.name || 'No driver assigned'}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                        </div>
-                        <span>{(assignment as any)?.vehicle?.display_name || 'No vehicle assigned'}</span>
-                      </div>
+            <div className="space-y-2">
+              {services.map((service: any, index: number) => (
+                <div key={service.id || index} className="border rounded-lg p-3">
+                  <div className="font-medium text-sm">{service.name || service.service_code || 'Service'}</div>
+                  {service.frequency && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {getFrequencyLabel(service)} • {formatCurrency(Number(service.calculated_cost || 0))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : servicesData?.individualServiceAssignments ? (
-              // Individual service assignments
-              <div className="space-y-3">
-                {services.map((service: any) => {
-                  const serviceAssignments = servicesData.individualServiceAssignments?.[service.id] || {};
-                  return (
-                    <div key={service.id} className="border rounded-lg p-3 space-y-2">
-                      <div className="font-medium text-sm">{service.name || service.service_code}</div>
-                      {Object.entries(serviceAssignments).map(([dateKey, assignment]: [string, any]) => (
-                        <div key={dateKey} className="pl-4 border-l-2 border-muted space-y-1">
-                          <div className="text-xs text-muted-foreground">{new Date(dateKey).toLocaleDateString()}</div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                                <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                              </div>
-                              <span className="text-xs">{assignment.driver?.name || 'No driver'}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                                <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                              </div>
-                              <span className="text-xs">{assignment.vehicle?.display_name || 'No vehicle'}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : servicesData?.scheduledDriverForAll || servicesData?.scheduledVehicleForAll ? (
-              // Global assignments for all services
-              <div className="border rounded-lg p-3 space-y-2">
-                <div className="font-medium text-sm">All Services</div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    <span>{servicesData.scheduledDriverForAll?.name || 'No driver assigned'}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <span>{servicesData.scheduledVehicleForAll?.display_name || 'No vehicle assigned'}</span>
-                  </div>
+                  )}
                 </div>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">No service assignments configured</div>
-            )}
+              ))}
+            </div>
           </div>
         )}
 
