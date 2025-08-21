@@ -2,6 +2,7 @@ import React from 'react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { ServicesFrequencyStep } from '@/components/jobs/steps/enhanced/ServicesFrequencyStep';
 
 export const ServicesFrequencyOnlyStep: React.FC = () => {
   const { state, updateData, previousStep } = useJobWizard();
@@ -24,19 +25,11 @@ export const ServicesFrequencyOnlyStep: React.FC = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Services & Frequency</h3>
-        <p className="text-muted-foreground">
-          Select additional services and configure their frequency for this job.
-        </p>
-        
-        {/* Services selection UI would go here */}
-        <div className="p-8 border-2 border-dashed border-muted-foreground/20 rounded-lg text-center">
-          <p className="text-muted-foreground">
-            Services configuration interface coming soon...
-          </p>
-        </div>
-      </div>
+      {/* Actual Services Functionality */}
+      <ServicesFrequencyStep
+        data={state.data.servicesData || { selectedServices: [], servicesSubtotal: 0 }}
+        onUpdate={(svc) => updateData({ servicesData: svc })}
+      />
     </div>
   );
 };
