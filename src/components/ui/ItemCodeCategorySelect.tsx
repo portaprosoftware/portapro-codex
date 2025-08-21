@@ -43,7 +43,7 @@ export const ItemCodeCategorySelect: React.FC<ItemCodeCategorySelectProps> = ({
           <SelectItem key={category.value} value={category.value} className="py-3">
             <div className="flex items-center justify-between w-full">
               <span className="font-medium">{category.label}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground ml-auto">
                 {category.description}
               </span>
             </div>
