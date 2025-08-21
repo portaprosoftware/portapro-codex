@@ -551,21 +551,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     setShowVehicleModal(true);
   };
 
-  const toggleDayExpansion = (dateKey: string) => {
-    const currentExpanded = data.expandedDays || new Set();
-    const newExpanded = new Set(currentExpanded);
-    
-    if (newExpanded.has(dateKey)) {
-      newExpanded.delete(dateKey);
-    } else {
-      newExpanded.add(dateKey);
-    }
-    
-    onUpdate({
-      ...data,
-      expandedDays: newExpanded
-    });
-  };
+  // Removed toggleDayExpansion function - no longer needed
 
   const openGlobalDriverModal = () => {
     setSelectedServiceId('');
@@ -1525,7 +1511,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                       </div>
                       {sortedDates.map(([dateKey, dateInfo]) => {
                         const dayAssignment = data.dayAssignments?.[dateKey];
-                        const isExpanded = data.expandedDays?.has(dateKey);
                         
                         return (
                           <div key={dateKey} className="space-y-2">
@@ -1607,90 +1592,8 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                      </Button>
                                    )}
                                  </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
-                                  onClick={() => toggleDayExpansion(dateKey)}
-                                >
-                                  <span className="text-xs">{isExpanded ? '−' : '+'}</span>
-                                </Button>
                               </div>
                             </div>
-
-                            {/* Expanded Individual Services */}
-                            {isExpanded && (
-                              <div className="ml-4 space-y-2 border-l-2 border-muted pl-4">
-                                {dateInfo.services.map((serviceInfo) => {
-                                  const service = data.selectedServices.find(s => s.id === serviceInfo.id);
-                                  if (!service) return null;
-                                  
-                                  const individualAssignment = getIndividualAssignment(service.id, dateKey);
-                                  
-                                  return (
-                                    <div key={service.id} className="flex items-center justify-between p-2 border rounded bg-muted/30">
-                                      <div className="text-sm">{service.name}</div>
-                                       <div className="flex items-center space-x-2">
-                                         <Button
-                                           variant="outline"
-                                           size="sm"
-                                           className="flex items-center gap-1 h-7"
-                                           onClick={() => openDriverModalForDate(service.id, dateInfo.date, dateKey)}
-                                         >
-                                           <User className="h-3 w-3" />
-                                           <span className="text-xs">
-                                             {individualAssignment?.driver
-                                               ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
-                                               : 'Override'
-                                             }
-                                           </span>
-                                           {individualAssignment?.driver && (
-                                             <Button
-                                               variant="ghost"
-                                               size="sm"
-                                               className="h-4 w-4 p-0 ml-1"
-                                               onClick={(e) => {
-                                                 e.stopPropagation();
-                                                 confirmRemoveOverride('driver', service.id, dateKey);
-                                               }}
-                                             >
-                                               <X className="h-2 w-2" />
-                                             </Button>
-                                           )}
-                                         </Button>
-                                         <Button
-                                           variant="outline"
-                                           size="sm"
-                                           className="flex items-center gap-1 h-7"
-                                           onClick={() => openVehicleModalForDate(service.id, dateInfo.date, dateKey)}
-                                         >
-                                           <Truck className="h-3 w-3" />
-                                           <span className="text-xs">
-                                             {individualAssignment?.vehicle
-                                               ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make}`
-                                               : 'Override'
-                                             }
-                                           </span>
-                                           {individualAssignment?.vehicle && (
-                                             <Button
-                                               variant="ghost"
-                                               size="sm"
-                                               className="h-4 w-4 p-0 ml-1"
-                                               onClick={(e) => {
-                                                 e.stopPropagation();
-                                                 confirmRemoveOverride('vehicle', service.id, dateKey);
-                                               }}
-                                             >
-                                               <X className="h-2 w-2" />
-                                             </Button>
-                                           )}
-                                         </Button>
-                                       </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
                           </div>
                         );
                       })}
