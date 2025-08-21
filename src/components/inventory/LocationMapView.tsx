@@ -8,5 +8,6 @@ interface LocationMapViewProps {
 }
 
 export const LocationMapView: React.FC<LocationMapViewProps> = (props) => {
+  console.log('🗺️ LocationMapView: Component mounting with props:', props);
   return <InventoryMapView {...props} />;
 };
