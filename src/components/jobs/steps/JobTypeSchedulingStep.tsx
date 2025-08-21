@@ -453,7 +453,7 @@ export function JobTypeSchedulingStep() {
               onCheckedChange={(checked) => updateData({ create_pickup_job: checked })}
             />
             <Label className="text-base font-medium">
-              Add Pickup Job <span className="text-muted-foreground">(optional, you can add a pickup job at another time)</span>
+              Add Pickup Job <span className="text-muted-foreground">(optional)</span>
             </Label>
           </div>
 
