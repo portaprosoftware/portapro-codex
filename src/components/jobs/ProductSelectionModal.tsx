@@ -465,9 +465,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <TrackedUnitsSelectionModal
         open={showTrackedUnitsModal}
         onOpenChange={setShowTrackedUnitsModal}
-        units={availability.data?.individual_items || []}
         productName={product.name}
         productId={product.id}
+        startDate={startDate}
+        endDate={endDate}
         onUnitsSelect={handleUnitsSelect}
         onBulkSelect={handleBulkSelect}
       />

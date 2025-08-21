@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Check, X } from "lucide-react";
-import { AvailabilityUnit } from "@/hooks/useAvailabilityEngine";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SelectedUnit {
   unitId: string;
@@ -13,12 +14,21 @@ interface SelectedUnit {
   productId: string;
 }
 
+interface UnitWithAttributes {
+  id: string;
+  item_code: string;
+  status: string;
+  is_available?: boolean;
+  attributes?: Record<string, any>;
+}
+
 interface TrackedUnitsSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  units: AvailabilityUnit[];
   productName: string;
   productId: string;
+  startDate?: string;
+  endDate?: string | null;
   onUnitsSelect: (units: SelectedUnit[]) => void;
   onBulkSelect: () => void;
 }
@@ -26,9 +36,10 @@ interface TrackedUnitsSelectionModalProps {
 export function TrackedUnitsSelectionModal({
   open,
   onOpenChange,
-  units,
   productName,
   productId,
+  startDate,
+  endDate,
   onUnitsSelect,
   onBulkSelect
 }: TrackedUnitsSelectionModalProps) {
@@ -36,17 +47,101 @@ export function TrackedUnitsSelectionModal({
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
 
-  // Extract available variation types and values from units
+  // Fetch units with availability check for date range
+  const { data: units = [], isLoading } = useQuery({
+    queryKey: ["tracked-units", productId, startDate, endDate],
+    queryFn: async () => {
+      if (!productId) return [];
+      
+      let query = supabase
+        .from("product_items")
+        .select("id, item_code, status")
+        .eq("product_id", productId);
+
+      const { data: items, error } = await query.order("item_code");
+      if (error) throw error;
+      
+      if (!items || items.length === 0) return [];
+
+      // Check availability for each item if date range is provided
+      const unitsWithAvailability = await Promise.all(
+        items.map(async (item) => {
+          let is_available = item.status === 'available';
+          
+          if (startDate && is_available) {
+            const { data: availabilityCheck } = await supabase.rpc('check_unit_availability', {
+              unit_id: item.id,
+              start_date: startDate,
+              end_date: endDate || startDate
+            });
+            is_available = availabilityCheck === true;
+          }
+          
+          return {
+            ...item,
+            is_available
+          };
+        })
+      );
+
+      return unitsWithAvailability;
+    },
+    enabled: !!productId && open
+  });
+
+  // Fetch item attributes for all units
+  const { data: itemAttributesMap = {} } = useQuery({
+    queryKey: ["item-attributes-bulk", productId, units?.map((i: any) => i.id).join(",")],
+    enabled: !!units && units.length > 0 && open,
+    queryFn: async () => {
+      const ids = units.map((i: any) => i.id);
+      const { data: attributes, error: attrError } = await supabase
+        .from("product_item_attributes")
+        .select("item_id, property_id, property_value")
+        .in("item_id", ids);
+      if (attrError) throw attrError;
+      if (!attributes || attributes.length === 0) return {};
+
+      const propIds = Array.from(new Set(attributes.map(a => a.property_id)));
+      const { data: properties, error: propError } = await supabase
+        .from("product_properties")
+        .select("id, attribute_name")
+        .in("id", propIds);
+      if (propError) throw propError;
+
+      const map: Record<string, Record<string, string>> = {};
+      attributes.forEach((attr) => {
+        const prop = properties?.find((p) => p.id === attr.property_id);
+        if (prop?.attribute_name) {
+          const key = prop.attribute_name.toLowerCase();
+          if (!map[attr.item_id]) map[attr.item_id] = {};
+          map[attr.item_id][key] = attr.property_value;
+        }
+      });
+
+      return map;
+    }
+  });
+
+  // Combine units with their complete attributes
+  const unitsWithCompleteAttributes: UnitWithAttributes[] = useMemo(() => {
+    return units.map((unit: any) => ({
+      ...unit,
+      attributes: itemAttributesMap[unit.id] || {}
+    }));
+  }, [units, itemAttributesMap]);
+
+  // Extract available variation types and values from units with complete attributes
   const availableVariations = useMemo(() => {
     const variations: Record<string, Set<string>> = {};
     
-    units.forEach(unit => {
+    unitsWithCompleteAttributes.forEach(unit => {
       if (unit.attributes) {
         Object.entries(unit.attributes).forEach(([key, value]) => {
           // Only include non-empty, non-null values and exclude winterized boolean
           if (value !== null && value !== undefined && value !== '' && key !== 'winterized') {
             const stringValue = String(value).trim();
-            if (stringValue) { // Ensure the trimmed string is not empty
+            if (stringValue) {
               if (!variations[key]) {
                 variations[key] = new Set();
               }
@@ -65,16 +160,16 @@ export function TrackedUnitsSelectionModal({
     });
     
     return result;
-  }, [units]);
+  }, [unitsWithCompleteAttributes]);
 
   // Filter units based on search term and variation filters
   const filteredUnits = useMemo(() => {
-    let filtered = units;
+    let filtered = unitsWithCompleteAttributes;
     
     // Apply search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter((unit: AvailabilityUnit) => {
+      filtered = filtered.filter((unit: UnitWithAttributes) => {
         return (
           unit.item_code.toLowerCase().includes(searchLower) ||
           (unit.attributes?.color && unit.attributes.color.toLowerCase().includes(searchLower)) ||
@@ -88,14 +183,14 @@ export function TrackedUnitsSelectionModal({
     Object.entries(variationFilters).forEach(([variationType, selectedValue]) => {
       if (selectedValue && selectedValue !== 'all') {
         const attributeKey = variationType.toLowerCase();
-        filtered = filtered.filter((unit: AvailabilityUnit) => {
+        filtered = filtered.filter((unit: UnitWithAttributes) => {
           return unit.attributes?.[attributeKey] === selectedValue;
         });
       }
     });
     
     return filtered;
-  }, [units, searchTerm, variationFilters]);
+  }, [unitsWithCompleteAttributes, searchTerm, variationFilters]);
 
   // Available units only
   const availableUnits = filteredUnits.filter(unit => unit.is_available);
@@ -121,7 +216,7 @@ export function TrackedUnitsSelectionModal({
   };
 
   const handleSelectAll = () => {
-    const allAvailableIds = availableUnits.map(unit => unit.item_id);
+    const allAvailableIds = availableUnits.map(unit => unit.id);
     setSelectedUnits(new Set(allAvailableIds));
   };
 
@@ -131,7 +226,7 @@ export function TrackedUnitsSelectionModal({
 
   const handleConfirmSelection = () => {
     const selectedUnitsList: SelectedUnit[] = Array.from(selectedUnits).map(unitId => {
-      const unit = units.find(u => u.item_id === unitId);
+      const unit = unitsWithCompleteAttributes.find(u => u.id === unitId);
       return {
         unitId,
         itemCode: unit?.item_code || '',
@@ -242,11 +337,11 @@ export function TrackedUnitsSelectionModal({
           {/* Units Grid */}
           <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredUnits.map((unit: AvailabilityUnit) => (
+              {filteredUnits.map((unit: UnitWithAttributes) => (
                 <div
-                  key={unit.item_id}
+                  key={unit.id}
                   className={`p-3 rounded-lg border transition-all ${
-                    selectedUnits.has(unit.item_id)
+                    selectedUnits.has(unit.id)
                       ? 'border-primary bg-primary/5 ring-1 ring-primary'
                       : 'border-border'
                   } ${
@@ -256,7 +351,7 @@ export function TrackedUnitsSelectionModal({
                   }`}
                   onClick={() => {
                     if (unit.is_available) {
-                      handleUnitToggle(unit.item_id);
+                      handleUnitToggle(unit.id);
                     }
                   }}
                 >
@@ -277,28 +372,25 @@ export function TrackedUnitsSelectionModal({
                       </div>
 
                       {/* Attributes */}
-                      {unit.attributes && (
+                      {unit.attributes && Object.keys(unit.attributes).length > 0 && (
                         <div className="mt-2 space-y-1">
-                          {unit.attributes.color && (
-                            <div className="text-xs text-muted-foreground">
-                              <span className="font-medium">Color:</span> {unit.attributes.color}
-                            </div>
-                          )}
-                          {unit.attributes.size && (
-                            <div className="text-xs text-muted-foreground">
-                              <span className="font-medium">Size:</span> {unit.attributes.size}
-                            </div>
-                          )}
-                          {unit.attributes.material && (
-                            <div className="text-xs text-muted-foreground">
-                              <span className="font-medium">Material:</span> {unit.attributes.material}
-                            </div>
-                          )}
-                          {unit.attributes.winterized && (
-                            <div className="text-xs text-blue-600 font-medium">
-                              Winterized
-                            </div>
-                          )}
+                          {Object.entries(unit.attributes).map(([key, value]) => {
+                            if (key === 'winterized' && value) {
+                              return (
+                                <div key={key} className="text-xs text-blue-600 font-medium">
+                                  Winterized
+                                </div>
+                              );
+                            }
+                            if (value && key !== 'winterized') {
+                              return (
+                                <div key={key} className="text-xs text-muted-foreground">
+                                  <span className="font-medium capitalize">{key}:</span> {value}
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
                         </div>
                       )}
                     </div>
@@ -306,11 +398,11 @@ export function TrackedUnitsSelectionModal({
                     {/* Selection Indicator */}
                     {unit.is_available && (
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                        selectedUnits.has(unit.item_id)
+                        selectedUnits.has(unit.id)
                           ? 'bg-primary border-primary text-primary-foreground'
                           : 'border-muted-foreground'
                       }`}>
-                        {selectedUnits.has(unit.item_id) && (
+                        {selectedUnits.has(unit.id) && (
                           <Check className="h-3 w-3" />
                         )}
                       </div>
@@ -320,7 +412,13 @@ export function TrackedUnitsSelectionModal({
               ))}
             </div>
 
-            {filteredUnits.length === 0 && (
+            {isLoading && (
+              <div className="text-center text-muted-foreground py-8">
+                Loading units...
+              </div>
+            )}
+
+            {!isLoading && filteredUnits.length === 0 && (
               <div className="text-center text-muted-foreground py-8">
                 {searchTerm ? 'No units match your search criteria' : 'No tracked units available'}
               </div>
