@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -156,7 +157,7 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{quote.quote_number}</h5>
                             <Badge variant={getQuoteStatusVariant(quote.status) as any}>
-                              {quote.status}
+                              {formatBadgeText(quote.status)}
                             </Badge>
                             {isExpired && (
                               <Badge variant="overdue">
@@ -206,7 +207,7 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                                   <div>
                                     <label className="text-sm font-medium">Status</label>
                                     <Badge variant={getQuoteStatusVariant(quote.status) as any}>
-                                      {quote.status}
+                                      {formatBadgeText(quote.status)}
                                     </Badge>
                                   </div>
                                   <div>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -488,7 +489,7 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
                     </div>
                     <Badge variant={getStatusBadgeVariant(request.status as any)}>
                       <StatusIcon className="w-3 h-3 mr-1" />
-                      {request.status.replace('_', ' ')}
+                      {formatBadgeText(request.status)}
                     </Badge>
                   </div>
                 </CardHeader>

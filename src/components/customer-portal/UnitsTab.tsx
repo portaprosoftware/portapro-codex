@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -165,7 +166,7 @@ export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
                     <CardTitle className="text-base">{unit.unitCode}</CardTitle>
                   </div>
                   <Badge variant={getStatusBadgeVariant(unit.status as any)}>
-                    {unit.status.replace('_', ' ')}
+                    {formatBadgeText(unit.status)}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">{unit.type}</p>
@@ -194,7 +195,7 @@ export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Condition:</span>
                   <Badge className={cn("text-xs", getConditionColor(unit.condition))}>
-                    {unit.condition.replace('_', ' ')}
+                    {formatBadgeText(unit.condition)}
                   </Badge>
                 </div>
 

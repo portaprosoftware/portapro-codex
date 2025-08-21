@@ -13,6 +13,7 @@ import {
   Package
 } from 'lucide-react';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 
 interface CustomerPortalDashboardProps {
   customerId: string;
@@ -248,7 +249,7 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
                     </div>
                     <div className="text-right">
                       <Badge variant={getStatusBadgeVariant(job.status as any)}>
-                        {job.status.replace('_', ' ')}
+                        {formatBadgeText(job.status)}
                       </Badge>
                       <p className="text-xs text-muted-foreground mt-1">{displayDate}</p>
                     </div>

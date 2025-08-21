@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -329,11 +330,11 @@ export const ServiceHistoryTab: React.FC<ServiceHistoryTabProps> = ({ customerId
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold capitalize">
-                          {service.job_type.replace('_', ' ')}
+                          {formatBadgeText(service.job_type)}
                         </h4>
                         <Badge variant={getStatusBadgeVariant(service.status as any)}>
                           <StatusIcon className="w-3 h-3 mr-1" />
-                          {service.status}
+                          {formatBadgeText(service.status)}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">

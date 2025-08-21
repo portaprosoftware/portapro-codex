@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -359,10 +360,10 @@ export const SupportTab: React.FC<SupportTabProps> = ({ customerId }) => {
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{ticket.ticket_number}</h5>
                             <Badge variant={getSupportStatusVariant(ticket.status) as any}>
-                              {ticket.status.replace('_', ' ')}
+                              {formatBadgeText(ticket.status)}
                             </Badge>
-                            <Badge className={cn("text-xs", getPriorityColor(ticket.priority))}>
-                              {ticket.priority}
+                            <Badge variant="info">
+                              {formatBadgeText(ticket.priority)}
                             </Badge>
                           </div>
                           <p className="text-sm font-medium">{ticket.subject}</p>

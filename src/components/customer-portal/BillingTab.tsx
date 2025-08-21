@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
+import { formatBadgeText } from '@/lib/textUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
@@ -226,7 +227,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{invoice.invoice_number}</h5>
                             <Badge variant={getInvoiceStatusVariant(invoice.status) as any}>
-                              {invoice.status}
+                              {formatBadgeText(invoice.status)}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
@@ -267,7 +268,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
                                   <div>
                                     <label className="text-sm font-medium">Status</label>
                                     <Badge variant={getInvoiceStatusVariant(invoice.status) as any}>
-                                      {invoice.status}
+                                      {formatBadgeText(invoice.status)}
                                     </Badge>
                                   </div>
                                   <div>
