@@ -1,6 +1,12 @@
 import React from 'react';
 import { InventoryMapView } from './InventoryMapView';
 
-export const LocationMapView: React.FC = () => {
-  return <InventoryMapView />;
+interface LocationMapViewProps {
+  searchQuery?: string;
+  selectedLocationId?: string;
+  selectedProductType?: string;
+}
+
+export const LocationMapView: React.FC<LocationMapViewProps> = (props) => {
+  return <InventoryMapView {...props} />;
 };

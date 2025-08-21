@@ -1,28 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { MapPin, Navigation, Phone, Package, Calendar, Clock, Radar } from 'lucide-react';
+import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
+import { MapPin, Navigation, Phone, Package, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
+import { addDays, subtractDays } from '@/lib/dateUtils';
+import { format } from 'date-fns';
+import { useInventoryMapboxInitializer } from '@/hooks/useInventoryMapboxInitializer';
+import { useInventoryMarkerManager, InventoryLocation } from '@/hooks/useInventoryMarkerManager';
+import { useInventoryWithDateRange } from '@/hooks/useInventoryWithDateRange';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-interface InventoryLocation {
-  id: string;
-  product_name: string;
-  item_code: string;
-  status: string;
-  customer_name: string;
-  customer_address: string;
-  latitude?: number;
-  longitude?: number;
-  job_type: string;
-  scheduled_date: string;
-  customer_phone?: string;
-  quantity: number;
+interface InventoryMapViewProps {
+  searchQuery?: string;
+  selectedLocationId?: string;
+  selectedProductType?: string;
 }
 
 const statusColors = {
@@ -41,207 +35,75 @@ const statusLabels = {
   available: 'Available'
 };
 
-export const InventoryMapView: React.FC = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
+  searchQuery,
+  selectedLocationId,
+  selectedProductType
+}) => {
+  // Date state following proven pattern
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 7)
+  });
   const [selectedLocation, setSelectedLocation] = useState<InventoryLocation | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string>('');
-  const [showTokenInput, setShowTokenInput] = useState(false);
-  const [radarEnabled, setRadarEnabled] = useState(false);
 
-  // Fetch Mapbox token
-  useEffect(() => {
-    const fetchMapboxToken = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
-        if (data?.token) {
-          setMapboxToken(data.token);
-        } else {
-          setShowTokenInput(true);
-        }
-      } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
-        setShowTokenInput(true);
-      }
-    };
-    
-    fetchMapboxToken();
-  }, []);
+  // Initialize mapbox following proven pattern
+  const { map, mapContainer, isLoading: mapLoading, error, mapboxToken, showTokenInput } = useInventoryMapboxInitializer();
 
-  // Fetch inventory locations from equipment assignments
-  const { data: inventoryLocations, isLoading } = useQuery({
-    queryKey: ['inventory-locations'],
-    queryFn: async (): Promise<InventoryLocation[]> => {
-      console.log('Fetching inventory locations from equipment assignments...');
-      // Query equipment_assignments with all related data
-      const { data: assignments, error } = await supabase
-        .from('equipment_assignments')
-        .select(`
-          id,
-          job_id,
-          product_id,
-          product_item_id,
-          quantity,
-          status,
-          assigned_date,
-          jobs!inner(
-            id,
-            job_type,
-            scheduled_date,
-            status,
-            customer_id,
-            customers!inner(
-              id,
-              name,
-              phone,
-              customer_service_locations!customer_id(
-                id,
-                location_name,
-                street,
-                city,
-                state,
-                zip,
-                gps_coordinates
-              )
-            )
-          ),
-          products(
-            id,
-            name
-          ),
-          product_items(
-            id,
-            item_code
-          )
-        `)
-        .in('status', ['assigned', 'delivered', 'in_service'])
-        .in('jobs.status', ['assigned', 'in-progress', 'delivered']);
-
-      if (error) {
-        console.error('Error fetching equipment assignments:', error);
-        return [];
-      }
-
-      console.log('Equipment assignments found:', assignments);
-
-      if (!assignments) return [];
-
-      const locations: InventoryLocation[] = [];
-
-      assignments.forEach(assignment => {
-        const job = assignment.jobs;
-        const customer = job?.customers;
-        const serviceLocations = customer?.customer_service_locations || [];
-        
-        // For each service location with coordinates
-        serviceLocations.forEach(location => {
-          let latitude: number | undefined;
-          let longitude: number | undefined;
-          
-          // Extract coordinates from gps_coordinates (PostgreSQL point type)
-          if (location.gps_coordinates) {
-            const coords = location.gps_coordinates as any;
-            // Point type in PostgreSQL returns {x: longitude, y: latitude}
-            if (coords.x !== undefined && coords.y !== undefined) {
-              longitude = coords.x;
-              latitude = coords.y;
-            }
-          }
-          
-          // Build address string
-          const addressParts = [
-            location.street,
-            location.city,
-            location.state,
-            location.zip
-          ].filter(Boolean);
-          
-          // Get product info
-          const product = assignment.products;
-          const itemCode = assignment.product_items?.item_code || `${job.job_type} - Qty: ${assignment.quantity}`;
-          
-          if (latitude && longitude && product) {
-            locations.push({
-              id: `${assignment.id}-${location.id}`,
-              product_name: product.name,
-              item_code: itemCode,
-              status: assignment.status,
-              customer_name: customer?.name || 'Unknown Customer',
-              customer_address: addressParts.join(', ') || location.location_name || 'No address',
-              latitude,
-              longitude,
-              job_type: job.job_type,
-              scheduled_date: job.scheduled_date,
-              customer_phone: customer?.phone,
-              quantity: assignment.quantity || 1
-            });
-          }
-        });
-      });
-
-      return locations;
-    }
+  // Fetch inventory data with date filtering
+  const { data: inventoryLocations, isLoading } = useInventoryWithDateRange({
+    startDate: dateRange?.from,
+    endDate: dateRange?.to,
+    searchQuery,
+    selectedLocationId,
+    selectedProductType
   });
 
-  // Initialize map
-  useEffect(() => {
-    if (!mapContainer.current || !mapboxToken || !inventoryLocations?.length) return;
+  // Use marker manager following proven pattern
+  useInventoryMarkerManager({
+    map,
+    locations: inventoryLocations || [],
+    onLocationSelect: setSelectedLocation
+  });
 
-    mapboxgl.accessToken = mapboxToken;
+  // Date navigation functions following proven pattern
+  const handleDatePrevious = () => {
+    setSelectedDate(subtractDays(selectedDate, 1));
+    setDateRange(prev => prev ? {
+      ...prev,
+      from: subtractDays(prev.from!, 1),
+      to: subtractDays(prev.to!, 1)
+    } : undefined);
+  };
 
-    // Calculate bounds from all locations
-    const bounds = new mapboxgl.LngLatBounds();
-    inventoryLocations.forEach(location => {
-      if (location.longitude && location.latitude) {
-        bounds.extend([location.longitude, location.latitude]);
-      }
-    });
+  const handleDateNext = () => {
+    setSelectedDate(addDays(selectedDate, 1));
+    setDateRange(prev => prev ? {
+      ...prev,
+      from: addDays(prev.from!, 1),
+      to: addDays(prev.to!, 1)
+    } : undefined);
+  };
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      bounds: bounds.isEmpty() ? undefined : bounds,
-      fitBoundsOptions: { padding: 50 }
-    });
-
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    return () => {
-      map.current?.remove();
-    };
-  }, [mapboxToken, inventoryLocations]);
-
-  // Add markers when locations change
-  useEffect(() => {
-    if (!map.current || !inventoryLocations?.length) return;
-
-    // Clear existing markers
-    const existingMarkers = document.querySelectorAll('.inventory-marker');
-    existingMarkers.forEach(marker => marker.remove());
-
-    // Add new markers
-    inventoryLocations.forEach((location, index) => {
-      if (!location.longitude || !location.latitude) return;
-
-      // Create marker element
-      const markerElement = document.createElement('div');
-      markerElement.className = 'inventory-marker';
-      markerElement.innerHTML = `
-        <div class="flex items-center justify-center w-8 h-8 rounded-full ${statusColors[location.status as keyof typeof statusColors]} text-white text-xs font-bold cursor-pointer shadow-lg border-2 border-white">
-          ${location.quantity > 1 ? location.quantity : index + 1}
-        </div>
-      `;
-
-      markerElement.addEventListener('click', () => {
-        setSelectedLocation(location);
-      });
-
-      new mapboxgl.Marker(markerElement)
-        .setLngLat([location.longitude, location.latitude])
-        .addTo(map.current!);
-    });
-  }, [inventoryLocations]);
+  const handleQuickSelect = (type: 'today' | 'tomorrow' | 'week') => {
+    const today = new Date();
+    switch (type) {
+      case 'today':
+        setSelectedDate(today);
+        setDateRange({ from: today, to: today });
+        break;
+      case 'tomorrow':
+        const tomorrow = addDays(today, 1);
+        setSelectedDate(tomorrow);
+        setDateRange({ from: tomorrow, to: tomorrow });
+        break;
+      case 'week':
+        setSelectedDate(today);
+        setDateRange({ from: today, to: addDays(today, 7) });
+        break;
+    }
+  };
 
   const handleNavigateToLocation = (location: InventoryLocation) => {
     if (location.latitude && location.longitude) {
@@ -259,28 +121,30 @@ export const InventoryMapView: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-600">
-              To display the inventory map, please enter your Mapbox public token.
+              To display the inventory map, please configure your Mapbox public token in Supabase Edge Function Secrets.
             </p>
-            <Input
-              type="text"
-              placeholder="Enter your Mapbox public token (pk.)"
-              value={mapboxToken}
-              onChange={(e) => setMapboxToken(e.target.value)}
-            />
-            <Button
-              onClick={() => setShowTokenInput(false)}
-              disabled={!mapboxToken || !mapboxToken.startsWith('pk.')}
-              className="w-full"
-            >
-              Apply Token
-            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Map Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-600">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isLoading || mapLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
@@ -307,18 +171,66 @@ export const InventoryMapView: React.FC = () => {
   }
 
   return (
-    <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
-      {/* Map Container */}
-      <div ref={mapContainer} className="absolute inset-0" />
-
-      {/* Radar Toggle */}
-      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
-        <div className="flex items-center gap-2">
-          <Radar className="h-4 w-4" />
-          <span className="text-sm font-medium">Radar</span>
-          <Switch checked={radarEnabled} onCheckedChange={setRadarEnabled} />
+    <div className="space-y-4">
+      {/* Date Navigation and Controls */}
+      <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDatePrevious}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <div className="text-sm font-medium">
+            {format(selectedDate, 'PPP')}
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDateNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickSelect('today')}
+          >
+            Today
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickSelect('tomorrow')}
+          >
+            Tomorrow
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickSelect('week')}
+          >
+            Next 7 Days
+          </Button>
+        </div>
+
+        <DatePickerWithRange
+          date={dateRange}
+          onDateChange={setDateRange}
+          placeholder="Select date range"
+          className="w-auto"
+        />
       </div>
+
+      {/* Map Container */}
+      <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
+        <div ref={mapContainer} className="absolute inset-0" />
 
       {/* Equipment Status Legend - Horizontal at bottom */}
       <div className="absolute bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-3">
@@ -402,6 +314,7 @@ export const InventoryMapView: React.FC = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

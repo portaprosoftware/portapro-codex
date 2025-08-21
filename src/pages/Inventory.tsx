@@ -502,7 +502,11 @@ const Inventory: React.FC = () => {
             
             {/* Card 3: Location Map */}
             <div className="bg-background rounded-2xl shadow-md p-6">
-              <LocationMapView />
+              <LocationMapView 
+                searchQuery={searchQuery}
+                selectedLocationId={selectedLocationId}
+                selectedProductType={selectedProductType}
+              />
             </div>
           </>
         )}
