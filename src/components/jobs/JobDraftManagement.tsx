@@ -124,7 +124,7 @@ export const JobDraftManagement: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={() => handleResumeDraft(draft)}
-                    className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-inter"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-inter"
                   >
                     Resume
                   </Button>
