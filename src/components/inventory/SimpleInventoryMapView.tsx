@@ -435,7 +435,10 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
                         {/* Bulk Inventory */}
                         {product.bulkQuantity > 0 && (
                           <div className="text-sm mb-2">
-                            <span className="font-medium">{product.bulkQuantity} Bulk Inventory</span>
+                            <div className="font-medium">{product.bulkQuantity} Bulk Inventory</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              Delivered on: {new Date(product.deliveredDate).toLocaleDateString()}
+                            </div>
                           </div>
                         )}
                         
