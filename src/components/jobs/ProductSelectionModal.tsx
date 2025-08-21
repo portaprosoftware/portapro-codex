@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
 import { Search, Package } from 'lucide-react';
-import { PRODUCT_TYPES } from '@/lib/productTypes';
+import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
 
 interface Product {
   id: string;
@@ -39,36 +39,80 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const [selectedProductType, setSelectedProductType] = useState('all');
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ['products', 'for-selection'],
+    queryKey: ['products', 'for-selection', searchTerm, selectedProductType],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, name, stock_total, image_url')
-        .order('name');
-      if (error) throw error;
-      return data as Product[];
+      try {
+        let data = [];
+        
+        // First, get products that match by name or manufacturer
+        let nameQuery = supabase
+          .from('products')
+          .select('id, name, stock_total, image_url')
+          .order('name');
+
+        if (searchTerm) {
+          nameQuery = nameQuery.or(`name.ilike.%${searchTerm}%,manufacturer.ilike.%${searchTerm}%`);
+        }
+
+        if (selectedProductType && selectedProductType !== 'all') {
+          nameQuery = nameQuery.eq('product_type', selectedProductType as ProductType);
+        }
+
+        const { data: nameResults, error: nameError } = await nameQuery;
+        if (nameError) throw nameError;
+        
+        if (nameResults) {
+          data = [...nameResults];
+        }
+
+        // If we have a search query, also search individual product items by tool number
+        if (searchTerm) {
+          // Get product IDs that have matching tool numbers in their items
+          const { data: itemResults, error: itemError } = await supabase
+            .from('product_items')
+            .select('product_id')
+            .ilike('tool_number', `%${searchTerm}%`);
+            
+          if (itemError) throw itemError;
+          
+          if (itemResults && itemResults.length > 0) {
+            const productIds = itemResults.map(item => item.product_id);
+            
+            // Get full product data for products that have matching tool numbers
+            let toolQuery = supabase
+              .from('products')
+              .select('id, name, stock_total, image_url')
+              .in('id', productIds);
+
+            if (selectedProductType && selectedProductType !== 'all') {
+              toolQuery = toolQuery.eq('product_type', selectedProductType as ProductType);
+            }
+
+            const { data: toolResults, error: toolError } = await toolQuery;
+            if (toolError) throw toolError;
+            
+            if (toolResults) {
+              // Merge with existing results, avoiding duplicates
+              const existingIds = new Set(data.map(p => p.id));
+              const newProducts = toolResults.filter(p => !existingIds.has(p.id));
+              data = [...data, ...newProducts];
+            }
+          }
+        }
+
+        return data as Product[];
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
     },
     enabled: open,
   });
 
   const filteredProducts = useMemo(() => {
-    let filtered = products;
-    
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(product => 
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    // Apply product type filter
-    if (selectedProductType && selectedProductType !== 'all') {
-      // This would need to be implemented based on your product type structure
-      // For now, we'll keep the search functionality
-    }
-    
-    return filtered;
-  }, [products, searchTerm, selectedProductType]);
+    // Since we're handling search in the query, just return the products
+    return products;
+  }, [products]);
 
   const handleProductSelect = (productId: string) => {
     onProductSelect(productId);
@@ -89,7 +133,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search products..."
+                placeholder="Search by name, code, tool number, or manufacturer..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
