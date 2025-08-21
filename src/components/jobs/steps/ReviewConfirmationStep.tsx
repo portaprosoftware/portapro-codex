@@ -242,13 +242,13 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
     // Remove underscores and add timezone abbreviations
     const cleanTimezone = timezone.replace(/_/g, ' ');
     const timezoneMap: Record<string, string> = {
-      'America/New York': 'America/New York (Eastern)',
-      'America/Chicago': 'America/Chicago (Central)', 
-      'America/Denver': 'America/Denver (Mountain)',
-      'America/Los Angeles': 'America/Los Angeles (Pacific)',
-      'America/Phoenix': 'America/Phoenix (Mountain)',
-      'America/Anchorage': 'America/Anchorage (Alaska)',
-      'Pacific/Honolulu': 'Pacific/Honolulu (Hawaii)'
+      'America/New York': 'America/New York - Eastern',
+      'America/Chicago': 'America/Chicago - Central', 
+      'America/Denver': 'America/Denver - Mountain',
+      'America/Los Angeles': 'America/Los Angeles - Pacific',
+      'America/Phoenix': 'America/Phoenix - Mountain',
+      'America/Anchorage': 'America/Anchorage - Alaska',
+      'Pacific/Honolulu': 'Pacific/Honolulu - Hawaii'
     };
     return timezoneMap[cleanTimezone] || cleanTimezone;
   };
@@ -263,7 +263,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Basics</h3>
           <div>Customer: {customerName || d.customer_id || '—'}</div>
-          <div>Type: {d.job_type || '—'}</div>
+          <div>Type: {d.job_type ? d.job_type.charAt(0).toUpperCase() + d.job_type.slice(1) : '—'}</div>
           <div>Date: {d.scheduled_date || '—'}{d.return_date ? ` → ${d.return_date}` : ''}</div>
           <div>Time: {d.scheduled_time || '—'} ({formatTimezone(d.timezone)})</div>
         </div>
