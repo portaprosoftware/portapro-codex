@@ -312,6 +312,28 @@ export function JobWizardProvider({
         if (state.data.items && state.data.items.some(i => i.quantity <= 0)) {
           errors.items = 'All selected quantities must be greater than 0';
         }
+        
+        // Validate pickup inventory allocation for delivery jobs with pickups
+        if (state.data.job_type === 'delivery' && 
+            (state.data.create_pickup_job || state.data.create_partial_pickups) && 
+            state.data.items && state.data.items.length > 0) {
+          
+          const hasMainPickup = state.data.create_pickup_job;
+          const hasPartialPickups = state.data.create_partial_pickups && state.data.partial_pickups && state.data.partial_pickups.length > 0;
+          
+          // Check if any pickup inventory has been allocated
+          const mainPickupItems = state.data.pickup_inventory_selections?.main_pickup || [];
+          const partialPickupItems = state.data.pickup_inventory_selections?.partial_pickups || {};
+          
+          const hasMainPickupItems = hasMainPickup && mainPickupItems.length > 0 && mainPickupItems.some(item => item.quantity > 0);
+          const hasPartialPickupItems = hasPartialPickups && Object.values(partialPickupItems).some(items => 
+            items.length > 0 && items.some(item => item.quantity > 0)
+          );
+          
+          if ((hasMainPickup || hasPartialPickups) && !hasMainPickupItems && !hasPartialPickupItems) {
+            errors.pickup_inventory = 'Please allocate inventory quantities for your scheduled pickup jobs. Scroll down to the "Pickup Inventory Allocation" section.';
+          }
+        }
         break;
       case 6:
         // Skip validation for step 6 if it's a pickup or survey job (this step is skipped)
