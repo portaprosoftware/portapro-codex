@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,7 @@ const jobTypes = [
 export function JobTypeSchedulingStep() {
   const { state, updateData } = useJobWizard();
   const { errors } = state;
+  const [trackHours, setTrackHours] = useState(false);
 
   const handleJobTypeSelect = (jobType: string) => {
     updateData({ job_type: jobType as any });
@@ -80,32 +81,56 @@ export function JobTypeSchedulingStep() {
   };
 
   const handleRentalDurationChange = (field: 'days' | 'hours', value: number) => {
-    const updates: any = {
-      [`rental_duration_${field}`]: field === 'days' ? Math.max(1, value) : Math.max(0, value)
-    };
-    
-    updateData(updates);
+    if (field === 'days') {
+      const days = Math.max(1, value);
+      updateData({ rental_duration_days: days });
+      // If setting days ≥ 1, turn off track hours toggle and clear hours
+      if (days >= 1) {
+        setTrackHours(false);
+        updateData({ rental_duration_hours: 0 });
+      }
+    } else {
+      const hours = Math.max(0, Math.min(23, value));
+      updateData({ rental_duration_hours: hours });
+      // If setting hours > 0, ensure days is 0 for hourly billing
+      if (hours > 0) {
+        updateData({ rental_duration_days: 0 });
+      }
+    }
   };
 
-  // Calculate return date when scheduled date changes
+  // Calculate return date using "1 day = 24 hours from delivery time" model
   React.useEffect(() => {
     if (state.data.scheduled_date && state.data.job_type === 'delivery') {
       const days = state.data.rental_duration_days || 0;
       const hours = state.data.rental_duration_hours || 0;
       
+      // Only calculate return date if we have valid duration
       if (days > 0 || hours > 0) {
+        // Create start date/time in customer's timezone
         const scheduledDate = new Date(state.data.scheduled_date);
-        let returnDate = addDays(scheduledDate, days);
+        const deliveryTime = state.data.scheduled_time || '08:00'; // Default to 8:00 AM
+        const [timeHours, timeMinutes] = deliveryTime.split(':').map(Number);
         
-        // Add hours to the return date
-        if (hours > 0) {
-          returnDate = new Date(returnDate.getTime() + (hours * 60 * 60 * 1000));
+        // Set the delivery time on the scheduled date
+        const startDateTime = new Date(scheduledDate);
+        startDateTime.setHours(timeHours, timeMinutes, 0, 0);
+        
+        // Calculate return date/time: 1 day = exactly 24 hours from delivery time
+        let returnDateTime = new Date(startDateTime);
+        if (days > 0) {
+          // Daily billing: add exact 24-hour periods, ignore hours
+          returnDateTime.setTime(startDateTime.getTime() + (days * 24 * 60 * 60 * 1000));
+        } else if (hours > 0) {
+          // Hourly billing: add exact hours
+          returnDateTime.setTime(startDateTime.getTime() + (hours * 60 * 60 * 1000));
         }
         
-        updateData({ return_date: formatDateForQuery(returnDate) });
+        const returnDateString = formatDateForQuery(returnDateTime);
+        updateData({ return_date: returnDateString });
       }
     }
-  }, [state.data.scheduled_date, state.data.rental_duration_days, state.data.rental_duration_hours, state.data.job_type, updateData]);
+  }, [state.data.scheduled_date, state.data.scheduled_time, state.data.rental_duration_days, state.data.rental_duration_hours, state.data.job_type, updateData]);
 
   return (
     <div className="space-y-6">
@@ -272,7 +297,7 @@ export function JobTypeSchedulingStep() {
                 <CardContent className="p-4 space-y-4">
                   {/* Days - Always visible and primary */}
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Days</Label>
+                    <Label className="text-sm font-medium">Keep for (Days)</Label>
                     <Input
                       type="number"
                       min="1"
@@ -280,75 +305,90 @@ export function JobTypeSchedulingStep() {
                       onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
                       className="text-center"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      1 day = 24 hours from your delivery time
+                    </p>
                   </div>
 
                   {/* Track hours toggle */}
-                  <div className="flex items-center justify-between">
+                  <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <Switch
-                        checked={state.data.rental_duration_hours > 0}
+                        checked={trackHours}
                         onCheckedChange={(checked) => {
+                          setTrackHours(checked);
                           if (checked) {
-                            updateData({ rental_duration_hours: 1 });
+                            updateData({ rental_duration_days: 0, rental_duration_hours: 1 });
                           } else {
-                            updateData({ rental_duration_hours: 0 });
+                            updateData({ rental_duration_hours: 0, rental_duration_days: 1 });
                           }
                         }}
                       />
                       <Label className="text-sm font-medium">Track hours (&lt;24h)</Label>
                     </div>
-                  </div>
-
-                  {/* Hours input - only shown when toggle is ON */}
-                  {state.data.rental_duration_hours > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Hours (1-23)</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="23"
-                        value={state.data.rental_duration_hours || 1}
-                        onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
-                        className="text-center"
-                      />
-                    </div>
-                  )}
-
-                  {/* Pricing helper text */}
-                  <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
-                    <p>
-                      <span className="font-medium">Pricing:</span>{' '}
-                      {state.data.rental_duration_days >= 1 && state.data.rental_duration_hours > 0
-                        ? "Daily rate applies for 1+ days (hours ignored)"
-                        : state.data.rental_duration_days >= 1
-                        ? "Daily rate × days"
-                        : "Hourly rate applies only when days = 0"
-                      }
+                    <p className="text-xs text-muted-foreground">
+                      Use for short events. If Days ≥ 1, we bill daily and ignore hours.
                     </p>
+
+                    {/* Hours input - only shown when toggle is ON */}
+                    {trackHours && (
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Hours (1-23)</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="23"
+                          value={state.data.rental_duration_hours || 1}
+                          onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
+                          className="text-center"
+                        />
+                      </div>
+                    )}
                   </div>
-                  
-                  {state.data.return_date && (
-                    <div className="pt-2 border-t text-sm text-muted-foreground space-y-1">
-                      <p>
-                        <span className="font-medium">Duration:</span>{' '}
-                        {(() => {
-                          const days = state.data.rental_duration_days || 0;
-                          const hours = state.data.rental_duration_hours || 0;
-                          
-                          if (days === 0 && hours > 0) {
-                            return `${hours} hour${hours !== 1 ? 's' : ''}`;
-                          } else if (days > 0 && hours === 0) {
-                            return `${days} day${days !== 1 ? 's' : ''}`;
-                          } else if (days > 0 && hours > 0) {
-                            return `${days} day${days !== 1 ? 's' : ''} and ${hours} hour${hours !== 1 ? 's' : ''}`;
-                          }
-                          return '';
-                        })()}
-                      </p>
-                      <p>
-                        <span className="font-medium">Return Date:</span>{' '}
-                        {formatDateSafe(state.data.return_date, 'long')}
-                      </p>
+
+                  {/* Live Preview */}
+                  {state.data.scheduled_date && (state.data.rental_duration_days || (trackHours && state.data.rental_duration_hours)) && (
+                    <div className="pt-3 border-t text-sm text-muted-foreground space-y-1">
+                      <p className="font-medium text-foreground">Live Preview</p>
+                      {(() => {
+                        const scheduledDate = new Date(state.data.scheduled_date);
+                        const deliveryTime = state.data.scheduled_time || '08:00';
+                        const [timeHours, timeMinutes] = deliveryTime.split(':').map(Number);
+                        const startDateTime = new Date(scheduledDate);
+                        startDateTime.setHours(timeHours, timeMinutes, 0, 0);
+                        
+                        const days = state.data.rental_duration_days || 0;
+                        const hours = state.data.rental_duration_hours || 0;
+                        
+                        let returnDateTime = new Date(startDateTime);
+                        let billingType = '';
+                        
+                        if (days > 0) {
+                          returnDateTime.setTime(startDateTime.getTime() + (days * 24 * 60 * 60 * 1000));
+                          billingType = 'Daily';
+                        } else if (hours > 0) {
+                          returnDateTime.setTime(startDateTime.getTime() + (hours * 60 * 60 * 1000));
+                          billingType = 'Hourly';
+                        }
+                        
+                        const formatDateTime = (date: Date) => {
+                          return date.toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          }) + ' @ ' + date.toLocaleTimeString('en-US', { 
+                            hour: 'numeric', 
+                            minute: '2-digit',
+                            hour12: true 
+                          });
+                        };
+                        
+                        return (
+                          <p>
+                            <span className="font-medium">Start:</span> {formatDateTime(startDateTime)} → <span className="font-medium">Return:</span> {formatDateTime(returnDateTime)} ({billingType})
+                          </p>
+                        );
+                      })()}
                     </div>
                   )}
                 </CardContent>

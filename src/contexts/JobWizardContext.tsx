@@ -154,8 +154,17 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         if (state.data.job_type === 'delivery') {
           const days = state.data.rental_duration_days || 0;
-          if (days < 1) {
-            errors.rental_duration = 'Please specify rental duration (minimum 1 day)';
+          const hours = state.data.rental_duration_hours || 0;
+          
+          // Validate rental duration: must have either days ≥ 1 OR hours > 0 (but not both zero)
+          if (days === 0 && hours === 0) {
+            errors.rental_duration = 'Please specify rental duration (minimum 1 day or 1 hour)';
+          }
+          
+          // If days ≥ 1, hours are ignored (daily billing)
+          // If days = 0, must have hours > 0 (hourly billing)
+          if (days === 0 && hours > 0 && hours > 23) {
+            errors.rental_duration = 'Hours must be 23 or less when using hourly billing';
           }
         }
         break;
