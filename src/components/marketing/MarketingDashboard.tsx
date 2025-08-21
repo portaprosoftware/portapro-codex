@@ -73,67 +73,69 @@ export const MarketingDashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Page Header */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 font-inter">Marketing</h1>
-            <p className="text-base text-gray-600 font-inter mt-1">Manage templates, campaigns, and customer communications</p>
-          </div>
-          
-          {/* Marketing Sub-Navigation Pills */}
-          <div className="flex items-center space-x-4">
-            <div className="enterprise-tabs">
-              <TabNav ariaLabel="Marketing sections">
-                <TabNav.Item 
-                  to="/marketing/campaigns" 
-                  isActive={activeTab === 'campaigns'}
-                  onClick={() => navigateToTab('campaigns')}
-                >
-                  <Megaphone className="w-4 h-4" />
-                  Campaigns
-                </TabNav.Item>
-                <TabNav.Item 
-                  to="/marketing/templates" 
-                  isActive={activeTab === 'templates'}
-                  onClick={() => navigateToTab('templates')}
-                >
-                  <Mail className="w-4 h-4" />
-                  Templates
-                </TabNav.Item>
-                <TabNav.Item 
-                  to="/marketing/scheduled" 
-                  isActive={activeTab === 'scheduled'}
-                  onClick={() => navigateToTab('scheduled')}
-                >
-                  <Clock className="w-4 h-4" />
-                  Scheduled
-                </TabNav.Item>
-                <TabNav.Item 
-                  to="/marketing/segments" 
-                  isActive={activeTab === 'segments'}
-                  onClick={() => navigateToTab('segments')}
-                >
-                  <Users2 className="w-4 h-4" />
-                  Smart Segments
-                </TabNav.Item>
-                <TabNav.Item 
-                  to="/marketing/drafts" 
-                  isActive={activeTab === 'drafts'}
-                  onClick={() => navigateToTab('drafts')}
-                >
-                  <FileText className="w-4 h-4" />
-                  Drafts
-                </TabNav.Item>
-              </TabNav>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
+        {/* Page Header */}
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Marketing</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Manage templates, campaigns, and customer communications</p>
+            </div>
+            
+            {/* Marketing Sub-Navigation Pills */}
+            <div className="flex items-center space-x-4">
+              <div className="enterprise-tabs">
+                <TabNav ariaLabel="Marketing sections">
+                  <TabNav.Item 
+                    to="/marketing/campaigns" 
+                    isActive={activeTab === 'campaigns'}
+                    onClick={() => navigateToTab('campaigns')}
+                  >
+                    <Megaphone className="w-4 h-4" />
+                    Campaigns
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/marketing/templates" 
+                    isActive={activeTab === 'templates'}
+                    onClick={() => navigateToTab('templates')}
+                  >
+                    <Mail className="w-4 h-4" />
+                    Templates
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/marketing/scheduled" 
+                    isActive={activeTab === 'scheduled'}
+                    onClick={() => navigateToTab('scheduled')}
+                  >
+                    <Clock className="w-4 h-4" />
+                    Scheduled
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/marketing/segments" 
+                    isActive={activeTab === 'segments'}
+                    onClick={() => navigateToTab('segments')}
+                  >
+                    <Users2 className="w-4 h-4" />
+                    Smart Segments
+                  </TabNav.Item>
+                  <TabNav.Item 
+                    to="/marketing/drafts" 
+                    isActive={activeTab === 'drafts'}
+                    onClick={() => navigateToTab('drafts')}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Drafts
+                  </TabNav.Item>
+                </TabNav>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Content Area */}
-      {renderContent()}
+        {/* Content Area */}
+        {renderContent()}
+      </div>
     </div>
   );
 };

@@ -88,8 +88,9 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-none px-6 py-6 space-y-6">
-        <div className="bg-white rounded-lg border shadow-sm p-6 mb-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
+        <div className="bg-white rounded-lg border shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 font-inter">Settings</h1>
@@ -121,5 +122,6 @@ export default function Settings() {
         
         {renderSection()}
       </div>
+    </div>
   );
 }

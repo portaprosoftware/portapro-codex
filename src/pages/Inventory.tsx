@@ -296,8 +296,8 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
         {/* Card 1: Header + Tab Navigation */}
         <div className="bg-background rounded-2xl shadow-md p-6">
           <div className="mb-6">

@@ -70,7 +70,8 @@ const QuotesInvoices: React.FC = () => {
   }
 
   return (
-    <div className="max-w-none px-6 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-6 py-6 space-y-6">
       {/* Page Header with Navigation Pills */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="space-y-4">
@@ -331,6 +332,7 @@ const QuotesInvoices: React.FC = () => {
         isOpen={showInvoiceWizard} 
         onClose={() => setShowInvoiceWizard(false)} 
       />
+      </div>
     </div>
   );
 };
