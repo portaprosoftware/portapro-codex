@@ -13,25 +13,46 @@ import { CustomerPortalDashboard } from '@/components/customer-portal/CustomerPo
 import { ServiceHistoryTab } from '@/components/customer-portal/ServiceHistoryTab';
 import { RequestsTab } from '@/components/customer-portal/RequestsTab';
 import { 
-  User, 
-  Calendar, 
-  FileText, 
-  CreditCard, 
-  MessageCircle,
+  BarChart3, 
+  History, 
+  Plus, 
+  Package, 
+  Calendar,
+  User,
+  Settings,
+  LogOut,
+  CreditCard,
+  FileText,
+  Users,
+  HelpCircle,
   Phone,
-  Mail,
-  MapPin,
-  Clock,
   CheckCircle,
+  Clock,
   AlertCircle
 } from 'lucide-react';
+import { UnitsTab } from '@/components/customer-portal/UnitsTab';
+import { BillingTab } from '@/components/customer-portal/BillingTab';
+import { QuotesTab } from '@/components/customer-portal/QuotesTab';
+import { UsersTab } from '@/components/customer-portal/UsersTab';
+import { SupportTab } from '@/components/customer-portal/SupportTab';
+
+const TABS = [
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+  { id: 'units', label: 'Units', icon: Package },
+  { id: 'service-history', label: 'Service History', icon: History },
+  { id: 'requests', label: 'Requests', icon: Plus },
+  { id: 'billing', label: 'Billing', icon: CreditCard },
+  { id: 'quotes', label: 'Quotes', icon: FileText },
+  { id: 'users', label: 'Users', icon: Users },
+  { id: 'support', label: 'Support', icon: HelpCircle },
+];
 
 interface CustomerPortalProps {
   customerId?: string;
 }
 
 export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [supportMessage, setSupportMessage] = useState('');
 
   // Fetch real customer data
@@ -137,281 +158,65 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Customer Portal</h1>
-          <p className="text-muted-foreground">Welcome back, {customer.name}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Support
-          </Button>
-          <Button variant="outline">
-            <Phone className="w-4 h-4 mr-2" />
-            Call Us
-          </Button>
+      <div className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div>
+              <h1 className="text-xl font-semibold">Customer Portal</h1>
+              <p className="text-sm text-muted-foreground">Welcome back, {customer?.name}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm">
+                <Phone className="w-4 h-4 mr-2" />
+                Emergency: (555) 123-4567
+              </Button>
+              <Button variant="outline" size="sm">
+                <User className="w-4 h-4 mr-2" />
+                Account
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Navigation */}
+      <div className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8 overflow-x-auto">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="history">Service History</TabsTrigger>
-          <TabsTrigger value="requests">Requests</TabsTrigger>
-          <TabsTrigger value="jobs">My Jobs</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="support">Support</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <CustomerPortalDashboard customerId={customerId || ''} />
-        </TabsContent>
-
-        <TabsContent value="history" className="space-y-4">
-          <ServiceHistoryTab customerId={customerId || ''} />
-        </TabsContent>
-
-        <TabsContent value="requests" className="space-y-4">
-          <RequestsTab customerId={customerId || ''} />
-        </TabsContent>
-
-        <TabsContent value="jobs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>All Jobs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {jobsLoading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="animate-pulse border rounded-lg p-4">
-                      <div className="h-4 bg-muted rounded w-1/4 mb-2"></div>
-                      <div className="h-3 bg-muted rounded w-1/2"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : jobs.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No jobs found</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {jobs.map((job) => {
-                    const StatusIcon = getStatusIcon(job.status);
-                    
-                    return (
-                      <div key={job.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                              <Calendar className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                              <p className="font-medium capitalize">{job.job_type?.replace('_', ' ') || 'Service'}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {job.job_number || `Job #${job.id.slice(-8)}`}
-                              </p>
-                            </div>
-                          </div>
-                          <Badge className={getStatusColor(job.status)} variant="outline">
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {job.status?.replace('_', ' ') || 'Unknown'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">
-                              {job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString() : 'Not scheduled'}
-                              {job.scheduled_time && ` at ${job.scheduled_time}`}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {job.actual_completion_time && (
-                          <div className="border-t pt-3">
-                            <p className="text-sm text-muted-foreground">
-                              Completed: {new Date(job.actual_completion_time).toLocaleDateString()}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="invoices" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Invoice History</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {invoicesLoading ? (
-                <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="animate-pulse flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-muted rounded-lg"></div>
-                        <div>
-                          <div className="h-4 bg-muted rounded w-24 mb-2"></div>
-                          <div className="h-3 bg-muted rounded w-32"></div>
-                        </div>
-                      </div>
-                      <div className="h-6 bg-muted rounded w-16"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : invoices.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No invoices found</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {invoices.map((invoice) => {
-                    const StatusIcon = getStatusIcon(invoice.status);
-                    return (
-                      <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-success" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{invoice.invoice_number}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Issued: {invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : 'N/A'}
-                              {invoice.due_date && ` | Due: ${new Date(invoice.due_date).toLocaleDateString()}`}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold">${Number(invoice.amount).toLocaleString()}</p>
-                          <Badge className={getStatusColor(invoice.status)} variant="outline">
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {invoice.status}
-                          </Badge>
-                          <div className="mt-2">
-                            <Button size="sm" variant="outline">
-                              Download PDF
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="profile" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {customer && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Company Name</Label>
-                    <Input value={customer.name || ''} readOnly />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input value={customer.email || ''} readOnly />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Phone</Label>
-                    <Input value={customer.phone || ''} readOnly />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Customer Type</Label>
-                    <Badge variant="outline">
-                      {customer.customer_type?.replace('_', ' ') || 'Standard'}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label>Service Address</Label>
-                <Input 
-                  value={customer?.service_address || customer?.address || ''} 
-                  readOnly 
-                />
-              </div>
-              <div className="pt-4">
-                <Button disabled>Update Profile</Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Contact support to update your profile information
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="support" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Support</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Message</Label>
-                <Textarea 
-                  placeholder="Describe your issue or question..."
-                  value={supportMessage}
-                  onChange={(e) => setSupportMessage(e.target.value)}
-                />
-              </div>
-              <Button>Send Message</Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium">Phone Support</p>
-                    <p className="text-sm text-muted-foreground">(555) 123-4567</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-green-600" />
-                  <div>
-                    <p className="font-medium">Email Support</p>
-                    <p className="text-sm text-muted-foreground">support@company.com</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-orange-600" />
-                  <div>
-                    <p className="font-medium">Business Hours</p>
-                    <p className="text-sm text-muted-foreground">Monday - Friday: 7:00 AM - 6:00 PM</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'dashboard' && <CustomerPortalDashboard customerId={customerId || ''} />}
+        {activeTab === 'units' && <UnitsTab customerId={customerId || ''} />}
+        {activeTab === 'service-history' && <ServiceHistoryTab customerId={customerId || ''} />}
+        {activeTab === 'requests' && <RequestsTab customerId={customerId || ''} />}
+        {activeTab === 'billing' && <BillingTab customerId={customerId || ''} />}
+        {activeTab === 'quotes' && <QuotesTab customerId={customerId || ''} />}
+        {activeTab === 'users' && <UsersTab customerId={customerId || ''} />}
+        {activeTab === 'support' && <SupportTab customerId={customerId || ''} />}
+      </div>
     </div>
   );
 };

@@ -221,28 +221,13 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
                                     </p>
                                   </div>
                                 </div>
-
-                                {quote.quote_items && quote.quote_items.length > 0 && (
-                                  <div>
-                                    <label className="text-sm font-medium">Line Items</label>
-                                    <div className="mt-2 border rounded-lg">
-                                      <div className="grid grid-cols-4 gap-4 p-3 bg-muted/50 border-b text-sm font-medium">
-                                        <span>Item</span>
-                                        <span>Quantity</span>
-                                        <span>Unit Price</span>
-                                        <span>Total</span>
-                                      </div>
-                                      {quote.quote_items.map((item: any, idx: number) => (
-                                        <div key={idx} className="grid grid-cols-4 gap-4 p-3 border-b last:border-b-0 text-sm">
-                                          <span>{item.product_name || 'Service Item'}</span>
-                                          <span>{item.quantity}</span>
-                                          <span>{formatCurrency(item.unit_price || 0)}</span>
-                                          <span>{formatCurrency(item.line_total || 0)}</span>
-                                        </div>
-                                      ))}
-                                    </div>
+                                
+                                <div>
+                                  <label className="text-sm font-medium">Line Items</label>
+                                  <div className="mt-2 border rounded-lg p-4 text-center text-muted-foreground">
+                                    <p className="text-sm">Line item details coming soon</p>
                                   </div>
-                                )}
+                                </div>
                                 
                                 {quote.notes && (
                                   <div>
