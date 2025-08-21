@@ -32,8 +32,13 @@ export const ServicesFrequencyOnlyStep: React.FC = () => {
           servicesSubtotal: state.data.servicesData?.servicesSubtotal || 0,
           useSameDriverForAll: state.data.servicesData?.useSameDriverForAll || false,
           useSameVehicleForAll: state.data.servicesData?.useSameVehicleForAll || false,
+          groupAssignmentsByDay: state.data.servicesData?.groupAssignmentsByDay || false,
+          dayAssignments: state.data.servicesData?.dayAssignments,
+          individualServiceAssignments: state.data.servicesData?.individualServiceAssignments,
+          expandedDays: state.data.servicesData?.expandedDays,
           scheduledDriverForAll: state.data.servicesData?.scheduledDriverForAll,
-          scheduledVehicleForAll: state.data.servicesData?.scheduledVehicleForAll
+          scheduledVehicleForAll: state.data.servicesData?.scheduledVehicleForAll,
+          package_override: state.data.servicesData?.package_override
         }}
         onUpdate={(svc) => updateData({ servicesData: svc })}
       />

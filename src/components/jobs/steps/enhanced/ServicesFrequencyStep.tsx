@@ -61,6 +61,13 @@ interface ServicesFrequencyData {
   scheduledVehicleForAll?: any;
   useSameDriverForAll: boolean;
   useSameVehicleForAll: boolean;
+  groupAssignmentsByDay: boolean;
+  dayAssignments?: {
+    [dateKey: string]: {
+      driver?: any;
+      vehicle?: any;
+    }
+  };
   individualServiceAssignments?: {
     [serviceId: string]: {
       [dateKey: string]: {
@@ -69,6 +76,7 @@ interface ServicesFrequencyData {
       }
     }
   };
+  expandedDays?: Set<string>;
   // Package override
   package_override?: {
     enabled: boolean;
@@ -93,6 +101,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const [selectedServiceDate, setSelectedServiceDate] = useState<Date>(new Date());
   const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [selectedDateKey, setSelectedDateKey] = useState<string>('');
+  const [selectedDayForAssignment, setSelectedDayForAssignment] = useState<string>('');
 
   // Fetch assigned driver details from step 4
   const { data: assignedDriver } = useQuery({
@@ -416,7 +425,20 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   };
 
   const handleDriverSelect = (driver: any) => {
-    if (selectedServiceId && selectedDateKey) {
+    if (selectedDayForAssignment) {
+      // Day-level assignment
+      const currentDayAssignments = data.dayAssignments || {};
+      onUpdate({
+        ...data,
+        dayAssignments: {
+          ...currentDayAssignments,
+          [selectedDayForAssignment]: {
+            ...currentDayAssignments[selectedDayForAssignment],
+            driver
+          }
+        }
+      });
+    } else if (selectedServiceId && selectedDateKey) {
       // Individual service date assignment
       const currentAssignments = data.individualServiceAssignments || {};
       const serviceAssignments = currentAssignments[selectedServiceId] || {};
@@ -445,7 +467,20 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   };
 
   const handleVehicleSelect = (vehicle: any) => {
-    if (selectedServiceId && selectedDateKey) {
+    if (selectedDayForAssignment) {
+      // Day-level assignment
+      const currentDayAssignments = data.dayAssignments || {};
+      onUpdate({
+        ...data,
+        dayAssignments: {
+          ...currentDayAssignments,
+          [selectedDayForAssignment]: {
+            ...currentDayAssignments[selectedDayForAssignment],
+            vehicle
+          }
+        }
+      });
+    } else if (selectedServiceId && selectedDateKey) {
       // Individual service date assignment
       const currentAssignments = data.individualServiceAssignments || {};
       const serviceAssignments = currentAssignments[selectedServiceId] || {};
@@ -491,9 +526,42 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     setShowVehicleModal(true);
   };
 
+  const openDriverModalForDay = (dateKey: string, date: Date) => {
+    setSelectedDayForAssignment(dateKey);
+    setSelectedServiceId('');
+    setSelectedDateKey('');
+    setSelectedServiceDate(date);
+    setShowDriverModal(true);
+  };
+
+  const openVehicleModalForDay = (dateKey: string, date: Date) => {
+    setSelectedDayForAssignment(dateKey);
+    setSelectedServiceId('');
+    setSelectedDateKey('');
+    setSelectedServiceDate(date);
+    setShowVehicleModal(true);
+  };
+
+  const toggleDayExpansion = (dateKey: string) => {
+    const currentExpanded = data.expandedDays || new Set();
+    const newExpanded = new Set(currentExpanded);
+    
+    if (newExpanded.has(dateKey)) {
+      newExpanded.delete(dateKey);
+    } else {
+      newExpanded.add(dateKey);
+    }
+    
+    onUpdate({
+      ...data,
+      expandedDays: newExpanded
+    });
+  };
+
   const openGlobalDriverModal = () => {
     setSelectedServiceId('');
     setSelectedDateKey('');
+    setSelectedDayForAssignment('');
     // Use job scheduled date and parse as local date to avoid timezone offset
     const jobDate = state.data.scheduled_date 
       ? (() => {
@@ -508,6 +576,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   const openGlobalVehicleModal = () => {
     setSelectedServiceId('');
     setSelectedDateKey('');
+    setSelectedDayForAssignment('');
     // Use job scheduled date and parse as local date to avoid timezone offset
     const jobDate = state.data.scheduled_date 
       ? (() => {
@@ -1248,112 +1317,311 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
               </div>
             </div>
 
-            {/* Individual Service Date Assignments */}
-            <div className="space-y-4 pt-6 border-t">
+            {/* Group by Day Toggle */}
+            <div className="flex items-center space-x-2 pt-6 border-t">
+              <Switch
+                id="group-by-day"
+                checked={data.groupAssignmentsByDay || false}
+                onCheckedChange={(checked) => onUpdate({
+                  ...data,
+                  groupAssignmentsByDay: checked,
+                  expandedDays: new Set() // Reset expanded days when toggling
+                })}
+              />
+              <Label htmlFor="group-by-day" className="text-sm font-medium">
+                Group assignments by day
+              </Label>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {data.groupAssignmentsByDay 
+                ? "Assign drivers and vehicles once per date. All services on that day will use the same assignments. Expand any day to override assignments for specific services."
+                : "Assign drivers and vehicles for each service separately. Use this view if different services on the same day require different assignments."
+              }
+            </p>
+
+            {/* Service Date Assignments */}
+            <div className="space-y-4 pt-4">
               <div>
                 <Label className="text-sm font-medium mb-3 block">Service Schedule</Label>
-                <p className="text-xs text-muted-foreground mb-4">
-                  Assign a driver and vehicle for each service date, or use the toggles above to assign the same for all.
-                </p>
               </div>
               
-              {data.selectedServices.map((service) => {
-                const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
-                const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
-                
-                let perVisitCost = 0;
-                switch (service.pricing_method) {
-                  case 'per_visit':
-                    perVisitCost = service.per_visit_cost || 0;
-                    break;
-                  case 'per_hour':
-                    perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
-                    break;
-                  case 'flat_rate':
-                    perVisitCost = service.flat_rate_cost || 0;
-                    break;
-                }
+              {data.groupAssignmentsByDay ? (
+                // Group by Day View
+                (() => {
+                  // Collect all unique dates across all services
+                  const allDates = new Map<string, { date: Date; displayDate: string; services: Array<{ id: string; name: string; }> }>();
+                  
+                  data.selectedServices.forEach((service) => {
+                    const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+                    const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+                    
+                    let perVisitCost = 0;
+                    switch (service.pricing_method) {
+                      case 'per_visit':
+                        perVisitCost = service.per_visit_cost || 0;
+                        break;
+                      case 'per_hour':
+                        perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+                        break;
+                      case 'flat_rate':
+                        perVisitCost = service.flat_rate_cost || 0;
+                        break;
+                    }
 
-                const calculation = calculateServiceVisits({
-                  startDate,
-                  endDate,
-                  frequency: service.frequency,
-                  customFrequencyDays: service.custom_frequency_days,
-                  customDaysOfWeek: service.custom_days_of_week,
-                  customSpecificDates: service.custom_specific_dates,
-                  includeDropoffService: service.include_dropoff_service,
-                  includePickupService: service.include_pickup_service,
-                  perVisitCost,
-                  serviceTime: '09:00',
-                  timezone: 'America/New_York'
-                });
+                    const calculation = calculateServiceVisits({
+                      startDate,
+                      endDate,
+                      frequency: service.frequency,
+                      customFrequencyDays: service.custom_frequency_days,
+                      customDaysOfWeek: service.custom_days_of_week,
+                      customSpecificDates: service.custom_specific_dates,
+                      includeDropoffService: service.include_dropoff_service,
+                      includePickupService: service.include_pickup_service,
+                      perVisitCost,
+                      serviceTime: '09:00',
+                      timezone: 'America/New_York'
+                    });
 
-                if (calculation.visits.length === 0) return null;
+                    calculation.visits.forEach((visit) => {
+                      const dateKey = format(visit.date, 'yyyy-MM-dd');
+                      if (!allDates.has(dateKey)) {
+                        allDates.set(dateKey, {
+                          date: visit.date,
+                          displayDate: visit.displayDate,
+                          services: []
+                        });
+                      }
+                      allDates.get(dateKey)!.services.push({ id: service.id, name: service.name });
+                    });
+                  });
 
-                return (
-                  <div key={service.id} className="space-y-3">
-                    <div className="font-medium text-sm text-muted-foreground">
-                      {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
-                    </div>
-                    <div className="space-y-2">
-                      {calculation.visits.map((visit, index) => {
-                        const dateKey = format(visit.date, 'yyyy-MM-dd');
-                        const individualAssignment = getIndividualAssignment(service.id, dateKey);
+                  // Sort dates chronologically
+                  const sortedDates = Array.from(allDates.entries()).sort(([a], [b]) => a.localeCompare(b));
+
+                  return (
+                    <div className="space-y-3">
+                      {sortedDates.map(([dateKey, dateInfo]) => {
+                        const dayAssignment = data.dayAssignments?.[dateKey];
+                        const isExpanded = data.expandedDays?.has(dateKey);
                         
                         return (
-                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-background">
-                            <div className="flex items-center space-x-3">
-                              <div className="text-sm font-medium">{visit.displayDate}</div>
-                              <div className="text-sm text-muted-foreground">—</div>
-                              <div className="text-sm text-muted-foreground">{service.name}</div>
+                          <div key={dateKey} className="space-y-2">
+                            {/* Day Assignment Row */}
+                            <div className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                              <div className="flex items-center space-x-3">
+                                <div className="text-sm font-medium">{dateInfo.displayDate}</div>
+                                <div className="text-sm text-muted-foreground">—</div>
+                                <div className="space-y-1">
+                                  {dateInfo.services.map((service, index) => (
+                                    <div key={service.id} className="text-xs text-muted-foreground">
+                                      {service.name}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-1 h-8"
+                                  disabled={data.useSameDriverForAll}
+                                  onClick={() => openDriverModalForDay(dateKey, dateInfo.date)}
+                                >
+                                  <User className="h-3 w-3" />
+                                  <span className="text-xs">
+                                    {data.useSameDriverForAll && data.scheduledDriverForAll 
+                                      ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
+                                      : dayAssignment?.driver
+                                      ? `${dayAssignment.driver.first_name} ${dayAssignment.driver.last_name}`
+                                      : assignedDriver
+                                      ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
+                                      : 'Assign Driver'
+                                    }
+                                  </span>
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-1 h-8"
+                                  disabled={data.useSameVehicleForAll}
+                                  onClick={() => openVehicleModalForDay(dateKey, dateInfo.date)}
+                                >
+                                  <Truck className="h-3 w-3" />
+                                  <span className="text-xs">
+                                    {data.useSameVehicleForAll && data.scheduledVehicleForAll 
+                                      ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
+                                      : dayAssignment?.vehicle
+                                      ? `${dayAssignment.vehicle.year} ${dayAssignment.vehicle.make} ${dayAssignment.vehicle.model}`
+                                      : assignedVehicle
+                                      ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
+                                      : 'Assign Vehicle'
+                                    }
+                                  </span>
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => toggleDayExpansion(dateKey)}
+                                >
+                                  <span className="text-xs">{isExpanded ? '−' : '+'}</span>
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex items-center gap-1 h-8"
-                                disabled={data.useSameDriverForAll}
-                                onClick={() => openDriverModalForDate(service.id, visit.date, dateKey)}
-                              >
-                                <User className="h-3 w-3" />
-                                <span className="text-xs">
-                                  {data.useSameDriverForAll && data.scheduledDriverForAll 
-                                    ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
-                                    : individualAssignment?.driver
-                                    ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
-                                    : assignedDriver
-                                    ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
-                                    : 'Assign Driver'
-                                  }
-                                </span>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="flex items-center gap-1 h-8"
-                                disabled={data.useSameVehicleForAll}
-                                onClick={() => openVehicleModalForDate(service.id, visit.date, dateKey)}
-                              >
-                                <Truck className="h-3 w-3" />
-                                <span className="text-xs">
-                                  {data.useSameVehicleForAll && data.scheduledVehicleForAll 
-                                    ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
-                                    : individualAssignment?.vehicle
-                                    ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make} ${individualAssignment.vehicle.model}`
-                                    : assignedVehicle
-                                    ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
-                                    : 'Assign Vehicle'
-                                  }
-                                </span>
-                              </Button>
-                            </div>
+
+                            {/* Expanded Individual Services */}
+                            {isExpanded && (
+                              <div className="ml-4 space-y-2 border-l-2 border-muted pl-4">
+                                {dateInfo.services.map((serviceInfo) => {
+                                  const service = data.selectedServices.find(s => s.id === serviceInfo.id);
+                                  if (!service) return null;
+                                  
+                                  const individualAssignment = getIndividualAssignment(service.id, dateKey);
+                                  
+                                  return (
+                                    <div key={service.id} className="flex items-center justify-between p-2 border rounded bg-muted/30">
+                                      <div className="text-sm">{service.name}</div>
+                                      <div className="flex items-center space-x-2">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="flex items-center gap-1 h-7"
+                                          onClick={() => openDriverModalForDate(service.id, dateInfo.date, dateKey)}
+                                        >
+                                          <User className="h-3 w-3" />
+                                          <span className="text-xs">
+                                            {individualAssignment?.driver
+                                              ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
+                                              : 'Override'
+                                            }
+                                          </span>
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="flex items-center gap-1 h-7"
+                                          onClick={() => openVehicleModalForDate(service.id, dateInfo.date, dateKey)}
+                                        >
+                                          <Truck className="h-3 w-3" />
+                                          <span className="text-xs">
+                                            {individualAssignment?.vehicle
+                                              ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make}`
+                                              : 'Override'
+                                            }
+                                          </span>
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })()
+              ) : (
+                // Individual Service View (existing functionality)
+                data.selectedServices.map((service) => {
+                  const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
+                  const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
+                  
+                  let perVisitCost = 0;
+                  switch (service.pricing_method) {
+                    case 'per_visit':
+                      perVisitCost = service.per_visit_cost || 0;
+                      break;
+                    case 'per_hour':
+                      perVisitCost = (service.per_hour_cost || 0) * (service.estimated_duration_hours || 1);
+                      break;
+                    case 'flat_rate':
+                      perVisitCost = service.flat_rate_cost || 0;
+                      break;
+                  }
+
+                  const calculation = calculateServiceVisits({
+                    startDate,
+                    endDate,
+                    frequency: service.frequency,
+                    customFrequencyDays: service.custom_frequency_days,
+                    customDaysOfWeek: service.custom_days_of_week,
+                    customSpecificDates: service.custom_specific_dates,
+                    includeDropoffService: service.include_dropoff_service,
+                    includePickupService: service.include_pickup_service,
+                    perVisitCost,
+                    serviceTime: '09:00',
+                    timezone: 'America/New_York'
+                  });
+
+                  if (calculation.visits.length === 0) return null;
+
+                  return (
+                    <div key={service.id} className="space-y-3">
+                      <div className="font-medium text-sm text-muted-foreground">
+                        {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
+                      </div>
+                      <div className="space-y-2">
+                        {calculation.visits.map((visit, index) => {
+                          const dateKey = format(visit.date, 'yyyy-MM-dd');
+                          const individualAssignment = getIndividualAssignment(service.id, dateKey);
+                          
+                          return (
+                            <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                              <div className="flex items-center space-x-3">
+                                <div className="text-sm font-medium">{visit.displayDate}</div>
+                                <div className="text-sm text-muted-foreground">—</div>
+                                <div className="text-sm text-muted-foreground">{service.name}</div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-1 h-8"
+                                  disabled={data.useSameDriverForAll}
+                                  onClick={() => openDriverModalForDate(service.id, visit.date, dateKey)}
+                                >
+                                  <User className="h-3 w-3" />
+                                  <span className="text-xs">
+                                    {data.useSameDriverForAll && data.scheduledDriverForAll 
+                                      ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
+                                      : individualAssignment?.driver
+                                      ? `${individualAssignment.driver.first_name} ${individualAssignment.driver.last_name}`
+                                      : assignedDriver
+                                      ? `${assignedDriver.first_name} ${assignedDriver.last_name}`
+                                      : 'Assign Driver'
+                                    }
+                                  </span>
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-1 h-8"
+                                  disabled={data.useSameVehicleForAll}
+                                  onClick={() => openVehicleModalForDate(service.id, visit.date, dateKey)}
+                                >
+                                  <Truck className="h-3 w-3" />
+                                  <span className="text-xs">
+                                    {data.useSameVehicleForAll && data.scheduledVehicleForAll 
+                                      ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
+                                      : individualAssignment?.vehicle
+                                      ? `${individualAssignment.vehicle.year} ${individualAssignment.vehicle.make} ${individualAssignment.vehicle.model}`
+                                      : assignedVehicle
+                                      ? `${assignedVehicle.year} ${assignedVehicle.make} ${assignedVehicle.model}`
+                                      : 'Assign Vehicle'
+                                    }
+                                  </span>
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </CardContent>
         </Card>
@@ -1367,6 +1635,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           if (!open) {
             setSelectedServiceId('');
             setSelectedDateKey('');
+            setSelectedDayForAssignment('');
           }
         }}
         selectedDate={selectedServiceDate}
@@ -1385,6 +1654,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
           if (!open) {
             setSelectedServiceId('');
             setSelectedDateKey('');
+            setSelectedDayForAssignment('');
           }
         }}
         selectedDate={selectedServiceDate}

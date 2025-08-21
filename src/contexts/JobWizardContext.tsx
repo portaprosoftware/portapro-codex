@@ -39,6 +39,22 @@ export interface JobWizardData {
     servicesSubtotal: number;
     useSameDriverForAll: boolean;
     useSameVehicleForAll: boolean;
+    groupAssignmentsByDay: boolean;
+    dayAssignments?: {
+      [dateKey: string]: {
+        driver?: any;
+        vehicle?: any;
+      }
+    };
+    individualServiceAssignments?: {
+      [serviceId: string]: {
+        [dateKey: string]: {
+          driver?: any;
+          vehicle?: any;
+        }
+      }
+    };
+    expandedDays?: Set<string>;
     scheduledDriverForAll?: any;
     scheduledVehicleForAll?: any;
     package_override?: {
@@ -95,7 +111,11 @@ const initialState: JobWizardState = {
       selectedServices: [], 
       servicesSubtotal: 0,
       useSameDriverForAll: false,
-      useSameVehicleForAll: false
+      useSameVehicleForAll: false,
+      groupAssignmentsByDay: false,
+      dayAssignments: {},
+      individualServiceAssignments: {},
+      expandedDays: new Set()
     },
     create_pickup_job: false,
     pickup_date: null,
