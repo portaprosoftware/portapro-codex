@@ -568,9 +568,11 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                           )}
                           <div className="flex items-center space-x-2 mt-2">
                             {service.service_code && (
-                              <Badge variant="outline">{service.service_code}</Badge>
+                              <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
+                                {service.service_code}
+                              </Badge>
                             )}
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
                               {getPricingDisplay(service)}
                             </Badge>
                             {service.estimated_duration_hours && (
