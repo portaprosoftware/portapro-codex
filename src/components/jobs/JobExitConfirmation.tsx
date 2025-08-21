@@ -75,7 +75,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
               className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
             >
               <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save as Draft'}
+              {isSaving ? 'Saving...' : 'Save Draft'}
             </Button>
             <AlertDialogAction
               onClick={onDeleteAndExit}
