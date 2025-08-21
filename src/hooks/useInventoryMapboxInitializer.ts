@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface MapboxState {
   map: mapboxgl.Map | null;
@@ -16,39 +15,11 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string>('');
+  // Use the public Mapbox token directly
+  const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
   const [showTokenInput, setShowTokenInput] = useState(false);
 
-  // Fetch Mapbox token
-  useEffect(() => {
-    console.log('🗺️ useInventoryMapboxInitializer: Starting token fetch...');
-    const fetchMapboxToken = async () => {
-      try {
-        console.log('🗺️ useInventoryMapboxInitializer: Calling supabase.functions.invoke...');
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        console.log('🗺️ useInventoryMapboxInitializer: Token response:', { data, error });
-        
-        if (error) {
-          console.error('🗺️ useInventoryMapboxInitializer: Token error:', error);
-          throw error;
-        }
-        
-        if (data?.token) {
-          console.log('🗺️ useInventoryMapboxInitializer: Token received, length:', data.token.length);
-          setMapboxToken(data.token);
-        } else {
-          console.log('🗺️ useInventoryMapboxInitializer: No token in response, showing input');
-          setShowTokenInput(true);
-        }
-      } catch (error) {
-        console.error('🗺️ useInventoryMapboxInitializer: Error fetching Mapbox token:', error);
-        setError('Failed to fetch Mapbox token: ' + error.message);
-        setShowTokenInput(true);
-      }
-    };
-    
-    fetchMapboxToken();
-  }, []);
+  // Token is now set directly, no need to fetch
 
   // Initialize map when token is available
   useEffect(() => {
