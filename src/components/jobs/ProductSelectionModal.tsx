@@ -413,17 +413,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
             {/* Breakdown (works for bulk-only and hybrid tracked products) */}
             {availability.data?.breakdown && (
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <div className="flex flex-col">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                <div className="flex flex-col space-y-0">
                   <span>Available</span>
                   <span>Tracked</span>
                 </div>
-                <span className="font-medium text-foreground self-end">{availability.data.breakdown.available_tracked ?? 0}</span>
-                <div className="flex flex-col">
+                <span className="font-medium text-foreground flex items-end">{availability.data.breakdown.available_tracked ?? 0}</span>
+                <div className="flex flex-col space-y-0">
                   <span>Available</span>
                   <span>Bulk</span>
                 </div>
-                <span className="font-medium text-foreground self-end">{availability.data.breakdown.bulk_pool ?? 0}</span>
+                <span className="font-medium text-foreground flex items-end">{availability.data.breakdown.bulk_pool ?? 0}</span>
                 <div className="flex items-center justify-between">
                   <span>On Job</span>
                   <span className="font-medium text-foreground">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
