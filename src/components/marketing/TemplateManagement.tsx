@@ -312,7 +312,7 @@ export const TemplateManagement: React.FC = () => {
               <Mail className="w-5 h-5 text-blue-500" />
               Email Templates
             </h2>
-            <span className="text-sm text-gray-500">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-muted-foreground">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* Email User Templates */}
@@ -343,7 +343,7 @@ export const TemplateManagement: React.FC = () => {
               <MessageSquare className="w-5 h-5 text-green-500" />
               SMS Templates
             </h2>
-            <span className="text-sm text-gray-500">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-muted-foreground">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* SMS User Templates */}
