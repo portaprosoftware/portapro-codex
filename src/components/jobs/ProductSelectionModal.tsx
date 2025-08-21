@@ -650,16 +650,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-xs"
-            onClick={onBulkSelect}
-            disabled={!availability.data || quantity <= 0 || quantity > (availability.data?.available ?? 0)}
-          >
-            <Layers className="h-3 w-3 mr-1" />
-            Add Bulk ({quantity})
-          </Button>
+          {/* Only show bulk button for products that support bulk operations */}
+          {availability.data?.method !== 'individual_tracking' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs"
+              onClick={onBulkSelect}
+              disabled={!availability.data || quantity <= 0 || quantity > (availability.data?.available ?? 0)}
+            >
+              <Layers className="h-3 w-3 mr-1" />
+              Add Bulk ({quantity})
+            </Button>
+          )}
           
           {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
             <Button
