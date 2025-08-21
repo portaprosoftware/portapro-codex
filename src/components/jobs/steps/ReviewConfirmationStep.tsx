@@ -26,6 +26,9 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
   const [customerName, setCustomerName] = useState<string>('');
   const [driverName, setDriverName] = useState<string>('');
   const [vehicleDetails, setVehicleDetails] = useState<string>('');
+  const [pickupDriverName, setPickupDriverName] = useState<string>('');
+  const [pickupVehicleDetails, setPickupVehicleDetails] = useState<string>('');
+  const [partialPickupAssignments, setPartialPickupAssignments] = useState<Record<string, { driver: string; vehicle: string }>>({});
   const [productDetails, setProductDetails] = useState<Record<string, { name: string; price_per_day: number }>>({});
 
   const startDate = d.scheduled_date || '';
@@ -58,28 +61,121 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
 
       // Fetch driver name
       if (d.driver_id) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('first_name, last_name')
-          .eq('clerk_user_id', d.driver_id)
-          .maybeSingle();
-        if (profile && (profile.first_name || profile.last_name)) {
-          setDriverName(`${profile.first_name || ''} ${profile.last_name || ''}`.trim());
-        } else {
-          setDriverName('Unknown Driver');
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', d.driver_id)
+            .single();
+          
+          if (data && !error) {
+            setDriverName(`${data.first_name} ${data.last_name}`);
+          }
+        } catch (error) {
+          console.error('Error fetching driver:', error);
+        }
+      }
+
+      // Fetch pickup driver name
+      if (d.pickup_driver_id) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', d.pickup_driver_id)
+            .single();
+          
+          if (data && !error) {
+            setPickupDriverName(`${data.first_name} ${data.last_name}`);
+          }
+        } catch (error) {
+          console.error('Error fetching pickup driver:', error);
         }
       }
 
       // Fetch vehicle details
       if (d.vehicle_id) {
-        const { data: vehicle } = await supabase
-          .from('vehicles')
-          .select('year, make, model, license_plate')
-          .eq('id', d.vehicle_id)
-          .maybeSingle();
-        if (vehicle) {
-          setVehicleDetails(`${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.model || ''} (${vehicle.license_plate || 'No Plate'})`.trim());
+        try {
+          const { data, error } = await supabase
+            .from('vehicles')
+            .select('license_plate, year, make, model')
+            .eq('id', d.vehicle_id)
+            .single();
+          
+          if (data && !error) {
+            setVehicleDetails(`${data.year} ${data.make} ${data.model} (${data.license_plate})`);
+          }
+        } catch (error) {
+          console.error('Error fetching vehicle:', error);
         }
+      }
+
+      // Fetch pickup vehicle details  
+      if (d.pickup_vehicle_id) {
+        try {
+          const { data, error } = await supabase
+            .from('vehicles')
+            .select('license_plate, year, make, model')
+            .eq('id', d.pickup_vehicle_id)
+            .single();
+          
+          if (data && !error) {
+            setPickupVehicleDetails(`${data.year} ${data.make} ${data.model} (${data.license_plate})`);
+          }
+        } catch (error) {
+          console.error('Error fetching pickup vehicle:', error);
+        }
+      }
+
+      // Fetch partial pickup assignments
+      if (d.partial_pickup_assignments && d.partial_pickups) {
+        const assignments: Record<string, { driver: string; vehicle: string }> = {};
+        
+        for (const pickup of d.partial_pickups) {
+          const assignment = d.partial_pickup_assignments[pickup.id];
+          if (assignment) {
+            let driverName = 'No driver assigned';
+            let vehicleName = 'No vehicle assigned';
+
+            // Fetch driver name
+            if (assignment.driver_id) {
+              try {
+                const { data, error } = await supabase
+                  .from('profiles')
+                  .select('first_name, last_name')
+                  .eq('id', assignment.driver_id)
+                  .single();
+                
+                if (data && !error) {
+                  driverName = `${data.first_name} ${data.last_name}`;
+                }
+              } catch (error) {
+                console.error('Error fetching partial pickup driver:', error);
+              }
+            }
+
+            // Fetch vehicle details
+            if (assignment.vehicle_id) {
+              try {
+                const { data, error } = await supabase
+                  .from('vehicles')
+                  .select('license_plate, year, make, model')
+                  .eq('id', assignment.vehicle_id)
+                  .single();
+                
+                if (data && !error) {
+                  vehicleName = `${data.year} ${data.make} ${data.model} (${data.license_plate})`;
+                }
+              } catch (error) {
+                console.error('Error fetching partial pickup vehicle:', error);
+              }
+            }
+
+            assignments[pickup.id] = { driver: driverName, vehicle: vehicleName };
+          }
+        }
+        
+        setPartialPickupAssignments(assignments);
       }
 
       // Fetch product details for items
@@ -104,7 +200,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
     };
 
     fetchNames();
-  }, [d.customer_id, d.driver_id, d.vehicle_id, items]);
+  }, [d.customer_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, items]);
   
   // Calculate rental period in days
   const rentalDays = useMemo(() => {
@@ -354,6 +450,10 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
                   {d.pickup_notes && (
                     <div className="text-xs text-muted-foreground mt-1">Notes: {d.pickup_notes}</div>
                   )}
+                  <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                    <div>Driver: {pickupDriverName || 'No driver assigned'}</div>
+                    <div>Vehicle: {pickupVehicleDetails || 'No vehicle assigned'}</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -363,22 +463,31 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({ 
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Partial Pickups</h4>
                 <div className="space-y-2">
-                  {d.partial_pickups.map((pickup, index) => (
-                    <div key={pickup.id} className="border rounded-lg p-3">
-                      <div className="font-medium text-sm">
-                        Partial Pickup #{index + 1}: {new Date(pickup.date).toLocaleDateString()}
+                  {d.partial_pickups.map((pickup, index) => {
+                    const assignment = partialPickupAssignments[pickup.id];
+                    return (
+                      <div key={pickup.id} className="border rounded-lg p-3">
+                        <div className="font-medium text-sm">
+                          Partial Pickup #{index + 1}: {new Date(pickup.date).toLocaleDateString()}
+                        </div>
+                        {pickup.time && (
+                          <div className="text-xs text-muted-foreground mt-1">Time: {pickup.time}</div>
+                        )}
+                        {pickup.is_priority && (
+                          <div className="text-xs text-orange-600 font-medium mt-1">Priority</div>
+                        )}
+                        {pickup.notes && (
+                          <div className="text-xs text-muted-foreground mt-1">Notes: {pickup.notes}</div>
+                        )}
+                        {assignment && (
+                          <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                            <div>Driver: {assignment.driver}</div>
+                            <div>Vehicle: {assignment.vehicle}</div>
+                          </div>
+                        )}
                       </div>
-                      {pickup.time && (
-                        <div className="text-xs text-muted-foreground mt-1">Time: {pickup.time}</div>
-                      )}
-                      {pickup.is_priority && (
-                        <div className="text-xs text-orange-600 font-medium mt-1">Priority</div>
-                      )}
-                      {pickup.notes && (
-                        <div className="text-xs text-muted-foreground mt-1">Notes: {pickup.notes}</div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
