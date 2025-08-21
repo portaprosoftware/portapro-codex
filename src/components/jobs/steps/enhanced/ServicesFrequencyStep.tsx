@@ -1172,95 +1172,78 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Driver Assignment */}
+            {/* Driver and Vehicle Assignment - Single Row */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="same-driver"
-                    checked={data.useSameDriverForAll || false}
-                    onCheckedChange={toggleUseSameDriver}
-                  />
-                  <Label htmlFor="same-driver" className="font-medium">
-                    Schedule same driver for all services
-                    {data.useSameDriverForAll && assignedDriver && (
-                      <span className="text-primary font-semibold ml-2">
-                        ({assignedDriver.first_name} {assignedDriver.last_name})
-                      </span>
-                    )}
-                  </Label>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openGlobalDriverModal}
-                  className="flex items-center gap-2"
-                >
-                  <User className="h-4 w-4" />
-                  Schedule Driver Now
-                </Button>
-              </div>
-              
-              {data.scheduledDriverForAll && (
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
-                      {data.scheduledDriverForAll.first_name?.[0]}{data.scheduledDriverForAll.last_name?.[0]}
-                    </div>
-                    <div>
-                      <p className="font-medium">{data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name}</p>
-                      <p className="text-sm text-muted-foreground">Status: {data.scheduledDriverForAll.status}</p>
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Driver Assignment */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="same-driver"
+                      checked={data.useSameDriverForAll || false}
+                      onCheckedChange={toggleUseSameDriver}
+                    />
+                    <Label htmlFor="same-driver" className="font-medium">
+                      Schedule same driver for all services
+                      {data.useSameDriverForAll && assignedDriver && (
+                        <span className="text-primary font-semibold ml-2">
+                          ({assignedDriver.first_name} {assignedDriver.last_name})
+                        </span>
+                      )}
+                    </Label>
                   </div>
+                  
+                  {data.scheduledDriverForAll && (
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                          {data.scheduledDriverForAll.first_name?.[0]}{data.scheduledDriverForAll.last_name?.[0]}
+                        </div>
+                        <div>
+                          <p className="font-medium">{data.scheduledDriverForAll.first_name} {data.scheduledDriverForAll.last_name}</p>
+                          <p className="text-sm text-muted-foreground">Status: {data.scheduledDriverForAll.status}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Vehicle Assignment */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="same-vehicle"
-                    checked={data.useSameVehicleForAll || false}
-                    onCheckedChange={toggleUseSameVehicle}
-                  />
-                  <Label htmlFor="same-vehicle" className="font-medium">
-                    Schedule same vehicle for all services
-                    {data.useSameVehicleForAll && assignedVehicle && (
-                      <span className="text-primary font-semibold ml-2">
-                        ({assignedVehicle.year} {assignedVehicle.make} {assignedVehicle.model})
-                      </span>
-                    )}
-                  </Label>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openGlobalVehicleModal}
-                  className="flex items-center gap-2"
-                >
-                  <Truck className="h-4 w-4" />
-                  Schedule Vehicle Now
-                </Button>
-              </div>
-              
-              {data.scheduledVehicleForAll && (
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                      <Truck className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{data.scheduledVehicleForAll.license_plate}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model}
-                        {data.scheduledVehicleForAll.nickname && ` "${data.scheduledVehicleForAll.nickname}"`}
-                      </p>
-                    </div>
+                {/* Vehicle Assignment */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="same-vehicle"
+                      checked={data.useSameVehicleForAll || false}
+                      onCheckedChange={toggleUseSameVehicle}
+                    />
+                    <Label htmlFor="same-vehicle" className="font-medium">
+                      Schedule same vehicle for all services
+                      {data.useSameVehicleForAll && assignedVehicle && (
+                        <span className="text-primary font-semibold ml-2">
+                          ({assignedVehicle.year} {assignedVehicle.make} {assignedVehicle.model})
+                        </span>
+                      )}
+                    </Label>
                   </div>
+                  
+                  {data.scheduledVehicleForAll && (
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{data.scheduledVehicleForAll.license_plate}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {data.scheduledVehicleForAll.year} {data.scheduledVehicleForAll.make} {data.scheduledVehicleForAll.model}
+                            {data.scheduledVehicleForAll.nickname && ` "${data.scheduledVehicleForAll.nickname}"`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Individual Service Date Assignments */}
