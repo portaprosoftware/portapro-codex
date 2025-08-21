@@ -219,6 +219,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               onViewTrackedUnits={handleViewTrackedUnits}
               bulkQuantities={bulkQuantities}
               onBulkQuantityChange={setBulkQuantities}
+              selectedUnitsCollection={selectedUnitsCollection}
             />
           ) : (
             <TrackedUnitsPage
@@ -360,6 +361,7 @@ interface ProductListPageProps {
   onViewTrackedUnits: (product: Product) => void;
   bulkQuantities: Record<string, number>;
   onBulkQuantityChange: (quantities: Record<string, number>) => void;
+  selectedUnitsCollection: UnitSelection[];
 }
 
 const ProductListPage: React.FC<ProductListPageProps> = ({
@@ -368,7 +370,8 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
   onBulkSelect,
   onViewTrackedUnits,
   bulkQuantities,
-  onBulkQuantityChange
+  onBulkQuantityChange,
+  selectedUnitsCollection
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState('all');
@@ -514,6 +517,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
                 })}
                 onBulkSelect={() => onBulkSelect(product, bulkQuantities[product.id] || 1)}
                 onViewTrackedUnits={() => onViewTrackedUnits(product)}
+                selectedUnitsCollection={selectedUnitsCollection}
               />
             ))}
           </div>
@@ -531,6 +535,7 @@ interface ProductCardProps {
   onQuantityChange: (quantity: number) => void;
   onBulkSelect: () => void;
   onViewTrackedUnits: () => void;
+  selectedUnitsCollection: UnitSelection[];
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -540,7 +545,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   quantity,
   onQuantityChange,
   onBulkSelect,
-  onViewTrackedUnits
+  onViewTrackedUnits,
+  selectedUnitsCollection
 }) => {
   
   const getMethodDisplayText = (method: string) => {
@@ -562,6 +568,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
     endDate || undefined
   );
 
+  // Calculate how many specific units are already selected for this product
+  const selectedSpecificUnits = selectedUnitsCollection.filter(
+    selection => selection.productId === product.id && selection.unitId !== 'bulk'
+  ).length;
+
+  // Calculate remaining available units for bulk selection
+  const totalAvailable = availability.data?.available ?? 0;
+  const remainingForBulk = Math.max(0, totalAvailable - selectedSpecificUnits);
 
   const getAvailabilityColor = (available: number, total: number) => {
     if (available === 0) return 'destructive';
@@ -637,13 +651,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Quantity Input */}
         <div className="space-y-2">
-          <label className="text-xs font-medium">Quantity</label>
+          <label className="text-xs font-medium">
+            Quantity {selectedSpecificUnits > 0 && `(${remainingForBulk} remaining after ${selectedSpecificUnits} specific)`}
+          </label>
           <Input
             type="number"
             min={1}
-            max={availability.data?.available || undefined}
+            max={remainingForBulk}
             value={quantity}
-            onChange={(e) => onQuantityChange(parseInt(e.target.value) || 1)}
+            onChange={(e) => onQuantityChange(Math.min(parseInt(e.target.value) || 1, remainingForBulk))}
             className="h-8 text-xs"
           />
         </div>
@@ -657,7 +673,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               size="sm"
               className="w-full text-xs"
               onClick={onBulkSelect}
-              disabled={!availability.data || quantity <= 0 || quantity > (availability.data?.available ?? 0)}
+              disabled={!availability.data || quantity <= 0 || quantity > remainingForBulk || remainingForBulk <= 0}
             >
               <Layers className="h-3 w-3 mr-1" />
               Add Bulk ({quantity})
