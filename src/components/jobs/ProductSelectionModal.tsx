@@ -283,6 +283,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               onUnitsSelect={handleUnitsSelect}
               onBulkSelect={handleBulkSelect}
               onBack={handleBackToMain}
+              existingSelectedUnits={selectedUnitsCollection}
             />
           )}
           

@@ -46,10 +46,16 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   existingSelectedUnits = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(
-    new Set(existingSelectedUnits.filter(unit => unit.productId === product.id).map(unit => unit.unitId))
-  );
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
+
+  // Get set of already selected unit IDs for this product
+  const alreadySelectedUnitIds = useMemo(() => {
+    return new Set(existingSelectedUnits
+      .filter(unit => unit.productId === product.id && unit.unitId !== 'bulk')
+      .map(unit => unit.unitId)
+    );
+  }, [existingSelectedUnits, product.id]);
 
   // Fetch units with availability check for date range
   const { data: units = [], isLoading } = useQuery({
@@ -220,8 +226,11 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   };
 
   const handleSelectAll = () => {
-    const allAvailableIds = availableUnits.map(unit => unit.id);
-    setSelectedUnits(new Set(allAvailableIds));
+    // Only select units that are available and not already selected
+    const availableAndNotSelectedIds = availableUnits
+      .filter(unit => !alreadySelectedUnitIds.has(unit.id))
+      .map(unit => unit.id);
+    setSelectedUnits(new Set(availableAndNotSelectedIds));
   };
 
   const handleDeselectAll = () => {
@@ -332,79 +341,89 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
       {/* Units Grid */}
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredUnits.map((unit: UnitWithAttributes) => (
-            <div
-              key={unit.id}
-              className={`p-3 rounded-lg border transition-all ${
-                selectedUnits.has(unit.id)
-                  ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                  : 'border-border'
-              } ${
-                unit.is_available 
-                  ? 'cursor-pointer hover:bg-muted/50' 
-                  : 'cursor-not-allowed opacity-60'
-              }`}
-              onClick={() => {
-                if (unit.is_available) {
-                  handleUnitToggle(unit.id);
-                }
-              }}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">
-                    {unit.item_code}
-                  </div>
-                  
-                  {/* Status */}
-                  <div className="mt-2">
-                    <Badge 
-                      variant={getStatusColor(unit.status)}
-                      className="text-xs"
-                    >
-                      {unit.status}
-                    </Badge>
+          {filteredUnits.map((unit: UnitWithAttributes) => {
+            const isAlreadySelected = alreadySelectedUnitIds.has(unit.id);
+            const isClickable = unit.is_available && !isAlreadySelected;
+            
+            return (
+              <div
+                key={unit.id}
+                className={`p-3 rounded-lg border transition-all ${
+                  selectedUnits.has(unit.id)
+                    ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                    : 'border-border'
+                } ${
+                  isAlreadySelected
+                    ? 'cursor-not-allowed opacity-40 bg-muted/50'
+                    : isClickable 
+                      ? 'cursor-pointer hover:bg-muted/50' 
+                      : 'cursor-not-allowed opacity-60'
+                }`}
+                onClick={() => {
+                  if (isClickable) {
+                    handleUnitToggle(unit.id);
+                  }
+                }}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm truncate">
+                      {unit.item_code}
+                      {isAlreadySelected && (
+                        <span className="ml-2 text-xs text-muted-foreground">(Already Selected)</span>
+                      )}
+                    </div>
+                    
+                    {/* Status */}
+                    <div className="mt-2">
+                      <Badge 
+                        variant={getStatusColor(unit.status)}
+                        className="text-xs"
+                      >
+                        {unit.status}
+                      </Badge>
+                    </div>
+
+                    {/* Attributes */}
+                    {unit.attributes && Object.keys(unit.attributes).length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {Object.entries(unit.attributes).map(([key, value]) => {
+                          if (key === 'winterized' && value) {
+                            return (
+                              <div key={key} className="text-xs text-blue-600 font-medium">
+                                Winterized
+                              </div>
+                            );
+                          }
+                          if (value && key !== 'winterized') {
+                            return (
+                              <div key={key} className="text-xs text-muted-foreground">
+                                <span className="font-medium capitalize">{key}:</span> {value}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Attributes */}
-                  {unit.attributes && Object.keys(unit.attributes).length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {Object.entries(unit.attributes).map(([key, value]) => {
-                        if (key === 'winterized' && value) {
-                          return (
-                            <div key={key} className="text-xs text-blue-600 font-medium">
-                              Winterized
-                            </div>
-                          );
-                        }
-                        if (value && key !== 'winterized') {
-                          return (
-                            <div key={key} className="text-xs text-muted-foreground">
-                              <span className="font-medium capitalize">{key}:</span> {value}
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
+                  {/* Selection Indicator */}
+                  {!isAlreadySelected && unit.is_available && (
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                      selectedUnits.has(unit.id)
+                        ? 'bg-primary border-primary text-primary-foreground'
+                        : 'border-muted-foreground'
+                    }`}>
+                      {selectedUnits.has(unit.id) && (
+                        <Check className="h-3 w-3" />
+                      )}
                     </div>
                   )}
                 </div>
-
-                {/* Selection Indicator */}
-                {unit.is_available && (
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                    selectedUnits.has(unit.id)
-                      ? 'bg-primary border-primary text-primary-foreground'
-                      : 'border-muted-foreground'
-                  }`}>
-                    {selectedUnits.has(unit.id) && (
-                      <Check className="h-3 w-3" />
-                    )}
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {isLoading && (
