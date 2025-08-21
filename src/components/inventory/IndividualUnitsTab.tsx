@@ -329,17 +329,27 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   };
 
   const getVariationText = (item: any) => {
-    const variations: string[] = [];
     const attrs = (itemAttributesMap as Record<string, Record<string, string> | undefined>)[item.id];
     const color = attrs?.color || item.color;
     const size = attrs?.size || item.size;
     const material = attrs?.material || item.material;
 
-    if (color) variations.push(color);
-    if (size) variations.push(size);
-    if (material) variations.push(material);
+    const variations = [];
+    if (color) variations.push({ name: "Color", value: color });
+    if (size) variations.push({ name: "Size", value: size });
+    if (material) variations.push({ name: "Material", value: material });
     
-    return variations.length > 0 ? variations.join(", ") : "Not set";
+    if (variations.length === 0) return "Not set";
+
+    return (
+      <div className="space-y-1">
+        {variations.map((variation, index) => (
+          <div key={index} className="text-sm">
+            <span className="font-semibold">{variation.name}:</span> {variation.value}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const getVerificationBadge = (status: string | null, confidence: number | null) => {
