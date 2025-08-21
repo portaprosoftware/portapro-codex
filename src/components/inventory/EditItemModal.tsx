@@ -214,6 +214,15 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       if (cleanUpdateData.manufacturing_date === "") {
         cleanUpdateData.manufacturing_date = null;
       }
+
+      // Sync known variation attributes to top-level columns for list display/filters
+      const knownKeys = ["color", "size", "material"] as const;
+      knownKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(attributeValues, key)) {
+          const v = (attributeValues as Record<string, string | undefined>)[key];
+          (cleanUpdateData as any)[key] = v && v.trim() !== "" ? v : null;
+        }
+      });
       
       console.log('Sending update data:', JSON.stringify(cleanUpdateData, null, 2));
 

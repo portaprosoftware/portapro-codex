@@ -148,6 +148,40 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  // Bulk-fetch item variation attributes for display
+  const { data: itemAttributesMap = {} } = useQuery({
+    queryKey: ["item-attributes-bulk", productId, items?.map((i: any) => i.id).join(",")],
+    enabled: !!items && items.length > 0,
+    queryFn: async () => {
+      const ids = (items as any[]).map(i => i.id);
+      const { data: attributes, error: attrError } = await supabase
+        .from("product_item_attributes")
+        .select("item_id, property_id, property_value")
+        .in("item_id", ids);
+      if (attrError) throw attrError;
+      if (!attributes || attributes.length === 0) return {};
+
+      const propIds = Array.from(new Set(attributes.map(a => a.property_id)));
+      const { data: properties, error: propError } = await supabase
+        .from("product_properties")
+        .select("id, attribute_name")
+        .in("id", propIds);
+      if (propError) throw propError;
+
+      const map: Record<string, Record<string, string>> = {};
+      attributes.forEach((attr) => {
+        const prop = properties?.find((p) => p.id === attr.property_id);
+        if (prop?.attribute_name) {
+          const key = prop.attribute_name.toLowerCase();
+          if (!map[attr.item_id]) map[attr.item_id] = {};
+          map[attr.item_id][key] = attr.property_value;
+        }
+      });
+
+      return map;
+    }
+  });
+
   // Delete item mutation
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: string) => {
@@ -295,10 +329,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   };
 
   const getVariationText = (item: any) => {
-    const variations = [];
-    if (item.color) variations.push(item.color);
-    if (item.size) variations.push(item.size);
-    if (item.material) variations.push(item.material);
+    const variations: string[] = [];
+    const attrs = (itemAttributesMap as Record<string, Record<string, string> | undefined>)[item.id];
+    const color = attrs?.color || item.color;
+    const size = attrs?.size || item.size;
+    const material = attrs?.material || item.material;
+
+    if (color) variations.push(color);
+    if (size) variations.push(size);
+    if (material) variations.push(material);
     
     return variations.length > 0 ? variations.join(", ") : "Not set";
   };
