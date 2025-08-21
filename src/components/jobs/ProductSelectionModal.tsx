@@ -78,6 +78,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const handleBulkSelect = (product: Product, quantity: number) => {
     if (quantity <= 0) return;
     
+    console.log('handleBulkSelect called with quantity:', quantity);
+    
     const selection: UnitSelection = {
       unitId: 'bulk',
       itemCode: 'BULK',
@@ -85,10 +87,15 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       productName: product.name,
       quantity
     };
+    
+    console.log('Created bulk selection:', selection);
+    
     setSelectedUnitsCollection(prev => {
       // Remove any existing BULK selections for this product, but keep specific unit selections
       const filtered = prev.filter(s => !(s.productId === product.id && s.unitId === 'bulk'));
-      return [...filtered, selection];
+      const newCollection = [...filtered, selection];
+      console.log('Updated selectedUnitsCollection:', newCollection);
+      return newCollection;
     });
   };
 
