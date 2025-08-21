@@ -39,14 +39,15 @@ export const DriverMapView: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const { latitude, longitude } = useGeolocation();
 
-  const { data: jobs } = useQuery({
+  const { data: jobs, isLoading: jobsLoading, error: jobsError } = useQuery({
     queryKey: ['driver-jobs-map', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const today = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      // First, try to find jobs directly with Clerk user ID
+      let { data, error } = await supabase
         .from('jobs')
         .select(`
           *,
@@ -58,8 +59,34 @@ export const DriverMapView: React.FC = () => {
         .gte('scheduled_date', today)
         .order('scheduled_date', { ascending: true });
 
+      // If no jobs found, try to find jobs through profiles table
+      if (!error && (!data || data.length === 0)) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('clerk_user_id', user.id)
+          .maybeSingle();
+
+        if (!profileError && profileData) {
+          const result = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              customers (
+                name
+              )
+            `)
+            .eq('driver_id', profileData.id)
+            .gte('scheduled_date', today)
+            .order('scheduled_date', { ascending: true });
+          
+          data = result.data;
+          error = result.error;
+        }
+      }
+
       if (error) throw error;
-      return data as Job[];
+      return (data || []) as Job[];
     },
     enabled: !!user?.id
   });
@@ -161,15 +188,66 @@ export const DriverMapView: React.FC = () => {
     console.log('Optimizing route for all jobs...');
   };
 
+  // Loading state
+  if (jobsLoading) {
+    return (
+      <div className="flex items-center justify-center h-full bg-muted">
+        <div className="text-center p-6">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading jobs...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (jobsError) {
+    return (
+      <div className="flex items-center justify-center h-full bg-muted">
+        <div className="text-center p-6">
+          <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium mb-2">Error Loading Jobs</h3>
+          <p className="text-muted-foreground mb-4">
+            {jobsError.message || 'Failed to load jobs for map view'}
+          </p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // No Mapbox token
   if (!MAPBOX_ACCESS_TOKEN.includes('pk.')) {
     return (
       <div className="flex items-center justify-center h-full bg-muted">
         <div className="text-center p-6">
           <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">Map Configuration Required</h3>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Please configure your Mapbox access token to enable the map view.
           </p>
+          {jobs && jobs.length > 0 && (
+            <div className="mt-4 p-4 bg-background rounded-lg">
+              <p className="text-sm text-muted-foreground mb-2">
+                You have {jobs.length} job{jobs.length === 1 ? '' : 's'} assigned:
+              </p>
+              <div className="space-y-2">
+                {jobs.slice(0, 3).map(job => (
+                  <div key={job.id} className="text-sm">
+                    <span className="font-medium">{job.customers?.name || 'Unknown Customer'}</span>
+                    <span className="text-muted-foreground"> - {job.job_type}</span>
+                  </div>
+                ))}
+                {jobs.length > 3 && (
+                  <p className="text-xs text-muted-foreground">
+                    +{jobs.length - 3} more job{jobs.length - 3 === 1 ? '' : 's'}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

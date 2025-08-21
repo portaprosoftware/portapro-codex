@@ -3,6 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { DriverHeader } from './DriverHeader';
 import { DriverBottomNav } from './DriverBottomNav';
+import { DriverDebugInfo } from './DriverDebugInfo';
 
 export const DriverLayout: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ export const DriverLayout: React.FC = () => {
       </main>
       
       <DriverBottomNav />
+      <DriverDebugInfo />
     </div>
   );
 };

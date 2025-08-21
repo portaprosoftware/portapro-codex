@@ -42,7 +42,8 @@ export const DailySchedule: React.FC = () => {
 
       const dateStr = formatDateForQuery(selectedDate);
       
-      const { data, error } = await supabase
+      // First, try to find jobs directly with Clerk user ID
+      let { data, error } = await supabase
         .from('jobs')
         .select(`
           *,
@@ -54,8 +55,34 @@ export const DailySchedule: React.FC = () => {
         .eq('scheduled_date', dateStr)
         .order('scheduled_time', { ascending: true });
 
+      // If no jobs found, try to find jobs through profiles table
+      if (!error && (!data || data.length === 0)) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('clerk_user_id', user.id)
+          .maybeSingle();
+
+        if (!profileError && profileData) {
+          const result = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              customers (
+                name
+              )
+            `)
+            .eq('driver_id', profileData.id)
+            .eq('scheduled_date', dateStr)
+            .order('scheduled_time', { ascending: true });
+          
+          data = result.data;
+          error = result.error;
+        }
+      }
+
       if (error) throw error;
-      return data as Job[];
+      return (data || []) as Job[];
     },
     enabled: !!user?.id
   });
@@ -69,15 +96,37 @@ export const DailySchedule: React.FC = () => {
       const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
       const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
       
-      const { data, error } = await supabase
+      // First, try to find jobs directly with Clerk user ID
+      let { data, error } = await supabase
         .from('jobs')
         .select('scheduled_date')
         .eq('driver_id', user.id)
         .gte('scheduled_date', formatDateForQuery(startOfMonth))
         .lte('scheduled_date', formatDateForQuery(endOfMonth));
 
+      // If no jobs found, try to find jobs through profiles table
+      if (!error && (!data || data.length === 0)) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('clerk_user_id', user.id)
+          .maybeSingle();
+
+        if (!profileError && profileData) {
+          const result = await supabase
+            .from('jobs')
+            .select('scheduled_date')
+            .eq('driver_id', profileData.id)
+            .gte('scheduled_date', formatDateForQuery(startOfMonth))
+            .lte('scheduled_date', formatDateForQuery(endOfMonth));
+          
+          data = result.data;
+          error = result.error;
+        }
+      }
+
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!user?.id
   });

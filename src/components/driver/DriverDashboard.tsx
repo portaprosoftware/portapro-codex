@@ -27,7 +27,8 @@ export const DriverDashboard: React.FC = () => {
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowStr = tomorrow.toISOString().split('T')[0];
       
-      const { data, error } = await supabase
+      // First, try to find jobs directly with Clerk user ID
+      let { data, error } = await supabase
         .from('jobs')
         .select(`
           *,
@@ -41,8 +42,36 @@ export const DriverDashboard: React.FC = () => {
         .order('scheduled_date', { ascending: true })
         .order('scheduled_time', { ascending: true });
 
+      // If no jobs found, try to find jobs through profiles table
+      if (!error && (!data || data.length === 0)) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('clerk_user_id', user.id)
+          .maybeSingle();
+
+        if (!profileError && profileData) {
+          const result = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              customers (
+                name
+              )
+            `)
+            .eq('driver_id', profileData.id)
+            .gte('scheduled_date', today)
+            .lte('scheduled_date', tomorrowStr)
+            .order('scheduled_date', { ascending: true })
+            .order('scheduled_time', { ascending: true });
+          
+          data = result.data;
+          error = result.error;
+        }
+      }
+
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: !!user?.id
   });
