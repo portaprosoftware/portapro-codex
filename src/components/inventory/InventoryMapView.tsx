@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { MapPin, Navigation, Phone, Package, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
 import { addDays, subtractDays } from '@/lib/dateUtils';
 import { format } from 'date-fns';
 import { useInventoryMapboxInitializer } from '@/hooks/useInventoryMapboxInitializer';
@@ -45,12 +42,8 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
     selectedLocationId,
     selectedProductType
   });
-  // Date state following proven pattern
+  // Single date state
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7)
-  });
   const [selectedLocation, setSelectedLocation] = useState<InventoryLocation | null>(null);
 
   // Initialize mapbox following proven pattern
@@ -64,10 +57,10 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
     showTokenInput
   });
 
-  // Fetch inventory data with date filtering
+  // Fetch inventory data with single date filtering
   const { data: inventoryLocations, isLoading, error: dataError } = useInventoryWithDateRange({
-    startDate: dateRange?.from,
-    endDate: dateRange?.to,
+    startDate: selectedDate,
+    endDate: selectedDate,
     searchQuery,
     selectedLocationId,
     selectedProductType
@@ -87,42 +80,13 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
     onLocationSelect: setSelectedLocation
   });
 
-  // Date navigation functions following proven pattern
+  // Single date navigation functions
   const handleDatePrevious = () => {
     setSelectedDate(subtractDays(selectedDate, 1));
-    setDateRange(prev => prev ? {
-      ...prev,
-      from: subtractDays(prev.from!, 1),
-      to: subtractDays(prev.to!, 1)
-    } : undefined);
   };
 
   const handleDateNext = () => {
     setSelectedDate(addDays(selectedDate, 1));
-    setDateRange(prev => prev ? {
-      ...prev,
-      from: addDays(prev.from!, 1),
-      to: addDays(prev.to!, 1)
-    } : undefined);
-  };
-
-  const handleQuickSelect = (type: 'today' | 'tomorrow' | 'week') => {
-    const today = new Date();
-    switch (type) {
-      case 'today':
-        setSelectedDate(today);
-        setDateRange({ from: today, to: today });
-        break;
-      case 'tomorrow':
-        const tomorrow = addDays(today, 1);
-        setSelectedDate(tomorrow);
-        setDateRange({ from: tomorrow, to: tomorrow });
-        break;
-      case 'week':
-        setSelectedDate(today);
-        setDateRange({ from: today, to: addDays(today, 7) });
-        break;
-    }
   };
 
   const handleNavigateToLocation = (location: InventoryLocation) => {
@@ -207,65 +171,32 @@ export const InventoryMapView: React.FC<InventoryMapViewProps> = ({
     hasMap: !!map,
     mapLoading,
     isLoading,
-    dateRange
+    selectedDate
   });
 
   return (
     <div className="space-y-4">
-      {/* Date Navigation and Controls */}
-      <div className="flex items-center justify-between gap-4 p-4 bg-white rounded-lg shadow-sm border">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDatePrevious}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="text-sm font-medium">
-            {format(selectedDate, 'PPP')}
-          </div>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDateNext}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+      {/* Single Date Navigation */}
+      <div className="flex items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-sm border">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDatePrevious}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        <div className="text-sm font-medium min-w-[200px] text-center">
+          {format(selectedDate, 'PPP')}
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleQuickSelect('today')}
-          >
-            Today
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleQuickSelect('tomorrow')}
-          >
-            Tomorrow
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleQuickSelect('week')}
-          >
-            Next 7 Days
-          </Button>
-        </div>
-
-        <DatePickerWithRange
-          date={dateRange}
-          onDateChange={setDateRange}
-          placeholder="Select date range"
-          className="w-auto"
-        />
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDateNext}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Map Container - Always render with proper dimensions */}
