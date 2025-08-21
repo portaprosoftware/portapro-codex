@@ -194,7 +194,7 @@ export function JobTypeSchedulingStep() {
           <Label className="text-base font-medium">Scheduled Date</Label>
           <div className="flex justify-center">
             <Card className="overflow-hidden w-fit">
-              <CardContent className="p-3">
+              <CardContent className="p-4">
                 <CalendarComponent
                   mode="single"
                   selected={state.data.scheduled_date ? (() => {
@@ -204,16 +204,16 @@ export function JobTypeSchedulingStep() {
                   })() : undefined}
                   onSelect={handleDateSelect}
                   disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                  className="rounded-none border-0 mx-auto
+                  className="rounded-none border-0 mx-auto pointer-events-auto
                     [&_.rdp-months]:w-fit
                     [&_.rdp-month]:w-fit
                     [&_.rdp-table]:w-fit
-                    [&_.rdp-caption]:text-lg [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-3 [&_.rdp-caption]:px-4
-                    [&_.rdp-nav]:gap-2 [&_.rdp-nav_button]:h-8 [&_.rdp-nav_button]:w-8 [&_.rdp-nav_button]:rounded-lg [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
-                    [&_.rdp-head_cell]:p-2 [&_.rdp-head_cell]:text-sm [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-10
-                    [&_.rdp-cell]:p-0.5
-                    [&_.rdp-day]:h-10 [&_.rdp-day]:w-10 [&_.rdp-day]:text-sm [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-lg [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
-                    [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-primary [&_.rdp-day_selected]:to-primary-variant [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl
+                    [&_.rdp-caption]:text-xl [&_.rdp-caption]:font-bold [&_.rdp-caption]:py-4 [&_.rdp-caption]:px-6
+                    [&_.rdp-nav]:gap-3 [&_.rdp-nav_button]:h-10 [&_.rdp-nav_button]:w-10 [&_.rdp-nav_button]:rounded-xl [&_.rdp-nav_button]:border [&_.rdp-nav_button]:bg-background [&_.rdp-nav_button]:hover:bg-accent
+                    [&_.rdp-head_cell]:p-3 [&_.rdp-head_cell]:text-base [&_.rdp-head_cell]:font-semibold [&_.rdp-head_cell]:text-muted-foreground [&_.rdp-head_cell]:w-14
+                    [&_.rdp-cell]:p-1
+                    [&_.rdp-day]:h-14 [&_.rdp-day]:w-14 [&_.rdp-day]:text-base [&_.rdp-day]:font-medium [&_.rdp-day]:rounded-xl [&_.rdp-day]:transition-all [&_.rdp-day]:hover:bg-accent [&_.rdp-day]:hover:scale-105
+                    [&_.rdp-day_selected]:bg-gradient-to-r [&_.rdp-day_selected]:from-primary [&_.rdp-day_selected]:to-primary-variant [&_.rdp-day_selected]:text-primary-foreground [&_.rdp-day_selected]:font-bold [&_.rdp-day_selected]:shadow-lg [&_.rdp-day_selected]:hover:shadow-xl [&_.rdp-day_selected]:scale-110
                     [&_.rdp-day_today]:bg-accent [&_.rdp-day_today]:text-accent-foreground [&_.rdp-day_today]:font-semibold
                     [&_.rdp-day_outside]:text-muted-foreground/40 [&_.rdp-day_outside]:hover:bg-muted/20
                     [&_.rdp-day_disabled]:text-muted-foreground/20 [&_.rdp-day_disabled]:cursor-not-allowed [&_.rdp-day_disabled]:hover:bg-transparent [&_.rdp-day_disabled]:hover:scale-100"
