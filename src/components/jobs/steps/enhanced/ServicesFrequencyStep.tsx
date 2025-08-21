@@ -682,6 +682,15 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
     });
   };
 
+  const hasOverridesForDay = (dateKey: string) => {
+    // Check if there are any individual service overrides for this day
+    const servicesOnDay = data.selectedServices.filter(service => {
+      const assignments = data.individualServiceAssignments?.[service.id]?.[dateKey];
+      return assignments?.driver || assignments?.vehicle;
+    });
+    return servicesOnDay.length > 0;
+  };
+
   const confirmRemoveOverride = (type: 'driver' | 'vehicle', serviceId?: string, dateKey?: string, dayKey?: string) => {
     setOverrideToRemove({ type, serviceId, dateKey, dayKey });
     setShowRemoveOverrideDialog(true);
@@ -1551,7 +1560,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    <User className="h-3 w-3" />
                                    <span className={cn(
                                      "text-xs",
-                                     dayAssignment?.driver && "text-muted-foreground opacity-70"
+                                     (dayAssignment?.driver || hasOverridesForDay(dateKey)) && "text-muted-foreground opacity-70"
                                    )}>
                                      {data.useSameDriverForAll && data.scheduledDriverForAll 
                                        ? `${data.scheduledDriverForAll.first_name} ${data.scheduledDriverForAll.last_name}`
@@ -1586,7 +1595,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                    <Truck className="h-3 w-3" />
                                    <span className={cn(
                                      "text-xs",
-                                     dayAssignment?.vehicle && "text-muted-foreground opacity-70"
+                                     (dayAssignment?.vehicle || hasOverridesForDay(dateKey)) && "text-muted-foreground opacity-70"
                                    )}>
                                      {data.useSameVehicleForAll && data.scheduledVehicleForAll 
                                        ? `${data.scheduledVehicleForAll.year} ${data.scheduledVehicleForAll.make} ${data.scheduledVehicleForAll.model}`
