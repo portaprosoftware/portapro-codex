@@ -1468,13 +1468,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
             {/* Service Date Assignments */}
             <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium">Service Schedule</Label>
-                <p className="text-xs text-muted-foreground">
-                  Select the + icon to override driver/vehicle for any day
-                </p>
-              </div>
-              
               {data.groupAssignmentsByDay ? (
                 // Group by Day View
                 (() => {
@@ -1530,6 +1523,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
                   return (
                     <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium">Service Schedule</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Select the + icon to override driver/vehicle for any day
+                        </p>
+                      </div>
                       {sortedDates.map(([dateKey, dateInfo]) => {
                         const dayAssignment = data.dayAssignments?.[dateKey];
                         const isExpanded = data.expandedDays?.has(dateKey);
@@ -1712,7 +1711,14 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                 })()
               ) : (
                 // Individual Service View (existing functionality)
-                data.selectedServices.map((service) => {
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Service Schedule</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Select the + icon to override driver/vehicle for any day
+                    </p>
+                  </div>
+                  {data.selectedServices.map((service) => {
                   const startDate = state.data.scheduled_date ? new Date(state.data.scheduled_date) : new Date();
                   const endDate = state.data.return_date ? new Date(state.data.return_date) : new Date();
                   
@@ -1746,14 +1752,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   if (calculation.visits.length === 0) return null;
 
                   return (
-                     <div key={service.id} className="space-y-3">
-                       <div className="flex items-center space-x-2">
-                         <span className="font-medium text-sm">Service Schedule</span>
-                         <span className="text-sm text-muted-foreground">—</span>
-                         <span className="font-medium text-sm text-muted-foreground">
-                           {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
-                         </span>
-                       </div>
+                      <div key={service.id} className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-sm text-muted-foreground">
+                            {service.name} ({calculation.visits.length} visit{calculation.visits.length !== 1 ? 's' : ''})
+                          </span>
+                        </div>
                       <div className="space-y-2">
                         {calculation.visits.map((visit, index) => {
                           const dateKey = format(visit.date, 'yyyy-MM-dd');
@@ -1842,9 +1846,10 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                           );
                         })}
                       </div>
-                    </div>
-                  );
-                })
+                     </div>
+                   );
+                 })}
+                </div>
               )}
             </div>
           </CardContent>
