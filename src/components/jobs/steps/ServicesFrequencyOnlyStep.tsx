@@ -1,7 +1,7 @@
 import React from 'react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck } from 'lucide-react';
 import { ServicesFrequencyStep } from '@/components/jobs/steps/enhanced/ServicesFrequencyStep';
 
 export const ServicesFrequencyOnlyStep: React.FC = () => {

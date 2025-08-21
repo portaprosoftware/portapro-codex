@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Settings, Clock, DollarSign, Wrench, CalendarIcon, Plus, X } from 'lucide-react';
+import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
@@ -316,7 +316,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
   if (loading) {
     return (
       <div className="text-center py-8">
-        <Settings className="w-12 h-12 text-primary mx-auto mb-4" />
+        <ClipboardCheck className="w-12 h-12 text-primary mx-auto mb-4" />
         <p className="text-muted-foreground">Loading services...</p>
       </div>
     );
@@ -324,10 +324,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <Settings className="w-12 h-12 text-primary mx-auto mb-4" />
-        <h2 className="text-2xl font-semibold text-foreground mb-2">Services & Frequency</h2>
-        <p className="text-muted-foreground">Select additional services and set their frequency</p>
+      <div className="flex items-center gap-3 mb-6">
+        <ClipboardCheck className="w-8 h-8 text-primary" />
+        <div>
+          <h2 className="text-2xl font-semibold text-foreground">Services & Frequency</h2>
+          <p className="text-muted-foreground">Select additional services and set their frequency</p>
+        </div>
       </div>
 
       {/* Available Services */}
