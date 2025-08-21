@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { BarChart3, Eye, MapPin, Package, ChevronDown, ChevronUp, Calendar, TrendingUp, Settings, Search, Layers } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 import { getProductTypeLabel, ProductType } from "@/lib/productTypes";
+import { useAvailabilityEngine, type AvailabilityUnit } from "@/hooks/useAvailabilityEngine";
 
 interface Product {
   id: string;
@@ -25,18 +27,41 @@ interface Product {
   product_variant?: string;
 }
 
-interface ProductCardProps {
-  product: Product;
-  onSelect: () => void;
+interface SelectedUnit {
+  unitId: string;
+  itemCode: string;
+  productId: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
+interface ProductCardProps {
+  product: Product;
+  onSelect: (selectedUnit?: SelectedUnit) => void;
+  startDate?: string;
+  endDate?: string;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ 
+  product, 
+  onSelect, 
+  startDate, 
+  endDate 
+}) => {
   const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
   const [showEquipmentBreakdown, setShowEquipmentBreakdown] = useState(false);
+  const [showUnits, setShowUnits] = useState(false);
+  const [unitSearchTerm, setUnitSearchTerm] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState<SelectedUnit | null>(null);
 
   // Use unified stock management for accurate calculations
   const { stockData, calculations, isLoading: isStockLoading } = useUnifiedStockManagement(product.id);
+
+  // Use availability engine for individual units when dates are provided
+  const availability = useAvailabilityEngine(
+    startDate ? product.id : undefined,
+    startDate,
+    endDate || undefined
+  );
 
   // Set up real-time subscription for this product's items
   useEffect(() => {
@@ -64,6 +89,44 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
       supabase.removeChannel(channel);
     };
   }, [product.id, queryClient]);
+
+  // Real-time subscription for product items when units dropdown is open
+  useEffect(() => {
+    if (!showUnits) return;
+
+    const channel = supabase
+      .channel(`product-items-${product.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_items',
+          filter: `product_id=eq.${product.id}`
+        },
+        () => {
+          // Refetch availability when product items change
+          availability.refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'equipment_assignments'
+        },
+        () => {
+          // Refetch availability when assignments change
+          availability.refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [showUnits, product.id, availability]);
 
   // Fetch location stock for this product
   const { data: locationStocks } = useQuery({
@@ -129,9 +192,50 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
   const availableCount = stockData?.totals?.physically_available || 0;
   const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
   const onJobCount = stockData?.individual_items?.assigned || 0;
+
+  // Filter individual units based on search term
+  const filteredUnits = useMemo(() => {
+    if (!availability.data?.individual_items) return [];
+    
+    return availability.data.individual_items.filter((unit: AvailabilityUnit) => {
+      if (!unitSearchTerm) return true;
+      
+      const searchLower = unitSearchTerm.toLowerCase();
+      return (
+        unit.item_code.toLowerCase().includes(searchLower) ||
+        (unit.attributes?.color && unit.attributes.color.toLowerCase().includes(searchLower)) ||
+        (unit.attributes?.size && unit.attributes.size.toLowerCase().includes(searchLower)) ||
+        (unit.attributes?.material && unit.attributes.material.toLowerCase().includes(searchLower))
+      );
+    });
+  }, [availability.data?.individual_items, unitSearchTerm]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'available': return 'default';
+      case 'assigned': return 'secondary';
+      case 'maintenance': return 'destructive';
+      case 'out_of_service': return 'destructive';
+      default: return 'outline';
+    }
+  };
+
+  const handleUnitSelect = (unit: AvailabilityUnit) => {
+    const unitSelection: SelectedUnit = {
+      unitId: unit.item_id,
+      itemCode: unit.item_code,
+      productId: product.id
+    };
+    setSelectedUnit(unitSelection);
+    onSelect(unitSelection);
+  };
+
+  const handleBulkSelect = () => {
+    setSelectedUnit(null);
+    onSelect();
+  };
   
   
-  // Badge logic removed - will be replaced with unified badge system
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-200 group">
@@ -378,16 +482,134 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
         )}
       </div>
 
-      {/* View Button */}
+      {/* Action Buttons */}
       <div className="mt-4">
-        <Button
-          onClick={onSelect}
-          variant="outline"
-          className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
-        >
-          <Eye className="w-4 h-4 mr-2" />
-          View
-        </Button>
+        {startDate ? (
+          // Show unit selection interface when dates are provided
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBulkSelect();
+                }}
+              >
+                <Layers className="h-3 w-3 mr-1" />
+                Select Bulk
+              </Button>
+              
+              {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
+                <Collapsible open={showUnits} onOpenChange={setShowUnits}>
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      View Units
+                      {showUnits ? (
+                        <ChevronUp className="h-3 w-3 ml-1" />
+                      ) : (
+                        <ChevronDown className="h-3 w-3 ml-1" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                </Collapsible>
+              )}
+            </div>
+            
+            {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
+              <Collapsible open={showUnits} onOpenChange={setShowUnits}>
+                <CollapsibleContent className="mt-3">
+                  {/* Unit Search */}
+                  <div className="relative mb-3">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3" />
+                    <Input
+                      placeholder="Search units by code, color, size..."
+                      value={unitSearchTerm}
+                      onChange={(e) => setUnitSearchTerm(e.target.value)}
+                      className="text-xs pl-7 h-8"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+
+                  {/* Individual Units */}
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {filteredUnits.map((unit: AvailabilityUnit) => (
+                      <div
+                        key={unit.item_id}
+                        className={`p-2 rounded-md border cursor-pointer transition-colors hover:bg-muted/50 ${
+                          selectedUnit?.unitId === unit.item_id
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnitSelect(unit);
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="text-xs font-medium">{unit.item_code}</div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge 
+                                variant={getStatusColor(unit.status)}
+                                className="text-xs px-1 py-0"
+                              >
+                                {unit.status}
+                              </Badge>
+                              {unit.attributes?.color && (
+                                <span className="text-xs text-muted-foreground">
+                                  {unit.attributes.color}
+                                </span>
+                              )}
+                              {unit.attributes?.size && (
+                                <span className="text-xs text-muted-foreground">
+                                  {unit.attributes.size}
+                                </span>
+                              )}
+                              {unit.attributes?.material && (
+                                <span className="text-xs text-muted-foreground">
+                                  {unit.attributes.material}
+                                </span>
+                              )}
+                              {unit.attributes?.winterized && (
+                                <span className="text-xs text-muted-foreground">
+                                  Winterized
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {filteredUnits.length === 0 && (
+                      <div className="text-xs text-muted-foreground text-center py-2">
+                        {unitSearchTerm ? 'No units match your search.' : 'No individual units available.'}
+                      </div>
+                    )}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        ) : (
+          // Default view button when no dates provided
+          <Button
+            onClick={() => handleBulkSelect()}
+            variant="outline"
+            className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            View
+          </Button>
+        )}
       </div>
     </div>
   );
