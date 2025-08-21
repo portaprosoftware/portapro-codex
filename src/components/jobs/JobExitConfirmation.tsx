@@ -42,15 +42,15 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AlertDialogContent>
-        <AlertDialogHeader>
+        <AlertDialogHeader className="space-y-4">
           <AlertDialogTitle>Save Your Job Progress?</AlertDialogTitle>
           <AlertDialogDescription>
             You have unsaved changes to your job. What would you like to do?
           </AlertDialogDescription>
         </AlertDialogHeader>
         
-        <div className="space-y-3">
-          <div>
+        <div className="space-y-6 py-4">
+          <div className="space-y-2">
             <Label htmlFor="draft-name" className="text-sm font-medium">
               Draft Name
             </Label>
@@ -59,12 +59,11 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
               placeholder="Enter a name for this draft..."
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
-              className="mt-1"
             />
           </div>
         </div>
 
-        <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+        <AlertDialogFooter className="flex-col gap-3 sm:flex-row sm:gap-2">
           <AlertDialogCancel onClick={onClose}>
             Continue Editing
           </AlertDialogCancel>
