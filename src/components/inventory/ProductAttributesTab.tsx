@@ -158,8 +158,8 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="font-medium">Variation</TableHead>
-              <TableHead className="font-medium">Values</TableHead>
+              <TableHead className="font-medium">Variation Type</TableHead>
+              <TableHead className="font-medium">Variation Value</TableHead>
               <TableHead className="font-medium">Required</TableHead>
               <TableHead className="w-20">Actions</TableHead>
             </TableRow>

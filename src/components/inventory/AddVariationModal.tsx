@@ -107,7 +107,7 @@ export const AddVariationModal: React.FC<AddVariationModalProps> = ({
         <div className="space-y-6 py-4">
           {/* Variation Name */}
           <div className="space-y-2">
-            <Label htmlFor="variation-name">Variation Name</Label>
+            <Label htmlFor="variation-name">Variation Type</Label>
             <Input
               id="variation-name"
               placeholder="e.g., Color, Size, Condition"
