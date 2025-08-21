@@ -72,7 +72,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
             <Button
               onClick={handleSaveAndExit}
               disabled={isSaving || !draftName.trim()}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? 'Saving...' : 'Save Draft'}
