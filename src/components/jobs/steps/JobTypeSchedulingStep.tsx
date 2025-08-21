@@ -327,7 +327,7 @@ export function JobTypeSchedulingStep() {
                       <Label className="text-sm font-medium">Track hours (less than 24 hours)</Label>
                     </div>
                      <p className="text-xs text-muted-foreground">
-                       Use for short events. If Days greater than or equal to 1 day (24+ hours), we bill daily and ignore hours.
+                       Use hours for rentals under 24h. Days and hours cannot be combined. To see exact start and end times in the live preview, set a delivery time.
                      </p>
 
                     {/* Hours input - only shown when toggle is ON */}
