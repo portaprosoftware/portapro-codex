@@ -5,6 +5,7 @@ interface LocationMapViewProps {
   searchQuery?: string;
   selectedLocationId?: string;
   selectedProductType?: string;
+  selectedDate: Date;
 }
 
 export const LocationMapView: React.FC<LocationMapViewProps> = (props) => {
