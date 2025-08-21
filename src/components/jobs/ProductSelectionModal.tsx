@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAvailabilityEngine, type AvailabilityUnit } from '@/hooks/useAvailabilityEngine';
 import { Search, Package, ChevronDown, ChevronUp, Eye, Layers } from 'lucide-react';
+import { TrackedUnitsSelectionModal } from './TrackedUnitsSelectionModal';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
 
 interface Product {
@@ -225,9 +226,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSelected,
   onSelect
 }) => {
-  const [showUnits, setShowUnits] = useState(false);
-  const [unitSearchTerm, setUnitSearchTerm] = useState('');
+  const [showTrackedUnitsModal, setShowTrackedUnitsModal] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<SelectedUnit | null>(null);
+  
   const getMethodDisplayText = (method: string) => {
     switch (method) {
       case 'stock_total':
@@ -249,7 +250,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   // Real-time subscription for product items
   useEffect(() => {
-    if (!showUnits) return;
+    if (!showTrackedUnitsModal) return;
 
     const channel = supabase
       .channel(`product-items-${product.id}`)
@@ -283,24 +284,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [showUnits, product.id, availability]);
-
-  // Filter individual units based on search term
-  const filteredUnits = useMemo(() => {
-    if (!availability.data?.individual_items) return [];
-    
-    return availability.data.individual_items.filter((unit: AvailabilityUnit) => {
-      if (!unitSearchTerm) return true;
-      
-      const searchLower = unitSearchTerm.toLowerCase();
-      return (
-        unit.item_code.toLowerCase().includes(searchLower) ||
-        (unit.attributes?.color && unit.attributes.color.toLowerCase().includes(searchLower)) ||
-        (unit.attributes?.size && unit.attributes.size.toLowerCase().includes(searchLower)) ||
-        (unit.attributes?.material && unit.attributes.material.toLowerCase().includes(searchLower))
-      );
-    });
-  }, [availability.data?.individual_items, unitSearchTerm]);
+  }, [showTrackedUnitsModal, product.id, availability]);
 
   const getAvailabilityColor = (available: number, total: number) => {
     if (available === 0) return 'destructive';
@@ -322,24 +306,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available': return 'default';
-      case 'assigned': return 'secondary';
-      case 'maintenance': return 'destructive';
-      case 'out_of_service': return 'destructive';
-      default: return 'outline';
+  const handleUnitsSelect = (units: SelectedUnit[]) => {
+    if (units.length === 1) {
+      // Single unit selected
+      setSelectedUnit(units[0]);
+      onSelect(units[0]);
+    } else if (units.length > 1) {
+      // Multiple units selected - for now, just select the first one
+      // This could be enhanced to handle multiple unit selection
+      setSelectedUnit(units[0]);
+      onSelect(units[0]);
     }
-  };
-
-  const handleUnitSelect = (unit: AvailabilityUnit) => {
-    const unitSelection: SelectedUnit = {
-      unitId: unit.item_id,
-      itemCode: unit.item_code,
-      productId: product.id
-    };
-    setSelectedUnit(unitSelection);
-    onSelect(unitSelection);
   };
 
   const handleBulkSelect = () => {
@@ -348,211 +325,152 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div
-      className={`relative p-4 rounded-lg border-2 transition-all hover:shadow-md ${
-        isSelected 
-          ? 'border-primary bg-primary/5' 
-          : 'border-border hover:border-primary/50'
-      }`}
-    >
-      {/* Product Image */}
-      <div 
-        className="aspect-square w-full mb-3 bg-white rounded-lg flex items-center justify-center overflow-hidden relative cursor-pointer"
-        onClick={handleBulkSelect}
+    <>
+      <div
+        className={`relative p-4 rounded-lg border-2 transition-all hover:shadow-md ${
+          isSelected 
+            ? 'border-primary bg-primary/5' 
+            : 'border-border hover:border-primary/50'
+        }`}
       >
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-full object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-        ) : null}
-        {!product.image_url && (
-          <Package className="h-12 w-12 text-muted-foreground" />
+        {/* Product Image */}
+        <div 
+          className="aspect-square w-full mb-3 bg-white rounded-lg flex items-center justify-center overflow-hidden relative cursor-pointer"
+          onClick={handleBulkSelect}
+        >
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : null}
+          {!product.image_url && (
+            <Package className="h-12 w-12 text-muted-foreground" />
+          )}
+        </div>
+
+        {/* Product Info */}
+        <div className="space-y-3">
+          <div 
+            className="cursor-pointer"
+            onClick={handleBulkSelect}
+          >
+            <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
+            
+            {/* Availability and Tracking Method Badges */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {availability.isLoading ? (
+                <Badge variant="outline" className="text-xs">
+                  Loading...
+                </Badge>
+              ) : (
+                <>
+                  <Badge 
+                    variant={getAvailabilityColor(
+                      availability.data?.available ?? 0, 
+                      availability.data?.total ?? 0
+                    )}
+                    className="text-xs font-bold text-white"
+                  >
+                    {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
+                  </Badge>
+                  {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
+                    <Badge 
+                      variant="info"
+                      className="text-xs font-bold text-white"
+                    >
+                      {getTrackingMethodBadge(availability.data.method)}
+                    </Badge>
+                  )}
+                </>
+              )}
+
+              {/* Breakdown (works for bulk-only and hybrid tracked products) */}
+              {availability.data?.breakdown && (
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between">
+                    <span>Available Tracked</span>
+                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.available_tracked ?? 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Available Bulk</span>
+                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.bulk_pool ?? 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>On Job</span>
+                    <span className="font-medium text-foreground ml-8">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Maintenance</span>
+                    <span className="font-medium text-foreground ml-8">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBulkSelect();
+              }}
+            >
+              <Layers className="h-3 w-3 mr-1" />
+              Select Bulk
+            </Button>
+            
+            {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowTrackedUnitsModal(true);
+                }}
+              >
+                <Eye className="h-3 w-3 mr-1" />
+                View Tracked Units ({availability.data.individual_items.length})
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Selection Indicator */}
+        {isSelected && (
+          <div className="absolute top-2 right-2">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+            </div>
+            {selectedUnit && (
+              <div className="absolute -bottom-1 -right-1 bg-secondary text-secondary-foreground text-xs px-1 rounded text-[10px] font-medium">
+                Unit
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Product Info */}
-      <div className="space-y-3">
-        <div 
-          className="cursor-pointer"
-          onClick={handleBulkSelect}
-        >
-          <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
-          
-          {/* Availability and Tracking Method Badges */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {availability.isLoading ? (
-              <Badge variant="outline" className="text-xs">
-                Loading...
-              </Badge>
-            ) : (
-              <>
-                <Badge 
-                  variant={getAvailabilityColor(
-                    availability.data?.available ?? 0, 
-                    availability.data?.total ?? 0
-                  )}
-                  className="text-xs font-bold text-white"
-                >
-                  {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
-                </Badge>
-                {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
-                  <Badge 
-                    variant="info"
-                    className="text-xs font-bold text-white"
-                  >
-                    {getTrackingMethodBadge(availability.data.method)}
-                  </Badge>
-                )}
-              </>
-            )}
-
-            {/* Breakdown (works for bulk-only and hybrid tracked products) */}
-            {availability.data?.breakdown && (
-              <div className="space-y-1 text-xs text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span>Available Tracked</span>
-                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.available_tracked ?? 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Available Bulk</span>
-                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.bulk_pool ?? 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>On Job</span>
-                  <span className="font-medium text-foreground ml-8">{(availability.data.breakdown.assigned_tracked ?? 0) + (availability.data.breakdown.bulk_assigned ?? 0)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Maintenance</span>
-                  <span className="font-medium text-foreground ml-8">{availability.data.breakdown.maintenance_tracked ?? 0}</span>
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBulkSelect();
-            }}
-          >
-            <Layers className="h-3 w-3 mr-1" />
-            Select Bulk
-          </Button>
-          
-          {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
-            <Collapsible open={showUnits} onOpenChange={setShowUnits}>
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  View Tracked Units
-                  {showUnits ? (
-                    <ChevronUp className="h-3 w-3 ml-1" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3 ml-1" />
-                  )}
-                </Button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="mt-3">
-                {/* Unit Search */}
-                <div className="relative mb-3">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3" />
-                  <Input
-                    placeholder="Search units by code, color, size..."
-                    value={unitSearchTerm}
-                    onChange={(e) => setUnitSearchTerm(e.target.value)}
-                    className="text-xs pl-7 h-8"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-
-                {/* Individual Units */}
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {filteredUnits.map((unit: AvailabilityUnit) => (
-                    <div
-                      key={unit.item_id}
-                      className={`p-2 rounded-md border transition-colors ${
-                        selectedUnit?.unitId === unit.item_id
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border'
-                      } ${
-                        unit.is_available ? 'cursor-pointer hover:bg-muted/50' : 'cursor-not-allowed opacity-60'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (unit.is_available) {
-                          handleUnitSelect(unit);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="text-xs font-medium">{unit.item_code}</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge 
-                              variant={getStatusColor(unit.status)}
-                              className="text-xs px-1 py-0"
-                            >
-                              {unit.status}
-                            </Badge>
-                            {unit.attributes?.color && (
-                              <span className="text-xs text-muted-foreground">
-                                {unit.attributes.color}
-                              </span>
-                            )}
-                            {unit.attributes?.size && (
-                              <span className="text-xs text-muted-foreground">
-                                {unit.attributes.size}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {filteredUnits.length === 0 && (
-                    <div className="text-xs text-muted-foreground text-center py-2">
-                      {unitSearchTerm ? 'No units match your search' : 'No individual units available'}
-                    </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-        </div>
-      </div>
-
-      {/* Selection Indicator */}
-      {isSelected && (
-        <div className="absolute top-2 right-2">
-          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-            <div className="w-2 h-2 bg-primary-foreground rounded-full" />
-          </div>
-          {selectedUnit && (
-            <div className="absolute -bottom-1 -right-1 bg-secondary text-secondary-foreground text-xs px-1 rounded text-[10px] font-medium">
-              Unit
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      {/* Tracked Units Selection Modal */}
+      <TrackedUnitsSelectionModal
+        open={showTrackedUnitsModal}
+        onOpenChange={setShowTrackedUnitsModal}
+        units={availability.data?.individual_items || []}
+        productName={product.name}
+        productId={product.id}
+        onUnitsSelect={handleUnitsSelect}
+        onBulkSelect={handleBulkSelect}
+      />
+    </>
   );
 };
