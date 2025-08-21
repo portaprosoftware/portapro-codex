@@ -31,6 +31,7 @@ interface TrackedUnitsSelectionModalProps {
   endDate?: string | null;
   onUnitsSelect: (units: SelectedUnit[]) => void;
   onBulkSelect: () => void;
+  existingSelectedUnits?: SelectedUnit[];
 }
 
 export function TrackedUnitsSelectionModal({
@@ -41,10 +42,13 @@ export function TrackedUnitsSelectionModal({
   startDate,
   endDate,
   onUnitsSelect,
-  onBulkSelect
+  onBulkSelect,
+  existingSelectedUnits = []
 }: TrackedUnitsSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(
+    new Set(existingSelectedUnits.filter(unit => unit.productId === productId).map(unit => unit.unitId))
+  );
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
 
   // Fetch units with availability check for date range
@@ -282,7 +286,7 @@ export function TrackedUnitsSelectionModal({
 
           {/* Variation Filters */}
           {Object.keys(availableVariations).length > 0 && (
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               {Object.entries(availableVariations).map(([variationType, values]) => (
                 <div key={variationType} className="flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground min-w-fit">
@@ -306,6 +310,16 @@ export function TrackedUnitsSelectionModal({
                   </Select>
                 </div>
               ))}
+              {Object.values(variationFilters).some(filter => filter && filter !== 'all') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setVariationFilters({})}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Clear Filters
+                </Button>
+              )}
             </div>
           )}
 
@@ -426,28 +440,19 @@ export function TrackedUnitsSelectionModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-between gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-2 pt-4 border-t">
             <Button
               variant="outline"
-              onClick={handleBulkSelection}
+              onClick={resetAndClose}
             >
-              Select Product in Bulk
+              Cancel
             </Button>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={resetAndClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirmSelection}
-                disabled={selectedUnits.size === 0}
-              >
-                Add Selected Units ({selectedUnits.size})
-              </Button>
-            </div>
+            <Button
+              onClick={handleConfirmSelection}
+              disabled={selectedUnits.size === 0}
+            >
+              Add Selected Units ({selectedUnits.size})
+            </Button>
           </div>
         </div>
       </DialogContent>
