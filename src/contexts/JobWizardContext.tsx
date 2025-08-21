@@ -191,6 +191,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         nextStepNumber = 6; // Go directly to Services & Frequency
       }
       
+      // Skip both steps 5 and 6 for survey/estimate jobs
+      if (state.currentStep === 4 && state.data.job_type === 'on-site-survey') {
+        nextStepNumber = 7; // Go directly to Review & Confirmation
+      }
+      
       // Skip step 6 (Services & Frequency) for pickup jobs
       if (state.currentStep === 5 && state.data.job_type === 'pickup') {
         nextStepNumber = 7; // Go directly to Review & Confirmation
@@ -205,6 +210,11 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
     
     // Skip step 5 (Products & Inventory) when going back from step 6 for service jobs
     if (state.currentStep === 6 && state.data.job_type === 'service') {
+      prevStepNumber = 4; // Go back to Assignment step
+    }
+    
+    // Skip both steps 5 and 6 when going back from step 7 for survey/estimate jobs
+    if (state.currentStep === 7 && state.data.job_type === 'on-site-survey') {
       prevStepNumber = 4; // Go back to Assignment step
     }
     
@@ -267,8 +277,8 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         // Driver and vehicle selection is now optional
         break;
       case 5:
-        // Skip validation for step 5 if it's a service job (this step is skipped)
-        if (state.data.job_type === 'service') {
+        // Skip validation for step 5 if it's a service or survey job (this step is skipped)
+        if (state.data.job_type === 'service' || state.data.job_type === 'on-site-survey') {
           break;
         }
         
@@ -279,8 +289,8 @@ export function JobWizardProvider({ children }: { children: ReactNode }) {
         }
         break;
       case 6:
-        // Skip validation for step 6 if it's a pickup job (this step is skipped)
-        if (state.data.job_type === 'pickup') {
+        // Skip validation for step 6 if it's a pickup or survey job (this step is skipped)
+        if (state.data.job_type === 'pickup' || state.data.job_type === 'on-site-survey') {
           break;
         }
         
