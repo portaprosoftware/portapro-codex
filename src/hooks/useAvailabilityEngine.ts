@@ -5,6 +5,7 @@ export interface AvailabilityUnit {
   item_id: string;
   item_code: string;
   status: string;
+  is_available?: boolean;
   attributes?: {
     color?: string | null;
     size?: string | null;

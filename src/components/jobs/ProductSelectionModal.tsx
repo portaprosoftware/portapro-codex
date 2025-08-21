@@ -396,11 +396,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 text-xs"
+            className="w-full text-xs"
             onClick={(e) => {
               e.stopPropagation();
               handleBulkSelect();
@@ -416,11 +416,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 text-xs"
+                  className="w-full text-xs"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Eye className="h-3 w-3 mr-1" />
-                  View Units
+                  View Tracked Units
                   {showUnits ? (
                     <ChevronUp className="h-3 w-3 ml-1" />
                   ) : (
@@ -447,14 +447,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   {filteredUnits.map((unit: AvailabilityUnit) => (
                     <div
                       key={unit.item_id}
-                      className={`p-2 rounded-md border cursor-pointer transition-colors hover:bg-muted/50 ${
+                      className={`p-2 rounded-md border transition-colors ${
                         selectedUnit?.unitId === unit.item_id
                           ? 'border-primary bg-primary/5'
                           : 'border-border'
+                      } ${
+                        unit.is_available ? 'cursor-pointer hover:bg-muted/50' : 'cursor-not-allowed opacity-60'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleUnitSelect(unit);
+                        if (unit.is_available) {
+                          handleUnitSelect(unit);
+                        }
                       }}
                     >
                       <div className="flex items-center justify-between">
