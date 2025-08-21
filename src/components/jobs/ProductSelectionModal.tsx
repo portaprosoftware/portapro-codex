@@ -304,8 +304,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const getAvailabilityColor = (available: number, total: number) => {
     if (available === 0) return 'destructive';
-    if (available <= total * 0.3) return 'secondary';
-    return 'default';
+    if (available <= total * 0.3) return 'warning';
+    return 'success';
+  };
+
+  const getTrackingMethodBadge = (method: string) => {
+    switch (method) {
+      case 'hybrid_tracking':
+        return 'Hybrid Tracking';
+      case 'bulk_only':
+        return 'Bulk Only';
+      case 'individual_tracking':
+        return 'Individual Tracking';
+      default:
+        return null;
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -369,22 +382,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
           
-          {/* Availability */}
-          <div className="space-y-2 mt-2">
+          {/* Availability and Tracking Method Badges */}
+          <div className="flex flex-wrap gap-2 mt-2">
             {availability.isLoading ? (
               <Badge variant="outline" className="text-xs">
                 Loading...
               </Badge>
             ) : (
-              <Badge 
-                variant={getAvailabilityColor(
-                  availability.data?.available ?? 0, 
-                  availability.data?.total ?? 0
+              <>
+                <Badge 
+                  variant={getAvailabilityColor(
+                    availability.data?.available ?? 0, 
+                    availability.data?.total ?? 0
+                  )}
+                  className="text-xs font-bold text-white"
+                >
+                  {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
+                </Badge>
+                {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
+                  <Badge 
+                    variant="info"
+                    className="text-xs font-bold text-white"
+                  >
+                    {getTrackingMethodBadge(availability.data.method)}
+                  </Badge>
                 )}
-                className="text-xs"
-              >
-                {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
-              </Badge>
+              </>
             )}
 
             {/* Breakdown (works for bulk-only and hybrid tracked products) */}
@@ -395,7 +418,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   <span className="font-medium text-foreground">{availability.data.breakdown.available_tracked ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Available Bulk Pool</span>
+                  <span>Available Bulk</span>
                   <span className="font-medium text-foreground">{availability.data.breakdown.bulk_pool ?? 0}</span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -409,11 +432,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             )}
 
-            {availability.data?.method && availability.data.method !== 'stock_total' && (
-              <div className="text-xs text-muted-foreground">
-                {getMethodDisplayText(availability.data.method)}
-              </div>
-            )}
           </div>
         </div>
 
