@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JobWizardData } from '@/contexts/JobWizardContext';
 
@@ -8,6 +8,8 @@ interface CreateQuoteParams {
 }
 
 export function useCreateQuote() {
+  const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async ({ wizardData, status = 'pending' }: CreateQuoteParams) => {
       console.log('Creating quote with data:', wizardData);
@@ -134,6 +136,12 @@ export function useCreateQuote() {
         .eq('id', companySettings.id);
 
       return quote;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch quotes
+      queryClient.invalidateQueries({ queryKey: ['quotes'] });
+      // Also invalidate metrics that might show quote counts/totals
+      queryClient.invalidateQueries({ queryKey: ['quote-metrics'] });
     },
   });
 }
