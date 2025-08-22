@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
+import { DevelopmentAuthDebug } from "@/components/debug/DevelopmentAuthDebug";
+import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -71,6 +73,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {children}
           </main>
         </SidebarInset>
+        <DevelopmentAuthDebug />
       </div>
     </SidebarProvider>
   );

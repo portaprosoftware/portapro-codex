@@ -6,7 +6,19 @@ export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | '
 export function useUserRole() {
   const { user, isLoaded } = useUser();
 
-  const role = (user?.publicMetadata?.role as AppRole) || 'unknown';
+  // Only determine role if user is fully loaded and exists
+  const role = (isLoaded && user?.publicMetadata?.role as AppRole) || 'unknown';
+
+  // Log current user info in development for debugging
+  if (process.env.NODE_ENV === 'development' && isLoaded) {
+    console.log('useUserRole - Current user:', {
+      userId: user?.id,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      role: user?.publicMetadata?.role,
+      isLoaded
+    });
+  }
 
   const isOwner = role === 'owner';
   const isDispatcher = role === 'dispatcher';

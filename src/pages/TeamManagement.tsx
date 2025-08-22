@@ -19,7 +19,7 @@ export default function TeamManagement() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
-  const { isDriver } = useUserRole();
+  const { isDriver, isLoaded, user } = useUserRole();
   
   // Check if we're on a driver detail page
   const isDriverDetail = location.pathname.includes('/driver/');
@@ -30,12 +30,17 @@ export default function TeamManagement() {
     document.title = 'Team Management | PortaPro';
   }, []);
   
-  // Redirect drivers away from Team Management to the Driver app
+  // Only redirect drivers if we're fully loaded and confirmed as driver
   useEffect(() => {
-    if (isDriver) {
+    if (isLoaded && isDriver && user) {
+      console.log('TeamManagement - Redirecting driver to /driver:', {
+        userId: user.id,
+        firstName: user.firstName,
+        role: user.publicMetadata?.role
+      });
       navigate('/driver', { replace: true });
     }
-  }, [isDriver, navigate]);
+  }, [isLoaded, isDriver, user, navigate]);
 
   // If hitting a stale driver detail route without an ID, go back to users tab
   useEffect(() => {
