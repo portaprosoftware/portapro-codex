@@ -560,7 +560,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                         min={1}
                         max={9999}
                         step={1}
-                        size="default"
+                        size="sm"
                         className="w-32 text-center"
                         placeholder="1"
                       />

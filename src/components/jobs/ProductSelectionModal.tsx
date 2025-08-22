@@ -781,7 +781,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               min={0}
               max={remainingForBulk}
               step={1}
-              size="lg"
+              size="default"
               className="w-32 text-center"
               disabled={remainingForBulk <= 0}
               placeholder="0"
