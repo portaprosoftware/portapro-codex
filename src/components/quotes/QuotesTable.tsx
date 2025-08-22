@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Eye, Plus, Mail, FileText, MoreHorizontal, Download, BriefcaseIcon } from "lucide-react";
+import { FileText, MoreHorizontal, BriefcaseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { QuoteExportModal } from "./QuoteExportModal";
-import { ViewQuoteModal } from "./ViewQuoteModal";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
 import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,9 +17,6 @@ interface QuotesTableProps {
 export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
   const [showCreateQuote, setShowCreateQuote] = useState(false);
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [showViewQuote, setShowViewQuote] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
   const queryClient = useQueryClient();
   const convertQuoteToJob = useConvertQuoteToJob();
@@ -175,36 +169,6 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        console.log('View quote clicked for:', quote.id);
-                        setSelectedQuote(quote);
-                        setShowViewQuote(true);
-                      }}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Quote
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => {
-                        console.log('Export PDF clicked for:', quote);
-                        setSelectedQuote(quote);
-                        setShowExportModal(true);
-                      }}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Export PDF
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => {
-                        console.log('Send email clicked for:', quote);
-                        setSelectedQuote(quote);
-                        setShowExportModal(true);
-                      }}
-                    >
-                      <Mail className="mr-2 h-4 w-4" />
-                      Send Email
-                    </DropdownMenuItem>
                     {quote.status === 'accepted' && (
                       <>
                         <DropdownMenuItem 
@@ -246,28 +210,6 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
             setSelectedQuoteForInvoice(null);
           }}
           fromQuoteId={selectedQuoteForInvoice.id}
-        />
-      )}
-      
-      {selectedQuote && (
-        <QuoteExportModal
-          isOpen={showExportModal}
-          onClose={() => {
-            setShowExportModal(false);
-            setSelectedQuote(null);
-          }}
-          quote={selectedQuote}
-        />
-      )}
-
-      {showViewQuote && selectedQuote && (
-        <ViewQuoteModal
-          isOpen={showViewQuote}
-          onClose={() => {
-            setShowViewQuote(false);
-            setSelectedQuote(null);
-          }}
-          quoteId={selectedQuote.id}
         />
       )}
     </div>

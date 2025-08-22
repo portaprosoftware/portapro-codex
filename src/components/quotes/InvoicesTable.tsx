@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, Plus, Mail, FileText, MoreHorizontal, Download, CreditCard } from "lucide-react";
+import { Eye, MoreHorizontal, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
-import { InvoiceExportModal } from "./InvoiceExportModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -17,8 +16,6 @@ interface InvoicesTableProps {
 
 export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading, error } = useQuery({
@@ -199,20 +196,6 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedInvoice(invoice);
-                          setShowExportModal(true);
-                        }}>
-                          <Download className="mr-2 h-4 w-4" />
-                          Export PDF
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedInvoice(invoice);
-                          setShowExportModal(true);
-                        }}>
-                          <Mail className="mr-2 h-4 w-4" />
-                          Send Email
-                        </DropdownMenuItem>
                         {invoice.status === 'unpaid' && (
                           <DropdownMenuItem className="text-blue-600 focus:text-blue-600">
                             <CreditCard className="mr-2 h-4 w-4" />
@@ -233,17 +216,6 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
         <InvoiceCreationWizard
           isOpen={showCreateInvoice}
           onClose={() => setShowCreateInvoice(false)}
-        />
-      )}
-      
-      {selectedInvoice && (
-        <InvoiceExportModal
-          isOpen={showExportModal}
-          onClose={() => {
-            setShowExportModal(false);
-            setSelectedInvoice(null);
-          }}
-          invoice={selectedInvoice}
         />
       )}
     </div>

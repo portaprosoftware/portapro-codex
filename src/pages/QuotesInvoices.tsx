@@ -16,8 +16,6 @@ import {
   Plus,
   Download
 } from 'lucide-react';
-import { QuoteExportModal } from '@/components/quotes/QuoteExportModal';
-import { InvoiceExportModal } from '@/components/quotes/InvoiceExportModal';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
 import { NewQuoteWizard } from '@/components/quotes/NewQuoteWizard';
