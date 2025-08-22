@@ -168,8 +168,8 @@ const handler = async (req: Request): Promise<Response> => {
     
     return new Response(
       JSON.stringify({ 
-        success: true, 
         html,
+        success: true,
         message: `${requestData.type} processed successfully`
       }),
       {

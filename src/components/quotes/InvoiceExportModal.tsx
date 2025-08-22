@@ -58,15 +58,19 @@ PortaPro Team`);
       if (error) throw error;
 
       // Handle PDF generation if requested
-      if ((action === 'generate_pdf' || action === 'both') && data.html) {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(data.html);
-          printWindow.document.close();
-          printWindow.focus();
-          setTimeout(() => {
-            printWindow.print();
-          }, 500);
+      if (action === 'generate_pdf' || action === 'both') {
+        if (data.html) {
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(data.html);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          }
+        } else {
+          throw new Error('PDF generation failed - no HTML content received');
         }
       }
 
