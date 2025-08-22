@@ -2,9 +2,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +31,10 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [dropModeActive, setDropModeActive] = useState(false);
+  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [pendingPin, setPendingPin] = useState<{ longitude: number; latitude: number } | null>(null);
+  const [pinName, setPinName] = useState('');
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -74,29 +80,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-      // Add click handler to drop pins
-      map.current.on('click', (e) => {
-        const newPin: DropPin = {
-          id: `pin-${Date.now()}`,
-          longitude: e.lngLat.lng,
-          latitude: e.lngLat.lat,
-          label: `Pin ${pins.length + 1}`
-        };
-
-        // Add marker to map
-        const marker = new mapboxgl.Marker({
-          color: '#3b82f6',
-          draggable: false
-        })
-          .setLngLat([e.lngLat.lng, e.lngLat.lat])
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${e.lngLat.lat.toFixed(6)}<br/>Lng: ${e.lngLat.lng.toFixed(6)}</div>`)
-          )
-          .addTo(map.current!);
-
-        setPins(prev => [...prev, newPin]);
-      });
+      // Remove the automatic click handler - we'll use controlled pin dropping instead
 
     } catch (error) {
       console.error('Mapbox initialization error:', error);
@@ -106,7 +90,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken, pins.length]);
+  }, [mapboxToken]);
 
   const clearAllPins = () => {
     if (map.current) {
@@ -115,6 +99,55 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       markers.forEach(marker => marker.remove());
     }
     setPins([]);
+  };
+
+  const toggleDropMode = () => {
+    setDropModeActive(!dropModeActive);
+  };
+
+  const dropPinAtCenter = () => {
+    if (!map.current || !dropModeActive) return;
+
+    const center = map.current.getCenter();
+    setPendingPin({ longitude: center.lng, latitude: center.lat });
+    setShowNameDialog(true);
+  };
+
+  const confirmPinDrop = () => {
+    if (!pendingPin || !map.current) return;
+
+    const newPin: DropPin = {
+      id: `pin-${Date.now()}`,
+      longitude: pendingPin.longitude,
+      latitude: pendingPin.latitude,
+      label: pinName || `Pin ${pins.length + 1}`
+    };
+
+    // Add marker to map
+    const marker = new mapboxgl.Marker({
+      color: '#3b82f6',
+      draggable: false
+    })
+      .setLngLat([pendingPin.longitude, pendingPin.latitude])
+      .setPopup(
+        new mapboxgl.Popup({ offset: 25 })
+          .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}</div>`)
+      )
+      .addTo(map.current);
+
+    setPins(prev => [...prev, newPin]);
+    
+    // Reset states
+    setShowNameDialog(false);
+    setPendingPin(null);
+    setPinName('');
+    setDropModeActive(false);
+  };
+
+  const cancelPinDrop = () => {
+    setShowNameDialog(false);
+    setPendingPin(null);
+    setPinName('');
   };
 
   const searchAddress = async () => {
@@ -186,20 +219,24 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         <div>
           <h3 className="text-lg font-medium text-foreground">Interactive Map</h3>
           <p className="text-sm text-muted-foreground">
-            Search for an address to navigate, then click anywhere to drop pins.
+            {dropModeActive 
+              ? "Drop mode active - use the crosshair to position and drop a pin at map center" 
+              : "Search for an address to navigate, then activate drop mode to place pins"}
           </p>
         </div>
-        {pins.length > 0 && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={clearAllPins}
-            className="flex items-center gap-2"
-          >
-            <Trash2 className="w-4 h-4" />
-            Clear Pins ({pins.length})
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {pins.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={clearAllPins}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear Pins ({pins.length})
+            </Button>
+          )}
+        </div>
       </div>
 
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
@@ -220,13 +257,42 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           {isSearching ? 'Searching...' : 'Go'}
         </Button>
       </form>
+
+      <div className="flex items-center justify-center gap-4 p-4 bg-muted/30 rounded-lg">
+        <Button
+          onClick={toggleDropMode}
+          variant={dropModeActive ? "default" : "outline"}
+          className="flex items-center gap-2"
+        >
+          <Target className="w-4 h-4" />
+          {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
+        </Button>
+        
+        {dropModeActive && (
+          <Button
+            onClick={dropPinAtCenter}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Drop Pin Here
+          </Button>
+        )}
+      </div>
       
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden relative">
         <div 
           ref={mapContainer} 
           className="w-full h-96"
           style={{ minHeight: '400px' }}
         />
+        {dropModeActive && (
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <div className="w-1 h-8 bg-red-500"></div>
+              <div className="w-8 h-1 bg-red-500 absolute"></div>
+            </div>
+          </div>
+        )}
       </div>
       
       {pins.length > 0 && (
@@ -244,6 +310,43 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           </div>
         </div>
       )}
+
+      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Name Your Pin</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="pin-name">Pin Name</Label>
+              <Input
+                id="pin-name"
+                value={pinName}
+                onChange={(e) => setPinName(e.target.value)}
+                placeholder="Enter a name for this pin..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    confirmPinDrop();
+                  }
+                }}
+              />
+            </div>
+            {pendingPin && (
+              <div className="text-sm text-muted-foreground">
+                <p>Coordinates: {pendingPin.latitude.toFixed(6)}, {pendingPin.longitude.toFixed(6)}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelPinDrop}>
+              Cancel
+            </Button>
+            <Button onClick={confirmPinDrop}>
+              Drop Pin
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
