@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -66,7 +66,7 @@ export const ViewQuoteModal: React.FC<ViewQuoteModalProps> = ({
         .from('quotes')
         .select(`
           *,
-          customer:customers(*),
+          customers:customer_id(*),
           quote_items(
             *
           )
@@ -183,6 +183,9 @@ export const ViewQuoteModal: React.FC<ViewQuoteModalProps> = ({
             <FileText className="h-5 w-5" />
             Quote {quote.quote_number}
           </DialogTitle>
+          <DialogDescription>
+            View and manage quote details, status, and convert to jobs or invoices.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -203,8 +206,8 @@ export const ViewQuoteModal: React.FC<ViewQuoteModalProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">Customer</Label>
-                    <p className="font-medium">{quote.customer?.name}</p>
-                    <p className="text-sm text-muted-foreground">{quote.customer?.email}</p>
+                    <p className="font-medium">{quote.customers?.name}</p>
+                    <p className="text-sm text-muted-foreground">{quote.customers?.email}</p>
                   </div>
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">Created</Label>
