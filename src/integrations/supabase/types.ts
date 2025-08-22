@@ -7885,30 +7885,48 @@ export type Database = {
       user_invitations: {
         Row: {
           accepted_at: string | null
+          clerk_user_id: string | null
           created_at: string | null
           email: string
+          error_message: string | null
           expires_at: string
           id: string
           invitation_token: string
+          invitation_type: string | null
           invited_by: string
+          metadata: Json | null
+          role: string | null
+          sent_at: string | null
         }
         Insert: {
           accepted_at?: string | null
+          clerk_user_id?: string | null
           created_at?: string | null
           email: string
+          error_message?: string | null
           expires_at: string
           id?: string
           invitation_token: string
+          invitation_type?: string | null
           invited_by: string
+          metadata?: Json | null
+          role?: string | null
+          sent_at?: string | null
         }
         Update: {
           accepted_at?: string | null
+          clerk_user_id?: string | null
           created_at?: string | null
           email?: string
+          error_message?: string | null
           expires_at?: string
           id?: string
           invitation_token?: string
+          invitation_type?: string | null
           invited_by?: string
+          metadata?: Json | null
+          role?: string | null
+          sent_at?: string | null
         }
         Relationships: []
       }
@@ -9106,6 +9124,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      cleanup_expired_invitations: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_failed_geocoding: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -9194,6 +9216,10 @@ export type Database = {
           features?: string
           one_time_use?: boolean
         }
+        Returns: string
+      }
+      generate_invitation_token: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       generate_invoice_from_quote: {
@@ -9690,7 +9716,7 @@ export type Database = {
           image_url_param?: string
           last_name_param: string
         }
-        Returns: Json
+        Returns: undefined
       }
       sync_consumable_total_from_locations: {
         Args: { consumable_uuid: string }

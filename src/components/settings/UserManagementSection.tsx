@@ -11,22 +11,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
 import { ComplianceDashboard } from "@/components/team/ComplianceDashboard";
 import { CustomReportBuilder } from "@/components/team/CustomReportBuilder";
 
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useInviteUser } from "@/hooks/useInviteUser";
 import { useClerkProfileSync } from "@/hooks/useClerkProfileSync";
 import { EditUserModal } from "./EditUserModal";
+import { AddUserModal } from "./AddUserModal";
+import { InvitationStatusBadge } from "@/components/team/InvitationStatusBadge";
 import { useUser } from "@clerk/clerk-react";
 
 const userFormSchema = z.object({
@@ -72,9 +74,11 @@ export function UserManagementSection() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
+  const [showInvitations, setShowInvitations] = useState(false);
   const { isOwner } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
+  const inviteUser = useInviteUser();
   
   // Auto-sync current user's profile from Clerk
   useClerkProfileSync();
@@ -113,6 +117,24 @@ export function UserManagementSection() {
             : [user.user_roles]
         };
       }) || [];
+    },
+  });
+
+  // Fetch pending invitations
+  const { data: invitations, isLoading: invitationsLoading } = useQuery({
+    queryKey: ['user-invitations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_invitations')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching invitations:', error);
+        throw error;
+      }
+      
+      return data || [];
     },
   });
 
@@ -350,115 +372,13 @@ export function UserManagementSection() {
             <Badge variant="secondary">{allFilteredUsers.length} users</Badge>
           </CardTitle>
           
-          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold">
-                <Plus className="w-4 h-4 mr-2" />
-                Add User
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Create New User</DialogTitle>
-              </DialogHeader>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="first_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="John" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="last_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Doe" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="john@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="(555) 123-4567" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Role</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="driver">Driver</SelectItem>
-                            <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setIsCreateModalOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={createUser.isPending}>
-                      {createUser.isPending ? "Creating..." : "Create User"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Invite User
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -624,6 +544,12 @@ export function UserManagementSection() {
 
 
         </Tabs>
+
+        {/* Add User Modal */}
+        <AddUserModal
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
+        />
 
         {/* Edit User Modal */}
         {editingUser && (
