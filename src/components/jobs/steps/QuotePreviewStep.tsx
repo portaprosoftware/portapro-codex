@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { EnhancedInvoiceWizard } from '@/components/invoices/EnhancedInvoiceWizard';
 import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt } from 'lucide-react';
 import { format } from 'date-fns';
 
