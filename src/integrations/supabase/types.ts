@@ -1241,6 +1241,50 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_map_pins: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          label: string
+          latitude: number
+          longitude: number
+          notes: string | null
+          pin_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          label: string
+          latitude: number
+          longitude: number
+          notes?: string | null
+          pin_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          label?: string
+          latitude?: number
+          longitude?: number
+          notes?: string | null
+          pin_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_map_pins_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_notes: {
         Row: {
           created_at: string

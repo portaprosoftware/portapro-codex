@@ -43,6 +43,42 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pinNotes, setPinNotes] = useState('');
   const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12');
 
+  // Load existing pins from database
+  useEffect(() => {
+    const loadExistingPins = async () => {
+      try {
+        const { data: existingPins, error } = await supabase
+          .from('customer_map_pins')
+          .select('*')
+          .eq('customer_id', customerId)
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.error('Error loading existing pins:', error);
+          return;
+        }
+
+        if (existingPins && existingPins.length > 0) {
+          const loadedPins: DropPin[] = existingPins.map(pin => ({
+            id: pin.pin_id,
+            longitude: Number(pin.longitude),
+            latitude: Number(pin.latitude),
+            label: pin.label,
+            notes: pin.notes
+          }));
+          
+          setPins(loadedPins);
+        }
+      } catch (error) {
+        console.error('Error loading pins:', error);
+      }
+    };
+
+    if (customerId) {
+      loadExistingPins();
+    }
+  }, [customerId]);
+
   useEffect(() => {
     const fetchMapboxToken = async () => {
       try {
@@ -138,22 +174,73 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     }
   };
 
-  const clearAllPins = () => {
-    if (map.current) {
-      // Remove all tracked markers
-      Object.values(markersRef.current).forEach(marker => marker.remove());
-      markersRef.current = {};
+  // Re-add markers when pins are loaded from database
+  useEffect(() => {
+    if (pins.length > 0 && map.current && Object.keys(markersRef.current).length === 0) {
+      pins.forEach(pin => {
+        const marker = new mapboxgl.Marker({
+          color: '#3b82f6',
+          draggable: false
+        })
+          .setLngLat([pin.longitude, pin.latitude])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
+          )
+          .addTo(map.current);
+        
+        markersRef.current[pin.id] = marker;
+      });
     }
-    setPins([]);
+  }, [pins, mapboxToken]);
+
+  const clearAllPins = async () => {
+    try {
+      // Remove from database
+      const { error } = await supabase
+        .from('customer_map_pins')
+        .delete()
+        .eq('customer_id', customerId);
+
+      if (error) {
+        console.error('Error clearing pins from database:', error);
+        return;
+      }
+
+      // Remove from map
+      if (map.current) {
+        Object.values(markersRef.current).forEach(marker => marker.remove());
+        markersRef.current = {};
+      }
+      setPins([]);
+    } catch (error) {
+      console.error('Error clearing pins:', error);
+    }
   };
 
-  const deletePin = (pinId: string) => {
-    // Remove the specific marker using our tracking ref
-    if (markersRef.current[pinId]) {
-      markersRef.current[pinId].remove();
-      delete markersRef.current[pinId];
+  const deletePin = async (pinId: string) => {
+    try {
+      // Remove from database
+      const { error } = await supabase
+        .from('customer_map_pins')
+        .delete()
+        .eq('customer_id', customerId)
+        .eq('pin_id', pinId);
+
+      if (error) {
+        console.error('Error deleting pin from database:', error);
+        return;
+      }
+
+      // Remove from map
+      if (markersRef.current[pinId]) {
+        markersRef.current[pinId].remove();
+        delete markersRef.current[pinId];
+      }
+      setPins(prev => prev.filter(pin => pin.id !== pinId));
+    } catch (error) {
+      console.error('Error deleting pin:', error);
     }
-    setPins(prev => prev.filter(pin => pin.id !== pinId));
   };
 
   const editPin = (pin: DropPin) => {
@@ -175,7 +262,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setShowNameDialog(true);
   };
 
-  const confirmPinDrop = () => {
+  const confirmPinDrop = async () => {
     if (!pendingPin || !map.current) return;
 
     const newPin: DropPin = {
@@ -186,32 +273,53 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       notes: pinNotes
     };
 
-    // Add marker to map using default styling
-    const marker = new mapboxgl.Marker({
-      color: '#3b82f6',
-      draggable: false
-    })
-      .setLngLat([pendingPin.longitude, pendingPin.latitude])
-      .setPopup(
-        new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}${newPin.notes ? '<br/>Notes: ' + newPin.notes : ''}</div>`)
-      )
-      .addTo(map.current);
+    try {
+      // Save to database
+      const { error } = await supabase
+        .from('customer_map_pins')
+        .insert({
+          customer_id: customerId,
+          pin_id: newPin.id,
+          longitude: newPin.longitude,
+          latitude: newPin.latitude,
+          label: newPin.label,
+          notes: newPin.notes
+        });
 
-    // Track the marker for later deletion
-    markersRef.current[newPin.id] = marker;
+      if (error) {
+        console.error('Error saving pin to database:', error);
+        return;
+      }
 
-    setPins(prev => [...prev, newPin]);
-    
-    // Reset states
-    setShowNameDialog(false);
-    setPendingPin(null);
-    setPinName('');
-    setPinNotes('');
-    setDropModeActive(false);
+      // Add marker to map using default styling
+      const marker = new mapboxgl.Marker({
+        color: '#3b82f6',
+        draggable: false
+      })
+        .setLngLat([pendingPin.longitude, pendingPin.latitude])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}${newPin.notes ? '<br/>Notes: ' + newPin.notes : ''}</div>`)
+        )
+        .addTo(map.current);
+
+      // Track the marker for later deletion
+      markersRef.current[newPin.id] = marker;
+
+      setPins(prev => [...prev, newPin]);
+      
+      // Reset states
+      setShowNameDialog(false);
+      setPendingPin(null);
+      setPinName('');
+      setPinNotes('');
+      setDropModeActive(false);
+    } catch (error) {
+      console.error('Error creating pin:', error);
+    }
   };
 
-  const confirmPinEdit = () => {
+  const confirmPinEdit = async () => {
     if (!editingPin || !map.current) return;
 
     const updatedPin = {
@@ -220,23 +328,42 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       notes: pinNotes
     };
 
-    // Update the pin in state
-    setPins(prev => prev.map(pin => pin.id === editingPin.id ? updatedPin : pin));
+    try {
+      // Update in database
+      const { error } = await supabase
+        .from('customer_map_pins')
+        .update({
+          label: updatedPin.label,
+          notes: updatedPin.notes
+        })
+        .eq('customer_id', customerId)
+        .eq('pin_id', editingPin.id);
 
-    // Update the popup content for the tracked marker
-    if (markersRef.current[editingPin.id]) {
-      const marker = markersRef.current[editingPin.id];
-      const popup = marker.getPopup();
-      if (popup) {
-        popup.setHTML(`<div style="padding: 4px;"><strong>${updatedPin.label}</strong><br/>Lat: ${updatedPin.latitude.toFixed(6)}<br/>Lng: ${updatedPin.longitude.toFixed(6)}${updatedPin.notes ? '<br/>Notes: ' + updatedPin.notes : ''}</div>`);
+      if (error) {
+        console.error('Error updating pin in database:', error);
+        return;
       }
-    }
 
-    // Reset states
-    setShowEditDialog(false);
-    setEditingPin(null);
-    setPinName('');
-    setPinNotes('');
+      // Update the pin in state
+      setPins(prev => prev.map(pin => pin.id === editingPin.id ? updatedPin : pin));
+
+      // Update the popup content for the tracked marker
+      if (markersRef.current[editingPin.id]) {
+        const marker = markersRef.current[editingPin.id];
+        const popup = marker.getPopup();
+        if (popup) {
+          popup.setHTML(`<div style="padding: 4px;"><strong>${updatedPin.label}</strong><br/>Lat: ${updatedPin.latitude.toFixed(6)}<br/>Lng: ${updatedPin.longitude.toFixed(6)}${updatedPin.notes ? '<br/>Notes: ' + updatedPin.notes : ''}</div>`);
+        }
+      }
+
+      // Reset states
+      setShowEditDialog(false);
+      setEditingPin(null);
+      setPinName('');
+      setPinNotes('');
+    } catch (error) {
+      console.error('Error editing pin:', error);
+    }
   };
 
   const cancelPinDrop = () => {
