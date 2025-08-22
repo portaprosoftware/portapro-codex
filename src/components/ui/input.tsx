@@ -4,6 +4,14 @@ import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      // Auto-select text for number inputs to make replacement easier
+      if (type === "number") {
+        e.target.select()
+      }
+      props.onFocus?.(e)
+    }
+
     return (
       <input
         type={type}
@@ -12,6 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           className
         )}
         ref={ref}
+        onFocus={handleFocus}
         {...props}
       />
     )

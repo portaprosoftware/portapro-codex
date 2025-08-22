@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
@@ -331,12 +331,12 @@ export function JobTypeSchedulingStep() {
                           <ChevronUp className="h-3 w-3" />
                         </Button>
                       </div>
-                      <Input
-                        type="number"
-                        min="1"
+                      <NumberInput
+                        min={1}
                         value={state.data.rental_duration_days || 1}
-                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
-                        className="text-center h-10 text-lg font-medium"
+                        onChange={(value) => handleRentalDurationChange('days', value)}
+                        showControls={false}
+                        className="text-center"
                       />
                       <div className="flex justify-center">
                         <Button
@@ -391,13 +391,13 @@ export function JobTypeSchedulingStep() {
                               <ChevronUp className="h-3 w-3" />
                             </Button>
                           </div>
-                          <Input
-                            type="number"
-                            min="1"
-                            max="23"
+                          <NumberInput
+                            min={1}
+                            max={23}
                             value={state.data.rental_duration_hours || 1}
-                            onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
-                            className="text-center h-10 text-lg font-medium"
+                            onChange={(value) => handleRentalDurationChange('hours', value)}
+                            showControls={false}
+                            className="text-center"
                           />
                           <div className="flex justify-center">
                             <Button
