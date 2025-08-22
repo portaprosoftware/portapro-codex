@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2 } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +27,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pins, setPins] = useState<DropPin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -114,6 +117,42 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setPins([]);
   };
 
+  const searchAddress = async () => {
+    if (!searchQuery.trim() || !map.current) return;
+
+    setIsSearching(true);
+    try {
+      const { data, error: searchError } = await supabase.functions.invoke('mapbox-geocoding', {
+        body: { query: searchQuery.trim(), limit: 1 }
+      });
+
+      if (searchError) {
+        console.error('Geocoding error:', searchError);
+        return;
+      }
+
+      if (data?.suggestions && data.suggestions.length > 0) {
+        const result = data.suggestions[0];
+        if (result.longitude && result.latitude) {
+          map.current.flyTo({
+            center: [result.longitude, result.latitude],
+            zoom: 14,
+            duration: 2000
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchAddress();
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -147,7 +186,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         <div>
           <h3 className="text-lg font-medium text-foreground">Interactive Map</h3>
           <p className="text-sm text-muted-foreground">
-            Click anywhere on the map to drop a pin. This is for reference only.
+            Search for an address to navigate, then click anywhere to drop pins.
           </p>
         </div>
         {pins.length > 0 && (
@@ -162,6 +201,25 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           </Button>
         )}
       </div>
+
+      <form onSubmit={handleSearchSubmit} className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search for an address..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Button 
+          type="submit" 
+          disabled={!searchQuery.trim() || isSearching}
+          className="px-6"
+        >
+          {isSearching ? 'Searching...' : 'Go'}
+        </Button>
+      </form>
       
       <div className="border rounded-lg overflow-hidden">
         <div 
