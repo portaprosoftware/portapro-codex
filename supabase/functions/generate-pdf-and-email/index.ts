@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -139,53 +140,81 @@ const handler = async (req: Request): Promise<Response> => {
       console.warn(`Warning: ${requestData.type} has items with zero pricing`, items);
     }
 
-    // Generate HTML
-    const pdfHtml = await generatePDFHTML(documentData, items, companySettings, products || [], requestData.type);
-
-    // Send email if requested
-    if (requestData.action === 'send_email' || requestData.action === 'both') {
-      if (!requestData.recipient_email) {
-        throw new Error('Recipient email is required for email action');
-      }
-
+    // Generate PDF HTML
+    const html = await generatePDFHTML(documentData, items, companySettings, products || [], requestData.type);
+    
+    let pdfBuffer = null;
+    
+    // Generate PDF if requested
+    if (requestData.action === 'generate_pdf' || requestData.action === 'both') {
       try {
-        const emailResponse = await resend.emails.send({
-          from: "PortaPro <onboarding@resend.dev>", // Use verified domain
-          to: [requestData.recipient_email],
-          subject: requestData.subject || `${requestData.type.charAt(0).toUpperCase() + requestData.type.slice(1)} from PortaPro`,
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2>Hello ${requestData.recipient_name || 'Valued Customer'},</h2>
-              <p>${requestData.message || `Please find your ${requestData.type} attached.`}</p>
-              <div style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                ${pdfHtml}
-              </div>
-              <p>Thank you for your business!</p>
-              <p>Best regards,<br>PortaPro Team</p>
-            </div>
-          `,
+        console.log('Starting PDF generation...');
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
-
-        console.log("Email sent successfully:", emailResponse);
-      } catch (emailError) {
-        console.error("Email sending failed:", emailError);
-        throw new Error(`Email sending failed: ${emailError.message}`);
+        
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        
+        pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+          margin: {
+            top: '0.5in',
+            right: '0.5in',
+            bottom: '0.5in',
+            left: '0.5in'
+          }
+        });
+        
+        await browser.close();
+        console.log('PDF generated successfully');
+      } catch (error) {
+        console.error('PDF generation failed:', error);
+        throw new Error('PDF generation failed: ' + error.message);
       }
     }
-
+    
+    // Send email if requested
+    if (requestData.action === 'send_email' || requestData.action === 'both') {
+      const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+      
+      const emailOptions: any = {
+        from: 'PortaPro <onboarding@resend.dev>',
+        to: [requestData.recipient_email],
+        subject: requestData.subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Hello ${requestData.recipient_name},</h2>
+            <p>${requestData.message.replace(/\n/g, '<br>')}</p>
+            <p>Please find your ${requestData.type} attached.</p>
+            <p>Thank you for your business!</p>
+          </div>
+        `
+      };
+      
+      // Attach PDF if generated
+      if (pdfBuffer) {
+        emailOptions.attachments = [{
+          filename: `${requestData.type}-${documentData.quote_number || documentData.invoice_number}.pdf`,
+          content: Array.from(new Uint8Array(pdfBuffer))
+        }];
+      }
+      
+      const emailResult = await resend.emails.send(emailOptions);
+      console.log('Email sent successfully:', emailResult);
+    }
+    
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `${requestData.type} ${requestData.action} completed successfully`,
-        pdf_available: requestData.action === 'generate_pdf' || requestData.action === 'both',
-        html: pdfHtml // Return the HTML content for download
-      }), 
+        html,
+        pdf: pdfBuffer ? Array.from(new Uint8Array(pdfBuffer)) : null,
+        message: `${requestData.type} processed successfully`
+      }),
       {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   } catch (error: any) {
