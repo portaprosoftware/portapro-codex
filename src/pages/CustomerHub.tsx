@@ -415,15 +415,15 @@ const CustomerHub: React.FC = () => {
                                 </div>
                               </div>
 
-                              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                                <h5 className="font-medium text-blue-900 mb-2">Example Calculation:</h5>
-                                <div className="text-sm text-blue-800 space-y-1">
+                              <div className="mt-4 p-3 border border-gray-200 rounded">
+                                <h5 className="font-medium text-gray-900 mb-2">Example Calculation:</h5>
+                                <div className="text-sm text-gray-700 space-y-1">
                                   <div>Customer with 5 jobs, 3 interactions, and 8 communications (2 clicked, 3 opened, 3 sent only):</div>
                                   <div className="ml-4 space-y-1">
                                     <div>• Jobs: 5 × 10 = 50 points</div>
                                     <div>• Interactions: 3 × 15 = 45 points</div>
                                     <div>• Communications: (2 × 15) + (3 × 8) + (3 × 2) = 60 points</div>
-                                    <div className="font-medium border-t border-blue-300 pt-1">Total: 155 points = High Engagement</div>
+                                    <div className="font-medium border-t border-gray-300 pt-1">Total: 155 points = High Engagement</div>
                                   </div>
                                 </div>
                               </div>
