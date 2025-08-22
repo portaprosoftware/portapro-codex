@@ -5,9 +5,10 @@ import { resolveTaxRate, normalizeZip, CompanySettingsTaxConfig } from '@/lib/ta
 interface UseTaxRateParams {
   zip?: string | null;
   state?: string | null;
+  customerOverride?: number | null;
 }
 
-export function useTaxRate({ zip, state }: UseTaxRateParams) {
+export function useTaxRate({ zip, state, customerOverride }: UseTaxRateParams) {
   const zip5 = normalizeZip(zip);
   const stateUp = state || undefined;
 
@@ -62,6 +63,7 @@ export function useTaxRate({ zip, state }: UseTaxRateParams) {
         zip: zip5,
         state: stateUp || undefined,
         tableZipRate: effectiveZipRate,
+        customerOverride,
       });
 
       // Debug logs to help trace 0.00% issues

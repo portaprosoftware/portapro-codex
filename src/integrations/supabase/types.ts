@@ -1499,6 +1499,7 @@ export type Database = {
           service_street: string | null
           service_street2: string | null
           service_zip: string | null
+          tax_rate_override: number | null
           updated_at: string
         }
         Insert: {
@@ -1534,6 +1535,7 @@ export type Database = {
           service_street?: string | null
           service_street2?: string | null
           service_zip?: string | null
+          tax_rate_override?: number | null
           updated_at?: string
         }
         Update: {
@@ -1569,6 +1571,7 @@ export type Database = {
           service_street?: string | null
           service_street2?: string | null
           service_zip?: string | null
+          tax_rate_override?: number | null
           updated_at?: string
         }
         Relationships: []

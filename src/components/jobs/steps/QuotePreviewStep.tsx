@@ -112,7 +112,11 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   const subtotal = calculateSubtotal();
   const derivedZip = customer?.service_zip || customer?.default_service_zip || customer?.billing_zip;
   const derivedState = customer?.service_state || customer?.default_service_state || customer?.billing_state;
-  const { data: taxData } = useTaxRate({ zip: derivedZip, state: derivedState });
+  const { data: taxData } = useTaxRate({ 
+    zip: derivedZip, 
+    state: derivedState,
+    customerOverride: customer?.tax_rate_override 
+  });
   const taxRate = taxData?.rate ?? 0; // decimal, e.g., 0.08875
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;

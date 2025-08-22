@@ -63,7 +63,7 @@ interface InvoiceFormData {
   recurring_frequency?: 'weekly' | 'monthly' | 'yearly';
 }
 
-type Customer = { id: string; name: string; email?: string; service_zip?: string | null; default_service_zip?: string | null; billing_zip?: string | null; service_state?: string | null; default_service_state?: string | null; billing_state?: string | null; };
+type Customer = { id: string; name: string; email?: string; service_zip?: string | null; default_service_zip?: string | null; billing_zip?: string | null; service_state?: string | null; default_service_state?: string | null; billing_state?: string | null; tax_rate_override?: number | null; };
 type Product = { id: string; name: string; default_price_per_day: number };
 type Service = { id: string; name: string };
 
@@ -115,7 +115,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
-        .select('id, name, email, service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state')
+        .select('id, name, email, service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state, tax_rate_override')
         .order('name');
       
       if (error) throw error;
@@ -424,7 +424,11 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const selectedCustomer = customers.find(c => c.id === invoiceData.customer_id);
   const derivedZip = selectedCustomer?.service_zip || selectedCustomer?.default_service_zip || selectedCustomer?.billing_zip;
   const derivedState = selectedCustomer?.service_state || selectedCustomer?.default_service_state || selectedCustomer?.billing_state;
-  const { data: taxData } = useTaxRate({ zip: derivedZip, state: derivedState });
+  const { data: taxData } = useTaxRate({ 
+    zip: derivedZip, 
+    state: derivedState, 
+    customerOverride: selectedCustomer?.tax_rate_override 
+  });
 
   // Auto-apply tax rate from ZIP/state when customer changes
   useEffect(() => {

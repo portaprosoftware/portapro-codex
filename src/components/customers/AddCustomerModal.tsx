@@ -90,6 +90,7 @@ const customerSchema = z.object({
   default_service_state: z.string().optional(),
   default_service_zip: z.string().optional(),
   deposit_required: z.boolean().default(false),
+  tax_rate_override: z.string().optional(),
 }).refine((data) => {
   if (data.billing_differs_from_service) {
     return data.billing_street && data.billing_city && data.billing_state && data.billing_zip;
@@ -158,6 +159,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
       default_service_state: "",
       default_service_zip: "",
       deposit_required: true, // Default to ON
+      tax_rate_override: "",
     },
   });
 
@@ -192,6 +194,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         default_service_state: customerData.default_service_differs_from_main ? customerData.default_service_state : null,
         default_service_zip: customerData.default_service_differs_from_main ? customerData.default_service_zip : null,
         deposit_required: customerData.deposit_required,
+        tax_rate_override: customerData.tax_rate_override ? (parseFloat(customerData.tax_rate_override) > 1 ? parseFloat(customerData.tax_rate_override) / 100 : parseFloat(customerData.tax_rate_override)) : null,
       };
 
       const { data: customerData_result, error: customerError } = await supabase
@@ -659,6 +662,30 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
                 </div>
               </div>
             )}
+
+            {/* Tax Rate Override */}
+            <div className="space-y-4 pt-6 border-t border-border">
+              <FormField
+                control={form.control}
+                name="tax_rate_override"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tax Rate Override (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="e.g., 8 or 8.5 for 8.5%"
+                        type="text"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Override the tax rate for this customer. Enter as percentage (e.g., "8" for 8% tax). Leave blank to use system defaults.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Deposit Requirement */}
             <div className="space-y-6 pt-6 border-t border-border">

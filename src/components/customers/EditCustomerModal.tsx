@@ -89,6 +89,7 @@ const customerSchema = z.object({
   default_service_state: z.string().optional(),
   default_service_zip: z.string().optional(),
   deposit_required: z.boolean().default(false),
+  tax_rate_override: z.string().optional(),
 }).refine((data) => {
   if (data.billing_differs_from_service) {
     return data.billing_street && data.billing_city && data.billing_state && data.billing_zip;
@@ -133,6 +134,7 @@ interface Customer {
   default_service_state?: string;
   default_service_zip?: string;
   deposit_required?: boolean;
+  tax_rate_override?: number;
   created_at: string;
   updated_at: string;
 }
@@ -193,6 +195,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       default_service_state: customer?.default_service_state || "",
       default_service_zip: customer?.default_service_zip || "",
       deposit_required: customer?.deposit_required || false,
+      tax_rate_override: customer?.tax_rate_override ? (customer.tax_rate_override * 100).toString() : "",
     },
   });
 
@@ -231,6 +234,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         default_service_state: data.default_service_differs_from_main ? data.default_service_state : null,
         default_service_zip: data.default_service_differs_from_main ? data.default_service_zip : null,
         deposit_required: data.deposit_required,
+        tax_rate_override: data.tax_rate_override ? (parseFloat(data.tax_rate_override) > 1 ? parseFloat(data.tax_rate_override) / 100 : parseFloat(data.tax_rate_override)) : null,
       };
 
       console.log('Update data:', updateData);
@@ -820,29 +824,53 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                 </div>
               )}
 
-              {/* Deposit Requirement */}
-              <div className="space-y-4 pt-6 border-t border-border">
-                <FormField
-                  control={form.control}
-                  name="deposit_required"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Deposit Required</FormLabel>
-                        <FormDescription>
-                          Require a deposit for this customer
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={handleDepositToggle}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+               {/* Tax Rate Override */}
+               <div className="space-y-4 pt-6 border-t border-border">
+                 <FormField
+                   control={form.control}
+                   name="tax_rate_override"
+                   render={({ field }) => (
+                     <FormItem>
+                       <FormLabel>Tax Rate Override (Optional)</FormLabel>
+                       <FormControl>
+                         <Input 
+                           {...field} 
+                           placeholder="e.g., 8 or 8.5 for 8.5%"
+                           type="text"
+                         />
+                       </FormControl>
+                       <FormDescription>
+                         Override the tax rate for this customer. Enter as percentage (e.g., "8" for 8% tax). Leave blank to use system defaults.
+                       </FormDescription>
+                       <FormMessage />
+                     </FormItem>
+                   )}
+                 />
+               </div>
+
+               {/* Deposit Requirement */}
+               <div className="space-y-4 pt-6 border-t border-border">
+                 <FormField
+                   control={form.control}
+                   name="deposit_required"
+                   render={({ field }) => (
+                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                       <div className="space-y-0.5">
+                         <FormLabel className="text-base">Deposit Required</FormLabel>
+                         <FormDescription>
+                           Require a deposit for this customer
+                         </FormDescription>
+                       </div>
+                       <FormControl>
+                         <Switch
+                           checked={field.value}
+                           onCheckedChange={handleDepositToggle}
+                         />
+                       </FormControl>
+                     </FormItem>
+                   )}
+                 />
+               </div>
 
               {/* Danger Zone */}
               <div className="space-y-6 pt-6 border-t border-destructive/20">
