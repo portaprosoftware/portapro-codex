@@ -26,6 +26,41 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 // Initialize Supabase client with service role key for admin operations
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+// Small helper to call Clerk with a given key
+async function clerkFetch(path: string, apiKey: string, init?: RequestInit) {
+  const base = 'https://api.clerk.com';
+  const headers = {
+    ...(init?.headers || {}),
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  };
+  return await fetch(`${base}${path}`, { ...init, headers });
+}
+
+// Try to find an existing Clerk user by email
+async function findClerkUserByEmail(email: string, primaryKey: string, secondaryKey?: string) {
+  const tryWithKey = async (key: string) => {
+    const resp = await clerkFetch(`/v1/users?email_address=${encodeURIComponent(email)}`, key, { method: 'GET' });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error('Clerk search error:', errText);
+      return null;
+    }
+    const users = await resp.json();
+    return Array.isArray(users) && users.length > 0 ? users[0] : null;
+  };
+
+  // Try primary first, then secondary if provided
+  const primaryResult = await tryWithKey(primaryKey);
+  if (primaryResult) return primaryResult;
+
+  if (secondaryKey) {
+    const secondaryResult = await tryWithKey(secondaryKey);
+    if (secondaryResult) return secondaryResult;
+  }
+  return null;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -50,10 +85,10 @@ const handler = async (req: Request): Promise<Response> => {
     let secondaryClerkKey: string | undefined;
     if (environment === 'development' && clerkSecretKeyDev) {
       primaryClerkKey = clerkSecretKeyDev;
-      secondaryClerkKey = clerkSecretKeyProd;
+      secondaryClerkKey = clerkSecretKeyProd || undefined;
     } else if (environment === 'production' && clerkSecretKeyProd) {
       primaryClerkKey = clerkSecretKeyProd;
-      secondaryClerkKey = clerkSecretKeyDev;
+      secondaryClerkKey = clerkSecretKeyDev || undefined;
     } else {
       primaryClerkKey = clerkSecretKeyDev || clerkSecretKeyProd;
       secondaryClerkKey = primaryClerkKey === clerkSecretKeyDev ? clerkSecretKeyProd : clerkSecretKeyDev;
@@ -93,12 +128,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Creating Clerk user account...');
     
     const createWithKey = async (apiKey: string) => {
-      const resp = await fetch('https://api.clerk.com/v1/users', {
+      const resp = await clerkFetch('/v1/users', apiKey, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email_address: [email],
           first_name: firstName,
@@ -117,41 +148,61 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     let clerkResponse = await createWithKey(primaryClerkKey!);
+    let clerkUserId: string | null = null;
 
     if (!clerkResponse.ok) {
       const firstError = await clerkResponse.text();
       console.error('Clerk API error (primary key):', firstError);
 
-      const looksLikeKeyInvalid = clerkResponse.status === 401 || clerkResponse.status === 403 || firstError.includes('clerk_key_invalid') || firstError.toLowerCase().includes('secret key');
+      const status = (clerkResponse as any).status as number;
+      const looksLikeKeyInvalid = status === 401 || status === 403 || firstError.includes('clerk_key_invalid') || firstError.toLowerCase().includes('secret key');
+      const looksLikeAlreadyExists = status === 422 || firstError.toLowerCase().includes('already exists') || firstError.toLowerCase().includes('form_identifier_exists');
 
+      // If key invalid, try secondary for create
       if (secondaryClerkKey && looksLikeKeyInvalid) {
         console.log('Retrying Clerk user creation with secondary key...');
         clerkResponse = await createWithKey(secondaryClerkKey);
-      } else {
-        // If it's a known "already exists" 422, handle below after this block
       }
 
+      // If still not ok, handle existing user case by lookup
       if (!clerkResponse.ok) {
         const clerkError = await clerkResponse.text();
         console.error('Clerk API error (final):', clerkError);
 
-        if (clerkResponse.status === 422 && clerkError.includes('already exists')) {
-          return new Response(
-            JSON.stringify({
-              success: false,
-              error: 'A user with this email address already exists in the system'
-            }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
+        const finalStatus = (clerkResponse as any).status as number;
+        const finalAlreadyExists = finalStatus === 422 || clerkError.toLowerCase().includes('already exists') || clerkError.toLowerCase().includes('form_identifier_exists');
 
-        throw new Error(`Clerk API error: ${clerkError}`);
+        if (finalAlreadyExists) {
+          console.log('Clerk indicates user already exists. Attempting lookup by email...');
+          const existing = await findClerkUserByEmail(email, primaryClerkKey!, secondaryClerkKey);
+          if (!existing) {
+            return new Response(
+              JSON.stringify({
+                success: false,
+                error: 'User already exists in Clerk, but could not be retrieved by email'
+              }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          clerkUserId = existing.id;
+          console.log(`Found existing Clerk user: ${clerkUserId}. Proceeding with Supabase records.`);
+        } else {
+          // Non-duplicate failure
+          throw new Error(`Clerk API error: ${clerkError}`);
+        }
       }
     }
 
-    const clerkUser = await clerkResponse.json();
-    const clerkUserId = clerkUser.id;
-    console.log(`Created Clerk user with ID: ${clerkUserId}`);
+    // If we created the Clerk user successfully, read id
+    if (!clerkUserId && clerkResponse.ok) {
+      const clerkUser = await clerkResponse.json();
+      clerkUserId = clerkUser.id;
+      console.log(`Created Clerk user with ID: ${clerkUserId}`);
+    }
+
+    if (!clerkUserId) {
+      throw new Error('Unable to determine Clerk user id.');
+    }
 
     // Step 3: Create user invitation record in Supabase
     console.log('Creating invitation record in Supabase...');
@@ -185,44 +236,42 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Created invitation record:', invitation.id);
 
-    // Step 4: Create Supabase profile
-    console.log('Creating Supabase profile...');
-    
-    const { error: profileError } = await supabase
+    // Step 4: Upsert Supabase profile (idempotent)
+    console.log('Upserting Supabase profile...');
+    const { error: profileUpsertError } = await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         clerk_user_id: clerkUserId,
         email,
         first_name: firstName,
         last_name: lastName,
         phone: phone || null,
+        image_url: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
-      });
+      }, { onConflict: 'clerk_user_id' });
 
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      // Don't throw here as this might be duplicate key error, which is okay
+    if (profileUpsertError) {
+      console.error('Profile upsert error:', profileUpsertError);
+      // Not fatal; continue
     }
 
-    // Step 5: Create user role
+    // Step 5: Create user role (ignore conflict)
     console.log('Creating user role...');
-    
-    const { error: roleError } = await supabase
+    const { error: roleInsertError } = await supabase
       .from('user_roles')
       .insert({
         user_id: clerkUserId,
-        role: role as any // Cast to the enum type
+        role: role as any // Cast to enum
       });
 
-    if (roleError) {
-      console.error('Role creation error:', roleError);
-      // Don't throw here as this might be duplicate key error
+    if (roleInsertError) {
+      // If duplicate or similar, keep going
+      console.warn('Role creation warning:', roleInsertError);
     }
 
     // Step 6: Send welcome email
     console.log('Sending welcome email...');
-    
     const loginUrl = `${Deno.env.get('SUPABASE_URL')?.replace('supabase.co', 'lovable.app') || 'https://your-app.lovable.app'}/auth`;
     
     const emailContent = `
@@ -274,21 +323,21 @@ const handler = async (req: Request): Promise<Response> => {
       html: emailContent,
     });
 
-    if (emailResponse.error) {
-      console.error('Email sending failed:', emailResponse.error);
+    if ((emailResponse as any).error) {
+      console.error('Email sending failed:', (emailResponse as any).error);
       // Update invitation with error but don't fail the entire process
       await supabase
         .from('user_invitations')
         .update({ 
-          error_message: `Email failed: ${emailResponse.error.message}`,
+          error_message: `Email failed: ${(emailResponse as any).error.message}`,
           metadata: { 
-            ...invitation.metadata, 
-            email_error: emailResponse.error 
+            ...(invitation?.metadata || {}), 
+            email_error: (emailResponse as any).error 
           }
         })
         .eq('id', invitation.id);
     } else {
-      console.log('Welcome email sent successfully:', emailResponse.data?.id);
+      console.log('Welcome email sent successfully:', (emailResponse as any).data?.id);
     }
 
     // Step 7: Log the invitation activity
@@ -317,7 +366,7 @@ const handler = async (req: Request): Promise<Response> => {
           invitationId: invitation.id,
           email,
           role,
-          emailSent: !emailResponse.error
+          emailSent: !(emailResponse as any).error
         }
       }),
       {
