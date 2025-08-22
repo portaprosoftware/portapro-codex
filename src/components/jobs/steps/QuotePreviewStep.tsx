@@ -67,6 +67,24 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
     }
   }, [customer]);
 
+  const getJobTypeBadgeClass = (jobType: string) => {
+    const type = jobType?.toLowerCase();
+    switch (type) {
+      case 'delivery':
+        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0';
+      case 'estimate':
+      case 'on-site':
+      case 'estimate/on-site':
+        return 'bg-gradient-to-r from-red-800 to-red-900 text-white font-bold border-0';
+      case 'pickup':
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold border-0';
+      case 'service':
+        return 'bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0';
+      default:
+        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0';
+    }
+  };
+
   const calculateSubtotal = () => {
     let subtotal = 0;
     
@@ -142,7 +160,9 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <Badge variant="outline">{state.data.job_type}</Badge>
+                <Badge variant="outline" className={getJobTypeBadgeClass(state.data.job_type)}>
+                  {state.data.job_type}
+                </Badge>
               </div>
             </div>
 
@@ -347,11 +367,11 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               <Button 
                 variant="outline" 
                 onClick={onSaveDraft}
-                className="w-full"
+                className="w-full flex flex-col items-center py-3 h-auto"
                 disabled={sending}
               >
-                Save as Draft
-                <span className="ml-2 text-xs text-muted-foreground">save & send later</span>
+                <span>Save as Draft</span>
+                <span className="text-xs text-muted-foreground font-normal">save & send later</span>
               </Button>
             </div>
           </CardContent>
