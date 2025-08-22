@@ -9731,10 +9731,10 @@ export type Database = {
           clerk_user_id_param: string
           email_param: string
           first_name_param: string
-          image_url_param: string
+          image_url_param?: string
           last_name_param: string
         }
-        Returns: Json
+        Returns: string
       }
       sync_consumable_total_from_locations: {
         Args: { consumable_uuid: string }

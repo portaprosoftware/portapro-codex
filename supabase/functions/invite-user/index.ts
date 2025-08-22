@@ -236,9 +236,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Created invitation record:', invitation.id);
 
-    // Step 4: Sync Supabase profile via RPC (idempotent)
-    console.log('Syncing Supabase profile via RPC...');
-    const { data: syncResult, error: syncError } = await supabase
+    // Step 4: Sync Supabase profile via RPC (returns the profile UUID)
+    console.log('Upserting Supabase profile...');
+    const { data: profileId, error: profileError } = await supabase
       .rpc('sync_clerk_profile', {
         clerk_user_id_param: clerkUserId,
         email_param: email,
@@ -247,28 +247,16 @@ const handler = async (req: Request): Promise<Response> => {
         image_url_param: ''
       });
 
-    if (syncError) {
-      console.error('sync_clerk_profile RPC error:', syncError);
-      // Continue but log; role creation depends on profile row below
-    } else {
-      console.log('sync_clerk_profile result:', syncResult);
+    if (profileError) {
+      console.error('Profile upsert error:', profileError);
+      throw new Error(`Failed to create/update profile: ${profileError.message}`);
     }
 
-    // Fetch profile UUID to use as FK for user_roles
-    const { data: profileRow, error: profileFetchError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('clerk_user_id', clerkUserId)
-      .maybeSingle();
-
-    if (profileFetchError) {
-      console.error('Failed to fetch profile after sync:', profileFetchError);
-      throw new Error('Profile sync failed: unable to fetch profile id');
-    }
-    const profileId = profileRow?.id;
     if (!profileId) {
-      throw new Error('Profile sync failed: missing profile id');
+      throw new Error('Profile sync failed: no profile ID returned');
     }
+
+    console.log('Profile synced with ID:', profileId);
 
     // Step 5: Create user role with profile UUID
     console.log('Creating user role...');
