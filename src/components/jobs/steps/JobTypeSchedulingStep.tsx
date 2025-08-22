@@ -340,9 +340,9 @@ export function JobTypeSchedulingStep() {
                         onCheckedChange={(checked) => {
                           setTrackHours(checked);
                           if (checked) {
-                            updateData({ rental_duration_days: undefined, rental_duration_hours: 1 });
-                          } else {
-                            updateData({ rental_duration_hours: undefined, rental_duration_days: 1 });
+            updateData({ rental_duration_days: undefined, rental_duration_hours: 1 });
+          } else {
+            updateData({ rental_duration_hours: undefined, rental_duration_days: undefined });
                           }
                         }}
                       />

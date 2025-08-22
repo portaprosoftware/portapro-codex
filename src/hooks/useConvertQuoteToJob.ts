@@ -59,7 +59,7 @@ export function useConvertQuoteToJob() {
       }
 
       // Calculate rental duration from quote items (use first inventory item's rental duration)
-      const rentalDuration = inventoryItems.length > 0 ? inventoryItems[0].rental_duration_days || 1 : 1;
+      const rentalDuration = inventoryItems.length > 0 ? inventoryItems[0].rental_duration_days : undefined;
       
       // Create the job
       const { data: job, error: jobError } = await supabase
