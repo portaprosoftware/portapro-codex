@@ -90,7 +90,7 @@ export function UserManagementSection() {
         .from("profiles")
         .select(`
           *,
-          user_roles!inner (
+          user_roles!left (
             role
           )
         `);
@@ -110,11 +110,11 @@ export function UserManagementSection() {
         
         return {
           ...user,
-          current_role,
+          current_role: current_role || 'No Role Assigned',
           // Keep the original user_roles structure for EditUserModal
           user_roles: Array.isArray(user.user_roles) 
             ? user.user_roles 
-            : [user.user_roles]
+            : user.user_roles ? [user.user_roles] : []
         };
       }) || [];
     },

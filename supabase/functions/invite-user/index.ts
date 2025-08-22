@@ -259,7 +259,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Profile synced with ID:', profileId);
 
     // Step 5: Create user role with profile UUID
-    console.log('Creating user role...');
+    console.log('Creating user role with profile ID:', profileId, 'and role:', role);
     const { error: roleInsertError } = await supabase
       .from('user_roles')
       .insert({
@@ -268,8 +268,11 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
     if (roleInsertError) {
-      // If duplicate or similar, keep going
-      console.warn('Role creation warning:', roleInsertError);
+      console.error('Role creation error:', roleInsertError);
+      console.error('Failed to create role for user:', clerkUserId, 'with profile ID:', profileId, 'role:', role);
+      // Continue with invitation but log the error - role can be assigned later in the UI
+    } else {
+      console.log('Successfully created role:', role, 'for user:', clerkUserId, 'with profile ID:', profileId);
     }
 
     // Step 6: Send welcome email
