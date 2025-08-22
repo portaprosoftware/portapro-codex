@@ -147,10 +147,19 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
       {/* Selected Items Summary */}
       {value.length === 0 ? (
         <Card>
-          <CardContent className="py-8 text-center">
+          <CardContent className="py-8 text-center space-y-4">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No products selected yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Click "Select Products" to add items to this job</p>
+            <div>
+              <p className="text-muted-foreground">No products selected yet</p>
+              <p className="text-sm text-muted-foreground mt-1">Click "Select Products" to add items to this job</p>
+            </div>
+            <Button 
+              onClick={() => setShowProductModal(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold"
+            >
+              <Package className="h-4 w-4 mr-2" />
+              Select Products
+            </Button>
           </CardContent>
         </Card>
       ) : (
