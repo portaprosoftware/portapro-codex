@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Eye, X, MapPin, Phone, Mail, Calendar, DollarSign } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Eye, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ViewQuoteModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface ViewQuoteModalProps {
 }
 
 export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps) => {
+  const queryClient = useQueryClient();
   const { data: quote, isLoading } = useQuery({
     queryKey: ['quote-details', quoteId],
     queryFn: async () => {
@@ -61,6 +63,25 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
       };
     },
     enabled: !!quoteId && isOpen,
+  });
+
+  const updateQuoteStatus = useMutation({
+    mutationFn: async (status: 'accepted' | 'rejected') => {
+      const { error } = await supabase
+        .from('quotes')
+        .update({ status })
+        .eq('id', quoteId);
+      
+      if (error) throw error;
+    },
+    onSuccess: (_, status) => {
+      toast.success(`Quote ${status === 'accepted' ? 'approved' : 'declined'} successfully!`);
+      queryClient.invalidateQueries({ queryKey: ['quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['quote-details', quoteId] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update quote status");
+    }
   });
 
   const formatCurrency = (amount: number) => {
@@ -278,10 +299,12 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
           {/* Quote Totals */}
           <div className="flex justify-end">
             <div className="w-full max-w-sm space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Subtotal:</span>
-                <span className="text-sm font-medium">{formatCurrency(quote.subtotal || 0)}</span>
-              </div>
+              {quote.subtotal && quote.subtotal > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Subtotal:</span>
+                  <span className="text-sm font-medium">{formatCurrency(quote.subtotal)}</span>
+                </div>
+              )}
               {quote.discount_value && quote.discount_value > 0 && (
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">
@@ -332,6 +355,32 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-foreground">Terms & Conditions</h3>
                 <p className="text-sm text-muted-foreground">{quote.terms}</p>
+              </div>
+            </>
+          )}
+
+          {/* Action Buttons */}
+          {quote.status !== 'accepted' && quote.status !== 'rejected' && (
+            <>
+              <Separator />
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => updateQuoteStatus.mutate('rejected')}
+                  disabled={updateQuoteStatus.isPending}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Decline Quote
+                </Button>
+                <Button
+                  onClick={() => updateQuoteStatus.mutate('accepted')}
+                  disabled={updateQuoteStatus.isPending}
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                >
+                  <Check className="mr-2 h-4 w-4" />
+                  Approve Quote
+                </Button>
               </div>
             </>
           )}
