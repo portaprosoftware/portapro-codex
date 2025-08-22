@@ -175,7 +175,7 @@ export function LocationSelectionStep() {
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-medium">{location.location_name}</h3>
                         {location.is_default && (
-                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                          <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 text-xs px-2 py-1 rounded">
                             Default
                           </span>
                         )}
