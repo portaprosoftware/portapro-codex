@@ -9731,7 +9731,7 @@ export type Database = {
           clerk_user_id_param: string
           email_param: string
           first_name_param: string
-          image_url_param?: string
+          image_url_param: string
           last_name_param: string
         }
         Returns: string
