@@ -166,10 +166,10 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 
       if (data?.suggestions && data.suggestions.length > 0) {
         const result = data.suggestions[0];
-        if (result.longitude && result.latitude) {
+        if (result.coordinates?.longitude && result.coordinates?.latitude) {
           map.current.flyTo({
-            center: [result.longitude, result.latitude],
-            zoom: 14,
+            center: [result.coordinates.longitude, result.coordinates.latitude],
+            zoom: 16,
             duration: 2000
           });
         }
