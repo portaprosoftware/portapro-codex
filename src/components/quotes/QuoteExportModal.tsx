@@ -56,19 +56,20 @@ PortaPro Team`);
       if (error) throw error;
 
       if (action === 'generate_pdf' || action === 'both') {
-        if (data.pdf) {
-          // Convert the PDF byte array back to a blob and trigger download
-          const pdfBlob = new Blob([new Uint8Array(data.pdf)], { type: 'application/pdf' });
-          const url = URL.createObjectURL(pdfBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `Quote-${quote.quote_number}.pdf`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+        // Open the professional HTML in a new window for printing to PDF
+        if (data.html) {
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(data.html);
+            printWindow.document.close();
+            printWindow.focus();
+            // Trigger print dialog after a short delay to ensure content is loaded
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          }
         } else {
-          throw new Error('PDF generation failed - no PDF data received');
+          throw new Error('PDF generation failed - no HTML content received');
         }
       }
 

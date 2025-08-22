@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
-import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -143,44 +142,11 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate PDF HTML
     const html = await generatePDFHTML(documentData, items, companySettings, products || [], requestData.type);
     
-    let pdfBuffer = null;
-    
-    // Generate PDF if requested
-    if (requestData.action === 'generate_pdf' || requestData.action === 'both') {
-      try {
-        console.log('Starting PDF generation...');
-        const browser = await puppeteer.launch({
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        
-        const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-        
-        pdfBuffer = await page.pdf({
-          format: 'A4',
-          printBackground: true,
-          margin: {
-            top: '0.5in',
-            right: '0.5in',
-            bottom: '0.5in',
-            left: '0.5in'
-          }
-        });
-        
-        await browser.close();
-        console.log('PDF generated successfully');
-      } catch (error) {
-        console.error('PDF generation failed:', error);
-        throw new Error('PDF generation failed: ' + error.message);
-      }
-    }
-    
     // Send email if requested
     if (requestData.action === 'send_email' || requestData.action === 'both') {
       const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
       
-      const emailOptions: any = {
+      const emailResult = await resend.emails.send({
         from: 'PortaPro <onboarding@resend.dev>',
         to: [requestData.recipient_email],
         subject: requestData.subject,
@@ -188,21 +154,15 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2>Hello ${requestData.recipient_name},</h2>
             <p>${requestData.message.replace(/\n/g, '<br>')}</p>
-            <p>Please find your ${requestData.type} attached.</p>
+            <div style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+              <h3>${requestData.type === 'quote' ? 'Quote' : 'Invoice'} Details:</h3>
+              ${html}
+            </div>
             <p>Thank you for your business!</p>
           </div>
         `
-      };
+      });
       
-      // Attach PDF if generated
-      if (pdfBuffer) {
-        emailOptions.attachments = [{
-          filename: `${requestData.type}-${documentData.quote_number || documentData.invoice_number}.pdf`,
-          content: Array.from(new Uint8Array(pdfBuffer))
-        }];
-      }
-      
-      const emailResult = await resend.emails.send(emailOptions);
       console.log('Email sent successfully:', emailResult);
     }
     
@@ -210,7 +170,6 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: true, 
         html,
-        pdf: pdfBuffer ? Array.from(new Uint8Array(pdfBuffer)) : null,
         message: `${requestData.type} processed successfully`
       }),
       {

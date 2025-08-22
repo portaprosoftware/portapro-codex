@@ -57,25 +57,25 @@ PortaPro Team`);
 
       if (error) throw error;
 
-      // Handle PDF download if generated
-      if ((action === 'generate_pdf' || action === 'both') && data.pdf) {
-        const pdfBlob = new Blob([new Uint8Array(data.pdf)], { type: 'application/pdf' });
-        const url = URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Invoice-${invoice.invoice_number}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      // Handle PDF generation if requested
+      if ((action === 'generate_pdf' || action === 'both') && data.html) {
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(data.html);
+          printWindow.document.close();
+          printWindow.focus();
+          setTimeout(() => {
+            printWindow.print();
+          }, 500);
+        }
       }
 
       if (action === 'generate_pdf') {
-        toast.success('PDF generated successfully!');
+        toast.success('PDF ready for printing!');
       } else if (action === 'send_email') {
         toast.success('Invoice emailed successfully!');
       } else {
-        toast.success('PDF generated and invoice emailed successfully!');
+        toast.success('PDF ready and invoice emailed successfully!');
       }
 
       onClose();
