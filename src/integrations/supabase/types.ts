@@ -3047,6 +3047,7 @@ export type Database = {
           service_hours: number | null
           service_id: string | null
           service_notes: string | null
+          unit_of_measure: string | null
           unit_price: number
           updated_at: string | null
           variation_name: string | null
@@ -3066,6 +3067,7 @@ export type Database = {
           service_hours?: number | null
           service_id?: string | null
           service_notes?: string | null
+          unit_of_measure?: string | null
           unit_price: number
           updated_at?: string | null
           variation_name?: string | null
@@ -3085,6 +3087,7 @@ export type Database = {
           service_hours?: number | null
           service_id?: string | null
           service_notes?: string | null
+          unit_of_measure?: string | null
           unit_price?: number
           updated_at?: string | null
           variation_name?: string | null
@@ -3121,6 +3124,7 @@ export type Database = {
       invoices: {
         Row: {
           additional_fees: number | null
+          additional_fees_description: string | null
           amount: number
           created_at: string
           customer_id: string
@@ -3128,10 +3132,13 @@ export type Database = {
           discount_value: number | null
           due_date: string
           id: string
+          internal_notes: string | null
           invoice_number: string | null
           job_id: string | null
           notes: string | null
           quote_id: string | null
+          recurring: boolean | null
+          recurring_frequency: string | null
           status: string
           subtotal: number | null
           tax_amount: number | null
@@ -3140,6 +3147,7 @@ export type Database = {
         }
         Insert: {
           additional_fees?: number | null
+          additional_fees_description?: string | null
           amount: number
           created_at?: string
           customer_id: string
@@ -3147,10 +3155,13 @@ export type Database = {
           discount_value?: number | null
           due_date: string
           id?: string
+          internal_notes?: string | null
           invoice_number?: string | null
           job_id?: string | null
           notes?: string | null
           quote_id?: string | null
+          recurring?: boolean | null
+          recurring_frequency?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null
@@ -3159,6 +3170,7 @@ export type Database = {
         }
         Update: {
           additional_fees?: number | null
+          additional_fees_description?: string | null
           amount?: number
           created_at?: string
           customer_id?: string
@@ -3166,10 +3178,13 @@ export type Database = {
           discount_value?: number | null
           due_date?: string
           id?: string
+          internal_notes?: string | null
           invoice_number?: string | null
           job_id?: string | null
           notes?: string | null
           quote_id?: string | null
+          recurring?: boolean | null
+          recurring_frequency?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null
@@ -3593,6 +3608,7 @@ export type Database = {
           default_template_id: string | null
           driver_id: string | null
           id: string
+          invoiced_at: string | null
           is_priority: boolean
           is_service_job: boolean
           job_number: string
@@ -3628,6 +3644,7 @@ export type Database = {
           default_template_id?: string | null
           driver_id?: string | null
           id?: string
+          invoiced_at?: string | null
           is_priority?: boolean
           is_service_job?: boolean
           job_number?: string
@@ -3663,6 +3680,7 @@ export type Database = {
           default_template_id?: string | null
           driver_id?: string | null
           id?: string
+          invoiced_at?: string | null
           is_priority?: boolean
           is_service_job?: boolean
           job_number?: string
@@ -6264,6 +6282,7 @@ export type Database = {
       quotes: {
         Row: {
           additional_fees: number | null
+          converted_to_invoice_at: string | null
           created_at: string
           customer_id: string
           deleted_at: string | null
@@ -6285,6 +6304,7 @@ export type Database = {
         }
         Insert: {
           additional_fees?: number | null
+          converted_to_invoice_at?: string | null
           created_at?: string
           customer_id: string
           deleted_at?: string | null
@@ -6306,6 +6326,7 @@ export type Database = {
         }
         Update: {
           additional_fees?: number | null
+          converted_to_invoice_at?: string | null
           created_at?: string
           customer_id?: string
           deleted_at?: string | null

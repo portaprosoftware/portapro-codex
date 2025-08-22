@@ -63,8 +63,8 @@ interface InvoiceFormData {
 }
 
 type Customer = { id: string; name: string; email?: string };
-type Product = { id: string; name: string; default_price_per_day: number; unit_of_measure?: string };
-type Service = { id: string; name: string; per_visit_cost: number | null; per_hour_cost: number | null; flat_rate_cost: number | null };
+type Product = { id: string; name: string; default_price_per_day: number };
+type Service = { id: string; name: string };
 
 export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId }: EnhancedInvoiceWizardProps) {
   const [invoiceData, setInvoiceData] = useState<InvoiceFormData>({
@@ -128,7 +128,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, default_price_per_day, unit_of_measure')
+        .select('id, name, default_price_per_day')
         .order('name');
       
       if (error) throw error;
@@ -142,7 +142,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('id, name, per_visit_cost, per_hour_cost, flat_rate_cost')
+        .select('id, name')
         .order('name');
       
       if (error) throw error;
@@ -203,16 +203,17 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   // Handle source data prefilling
   useEffect(() => {
     if (sourceData) {
+      const sourceObj = sourceData.data as any;
       setInvoiceData(prev => ({
         ...prev,
-        customer_id: sourceData.data.customer_id,
-        discount_type: sourceData.data.discount_type || 'percentage',
-        discount_value: sourceData.data.discount_value || 0,
-        additional_fees: sourceData.data.additional_fees || 0,
-        terms: sourceData.data.terms || 'Payment due within 30 days.',
+        customer_id: sourceObj.customer_id,
+        discount_type: sourceObj.discount_type || 'percentage',
+        discount_value: sourceObj.discount_value || 0,
+        additional_fees: sourceObj.additional_fees || 0,
+        terms: sourceObj.terms || 'Payment due within 30 days.',
         notes: sourceData.source === 'quote' 
-          ? `Generated from Quote: ${sourceData.data.quote_number || fromQuoteId}`
-          : `Generated from Job: ${sourceData.data.job_number || fromJobId}`
+          ? `Generated from Quote: ${sourceObj.quote_number || fromQuoteId}`
+          : `Generated from Job: ${sourceObj.job_number || fromJobId}`
       }));
 
       // Convert source items to invoice format
@@ -327,11 +328,11 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       const product = products.find(p => p.id === newItem.product_id);
       productName = product?.name || '';
       unitPrice = product?.default_price_per_day || 0;
-      unitOfMeasure = product?.unit_of_measure || 'each';
+      unitOfMeasure = 'each';
     } else if (newItem.type === 'service' && newItem.service_id) {
       const service = services.find(s => s.id === newItem.service_id);
       productName = service?.name || '';
-      unitPrice = service?.per_visit_cost || service?.per_hour_cost || service?.flat_rate_cost || 0;
+      unitPrice = 0; // Default to 0, user can edit
       unitOfMeasure = 'service';
     }
 
@@ -671,7 +672,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                             <TableHead>Unit Price</TableHead>
                             <TableHead>Unit</TableHead>
                             <TableHead>Total</TableHead>
-                            <TableHead width="50px"></TableHead>
+                            <TableHead className="w-12"></TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
