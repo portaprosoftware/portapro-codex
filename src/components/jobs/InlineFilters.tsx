@@ -264,47 +264,41 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
-          )}
-
-          {/* Route vs Truck Stock Toggle and Quick Date Buttons */}
-          <div className="flex items-center gap-2 ml-auto">
-            {/* Today/Tomorrow Quick Select Buttons */}
-            {showDateNavigator && selectedDate && onDateChange && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onDateChange(new Date())}
-                  className="text-xs px-3 py-1"
-                >
-                  Today
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    onDateChange(tomorrow);
-                  }}
-                  className="text-xs px-3 py-1"
-                >
-                  Tomorrow
-                </Button>
-              </>
-            )}
             
+            {/* Today/Tomorrow Quick Select Buttons */}
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowRouteStock(!showRouteStock)}
-              className="flex items-center gap-2"
+              onClick={() => onDateChange(new Date())}
+              className="text-xs px-3 py-1"
             >
-              {showRouteStock ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              Route vs Truck Stock
+              Today
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                onDateChange(tomorrow);
+              }}
+              className="text-xs px-3 py-1"
+            >
+              Tomorrow
             </Button>
           </div>
+          )}
+
+          {/* Route vs Truck Stock Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowRouteStock(!showRouteStock)}
+            className="flex items-center gap-2 ml-auto"
+          >
+            {showRouteStock ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            Route vs Truck Stock
+          </Button>
         </div>
 
         {/* Route vs Truck Stock Section */}
