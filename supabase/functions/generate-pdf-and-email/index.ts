@@ -1,13 +1,14 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface EmailRequest {
+interface RequestData {
   type: 'quote' | 'invoice';
   id: string;
   action: 'generate_pdf' | 'send_email' | 'both';
@@ -24,20 +25,29 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-    const requestData: EmailRequest = await req.json();
-
-    console.log('Processing request:', requestData);
-
-    // Fetch the document data
-    let documentData;
-    let items = [];
+    const requestData: RequestData = await req.json();
     
+    console.log('Processing request:', {
+      type: requestData.type,
+      id: requestData.id,
+      action: requestData.action,
+      recipient_email: requestData.recipient_email,
+      recipient_name: requestData.recipient_name,
+      subject: requestData.subject,
+      message: requestData.message
+    });
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch document data
+    let documentData: any;
+    let items: any[];
+
     if (requestData.type === 'quote') {
       const { data: quote, error: quoteError } = await supabase
         .from('quotes')
@@ -96,43 +106,65 @@ const handler = async (req: Request): Promise<Response> => {
       items = invoiceItems;
     }
 
-    // Generate PDF HTML content
-    const pdfHtml = await generatePdfHtml(documentData, items, requestData.type, supabase);
+    // Fetch additional data
+    const { data: companySettings } = await supabase
+      .from('company_settings')
+      .select('*')
+      .single();
 
-    let pdfBuffer;
-    if (requestData.action === 'generate_pdf' || requestData.action === 'both') {
-      // For now, we'll return the HTML. In a production environment, 
-      // you'd use a service like Puppeteer or similar to generate actual PDF
-      pdfBuffer = new TextEncoder().encode(pdfHtml);
+    // Fetch products for name lookup
+    const { data: products } = await supabase
+      .from('products')
+      .select('id, name');
+
+    console.log(`Fetched ${items?.length || 0} items for ${requestData.type}:`, items);
+
+    // Validate we have items with proper pricing
+    if (!items || items.length === 0) {
+      throw new Error(`No items found for ${requestData.type} ${requestData.id}`);
     }
+
+    const hasValidPricing = items.some(item => 
+      (item.unit_price && Number(item.unit_price) > 0) || 
+      (item.line_total && Number(item.line_total) > 0)
+    );
+
+    if (!hasValidPricing) {
+      console.warn(`Warning: ${requestData.type} has items with zero pricing`, items);
+    }
+
+    // Generate HTML
+    const pdfHtml = await generatePDFHTML(documentData, items, companySettings, products || [], requestData.type);
 
     // Send email if requested
     if (requestData.action === 'send_email' || requestData.action === 'both') {
-      const emailSubject = requestData.subject || 
-        `${requestData.type === 'quote' ? 'Quote' : 'Invoice'} from ${documentData.customers?.name || 'Your Company'}`;
-      
-      const emailMessage = requestData.message || 
-        `Please find attached your ${requestData.type === 'quote' ? 'quote' : 'invoice'}.`;
+      if (!requestData.recipient_email) {
+        throw new Error('Recipient email is required for email action');
+      }
 
-      const emailData = {
-        from: "PortaPro <noreply@resend.dev>",
-        to: [requestData.recipient_email || documentData.customers?.email],
-        subject: emailSubject,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2>Hello ${requestData.recipient_name || documentData.customers?.name},</h2>
-            <p>${emailMessage}</p>
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              ${pdfHtml}
+      try {
+        const emailResponse = await resend.emails.send({
+          from: "PortaPro <onboarding@resend.dev>", // Use verified domain
+          to: [requestData.recipient_email],
+          subject: requestData.subject || `${requestData.type.charAt(0).toUpperCase() + requestData.type.slice(1)} from PortaPro`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2>Hello ${requestData.recipient_name || 'Valued Customer'},</h2>
+              <p>${requestData.message || `Please find your ${requestData.type} attached.`}</p>
+              <div style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                ${pdfHtml}
+              </div>
+              <p>Thank you for your business!</p>
+              <p>Best regards,<br>PortaPro Team</p>
             </div>
-            <p>Thank you for your business!</p>
-            <p>Best regards,<br>PortaPro Team</p>
-          </div>
-        `,
-      };
+          `,
+        });
 
-      const emailResponse = await resend.emails.send(emailData);
-      console.log('Email sent successfully:', emailResponse);
+        console.log("Email sent successfully:", emailResponse);
+      } catch (emailError) {
+        console.error("Email sending failed:", emailError);
+        throw new Error(`Email sending failed: ${emailError.message}`);
+      }
     }
 
     return new Response(
@@ -150,45 +182,32 @@ const handler = async (req: Request): Promise<Response> => {
         },
       }
     );
-
   } catch (error: any) {
     console.error("Error in generate-pdf-and-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        success: false 
+      }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
       }
     );
   }
 };
 
-async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'invoice', supabase: any): Promise<string> {
-  const isQuote = type === 'quote';
-  const documentNumber = isQuote ? document.quote_number : document.invoice_number;
-  const documentTitle = isQuote ? 'QUOTE' : 'INVOICE';
+async function generatePDFHTML(documentData: any, items: any[], companySettings: any, products: any[], type: string): Promise<string> {
   
-  // Fetch company settings for branding
-  const { data: companySettings } = await supabase
-    .from('company_settings')
-    .select('company_name, company_logo, company_email, company_phone, company_address')
-    .single();
-
-  // Get product names for items that might have raw IDs
-  const productIds = items.map(item => item.product_id).filter(Boolean);
-  let products = [];
-  if (productIds.length > 0) {
-    const { data: productData } = await supabase
-      .from('products')
-      .select('id, name')
-      .in('id', productIds);
-    products = productData || [];
-  }
-
-  // Helper function to get product name
   const getProductName = (item: any) => {
-    // If we have a proper product name that's not a UUID, use it
-    if (item.product_name && item.product_name !== 'Product' && !item.product_name.includes('-') && item.product_name.length > 10) {
+    // If we have a proper product name that's not a UUID or generic text, use it
+    if (item.product_name && 
+        item.product_name !== 'Product' && 
+        !item.product_name.includes('-') && 
+        item.product_name.length > 10) {
       return item.product_name;
     }
     // Otherwise, look up the product name from our products array
@@ -211,6 +230,9 @@ async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'inv
     const style = statusStyles[status.toLowerCase()] || statusStyles['pending'];
     return `<span style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; ${style}">${status.replace('_', ' ')}</span>`;
   };
+
+  const documentTitle = type === 'quote' ? 'Quote' : 'Invoice';
+  const documentNumber = type === 'quote' ? documentData.quote_number : documentData.invoice_number;
   
   return `
 <!DOCTYPE html>
@@ -250,278 +272,204 @@ async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'inv
     .company-info {
       display: flex;
       align-items: center;
-      gap: 16px;
-    }
-    
-    .company-logo {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
+      gap: 20px;
     }
     
     .company-details h1 {
-      margin: 0;
-      font-size: 24px;
+      margin: 0 0 5px 0;
+      font-size: 28px;
       font-weight: 700;
-      color: #1f2937;
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .company-details p {
-      margin: 4px 0;
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .document-info {
+      text-align: right;
+    }
+    
+    .document-info h2 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .document-number {
+      display: inline-block;
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    
+    .document-details {
       font-size: 14px;
       color: #6b7280;
     }
     
-    .document-banner {
-      text-align: right;
-    }
-    
-    .document-title {
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      display: inline-block;
-    }
-    
-    .document-info {
-      display: flex;
-      justify-content: space-between;
-      gap: 40px;
-      margin-bottom: 40px;
-    }
-    
-    .info-card {
-      flex: 1;
-      background: #f9fafb;
+    .customer-section {
+      margin: 40px 0;
       padding: 24px;
+      background: #f9fafb;
       border-radius: 12px;
       border-left: 4px solid hsl(214, 83%, 56%);
     }
     
-    .info-card h3 {
+    .customer-section h3 {
       margin: 0 0 16px 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: #1f2937;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .customer-name {
       font-size: 18px;
       font-weight: 600;
       color: #1f2937;
-      margin-bottom: 8px;
     }
     
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 6px 0;
-      font-size: 14px;
-      color: #4b5563;
+    .customer-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
     
-    .contact-icon {
-      width: 16px;
-      height: 16px;
-      opacity: 0.7;
+    .customer-info p {
+      margin: 4px 0;
+      color: #374151;
     }
     
-    .info-bar {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 16px 0;
-      margin-bottom: 32px;
+    .customer-info strong {
+      color: #1f2937;
     }
     
-    .info-bar-content {
-      display: flex;
-      justify-content: space-around;
-      text-align: center;
+    .items-section {
+      margin: 40px 0;
     }
     
-    .info-item strong {
-      display: block;
-      font-size: 16px;
+    .items-section h3 {
+      margin: 0 0 20px 0;
+      font-size: 20px;
       font-weight: 600;
       color: #1f2937;
-      margin-bottom: 4px;
-    }
-    
-    .info-item span {
-      font-size: 14px;
-      color: #6b7280;
     }
     
     .items-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 32px;
-      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     }
     
-    .items-table thead th {
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    .items-table th {
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      color: white;
       padding: 16px 12px;
       text-align: left;
       font-weight: 600;
       font-size: 14px;
-      color: #374151;
-      border-bottom: 2px solid #e5e7eb;
     }
     
-    .items-table tbody td {
+    .items-table td {
       padding: 16px 12px;
-      border-bottom: 1px solid #f3f4f6;
-      vertical-align: top;
+      border-bottom: 1px solid #e5e7eb;
+      color: #374151;
     }
     
     .items-table tbody tr:hover {
-      background: #fafbfc;
+      background-color: #f9fafb;
     }
     
-    .item-name {
-      font-weight: 600;
-      color: #1f2937;
-      font-size: 15px;
-      margin-bottom: 4px;
-    }
-    
-    .item-description {
-      font-size: 13px;
-      color: #6b7280;
-      line-height: 1.4;
-    }
-    
-    .text-right {
-      text-align: right;
-    }
-    
-    .text-center {
-      text-align: center;
-    }
-    
-    .totals-section {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 40px;
-    }
-    
-    .totals-card {
-      min-width: 350px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 20px;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 14px;
-    }
-    
-    .totals-row:last-child {
+    .items-table tbody tr:last-child td {
       border-bottom: none;
     }
     
-    .total-final {
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
-      color: white;
-      font-weight: 700;
-      font-size: 18px;
-      padding: 16px 20px;
+    .totals-section {
+      margin: 40px 0;
+      padding: 24px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
     }
     
-    .terms-section, .notes-section {
-      margin-top: 40px;
-      padding: 24px;
-      border-radius: 12px;
+    .totals-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      max-width: 400px;
+      margin-left: auto;
+    }
+    
+    .totals-grid .label {
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .totals-grid .value {
+      text-align: right;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .total-amount {
+      font-size: 18px;
+      padding-top: 12px;
+      border-top: 2px solid #d1d5db;
+      margin-top: 12px;
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .footer-section {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
     }
     
     .terms-section {
-      background: #f8fafc;
-      border-left: 4px solid #3b82f6;
-    }
-    
-    .notes-section {
+      margin: 40px 0;
+      padding: 20px;
       background: #fffbeb;
+      border-radius: 8px;
       border-left: 4px solid #f59e0b;
     }
     
-    .section-title {
+    .terms-section h4 {
       margin: 0 0 12px 0;
-      font-size: 16px;
+      color: #92400e;
       font-weight: 600;
-      color: #1f2937;
     }
     
-    .section-content {
+    .terms-section p {
+      margin: 0;
+      color: #78350f;
       font-size: 14px;
-      color: #4b5563;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-    
-    .signature-section {
-      margin-top: 60px;
-      padding-top: 24px;
-      border-top: 2px solid #e5e7eb;
-    }
-    
-    .signature-block {
-      display: flex;
-      justify-content: space-between;
-      gap: 40px;
-    }
-    
-    .signature-item {
-      flex: 1;
-      text-align: center;
-    }
-    
-    .signature-line {
-      border-bottom: 2px solid #d1d5db;
-      margin-bottom: 8px;
-      height: 40px;
-    }
-    
-    .signature-label {
-      font-size: 14px;
-      color: #6b7280;
-      font-weight: 500;
-    }
-    
-    .footer {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid #e5e7eb;
-      text-align: center;
-      font-size: 12px;
-      color: #6b7280;
-    }
-    
-    .footer-brand {
-      font-weight: 600;
-      color: #1f2937;
-      margin-bottom: 8px;
     }
     
     @media print {
-      .document-container { padding: 20px; }
-      .signature-section { page-break-inside: avoid; }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .document-container {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -533,168 +481,118 @@ async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'inv
         <div class="company-details">
           <h1>${companySettings?.company_name || 'PortaPro'}</h1>
           <p>Portable Toilet Rental Services</p>
-          ${companySettings?.company_email ? `<p>📧 ${companySettings.company_email}</p>` : ''}
-          ${companySettings?.company_phone ? `<p>📞 ${companySettings.company_phone}</p>` : ''}
+          ${companySettings?.company_phone ? `<p>Phone: ${companySettings.company_phone}</p>` : ''}
+          ${companySettings?.company_email ? `<p>Email: ${companySettings.company_email}</p>` : ''}
         </div>
       </div>
-      <div class="document-banner">
-        <div class="document-title">${documentTitle} ${documentNumber}</div>
-        ${getStatusBadge(document.status)}
+      
+      <div class="document-info">
+        <h2>${documentTitle}</h2>
+        <div class="document-number">${documentNumber}</div>
+        <div class="status-badge">${getStatusBadge(documentData.status)}</div>
+        <div class="document-details">
+          <p><strong>Date:</strong> ${new Date(documentData.created_at).toLocaleDateString()}</p>
+          ${type === 'quote' && documentData.expiration_date ? `<p><strong>Expires:</strong> ${new Date(documentData.expiration_date).toLocaleDateString()}</p>` : ''}
+          ${type === 'invoice' && documentData.due_date ? `<p><strong>Due:</strong> ${new Date(documentData.due_date).toLocaleDateString()}</p>` : ''}
+        </div>
       </div>
     </div>
 
-    <!-- Document Info Bar -->
-    <div class="info-bar">
-      <div class="info-bar-content">
-        <div class="info-item">
-          <strong>${documentNumber}</strong>
-          <span>${documentTitle} Number</span>
+    <!-- Customer Section -->
+    <div class="customer-section">
+      <h3>Bill To</h3>
+      <div class="customer-details">
+        <div class="customer-info">
+          <p><strong>Customer:</strong> ${documentData.customers?.name || 'N/A'}</p>
+          ${documentData.customers?.email ? `<p><strong>Email:</strong> ${documentData.customers.email}</p>` : ''}
+          ${documentData.customers?.phone ? `<p><strong>Phone:</strong> ${documentData.customers.phone}</p>` : ''}
         </div>
-        <div class="info-item">
-          <strong>${new Date(document.created_at).toLocaleDateString()}</strong>
-          <span>Date Issued</span>
+        <div class="customer-info">
+          ${documentData.customers?.service_street ? `
+            <p><strong>Service Address:</strong></p>
+            <p>${documentData.customers.service_street}</p>
+            <p>${documentData.customers.service_city}, ${documentData.customers.service_state} ${documentData.customers.service_zip}</p>
+          ` : ''}
         </div>
-        ${isQuote && document.expiration_date ? `
-          <div class="info-item">
-            <strong>${new Date(document.expiration_date).toLocaleDateString()}</strong>
-            <span>Expires</span>
-          </div>
-        ` : ''}
-        ${!isQuote ? `
-          <div class="info-item">
-            <strong>${new Date(document.due_date).toLocaleDateString()}</strong>
-            <span>Due Date</span>
-          </div>
-        ` : ''}
       </div>
     </div>
 
-    <!-- Customer and Document Info -->
-    <div class="document-info">
-      <div class="info-card">
-        <h3>📋 Bill To</h3>
-        <div class="customer-name">${document.customers?.name || 'N/A'}</div>
-        ${document.customers?.service_street ? `
-          <div class="contact-item">
-            <span>📍</span>
-            <span>
-              ${document.customers.service_street}<br>
-              ${document.customers?.service_city || ''}, ${document.customers?.service_state || ''} ${document.customers?.service_zip || ''}
-            </span>
-          </div>
-        ` : ''}
-        ${document.customers?.email ? `
-          <div class="contact-item">
-            <span>✉️</span>
-            <span>${document.customers.email}</span>
-          </div>
-        ` : ''}
-        ${document.customers?.phone ? `
-          <div class="contact-item">
-            <span>☎️</span>
-            <span>${document.customers.phone}</span>
-          </div>
-        ` : ''}
-      </div>
-    </div>
-
-    <!-- Items Table -->
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th style="width: 45%;">Item & Description</th>
-          <th style="width: 15%;" class="text-center">Quantity</th>
-          <th style="width: 20%;" class="text-right">Unit Price</th>
-          <th style="width: 20%;" class="text-right">Line Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${items.map(item => `
+    <!-- Items Section -->
+    <div class="items-section">
+      <h3>${type === 'quote' ? 'Quote' : 'Invoice'} Items</h3>
+      <table class="items-table">
+        <thead>
           <tr>
-            <td>
-              <div class="item-name">${getProductName(item)}</div>
-              ${item.variation_name ? `<div class="item-description">Variation: ${item.variation_name}</div>` : ''}
-              ${item.description ? `<div class="item-description">${item.description}</div>` : ''}
-              ${item.rental_duration_days ? `<div class="item-description">Rental Duration: ${item.rental_duration_days} days</div>` : ''}
-            </td>
-            <td class="text-center" style="font-weight: 600;">${item.quantity}</td>
-            <td class="text-right" style="font-weight: 500;">$${Number(item.unit_price || 0).toFixed(2)}</td>
-            <td class="text-right" style="font-weight: 600; color: hsl(214, 83%, 56%);">$${Number(item.line_total || 0).toFixed(2)}</td>
+            <th>Item Description</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            ${type === 'quote' ? '<th>Rental Days</th>' : ''}
+            <th>Line Total</th>
           </tr>
-        `).join('')}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${items.map(item => `
+            <tr>
+              <td>
+                <strong>${getProductName(item)}</strong>
+                ${item.description ? `<br><small style="color: #6b7280;">${item.description}</small>` : ''}
+              </td>
+              <td>${item.quantity || 0}</td>
+              <td>$${Number(item.unit_price || 0).toFixed(2)}</td>
+              ${type === 'quote' ? `<td>${item.rental_duration_days || 1} days</td>` : ''}
+              <td><strong>$${Number(item.line_total || 0).toFixed(2)}</strong></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
 
     <!-- Totals Section -->
     <div class="totals-section">
-      <div class="totals-card">
-        <div class="totals-row">
-          <span>Subtotal:</span>
-          <span style="font-weight: 600;">$${Number(document.subtotal || 0).toFixed(2)}</span>
-        </div>
-        ${document.discount_value && Number(document.discount_value) > 0 ? `
-          <div class="totals-row">
-            <span>Discount ${document.discount_type === 'percentage' ? '(%)' : ''}:</span>
-            <span style="color: #dc2626; font-weight: 600;">-$${Number(document.discount_value).toFixed(2)}</span>
-          </div>
+      <div class="totals-grid">
+        <span class="label">Subtotal:</span>
+        <span class="value">$${Number(documentData.subtotal || 0).toFixed(2)}</span>
+        
+        ${documentData.discount_value && Number(documentData.discount_value) > 0 ? `
+          <span class="label">Discount:</span>
+          <span class="value">-$${Number(documentData.discount_value || 0).toFixed(2)}</span>
         ` : ''}
-        ${document.additional_fees && Number(document.additional_fees) > 0 ? `
-          <div class="totals-row">
-            <span>Additional Fees:</span>
-            <span style="font-weight: 600;">$${Number(document.additional_fees).toFixed(2)}</span>
-          </div>
+        
+        ${documentData.additional_fees && Number(documentData.additional_fees) > 0 ? `
+          <span class="label">Additional Fees:</span>
+          <span class="value">$${Number(documentData.additional_fees || 0).toFixed(2)}</span>
         ` : ''}
-        ${document.tax_amount && Number(document.tax_amount) > 0 ? `
-          <div class="totals-row">
-            <span>Tax:</span>
-            <span style="font-weight: 600;">$${Number(document.tax_amount).toFixed(2)}</span>
-          </div>
-        ` : ''}
-        <div class="total-final">
-          <span>TOTAL:</span>
-          <span>$${Number(isQuote ? document.total_amount : document.amount).toFixed(2)}</span>
-        </div>
+        
+        <span class="label">Tax:</span>
+        <span class="value">$${Number(documentData.tax_amount || 0).toFixed(2)}</span>
+        
+        <span class="label total-amount">Total Amount:</span>
+        <span class="value total-amount">$${Number(documentData.total_amount || 0).toFixed(2)}</span>
       </div>
     </div>
 
-    ${document.terms ? `
+    ${documentData.terms ? `
       <div class="terms-section">
-        <h3 class="section-title">📋 Terms & Conditions</h3>
-        <div class="section-content">${document.terms}</div>
+        <h4>Terms & Conditions</h4>
+        <p>${documentData.terms}</p>
       </div>
     ` : ''}
 
-    ${document.notes ? `
-      <div class="notes-section">
-        <h3 class="section-title">📝 Notes</h3>
-        <div class="section-content">${document.notes}</div>
+    ${documentData.notes ? `
+      <div style="margin: 30px 0; padding: 20px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+        <h4 style="margin: 0 0 10px 0; color: #0c4a6e;">Notes</h4>
+        <p style="margin: 0; color: #164e63;">${documentData.notes}</p>
       </div>
     ` : ''}
 
-    ${isQuote ? `
-      <div class="signature-section">
-        <div class="signature-block">
-          <div class="signature-item">
-            <div class="signature-line"></div>
-            <div class="signature-label">Customer Signature</div>
-          </div>
-          <div class="signature-item">
-            <div class="signature-line"></div>
-            <div class="signature-label">Date</div>
-          </div>
-        </div>
-      </div>
-    ` : ''}
-
-    <div class="footer">
-      <div class="footer-brand">${companySettings?.company_name || 'PortaPro'} - Professional Portable Toilet Rental Services</div>
-      <div>Thank you for choosing us for your sanitation needs!</div>
-      ${companySettings?.company_address ? `<div style="margin-top: 8px;">${companySettings.company_address}</div>` : ''}
+    <!-- Footer -->
+    <div class="footer-section">
+      <p>Thank you for choosing ${companySettings?.company_name || 'PortaPro'}!</p>
+      <p>This document was generated on ${new Date().toLocaleDateString()}</p>
     </div>
   </div>
 </body>
-</html>
-  `;
+</html>`;
 }
 
 serve(handler);
