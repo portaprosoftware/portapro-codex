@@ -3129,6 +3129,7 @@ export type Database = {
           due_date: string
           id: string
           invoice_number: string | null
+          job_id: string | null
           notes: string | null
           quote_id: string | null
           status: string
@@ -3147,6 +3148,7 @@ export type Database = {
           due_date: string
           id?: string
           invoice_number?: string | null
+          job_id?: string | null
           notes?: string | null
           quote_id?: string | null
           status?: string
@@ -3165,6 +3167,7 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string | null
+          job_id?: string | null
           notes?: string | null
           quote_id?: string | null
           status?: string
@@ -3179,6 +3182,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
         ]

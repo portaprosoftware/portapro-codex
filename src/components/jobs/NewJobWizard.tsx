@@ -10,6 +10,8 @@ import { JobTypeSchedulingStep } from './steps/JobTypeSchedulingStep';
 import { LocationSelectionStep } from './steps/LocationSelectionStep';
 import { useCreateJob } from '@/hooks/useJobs';
 import { useCreateQuote } from '@/hooks/useCreateQuote';
+import { useCreateInvoiceFromJob } from '@/hooks/useCreateInvoiceFromJob';
+import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 import { toast } from 'sonner';
 import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ProductsServicesStep } from './steps/ProductsServicesStep';
@@ -39,7 +41,10 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   const isSaving = wizardMode === 'quote' ? isSavingQuote : isSavingJob;
   const createJobMutation = useCreateJob();
   const createQuoteMutation = useCreateQuote();
+  const createInvoiceFromJobMutation = useCreateInvoiceFromJob();
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
+  const [createdJobId, setCreatedJobId] = useState<string | null>(null);
   const handleSaveAndExit = async (draftName: string) => {
     try {
       const draftType = wizardMode === 'quote' ? 'quote' : 'job';
@@ -199,6 +204,10 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       const totalJobsCreated = 1 + (pickupJob ? 1 : 0) + partialPickupJobs.length;
       const jobsCreated = totalJobsCreated > 1 ? `${totalJobsCreated} jobs created successfully!` : 'Job created successfully!';
       toast.success(jobsCreated);
+      
+      // Store the main job ID for invoice creation
+      setCreatedJobId(job.id);
+      
       reset();
       onClose();
     } catch (error) {
@@ -247,6 +256,14 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
 
   const handleSaveDraft = () => {
     handleCreateQuote({ method: 'save_draft', sendImmediately: false });
+  };
+
+  const handleCreateInvoice = () => {
+    if (createdJobId) {
+      setShowInvoiceWizard(true);
+    } else {
+      toast.error('No job found to create invoice from');
+    }
   };
 
   const handleCreateJobAndQuote = async () => {
@@ -417,6 +434,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
               onCreateJob={handleCreateJob} 
               onCreateQuote={handleCreateQuote}
               onCreateJobAndQuote={handleCreateJobAndQuote}
+              onCreateInvoice={handleCreateInvoice}
               creating={createJobMutation.isPending}
               creatingQuote={createQuoteMutation.isPending}
               creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
@@ -431,6 +449,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
             <QuotePreviewStep
               onSendQuote={handleCreateQuote}
               onSaveDraft={handleSaveDraft}
+              onCreateInvoice={handleCreateInvoice}
               sending={createQuoteMutation.isPending}
             />
           );
@@ -440,6 +459,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
             onCreateJob={handleCreateJob} 
             onCreateQuote={handleCreateQuote}
             onCreateJobAndQuote={handleCreateJobAndQuote}
+            onCreateInvoice={handleCreateInvoice}
             creating={createJobMutation.isPending}
             creatingQuote={createQuoteMutation.isPending}
             creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
@@ -564,6 +584,15 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
           onSaveAndExit={handleSaveAndExit}
           onDeleteAndExit={handleDeleteAndExit}
           isSaving={isSaving}
+        />
+      )}
+
+      {/* Invoice Creation Wizard */}
+      {showInvoiceWizard && createdJobId && (
+        <InvoiceCreationWizard
+          isOpen={showInvoiceWizard}
+          onClose={() => setShowInvoiceWizard(false)}
+          fromJobId={createdJobId}
         />
       )}
     </div>

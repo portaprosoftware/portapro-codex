@@ -25,9 +25,16 @@ export function useCreateInvoiceFromJob() {
 
       if (jobError) throw jobError;
 
-      // Check if an invoice already exists (skip for now until DB migration)
-      // TODO: Add job_id field to invoices table via migration
+      // Check if an invoice already exists
+      const { data: existingInvoice } = await supabase
+        .from('invoices')
+        .select('id')
+        .eq('job_id', jobId)
+        .maybeSingle();
 
+      if (existingInvoice) {
+        throw new Error('An invoice already exists for this job');
+      }
 
       // Get job items
       const { data: jobItems, error: itemsError } = await supabase
@@ -59,6 +66,7 @@ export function useCreateInvoiceFromJob() {
         .from('invoices')
         .insert({
           customer_id: job.customer_id,
+          job_id: jobId,
           invoice_number: invoiceNumber,
           amount: totalAmount,
           subtotal: subtotal,

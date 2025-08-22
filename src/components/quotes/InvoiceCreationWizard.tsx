@@ -20,6 +20,7 @@ interface InvoiceCreationWizardProps {
   isOpen: boolean;
   onClose: () => void;
   fromQuoteId?: string;
+  fromJobId?: string;
 }
 
 interface InvoiceItem {
@@ -39,7 +40,7 @@ type Customer = { id: string };
 type Product = { id: string; name: string; default_price_per_day: number };
 type Service = { id: string; name: string; per_visit_cost: number | null; per_hour_cost: number | null; flat_rate_cost: number | null };
 
-export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceCreationWizardProps) {
+export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId }: InvoiceCreationWizardProps) {
   const [invoiceData, setInvoiceData] = useState({
     customer_id: '',
     invoice_number: '',
@@ -138,6 +139,37 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
     enabled: !!fromQuoteId
   });
 
+  // Fetch job if fromJobId is provided
+  const { data: sourceJob } = useQuery({
+    queryKey: ['job', fromJobId],
+    queryFn: async () => {
+      if (!fromJobId) return null;
+      
+      try {
+        const jobResponse = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('id', fromJobId)
+          .single();
+        
+        if (jobResponse.error) throw jobResponse.error;
+
+        const itemsResponse = await supabase
+          .from('job_items')
+          .select('*')
+          .eq('job_id', fromJobId);
+
+        if (itemsResponse.error) throw itemsResponse.error;
+
+        return { job: jobResponse.data, items: itemsResponse.data };
+      } catch (error) {
+        console.error('Error fetching job:', error);
+        return null;
+      }
+    },
+    enabled: !!fromJobId
+  });
+
   useEffect(() => {
     if (companySettings && !invoiceData.invoice_number) {
       const nextNumber = companySettings.next_invoice_number || 1;
@@ -178,6 +210,32 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
     }
   }, [sourceQuote]);
 
+  // Handle job data prefilling
+  useEffect(() => {
+    if (sourceJob) {
+      setInvoiceData(prev => ({
+        ...prev,
+        customer_id: sourceJob.job.customer_id,
+        notes: `Invoice for Job: ${sourceJob.job.job_number || fromJobId}`
+      }));
+
+      // Convert job items to invoice format
+      const items = sourceJob.items.map((item: any) => ({
+        id: Date.now().toString() + Math.random(),
+        type: item.line_item_type as 'inventory' | 'service',
+        product_id: item.product_id || undefined,
+        service_id: item.service_id || undefined,
+        product_name: item.line_item_type === 'inventory' ? 'Product' : 'Service',
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        line_total: item.total_price,
+        service_frequency: item.service_frequency || undefined,
+        notes: undefined
+      }));
+      setInvoiceItems(items);
+    }
+  }, [sourceJob]);
+
   const createInvoiceMutation = useMutation({
     mutationFn: async () => {
       const subtotal = invoiceItems.reduce((sum, item) => sum + item.line_total, 0);
@@ -194,6 +252,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
           invoice_number: invoiceData.invoice_number,
           due_date: invoiceData.due_date.toISOString().split('T')[0],
           quote_id: invoiceData.quote_id || null,
+          job_id: fromJobId || null,
           notes: invoiceData.notes,
           terms: invoiceData.terms,
           discount_type: invoiceData.discount_type,
@@ -335,6 +394,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
             <Receipt className="h-5 w-5" />
             Create New Invoice
             {fromQuoteId && <Badge variant="secondary">From Quote</Badge>}
+            {fromJobId && <Badge variant="secondary">From Job</Badge>}
           </DialogTitle>
         </DialogHeader>
 
@@ -427,7 +487,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
             </CardContent>
           </Card>
 
-          {!fromQuoteId && (
+          {!fromQuoteId && !fromJobId && (
             <Card>
               <CardHeader>
                 <CardTitle>Add Items & Services</CardTitle>
@@ -533,7 +593,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
                       <TableHead>Qty</TableHead>
                       <TableHead>Unit Price</TableHead>
                       <TableHead>Total</TableHead>
-                      {!fromQuoteId && <TableHead>Actions</TableHead>}
+                      {!fromQuoteId && !fromJobId && <TableHead>Actions</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -548,7 +608,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId }: InvoiceC
                         <TableCell>{item.quantity}</TableCell>
                         <TableCell>{formatCurrency(item.unit_price)}</TableCell>
                         <TableCell>{formatCurrency(item.line_total)}</TableCell>
-                        {!fromQuoteId && (
+                        {!fromQuoteId && !fromJobId && (
                           <TableCell>
                             <Button
                               variant="ghost"
