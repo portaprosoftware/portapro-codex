@@ -1136,14 +1136,22 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
               return (
                 <div
                   key={service.id}
-                  className={`p-4 border rounded-lg transition-all cursor-pointer hover:shadow-md ${
-                    isSelected ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                  className={`p-4 border rounded-lg transition-all ${
+                    isSelected ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border'
                   }`}
-                  onClick={() => toggleService(service.id, !isSelected)}
                 >
                   <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
+                          {/* Checkmark indicator when selected */}
+                          {isSelected && (
+                            <div className="absolute -mt-2 -ml-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                          
                           <div className="font-medium">{service.name}</div>
                           {service.description && (
                             <div className="text-sm text-muted-foreground mt-1">
@@ -1172,6 +1180,16 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                             )}
                           </div>
                         </div>
+                        
+                        {/* Add Service Button */}
+                        {!isSelected && (
+                          <Button 
+                            onClick={() => toggleService(service.id, true)}
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold"
+                          >
+                            Add Service
+                          </Button>
+                        )}
                       </div>
                       
                        {/* Custom Pricing Override - Only show when service is selected */}
