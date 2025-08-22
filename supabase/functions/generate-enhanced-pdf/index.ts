@@ -324,120 +324,362 @@ function generatePDFHTML(data: any): string {
   <meta charset="UTF-8">
   <title>${data.title}</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
     @page { margin: 1cm; size: A4; }
-    body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; font-size: 11px; line-height: 1.4; }
-    .header { border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px; }
-    .title { font-size: 20px; font-weight: bold; margin-bottom: 8px; color: #1f2937; }
-    .metadata { display: flex; justify-content: space-between; margin-bottom: 10px; color: #6b7280; font-size: 10px; }
-    .filter-summary { background: #f9fafb; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
-    .filter-summary h3 { margin: 0 0 8px 0; font-size: 12px; color: #374151; }
-    .filter-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .filter-tag { background: #e5e7eb; padding: 3px 6px; border-radius: 3px; font-size: 9px; }
-    .analytics { display: flex; gap: 15px; margin-bottom: 15px; }
-    .analytics-item { flex: 1; }
-    .analytics-item h4 { margin: 0 0 6px 0; font-size: 11px; color: #6b7280; }
-    .sparkline { margin: 8px 0; }
-    .map-section { margin: 15px 0; }
-    .map-section img { max-width: 100%; border-radius: 6px; border: 1px solid #e5e7eb; }
-    .jobs-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 10px; }
-    .jobs-table th, .jobs-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .jobs-table th { background: #f9fafb; font-weight: 600; font-size: 9px; }
-    .status-badge { padding: 2px 5px; border-radius: 3px; font-size: 8px; font-weight: 500; }
-    .status-completed { background: #dcfce7; color: #166534; }
-    .status-in_progress { background: #fef3c7; color: #92400e; }
-    .status-assigned { background: #dbeafe; color: #1e40af; }
-    .status-overdue { background: #fecaca; color: #991b1b; }
-    .status-unassigned { background: #f3f4f6; color: #374151; }
-    .footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; font-size: 9px; color: #6b7280; }
-    .page-break { page-break-before: always; }
-    .more-jobs { background: #f0f9ff; padding: 12px; border-radius: 6px; text-align: center; margin: 15px 0; }
-    .deep-link { color: #2563eb; text-decoration: none; font-size: 9px; }
-    .location-count { font-size: 9px; color: #6b7280; margin-top: 4px; }
-    .compact-row td { padding: 4px; }
+    
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      font-size: 11px; 
+      line-height: 1.5; 
+      color: #1f2937;
+      background: #ffffff;
+    }
+    
+    .document-container {
+      max-width: 100%;
+      padding: 20px;
+    }
+    
+    .header {
+      border-bottom: 3px solid;
+      border-image: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%)) 1;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .header-left .title { 
+      font-size: 24px; 
+      font-weight: 700; 
+      margin-bottom: 8px; 
+      color: #1f2937;
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header-right {
+      text-align: right;
+      font-size: 10px;
+      color: #6b7280;
+    }
+    
+    .metadata { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 8px; 
+      color: #6b7280; 
+      font-size: 10px; 
+    }
+    
+    .company-brand {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    
+    .filter-summary { 
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9); 
+      padding: 16px; 
+      border-radius: 12px; 
+      margin-bottom: 20px;
+      border-left: 4px solid hsl(214, 83%, 56%);
+    }
+    
+    .filter-summary h3 { 
+      margin: 0 0 12px 0; 
+      font-size: 14px; 
+      color: #1f2937; 
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .filter-tags { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+    }
+    
+    .filter-tag { 
+      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
+      color: white;
+      padding: 4px 12px; 
+      border-radius: 20px; 
+      font-size: 10px;
+      font-weight: 500;
+    }
+    
+    .analytics { 
+      display: flex; 
+      gap: 20px; 
+      margin-bottom: 20px; 
+    }
+    
+    .analytics-item { 
+      flex: 1;
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .analytics-item h4 { 
+      margin: 0 0 8px 0; 
+      font-size: 13px; 
+      color: #1f2937;
+      font-weight: 600;
+    }
+    
+    .sparkline { 
+      margin: 10px 0; 
+    }
+    
+    .map-section { 
+      margin: 12px 0; 
+    }
+    
+    .map-section img { 
+      max-width: 100%; 
+      border-radius: 8px; 
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .jobs-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin: 20px 0; 
+      font-size: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .jobs-table th, .jobs-table td { 
+      padding: 8px 6px; 
+      text-align: left; 
+      border-bottom: 1px solid #f3f4f6; 
+    }
+    
+    .jobs-table th { 
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      font-weight: 600; 
+      font-size: 10px;
+      color: #374151;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .jobs-table tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+    
+    .status-badge { 
+      padding: 3px 8px; 
+      border-radius: 12px; 
+      font-size: 8px; 
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-completed { 
+      background: #dcfce7; 
+      color: #166534; 
+      border: 1px solid #22c55e;
+    }
+    
+    .status-in_progress { 
+      background: #fef3c7; 
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+    
+    .status-assigned { 
+      background: #dbeafe; 
+      color: #1e40af;
+      border: 1px solid #3b82f6;
+    }
+    
+    .status-overdue { 
+      background: #fecaca; 
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+    
+    .status-unassigned { 
+      background: #f3f4f6; 
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    
+    .footer { 
+      margin-top: 30px; 
+      padding-top: 20px; 
+      border-top: 2px solid #e5e7eb; 
+      font-size: 10px; 
+      color: #6b7280;
+      text-align: center;
+    }
+    
+    .footer-brand {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    
+    .more-jobs { 
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe); 
+      padding: 16px; 
+      border-radius: 12px; 
+      text-align: center; 
+      margin: 20px 0;
+      border-left: 4px solid hsl(195, 84%, 65%);
+    }
+    
+    .deep-link { 
+      color: hsl(214, 83%, 56%); 
+      text-decoration: none; 
+      font-size: 10px;
+      font-weight: 500;
+    }
+    
+    .location-count { 
+      font-size: 9px; 
+      color: #6b7280; 
+      margin-top: 6px; 
+    }
+    
+    .compact-row td { 
+      padding: 6px; 
+      vertical-align: middle;
+    }
+    
+    .stats-grid {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 9px;
+      color: #6b7280;
+    }
+    
+    .stat-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-weight: 600;
+      color: #1f2937;
+      display: block;
+      margin-bottom: 2px;
+    }
+    
+    @media print {
+      .document-container { padding: 15px; }
+      .page-break { page-break-before: always; }
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="title">${data.title}</div>
-    <div class="metadata">
-      <span>Generated: ${data.timestamp}</span>
-      <span>Run by: ${data.runBy}</span>
-    </div>
-    <div class="metadata">
-      <span>${data.resultsSummary}</span>
-      <span>Page 1 of 1</span>
-    </div>
-  </div>
-
-  <div class="filter-summary">
-    <h3>Applied Filters</h3>
-    <div class="filter-tags">
-      ${data.filterSummary.map((filter: string) => `<span class="filter-tag">${filter}</span>`).join('')}
-    </div>
-  </div>
-
-  <div class="analytics">
-    <div class="analytics-item">
-      <h4>Status Distribution</h4>
-      <div class="sparkline">${data.sparklineSvg}</div>
-      <div style="font-size: 9px; color: #6b7280; margin-top: 4px;">
-        ${Object.entries(data.statusDistribution).map(([status, count]) => 
-          `${status.replace('_', ' ')}: ${count}`
-        ).join(' • ')}
+  <div class="document-container">
+    <div class="header">
+      <div class="header-left">
+        <div class="title">📊 ${data.title}</div>
+        <div class="company-brand">PortaPro Advanced Analytics</div>
+      </div>
+      <div class="header-right">
+        <div><strong>Generated:</strong> ${data.timestamp}</div>
+        <div><strong>Run by:</strong> ${data.runBy}</div>
+        <div style="margin-top: 8px;"><strong>${data.resultsSummary}</strong></div>
       </div>
     </div>
-    ${data.mapImageUrl ? `
-    <div class="analytics-item">
-      <h4>Locations Map</h4>
-      <div class="map-section">
-        <img src="${data.mapImageUrl}" alt="Job locations map" style="max-height: 120px;" />
-        <div class="location-count">${data.locations.length} unique locations</div>
+
+    <div class="filter-summary">
+      <h3>🔍 Applied Filters</h3>
+      <div class="filter-tags">
+        ${data.filterSummary.map((filter: string) => `<span class="filter-tag">${filter}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="analytics">
+      <div class="analytics-item">
+        <h4>📈 Status Distribution</h4>
+        <div class="sparkline">${data.sparklineSvg}</div>
+        <div class="stats-grid">
+          ${Object.entries(data.statusDistribution).map(([status, count]) => 
+            `<div class="stat-item">
+              <span class="stat-value">${count}</span>
+              <span>${status.replace('_', ' ')}</span>
+            </div>`
+          ).join('')}
+        </div>
+      </div>
+      ${data.mapImageUrl ? `
+      <div class="analytics-item">
+        <h4>🗺️ Locations Overview</h4>
+        <div class="map-section">
+          <img src="${data.mapImageUrl}" alt="Job locations map" style="max-height: 140px;" />
+          <div class="location-count">${data.locations.length} unique service locations</div>
+        </div>
+      </div>
+      ` : ''}
+    </div>
+
+    <table class="jobs-table">
+      <thead>
+        <tr>
+          <th style="width: 15%;">Job Number</th>
+          <th style="width: 12%;">Scheduled Date</th>
+          <th style="width: 15%;">Job Type</th>
+          <th style="width: 12%;">Status</th>
+          <th style="width: 25%;">Customer</th>
+          <th style="width: 21%;">Assigned Driver</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.jobs.map((job: Job) => `
+          <tr class="compact-row">
+            <td style="font-weight: 600; color: hsl(214, 83%, 56%);">${job.job_number}</td>
+            <td>${new Date(job.scheduled_date).toLocaleDateString()}</td>
+            <td style="text-transform: capitalize;">${job.job_type.replace('-', ' ')}</td>
+            <td><span class="status-badge status-${job.status}">${job.status.replace('_', ' ')}</span></td>
+            <td style="font-weight: 500;">${job.customers?.name || 'N/A'}</td>
+            <td>${job.profiles ? `${job.profiles.first_name || ''} ${job.profiles.last_name || ''}`.trim() : 'Unassigned'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+
+    ${data.hasMoreJobs ? `
+    <div class="more-jobs">
+      <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">
+        📋 Additional Results Available
+      </div>
+      <div><strong>+${data.remainingCount} additional jobs</strong> match your current filters</div>
+      <div style="font-size: 9px; margin-top: 8px; color: #6b7280;">
+        This report shows the first 20 results. Use the link below to view all matching jobs in the application.
       </div>
     </div>
     ` : ''}
-  </div>
 
-  <table class="jobs-table">
-    <thead>
-      <tr>
-        <th>Job #</th>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Status</th>
-        <th>Customer</th>
-        <th>Driver</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${data.jobs.map((job: Job) => `
-        <tr class="compact-row">
-          <td style="font-weight: 600;">${job.job_number}</td>
-          <td>${new Date(job.scheduled_date).toLocaleDateString()}</td>
-          <td>${job.job_type.replace('-', ' ')}</td>
-          <td><span class="status-badge status-${job.status}">${job.status.replace('_', ' ')}</span></td>
-          <td>${job.customers?.name || 'N/A'}</td>
-          <td>${job.profiles ? `${job.profiles.first_name || ''} ${job.profiles.last_name || ''}`.trim() : 'Unassigned'}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-
-  ${data.hasMoreJobs ? `
-  <div class="more-jobs">
-    <strong>+${data.remainingCount} additional jobs match your filters</strong><br>
-    <small style="font-size: 9px;">Showing first 20 jobs. Use the app link below to view all results.</small>
-  </div>
-  ` : ''}
-
-  <div class="footer">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span>Report generated on ${data.timestamp}</span>
-      <span>
-        <a href="${data.shareUrl}" class="deep-link">🔗 View complete results in PortaPro</a>
-      </span>
-    </div>
-    <div style="margin-top: 8px; text-align: center;">
-      PortaPro Advanced Search • Enhanced PDF Report
+    <div class="footer">
+      <div class="footer-brand">PortaPro Professional Services Management</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+        <span>Report generated on ${data.timestamp}</span>
+        <a href="${data.shareUrl}" class="deep-link">🔗 View complete results in PortaPro Dashboard</a>
+      </div>
+      <div style="margin-top: 8px; font-size: 9px;">
+        Advanced Search & Analytics • Professional PDF Export
+      </div>
     </div>
   </div>
 </body>
