@@ -1141,13 +1141,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   }`}
                   onClick={() => toggleService(service.id, !isSelected)}
                 >
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={() => {}} // Prevent default checkbox behavior
-                      className="pointer-events-none"
-                    />
-                    <div className="flex-1 space-y-3">
+                  <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-medium">{service.name}</div>
@@ -1496,11 +1490,10 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                               </div>
                            </div>
                          </div>
-                       )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
+                  );
             })}
           </div>
         </CardContent>
