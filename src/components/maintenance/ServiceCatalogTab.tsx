@@ -56,21 +56,21 @@ export const ServiceCatalogTab: React.FC = () => {
     }
   });
 
-  const archiveServiceMutation = useMutation({
+  const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
       const { error } = await supabase
         .from('services')
-        .update({ is_active: false })
+        .delete()
         .eq('id', serviceId);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
-      toast.success('Service archived successfully');
+      toast.success('Service deleted successfully');
     },
     onError: () => {
-      toast.error('Failed to archive service');
+      toast.error('Failed to delete service');
     }
   });
 
@@ -292,7 +292,7 @@ export const ServiceCatalogTab: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => archiveServiceMutation.mutate(service.id)}
+                    onClick={() => deleteServiceMutation.mutate(service.id)}
                     className="text-red-600 hover:text-red-700"
                   >
                     <Archive className="w-3 h-3" />
@@ -373,11 +373,11 @@ export const ServiceCatalogTab: React.FC = () => {
                             Duplicate
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => archiveServiceMutation.mutate(service.id)}
+                            onClick={() => deleteServiceMutation.mutate(service.id)}
                             className="text-red-600"
                           >
                             <Archive className="w-4 h-4 mr-2" />
-                            Archive
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
