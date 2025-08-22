@@ -21,12 +21,15 @@ export const NewQuoteWizard: React.FC<NewQuoteWizardProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0">
+      <DialogContent 
+        className="max-w-6xl max-h-[90vh] overflow-hidden p-0" 
+        aria-describedby="quote-wizard-description"
+      >
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-2xl font-bold">
             {draftData ? 'Resume Quote Draft' : 'Create New Quote'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="quote-wizard-description">
             {draftData 
               ? `Continue working on "${draftData.name}"`
               : 'Build a comprehensive quote for your customer'
