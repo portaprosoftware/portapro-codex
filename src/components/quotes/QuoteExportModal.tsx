@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Download, Mail, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { generateDocumentHTML } from "@/utils/pdf/generateDocumentHtml";
 
 interface QuoteExportModalProps {
   isOpen: boolean;
@@ -84,7 +85,6 @@ PortaPro Team`);
             printWindow.document.write(data.html);
             printWindow.document.close();
             printWindow.focus();
-            // Trigger print dialog after a short delay to ensure content is loaded
             setTimeout(() => {
               printWindow.print();
             }, 500);
@@ -92,8 +92,56 @@ PortaPro Team`);
             throw new Error('Failed to open print window - popup blocked?');
           }
         } else {
-          console.error('No HTML content in response:', data);
-          throw new Error('PDF generation failed - no HTML content received');
+          console.warn('No HTML in edge response. Falling back to client-side generation.');
+
+          // Fetch the full quote and items needed to build the PDF locally
+          const { data: quoteData, error: quoteErr } = await supabase
+            .from('quotes')
+            .select(`
+              *,
+              customers:customer_id (
+                name,
+                email,
+                phone,
+                service_street,
+                service_city,
+                service_state,
+                service_zip
+              )
+            `)
+            .eq('id', quote.id)
+            .single();
+
+          if (quoteErr || !quoteData) {
+            console.error('Failed fetching quote for local PDF:', quoteErr);
+            throw new Error('Failed to fetch quote data for PDF');
+          }
+
+          const { data: itemsData, error: itemsErr } = await supabase
+            .from('quote_items')
+            .select(`
+              *,
+              products!inner(id, name)
+            `)
+            .eq('quote_id', quote.id);
+
+          if (itemsErr || !itemsData) {
+            console.error('Failed fetching quote items for local PDF:', itemsErr);
+            throw new Error('Failed to fetch quote items for PDF');
+          }
+
+          const html = generateDocumentHTML(quoteData as any, itemsData as any, 'quote');
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          } else {
+            throw new Error('Failed to open print window - popup blocked?');
+          }
         }
       }
 
