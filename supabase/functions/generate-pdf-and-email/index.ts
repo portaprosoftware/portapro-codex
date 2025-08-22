@@ -283,355 +283,545 @@ async function generatePDFHTML(documentData: any, items: any[], companySettings:
 <head>
   <meta charset="UTF-8">
   <title>${documentTitle} ${documentNumber}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     body { 
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
       margin: 0; 
       padding: 0; 
       background: #ffffff;
       color: #1f2937;
-      line-height: 1.5;
+      line-height: 1.6;
+      font-size: 14px;
     }
     
     .document-container {
       max-width: 800px;
       margin: 0 auto;
-      padding: 40px;
+      padding: 0;
       background: white;
+      min-height: 100vh;
     }
     
     .header-section {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(50px, -50px);
+    }
+    
+    .header-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      transform: translate(-50px, 50px);
+    }
+    
+    .header-content {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 3px solid;
-      border-image: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%)) 1;
+      position: relative;
+      z-index: 2;
     }
     
-    .company-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
+    .company-info h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
-    .company-details h1 {
-      margin: 0 0 5px 0;
-      font-size: 28px;
-      font-weight: 700;
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .company-tagline {
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-bottom: 16px;
     }
     
-    .company-details p {
-      margin: 0;
-      color: #6b7280;
+    .company-contact {
       font-size: 14px;
+      opacity: 0.8;
+      line-height: 1.5;
     }
     
     .document-info {
       text-align: right;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 24px;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
-    .document-info h2 {
-      margin: 0 0 10px 0;
+    .document-title {
       font-size: 24px;
-      font-weight: 600;
-      color: #1f2937;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .document-number {
-      display: inline-block;
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
-      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.2);
       padding: 8px 16px;
       border-radius: 8px;
-      font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
+      display: inline-block;
     }
     
     .status-badge {
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
     }
     
-    .document-details {
-      font-size: 14px;
-      color: #6b7280;
+    .document-meta {
+      font-size: 13px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .content-section {
+      padding: 40px;
     }
     
     .customer-section {
-      margin: 40px 0;
-      padding: 24px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border-left: 4px solid hsl(214, 83%, 56%);
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 40px;
+      position: relative;
     }
     
-    .customer-section h3 {
-      margin: 0 0 16px 0;
-      font-size: 18px;
-      font-weight: 600;
+    .customer-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+      border-radius: 2px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
       color: #1f2937;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
     }
     
-    .customer-details {
+    .section-title::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+    
+    .customer-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 32px;
+    }
+    
+    .customer-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .customer-info p {
-      margin: 4px 0;
-      color: #374151;
+      margin: 6px 0;
+      color: #6b7280;
+      font-weight: 500;
     }
     
-    .customer-info strong {
+    .customer-info .highlight {
       color: #1f2937;
+      font-weight: 600;
     }
     
     .items-section {
       margin: 40px 0;
     }
     
-    .items-section h3 {
-      margin: 0 0 20px 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: #1f2937;
-    }
-    
     .items-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
+      margin-bottom: 32px;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .items-table thead {
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
     }
     
     .items-table th {
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
       color: white;
-      padding: 16px 12px;
+      padding: 20px 16px;
       text-align: left;
       font-weight: 600;
       font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
-    .items-table td {
-      padding: 16px 12px;
+    .items-table tbody tr {
       border-bottom: 1px solid #e5e7eb;
-      color: #374151;
+      transition: background-color 0.2s ease;
     }
     
-    .items-table tbody tr:hover {
+    .items-table tbody tr:nth-child(even) {
       background-color: #f9fafb;
     }
     
-    .items-table tbody tr:last-child td {
-      border-bottom: none;
+    .items-table tbody tr:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .items-table td {
+      padding: 20px 16px;
+      color: #374151;
+      font-weight: 500;
+      vertical-align: top;
+    }
+    
+    .product-name {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 15px;
+    }
+    
+    .product-description {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    
+    .price-cell {
+      font-weight: 600;
+      color: #059669;
+      font-size: 15px;
     }
     
     .totals-section {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
       margin: 40px 0;
-      padding: 24px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
     }
     
     .totals-grid {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 12px;
+      gap: 16px;
       max-width: 400px;
       margin-left: auto;
     }
     
-    .totals-grid .label {
-      font-weight: 500;
-      color: #374151;
+    .totals-row {
+      display: contents;
     }
     
-    .totals-grid .value {
+    .totals-label {
+      font-weight: 500;
+      color: #374151;
+      padding: 8px 0;
+    }
+    
+    .totals-value {
       text-align: right;
       font-weight: 600;
       color: #1f2937;
+      padding: 8px 0;
     }
     
-    .total-amount {
+    .total-final {
+      border-top: 3px solid #3b82f6;
+      margin-top: 16px;
+      padding-top: 16px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .total-final .totals-label {
+      color: #1f2937;
       font-size: 18px;
-      padding-top: 12px;
-      border-top: 2px solid #d1d5db;
-      margin-top: 12px;
-      background: linear-gradient(135deg, hsl(214, 83%, 56%), hsl(195, 84%, 65%));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    }
+    
+    .total-final .totals-value {
+      color: #059669;
+      font-size: 24px;
+    }
+    
+    .terms-section, .notes-section {
+      background: #fffbeb;
+      border: 2px solid #fbbf24;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 32px 0;
+      position: relative;
+    }
+    
+    .terms-section::before, .notes-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #fbbf24;
+      border-radius: 2px;
+    }
+    
+    .terms-section h4, .notes-section h4 {
+      color: #92400e;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    
+    .terms-section p, .notes-section p {
+      color: #78350f;
+      line-height: 1.7;
+      font-weight: 500;
     }
     
     .footer-section {
-      margin-top: 60px;
-      padding-top: 30px;
-      border-top: 1px solid #e5e7eb;
+      background: #1f2937;
+      color: white;
+      padding: 32px 40px;
       text-align: center;
-      color: #6b7280;
-      font-size: 14px;
+      margin-top: 60px;
     }
     
-    .terms-section {
-      margin: 40px 0;
-      padding: 20px;
-      background: #fffbeb;
-      border-radius: 8px;
-      border-left: 4px solid #f59e0b;
+    .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
     }
     
-    .terms-section h4 {
-      margin: 0 0 12px 0;
-      color: #92400e;
-      font-weight: 600;
+    .footer-section h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
     
-    .terms-section p {
-      margin: 0;
-      color: #78350f;
-      font-size: 14px;
+    .footer-section p {
+      color: #d1d5db;
+      margin: 8px 0;
+      font-weight: 500;
+    }
+    
+    .footer-divider {
+      width: 100px;
+      height: 2px;
+      background: #3b82f6;
+      margin: 20px auto;
+      border-radius: 1px;
     }
     
     @media print {
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      .document-container {
-        padding: 20px;
-      }
+      body { margin: 0; padding: 0; }
+      .document-container { padding: 0; }
+      .header-section { break-inside: avoid; }
+      .customer-section { break-inside: avoid; }
+      .totals-section { break-inside: avoid; }
     }
   </style>
 </head>
 <body>
   <div class="document-container">
-    <!-- Header Section -->
+    <!-- Professional Header -->
     <div class="header-section">
-      <div class="company-info">
-        <div class="company-details">
+      <div class="header-content">
+        <div class="company-info">
           <h1>${companySettings?.company_name || 'PortaPro'}</h1>
-          <p>Portable Toilet Rental Services</p>
-          ${companySettings?.company_phone ? `<p>Phone: ${companySettings.company_phone}</p>` : ''}
-          ${companySettings?.company_email ? `<p>Email: ${companySettings.company_email}</p>` : ''}
+          <div class="company-tagline">Professional Portable Sanitation Services</div>
+          <div class="company-contact">
+            ${companySettings?.company_phone ? `<div>📞 ${companySettings.company_phone}</div>` : ''}
+            ${companySettings?.company_email ? `<div>✉️ ${companySettings.company_email}</div>` : ''}
+            ${companySettings?.company_street ? `<div>📍 ${companySettings.company_street}, ${companySettings.company_city || ''} ${companySettings.company_state || ''}</div>` : ''}
+          </div>
         </div>
-      </div>
-      
-      <div class="document-info">
-        <h2>${documentTitle}</h2>
-        <div class="document-number">${documentNumber}</div>
-        <div class="status-badge">${getStatusBadge(documentData.status)}</div>
-        <div class="document-details">
-          <p><strong>Date:</strong> ${new Date(documentData.created_at).toLocaleDateString()}</p>
-          ${type === 'quote' && documentData.expiration_date ? `<p><strong>Expires:</strong> ${new Date(documentData.expiration_date).toLocaleDateString()}</p>` : ''}
-          ${type === 'invoice' && documentData.due_date ? `<p><strong>Due:</strong> ${new Date(documentData.due_date).toLocaleDateString()}</p>` : ''}
-        </div>
-      </div>
-    </div>
-
-    <!-- Customer Section -->
-    <div class="customer-section">
-      <h3>Bill To</h3>
-      <div class="customer-details">
-        <div class="customer-info">
-          <p><strong>Customer:</strong> ${documentData.customers?.name || 'N/A'}</p>
-          ${documentData.customers?.email ? `<p><strong>Email:</strong> ${documentData.customers.email}</p>` : ''}
-          ${documentData.customers?.phone ? `<p><strong>Phone:</strong> ${documentData.customers.phone}</p>` : ''}
-        </div>
-        <div class="customer-info">
-          ${documentData.customers?.service_street ? `
-            <p><strong>Service Address:</strong></p>
-            <p>${documentData.customers.service_street}</p>
-            <p>${documentData.customers.service_city}, ${documentData.customers.service_state} ${documentData.customers.service_zip}</p>
-          ` : ''}
+        
+        <div class="document-info">
+          <div class="document-title">${documentTitle}</div>
+          <div class="document-number">${documentNumber}</div>
+          <div class="status-badge">${getStatusBadge(documentData.status)}</div>
+          <div class="document-meta">
+            <div><strong>Issue Date:</strong> ${new Date(documentData.created_at).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</div>
+            ${type === 'quote' && documentData.expiration_date ? `<div><strong>Valid Until:</strong> ${new Date(documentData.expiration_date).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</div>` : ''}
+            ${type === 'invoice' && documentData.due_date ? `<div><strong>Payment Due:</strong> ${new Date(documentData.due_date).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</div>` : ''}
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Items Section -->
-    <div class="items-section">
-      <h3>${type === 'quote' ? 'Quote' : 'Invoice'} Items</h3>
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th>Item Description</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            ${type === 'quote' ? '<th>Rental Days</th>' : ''}
-            <th>Line Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map(item => `
+    <div class="content-section">
+      <!-- Customer Information -->
+      <div class="customer-section">
+        <h3 class="section-title">Customer Information</h3>
+        <div class="customer-grid">
+          <div class="customer-info">
+            <h4>Bill To</h4>
+            <p class="highlight">${documentData.customers?.name || 'N/A'}</p>
+            ${documentData.customers?.email ? `<p>📧 ${documentData.customers.email}</p>` : ''}
+            ${documentData.customers?.phone ? `<p>📞 ${documentData.customers.phone}</p>` : ''}
+          </div>
+          <div class="customer-info">
+            ${documentData.customers?.service_street ? `
+              <h4>Service Address</h4>
+              <p>${documentData.customers.service_street}</p>
+              <p>${documentData.customers.service_city}, ${documentData.customers.service_state} ${documentData.customers.service_zip}</p>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+
+      <!-- Items Section -->
+      <div class="items-section">
+        <h3 class="section-title">${type === 'quote' ? 'Quoted Items & Services' : 'Invoiced Items & Services'}</h3>
+        <table class="items-table">
+          <thead>
             <tr>
-              <td>
-                <strong>${getProductName(item)}</strong>
-                ${item.description ? `<br><small style="color: #6b7280;">${item.description}</small>` : ''}
-              </td>
-              <td>${item.quantity || 0}</td>
-              <td>$${Number(item.unit_price || 0).toFixed(2)}</td>
-              ${type === 'quote' ? `<td>${item.rental_duration_days || 1} days</td>` : ''}
-              <td><strong>$${Number(item.line_total || 0).toFixed(2)}</strong></td>
+              <th style="width: 40%;">Description</th>
+              <th style="width: 12%; text-align: center;">Qty</th>
+              <th style="width: 15%; text-align: right;">Unit Price</th>
+              ${type === 'quote' ? '<th style="width: 13%; text-align: center;">Duration</th>' : ''}
+              <th style="width: 20%; text-align: right;">Total</th>
             </tr>
-          `).join('')}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${items.map(item => `
+              <tr>
+                <td>
+                  <div class="product-name">${getProductName(item)}</div>
+                  ${item.description ? `<div class="product-description">${item.description}</div>` : ''}
+                </td>
+                <td style="text-align: center; font-weight: 600;">${item.quantity || 0}</td>
+                <td class="price-cell" style="text-align: right;">$${Number(item.unit_price || 0).toFixed(2)}</td>
+                ${type === 'quote' ? `<td style="text-align: center; font-weight: 600;">${item.rental_duration_days || 1} ${(item.rental_duration_days || 1) === 1 ? 'day' : 'days'}</td>` : ''}
+                <td class="price-cell" style="text-align: right;">$${Number(item.line_total || 0).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals Section -->
+      <div class="totals-section">
+        <div class="totals-grid">
+          <div class="totals-row">
+            <span class="totals-label">Subtotal:</span>
+            <span class="totals-value">$${Number(documentData.subtotal || 0).toFixed(2)}</span>
+          </div>
+          
+          ${documentData.discount_value && Number(documentData.discount_value) > 0 ? `
+            <div class="totals-row">
+              <span class="totals-label">Discount Applied:</span>
+              <span class="totals-value" style="color: #dc2626;">-$${Number(documentData.discount_value || 0).toFixed(2)}</span>
+            </div>
+          ` : ''}
+          
+          ${documentData.additional_fees && Number(documentData.additional_fees) > 0 ? `
+            <div class="totals-row">
+              <span class="totals-label">Additional Fees:</span>
+              <span class="totals-value">$${Number(documentData.additional_fees || 0).toFixed(2)}</span>
+            </div>
+          ` : ''}
+          
+          <div class="totals-row">
+            <span class="totals-label">Tax:</span>
+            <span class="totals-value">$${Number(documentData.tax_amount || 0).toFixed(2)}</span>
+          </div>
+          
+          <div class="totals-row total-final">
+            <span class="totals-label">Total Amount:</span>
+            <span class="totals-value">$${Number(documentData.total_amount || 0).toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      ${documentData.terms ? `
+        <div class="terms-section">
+          <h4>📋 Terms & Conditions</h4>
+          <p>${documentData.terms}</p>
+        </div>
+      ` : ''}
+
+      ${documentData.notes ? `
+        <div class="notes-section">
+          <h4>📝 Additional Notes</h4>
+          <p>${documentData.notes}</p>
+        </div>
+      ` : ''}
     </div>
 
-    <!-- Totals Section -->
-    <div class="totals-section">
-      <div class="totals-grid">
-        <span class="label">Subtotal:</span>
-        <span class="value">$${Number(documentData.subtotal || 0).toFixed(2)}</span>
-        
-        ${documentData.discount_value && Number(documentData.discount_value) > 0 ? `
-          <span class="label">Discount:</span>
-          <span class="value">-$${Number(documentData.discount_value || 0).toFixed(2)}</span>
-        ` : ''}
-        
-        ${documentData.additional_fees && Number(documentData.additional_fees) > 0 ? `
-          <span class="label">Additional Fees:</span>
-          <span class="value">$${Number(documentData.additional_fees || 0).toFixed(2)}</span>
-        ` : ''}
-        
-        <span class="label">Tax:</span>
-        <span class="value">$${Number(documentData.tax_amount || 0).toFixed(2)}</span>
-        
-        <span class="label total-amount">Total Amount:</span>
-        <span class="value total-amount">$${Number(documentData.total_amount || 0).toFixed(2)}</span>
-      </div>
-    </div>
-
-    ${documentData.terms ? `
-      <div class="terms-section">
-        <h4>Terms & Conditions</h4>
-        <p>${documentData.terms}</p>
-      </div>
-    ` : ''}
-
-    ${documentData.notes ? `
-      <div style="margin: 30px 0; padding: 20px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
-        <h4 style="margin: 0 0 10px 0; color: #0c4a6e;">Notes</h4>
-        <p style="margin: 0; color: #164e63;">${documentData.notes}</p>
-      </div>
-    ` : ''}
-
-    <!-- Footer -->
+    <!-- Professional Footer -->
     <div class="footer-section">
-      <p>Thank you for choosing ${companySettings?.company_name || 'PortaPro'}!</p>
-      <p>This document was generated on ${new Date().toLocaleDateString()}</p>
+      <div class="footer-content">
+        <h3>Thank You for Your Business!</h3>
+        <div class="footer-divider"></div>
+        <p>This ${documentTitle.toLowerCase()} was professionally generated by ${companySettings?.company_name || 'PortaPro'}</p>
+        <p>Generated on ${new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })}</p>
+        ${type === 'quote' ? '<p><strong>We look forward to serving your portable sanitation needs!</strong></p>' : '<p><strong>Thank you for choosing our professional services!</strong></p>'}
+      </div>
     </div>
   </div>
 </body>
