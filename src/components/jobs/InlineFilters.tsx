@@ -306,27 +306,29 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           <Card className="p-4 space-y-4">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-medium text-muted-foreground">Route vs Truck Stock</h3>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <Dialog>
+                <DialogTrigger asChild>
                   <button className="p-1 hover:bg-muted rounded-full transition-colors">
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs p-4 z-50 bg-popover border shadow-md pointer-events-auto" side="top">
-                  <div className="space-y-2">
-                    <h4 className="font-medium">How This Works</h4>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>How This Works</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
                       This tool helps you ensure your truck has enough supplies before starting your route.
                     </p>
-                    <div className="space-y-1 text-xs">
+                    <div className="space-y-2 text-xs">
                       <p><strong>Needed:</strong> Total supplies required for all jobs assigned to this truck</p>
                       <p><strong>On Truck:</strong> Current stock levels loaded on the vehicle</p>
                       <p><strong>Deficit:</strong> How many more items you need to load</p>
                       <p><strong>Status:</strong> "OK" means you're ready, "Replenish" means load more supplies</p>
                     </div>
                   </div>
-                </TooltipContent>
-              </Tooltip>
+                </DialogContent>
+              </Dialog>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
