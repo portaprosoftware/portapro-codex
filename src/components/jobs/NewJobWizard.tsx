@@ -17,28 +17,36 @@ import { ServicesFrequencyOnlyStep } from './steps/ServicesFrequencyOnlyStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
 import { supabase } from '@/integrations/supabase/client';
 import { JobExitConfirmation } from './JobExitConfirmation';
+import { QuoteExitConfirmation } from '@/components/quotes/QuoteExitConfirmation';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
+import { useQuoteDrafts } from '@/hooks/useQuoteDrafts';
 
 interface NewJobWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   draftData?: any;
   initialMode?: 'job' | 'quote' | 'job_and_quote';
+  wizardMode?: 'job' | 'quote';
 }
 
-function WizardContent({ onClose }: { onClose: () => void }) {
+function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; wizardMode?: 'job' | 'quote' }) {
   const { state, nextStep, previousStep, validateCurrentStep, reset } = useJobWizard();
-  const { saveDraft, isSaving } = useJobDrafts();
+  const { saveDraft: saveJobDraft, isSaving: isSavingJob } = useJobDrafts();
+  const { saveDraft: saveQuoteDraft, isSaving: isSavingQuote } = useQuoteDrafts();
+  
+  const saveDraft = wizardMode === 'quote' ? saveQuoteDraft : saveJobDraft;
+  const isSaving = wizardMode === 'quote' ? isSavingQuote : isSavingJob;
   const createJobMutation = useCreateJob();
   const createQuoteMutation = useCreateQuote();
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const handleSaveAndExit = async (draftName: string) => {
     try {
-      console.log('Saving job draft with name:', draftName);
+      const draftType = wizardMode === 'quote' ? 'quote' : 'job';
+      console.log(`Saving ${draftType} draft with name:`, draftName);
       console.log('Current wizard data:', state.data);
       
       await saveDraft(draftName, state.data);
-      toast.success('Job draft saved successfully');
+      toast.success(`${draftType === 'quote' ? 'Quote' : 'Job'} draft saved successfully`);
       reset();
       onClose();
     } catch (error) {
@@ -501,21 +509,34 @@ function WizardContent({ onClose }: { onClose: () => void }) {
         </div>
       </div>
       
-      <JobExitConfirmation
-        isOpen={showExitConfirmation}
-        onClose={() => {
-          console.log('JobExitConfirmation onClose called');
-          setShowExitConfirmation(false);
-        }}
-        onSaveAndExit={handleSaveAndExit}
-        onDeleteAndExit={handleDeleteAndExit}
-        isSaving={isSaving}
-      />
+      {wizardMode === 'quote' ? (
+        <QuoteExitConfirmation
+          isOpen={showExitConfirmation}
+          onClose={() => {
+            console.log('QuoteExitConfirmation onClose called');
+            setShowExitConfirmation(false);
+          }}
+          onSaveAndExit={handleSaveAndExit}
+          onDeleteAndExit={handleDeleteAndExit}
+          isSaving={isSaving}
+        />
+      ) : (
+        <JobExitConfirmation
+          isOpen={showExitConfirmation}
+          onClose={() => {
+            console.log('JobExitConfirmation onClose called');
+            setShowExitConfirmation(false);
+          }}
+          onSaveAndExit={handleSaveAndExit}
+          onDeleteAndExit={handleDeleteAndExit}
+          isSaving={isSaving}
+        />
+      )}
     </div>
   );
 }
 
-export function NewJobWizard({ open, onOpenChange, draftData, initialMode = 'job' }: NewJobWizardProps) {
+export function NewJobWizard({ open, onOpenChange, draftData, initialMode = 'job', wizardMode = 'job' }: NewJobWizardProps) {
   const handleClose = () => {
     onOpenChange(false);
   };
@@ -524,10 +545,10 @@ export function NewJobWizard({ open, onOpenChange, draftData, initialMode = 'job
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="p-0" aria-describedby="new-job-wizard-description">
         <div id="new-job-wizard-description" className="sr-only">
-          Create a new job by following the wizard steps
+          {wizardMode === 'quote' ? 'Create a new quote by following the wizard steps' : 'Create a new job by following the wizard steps'}
         </div>
         <JobWizardProvider initialDraftData={draftData} initialMode={initialMode}>
-          <WizardContent onClose={handleClose} />
+          <WizardContent onClose={handleClose} wizardMode={wizardMode} />
         </JobWizardProvider>
       </DrawerContent>
     </Drawer>

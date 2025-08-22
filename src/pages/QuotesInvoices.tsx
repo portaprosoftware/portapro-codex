@@ -20,7 +20,8 @@ import { QuoteExportModal } from '@/components/quotes/QuoteExportModal';
 import { InvoiceExportModal } from '@/components/quotes/InvoiceExportModal';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
-import { NewJobWizard } from '@/components/jobs/NewJobWizard';
+import { NewQuoteWizard } from '@/components/quotes/NewQuoteWizard';
+import { QuoteDraftManagement } from '@/components/quotes/QuoteDraftManagement';
 import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 
 const QuotesInvoices: React.FC = () => {
@@ -203,6 +204,9 @@ const QuotesInvoices: React.FC = () => {
 
             <QuotesTable searchTerm={searchTerm} />
           </div>
+
+          {/* Quote Drafts Section */}
+          <QuoteDraftManagement />
         </div>
       )}
 
@@ -324,10 +328,9 @@ const QuotesInvoices: React.FC = () => {
       */}
 
       {/* Creation Wizards */}
-      <NewJobWizard 
+      <NewQuoteWizard 
         open={showQuoteWizard} 
         onOpenChange={setShowQuoteWizard}
-        initialMode="quote"
       />
       <InvoiceCreationWizard 
         isOpen={showInvoiceWizard} 

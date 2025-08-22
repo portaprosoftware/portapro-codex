@@ -6149,6 +6149,33 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_drafts: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          quote_data: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          quote_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          quote_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quote_items: {
         Row: {
           created_at: string
