@@ -4,12 +4,12 @@ import { JobWizardData } from '@/contexts/JobWizardContext';
 
 interface CreateQuoteParams {
   wizardData: JobWizardData;
-  status?: 'draft' | 'sent';
+  status?: 'pending' | 'sent' | 'accepted' | 'declined' | 'expired';
 }
 
 export function useCreateQuote() {
   return useMutation({
-    mutationFn: async ({ wizardData, status = 'draft' }: CreateQuoteParams) => {
+    mutationFn: async ({ wizardData, status = 'pending' }: CreateQuoteParams) => {
       console.log('Creating quote with data:', wizardData);
 
       // Get next quote number

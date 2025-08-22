@@ -211,17 +211,23 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
 
     try {
       console.log('Creating quote with wizard data:', state.data);
+      console.log('Customer ID:', state.data.customer_id);
+      console.log('Items:', state.data.items);
+      console.log('Services Data:', state.data.servicesData);
+      
       const quote = await createQuoteMutation.mutateAsync({
         wizardData: state.data,
-        status: 'draft'
+        status: 'pending'
       });
 
+      console.log('Quote created successfully:', quote);
       toast.success('Quote created successfully!');
       reset();
       onClose();
     } catch (error) {
       console.error('Error creating quote:', error);
-      toast.error('Failed to create quote. Please try again.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      toast.error(`Failed to create quote: ${error?.message || 'Unknown error'}`);
     }
   };
 
