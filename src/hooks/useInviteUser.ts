@@ -62,6 +62,7 @@ export const useInviteUser = () => {
       
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['users-with-roles'] });
       queryClient.invalidateQueries({ queryKey: ['user-invitations'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
     },

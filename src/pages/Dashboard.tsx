@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +6,7 @@ import { MinimalClock } from "@/components/ui/MinimalClock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { DonutChart } from "@/components/ui/DonutChart";
+import { useNavigate } from "react-router-dom";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/badge";
 import { ConsumablesAlertCard } from "@/components/dashboard/ConsumablesAlertCard";
@@ -23,7 +23,15 @@ import {
 
 const Dashboard = () => {
   const { role, user } = useUserRole();
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Redirect drivers to the Driver app dashboard
+  useEffect(() => {
+    if (role === 'driver') {
+      navigate('/driver', { replace: true });
+    }
+  }, [role, navigate]);
   
   // Mock data for sparkline (jobs over the past week)
   const jobsSparklineData = [2, 3, 1, 4, 2, 5, 3];

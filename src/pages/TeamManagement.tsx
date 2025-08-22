@@ -9,7 +9,7 @@ import { TrainingCertificationsTab } from '@/components/team/TrainingCertificati
 import { BulkTeamOperations } from '@/components/team/BulkTeamOperations';
 import { ComplianceDashboard } from '@/components/team/ComplianceDashboard';
 import { CustomReportBuilder } from '@/components/team/CustomReportBuilder';
-
+import { useUserRole } from '@/hooks/useUserRole';
 
 import { DetailedDriverProfile } from '@/components/driver/DetailedDriverProfile';
 
@@ -19,6 +19,7 @@ export default function TeamManagement() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
+  const { isDriver } = useUserRole();
   
   // Check if we're on a driver detail page
   const isDriverDetail = location.pathname.includes('/driver/');
@@ -28,6 +29,20 @@ export default function TeamManagement() {
   useEffect(() => {
     document.title = 'Team Management | PortaPro';
   }, []);
+  
+  // Redirect drivers away from Team Management to the Driver app
+  useEffect(() => {
+    if (isDriver) {
+      navigate('/driver', { replace: true });
+    }
+  }, [isDriver, navigate]);
+
+  // If hitting a stale driver detail route without an ID, go back to users tab
+  useEffect(() => {
+    if (isDriverDetail && !(params as any).driverId) {
+      navigate('/team-management/users', { replace: true });
+    }
+  }, [isDriverDetail, params, navigate]);
   
   // Redirect to users tab if on base route
   useEffect(() => {
