@@ -7912,7 +7912,7 @@ export type Database = {
           created_at?: string | null
           email: string
           error_message?: string | null
-          expires_at: string
+          expires_at?: string
           first_name?: string | null
           id?: string
           invitation_token: string
@@ -9734,7 +9734,7 @@ export type Database = {
           image_url_param: string
           last_name_param: string
         }
-        Returns: undefined
+        Returns: Json
       }
       sync_consumable_total_from_locations: {
         Args: { consumable_uuid: string }
