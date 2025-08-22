@@ -10,12 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock } from 'lucide-react';
+import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface QuotePreviewStepProps {
   onSendQuote: (sendOptions: QuoteSendOptions) => void;
   onSaveDraft: () => void;
+  onCreateInvoice?: () => void;
   sending?: boolean;
 }
 
@@ -31,6 +32,7 @@ export interface QuoteSendOptions {
 export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   onSendQuote,
   onSaveDraft,
+  onCreateInvoice,
   sending = false
 }) => {
   const { state } = useJobWizard();
@@ -309,6 +311,18 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               >
                 Save as Draft
               </Button>
+
+              {onCreateInvoice && (
+                <Button 
+                  variant="outline" 
+                  onClick={onCreateInvoice}
+                  className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                  disabled={sending}
+                >
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Create Invoice from Quote
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

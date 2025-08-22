@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { FileText, BriefcaseIcon, Package } from 'lucide-react';
+import { FileText, BriefcaseIcon, Package, Receipt } from 'lucide-react';
 
 interface ReviewConfirmationStepProps {
   onCreateJob: () => void;
   onCreateQuote: () => void;
   onCreateJobAndQuote: () => void;
+  onCreateInvoice?: () => void;
   creating?: boolean;
   creatingQuote?: boolean;
   creatingJobAndQuote?: boolean;
@@ -26,6 +27,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   onCreateJob, 
   onCreateQuote, 
   onCreateJobAndQuote, 
+  onCreateInvoice,
   creating, 
   creatingQuote, 
   creatingJobAndQuote 
@@ -635,6 +637,25 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
               </CardContent>
             </Card>
           </div>
+
+          {/* Create Invoice Section - shows after job creation would be useful */}
+          {onCreateInvoice && (
+            <div className="pt-6 border-t border-border">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-4">
+                  After creating your job, you can immediately generate an invoice for this work.
+                </p>
+                <Button
+                  onClick={onCreateInvoice}
+                  variant="outline"
+                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                >
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Create Invoice
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
