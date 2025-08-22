@@ -37,7 +37,7 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
+      <AlertDialogContent className="sm:max-w-[500px]">
         <AlertDialogHeader>
           <AlertDialogTitle>Save Quote Progress</AlertDialogTitle>
           <AlertDialogDescription>
