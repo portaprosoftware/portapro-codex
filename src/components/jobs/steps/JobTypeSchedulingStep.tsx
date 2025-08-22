@@ -320,15 +320,17 @@ export function JobTypeSchedulingStep() {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Keep for (Days)</Label>
                     <div className="space-y-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full h-6 p-0"
-                        onClick={() => handleRentalDurationChange('days', (state.data.rental_duration_days || 1) + 1)}
-                        aria-label="Increase days"
-                      >
-                        <ChevronUp className="h-3 w-3" />
-                      </Button>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-8 h-6 p-0"
+                          onClick={() => handleRentalDurationChange('days', (state.data.rental_duration_days || 1) + 1)}
+                          aria-label="Increase days"
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </Button>
+                      </div>
                       <Input
                         type="number"
                         min="1"
@@ -336,15 +338,17 @@ export function JobTypeSchedulingStep() {
                         onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
                         className="text-center h-10 text-lg font-medium"
                       />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full h-6 p-0"
-                        onClick={() => handleRentalDurationChange('days', Math.max(1, (state.data.rental_duration_days || 1) - 1))}
-                        aria-label="Decrease days"
-                      >
-                        <ChevronDown className="h-3 w-3" />
-                      </Button>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-8 h-6 p-0"
+                          onClick={() => handleRentalDurationChange('days', Math.max(1, (state.data.rental_duration_days || 1) - 1))}
+                          aria-label="Decrease days"
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       1 day = 24 hours from your delivery time
@@ -376,15 +380,17 @@ export function JobTypeSchedulingStep() {
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Hours (1-23)</Label>
                         <div className="space-y-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full h-6 p-0"
-                            onClick={() => handleRentalDurationChange('hours', Math.min(23, (state.data.rental_duration_hours || 1) + 1))}
-                            aria-label="Increase hours"
-                          >
-                            <ChevronUp className="h-3 w-3" />
-                          </Button>
+                          <div className="flex justify-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-8 h-6 p-0"
+                              onClick={() => handleRentalDurationChange('hours', Math.min(23, (state.data.rental_duration_hours || 1) + 1))}
+                              aria-label="Increase hours"
+                            >
+                              <ChevronUp className="h-3 w-3" />
+                            </Button>
+                          </div>
                           <Input
                             type="number"
                             min="1"
@@ -393,15 +399,17 @@ export function JobTypeSchedulingStep() {
                             onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
                             className="text-center h-10 text-lg font-medium"
                           />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full h-6 p-0"
-                            onClick={() => handleRentalDurationChange('hours', Math.max(1, (state.data.rental_duration_hours || 1) - 1))}
-                            aria-label="Decrease hours"
-                          >
-                            <ChevronDown className="h-3 w-3" />
-                          </Button>
+                          <div className="flex justify-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-8 h-6 p-0"
+                              onClick={() => handleRentalDurationChange('hours', Math.max(1, (state.data.rental_duration_hours || 1) - 1))}
+                              aria-label="Decrease hours"
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     )}
