@@ -85,8 +85,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         {/* Instructions */}
         <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
           <span>
-            <strong>Quick Job Search:</strong> Type a complete Job ID (e.g., 2032) and press Enter to find jobs across all dates. 
-            Regular search filters current date only.
+            <strong>Quick Job Search:</strong> Typing searches today's date. Press Enter to search job IDs across all dates.
           </span>
         </div>
 
