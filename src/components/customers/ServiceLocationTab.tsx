@@ -4,10 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
 import { MapPin, Navigation, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ServiceLocationTabProps {
   customerId: string;
@@ -25,16 +24,42 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState('');
   const [pins, setPins] = useState<DropPin[]>([]);
-  const [showTokenInput, setShowTokenInput] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Use the user-provided token
-    const token = mapboxToken;
-    
-    if (!token || !mapContainer.current || map.current) return;
+    const fetchMapboxToken = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const { data, error: functionError } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (functionError) {
+          throw new Error(functionError.message || 'Failed to fetch Mapbox token');
+        }
+        
+        if (data?.token) {
+          setMapboxToken(data.token);
+        } else {
+          throw new Error('No Mapbox token received');
+        }
+      } catch (err) {
+        console.error('Error fetching Mapbox token:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load map');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMapboxToken();
+  }, []);
+
+  useEffect(() => {
+    if (!mapboxToken || !mapContainer.current || map.current) return;
 
     try {
-      mapboxgl.accessToken = token;
+      mapboxgl.accessToken = mapboxToken;
       
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
@@ -68,11 +93,11 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           .addTo(map.current!);
 
         setPins(prev => [...prev, newPin]);
-        setShowTokenInput(false);
       });
 
     } catch (error) {
       console.error('Mapbox initialization error:', error);
+      setError('Failed to initialize map');
     }
 
     return () => {
@@ -89,51 +114,28 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setPins([]);
   };
 
-  const handleTokenSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (mapboxToken.trim()) {
-      setShowTokenInput(false);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-8">
+          <Navigation className="w-12 h-12 text-muted-foreground mx-auto mb-4 animate-pulse" />
+          <h3 className="text-lg font-medium text-foreground mb-2">Drop Map Pins</h3>
+          <p className="text-muted-foreground">Loading interactive map...</p>
+        </div>
+      </div>
+    );
+  }
 
-  if (showTokenInput) {
+  if (error) {
     return (
       <div className="space-y-4">
         <div className="text-center py-8">
           <Navigation className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">Drop Map Pins</h3>
-          <p className="text-muted-foreground mb-6">
-            Enter your Mapbox public token to enable the interactive map.
-          </p>
-          
-          <form onSubmit={handleTokenSubmit} className="max-w-md mx-auto space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
-              <Input
-                id="mapbox-token"
-                type="text"
-                placeholder="pk.ey..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-                className="font-mono text-sm"
-              />
-            </div>
-            <Button type="submit" disabled={!mapboxToken.trim()}>
-              Initialize Map
-            </Button>
-          </form>
-          
-          <p className="text-xs text-muted-foreground mt-4">
-            Get your token at{' '}
-            <a 
-              href="https://mapbox.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              mapbox.com
-            </a>
-          </p>
+          <p className="text-destructive mb-4">Error: {error}</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
         </div>
       </div>
     );
