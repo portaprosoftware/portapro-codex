@@ -41,6 +41,15 @@ export function useTaxRate({ zip, state }: UseTaxRateParams) {
           });
           if (!tjError && tjData?.rateDecimal != null) {
             externalZipRate = Number(tjData.rateDecimal);
+            // cache into tax_rates for future lookups
+            try {
+              await supabase
+                .from('tax_rates')
+                .upsert({ zip_code: zip5, tax_rate: externalZipRate } as any, { onConflict: 'zip_code' });
+              console.log('[useTaxRate] cached external rate to tax_rates', { zip5, externalZipRate });
+            } catch (cacheErr) {
+              console.warn('[useTaxRate] cache upsert failed', cacheErr);
+            }
           }
         } catch (e) {
           console.warn('[useTaxRate] TaxJar lookup failed', e);
