@@ -166,12 +166,19 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Email sent successfully:', emailResult);
     }
     
+    console.log('About to return response with HTML length:', html?.length);
+    console.log('Response object keys will be:', Object.keys({ html, success: true, message: `${requestData.type} processed successfully` }));
+    
+    const responseObj = { 
+      html,
+      success: true,
+      message: `${requestData.type} processed successfully`
+    };
+    
+    console.log('Final response object:', JSON.stringify(responseObj).substring(0, 200));
+    
     return new Response(
-      JSON.stringify({ 
-        html,
-        success: true,
-        message: `${requestData.type} processed successfully`
-      }),
+      JSON.stringify(responseObj),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
