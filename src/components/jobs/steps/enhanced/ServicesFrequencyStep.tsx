@@ -1141,17 +1141,8 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   }`}
                 >
                   <div className="space-y-3">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          {/* Checkmark indicator when selected */}
-                          {isSelected && (
-                            <div className="absolute -mt-2 -ml-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          )}
-                          
                           <div className="font-medium">{service.name}</div>
                           {service.description && (
                             <div className="text-sm text-muted-foreground mt-1">
@@ -1181,15 +1172,37 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                           </div>
                         </div>
                         
-                        {/* Add Service Button */}
-                        {!isSelected && (
-                          <Button 
-                            onClick={() => toggleService(service.id, true)}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold"
-                          >
-                            Add Service
-                          </Button>
-                        )}
+                        {/* Top right actions */}
+                        <div className="flex items-center gap-2">
+                          {!isSelected ? (
+                            <Button 
+                              onClick={() => toggleService(service.id, true)}
+                              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold"
+                            >
+                              Add Service
+                            </Button>
+                          ) : (
+                            <>
+                              {/* Remove Service Button */}
+                              <Button 
+                                onClick={() => toggleService(service.id, false)}
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 border-red-600 hover:bg-red-50"
+                              >
+                                <X className="w-4 h-4 mr-1" />
+                                Remove Service
+                              </Button>
+                              
+                              {/* Checkmark indicator */}
+                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                       
                        {/* Custom Pricing Override - Only show when service is selected */}
