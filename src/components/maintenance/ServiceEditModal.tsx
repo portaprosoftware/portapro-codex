@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Save, X } from "lucide-react";
+import { Save, X, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ServiceEditModalProps {
@@ -30,7 +30,7 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
     name: "",
     code: "",
     description: "",
-    category: "cleaning",
+    category: "cleaning", // slug values like 'cleaning', 'preventive_maintenance', etc.
     pricing_method: "per_visit",
     default_rate: 0,
     estimated_duration: 60,
@@ -101,6 +101,14 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
     }
   }, [service, isCreating]);
 
+  // Auto-generate code on category change when creating and code is empty
+  useEffect(() => {
+    if (isCreating && formData.category && !formData.code) {
+      generateNextServiceCode(formData.category);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.category, isCreating]);
+
   const saveServiceMutation = useMutation({
     mutationFn: async () => {
       const serviceData = {
@@ -151,6 +159,53 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
     "Cleaning Equipment"
   ];
 
+  // Category options with prefixes
+  const categoryOptions = [
+    { value: 'cleaning', label: 'Cleaning', prefix: 'CL' },
+    { value: 'preventive_maintenance', label: 'Preventive Maintenance', prefix: 'PM' },
+    { value: 'corrective_maintenance', label: 'Corrective Maintenance', prefix: 'CM' },
+    { value: 'inspection', label: 'Inspection', prefix: 'IN' },
+    { value: 'emergency_response', label: 'Emergency Response', prefix: 'EM' },
+    { value: 'contractor_work', label: 'Contractor Work', prefix: 'CO' },
+    { value: 'restock', label: 'Restock', prefix: 'RS' },
+    { value: 'service_request', label: 'Service Request', prefix: 'SR' },
+    { value: 'breakdown_repair', label: 'Breakdown Repair', prefix: 'BD' },
+    { value: 'testing_calibration', label: 'Testing & Calibration', prefix: 'TC' },
+    { value: 'deodorizing', label: 'Deodorizing', prefix: 'DP' },
+    { value: 'sanitization', label: 'Sanitization', prefix: 'SN' },
+    { value: 'quality_assurance', label: 'Quality Assurance', prefix: 'QA' },
+    { value: 'other', label: 'Other', prefix: 'OT' },
+  ] as const;
+
+  const getPrefixForCategory = (cat: string) => categoryOptions.find(c => c.value === cat)?.prefix || 'OT';
+
+  const generateNextServiceCode = async (categoryValue: string) => {
+    const prefix = getPrefixForCategory(categoryValue);
+    if (!prefix) return;
+
+    const { data, error } = await supabase
+      .from('services')
+      .select('code')
+      .ilike('code', `${prefix}-%`);
+
+    if (error) {
+      console.error('Error fetching codes', error);
+      return;
+    }
+
+    let maxNum = 0;
+    (data || []).forEach((row: any) => {
+      const m = row.code?.match(new RegExp(`^${prefix}-(\\d+)$`));
+      if (m) {
+        const n = parseInt(m[1], 10);
+        if (!isNaN(n)) maxNum = Math.max(maxNum, n);
+      }
+    });
+
+    const next = (maxNum + 1).toString().padStart(4, '0');
+    setFormData(prev => ({ ...prev, code: `${prefix}-${next}` }));
+  };
+
   const toggleTarget = (target: string) => {
     setFormData(prev => ({
       ...prev,
@@ -183,12 +238,25 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
             </div>
             <div>
               <Label htmlFor="code">Service Code *</Label>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
-                required
-              />
+              <div className="flex items-center gap-2">
+                <Input
+                  id="code"
+                  value={formData.code}
+                  onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
+                  required
+                  disabled={!isCreating}
+                  placeholder="Will auto-generate (e.g., CL-0001)"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  title="Generate code"
+                  onClick={() => generateNextServiceCode(formData.category)}
+                >
+                  <Wand2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -212,10 +280,11 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cleaning">Cleaning</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="emergency">Emergency</SelectItem>
-                <SelectItem value="inspection">Inspection</SelectItem>
+                {categoryOptions.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label} ({opt.prefix})
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
