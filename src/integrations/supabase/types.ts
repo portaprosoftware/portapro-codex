@@ -5812,6 +5812,7 @@ export type Database = {
           hire_date: string | null
           home_base: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           last_name: string | null
           notes: string | null
@@ -5833,6 +5834,7 @@ export type Database = {
           hire_date?: string | null
           home_base?: string | null
           id: string
+          image_url?: string | null
           is_active?: boolean
           last_name?: string | null
           notes?: string | null
@@ -5854,6 +5856,7 @@ export type Database = {
           hire_date?: string | null
           home_base?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           last_name?: string | null
           notes?: string | null
@@ -7890,13 +7893,18 @@ export type Database = {
           email: string
           error_message: string | null
           expires_at: string
+          first_name: string | null
           id: string
           invitation_token: string
           invitation_type: string | null
           invited_by: string
+          last_name: string | null
           metadata: Json | null
+          phone: string | null
           role: string | null
           sent_at: string | null
+          status: string | null
+          updated_at: string
         }
         Insert: {
           accepted_at?: string | null
@@ -7905,13 +7913,18 @@ export type Database = {
           email: string
           error_message?: string | null
           expires_at: string
+          first_name?: string | null
           id?: string
           invitation_token: string
           invitation_type?: string | null
           invited_by: string
+          last_name?: string | null
           metadata?: Json | null
+          phone?: string | null
           role?: string | null
           sent_at?: string | null
+          status?: string | null
+          updated_at?: string
         }
         Update: {
           accepted_at?: string | null
@@ -7920,13 +7933,18 @@ export type Database = {
           email?: string
           error_message?: string | null
           expires_at?: string
+          first_name?: string | null
           id?: string
           invitation_token?: string
           invitation_type?: string | null
           invited_by?: string
+          last_name?: string | null
           metadata?: Json | null
+          phone?: string | null
           role?: string | null
           sent_at?: string | null
+          status?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
