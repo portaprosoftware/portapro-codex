@@ -180,7 +180,7 @@ export const TaxRatesImportDialog: React.FC<TaxRatesImportDialogProps> = ({ open
               type="button"
               onClick={handleImport}
               disabled={busy || preview.length === 0}
-              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white"
+              className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))] text-white"
             >
               {busy ? 'Importing…' : 'Import tax rates'}
             </Button>

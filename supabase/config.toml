@@ -6,3 +6,7 @@ verify_jwt = false
 
 [functions.customer-docs]
 verify_jwt = false
+
+[functions.taxjar-rate]
+verify_jwt = false
+

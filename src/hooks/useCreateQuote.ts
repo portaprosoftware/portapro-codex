@@ -93,7 +93,23 @@ export function useCreateQuote() {
         tableZipRate = tr ? Number(tr.tax_rate) : null;
       }
 
-      const taxRate = resolveTaxRate(companySettings as any, { zip: zip5, state, tableZipRate });
+      let externalZipRate: number | null = null;
+      if (zip5 && tableZipRate == null) {
+        try {
+          const { data: tjData, error: tjError } = await supabase.functions.invoke('taxjar-rate', {
+            body: { zip: zip5, state },
+          });
+          if (!tjError && tjData?.rateDecimal != null) {
+            externalZipRate = Number(tjData.rateDecimal);
+          }
+        } catch (e) {
+          console.warn('[useCreateQuote] TaxJar lookup failed', e);
+        }
+      }
+
+      const effectiveZipRate = tableZipRate ?? externalZipRate;
+
+      const taxRate = resolveTaxRate(companySettings as any, { zip: zip5, state, tableZipRate: effectiveZipRate });
       const tax_amount = subtotal * taxRate;
       const total_amount = subtotal + tax_amount;
 
