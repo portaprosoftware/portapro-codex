@@ -228,8 +228,11 @@ export function UserManagementSection() {
       
       if (checkError) throw checkError;
       
-      if (!canDeleteResult?.can_delete) {
-        throw new Error(canDeleteResult?.reason || 'User cannot be deleted due to active assignments');
+      // Type assert the response to expected structure
+      const deleteCheck = canDeleteResult as { can_delete: boolean; reason?: string } | null;
+      
+      if (!deleteCheck?.can_delete) {
+        throw new Error(deleteCheck?.reason || 'User cannot be deleted due to active assignments');
       }
 
       // Delete role first (if exists - some orphaned users may not have roles)
