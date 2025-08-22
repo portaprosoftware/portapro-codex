@@ -2,11 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search, Target, Plus } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +21,7 @@ interface DropPin {
   longitude: number;
   latitude: number;
   label: string;
+  notes?: string;
 }
 
 const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
@@ -33,8 +35,11 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [dropModeActive, setDropModeActive] = useState(false);
   const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingPin, setEditingPin] = useState<DropPin | null>(null);
   const [pendingPin, setPendingPin] = useState<{ longitude: number; latitude: number } | null>(null);
   const [pinName, setPinName] = useState('');
+  const [pinNotes, setPinNotes] = useState('');
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -101,6 +106,22 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setPins([]);
   };
 
+  const deletePin = (pinId: string) => {
+    if (map.current) {
+      // Remove the specific marker - we'll need to track markers by pin ID
+      const markerElement = document.querySelector(`[data-pin-id="${pinId}"]`);
+      markerElement?.remove();
+    }
+    setPins(prev => prev.filter(pin => pin.id !== pinId));
+  };
+
+  const editPin = (pin: DropPin) => {
+    setEditingPin(pin);
+    setPinName(pin.label);
+    setPinNotes(pin.notes || '');
+    setShowEditDialog(true);
+  };
+
   const toggleDropMode = () => {
     setDropModeActive(!dropModeActive);
   };
@@ -120,18 +141,23 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       id: `pin-${Date.now()}`,
       longitude: pendingPin.longitude,
       latitude: pendingPin.latitude,
-      label: pinName || `Pin ${pins.length + 1}`
+      label: pinName || `Pin ${pins.length + 1}`,
+      notes: pinNotes
     };
 
-    // Add marker to map
+    // Add marker to map with pin ID for tracking
+    const markerElement = document.createElement('div');
+    markerElement.setAttribute('data-pin-id', newPin.id);
+    
     const marker = new mapboxgl.Marker({
+      element: markerElement,
       color: '#3b82f6',
       draggable: false
     })
       .setLngLat([pendingPin.longitude, pendingPin.latitude])
       .setPopup(
         new mapboxgl.Popup({ offset: 25 })
-          .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}</div>`)
+          .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}${newPin.notes ? '<br/>Notes: ' + newPin.notes : ''}</div>`)
       )
       .addTo(map.current);
 
@@ -141,13 +167,50 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setShowNameDialog(false);
     setPendingPin(null);
     setPinName('');
+    setPinNotes('');
     setDropModeActive(false);
+  };
+
+  const confirmPinEdit = () => {
+    if (!editingPin || !map.current) return;
+
+    const updatedPin = {
+      ...editingPin,
+      label: pinName,
+      notes: pinNotes
+    };
+
+    // Update the pin in state
+    setPins(prev => prev.map(pin => pin.id === editingPin.id ? updatedPin : pin));
+
+    // Update the popup content
+    const markerElement = document.querySelector(`[data-pin-id="${editingPin.id}"]`);
+    if (markerElement) {
+      const marker = markerElement as any;
+      if (marker._popup) {
+        marker._popup.setHTML(`<div style="padding: 4px;"><strong>${updatedPin.label}</strong><br/>Lat: ${updatedPin.latitude.toFixed(6)}<br/>Lng: ${updatedPin.longitude.toFixed(6)}${updatedPin.notes ? '<br/>Notes: ' + updatedPin.notes : ''}</div>`);
+      }
+    }
+
+    // Reset states
+    setShowEditDialog(false);
+    setEditingPin(null);
+    setPinName('');
+    setPinNotes('');
   };
 
   const cancelPinDrop = () => {
     setShowNameDialog(false);
     setPendingPin(null);
     setPinName('');
+    setPinNotes('');
+  };
+
+  const cancelPinEdit = () => {
+    setShowEditDialog(false);
+    setEditingPin(null);
+    setPinName('');
+    setPinNotes('');
   };
 
   const searchAddress = async () => {
@@ -300,11 +363,36 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           <h4 className="font-medium mb-2">Dropped Pins ({pins.length})</h4>
           <div className="grid gap-2 max-h-32 overflow-y-auto">
             {pins.map((pin) => (
-              <div key={pin.id} className="flex items-center justify-between text-sm">
-                <span>{pin.label}</span>
-                <span className="text-muted-foreground font-mono">
-                  {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                </span>
+              <div key={pin.id} className="flex items-center justify-between text-sm p-2 bg-background rounded border">
+                <div className="flex-1">
+                  <div className="font-medium">{pin.label}</div>
+                  <div className="text-muted-foreground font-mono text-xs">
+                    {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                  </div>
+                  {pin.notes && (
+                    <div className="text-muted-foreground text-xs mt-1">
+                      Notes: {pin.notes}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => editPin(pin)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deletePin(pin.id)}
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -325,10 +413,20 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 onChange={(e) => setPinName(e.target.value)}
                 placeholder="Enter a name for this pin..."
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && !e.shiftKey) {
                     confirmPinDrop();
                   }
                 }}
+              />
+            </div>
+            <div>
+              <Label htmlFor="pin-notes">Inventory Guide / Notes</Label>
+              <Textarea
+                id="pin-notes"
+                value={pinNotes}
+                onChange={(e) => setPinNotes(e.target.value)}
+                placeholder="Add inventory notes or guidance for this location..."
+                rows={3}
               />
             </div>
             {pendingPin && (
@@ -343,6 +441,53 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             </Button>
             <Button onClick={confirmPinDrop}>
               Drop Pin
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Pin</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-pin-name">Pin Name</Label>
+              <Input
+                id="edit-pin-name"
+                value={pinName}
+                onChange={(e) => setPinName(e.target.value)}
+                placeholder="Enter a name for this pin..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    confirmPinEdit();
+                  }
+                }}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-pin-notes">Inventory Guide / Notes</Label>
+              <Textarea
+                id="edit-pin-notes"
+                value={pinNotes}
+                onChange={(e) => setPinNotes(e.target.value)}
+                placeholder="Add inventory notes or guidance for this location..."
+                rows={3}
+              />
+            </div>
+            {editingPin && (
+              <div className="text-sm text-muted-foreground">
+                <p>Coordinates: {editingPin.latitude.toFixed(6)}, {editingPin.longitude.toFixed(6)}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelPinEdit}>
+              Cancel
+            </Button>
+            <Button onClick={confirmPinEdit}>
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
