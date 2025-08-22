@@ -71,7 +71,10 @@ const handler = async (req: Request): Promise<Response> => {
 
       const { data: quoteItems, error: itemsError } = await supabase
         .from('quote_items')
-        .select('*')
+        .select(`
+          *,
+          products!inner(id, name)
+        `)
         .eq('quote_id', requestData.id);
 
       if (itemsError) throw itemsError;
@@ -99,7 +102,10 @@ const handler = async (req: Request): Promise<Response> => {
 
       const { data: invoiceItems, error: itemsError } = await supabase
         .from('invoice_items')
-        .select('*')
+        .select(`
+          *,
+          products!inner(id, name)
+        `)
         .eq('invoice_id', requestData.id);
 
       if (itemsError) throw itemsError;
@@ -203,16 +209,24 @@ const handler = async (req: Request): Promise<Response> => {
 async function generatePDFHTML(documentData: any, items: any[], companySettings: any, products: any[], type: string): Promise<string> {
   
   const getProductName = (item: any) => {
-    // If we have a proper product name that's not a UUID or generic text, use it
-    if (item.product_name && 
-        item.product_name !== 'Product' && 
-        !item.product_name.includes('-') && 
-        item.product_name.length > 10) {
+    // First priority: properly formatted product name from the item
+    if (item.product_name && item.product_name !== 'Product' && !item.product_name.includes('-') && item.product_name.length > 5) {
       return item.product_name;
     }
-    // Otherwise, look up the product name from our products array
-    const product = products.find(p => p.id === item.product_id);
-    return product?.name || item.product_name || 'Unknown Product';
+    
+    // Second priority: joined products data from the query
+    if (item.products && item.products.name) {
+      return item.products.name;
+    }
+    
+    // Third priority: lookup in products array
+    const product = products?.find(p => p.id === item.product_id);
+    if (product?.name) {
+      return product.name;
+    }
+    
+    // Fallback
+    return item.product_name || 'Unknown Product';
   };
 
   // Status badge styling
