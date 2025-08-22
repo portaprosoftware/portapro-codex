@@ -68,27 +68,6 @@ export const EnhancedDateNavigator: React.FC<EnhancedDateNavigatorProps> = ({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 bg-white border shadow-lg z-50" align="center">
           <div className="p-4">
-            <div className="mb-4">
-              <h4 className="font-semibold text-gray-900 mb-2">Quick Select</h4>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickSelect(0)}
-                  className="text-xs"
-                >
-                  Today
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickSelect(1)}
-                  className="text-xs"
-                >
-                  Tomorrow
-                </Button>
-              </div>
-            </div>
             <Calendar
               mode="single"
               selected={currentDate}
