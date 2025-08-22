@@ -15,6 +15,7 @@ import { DriverVehicleStep } from './steps/DriverVehicleStep';
 import { ProductsServicesStep } from './steps/ProductsServicesStep';
 import { ServicesFrequencyOnlyStep } from './steps/ServicesFrequencyOnlyStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
+import { QuotePreviewStep, QuoteSendOptions } from './steps/QuotePreviewStep';
 import { supabase } from '@/integrations/supabase/client';
 import { JobExitConfirmation } from './JobExitConfirmation';
 import { QuoteExitConfirmation } from '@/components/quotes/QuoteExitConfirmation';
@@ -206,22 +207,35 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
     }
   };
 
-  const handleCreateQuote = async () => {
+  const handleCreateQuote = async (sendOptions?: QuoteSendOptions) => {
     if (!validateCurrentStep()) return;
 
     try {
       console.log('Creating quote with wizard data:', state.data);
-      console.log('Customer ID:', state.data.customer_id);
-      console.log('Items:', state.data.items);
-      console.log('Services Data:', state.data.servicesData);
+      console.log('Send options:', sendOptions);
+      
+      let status = 'pending';
+      if (sendOptions?.method === 'save_draft') {
+        status = 'draft';
+      } else if (sendOptions?.method === 'email' || sendOptions?.method === 'sms') {
+        status = 'sent';
+      }
       
       const quote = await createQuoteMutation.mutateAsync({
         wizardData: state.data,
-        status: 'pending'
+        status: status as 'pending' | 'sent' | 'accepted' | 'declined' | 'expired'
       });
 
       console.log('Quote created successfully:', quote);
-      toast.success('Quote created successfully!');
+      
+      if (sendOptions?.method === 'save_draft') {
+        toast.success('Quote saved as draft!');
+      } else if (sendOptions?.method === 'email' || sendOptions?.method === 'sms') {
+        toast.success('Quote created and sent successfully!');
+      } else {
+        toast.success('Quote created successfully!');
+      }
+      
       reset();
       onClose();
     } catch (error) {
@@ -229,6 +243,10 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       console.error('Error details:', JSON.stringify(error, null, 2));
       toast.error(`Failed to create quote: ${error?.message || 'Unknown error'}`);
     }
+  };
+
+  const handleSaveDraft = () => {
+    handleCreateQuote({ method: 'save_draft', sendImmediately: false });
   };
 
   const handleCreateJobAndQuote = async () => {
@@ -407,6 +425,16 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
         }
         return <ServicesFrequencyOnlyStep />;
       case 7:
+        // For quotes, show preview step, otherwise show review
+        if (wizardMode === 'quote') {
+          return (
+            <QuotePreviewStep
+              onSendQuote={handleCreateQuote}
+              onSaveDraft={handleSaveDraft}
+              sending={createQuoteMutation.isPending}
+            />
+          );
+        }
         return (
           <ReviewConfirmationStep 
             onCreateJob={handleCreateJob} 

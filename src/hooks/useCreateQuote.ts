@@ -4,7 +4,7 @@ import { JobWizardData } from '@/contexts/JobWizardContext';
 
 interface CreateQuoteParams {
   wizardData: JobWizardData;
-  status?: 'pending' | 'sent' | 'accepted' | 'declined' | 'expired';
+  status?: 'draft' | 'pending' | 'sent' | 'accepted' | 'declined' | 'expired';
 }
 
 export function useCreateQuote() {

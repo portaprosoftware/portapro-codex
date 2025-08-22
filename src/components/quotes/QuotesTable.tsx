@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { QuoteExportModal } from "./QuoteExportModal";
+import { ViewQuoteModal } from "./ViewQuoteModal";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
 import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
   const [showCreateQuote, setShowCreateQuote] = useState(false);
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showViewQuote, setShowViewQuote] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
   const queryClient = useQueryClient();
@@ -173,7 +175,12 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setSelectedQuote(quote);
+                        setShowViewQuote(true);
+                      }}
+                    >
                       <Eye className="mr-2 h-4 w-4" />
                       View
                     </DropdownMenuItem>
@@ -243,6 +250,17 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
             setSelectedQuote(null);
           }}
           quote={selectedQuote}
+        />
+      )}
+
+      {showViewQuote && selectedQuote && (
+        <ViewQuoteModal
+          isOpen={showViewQuote}
+          onClose={() => {
+            setShowViewQuote(false);
+            setSelectedQuote(null);
+          }}
+          quoteId={selectedQuote.id}
         />
       )}
     </div>
