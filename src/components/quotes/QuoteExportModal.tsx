@@ -41,6 +41,8 @@ PortaPro Team`);
     setIsLoading(true);
     
     try {
+      console.log('Export PDF clicked for:', quote);
+      
       const { data, error } = await supabase.functions.invoke('generate-pdf-and-email', {
         body: {
           type: 'quote',
@@ -53,11 +55,24 @@ PortaPro Team`);
         }
       });
 
-      if (error) throw error;
+      console.log('Edge function response:', { data, error });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error('No data received from edge function');
+      }
+
+      console.log('Response data structure:', Object.keys(data));
 
       if (action === 'generate_pdf' || action === 'both') {
-        // Open the professional HTML in a new window for printing to PDF
+        console.log('Checking for HTML content...', { hasHtml: !!data.html, htmlLength: data.html?.length });
+        
         if (data.html) {
+          console.log('Opening print window with HTML content');
           const printWindow = window.open('', '_blank');
           if (printWindow) {
             printWindow.document.write(data.html);
@@ -67,8 +82,11 @@ PortaPro Team`);
             setTimeout(() => {
               printWindow.print();
             }, 500);
+          } else {
+            throw new Error('Failed to open print window - popup blocked?');
           }
         } else {
+          console.error('No HTML content in response:', data);
           throw new Error('PDF generation failed - no HTML content received');
         }
       }
