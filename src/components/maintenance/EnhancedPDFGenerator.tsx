@@ -332,7 +332,7 @@ export const EnhancedPDFGenerator: React.FC<EnhancedPDFGeneratorProps> = ({
                     className="w-full justify-start"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Download PDF
+                    Download Professional PDF
                   </Button>
 
                   <Button
@@ -342,7 +342,7 @@ export const EnhancedPDFGenerator: React.FC<EnhancedPDFGeneratorProps> = ({
                     className="w-full justify-start"
                   >
                     <Printer className="h-4 w-4 mr-2" />
-                    Print Report
+                    Print Enhanced Report
                   </Button>
 
                   <Button
@@ -352,14 +352,14 @@ export const EnhancedPDFGenerator: React.FC<EnhancedPDFGeneratorProps> = ({
                     className="w-full justify-start"
                   >
                     <Mail className="h-4 w-4 mr-2" />
-                    Email to Customer
+                    Email Professional Report
                   </Button>
                 </div>
 
                 {generatePDFMutation.isPending && (
                   <div className="text-center py-4">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
-                    <p className="text-sm text-muted-foreground">Generating PDF...</p>
+                    <p className="text-sm text-muted-foreground">Generating professional PDF...</p>
                   </div>
                 )}
               </CardContent>

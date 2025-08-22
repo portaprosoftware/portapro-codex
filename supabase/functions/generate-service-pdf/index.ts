@@ -66,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Generate comprehensive service report HTML
-    const pdfHtml = generateServiceReportHtml(report);
+    const pdfHtml = await generateServiceReportHtml(report, supabase);
 
     let pdfBuffer;
     if (requestData.action === 'generate_pdf' || requestData.action === 'both') {
