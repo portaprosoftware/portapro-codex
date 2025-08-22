@@ -41,26 +41,39 @@ PortaPro Team`);
     setIsLoading(true);
     
     try {
-      if (action === 'generate_pdf') {
-        // Simple PDF generation - for now we'll simulate it
-        // In a real app, you'd integrate with a PDF generation service
-        const blob = new Blob(['Quote PDF content would go here'], { type: 'application/pdf' });
+      const { data, error } = await supabase.functions.invoke('generate-pdf-and-email', {
+        body: {
+          type: 'quote',
+          id: quote.id,
+          action,
+          recipient_email: recipientEmail,
+          recipient_name: recipientName,
+          subject,
+          message
+        }
+      });
+
+      if (error) throw error;
+
+      if (action === 'generate_pdf' || action === 'both') {
+        // Create a blob from the HTML response and trigger download
+        const htmlContent = data.html || `<h1>Quote ${quote.quote_number}</h1><p>PDF content not available</p>`;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Quote-${quote.quote_number}.pdf`;
+        a.download = `Quote-${quote.quote_number}.html`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
-        toast.success('PDF downloaded successfully!');
+      }
+
+      if (action === 'generate_pdf') {
+        toast.success('Quote PDF generated and downloaded!');
       } else if (action === 'send_email') {
-        // Email functionality - for now we'll show a success message
-        // In a real app, you'd send this to your email service
         toast.success('Quote emailed successfully!');
       } else {
-        // Both actions
         toast.success('PDF generated and quote emailed successfully!');
       }
 

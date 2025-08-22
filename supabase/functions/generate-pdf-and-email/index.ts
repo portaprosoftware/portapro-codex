@@ -139,7 +139,8 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: true, 
         message: `${requestData.type} ${requestData.action} completed successfully`,
-        pdf_available: requestData.action === 'generate_pdf' || requestData.action === 'both'
+        pdf_available: requestData.action === 'generate_pdf' || requestData.action === 'both',
+        html: pdfHtml // Return the HTML content for download
       }), 
       {
         status: 200,
@@ -527,9 +528,6 @@ async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'inv
     <!-- Header Section -->
     <div class="header-section">
       <div class="company-info">
-        ${companySettings?.company_logo ? `
-          <img src="${companySettings.company_logo}" alt="Company Logo" class="company-logo" />
-        ` : ''}
         <div class="company-details">
           <h1>${companySettings?.company_name || 'PortaPro'}</h1>
           <p>Portable Toilet Rental Services</p>
