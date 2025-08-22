@@ -102,13 +102,17 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
       if (isCreating) {
         const { error } = await supabase
           .from('services')
-          .insert([serviceData]);
+          .insert([serviceData])
+          .select()
+          .single();
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('services')
           .update(serviceData)
-          .eq('id', service.id);
+          .eq('id', service.id)
+          .select()
+          .single();
         if (error) throw error;
       }
     },
