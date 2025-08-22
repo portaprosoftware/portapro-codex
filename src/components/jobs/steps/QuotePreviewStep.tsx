@@ -15,6 +15,7 @@ import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt, Sparkl
 import { format } from 'date-fns';
 import { AIQuoteMessageModal } from '@/components/quotes/AIQuoteMessageModal';
 import { useTaxRate } from '@/hooks/useTaxRate';
+import { TaxRatesImportDialog } from '@/components/finance/TaxRatesImportDialog';
 
 interface QuotePreviewStepProps {
   onSendQuote: (sendOptions: QuoteSendOptions) => void;
@@ -44,6 +45,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   const [message, setMessage] = useState('Please find your quote attached. We look forward to working with you!');
   const [sendImmediately, setSendImmediately] = useState(true);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [showTaxImport, setShowTaxImport] = useState(false);
 
   // Fetch customer data
   const { data: customer } = useQuery({
@@ -148,6 +150,28 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Inline notice if tax is missing for this ZIP */}
+      {derivedZip && taxRate === 0 && (
+        <div className="rounded-2xl border border-yellow-300 bg-white p-4 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="text-sm">
+              <span className="font-medium">No tax rate found</span> for ZIP {String(derivedZip).slice(0,5)}.
+              <span className="ml-1 text-muted-foreground">Import ZIP tax rates to enable automatic tax.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setShowTaxImport(true)}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 text-white"
+              >
+                Import tax rates
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quote Preview */}
         <Card>
@@ -438,6 +462,13 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
         onClose={() => setShowAIModal(false)}
         onMessageGenerated={handleAIMessageGenerated}
         quoteData={quoteData}
+      />
+
+      {/* Tax Rates Importer */}
+      <TaxRatesImportDialog
+        open={showTaxImport}
+        onOpenChange={setShowTaxImport}
+        defaultZip={derivedZip || undefined}
       />
     </div>
   );
