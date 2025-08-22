@@ -260,7 +260,17 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               <div className="flex justify-between text-sm">
                 <div className="flex flex-col">
                   <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
-                  <span className="text-xs text-muted-foreground">Tax rate is based on the service location ZIP code.</span>
+                  <span className="text-xs text-muted-foreground">
+                    Tax rate is based on service location ZIP code. Live data via{" "}
+                    <a 
+                      href="https://taxjar.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      taxjar.com
+                    </a>
+                  </span>
                 </div>
                 <span>${taxAmount.toFixed(2)}</span>
               </div>
