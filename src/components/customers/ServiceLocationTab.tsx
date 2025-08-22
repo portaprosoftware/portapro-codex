@@ -27,6 +27,7 @@ interface DropPin {
 const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
   const [mapboxToken, setMapboxToken] = useState('');
   const [pins, setPins] = useState<DropPin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,18 +100,18 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 
   const clearAllPins = () => {
     if (map.current) {
-      // Remove all markers
-      const markers = document.querySelectorAll('.mapboxgl-marker');
-      markers.forEach(marker => marker.remove());
+      // Remove all tracked markers
+      Object.values(markersRef.current).forEach(marker => marker.remove());
+      markersRef.current = {};
     }
     setPins([]);
   };
 
   const deletePin = (pinId: string) => {
-    if (map.current) {
-      // Remove the specific marker - we'll need to track markers by pin ID
-      const markerElement = document.querySelector(`[data-pin-id="${pinId}"]`);
-      markerElement?.remove();
+    // Remove the specific marker using our tracking ref
+    if (markersRef.current[pinId]) {
+      markersRef.current[pinId].remove();
+      delete markersRef.current[pinId];
     }
     setPins(prev => prev.filter(pin => pin.id !== pinId));
   };
@@ -145,12 +146,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       notes: pinNotes
     };
 
-    // Add marker to map with pin ID for tracking
-    const markerElement = document.createElement('div');
-    markerElement.setAttribute('data-pin-id', newPin.id);
-    
+    // Add marker to map using default styling
     const marker = new mapboxgl.Marker({
-      element: markerElement,
       color: '#3b82f6',
       draggable: false
     })
@@ -160,6 +157,9 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           .setHTML(`<div style="padding: 4px;"><strong>${newPin.label}</strong><br/>Lat: ${pendingPin.latitude.toFixed(6)}<br/>Lng: ${pendingPin.longitude.toFixed(6)}${newPin.notes ? '<br/>Notes: ' + newPin.notes : ''}</div>`)
       )
       .addTo(map.current);
+
+    // Track the marker for later deletion
+    markersRef.current[newPin.id] = marker;
 
     setPins(prev => [...prev, newPin]);
     
@@ -183,12 +183,12 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     // Update the pin in state
     setPins(prev => prev.map(pin => pin.id === editingPin.id ? updatedPin : pin));
 
-    // Update the popup content
-    const markerElement = document.querySelector(`[data-pin-id="${editingPin.id}"]`);
-    if (markerElement) {
-      const marker = markerElement as any;
-      if (marker._popup) {
-        marker._popup.setHTML(`<div style="padding: 4px;"><strong>${updatedPin.label}</strong><br/>Lat: ${updatedPin.latitude.toFixed(6)}<br/>Lng: ${updatedPin.longitude.toFixed(6)}${updatedPin.notes ? '<br/>Notes: ' + updatedPin.notes : ''}</div>`);
+    // Update the popup content for the tracked marker
+    if (markersRef.current[editingPin.id]) {
+      const marker = markersRef.current[editingPin.id];
+      const popup = marker.getPopup();
+      if (popup) {
+        popup.setHTML(`<div style="padding: 4px;"><strong>${updatedPin.label}</strong><br/>Lat: ${updatedPin.latitude.toFixed(6)}<br/>Lng: ${updatedPin.longitude.toFixed(6)}${updatedPin.notes ? '<br/>Notes: ' + updatedPin.notes : ''}</div>`);
       }
     }
 
