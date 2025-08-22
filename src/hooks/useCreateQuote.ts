@@ -64,6 +64,10 @@ export function useCreateQuote() {
       const servicesSubtotal = Number(wizardData.servicesData?.servicesSubtotal || 0);
       const subtotal = itemsSubtotal + servicesSubtotal;
       
+      // For now, use simple calculations
+      const discount_value = 0;
+      const additional_fees = 0;
+
       // Resolve tax rate based on customer ZIP/state and company settings
       // Fetch customer location info
       const { data: customer } = await supabase

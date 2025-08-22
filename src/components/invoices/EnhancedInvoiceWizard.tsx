@@ -64,6 +64,8 @@ interface InvoiceFormData {
 }
 
 type Customer = { id: string; name: string; email?: string; service_zip?: string | null; default_service_zip?: string | null; billing_zip?: string | null; service_state?: string | null; default_service_state?: string | null; billing_state?: string | null; };
+type Product = { id: string; name: string; default_price_per_day: number };
+type Service = { id: string; name: string };
 
 export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId }: EnhancedInvoiceWizardProps) {
   const [invoiceData, setInvoiceData] = useState<InvoiceFormData>({
@@ -199,12 +201,6 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     }
   }, [nextInvoiceNumber, invoiceData.invoice_number]);
 
-  // Auto-apply tax rate from ZIP/state when customer changes
-  useEffect(() => {
-    if (taxData?.rate != null) {
-      setInvoiceData(prev => ({ ...prev, tax_rate: Number((taxData.rate * 100).toFixed(4)) }));
-    }
-  }, [taxData?.rate, invoiceData.customer_id]);
 
   // Handle source data prefilling
   useEffect(() => {
@@ -429,6 +425,13 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const derivedZip = selectedCustomer?.service_zip || selectedCustomer?.default_service_zip || selectedCustomer?.billing_zip;
   const derivedState = selectedCustomer?.service_state || selectedCustomer?.default_service_state || selectedCustomer?.billing_state;
   const { data: taxData } = useTaxRate({ zip: derivedZip, state: derivedState });
+
+  // Auto-apply tax rate from ZIP/state when customer changes
+  useEffect(() => {
+    if (taxData?.rate != null) {
+      setInvoiceData(prev => ({ ...prev, tax_rate: Number((taxData.rate * 100).toFixed(4)) }));
+    }
+  }, [taxData?.rate, invoiceData.customer_id]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
