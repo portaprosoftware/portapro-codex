@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X, User, Truck } from 'lucide-react';
+import { ClipboardCheck, Clock, DollarSign, Wrench, CalendarIcon, Plus, X, User, Truck, FileText } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -53,6 +53,13 @@ interface ServiceItem {
     method: 'per_visit' | 'flat_for_job';
     amount: number;
   };
+  // Template information
+  default_template_id?: string | null;
+  template?: {
+    id: string;
+    name: string;
+    template_type: string;
+  } | null;
 }
 
 interface ServicesFrequencyData {
@@ -158,10 +165,17 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   const fetchServices = async () => {
     try {
-      // Fetch from routine_maintenance_services table
+      // Fetch from routine_maintenance_services table with template info
       const { data: servicesData } = await supabase
         .from('routine_maintenance_services')
-        .select('*')
+        .select(`
+          *,
+          template:maintenance_report_templates!default_template_id(
+            id,
+            name,
+            template_type
+          )
+        `)
         .eq('is_active', true)
         .order('name');
 
@@ -186,7 +200,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         include_pickup_service: false,
         visit_count: 0,
         service_dates: [],
-        price_override: undefined
+        price_override: undefined,
+        default_template_id: service.default_template_id,
+        template: service.template
       }));
 
       setAvailableServices(services);
@@ -1143,7 +1159,15 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                   <div className="space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="font-medium">{service.name}</div>
+                          <div className="flex items-center justify-between">
+                            <div className="font-medium">{service.name}</div>
+                            {service.template && (
+                              <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                                <FileText className="w-3 h-3 mr-1" />
+                                {service.template.name}
+                              </Badge>
+                            )}
+                          </div>
                           {service.description && (
                             <div className="text-sm text-muted-foreground mt-1">
                               {service.description}

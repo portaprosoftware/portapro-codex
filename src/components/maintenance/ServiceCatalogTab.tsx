@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ServiceEditModal } from "./ServiceEditModal";
-import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign, MoreVertical } from "lucide-react";
+import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign, MoreVertical, FileText } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ServiceTemplateAssignmentModal } from "./ServiceTemplateAssignmentModal";
 import { toast } from "sonner";
 
 interface Service {
@@ -34,6 +35,7 @@ export const ServiceCatalogTab: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [templateAssignmentService, setTemplateAssignmentService] = useState<Service | null>(null);
 
   const { data: services, isLoading } = useQuery({
     queryKey: ['services'],
@@ -299,6 +301,7 @@ export const ServiceCatalogTab: React.FC = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Rate</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Duration</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Recurring</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Template</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                 </tr>
               </thead>
@@ -319,14 +322,24 @@ export const ServiceCatalogTab: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {formatRate(service.default_rate, service.pricing_method)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {service.estimated_duration_minutes}m
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant={service.can_be_recurring ? "default" : "outline"} className="text-xs">
-                        {service.can_be_recurring ? "Yes" : "No"}
-                      </Badge>
-                    </td>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {service.estimated_duration_minutes}m
+                </td>
+                <td className="px-6 py-4">
+                  <Badge variant={service.can_be_recurring ? "default" : "outline"} className="text-xs">
+                    {service.can_be_recurring ? "Yes" : "No"}
+                  </Badge>
+                </td>
+                <td className="px-6 py-4">
+                  {service.default_template_id ? (
+                    <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                      <FileText className="w-3 h-3 mr-1" />
+                      Template Set
+                    </Badge>
+                  ) : (
+                    <span className="text-xs text-gray-400">No template</span>
+                  )}
+                </td>
                     <td className="px-6 py-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -338,6 +351,10 @@ export const ServiceCatalogTab: React.FC = () => {
                           <DropdownMenuItem onClick={() => setSelectedService(service)}>
                             <Edit className="w-4 h-4 mr-2" />
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setTemplateAssignmentService(service)}>
+                            <FileText className="w-4 h-4 mr-2" />
+                            Assign Template
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => duplicateServiceMutation.mutate(service)}>
                             <Copy className="w-4 h-4 mr-2" />
@@ -370,6 +387,13 @@ export const ServiceCatalogTab: React.FC = () => {
         }}
         service={selectedService}
         isCreating={isCreating}
+      />
+      
+      <ServiceTemplateAssignmentModal
+        serviceId={templateAssignmentService?.id || null}
+        serviceName={templateAssignmentService?.name || null}
+        isOpen={templateAssignmentService !== null}
+        onClose={() => setTemplateAssignmentService(null)}
       />
     </div>
   );
