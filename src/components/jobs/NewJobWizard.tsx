@@ -224,9 +224,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       console.log('Send options:', sendOptions);
       
       let status = 'pending';
-      if (sendOptions?.method === 'save_draft') {
-        status = 'draft';
-      } else if (sendOptions?.method === 'email' || sendOptions?.method === 'sms') {
+      if (sendOptions?.method === 'email' || sendOptions?.method === 'sms' || sendOptions?.method === 'email_sms') {
         status = 'sent';
       }
       
@@ -237,9 +235,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
 
       console.log('Quote created successfully:', quote);
       
-      if (sendOptions?.method === 'save_draft') {
-        toast.success('Quote saved as draft!');
-      } else if (sendOptions?.method === 'email' || sendOptions?.method === 'sms') {
+      if (sendOptions?.method === 'email' || sendOptions?.method === 'sms' || sendOptions?.method === 'email_sms') {
         toast.success('Quote created and sent successfully!');
       } else {
         toast.success('Quote created successfully!');
@@ -255,7 +251,8 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   };
 
   const handleSaveDraft = () => {
-    handleCreateQuote({ method: 'save_draft', sendImmediately: false });
+    // Simply create quote as draft without sending
+    handleCreateQuote();
   };
 
   const handleCreateInvoice = () => {
@@ -449,7 +446,6 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
             <QuotePreviewStep
               onSendQuote={handleCreateQuote}
               onSaveDraft={handleSaveDraft}
-              onCreateInvoice={handleCreateInvoice}
               sending={createQuoteMutation.isPending}
             />
           );

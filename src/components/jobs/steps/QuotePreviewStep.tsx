@@ -17,12 +17,11 @@ import { format } from 'date-fns';
 interface QuotePreviewStepProps {
   onSendQuote: (sendOptions: QuoteSendOptions) => void;
   onSaveDraft: () => void;
-  onCreateInvoice?: () => void;
   sending?: boolean;
 }
 
 export interface QuoteSendOptions {
-  method: 'email' | 'sms' | 'save_draft';
+  method: 'email' | 'sms' | 'email_sms';
   recipientEmail?: string;
   recipientPhone?: string;
   subject?: string;
@@ -33,11 +32,10 @@ export interface QuoteSendOptions {
 export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   onSendQuote,
   onSaveDraft,
-  onCreateInvoice,
   sending = false
 }) => {
   const { state } = useJobWizard();
-  const [sendMethod, setSendMethod] = useState<'email' | 'sms' | 'save_draft'>('email');
+  const [sendMethod, setSendMethod] = useState<'email' | 'sms' | 'email_sms'>('email');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [recipientPhone, setRecipientPhone] = useState('');
   const [subject, setSubject] = useState('Your Quote from PortaPro');
@@ -224,10 +222,11 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="save_draft" id="save_draft" />
-                  <Label htmlFor="save_draft" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Save as Draft
+                  <RadioGroupItem value="email_sms" id="email_sms" />
+                  <Label htmlFor="email_sms" className="flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <MessageSquare className="h-4 w-4" />
+                    Email & Text
                   </Label>
                 </div>
               </RadioGroup>
@@ -293,16 +292,57 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               </div>
             )}
 
+            {/* Email & SMS combined method */}
+            {sendMethod === 'email_sms' && (
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="email-recipient">Recipient Email</Label>
+                  <Input
+                    id="email-recipient"
+                    type="email"
+                    value={recipientEmail}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                    placeholder="customer@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sms-recipient">Recipient Phone</Label>
+                  <Input
+                    id="sms-recipient"
+                    type="tel"
+                    value={recipientPhone}
+                    onChange={(e) => setRecipientPhone(e.target.value)}
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email-subject">Subject</Label>
+                  <Input
+                    id="email-subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email-message">Message</Label>
+                  <Textarea
+                    id="email-message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="pt-4 space-y-3">
-              {sendMethod !== 'save_draft' && (
-                <Button 
-                  onClick={handleSend} 
-                  className="w-full"
-                  disabled={sending || (!recipientEmail && sendMethod === 'email') || (!recipientPhone && sendMethod === 'sms')}
-                >
-                  {sending ? 'Sending...' : `Send Quote via ${sendMethod === 'email' ? 'Email' : 'SMS'}`}
-                </Button>
-              )}
+              <Button 
+                onClick={handleSend} 
+                className="w-full"
+                disabled={sending || (!recipientEmail && (sendMethod === 'email' || sendMethod === 'email_sms')) || (!recipientPhone && (sendMethod === 'sms' || sendMethod === 'email_sms'))}
+              >
+                {sending ? 'Sending...' : sendMethod === 'email_sms' ? 'Send Quote via Email & SMS' : `Send Quote via ${sendMethod === 'email' ? 'Email' : 'SMS'}`}
+              </Button>
               
               <Button 
                 variant="outline" 
@@ -311,19 +351,8 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                 disabled={sending}
               >
                 Save as Draft
+                <span className="ml-2 text-xs text-muted-foreground">save & send later</span>
               </Button>
-
-              {onCreateInvoice && (
-                <Button 
-                  variant="outline" 
-                  onClick={onCreateInvoice}
-                  className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50"
-                  disabled={sending}
-                >
-                  <Receipt className="h-4 w-4 mr-2" />
-                  Create Invoice from Quote
-                </Button>
-              )}
             </div>
           </CardContent>
         </Card>
