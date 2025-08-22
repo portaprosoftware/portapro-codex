@@ -28,8 +28,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [showTokenInput, setShowTokenInput] = useState(true);
 
   useEffect(() => {
-    // Check if we have a token from environment or user input
-    const token = process.env.REACT_APP_MAPBOX_TOKEN || mapboxToken;
+    // Use the user-provided token
+    const token = mapboxToken;
     
     if (!token || !mapContainer.current || map.current) return;
 
@@ -96,7 +96,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     }
   };
 
-  if (showTokenInput && !process.env.REACT_APP_MAPBOX_TOKEN) {
+  if (showTokenInput) {
     return (
       <div className="space-y-4">
         <div className="text-center py-8">
