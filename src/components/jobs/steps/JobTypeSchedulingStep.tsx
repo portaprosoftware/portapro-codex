@@ -87,14 +87,14 @@ export function JobTypeSchedulingStep() {
       // If setting days ≥ 1, turn off track hours toggle and clear hours
       if (days >= 1) {
         setTrackHours(false);
-        updateData({ rental_duration_hours: 0 });
+        updateData({ rental_duration_hours: undefined });
       }
     } else {
-      const hours = Math.max(0, Math.min(23, value));
+      const hours = Math.max(1, Math.min(23, value));
       updateData({ rental_duration_hours: hours });
       // If setting hours > 0, ensure days is 0 for hourly billing
       if (hours > 0) {
-        updateData({ rental_duration_days: 0 });
+        updateData({ rental_duration_days: undefined });
       }
     }
   };
@@ -102,11 +102,11 @@ export function JobTypeSchedulingStep() {
   // Calculate return date using "1 day = 24 hours from delivery time" model
   React.useEffect(() => {
     if (state.data.scheduled_date && state.data.job_type === 'delivery') {
-      const days = state.data.rental_duration_days || 0;
-      const hours = state.data.rental_duration_hours || 0;
+      const days = state.data.rental_duration_days;
+      const hours = state.data.rental_duration_hours;
       
       // Only calculate return date if we have valid duration
-      if (days > 0 || hours > 0) {
+      if (days || hours) {
         // Create start date/time in customer's timezone
         const scheduledDate = new Date(state.data.scheduled_date);
         const deliveryTime = state.data.scheduled_time || '08:00'; // Default to 8:00 AM
@@ -118,10 +118,10 @@ export function JobTypeSchedulingStep() {
         
         // Calculate return date/time: 1 day = exactly 24 hours from delivery time
         let returnDateTime = new Date(startDateTime);
-        if (days > 0) {
+        if (days) {
           // Daily billing: add exact 24-hour periods, ignore hours
           returnDateTime.setTime(startDateTime.getTime() + (days * 24 * 60 * 60 * 1000));
-        } else if (hours > 0) {
+        } else if (hours) {
           // Hourly billing: add exact hours
           returnDateTime.setTime(startDateTime.getTime() + (hours * 60 * 60 * 1000));
         }
@@ -316,40 +316,17 @@ export function JobTypeSchedulingStep() {
               
               <Card>
                 <CardContent className="p-4 space-y-4">
-                  {/* Days - Always visible and primary */}
+                   {/* Days - Always visible and primary */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Keep for (Days)</Label>
-                    <div className="space-y-1">
-                      <div className="flex justify-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-8 h-6 p-0"
-                          onClick={() => handleRentalDurationChange('days', (state.data.rental_duration_days || 1) + 1)}
-                          aria-label="Increase days"
-                        >
-                          <ChevronUp className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <NumberInput
-                        min={1}
-                        value={state.data.rental_duration_days || 1}
-                        onChange={(value) => handleRentalDurationChange('days', value)}
-                        showControls={false}
-                        className="text-center"
-                      />
-                      <div className="flex justify-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-8 h-6 p-0"
-                          onClick={() => handleRentalDurationChange('days', Math.max(1, (state.data.rental_duration_days || 1) - 1))}
-                          aria-label="Decrease days"
-                        >
-                          <ChevronDown className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
+                    <NumberInput
+                      min={1}
+                      value={state.data.rental_duration_days}
+                      onChange={(value) => handleRentalDurationChange('days', value)}
+                      showControls={true}
+                      className="text-center"
+                      placeholder="Enter days"
+                    />
                     <p className="text-xs text-muted-foreground">
                       1 day = 24 hours from your delivery time
                     </p>
@@ -363,9 +340,9 @@ export function JobTypeSchedulingStep() {
                         onCheckedChange={(checked) => {
                           setTrackHours(checked);
                           if (checked) {
-                            updateData({ rental_duration_days: 0, rental_duration_hours: 1 });
+                            updateData({ rental_duration_days: undefined, rental_duration_hours: 1 });
                           } else {
-                            updateData({ rental_duration_hours: 0, rental_duration_days: 1 });
+                            updateData({ rental_duration_hours: undefined, rental_duration_days: 1 });
                           }
                         }}
                       />
@@ -375,42 +352,19 @@ export function JobTypeSchedulingStep() {
                        Use hours for rentals under 24h. Days and hours cannot be combined. To see exact start and end times in the live preview, set a delivery time.
                      </p>
 
-                    {/* Hours input - only shown when toggle is ON */}
-                    {trackHours && (
+                     {/* Hours input - only shown when toggle is ON */}
+                     {trackHours && (
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Hours (1-23)</Label>
-                        <div className="space-y-1">
-                          <div className="flex justify-center">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-8 h-6 p-0"
-                              onClick={() => handleRentalDurationChange('hours', Math.min(23, (state.data.rental_duration_hours || 1) + 1))}
-                              aria-label="Increase hours"
-                            >
-                              <ChevronUp className="h-3 w-3" />
-                            </Button>
-                          </div>
-                          <NumberInput
-                            min={1}
-                            max={23}
-                            value={state.data.rental_duration_hours || 1}
-                            onChange={(value) => handleRentalDurationChange('hours', value)}
-                            showControls={false}
-                            className="text-center"
-                          />
-                          <div className="flex justify-center">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-8 h-6 p-0"
-                              onClick={() => handleRentalDurationChange('hours', Math.max(1, (state.data.rental_duration_hours || 1) - 1))}
-                              aria-label="Decrease hours"
-                            >
-                              <ChevronDown className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
+                        <NumberInput
+                          min={1}
+                          max={23}
+                          value={state.data.rental_duration_hours}
+                          onChange={(value) => handleRentalDurationChange('hours', value)}
+                          showControls={true}
+                          className="text-center"
+                          placeholder="Enter hours"
+                        />
                       </div>
                     )}
                   </div>
