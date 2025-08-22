@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 
 interface CreateInvoiceFromJobParams {
   jobId: string;
@@ -55,7 +56,35 @@ export function useCreateInvoiceFromJob() {
         return total + (Number(item.total_price) || 0);
       }, 0) || 0;
 
-      const taxAmount = subtotal * 0.08;
+      // Resolve tax rate based on customer ZIP/state and company settings
+      const { data: companySettings } = await supabase
+        .from('company_settings')
+        .select('tax_enabled, tax_method, flat_tax_rate, state_tax_rates, zip_tax_overrides')
+        .single();
+
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state')
+        .eq('id', job.customer_id)
+        .maybeSingle();
+
+      const zip = customer?.service_zip || customer?.default_service_zip || customer?.billing_zip || '';
+      const state = customer?.service_state || customer?.default_service_state || customer?.billing_state || '';
+      const zip5 = normalizeZip(zip);
+
+      let tableZipRate: number | null = null;
+      if (zip5) {
+        const { data: tr } = await supabase
+          .from('tax_rates')
+          .select('tax_rate')
+          .eq('zip_code', zip5)
+          .maybeSingle();
+        tableZipRate = tr ? Number(tr.tax_rate) : null;
+      }
+
+      const taxRate = resolveTaxRate(companySettings as any, { zip: zip5, state, tableZipRate });
+
+      const taxAmount = subtotal * taxRate;
       const totalAmount = subtotal + taxAmount;
 
       const dueDateString = (dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))

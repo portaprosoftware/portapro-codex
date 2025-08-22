@@ -14,6 +14,7 @@ import { EnhancedInvoiceWizard } from '@/components/invoices/EnhancedInvoiceWiza
 import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { AIQuoteMessageModal } from '@/components/quotes/AIQuoteMessageModal';
+import { useTaxRate } from '@/hooks/useTaxRate';
 
 interface QuotePreviewStepProps {
   onSendQuote: (sendOptions: QuoteSendOptions) => void;
@@ -107,7 +108,10 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   };
 
   const subtotal = calculateSubtotal();
-  const taxRate = 0.08; // 8% tax
+  const derivedZip = customer?.service_zip || customer?.default_service_zip || customer?.billing_zip;
+  const derivedState = customer?.service_state || customer?.default_service_state || customer?.billing_state;
+  const { data: taxData } = useTaxRate({ zip: derivedZip, state: derivedState });
+  const taxRate = taxData?.rate ?? 0; // decimal, e.g., 0.08875
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;
 
@@ -224,7 +228,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Tax (8%)</span>
+                <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
                 <span>${taxAmount.toFixed(2)}</span>
               </div>
               <Separator />

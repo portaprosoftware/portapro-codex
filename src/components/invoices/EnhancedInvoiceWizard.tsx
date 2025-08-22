@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { format, addDays } from 'date-fns';
 import { CalendarIcon, Plus, Trash2, Receipt, ChevronDown, ChevronUp, FileText, Eye, Send, Download, Save } from 'lucide-react';
+import { useTaxRate } from '@/hooks/useTaxRate';
 import { toast } from 'sonner';
 
 interface EnhancedInvoiceWizardProps {
@@ -62,9 +63,7 @@ interface InvoiceFormData {
   recurring_frequency?: 'weekly' | 'monthly' | 'yearly';
 }
 
-type Customer = { id: string; name: string; email?: string };
-type Product = { id: string; name: string; default_price_per_day: number };
-type Service = { id: string; name: string };
+type Customer = { id: string; name: string; email?: string; service_zip?: string | null; default_service_zip?: string | null; billing_zip?: string | null; service_state?: string | null; default_service_state?: string | null; billing_state?: string | null; };
 
 export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId }: EnhancedInvoiceWizardProps) {
   const [invoiceData, setInvoiceData] = useState<InvoiceFormData>({
@@ -114,7 +113,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
-        .select('id, name, email')
+        .select('id, name, email, service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state')
         .order('name');
       
       if (error) throw error;
@@ -199,6 +198,13 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       }));
     }
   }, [nextInvoiceNumber, invoiceData.invoice_number]);
+
+  // Auto-apply tax rate from ZIP/state when customer changes
+  useEffect(() => {
+    if (taxData?.rate != null) {
+      setInvoiceData(prev => ({ ...prev, tax_rate: Number((taxData.rate * 100).toFixed(4)) }));
+    }
+  }, [taxData?.rate, invoiceData.customer_id]);
 
   // Handle source data prefilling
   useEffect(() => {
@@ -420,6 +426,9 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const totalAmount = taxableAmount + taxAmount;
 
   const selectedCustomer = customers.find(c => c.id === invoiceData.customer_id);
+  const derivedZip = selectedCustomer?.service_zip || selectedCustomer?.default_service_zip || selectedCustomer?.billing_zip;
+  const derivedState = selectedCustomer?.service_state || selectedCustomer?.default_service_state || selectedCustomer?.billing_state;
+  const { data: taxData } = useTaxRate({ zip: derivedZip, state: derivedState });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

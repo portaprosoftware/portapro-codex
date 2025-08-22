@@ -321,6 +321,7 @@ export type Database = {
           due_soon_window_days: number
           enable_sanitation_compliance: boolean
           enable_transport_spill_compliance: boolean
+          flat_tax_rate: number | null
           id: string
           invoice_number_prefix: string | null
           item_code_categories: Json | null
@@ -339,9 +340,13 @@ export type Database = {
           quote_number_prefix: string | null
           return_prefix: string | null
           service_prefix: string | null
+          state_tax_rates: Json | null
           support_email: string | null
           survey_prefix: string | null
+          tax_enabled: boolean | null
+          tax_method: string | null
           updated_at: string | null
+          zip_tax_overrides: Json | null
         }
         Insert: {
           cleaning_prefix?: string | null
@@ -367,6 +372,7 @@ export type Database = {
           due_soon_window_days?: number
           enable_sanitation_compliance?: boolean
           enable_transport_spill_compliance?: boolean
+          flat_tax_rate?: number | null
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -385,9 +391,13 @@ export type Database = {
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
+          state_tax_rates?: Json | null
           support_email?: string | null
           survey_prefix?: string | null
+          tax_enabled?: boolean | null
+          tax_method?: string | null
           updated_at?: string | null
+          zip_tax_overrides?: Json | null
         }
         Update: {
           cleaning_prefix?: string | null
@@ -413,6 +423,7 @@ export type Database = {
           due_soon_window_days?: number
           enable_sanitation_compliance?: boolean
           enable_transport_spill_compliance?: boolean
+          flat_tax_rate?: number | null
           id?: string
           invoice_number_prefix?: string | null
           item_code_categories?: Json | null
@@ -431,9 +442,13 @@ export type Database = {
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
+          state_tax_rates?: Json | null
           support_email?: string | null
           survey_prefix?: string | null
+          tax_enabled?: boolean | null
+          tax_method?: string | null
           updated_at?: string | null
+          zip_tax_overrides?: Json | null
         }
         Relationships: []
       }
@@ -7667,6 +7682,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tax_rates: {
+        Row: {
+          city: string | null
+          county: string | null
+          created_at: string
+          description: string | null
+          effective_date: string | null
+          id: string
+          state: string | null
+          tax_rate: number
+          updated_at: string
+          zip_code: string
+        }
+        Insert: {
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          description?: string | null
+          effective_date?: string | null
+          id?: string
+          state?: string | null
+          tax_rate?: number
+          updated_at?: string
+          zip_code: string
+        }
+        Update: {
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          description?: string | null
+          effective_date?: string | null
+          id?: string
+          state?: string | null
+          tax_rate?: number
+          updated_at?: string
+          zip_code?: string
+        }
+        Relationships: []
       }
       template_categories: {
         Row: {

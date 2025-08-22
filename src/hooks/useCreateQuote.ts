@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JobWizardData } from '@/contexts/JobWizardContext';
+import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 
 interface CreateQuoteParams {
   wizardData: JobWizardData;
@@ -63,10 +64,30 @@ export function useCreateQuote() {
       const servicesSubtotal = Number(wizardData.servicesData?.servicesSubtotal || 0);
       const subtotal = itemsSubtotal + servicesSubtotal;
       
-      // For now, use simple calculations
-      const discount_value = 0;
-      const additional_fees = 0;
-      const tax_amount = subtotal * 0.08; // 8% tax
+      // Resolve tax rate based on customer ZIP/state and company settings
+      // Fetch customer location info
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state')
+        .eq('id', wizardData.customer_id as string)
+        .maybeSingle();
+
+      const zip = customer?.service_zip || customer?.default_service_zip || customer?.billing_zip || '';
+      const state = customer?.service_state || customer?.default_service_state || customer?.billing_state || '';
+      const zip5 = normalizeZip(zip);
+
+      let tableZipRate: number | null = null;
+      if (zip5) {
+        const { data: tr } = await supabase
+          .from('tax_rates')
+          .select('tax_rate')
+          .eq('zip_code', zip5)
+          .maybeSingle();
+        tableZipRate = tr ? Number(tr.tax_rate) : null;
+      }
+
+      const taxRate = resolveTaxRate(companySettings as any, { zip: zip5, state, tableZipRate });
+      const tax_amount = subtotal * taxRate;
       const total_amount = subtotal + tax_amount;
 
       // Create the quote
