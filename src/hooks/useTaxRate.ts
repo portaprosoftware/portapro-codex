@@ -24,10 +24,12 @@ export function useTaxRate({ zip, state }: UseTaxRateParams) {
       // Fetch zip rate from table if zip is present
       let tableZipRate: number | null = null;
       if (zip5) {
+        const zipVariants = [zip5, zip5.replace(/^0+/, '')].filter((z, i, arr) => z && arr.indexOf(z) === i) as string[];
         const { data: tr } = await supabase
           .from('tax_rates')
-          .select('tax_rate')
-          .eq('zip_code', zip5)
+          .select('tax_rate, zip_code')
+          .in('zip_code', zipVariants)
+          .limit(1)
           .maybeSingle();
         tableZipRate = tr ? Number(tr.tax_rate) : null;
       }
@@ -37,6 +39,12 @@ export function useTaxRate({ zip, state }: UseTaxRateParams) {
         state: stateUp || undefined,
         tableZipRate,
       });
+
+      // Debug logs to help trace 0.00% issues
+      console.log('[useTaxRate] inputs', { zip, normalized: zip5, state, stateUp });
+      console.log('[useTaxRate] settings', settings);
+      console.log('[useTaxRate] tableZipRate', tableZipRate);
+      console.log('[useTaxRate] resolved rate (decimal)', rate);
 
       return { rate, settings: settings as CompanySettingsTaxConfig };
     },

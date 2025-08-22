@@ -115,6 +115,8 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;
 
+  console.log('[QuotePreviewStep] tax context', { derivedZip, derivedState, taxRateDecimal: taxRate, subtotal, taxAmount, total });
+
   const handleSend = () => {
     const sendOptions: QuoteSendOptions = {
       method: sendMethod,
