@@ -41,16 +41,19 @@ export function useCreateQuote() {
 
       // Get product prices for items
       let itemsSubtotal = 0;
+      let products: any[] = [];
+      let productPrices: Record<string, number> = {};
+      
       if (items.length > 0) {
         const productIds = [...new Set(items.map(item => item.product_id))];
-        const { data: products } = await supabase
+        const { data: productsData } = await supabase
           .from('products')
-          .select('id, default_price_per_day')
+          .select('id, name, default_price_per_day')
           .in('id', productIds);
 
-        if (products) {
-          const productPrices: Record<string, number> = {};
-          products.forEach(product => {
+        if (productsData) {
+          products = productsData;
+          productsData.forEach(product => {
             productPrices[product.id] = Number(product.default_price_per_day || 0);
           });
 
@@ -116,17 +119,23 @@ export function useCreateQuote() {
 
       if (quoteError) throw quoteError;
 
-      // Create quote items for inventory
+      // Create quote items for inventory with proper pricing
       if (items.length > 0) {
-        const quoteItems = items.map(item => ({
-          quote_id: quote.id,
-          product_id: item.product_id,
-          product_name: `Product ${item.product_id}`, // Will be updated by trigger
-          quantity: item.quantity,
-          unit_price: 0, // Will be updated by trigger
-          line_total: 0, // Will be calculated by trigger
-          rental_duration_days: rentalDays,
-        }));
+        const quoteItems = items.map(item => {
+          const pricePerDay = productPrices[item.product_id] || 0;
+          const unitPrice = pricePerDay;
+          const lineTotal = pricePerDay * item.quantity * rentalDays;
+          
+          return {
+            quote_id: quote.id,
+            product_id: item.product_id,
+            product_name: products?.find(p => p.id === item.product_id)?.name || 'Product',
+            quantity: item.quantity,
+            unit_price: unitPrice,
+            line_total: lineTotal,
+            rental_duration_days: rentalDays,
+          };
+        });
 
         const { error: itemsError } = await supabase
           .from('quote_items')

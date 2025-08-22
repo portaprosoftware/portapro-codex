@@ -187,11 +187,13 @@ async function generatePdfHtml(document: any, items: any[], type: 'quote' | 'inv
 
   // Helper function to get product name
   const getProductName = (item: any) => {
-    if (item.product_name && !item.product_name.includes('-')) {
+    // If we have a proper product name that's not a UUID, use it
+    if (item.product_name && item.product_name !== 'Product' && !item.product_name.includes('-') && item.product_name.length > 10) {
       return item.product_name;
     }
+    // Otherwise, look up the product name from our products array
     const product = products.find(p => p.id === item.product_id);
-    return product?.name || item.product_name || 'Product';
+    return product?.name || item.product_name || 'Unknown Product';
   };
 
   // Status badge styling
