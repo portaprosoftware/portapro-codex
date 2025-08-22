@@ -45,23 +45,32 @@ const handler = async (req: Request): Promise<Response> => {
     const requestBody: InviteUserRequest = await req.json();
     const { email, firstName, lastName, role, phone, invitedBy, environment } = requestBody;
 
-    // Select appropriate Clerk secret key based on environment
-    const clerkSecretKey = environment === 'development' && clerkSecretKeyDev 
-      ? clerkSecretKeyDev 
-      : clerkSecretKeyProd;
-    
-    if (!clerkSecretKey) {
-      console.error('No Clerk secret key available for environment:', environment);
+    // Determine primary and secondary Clerk keys with sensible fallback
+    let primaryClerkKey: string | undefined;
+    let secondaryClerkKey: string | undefined;
+    if (environment === 'development' && clerkSecretKeyDev) {
+      primaryClerkKey = clerkSecretKeyDev;
+      secondaryClerkKey = clerkSecretKeyProd;
+    } else if (environment === 'production' && clerkSecretKeyProd) {
+      primaryClerkKey = clerkSecretKeyProd;
+      secondaryClerkKey = clerkSecretKeyDev;
+    } else {
+      primaryClerkKey = clerkSecretKeyDev || clerkSecretKeyProd;
+      secondaryClerkKey = primaryClerkKey === clerkSecretKeyDev ? clerkSecretKeyProd : clerkSecretKeyDev;
+    }
+
+    if (!primaryClerkKey) {
+      console.error('No Clerk secret key available. Env:', environment, 'Have dev?', !!clerkSecretKeyDev, 'Have prod?', !!clerkSecretKeyProd);
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: 'Clerk integration not configured properly' 
+        JSON.stringify({
+          success: false,
+          error: 'Clerk integration not configured properly'
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Using Clerk environment: ${environment || 'production'} (${environment === 'development' && clerkSecretKeyDev ? 'dev key' : 'prod key'})`);
+    console.log(`Invite-user: Requested environment=${environment || 'unspecified'}. Keys present -> dev:${!!clerkSecretKeyDev}, prod:${!!clerkSecretKeyProd}. Using primary=${primaryClerkKey === clerkSecretKeyDev ? 'dev' : 'prod'}`);
 
     // Validate required fields
     if (!email || !firstName || !lastName || !role || !invitedBy) {
@@ -80,46 +89,64 @@ const handler = async (req: Request): Promise<Response> => {
     const invitationToken = crypto.randomUUID();
     console.log('Generated invitation token');
 
-    // Step 2: Create Clerk user account
+    // Step 2: Create Clerk user account (with key fallback)
     console.log('Creating Clerk user account...');
     
-    const clerkResponse = await fetch('https://api.clerk.com/v1/users', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${clerkSecretKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email_address: [email],
-        first_name: firstName,
-        last_name: lastName,
-        public_metadata: {
-          role: role,
-          invited_by: invitedBy,
-          invitation_token: invitationToken
+    const createWithKey = async (apiKey: string) => {
+      const resp = await fetch('https://api.clerk.com/v1/users', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
         },
-        skip_password_requirement: true,
-        skip_password_checks: true,
-        created_at: new Date().toISOString()
-      }),
-    });
+        body: JSON.stringify({
+          email_address: [email],
+          first_name: firstName,
+          last_name: lastName,
+          public_metadata: {
+            role: role,
+            invited_by: invitedBy,
+            invitation_token: invitationToken
+          },
+          skip_password_requirement: true,
+          skip_password_checks: true,
+          created_at: new Date().toISOString()
+        }),
+      });
+      return resp;
+    };
+
+    let clerkResponse = await createWithKey(primaryClerkKey!);
 
     if (!clerkResponse.ok) {
-      const clerkError = await clerkResponse.text();
-      console.error('Clerk API error:', clerkError);
-      
-      // Handle the case where user already exists in Clerk
-      if (clerkResponse.status === 422 && clerkError.includes('already exists')) {
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'A user with this email address already exists in the system' 
-          }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+      const firstError = await clerkResponse.text();
+      console.error('Clerk API error (primary key):', firstError);
+
+      const looksLikeKeyInvalid = clerkResponse.status === 401 || clerkResponse.status === 403 || firstError.includes('clerk_key_invalid') || firstError.toLowerCase().includes('secret key');
+
+      if (secondaryClerkKey && looksLikeKeyInvalid) {
+        console.log('Retrying Clerk user creation with secondary key...');
+        clerkResponse = await createWithKey(secondaryClerkKey);
+      } else {
+        // If it's a known "already exists" 422, handle below after this block
       }
 
-      throw new Error(`Clerk API error: ${clerkError}`);
+      if (!clerkResponse.ok) {
+        const clerkError = await clerkResponse.text();
+        console.error('Clerk API error (final):', clerkError);
+
+        if (clerkResponse.status === 422 && clerkError.includes('already exists')) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: 'A user with this email address already exists in the system'
+            }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        throw new Error(`Clerk API error: ${clerkError}`);
+      }
     }
 
     const clerkUser = await clerkResponse.json();
