@@ -167,15 +167,16 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     console.log('About to return response with HTML length:', html?.length);
-    console.log('Response object keys will be:', Object.keys({ html, success: true, message: `${requestData.type} processed successfully` }));
+    console.log('HTML content preview:', html?.substring(0, 100));
     
     const responseObj = { 
       html,
       success: true,
-      message: `${requestData.type} processed successfully`
+      message: `${requestData.type} ${requestData.action} completed successfully`
     };
     
-    console.log('Final response object:', JSON.stringify(responseObj).substring(0, 200));
+    console.log('Response object keys:', Object.keys(responseObj));
+    console.log('Final response size:', JSON.stringify(responseObj).length);
     
     return new Response(
       JSON.stringify(responseObj),
