@@ -228,7 +228,10 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
+                <div className="flex flex-col">
+                  <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
+                  <span className="text-xs text-muted-foreground">% based on service location US zip code</span>
+                </div>
                 <span>${taxAmount.toFixed(2)}</span>
               </div>
               <Separator />
@@ -248,6 +251,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
           <CardContent className="space-y-4">
             <div>
               <Label className="text-base font-medium">Delivery Method</Label>
+              <p className="text-sm text-muted-foreground mt-1">All quotes are also added to your customers unique portal</p>
               <RadioGroup value={sendMethod} onValueChange={(value: any) => setSendMethod(value)} className="mt-2">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="email" id="email" />
@@ -295,24 +299,22 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="email-message">Message</Label>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => setShowAIModal(true)}
-                      className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold"
-                    >
-                      <Sparkles className="w-2 h-2 mr-1" />
-                      Create with AI
-                    </Button>
-                  </div>
+                  <Label htmlFor="email-message">Message</Label>
                   <Textarea
                     id="email-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={3}
                   />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setShowAIModal(true)}
+                    className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white mt-2"
+                  >
+                    <Sparkles className="w-2 h-2 mr-1" />
+                    Create with AI
+                  </Button>
                 </div>
               </div>
             )}
@@ -330,18 +332,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="sms-message">Message</Label>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => setShowAIModal(true)}
-                      className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold"
-                    >
-                      <Sparkles className="w-2 h-2 mr-1" />
-                      Create with AI
-                    </Button>
-                  </div>
+                  <Label htmlFor="sms-message">Message</Label>
                   <Textarea
                     id="sms-message"
                     value={message}
@@ -352,6 +343,15 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   <p className="text-xs text-muted-foreground mt-1">
                     {message.length}/160 characters
                   </p>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setShowAIModal(true)}
+                    className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white mt-2"
+                  >
+                    <Sparkles className="w-2 h-2 mr-1" />
+                    Create with AI
+                  </Button>
                 </div>
               </div>
             )}
@@ -388,24 +388,22 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="email-message">Message</Label>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => setShowAIModal(true)}
-                      className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold"
-                    >
-                      <Sparkles className="w-2 h-2 mr-1" />
-                      Create with AI
-                    </Button>
-                  </div>
+                  <Label htmlFor="email-message">Message</Label>
                   <Textarea
                     id="email-message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={3}
                   />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setShowAIModal(true)}
+                    className="h-6 px-2 text-xs bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white mt-2"
+                  >
+                    <Sparkles className="w-2 h-2 mr-1" />
+                    Create with AI
+                  </Button>
                 </div>
               </div>
             )}
