@@ -14,10 +14,12 @@ interface InviteUserRequest {
   role: string;
   phone?: string;
   invitedBy: string;
+  environment?: 'development' | 'production';
 }
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-const clerkSecretKey = Deno.env.get('CLERK_SECRET_KEY');
+const clerkSecretKeyProd = Deno.env.get('CLERK_SECRET_KEY');
+const clerkSecretKeyDev = Deno.env.get('CLERK_SECRET_KEY_DEV');
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
@@ -41,7 +43,25 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Starting user invitation process...');
     
     const requestBody: InviteUserRequest = await req.json();
-    const { email, firstName, lastName, role, phone, invitedBy } = requestBody;
+    const { email, firstName, lastName, role, phone, invitedBy, environment } = requestBody;
+
+    // Select appropriate Clerk secret key based on environment
+    const clerkSecretKey = environment === 'development' && clerkSecretKeyDev 
+      ? clerkSecretKeyDev 
+      : clerkSecretKeyProd;
+    
+    if (!clerkSecretKey) {
+      console.error('No Clerk secret key available for environment:', environment);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Clerk integration not configured properly' 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Using Clerk environment: ${environment || 'production'} (${environment === 'development' && clerkSecretKeyDev ? 'dev key' : 'prod key'})`);
 
     // Validate required fields
     if (!email || !firstName || !lastName || !role || !invitedBy) {

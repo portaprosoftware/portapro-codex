@@ -37,7 +37,8 @@ export const useInviteUser = () => {
       const { data, error } = await supabase.functions.invoke('invite-user', {
         body: {
           ...userData,
-          invitedBy: user.id
+          invitedBy: user.id,
+          environment: import.meta.env.DEV ? 'development' : 'production'
         }
       });
 
