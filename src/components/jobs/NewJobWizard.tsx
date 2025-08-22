@@ -542,19 +542,22 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   );
 }
 
-export function NewJobWizard({ open, onOpenChange, draftData, initialMode = 'job', wizardMode = 'job' }: NewJobWizardProps) {
+export function NewJobWizard({ open, onOpenChange, draftData, initialMode, wizardMode = 'job' }: NewJobWizardProps) {
   const handleClose = () => {
     onOpenChange(false);
   };
+
+  // Use wizardMode consistently - it should be the same as initialMode
+  const mode = (wizardMode || initialMode || 'job') as 'job' | 'quote';
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="p-0" aria-describedby="new-job-wizard-description">
         <div id="new-job-wizard-description" className="sr-only">
-          {wizardMode === 'quote' ? 'Create a new quote by following the wizard steps' : 'Create a new job by following the wizard steps'}
+          {mode === 'quote' ? 'Create a new quote by following the wizard steps' : 'Create a new job by following the wizard steps'}
         </div>
-        <JobWizardProvider initialDraftData={draftData} initialMode={initialMode}>
-          <WizardContent onClose={handleClose} wizardMode={wizardMode} />
+        <JobWizardProvider initialDraftData={draftData} initialMode={mode}>
+          <WizardContent onClose={handleClose} wizardMode={mode} />
         </JobWizardProvider>
       </DrawerContent>
     </Drawer>
