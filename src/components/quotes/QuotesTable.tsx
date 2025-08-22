@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileText, MoreHorizontal, BriefcaseIcon } from "lucide-react";
+import { FileText, MoreHorizontal, BriefcaseIcon, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
+import { ViewQuoteModal } from "./ViewQuoteModal";
 import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,6 +19,8 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
   const [showCreateQuote, setShowCreateQuote] = useState(false);
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
+  const [showViewQuote, setShowViewQuote] = useState(false);
+  const [selectedQuoteForView, setSelectedQuoteForView] = useState<string>("");
   const queryClient = useQueryClient();
   const convertQuoteToJob = useConvertQuoteToJob();
 
@@ -169,6 +172,15 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setSelectedQuoteForView(quote.id);
+                        setShowViewQuote(true);
+                      }}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Quote
+                    </DropdownMenuItem>
                     {quote.status === 'accepted' && (
                       <>
                         <DropdownMenuItem 
@@ -212,6 +224,15 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
           fromQuoteId={selectedQuoteForInvoice.id}
         />
       )}
+
+      <ViewQuoteModal
+        isOpen={showViewQuote}
+        onClose={() => {
+          setShowViewQuote(false);
+          setSelectedQuoteForView("");
+        }}
+        quoteId={selectedQuoteForView}
+      />
     </div>
   );
 };
