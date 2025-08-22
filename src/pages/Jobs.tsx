@@ -81,7 +81,6 @@ const JobsPage: React.FC = () => {
 
   // Smart job search for cross-date navigation - only trigger on Enter key
   const [shouldTriggerSmartSearch, setShouldTriggerSmartSearch] = useState(false);
-  console.log('Search term:', searchTerm, 'Search looks like job ID:', searchTerm.length >= 6 && /^[A-Z]{3}-\d+$/i.test(searchTerm));
   const searchLooksLikeJobId = searchTerm.length >= 6 && /^[A-Z]{3}-\d+$/i.test(searchTerm);
   const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm : undefined);
 
@@ -123,13 +122,10 @@ const JobsPage: React.FC = () => {
 
   // Handle Enter key for smart search
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
-    console.log('Key pressed:', e.key, 'Search term:', searchTerm, 'Looks like job ID:', searchLooksLikeJobId, 'Active tab:', activeTab);
     if (e.key === 'Enter' && searchLooksLikeJobId && activeTab !== 'custom') {
-      console.log('Enter pressed for job search:', searchTerm);
-      console.log('Setting shouldTriggerSmartSearch to true');
       setShouldTriggerSmartSearch(true);
     }
-  }, [searchLooksLikeJobId, activeTab, searchTerm]);
+  }, [searchLooksLikeJobId, activeTab]);
 
   // Trigger smart search when job is found
   useEffect(() => {
