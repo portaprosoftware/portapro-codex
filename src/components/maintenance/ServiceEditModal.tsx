@@ -60,7 +60,7 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
         category: service.category || "cleaning",
         pricing_method: service.pricing_method || "per_visit",
         default_rate: service.default_rate || 0,
-        estimated_duration: service.estimated_duration || 60,
+        estimated_duration: service.estimated_duration_minutes || 60,
         default_template_id: service.default_template_id || "",
       });
     } else if (isCreating) {
@@ -88,7 +88,14 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
   const saveServiceMutation = useMutation({
     mutationFn: async () => {
       const serviceData = {
-        ...formData,
+        name: formData.name,
+        code: formData.code,
+        description: formData.description,
+        category: formData.category,
+        pricing_method: formData.pricing_method,
+        default_rate: formData.default_rate,
+        estimated_duration_minutes: formData.estimated_duration,
+        default_template_id: formData.default_template_id || null,
         is_active: true,
       };
 
