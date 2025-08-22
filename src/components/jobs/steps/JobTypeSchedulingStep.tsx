@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -319,13 +319,33 @@ export function JobTypeSchedulingStep() {
                   {/* Days - Always visible and primary */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Keep for (Days)</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={state.data.rental_duration_days || 1}
-                      onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
-                      className="text-center"
-                    />
+                    <div className="space-y-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-6 p-0"
+                        onClick={() => handleRentalDurationChange('days', (state.data.rental_duration_days || 1) + 1)}
+                        aria-label="Increase days"
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                      </Button>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={state.data.rental_duration_days || 1}
+                        onChange={(e) => handleRentalDurationChange('days', parseInt(e.target.value) || 1)}
+                        className="text-center h-10 text-lg font-medium"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-6 p-0"
+                        onClick={() => handleRentalDurationChange('days', Math.max(1, (state.data.rental_duration_days || 1) - 1))}
+                        aria-label="Decrease days"
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       1 day = 24 hours from your delivery time
                     </p>
@@ -355,14 +375,34 @@ export function JobTypeSchedulingStep() {
                     {trackHours && (
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Hours (1-23)</Label>
-                        <Input
-                          type="number"
-                          min="1"
-                          max="23"
-                          value={state.data.rental_duration_hours || 1}
-                          onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
-                          className="text-center"
-                        />
+                        <div className="space-y-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full h-6 p-0"
+                            onClick={() => handleRentalDurationChange('hours', Math.min(23, (state.data.rental_duration_hours || 1) + 1))}
+                            aria-label="Increase hours"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="23"
+                            value={state.data.rental_duration_hours || 1}
+                            onChange={(e) => handleRentalDurationChange('hours', parseInt(e.target.value) || 1)}
+                            className="text-center h-10 text-lg font-medium"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full h-6 p-0"
+                            onClick={() => handleRentalDurationChange('hours', Math.max(1, (state.data.rental_duration_hours || 1) - 1))}
+                            aria-label="Decrease hours"
+                          >
+                            <ChevronDown className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -426,7 +466,9 @@ export function JobTypeSchedulingStep() {
               </Card>
               
               {errors.rental_duration && (
-                <p className="text-sm text-destructive">{errors.rental_duration}</p>
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                  <p className="text-destructive text-sm font-medium">{errors.rental_duration}</p>
+                </div>
               )}
             </div>
           )}
