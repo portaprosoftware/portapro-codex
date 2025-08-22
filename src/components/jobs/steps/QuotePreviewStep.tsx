@@ -230,7 +230,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               <div className="flex justify-between text-sm">
                 <div className="flex flex-col">
                   <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
-                  <span className="text-xs text-muted-foreground">% based on service location US zip code</span>
+                  <span className="text-xs text-muted-foreground">Tax rate is based on the service location ZIP code.</span>
                 </div>
                 <span>${taxAmount.toFixed(2)}</span>
               </div>
@@ -251,7 +251,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
           <CardContent className="space-y-4">
             <div>
               <Label className="text-base font-medium">Delivery Method</Label>
-              <p className="text-sm text-muted-foreground mt-1">All quotes are also added to your customers unique portal</p>
+              <p className="text-sm text-muted-foreground mt-1">All sent quotes are also uploaded to your customer's portal.</p>
               <RadioGroup value={sendMethod} onValueChange={(value: any) => setSendMethod(value)} className="mt-2">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="email" id="email" />
