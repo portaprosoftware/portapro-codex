@@ -177,12 +177,13 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => {
+                        console.log('View quote clicked for:', quote.id);
                         setSelectedQuote(quote);
                         setShowViewQuote(true);
                       }}
                     >
                       <Eye className="mr-2 h-4 w-4" />
-                      View
+                      View Quote
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => {
                       setSelectedQuote(quote);
