@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit2, X } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit2, X, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -41,6 +41,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pendingPin, setPendingPin] = useState<{ longitude: number; latitude: number } | null>(null);
   const [pinName, setPinName] = useState('');
   const [pinNotes, setPinNotes] = useState('');
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12');
 
   useEffect(() => {
     const fetchMapboxToken = async () => {
@@ -78,7 +79,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
+        style: mapStyle,
         center: [-95.7129, 37.0902], // Center of US
         zoom: 4
       });
@@ -96,7 +97,20 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, mapStyle]);
+
+  // Effect to update map style when toggled
+  const toggleMapStyle = () => {
+    const newStyle = mapStyle === 'mapbox://styles/mapbox/streets-v12' 
+      ? 'mapbox://styles/mapbox/satellite-streets-v12' 
+      : 'mapbox://styles/mapbox/streets-v12';
+    
+    setMapStyle(newStyle);
+    
+    if (map.current) {
+      map.current.setStyle(newStyle);
+    }
+  };
 
   const clearAllPins = () => {
     if (map.current) {
@@ -320,6 +334,35 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           {isSearching ? 'Searching...' : 'Go'}
         </Button>
       </form>
+      
+      <div className="border rounded-lg overflow-hidden relative">
+        {/* Map Style Toggle */}
+        <div className="absolute top-4 left-4 z-10">
+          <Button
+            onClick={toggleMapStyle}
+            variant="secondary"
+            size="sm"
+            className="flex items-center gap-2 bg-background/90 backdrop-blur-sm"
+          >
+            <Layers className="w-4 h-4" />
+            {mapStyle === 'mapbox://styles/mapbox/streets-v12' ? 'Satellite' : 'Streets'}
+          </Button>
+        </div>
+        
+        <div 
+          ref={mapContainer} 
+          className="w-full h-96"
+          style={{ minHeight: '400px' }}
+        />
+        {dropModeActive && (
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <div className="w-1 h-8 bg-red-500"></div>
+              <div className="w-8 h-1 bg-red-500 absolute"></div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center justify-center gap-4 p-4 bg-muted/30 rounded-lg">
         <Button
@@ -339,22 +382,6 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             <Plus className="w-4 h-4" />
             Drop Pin Here
           </Button>
-        )}
-      </div>
-      
-      <div className="border rounded-lg overflow-hidden relative">
-        <div 
-          ref={mapContainer} 
-          className="w-full h-96"
-          style={{ minHeight: '400px' }}
-        />
-        {dropModeActive && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <div className="w-1 h-8 bg-red-500"></div>
-              <div className="w-8 h-1 bg-red-500 absolute"></div>
-            </div>
-          </div>
         )}
       </div>
       
