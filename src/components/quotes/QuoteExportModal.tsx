@@ -43,7 +43,7 @@ PortaPro Team`);
     try {
       console.log('Export PDF clicked for:', quote);
       
-      const { data, error } = await supabase.functions.invoke('generate-pdf-and-email', {
+      const response = await supabase.functions.invoke('generate-pdf-and-email', {
         body: {
           type: 'quote',
           id: quote.id,
@@ -54,6 +54,12 @@ PortaPro Team`);
           message
         }
       });
+
+      console.log('Raw Supabase response:', response);
+      console.log('Response data:', response.data);
+      console.log('Response error:', response.error);
+
+      const { data, error } = response;
 
       console.log('Edge function response:', { data, error });
 
