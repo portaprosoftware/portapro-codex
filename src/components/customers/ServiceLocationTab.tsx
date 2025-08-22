@@ -108,7 +108,33 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setMapStyle(newStyle);
     
     if (map.current) {
+      // Store current markers data before style change
+      const currentPins = [...pins];
+      
       map.current.setStyle(newStyle);
+      
+      // Re-add markers after style loads
+      map.current.once('style.load', () => {
+        // Clear existing marker refs
+        Object.values(markersRef.current).forEach(marker => marker.remove());
+        markersRef.current = {};
+        
+        // Re-add all markers
+        currentPins.forEach(pin => {
+          const marker = new mapboxgl.Marker({
+            color: '#3b82f6',
+            draggable: false
+          })
+            .setLngLat([pin.longitude, pin.latitude])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
+            )
+            .addTo(map.current!);
+          
+          markersRef.current[pin.id] = marker;
+        });
+      });
     }
   };
 
@@ -336,17 +362,32 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       </form>
       
       <div className="border rounded-lg overflow-hidden relative">
-        {/* Map Style Toggle */}
+        {/* Map Style Toggle Switch */}
         <div className="absolute top-4 left-4 z-10">
-          <Button
-            onClick={toggleMapStyle}
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2 bg-background/90 backdrop-blur-sm"
-          >
-            <Layers className="w-4 h-4" />
-            {mapStyle === 'mapbox://styles/mapbox/streets-v12' ? 'Satellite' : 'Streets'}
-          </Button>
+          <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
+            <div className="flex">
+              <button
+                onClick={() => mapStyle !== 'mapbox://styles/mapbox/streets-v12' && toggleMapStyle()}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  mapStyle === 'mapbox://styles/mapbox/streets-v12'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Streets
+              </button>
+              <button
+                onClick={() => mapStyle !== 'mapbox://styles/mapbox/satellite-streets-v12' && toggleMapStyle()}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Satellite
+              </button>
+            </div>
+          </div>
         </div>
         
         <div 
