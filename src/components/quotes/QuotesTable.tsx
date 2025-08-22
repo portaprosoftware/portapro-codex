@@ -185,17 +185,23 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
                       <Eye className="mr-2 h-4 w-4" />
                       View Quote
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => {
-                      setSelectedQuote(quote);
-                      setShowExportModal(true);
-                    }}>
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        console.log('Export PDF clicked for:', quote);
+                        setSelectedQuote(quote);
+                        setShowExportModal(true);
+                      }}
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       Export PDF
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => {
-                      setSelectedQuote(quote);
-                      setShowExportModal(true);
-                    }}>
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        console.log('Send email clicked for:', quote);
+                        setSelectedQuote(quote);
+                        setShowExportModal(true);
+                      }}
+                    >
                       <Mail className="mr-2 h-4 w-4" />
                       Send Email
                     </DropdownMenuItem>
