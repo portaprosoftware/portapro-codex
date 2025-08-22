@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { NumberInput } from '@/components/ui/number-input';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
 import { Search, Package, Eye, Layers, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
@@ -769,19 +770,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Quantity Input */}
-        <div className="space-y-2">
-          <label className="text-xs font-medium">
+        <div className="space-y-3">
+          <label className="text-xs font-medium block text-center">
             Additional Quantity {selectedSpecificUnits > 0 && `(${remainingForBulk} remaining after ${selectedSpecificUnits} specific)`}
           </label>
-          <Input
-            type="number"
-            min={1}
-            max={remainingForBulk}
-            value={quantity}
-            onChange={(e) => onQuantityChange(Math.min(parseInt(e.target.value) || 1, remainingForBulk))}
-            className="h-8 text-xs"
-            disabled={remainingForBulk <= 0}
-          />
+          <div className="flex flex-col items-center space-y-2">
+            <NumberInput
+              value={quantity}
+              onChange={(value) => onQuantityChange(Math.min(value || 1, remainingForBulk))}
+              min={0}
+              max={remainingForBulk}
+              step={1}
+              size="lg"
+              className="w-32 text-center"
+              disabled={remainingForBulk <= 0}
+              placeholder="0"
+            />
+          </div>
         </div>
 
         {/* Action Buttons */}

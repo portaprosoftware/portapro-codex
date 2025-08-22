@@ -12,6 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { NumberInput } from '@/components/ui/number-input';
 import { format, addDays } from 'date-fns';
 import { CalendarIcon, Plus, Trash2, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
@@ -551,13 +552,19 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                   )}
 
                   <div className="space-y-2">
-                    <Label>Quantity</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={newItem.quantity}
-                      onChange={(e) => setNewItem(prev => ({ ...prev, quantity: parseInt(e.target.value) || 1 }))}
-                    />
+                    <Label className="text-center block">Quantity</Label>
+                    <div className="flex justify-center">
+                      <NumberInput
+                        value={newItem.quantity}
+                        onChange={(value) => setNewItem(prev => ({ ...prev, quantity: value || 1 }))}
+                        min={1}
+                        max={9999}
+                        step={1}
+                        size="default"
+                        className="w-32 text-center"
+                        placeholder="1"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
