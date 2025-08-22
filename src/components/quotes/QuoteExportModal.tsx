@@ -43,7 +43,7 @@ PortaPro Team`);
     try {
       console.log('Export PDF clicked for:', quote);
       
-      const response = await supabase.functions.invoke('generate-pdf-and-email', {
+      const response = await supabase.functions.invoke('quote-pdf-generator', {
         body: {
           type: 'quote',
           id: quote.id,

@@ -45,7 +45,7 @@ PortaPro Team`);
     try {
       console.log('Export PDF clicked for invoice:', invoice);
       
-      const response = await supabase.functions.invoke('generate-pdf-and-email', {
+      const response = await supabase.functions.invoke('quote-pdf-generator', {
         body: {
           type: 'invoice',
           id: invoice.id,
