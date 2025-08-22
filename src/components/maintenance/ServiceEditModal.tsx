@@ -164,7 +164,7 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
       }
     });
 
-    const next = (maxNum + 1).toString().padStart(4, '0');
+    const next = (maxNum + 1).toString().padStart(2, '0');
     setFormData(prev => ({ ...prev, code: `${prefix}-${next}` }));
   };
 
@@ -198,7 +198,7 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
                   onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
                   required
                   disabled={!isCreating}
-                  placeholder="Will auto-generate (e.g., CL-0001)"
+                  placeholder="Will auto-generate (e.g., CL-01)"
                 />
                 <Button
                   type="button"
