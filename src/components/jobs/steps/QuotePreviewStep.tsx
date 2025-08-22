@@ -11,8 +11,9 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { EnhancedInvoiceWizard } from '@/components/invoices/EnhancedInvoiceWizard';
-import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt } from 'lucide-react';
+import { Mail, MessageSquare, FileText, Calendar, MapPin, Clock, Receipt, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
+import { AIQuoteMessageModal } from '@/components/quotes/AIQuoteMessageModal';
 
 interface QuotePreviewStepProps {
   onSendQuote: (sendOptions: QuoteSendOptions) => void;
@@ -41,6 +42,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
   const [subject, setSubject] = useState('Your Quote from PortaPro');
   const [message, setMessage] = useState('Please find your quote attached. We look forward to working with you!');
   const [sendImmediately, setSendImmediately] = useState(true);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   // Fetch customer data
   const { data: customer } = useQuery({
@@ -120,6 +122,22 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
     };
     
     onSendQuote(sendOptions);
+  };
+
+  const handleAIMessageGenerated = (generatedSubject: string, generatedContent: string) => {
+    if (sendMethod === 'email' || sendMethod === 'email_sms') {
+      setSubject(generatedSubject);
+    }
+    setMessage(generatedContent);
+  };
+
+  // Prepare quote data for AI context
+  const quoteData = {
+    customerName: customer?.name,
+    jobType: state.data.job_type,
+    totalAmount: total,
+    items: state.data.items || [],
+    services: state.data.servicesData?.selectedServices || []
   };
 
   return (
@@ -273,7 +291,19 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email-message">Message</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="email-message">Message</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAIModal(true)}
+                      className="h-6 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      AI
+                    </Button>
+                  </div>
                   <Textarea
                     id="email-message"
                     value={message}
@@ -297,7 +327,19 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sms-message">Message</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="sms-message">Message</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAIModal(true)}
+                      className="h-6 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      AI
+                    </Button>
+                  </div>
                   <Textarea
                     id="sms-message"
                     value={message}
@@ -344,7 +386,19 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email-message">Message</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="email-message">Message</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAIModal(true)}
+                      className="h-6 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      AI
+                    </Button>
+                  </div>
                   <Textarea
                     id="email-message"
                     value={message}
@@ -376,6 +430,14 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Quote Message Modal */}
+      <AIQuoteMessageModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        onMessageGenerated={handleAIMessageGenerated}
+        quoteData={quoteData}
+      />
     </div>
   );
 };
