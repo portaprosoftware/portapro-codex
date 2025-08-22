@@ -161,7 +161,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               )}
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={getJobTypeBadgeClass(state.data.job_type)}>
-                  {state.data.job_type}
+                  {state.data.job_type?.charAt(0).toUpperCase() + state.data.job_type?.slice(1).toLowerCase()}
                 </Badge>
               </div>
             </div>
@@ -367,11 +367,10 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               <Button 
                 variant="outline" 
                 onClick={onSaveDraft}
-                className="w-full flex flex-col items-center py-3 h-auto"
+                className="w-full"
                 disabled={sending}
               >
-                <span>Save as Draft</span>
-                <span className="text-xs text-muted-foreground font-normal">save & send later</span>
+                Save as Draft
               </Button>
             </div>
           </CardContent>
