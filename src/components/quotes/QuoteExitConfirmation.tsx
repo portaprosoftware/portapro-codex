@@ -50,7 +50,7 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
             <Label htmlFor="draftName">Quote Draft Name</Label>
             <Input
               id="draftName"
-              placeholder="Enter a name for this quote draft..."
+              placeholder=""
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               disabled={isSaving}
@@ -58,7 +58,7 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
           </div>
         </div>
 
-        <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+        <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 justify-center">
           <AlertDialogCancel onClick={onClose} disabled={isSaving}>
             Continue Editing
           </AlertDialogCancel>
