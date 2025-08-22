@@ -35,14 +35,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
     default_rate: 0,
     estimated_duration: 60,
     default_template_id: "",
-    consumables_recipe: {},
-    evidence_requirements: {
-      min_photos: 0,
-      gps_required: false,
-      signature_required: false,
-    },
-    eligible_targets: [] as string[],
-    can_be_recurring: true,
   });
 
   const { data: templates } = useQuery({
@@ -70,14 +62,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
         default_rate: service.default_rate || 0,
         estimated_duration: service.estimated_duration || 60,
         default_template_id: service.default_template_id || "",
-        consumables_recipe: service.consumables_recipe || {},
-        evidence_requirements: service.evidence_requirements || {
-          min_photos: 0,
-          gps_required: false,
-          signature_required: false,
-        },
-        eligible_targets: service.eligible_targets || [],
-        can_be_recurring: service.can_be_recurring !== false,
       });
     } else if (isCreating) {
       setFormData({
@@ -89,14 +73,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
         default_rate: 0,
         estimated_duration: 60,
         default_template_id: "",
-        consumables_recipe: {},
-        evidence_requirements: {
-          min_photos: 0,
-          gps_required: false,
-          signature_required: false,
-        },
-        eligible_targets: [],
-        can_be_recurring: true,
       });
     }
   }, [service, isCreating]);
@@ -145,20 +121,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
     saveServiceMutation.mutate();
   };
 
-  const unitTypes = [
-    "Standard Units",
-    "ADA Units", 
-    "Luxury Units",
-    "Hand Wash Stations",
-    "Portable Sinks"
-  ];
-
-  const assetTypes = [
-    "Pump Trucks",
-    "Service Vehicles",
-    "Cleaning Equipment"
-  ];
-
   // Category options with prefixes
   const categoryOptions = [
     { value: 'cleaning', label: 'Cleaning', prefix: 'CL' },
@@ -204,15 +166,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
 
     const next = (maxNum + 1).toString().padStart(4, '0');
     setFormData(prev => ({ ...prev, code: `${prefix}-${next}` }));
-  };
-
-  const toggleTarget = (target: string) => {
-    setFormData(prev => ({
-      ...prev,
-      eligible_targets: prev.eligible_targets.includes(target)
-        ? prev.eligible_targets.filter(t => t !== target)
-        : [...prev.eligible_targets, target]
-    }));
   };
 
   return (
@@ -349,114 +302,6 @@ export const ServiceEditModal: React.FC<ServiceEditModalProps> = ({
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Evidence Requirements */}
-          <div>
-            <Label className="text-base font-medium">Evidence Requirements</Label>
-            <div className="grid grid-cols-3 gap-4 mt-2">
-              <div>
-                <Label htmlFor="min_photos">Minimum Photos</Label>
-                <Input
-                  id="min_photos"
-                  type="number"
-                  min="0"
-                  value={formData.evidence_requirements.min_photos}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    evidence_requirements: {
-                      ...prev.evidence_requirements,
-                      min_photos: parseInt(e.target.value) || 0
-                    }
-                  }))}
-                />
-              </div>
-              
-              <div className="flex items-center space-x-2 mt-6">
-                <Checkbox
-                  id="gps_required"
-                  checked={formData.evidence_requirements.gps_required}
-                  onCheckedChange={(checked) => setFormData(prev => ({
-                    ...prev,
-                    evidence_requirements: {
-                      ...prev.evidence_requirements,
-                      gps_required: !!checked
-                    }
-                  }))}
-                />
-                <Label htmlFor="gps_required">GPS Required</Label>
-              </div>
-
-              <div className="flex items-center space-x-2 mt-6">
-                <Checkbox
-                  id="signature_required"
-                  checked={formData.evidence_requirements.signature_required}
-                  onCheckedChange={(checked) => setFormData(prev => ({
-                    ...prev,
-                    evidence_requirements: {
-                      ...prev.evidence_requirements,
-                      signature_required: !!checked
-                    }
-                  }))}
-                />
-                <Label htmlFor="signature_required">Signature Required</Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Eligible Targets */}
-          <div>
-            <Label className="text-base font-medium">Applies To</Label>
-            <div className="space-y-3 mt-2">
-              <div>
-                <Label className="text-sm font-medium text-gray-700">Unit Types</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {unitTypes.map((type) => (
-                    <Badge
-                      key={type}
-                      variant={formData.eligible_targets.includes(type) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleTarget(type)}
-                    >
-                      {type}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <Label className="text-sm font-medium text-gray-700">Fleet Assets</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {assetTypes.map((type) => (
-                    <Badge
-                      key={type}
-                      variant={formData.eligible_targets.includes(type) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleTarget(type)}
-                    >
-                      {type}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recurring */}
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="can_be_recurring"
-              checked={formData.can_be_recurring}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, can_be_recurring: !!checked }))}
-            />
-            <Label htmlFor="can_be_recurring">Can be recurring</Label>
-          </div>
-
-          {/* Microcopy */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Services define <em>what you do</em>. Records are created when a job or work order using this service is completed.
-            </p>
           </div>
 
           {/* Form Actions */}
