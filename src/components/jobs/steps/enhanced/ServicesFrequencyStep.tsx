@@ -1178,74 +1178,80 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                        {isSelected && selectedService && (
                          <div className="border-t pt-3 mt-3">
                            <div className="space-y-3">
-                             <div className="flex items-center space-x-2">
-                               <Checkbox
-                                 id={`custom-price-${service.id}`}
-                                 checked={selectedService.price_override?.enabled || false}
-                                 onCheckedChange={(checked) => {
-                                   if (checked) {
-                                     updateServicePriceOverride(service.id, true, 'per_visit', selectedService.per_visit_cost || 0);
-                                   } else {
-                                     updateServicePriceOverride(service.id, false);
-                                   }
-                                 }}
-                               />
-                               <Label htmlFor={`custom-price-${service.id}`} className="text-sm font-medium">
-                                 Custom pricing for this service
-                               </Label>
-                             </div>
+                              <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                                <Checkbox
+                                  id={`custom-price-${service.id}`}
+                                  checked={selectedService.price_override?.enabled || false}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      updateServicePriceOverride(service.id, true, 'per_visit', selectedService.per_visit_cost || 0);
+                                    } else {
+                                      updateServicePriceOverride(service.id, false);
+                                    }
+                                  }}
+                                />
+                                <Label htmlFor={`custom-price-${service.id}`} className="text-sm font-medium">
+                                  Custom pricing for this service
+                                </Label>
+                              </div>
                              
                              {selectedService.price_override?.enabled && (
                                <div className="ml-6 space-y-3 p-3 bg-muted/30 rounded-lg">
-                                 <div className="flex items-center space-x-3">
-                                   <Label className="text-sm">Pricing method:</Label>
-                                   <div className="flex space-x-2">
-                                     <Button
-                                       variant={selectedService.price_override.method === 'per_visit' ? 'default' : 'outline'}
-                                       size="sm"
-                                       onClick={() => updateServicePriceOverride(
-                                         service.id, 
-                                         true, 
-                                         'per_visit', 
-                                         selectedService.price_override?.amount || selectedService.per_visit_cost || 0
-                                       )}
-                                     >
-                                       Per Visit
-                                     </Button>
-                                     <Button
-                                       variant={selectedService.price_override.method === 'flat_for_job' ? 'default' : 'outline'}
-                                       size="sm"
-                                       onClick={() => updateServicePriceOverride(
-                                         service.id, 
-                                         true, 
-                                         'flat_for_job', 
-                                         selectedService.price_override?.amount || (selectedService.per_visit_cost || 0) * (selectedService.visit_count || 1)
-                                       )}
-                                     >
-                                       Flat for Job
-                                     </Button>
-                                   </div>
-                                 </div>
+                                  <div className="flex items-center space-x-3" onClick={(e) => e.stopPropagation()}>
+                                    <Label className="text-sm">Pricing method:</Label>
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        variant={selectedService.price_override.method === 'per_visit' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          updateServicePriceOverride(
+                                            service.id, 
+                                            true, 
+                                            'per_visit', 
+                                            selectedService.price_override?.amount || selectedService.per_visit_cost || 0
+                                          );
+                                        }}
+                                      >
+                                        Per Visit
+                                      </Button>
+                                      <Button
+                                        variant={selectedService.price_override.method === 'flat_for_job' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          updateServicePriceOverride(
+                                            service.id, 
+                                            true, 
+                                            'flat_for_job', 
+                                            selectedService.price_override?.amount || (selectedService.per_visit_cost || 0) * (selectedService.visit_count || 1)
+                                          );
+                                        }}
+                                      >
+                                        Flat for Job
+                                      </Button>
+                                    </div>
+                                  </div>
                                  <div>
                                    <Label className="text-sm font-medium">
                                      {selectedService.price_override.method === 'per_visit' ? 'Price per visit' : 'Total flat price'}
                                    </Label>
-                                   <div className="flex items-center space-x-2 mt-1">
-                                     <span className="text-sm">$</span>
-                                     <Input
-                                       type="number"
-                                       min="0"
-                                       step="0.01"
-                                       value={selectedService.price_override.amount}
-                                       onChange={(e) => updateServicePriceOverride(
-                                         service.id,
-                                         true,
-                                         selectedService.price_override?.method || 'per_visit',
-                                         parseFloat(e.target.value) || 0
-                                       )}
-                                       className="flex-1"
-                                     />
-                                   </div>
+                                    <div className="flex items-center space-x-2 mt-1" onClick={(e) => e.stopPropagation()}>
+                                      <span className="text-sm">$</span>
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={selectedService.price_override.amount}
+                                        onChange={(e) => updateServicePriceOverride(
+                                          service.id,
+                                          true,
+                                          selectedService.price_override?.method || 'per_visit',
+                                          parseFloat(e.target.value) || 0
+                                        )}
+                                        className="flex-1"
+                                      />
+                                    </div>
                                    <p className="text-xs text-muted-foreground mt-1">
                                      {selectedService.price_override.method === 'per_visit' 
                                        ? 'Enter the custom rate per service visit'
@@ -1267,65 +1273,76 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                <Label htmlFor={`frequency-${service.id}`} className="text-sm font-medium">
                                  Service Frequency <span className="text-destructive">*</span>
                                </Label>
-                               <Select
-                                 value={selectedService.frequency}
-                                 onValueChange={(value) => updateServiceFrequency(service.id, value)}
-                               >
-                                 <SelectTrigger id={`frequency-${service.id}`} className="mt-1">
-                                   <SelectValue placeholder="Select frequency" />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                   <SelectItem value="one-time">One-Time</SelectItem>
-                                   <SelectItem value="daily">Daily</SelectItem>
-                                   <SelectItem value="weekly">Weekly (based on first day of schedule)</SelectItem>
-                                   <SelectItem value="custom">Custom</SelectItem>
-                                 </SelectContent>
-                               </Select>
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <Select
+                                    value={selectedService.frequency}
+                                    onValueChange={(value) => updateServiceFrequency(service.id, value)}
+                                  >
+                                    <SelectTrigger id={`frequency-${service.id}`} className="mt-1">
+                                      <SelectValue placeholder="Select frequency" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-popover border border-border z-50">
+                                      <SelectItem value="one-time">One-Time</SelectItem>
+                                      <SelectItem value="daily">Daily</SelectItem>
+                                      <SelectItem value="weekly">Weekly (based on first day of schedule)</SelectItem>
+                                      <SelectItem value="custom">Custom</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
                              </div>
                              
                              {selectedService.frequency === 'custom' && (
                                <div className="space-y-3">
                                  <div>
                                    <Label className="text-sm font-medium">Custom Type</Label>
-                                   <div className="flex flex-wrap gap-2 mt-1">
-                                     <Button
-                                       variant={selectedService.custom_type === 'days_interval' ? 'default' : 'outline'}
-                                       size="sm"
-                                       onClick={() => updateCustomType(service.id, 'days_interval')}
-                                     >
-                                       Every X Days
-                                     </Button>
-                                     <Button
-                                       variant={selectedService.custom_type === 'days_of_week' ? 'default' : 'outline'}
-                                       size="sm"
-                                       onClick={() => updateCustomType(service.id, 'days_of_week')}
-                                     >
-                                       Specific Days of Week
-                                     </Button>
-                                     <Button
-                                       variant={selectedService.custom_type === 'specific_dates' ? 'default' : 'outline'}
-                                       size="sm"
-                                       onClick={() => updateCustomType(service.id, 'specific_dates')}
-                                     >
-                                       Specific Dates
-                                     </Button>
-                                   </div>
+                                    <div className="flex flex-wrap gap-2 mt-1" onClick={(e) => e.stopPropagation()}>
+                                      <Button
+                                        variant={selectedService.custom_type === 'days_interval' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          updateCustomType(service.id, 'days_interval');
+                                        }}
+                                      >
+                                        Every X Days
+                                      </Button>
+                                      <Button
+                                        variant={selectedService.custom_type === 'days_of_week' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          updateCustomType(service.id, 'days_of_week');
+                                        }}
+                                      >
+                                        Specific Days of Week
+                                      </Button>
+                                      <Button
+                                        variant={selectedService.custom_type === 'specific_dates' ? 'default' : 'outline'}
+                                        size="sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          updateCustomType(service.id, 'specific_dates');
+                                        }}
+                                      >
+                                        Specific Dates
+                                      </Button>
+                                    </div>
                                  </div>
 
                                  {selectedService.custom_type === 'days_interval' && (
-                                   <div>
-                                     <Label className="text-sm font-medium">Every X Days</Label>
-                                     <Input
-                                       type="number"
-                                       min="1"
-                                       value={selectedService.custom_frequency_days || 1}
-                                       onChange={(e) => updateCustomFrequency(
-                                         service.id, 
-                                         parseInt(e.target.value) || 1
-                                       )}
-                                       className="mt-1"
-                                     />
-                                   </div>
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                      <Label className="text-sm font-medium">Every X Days</Label>
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        value={selectedService.custom_frequency_days || 1}
+                                        onChange={(e) => updateCustomFrequency(
+                                          service.id, 
+                                          parseInt(e.target.value) || 1
+                                        )}
+                                        className="mt-1"
+                                      />
+                                    </div>
                                  )}
 
                                  {selectedService.custom_type === 'days_of_week' && (
@@ -1437,7 +1454,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                 <p className="text-xs text-muted-foreground mb-2">
                                   Services are billed per visit. Frequency sets how many visits occur while the unit is on site. Use the options below to add a service on delivery or pickup day if needed.
                                 </p>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                                   <Checkbox
                                     id={`dropoff-${service.id}`}
                                     checked={selectedService.include_dropoff_service}
@@ -1456,7 +1473,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                                     Include a service on the delivery day (charge applies)
                                   </Label>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                                   <Checkbox
                                     id={`pickup-${service.id}`}
                                     checked={selectedService.include_pickup_service}
