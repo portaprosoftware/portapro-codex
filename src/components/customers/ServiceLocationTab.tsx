@@ -26,34 +26,62 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pins, setPins] = useState<DropPin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [customerLocation, setCustomerLocation] = useState<{lat: number, lng: number, address: string} | null>(null);
 
   useEffect(() => {
-    const fetchMapboxToken = async () => {
+    const fetchMapboxTokenAndCustomer = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        const { data, error: functionError } = await supabase.functions.invoke('get-mapbox-token');
+        // Fetch Mapbox token and customer data in parallel
+        const [tokenResponse, customerResponse] = await Promise.all([
+          supabase.functions.invoke('get-mapbox-token'),
+          supabase
+            .from('customer_service_locations')
+            .select('gps_coordinates, street, street2, city, state, zip, location_name')
+            .eq('customer_id', customerId)
+            .eq('is_default', true)
+            .maybeSingle()
+        ]);
         
-        if (functionError) {
-          throw new Error(functionError.message || 'Failed to fetch Mapbox token');
+        if (tokenResponse.error) {
+          throw new Error(tokenResponse.error.message || 'Failed to fetch Mapbox token');
         }
         
-        if (data?.token) {
-          setMapboxToken(data.token);
+        if (tokenResponse.data?.token) {
+          setMapboxToken(tokenResponse.data.token);
         } else {
           throw new Error('No Mapbox token received');
         }
+
+        // Set customer location if available
+        if (customerResponse.data && customerResponse.data.gps_coordinates) {
+          const coordinates = customerResponse.data.gps_coordinates as any;
+          const address = [
+            customerResponse.data.street,
+            customerResponse.data.street2,
+            customerResponse.data.city,
+            customerResponse.data.state,
+            customerResponse.data.zip
+          ].filter(Boolean).join(', ');
+
+          setCustomerLocation({
+            lat: coordinates.y || coordinates.latitude,
+            lng: coordinates.x || coordinates.longitude,
+            address: customerResponse.data.location_name || address
+          });
+        }
       } catch (err) {
-        console.error('Error fetching Mapbox token:', err);
+        console.error('Error fetching data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load map');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchMapboxToken();
-  }, []);
+    fetchMapboxTokenAndCustomer();
+  }, [customerId]);
 
   useEffect(() => {
     if (!mapboxToken || !mapContainer.current || map.current) return;
@@ -61,15 +89,33 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     try {
       mapboxgl.accessToken = mapboxToken;
       
+      // Center on customer location if available, otherwise use default
+      const mapCenter = customerLocation ? [customerLocation.lng, customerLocation.lat] : [-95.7129, 37.0902];
+      const mapZoom = customerLocation ? 12 : 4;
+      
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
-        center: [-95.7129, 37.0902], // Center of US
-        zoom: 4
+        center: mapCenter as [number, number],
+        zoom: mapZoom
       });
 
       // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      // Add main service location marker if available
+      if (customerLocation) {
+        const homeMarker = new mapboxgl.Marker({
+          color: '#22c55e', // Green color for home base
+          scale: 1.2
+        })
+          .setLngLat([customerLocation.lng, customerLocation.lat])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`<div style="padding: 8px;"><strong>🏠 Main Service Location</strong><br/>${customerLocation.address}<br/>Lat: ${customerLocation.lat.toFixed(6)}<br/>Lng: ${customerLocation.lng.toFixed(6)}</div>`)
+          )
+          .addTo(map.current);
+      }
 
       // Add click handler to drop pins
       map.current.on('click', (e) => {
@@ -80,7 +126,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           label: `Pin ${pins.length + 1}`
         };
 
-        // Add marker to map
+        // Add marker to map (blue color for user-dropped pins)
         const marker = new mapboxgl.Marker({
           color: '#3b82f6',
           draggable: false
@@ -103,7 +149,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken, pins.length]);
+  }, [mapboxToken, customerLocation, pins.length]);
 
   const clearAllPins = () => {
     if (map.current) {
