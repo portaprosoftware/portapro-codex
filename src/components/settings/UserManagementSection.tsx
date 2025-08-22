@@ -110,11 +110,13 @@ export function UserManagementSection() {
         
         return {
           ...user,
-          current_role: current_role || 'No Role Assigned',
+          current_role: current_role || null,
           // Keep the original user_roles structure for EditUserModal
           user_roles: Array.isArray(user.user_roles) 
             ? user.user_roles 
-            : user.user_roles ? [user.user_roles] : []
+            : user.user_roles ? [user.user_roles] : [],
+          // Add visual indicator for users without roles
+          hasRole: !!current_role
         };
       }) || [];
     },
@@ -220,13 +222,38 @@ export function UserManagementSection() {
         }
       }
 
-      // Delete role first (foreign key constraint)
+      // Check if user can be deleted (no active assignments)
+      const { data: canDeleteResult, error: checkError } = await supabase
+        .rpc('can_delete_user', { user_uuid: userId });
+      
+      if (checkError) throw checkError;
+      
+      if (!canDeleteResult?.can_delete) {
+        throw new Error(canDeleteResult?.reason || 'User cannot be deleted due to active assignments');
+      }
+
+      // Delete role first (if exists - some orphaned users may not have roles)
       const { error: roleError } = await supabase
         .from("user_roles")
         .delete()
         .eq("user_id", userId);
 
-      if (roleError) throw roleError;
+      // Don't throw on role delete error - user might not have a role
+      if (roleError) {
+        console.warn("Warning deleting user role:", roleError);
+      }
+
+      // Also try deleting by clerk_user_id for orphaned roles
+      if (userToDelete?.clerk_user_id) {
+        const { error: clerkRoleError } = await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", userToDelete.clerk_user_id);
+          
+        if (clerkRoleError) {
+          console.warn("Warning deleting clerk user role:", clerkRoleError);
+        }
+      }
 
       // Then delete profile
       const { error: profileError } = await supabase
