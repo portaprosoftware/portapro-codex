@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Eye, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle, Send, MessageSquare, ChevronDown } from "lucide-react";
+import { FileText, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle, Send, MessageSquare, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -258,7 +258,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <Eye className="h-5 w-5 text-primary" />
+            <FileText className="h-5 w-5 text-primary" />
             <DialogTitle className="text-xl font-bold">
               Quote {quote.quote_number || `Q-${quote.id.slice(0, 8)}`}
             </DialogTitle>
