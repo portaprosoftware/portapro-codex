@@ -269,7 +269,9 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
                   {invoice.quote_id && (
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Quote ID:</span>
-                      <span className="font-mono text-sm">{invoice.quote_id}</span>
+                      <span className="font-mono text-sm bg-muted px-2 py-1 rounded">
+                        Q-{invoice.quote_id.slice(0, 8).toUpperCase()}
+                      </span>
                     </div>
                   )}
                 </CardContent>
