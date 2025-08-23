@@ -42,6 +42,23 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailMo
     enabled: !!invoice?.id && isOpen
   });
 
+  // Fetch invoice line items
+  const { data: invoiceItems = [] } = useQuery({
+    queryKey: ['invoice-items', invoice?.id],
+    queryFn: async () => {
+      if (!invoice?.id) return [];
+      const { data, error } = await supabase
+        .from('invoice_items')
+        .select('*')
+        .eq('invoice_id', invoice.id)
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!invoice?.id && isOpen
+  });
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -116,6 +133,37 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailMo
               <p className="text-2xl font-bold mt-2">{formatCurrency(invoice.amount)}</p>
             </div>
           </div>
+
+          {/* Invoice Items */}
+          {invoiceItems.length > 0 && (
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold mb-3">Invoice Items</h3>
+              <div className="space-y-3">
+                <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-600 border-b pb-2">
+                  <span>Item</span>
+                  <span>Duration</span>
+                  <span>Qty</span>
+                  <span>Unit Price</span>
+                  <span className="text-right">Total</span>
+                </div>
+                {invoiceItems.map((item, index) => (
+                  <div key={index} className="grid grid-cols-5 gap-4 text-sm py-2">
+                    <span className="font-medium">{item.product_name || item.variation_name}</span>
+                    <span>{item.description?.includes('days') ? item.description.match(/\d+/)?.[0] + ' days' : '-'}</span>
+                    <span>{item.quantity}</span>
+                    <span>{formatCurrency(item.unit_price)}</span>
+                    <span className="text-right font-medium">{formatCurrency(item.line_total)}</span>
+                  </div>
+                ))}
+                <div className="border-t pt-3 mt-3">
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total:</span>
+                    <span className="text-blue-600">{formatCurrency(invoice.amount)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Customer Info */}
           <div className="p-4 border rounded-lg">
