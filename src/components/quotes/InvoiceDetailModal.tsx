@@ -1,150 +1,46 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { X, Mail, Phone, MapPin, Calendar, DollarSign, FileText, User, Send, ChevronDown } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState } from 'react';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { X, Eye, Send, Mail, MessageSquare, Download, Printer, DollarSign, Calendar, User, Building, FileText, Receipt, Edit3, Undo2, Phone, MapPin } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+// import { SendInvoiceModal } from './SendInvoiceModal';
+import { EditInvoiceModal } from './EditInvoiceModal';
+import { ReversePaymentModal } from './ReversePaymentModal';
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  invoiceId: string;
+  invoice: any;
 }
 
-export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetailModalProps) => {
-  const [showContactEdit, setShowContactEdit] = useState(false);
-  const [contactData, setContactData] = useState({ email: '', phone: '', name: '' });
+export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailModalProps) {
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReverseModalOpen, setIsReverseModalOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const queryClient = useQueryClient();
 
-  // Fetch invoice basic data
-  const { data: invoice, isLoading: invoiceLoading } = useQuery({
-    queryKey: ['invoice-details', invoiceId],
+  // Fetch payments for this invoice
+  const { data: payments = [] } = useQuery({
+    queryKey: ['payments', invoice?.id],
     queryFn: async () => {
+      if (!invoice?.id) return [];
       const { data, error } = await supabase
-        .from('invoices')
-        .select(`
-          *,
-          customers:customer_id (
-            id,
-            name,
-            email,
-            phone,
-            billing_street,
-            billing_street2,
-            billing_city,
-            billing_state,
-            billing_zip,
-            service_street,
-            service_street2,
-            service_city,
-            service_state,
-            service_zip
-          ),
-          jobs:job_id (
-            id,
-            job_number,
-            job_type,
-            scheduled_date
-          )
-        `)
-        .eq('id', invoiceId)
-        .single();
-
+        .from('payments')
+        .select('*')
+        .eq('invoice_id', invoice.id)
+        .order('created_at', { ascending: false });
+      
       if (error) throw error;
       return data;
     },
-    enabled: isOpen && !!invoiceId,
+    enabled: !!invoice?.id && isOpen
   });
-
-  // Fetch invoice items separately since the relationship might not exist
-  const { data: invoiceItems, isLoading: itemsLoading } = useQuery({
-    queryKey: ['invoice-items', invoiceId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('invoice_items')
-        .select('id, product_name, variation_name, quantity, unit_price, line_total, description')
-        .eq('invoice_id', invoiceId);
-
-      // Don't throw error if table doesn't exist or no items found
-      if (error && !error.message.includes('relation') && !error.message.includes('does not exist')) {
-        throw error;
-      }
-      return data || [];
-    },
-    enabled: isOpen && !!invoiceId,
-  });
-
-  // Send invoice mutation
-  const sendInvoiceMutation = useMutation({
-    mutationFn: async ({ sendMethod, customerEmail, customerPhone, customerName }: {
-      sendMethod: 'email' | 'sms' | 'both';
-      customerEmail?: string;
-      customerPhone?: string;
-      customerName: string;
-    }) => {
-      const { data, error } = await supabase.functions.invoke('send-invoice-email', {
-        body: {
-          invoiceId: invoiceId,
-          customerEmail,
-          customerPhone,
-          customerName,
-          sendMethod
-        }
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data, variables) => {
-      const method = variables.sendMethod === 'both' ? 'email and SMS' : variables.sendMethod;
-      toast.success(`Invoice sent successfully via ${method}!`);
-      queryClient.invalidateQueries({ queryKey: ['invoice-details', invoiceId] });
-    },
-    onError: (error: any) => {
-      console.error('Send invoice error:', error);
-      toast.error(`Failed to send invoice: ${error.message}`);
-    }
-  });
-
-  const isLoading = invoiceLoading || itemsLoading;
-
-  // Initialize contact data when invoice loads
-  const customer = invoice?.customers;
-  const defaultContactData = {
-    email: customer?.email || '',
-    phone: customer?.phone || '',
-    name: customer?.name || ''
-  };
-
-  const handleSendOption = () => {
-    const currentData = {
-      email: customer?.email || '',
-      phone: customer?.phone || '',
-      name: customer?.name || ''
-    };
-    
-    setContactData(currentData);
-    setShowContactEdit(true);
-  };
-
-  const handleSendWithEditedContact = (method: 'email' | 'sms' | 'both') => {
-    sendInvoiceMutation.mutate({
-      sendMethod: method,
-      customerEmail: method !== 'sms' ? contactData.email : undefined,
-      customerPhone: method !== 'email' ? contactData.phone : undefined,
-      customerName: contactData.name
-    });
-    setShowContactEdit(false);
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -159,26 +55,9 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      'paid': { 
-        gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
-        label: 'Paid' 
-      },
-      'unpaid': { 
-        gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
-        label: 'Unpaid' 
-      },
-      'overdue': { 
-        gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
-        label: 'Overdue' 
-      },
-      'cancelled': { 
-        gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
-        label: 'Cancelled' 
-      },
-      'partial': { 
-        gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
-        label: 'Partial' 
-      }
+      'paid': { gradient: 'bg-gradient-to-r from-green-500 to-green-600', label: 'Paid' },
+      'unpaid': { gradient: 'bg-gradient-to-r from-red-500 to-red-600', label: 'Unpaid' },
+      'partial': { gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', label: 'Partial' }
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || {
@@ -193,376 +72,242 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     );
   };
 
-  const formatAddress = (customer: any, type: 'billing' | 'service') => {
-    const prefix = type === 'billing' ? 'billing' : 'service';
-    const street = customer[`${prefix}_street`];
-    const street2 = customer[`${prefix}_street2`];
-    const city = customer[`${prefix}_city`];
-    const state = customer[`${prefix}_state`];
-    const zip = customer[`${prefix}_zip`];
-
-    if (!street && !city) return null;
-
-    return (
-      <div className="text-sm text-muted-foreground">
-        {street && <div>{street}</div>}
-        {street2 && <div>{street2}</div>}
-        {(city || state || zip) && (
-          <div>{[city, state, zip].filter(Boolean).join(', ')}</div>
-        )}
-      </div>
-    );
-  };
-
-  if (!isOpen) return null;
+  if (!invoice) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <Receipt className="h-6 w-6 text-blue-600" />
             Invoice Details
           </DialogTitle>
-        </DialogHeader>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">Loading invoice details...</div>
-          </div>
-        ) : invoice ? (
-          <div className="space-y-6">
-            {/* Header Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <DollarSign className="h-4 w-4" />
-                    Invoice Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Invoice #:</span>
-                    <span className="font-mono text-sm bg-muted px-2 py-1 rounded">
-                      {invoice.invoice_number}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Status:</span>
-                    {getStatusBadge(invoice.status)}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Created:</span>
-                    <span className="text-muted-foreground">{formatDate(invoice.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Due Date:</span>
-                    <span className="text-muted-foreground">{formatDate(invoice.due_date)}</span>
-                  </div>
-                  {invoice.jobs && (
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Job #:</span>
-                      <span className="font-mono text-sm">{invoice.jobs.job_number}</span>
-                    </div>
-                  )}
-                  {invoice.quote_id && (
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Quote ID:</span>
-                      <span className="font-mono text-sm bg-muted px-2 py-1 rounded">
-                        Q-{invoice.quote_id.slice(0, 8).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Customer Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <div className="font-medium text-lg">{invoice.customers?.name}</div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {invoice.customers?.email && (
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          {invoice.customers.email}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {invoice.customers?.phone && (
-                        <div className="flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          {invoice.customers.phone}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {formatAddress(invoice.customers, 'billing') && (
-                    <div>
-                      <div className="font-medium text-sm mb-1 flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        Billing Address:
-                      </div>
-                      {formatAddress(invoice.customers, 'billing')}
-                    </div>
-                  )}
-                  
-                  {formatAddress(invoice.customers, 'service') && (
-                    <div>
-                      <div className="font-medium text-sm mb-1 flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        Service Address:
-                      </div>
-                      {formatAddress(invoice.customers, 'service')}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Line Items */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Line Items</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Item</TableHead>
-                      <TableHead className="text-center">Quantity</TableHead>
-                      <TableHead className="text-right">Unit Price</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {Array.isArray(invoiceItems) && invoiceItems.length > 0 ? (
-                      invoiceItems.map((item: any) => (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{item.product_name}</div>
-                              {item.variation_name && (
-                                <div className="text-sm text-muted-foreground">{item.variation_name}</div>
-                              )}
-                              {item.description && (
-                                <div className="text-sm text-muted-foreground">{item.description}</div>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">{item.quantity}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(item.unit_price)}</TableCell>
-                          <TableCell className="text-right font-medium">{formatCurrency(item.line_total)}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-4 text-muted-foreground">
-                          No line items found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            {/* Financial Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Financial Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {invoice.subtotal && (
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>{formatCurrency(invoice.subtotal)}</span>
-                    </div>
-                  )}
-                  {invoice.discount_value && invoice.discount_value > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>
-                        Discount ({invoice.discount_type === 'percentage' ? `${invoice.discount_value}%` : 'Fixed'}):
-                      </span>
-                      <span>-{formatCurrency(invoice.discount_value)}</span>
-                    </div>
-                  )}
-                  {invoice.additional_fees && invoice.additional_fees > 0 && (
-                    <div className="flex justify-between">
-                      <span>Additional Fees:</span>
-                      <span>{formatCurrency(invoice.additional_fees)}</span>
-                    </div>
-                  )}
-                  {invoice.tax_amount && invoice.tax_amount > 0 && (
-                    <div className="flex justify-between">
-                      <span>Tax:</span>
-                      <span>{formatCurrency(invoice.tax_amount)}</span>
-                    </div>
-                  )}
-                  <Separator />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total Amount:</span>
-                    <span>{formatCurrency(invoice.amount)}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Notes and Terms */}
-            {(invoice.notes || invoice.terms) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Additional Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {invoice.notes && (
-                    <div>
-                      <div className="font-medium mb-2">Notes:</div>
-                      <p className="text-muted-foreground whitespace-pre-wrap">{invoice.notes}</p>
-                    </div>
-                  )}
-                  {invoice.terms && (
-                    <div>
-                      <div className="font-medium mb-2">Terms:</div>
-                      <p className="text-muted-foreground whitespace-pre-wrap">{invoice.terms}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            Invoice not found
-          </div>
-        )}
-
-        <div className="flex justify-between pt-4">
-          {invoice?.status === 'unpaid' && (
-            <Button 
-              onClick={handleSendOption}
-              disabled={sendInvoiceMutation.isPending}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 font-bold"
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setIsSendModalOpen(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
             >
-              <Send className="w-4 h-4 mr-2" />
+              <Send className="h-4 w-4 mr-2" />
               Send Invoice
             </Button>
-          )}
-          
-          <Button 
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
-            onClick={onClose}
-          >
-            Close
-          </Button>
-        </div>
 
-        {/* Contact Edit Modal */}
-        {showContactEdit && (
-          <Dialog open={showContactEdit} onOpenChange={setShowContactEdit}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Send Invoice {invoice?.invoice_number}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                  Review and confirm the contact information before sending the invoice.
-                </div>
+            <Button
+              onClick={() => setIsEditModalOpen(true)}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
+            >
+              <Edit3 className="h-4 w-4 mr-2" />
+              Edit Invoice
+            </Button>
+            
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+            
+            <Button variant="outline" size="sm">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </Button>
+          </div>
+        </DialogHeader>
 
-                <div className="space-y-2">
-                  <Label htmlFor="contact-name">Customer Name</Label>
-                  <Input
-                    id="contact-name"
-                    value={contactData.name}
-                    onChange={(e) => setContactData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Customer name"
-                    className="border-blue-200 focus:border-blue-400"
-                  />
+        <div className="space-y-6">
+          {/* Header Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Invoice Information */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  Invoice Information
+                </h3>
+                {getStatusBadge(invoice.status)}
+              </div>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="font-medium">Invoice #:</span>
+                  <span className="font-mono">{invoice.invoice_number}</span>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">Email Address</Label>
-                  <Input
-                    id="contact-email"
-                    type="email"
-                    value={contactData.email}
-                    onChange={(e) => setContactData(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="customer@example.com"
-                  />
+                <div className="flex justify-between">
+                  <span className="font-medium">Created:</span>
+                  <span>{formatDate(invoice.created_at)}</span>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="contact-phone">Phone Number</Label>
-                  <Input
-                    id="contact-phone"
-                    type="tel"
-                    value={contactData.phone}
-                    onChange={(e) => setContactData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="(555) 123-4567"
-                  />
+                <div className="flex justify-between">
+                  <span className="font-medium">Due Date:</span>
+                  <span>{formatDate(invoice.due_date)}</span>
                 </div>
-
-                <div className="space-y-3 pt-4">
-                  <Label>How would you like to send the invoice?</Label>
-                  <div className="flex flex-col gap-2">
-                    {contactData.email && (
-                      <Button
-                        onClick={() => handleSendWithEditedContact('email')}
-                        disabled={sendInvoiceMutation.isPending}
-                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
-                      >
-                        <Mail className="mr-2 h-4 w-4" />
-                        Send via Email
-                      </Button>
-                    )}
-                    {contactData.phone && (
-                      <Button
-                        onClick={() => handleSendWithEditedContact('sms')}
-                        disabled={sendInvoiceMutation.isPending}
-                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
-                      >
-                        <Phone className="mr-2 h-4 w-4" />
-                        Send via SMS
-                      </Button>
-                    )}
-                    {contactData.email && contactData.phone && (
-                      <Button
-                        onClick={() => handleSendWithEditedContact('both')}
-                        disabled={sendInvoiceMutation.isPending}
-                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
-                      >
-                        <Send className="mr-2 h-4 w-4" />
-                        Send via Email & SMS
-                      </Button>
-                    )}
+                {invoice.quote_id && (
+                  <div className="flex justify-between">
+                    <span className="font-medium">Quote ID:</span>
+                    <span className="font-mono">Q-{invoice.quote_id.slice(0, 8).toUpperCase()}</span>
                   </div>
-                </div>
+                )}
+              </div>
+            </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button 
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
-                    onClick={() => setShowContactEdit(false)}
-                  >
-                    Cancel
-                  </Button>
+            {/* Customer Information */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <User className="h-5 w-5 text-blue-600" />
+                Customer Information
+              </h3>
+              
+              <div className="space-y-2 text-sm">
+                <div className="font-medium text-base">{invoice.customers?.name}</div>
+                {invoice.customers?.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-3 w-3 text-muted-foreground" />
+                    <span>{invoice.customers.email}</span>
+                  </div>
+                )}
+                {invoice.customers?.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-3 w-3 text-muted-foreground" />
+                    <span>{invoice.customers.phone}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Financial Summary */}
+          <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-green-600" />
+              Financial Summary
+            </h3>
+            
+            <div className="space-y-2">
+              {invoice.subtotal && invoice.subtotal > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>{formatCurrency(invoice.subtotal)}</span>
+                </div>
+              )}
+              {invoice.discount_value && invoice.discount_value > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>
+                    Discount ({invoice.discount_type === 'percentage' ? `${invoice.discount_value}%` : 'Fixed'}):
+                  </span>
+                  <span>-{formatCurrency(invoice.discount_value)}</span>
+                </div>
+              )}
+              {invoice.additional_fees && invoice.additional_fees > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span>Additional Fees:</span>
+                  <span>{formatCurrency(invoice.additional_fees)}</span>
+                </div>
+              )}
+              {invoice.tax_amount && invoice.tax_amount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span>Tax:</span>
+                  <span>{formatCurrency(invoice.tax_amount)}</span>
+                </div>
+              )}
+              <Separator />
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total Amount:</span>
+                <span>{formatCurrency(invoice.amount)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment History */}
+          {payments.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Payment History</h3>
+                <div className="space-y-3">
+                  {payments.map((payment) => (
+                    <div key={payment.id} className="bg-muted/30 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-green-600" />
+                            <span className="font-semibold">{formatCurrency(payment.amount)}</span>
+                          </div>
+                          <Badge 
+                            variant="outline" 
+                            className={payment.status === 'reversed' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}
+                          >
+                            {payment.status === 'reversed' ? 'Reversed' : 'Completed'}
+                          </Badge>
+                        </div>
+                        
+                        {payment.status === 'completed' && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              setSelectedPayment(payment);
+                              setIsReverseModalOpen(true);
+                            }}
+                          >
+                            <Undo2 className="h-3 w-3 mr-1" />
+                            Reverse
+                          </Button>
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-4">
+                          <span>Method: {payment.payment_method?.replace('_', ' ').toUpperCase()}</span>
+                          <span>Date: {format(new Date(payment.created_at), 'MMM d, yyyy h:mm a')}</span>
+                        </div>
+                        {payment.reference_number && (
+                          <div className="mt-1">Reference: {payment.reference_number}</div>
+                        )}
+                        {payment.notes && (
+                          <div className="mt-1">Notes: {payment.notes}</div>
+                        )}
+                        {payment.reversal_reason && (
+                          <div className="mt-1 text-red-600">Reversal Reason: {payment.reversal_reason}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </DialogContent>
-          </Dialog>
-        )}
+            </>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 border-0"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+
+        {/* <SendInvoiceModal
+          isOpen={isSendModalOpen}
+          onClose={() => setIsSendModalOpen(false)}
+          invoice={invoice}
+        /> */}
+
+        <EditInvoiceModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          invoice={invoice}
+        />
+
+        <ReversePaymentModal
+          isOpen={isReverseModalOpen}
+          onClose={() => {
+            setIsReverseModalOpen(false);
+            setSelectedPayment(null);
+          }}
+          payment={selectedPayment}
+          invoice={invoice}
+        />
       </DialogContent>
     </Dialog>
   );
-};
+}

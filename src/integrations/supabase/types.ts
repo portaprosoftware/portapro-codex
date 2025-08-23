@@ -4988,6 +4988,78 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          invoice_id: string
+          metadata: Json
+          notes: string | null
+          original_payment_id: string | null
+          payment_method: string
+          reference_number: string | null
+          reversal_reason: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          invoice_id: string
+          metadata?: Json
+          notes?: string | null
+          original_payment_id?: string | null
+          payment_method: string
+          reference_number?: string | null
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          invoice_id?: string
+          metadata?: Json
+          notes?: string | null
+          original_payment_id?: string | null
+          payment_method?: string
+          reference_number?: string | null
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_original_payment_id_fkey"
+            columns: ["original_payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pin_categories: {
         Row: {
           color: string
@@ -9566,6 +9638,10 @@ export type Database = {
       }
       get_invoice_metrics: {
         Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_invoice_payment_totals: {
+        Args: { invoice_uuid: string }
         Returns: Json
       }
       get_job_notes: {

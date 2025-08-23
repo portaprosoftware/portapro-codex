@@ -43,19 +43,33 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
 
   const processPaymentMutation = useMutation({
     mutationFn: async (data: PaymentData) => {
-      // Update invoice status to paid
+      // Create payment record
+      const { error: paymentError } = await supabase
+        .from('payments')
+        .insert({
+          invoice_id: invoice.id,
+          amount: data.amount,
+          payment_method: data.paymentMethod,
+          reference_number: data.referenceNumber || null,
+          notes: data.notes || null,
+          status: 'completed',
+          created_by: 'current_user' // Will be replaced with actual Clerk user ID
+        });
+
+      if (paymentError) throw paymentError;
+
+      // Update invoice status
+      const newStatus = data.amount >= invoice.amount ? 'paid' : 'partial';
       const { error: invoiceError } = await supabase
         .from('invoices')
         .update({
-          status: data.amount >= invoice.amount ? 'paid' : 'partial',
+          status: newStatus,
           updated_at: new Date().toISOString()
         })
         .eq('id', invoice.id);
 
       if (invoiceError) throw invoiceError;
 
-      // Create payment record (we'll create a payments table later)
-      // For now, we'll just update the invoice
       return { success: true };
     },
     onSuccess: () => {

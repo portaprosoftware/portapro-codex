@@ -230,7 +230,7 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
         <InvoiceDetailModal
           isOpen={!!selectedInvoiceId}
           onClose={() => setSelectedInvoiceId(null)}
-          invoiceId={selectedInvoiceId}
+          invoice={invoices.find(inv => inv.id === selectedInvoiceId)}
         />
       )}
 
