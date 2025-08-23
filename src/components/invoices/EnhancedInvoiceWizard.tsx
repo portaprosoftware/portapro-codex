@@ -29,7 +29,7 @@ interface EnhancedInvoiceWizardProps {
 
 interface InvoiceItem {
   id: string;
-  type: 'inventory' | 'service';
+  type: 'inventory' | 'service' | 'fee' | 'discount';
   product_id?: string;
   service_id?: string;
   product_name: string;
@@ -90,7 +90,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
   const [newItem, setNewItem] = useState({
-    type: 'inventory' as 'inventory' | 'service',
+    type: 'inventory' as 'inventory' | 'service' | 'fee' | 'discount',
     product_id: '',
     service_id: '',
     description: '',
@@ -115,7 +115,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     queryFn: async () => {
       const { data, error } = await supabase
         .from('customers')
-        .select('id, name, email, service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state, tax_rate_override')
+        .select('id, name, email, phone, billing_address, billing_city, billing_state, billing_zip, service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state, tax_rate_override')
         .order('name');
       
       if (error) throw error;
@@ -317,8 +317,16 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   });
 
   const addItem = () => {
-    if (!newItem.product_id && !newItem.service_id) {
-      toast.error('Please select a product or service');
+    if (newItem.type === 'inventory' && !newItem.product_id) {
+      toast.error('Please select a product');
+      return;
+    }
+    if (newItem.type === 'service' && !newItem.service_id) {
+      toast.error('Please select a service');
+      return;
+    }
+    if ((newItem.type === 'fee' || newItem.type === 'discount') && !newItem.description) {
+      toast.error('Please provide a description');
       return;
     }
 
@@ -330,12 +338,20 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       const product = products.find(p => p.id === newItem.product_id);
       productName = product?.name || '';
       unitPrice = product?.default_price_per_day || 0;
-      unitOfMeasure = 'each';
+      unitOfMeasure = newItem.unit_of_measure || 'each';
     } else if (newItem.type === 'service' && newItem.service_id) {
       const service = services.find(s => s.id === newItem.service_id);
       productName = service?.name || '';
       unitPrice = 0; // Default to 0, user can edit
-      unitOfMeasure = 'service';
+      unitOfMeasure = newItem.unit_of_measure || 'service';
+    } else if (newItem.type === 'fee') {
+      productName = newItem.description;
+      unitPrice = newItem.unit_price;
+      unitOfMeasure = newItem.unit_of_measure || 'each';
+    } else if (newItem.type === 'discount') {
+      productName = newItem.description;
+      unitPrice = -Math.abs(newItem.unit_price); // Ensure discount is negative
+      unitOfMeasure = newItem.unit_of_measure || 'each';
     }
 
     const item: InvoiceItem = {
@@ -344,7 +360,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       product_id: newItem.product_id || undefined,
       service_id: newItem.service_id || undefined,
       product_name: productName,
-      description: newItem.description,
+      description: newItem.type === 'inventory' || newItem.type === 'service' ? newItem.description : undefined,
       quantity: newItem.quantity,
       unit_price: unitPrice,
       unit_of_measure: unitOfMeasure,
@@ -437,6 +453,21 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     }
   }, [taxData?.rate, invoiceData.customer_id]);
 
+  // Auto-fill customer details when customer is selected
+  useEffect(() => {
+    if (selectedCustomer) {
+      // Auto-set payment terms based on company defaults if no specific customer default
+      if (!invoiceData.terms || invoiceData.terms === 'Payment due within 30 days.') {
+        // Could fetch from company settings or customer defaults in the future
+        setInvoiceData(prev => ({ 
+          ...prev, 
+          terms: 'Payment due within 30 days.',
+          due_date: addDays(new Date(), 30)
+        }));
+      }
+    }
+  }, [selectedCustomer]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden">
@@ -490,11 +521,16 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
                       <div className="space-y-2">
                         <Label>Invoice Number *</Label>
-                        <Input
-                          value={invoiceData.invoice_number}
-                          onChange={(e) => setInvoiceData(prev => ({ ...prev, invoice_number: e.target.value }))}
-                          placeholder="Invoice number"
-                        />
+                        <div className="space-y-1">
+                          <Input
+                            value={invoiceData.invoice_number}
+                            onChange={(e) => setInvoiceData(prev => ({ ...prev, invoice_number: e.target.value }))}
+                            placeholder="Invoice number"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Next: {nextInvoiceNumber || 'Loading...'}
+                          </p>
+                        </div>
                       </div>
 
                       <div className="space-y-2">
@@ -519,23 +555,30 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
                       <div className="space-y-2">
                         <Label>Payment Terms</Label>
-                        <Select 
-                          value={invoiceData.terms.includes('30') ? '30' : invoiceData.terms.includes('15') ? '15' : '7'} 
-                          onValueChange={(value) => setInvoiceData(prev => ({ 
-                            ...prev, 
-                            terms: `Payment due within ${value} days.`,
-                            due_date: addDays(new Date(), parseInt(value))
-                          }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="7">Net 7</SelectItem>
-                            <SelectItem value="15">Net 15</SelectItem>
-                            <SelectItem value="30">Net 30</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="space-y-1">
+                          <Select 
+                            value={invoiceData.terms.includes('30') ? '30' : invoiceData.terms.includes('15') ? '15' : '7'} 
+                            onValueChange={(value) => setInvoiceData(prev => ({ 
+                              ...prev, 
+                              terms: `Payment due within ${value} days.`,
+                              due_date: addDays(new Date(), parseInt(value))
+                            }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="7">Net 7</SelectItem>
+                              <SelectItem value="15">Net 15</SelectItem>
+                              <SelectItem value="30">Net 30</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            {invoiceData.terms.includes('30') ? 'Net 30' : 
+                             invoiceData.terms.includes('15') ? 'Net 15' : 'Net 7'} 
+                            → Due {format(invoiceData.due_date, 'MMM dd, yyyy')}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
@@ -608,10 +651,10 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                 <CollapsibleContent>
                   <CardContent className="space-y-4">
                     {/* Add Item Form */}
-                    <div className="grid grid-cols-5 gap-2 p-4 border rounded-lg">
+                    <div className="grid grid-cols-6 gap-2 p-4 border rounded-lg">
                       <Select 
                         value={newItem.type} 
-                        onValueChange={(value: 'inventory' | 'service') => 
+                        onValueChange={(value: 'inventory' | 'service' | 'fee' | 'discount') => 
                           setNewItem(prev => ({ ...prev, type: value, product_id: '', service_id: '' }))
                         }
                       >
@@ -621,6 +664,8 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                         <SelectContent>
                           <SelectItem value="inventory">Product</SelectItem>
                           <SelectItem value="service">Service</SelectItem>
+                          <SelectItem value="fee">Fee</SelectItem>
+                          <SelectItem value="discount">Discount</SelectItem>
                         </SelectContent>
                       </Select>
 
@@ -640,7 +685,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                             ))}
                           </SelectContent>
                         </Select>
-                      ) : (
+                      ) : newItem.type === 'service' ? (
                         <Select 
                           value={newItem.service_id} 
                           onValueChange={(value) => setNewItem(prev => ({ ...prev, service_id: value }))}
@@ -656,13 +701,48 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                             ))}
                           </SelectContent>
                         </Select>
+                      ) : newItem.type === 'fee' ? (
+                        <Select 
+                          value={newItem.description} 
+                          onValueChange={(value) => {
+                            const feeMap: Record<string, number> = {
+                              'Delivery Fee': 50,
+                              'Setup Fee': 75,
+                              'Environmental Fee': 25,
+                              'Custom': 0
+                            };
+                            setNewItem(prev => ({ 
+                              ...prev, 
+                              description: value,
+                              unit_price: feeMap[value] || 0
+                            }));
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select fee type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Delivery Fee">Delivery Fee ($50)</SelectItem>
+                            <SelectItem value="Setup Fee">Setup Fee ($75)</SelectItem>
+                            <SelectItem value="Environmental Fee">Environmental Fee ($25)</SelectItem>
+                            <SelectItem value="Custom">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          placeholder="Discount name"
+                          value={newItem.description}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
                       )}
 
-                      <Input
-                        placeholder="Description"
-                        value={newItem.description}
-                        onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
-                      />
+                      {newItem.type === 'fee' || newItem.type === 'discount' ? null : (
+                        <Input
+                          placeholder="Description"
+                          value={newItem.description}
+                          onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      )}
 
                       <Input
                         type="number"
@@ -670,6 +750,23 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                         value={newItem.quantity}
                         onChange={(e) => setNewItem(prev => ({ ...prev, quantity: Number(e.target.value) }))}
                       />
+
+                      <Select 
+                        value={newItem.unit_of_measure} 
+                        onValueChange={(value) => setNewItem(prev => ({ ...prev, unit_of_measure: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="each">Each</SelectItem>
+                          <SelectItem value="per day">Per Day</SelectItem>
+                          <SelectItem value="per hour">Per Hour</SelectItem>
+                          <SelectItem value="per mile">Per Mile</SelectItem>
+                          <SelectItem value="per event">Per Event</SelectItem>
+                          <SelectItem value="service">Service</SelectItem>
+                        </SelectContent>
+                      </Select>
 
                       <Button onClick={addItem} size="sm">
                         <Plus className="h-4 w-4" />
@@ -695,7 +792,12 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                           {invoiceItems.map((item) => (
                             <TableRow key={item.id}>
                               <TableCell>
-                                <Badge variant={item.type === 'inventory' ? 'default' : 'secondary'}>
+                                <Badge variant={
+                                  item.type === 'inventory' ? 'default' : 
+                                  item.type === 'service' ? 'secondary' :
+                                  item.type === 'fee' ? 'outline' :
+                                  'destructive'
+                                }>
                                   {item.type}
                                 </Badge>
                               </TableCell>
@@ -724,7 +826,24 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                                   className="w-24"
                                 />
                               </TableCell>
-                              <TableCell>{item.unit_of_measure}</TableCell>
+                              <TableCell>
+                                <Select 
+                                  value={item.unit_of_measure} 
+                                  onValueChange={(value) => updateItem(item.id, 'unit_of_measure', value)}
+                                >
+                                  <SelectTrigger className="w-24">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="each">Each</SelectItem>
+                                    <SelectItem value="per day">Per Day</SelectItem>
+                                    <SelectItem value="per hour">Per Hour</SelectItem>
+                                    <SelectItem value="per mile">Per Mile</SelectItem>
+                                    <SelectItem value="per event">Per Event</SelectItem>
+                                    <SelectItem value="service">Service</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
                               <TableCell>{formatCurrency(item.line_total)}</TableCell>
                               <TableCell>
                                 <Button
@@ -846,7 +965,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                         <span>{formatCurrency(taxAmount)}</span>
                       </div>
                       <Separator />
-                      <div className="flex justify-between text-lg font-bold text-green-600">
+                      <div className="flex justify-between text-2xl font-bold text-primary bg-primary/10 p-3 rounded-lg">
                         <span>Total:</span>
                         <span>{formatCurrency(totalAmount)}</span>
                       </div>
@@ -928,7 +1047,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                     <span>Tax:</span>
                     <span>{formatCurrency(taxAmount)}</span>
                   </div>
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                  <div className="flex justify-between font-bold text-xl pt-2 border-t bg-primary/10 p-2 rounded">
                     <span>Total:</span>
                     <span>{formatCurrency(totalAmount)}</span>
                   </div>
