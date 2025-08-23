@@ -125,7 +125,7 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     name: customer?.name || ''
   };
 
-  const handleSendOption = (method: 'email' | 'sms' | 'both') => {
+  const handleSendOption = () => {
     const currentData = {
       email: customer?.email || '',
       phone: customer?.phone || '',
@@ -133,12 +133,7 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     };
     
     setContactData(currentData);
-    
-    // Always show the contact edit modal for user to review/confirm contact info
     setShowContactEdit(true);
-    
-    // Store the selected method for later use
-    (window as any).pendingSendMethod = method;
   };
 
   const handleSendWithEditedContact = (method: 'email' | 'sms' | 'both') => {
@@ -454,38 +449,14 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
 
         <div className="flex justify-between pt-4">
           {invoice?.status === 'unpaid' && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 font-bold">
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Invoice
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48">
-                <DropdownMenuItem 
-                  onClick={() => handleSendOption('email')}
-                  disabled={sendInvoiceMutation.isPending}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send via Email
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleSendOption('sms')}
-                  disabled={sendInvoiceMutation.isPending}
-                >
-                  <Phone className="mr-2 h-4 w-4" />
-                  Send via SMS
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleSendOption('both')}
-                  disabled={sendInvoiceMutation.isPending}
-                >
-                  <Send className="mr-2 h-4 w-4" />
-                  Send via Both
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button 
+              onClick={handleSendOption}
+              disabled={sendInvoiceMutation.isPending}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 font-bold"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Send Invoice
+            </Button>
           )}
           
           <Button variant="outline" onClick={onClose}>
