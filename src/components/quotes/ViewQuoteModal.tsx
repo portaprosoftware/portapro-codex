@@ -19,10 +19,12 @@ interface ViewQuoteModalProps {
 }
 
 export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps) => {
-  const [showSendModal, setShowSendModal] = useState(false);
-  const [sendMethod, setSendMethod] = useState<'email' | 'sms' | 'both'>('email');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactPhone, setContactPhone] = useState('');
+  const [showContactEdit, setShowContactEdit] = useState(false);
+  const [contactData, setContactData] = useState({
+    email: '',
+    phone: '',
+    name: ''
+  });
   const queryClient = useQueryClient();
   const { data: quote, isLoading } = useQuery({
     queryKey: ['quote-details', quoteId],
@@ -76,8 +78,11 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
   useEffect(() => {
     if (quote?.customers) {
       const customer = quote.customers as any;
-      setContactEmail(customer.email || '');
-      setContactPhone(customer.phone || '');
+      setContactData({
+        email: customer.email || '',
+        phone: customer.phone || '',
+        name: customer.name || ''
+      });
     }
   }, [quote]);
 
@@ -99,6 +104,25 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
       toast.error(error.message || "Failed to update quote status");
     }
   });
+
+  const handleSendOption = () => {
+    const currentData = {
+      email: customer?.email || '',
+      phone: customer?.phone || '',
+      name: customer?.name || ''
+    };
+    
+    setContactData(currentData);
+    setShowContactEdit(true);
+  };
+
+  const handleSendWithEditedContact = (method: 'email' | 'sms' | 'both') => {
+    sendQuoteEmail.mutate({
+      email: contactData.email,
+      phone: contactData.phone,
+      method
+    });
+  };
 
   const sendQuoteEmail = useMutation({
     mutationFn: async ({ email, phone, method }: { email?: string; phone?: string; method: 'email' | 'sms' | 'both' }) => {
@@ -130,7 +154,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
     },
     onSuccess: () => {
       toast.success('Quote sent successfully!');
-      setShowSendModal(false);
+      setShowContactEdit(false);
       queryClient.invalidateQueries({ queryKey: ['quotes'] });
       queryClient.invalidateQueries({ queryKey: ['quote-details', quoteId] });
     },
@@ -414,50 +438,15 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
           <div className="flex justify-between">
             <div>
               {(customer?.email || customer?.phone) && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50">
-                      <Send className="mr-2 h-4 w-4" />
-                      Resend Quote
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {customer?.email && (
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          setSendMethod('email');
-                          setShowSendModal(true);
-                        }}
-                      >
-                        <Mail className="mr-2 h-4 w-4" />
-                        Resend via Email
-                      </DropdownMenuItem>
-                    )}
-                    {customer?.phone && (
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          setSendMethod('sms');
-                          setShowSendModal(true);
-                        }}
-                      >
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        Resend via SMS
-                      </DropdownMenuItem>
-                    )}
-                    {customer?.email && customer?.phone && (
-                      <DropdownMenuItem 
-                        onClick={() => {
-                          setSendMethod('both');
-                          setShowSendModal(true);
-                        }}
-                      >
-                        <Send className="mr-2 h-4 w-4" />
-                        Resend via Email & SMS
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button 
+                  onClick={handleSendOption}
+                  disabled={sendQuoteEmail.isPending}
+                  variant="outline" 
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  Resend Quote
+                </Button>
               )}
             </div>
             
@@ -484,65 +473,96 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
             )}
           </div>
 
-          {/* Send Quote Modal */}
-          {showSendModal && (
-            <Dialog open={showSendModal} onOpenChange={setShowSendModal}>
+          {/* Contact Edit Modal */}
+          {showContactEdit && (
+            <Dialog open={showContactEdit} onOpenChange={setShowContactEdit}>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>
-                    Send Quote {quote.quote_number}
-                  </DialogTitle>
+                  <DialogTitle>Send Quote {quote.quote_number}</DialogTitle>
                 </DialogHeader>
                 
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    {sendMethod === 'email' && 'Send quote via email'}
-                    {sendMethod === 'sms' && 'Send quote via SMS'}
-                    {sendMethod === 'both' && 'Send quote via email and SMS'}
+                    Review and confirm the contact information before sending the quote.
                   </div>
 
-                  {(sendMethod === 'email' || sendMethod === 'both') && (
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={contactEmail}
-                        onChange={(e) => setContactEmail(e.target.value)}
-                        placeholder="Enter email address"
-                      />
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="customerName">Customer Name</Label>
+                    <Input
+                      id="customerName"
+                      value={contactData.name}
+                      onChange={(e) => setContactData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Enter customer name"
+                    />
+                  </div>
 
-                  {(sendMethod === 'sms' || sendMethod === 'both') && (
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={contactPhone}
-                        onChange={(e) => setContactPhone(e.target.value)}
-                        placeholder="Enter phone number"
-                      />
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={contactData.email}
+                      onChange={(e) => setContactData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="Enter email address"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={contactData.phone}
+                      onChange={(e) => setContactData(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+
+                  <div className="space-y-3 pt-4">
+                    <Label>How would you like to send the quote?</Label>
+                    <div className="flex flex-col gap-2">
+                      {contactData.email && (
+                        <Button
+                          onClick={() => handleSendWithEditedContact('email')}
+                          disabled={sendQuoteEmail.isPending}
+                          variant="outline"
+                          className="justify-start"
+                        >
+                          <Mail className="mr-2 h-4 w-4" />
+                          Send via Email
+                        </Button>
+                      )}
+                      {contactData.phone && (
+                        <Button
+                          onClick={() => handleSendWithEditedContact('sms')}
+                          disabled={sendQuoteEmail.isPending}
+                          variant="outline"
+                          className="justify-start"
+                        >
+                          <MessageSquare className="mr-2 h-4 w-4" />
+                          Send via SMS
+                        </Button>
+                      )}
+                      {contactData.email && contactData.phone && (
+                        <Button
+                          onClick={() => handleSendWithEditedContact('both')}
+                          disabled={sendQuoteEmail.isPending}
+                          variant="outline"
+                          className="justify-start"
+                        >
+                          <Send className="mr-2 h-4 w-4" />
+                          Send via Email & SMS
+                        </Button>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   <div className="flex justify-end gap-2 pt-4">
                     <Button 
                       variant="outline" 
-                      onClick={() => setShowSendModal(false)}
+                      onClick={() => setShowContactEdit(false)}
                     >
                       Cancel
-                    </Button>
-                    <Button
-                      onClick={() => sendQuoteEmail.mutate({
-                        email: contactEmail,
-                        phone: contactPhone,
-                        method: sendMethod
-                      })}
-                      disabled={sendQuoteEmail.isPending}
-                    >
-                      {sendQuoteEmail.isPending ? 'Sending...' : 'Send Quote'}
                     </Button>
                   </div>
                 </div>
