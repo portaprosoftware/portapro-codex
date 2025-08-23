@@ -134,27 +134,11 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     
     setContactData(currentData);
     
-    // Check if we have the required contact info
-    const hasEmail = currentData.email && currentData.email.trim() !== '';
-    const hasPhone = currentData.phone && currentData.phone.trim() !== '';
+    // Always show the contact edit modal for user to review/confirm contact info
+    setShowContactEdit(true);
     
-    if ((method === 'email' || method === 'both') && !hasEmail) {
-      setShowContactEdit(true);
-      return;
-    }
-    
-    if ((method === 'sms' || method === 'both') && !hasPhone) {
-      setShowContactEdit(true);
-      return;
-    }
-    
-    // Send directly if we have the required info
-    sendInvoiceMutation.mutate({
-      sendMethod: method,
-      customerEmail: method !== 'sms' ? currentData.email : undefined,
-      customerPhone: method !== 'email' ? currentData.phone : undefined,
-      customerName: currentData.name
-    });
+    // Store the selected method for later use
+    (window as any).pendingSendMethod = method;
   };
 
   const handleSendWithEditedContact = (method: 'email' | 'sms' | 'both') => {
