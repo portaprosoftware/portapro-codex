@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Eye, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle } from "lucide-react";
+import { Eye, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle, Send } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -81,6 +81,33 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update quote status");
+    }
+  });
+
+  const sendQuoteEmail = useMutation({
+    mutationFn: async () => {
+      if (!quote || !customer?.email) {
+        throw new Error('Quote or customer email not available');
+      }
+
+      const { data, error } = await supabase.functions.invoke('send-quote-email', {
+        body: {
+          quoteId: quote.id,
+          customerEmail: customer.email,
+          customerName: customer.name
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Quote email sent successfully!');
+      queryClient.invalidateQueries({ queryKey: ['quotes'] });
+      queryClient.invalidateQueries({ queryKey: ['quote-details', quoteId] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to send quote email");
     }
   });
 
@@ -355,10 +382,24 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
           )}
 
           {/* Action Buttons */}
-          {quote.status !== 'accepted' && quote.status !== 'rejected' && (
-            <>
-              <Separator />
-              <div className="flex justify-end gap-3">
+          <Separator />
+          <div className="flex justify-between">
+            <div>
+              {customer?.email && (
+                <Button
+                  variant="outline"
+                  onClick={() => sendQuoteEmail.mutate()}
+                  disabled={sendQuoteEmail.isPending}
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  {sendQuoteEmail.isPending ? 'Sending...' : 'Resend via Email'}
+                </Button>
+              )}
+            </div>
+            
+            {quote.status !== 'accepted' && quote.status !== 'rejected' && (
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   onClick={() => updateQuoteStatus.mutate('rejected')}
@@ -377,8 +418,8 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                   Approve Quote
                 </Button>
               </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
