@@ -525,8 +525,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                         <Button
                           onClick={() => handleSendWithEditedContact('email')}
                           disabled={sendQuoteEmail.isPending}
-                          variant="outline"
-                          className="justify-start"
+                          className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                         >
                           <Mail className="mr-2 h-4 w-4" />
                           Send via Email
@@ -536,8 +535,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                         <Button
                           onClick={() => handleSendWithEditedContact('sms')}
                           disabled={sendQuoteEmail.isPending}
-                          variant="outline"
-                          className="justify-start"
+                          className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                         >
                           <MessageSquare className="mr-2 h-4 w-4" />
                           Send via SMS
@@ -547,8 +545,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                         <Button
                           onClick={() => handleSendWithEditedContact('both')}
                           disabled={sendQuoteEmail.isPending}
-                          variant="outline"
-                          className="justify-start"
+                          className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                         >
                           <Send className="mr-2 h-4 w-4" />
                           Send via Email & SMS
