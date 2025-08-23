@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
 import { InvoiceDetailModal } from "./InvoiceDetailModal";
+import { CollectPaymentModal } from "./CollectPaymentModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -18,6 +19,7 @@ interface InvoicesTableProps {
 export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading, error } = useQuery({
@@ -198,8 +200,11 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        {invoice.status === 'unpaid' && (
-                          <DropdownMenuItem className="text-blue-600 focus:text-blue-600">
+                        {(invoice.status === 'unpaid' || invoice.status === 'partial') && (
+                          <DropdownMenuItem 
+                            className="text-blue-600 focus:text-blue-600"
+                            onClick={() => setSelectedInvoiceForPayment(invoice)}
+                          >
                             <CreditCard className="mr-2 h-4 w-4" />
                             Collect Payment
                           </DropdownMenuItem>
@@ -226,6 +231,14 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
           isOpen={!!selectedInvoiceId}
           onClose={() => setSelectedInvoiceId(null)}
           invoiceId={selectedInvoiceId}
+        />
+      )}
+
+      {selectedInvoiceForPayment && (
+        <CollectPaymentModal
+          isOpen={!!selectedInvoiceForPayment}
+          onClose={() => setSelectedInvoiceForPayment(null)}
+          invoice={selectedInvoiceForPayment}
         />
       )}
     </div>
