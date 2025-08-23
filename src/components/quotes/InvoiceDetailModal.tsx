@@ -461,7 +461,10 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
             </Button>
           )}
           
-          <Button variant="outline" onClick={onClose}>
+          <Button 
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+            onClick={onClose}
+          >
             Close
           </Button>
         </div>
@@ -469,21 +472,27 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
         {/* Contact Edit Modal */}
         {showContactEdit && (
           <Dialog open={showContactEdit} onOpenChange={setShowContactEdit}>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Edit Contact Information</DialogTitle>
+                <DialogTitle>Send Invoice {invoice?.invoice_number}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div>
+                <div className="text-sm text-muted-foreground">
+                  Review and confirm the contact information before sending the invoice.
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="contact-name">Customer Name</Label>
                   <Input
                     id="contact-name"
                     value={contactData.name}
                     onChange={(e) => setContactData(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Customer name"
+                    className="border-blue-200 focus:border-blue-400"
                   />
                 </div>
-                <div>
+                
+                <div className="space-y-2">
                   <Label htmlFor="contact-email">Email Address</Label>
                   <Input
                     id="contact-email"
@@ -493,7 +502,8 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
                     placeholder="customer@example.com"
                   />
                 </div>
-                <div>
+                
+                <div className="space-y-2">
                   <Label htmlFor="contact-phone">Phone Number</Label>
                   <Input
                     id="contact-phone"
@@ -503,33 +513,51 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
                     placeholder="(555) 123-4567"
                   />
                 </div>
-              </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setShowContactEdit(false)}>
-                  Cancel
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
-                      Send Invoice
-                      <ChevronDown className="w-4 h-4 ml-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('email')}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Send via Email
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('sms')}>
-                      <Phone className="mr-2 h-4 w-4" />
-                      Send via SMS
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('both')}>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send via Both
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+
+                <div className="space-y-3 pt-4">
+                  <Label>How would you like to send the invoice?</Label>
+                  <div className="flex flex-col gap-2">
+                    {contactData.email && (
+                      <Button
+                        onClick={() => handleSendWithEditedContact('email')}
+                        disabled={sendInvoiceMutation.isPending}
+                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+                      >
+                        <Mail className="mr-2 h-4 w-4" />
+                        Send via Email
+                      </Button>
+                    )}
+                    {contactData.phone && (
+                      <Button
+                        onClick={() => handleSendWithEditedContact('sms')}
+                        disabled={sendInvoiceMutation.isPending}
+                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+                      >
+                        <Phone className="mr-2 h-4 w-4" />
+                        Send via SMS
+                      </Button>
+                    )}
+                    {contactData.email && contactData.phone && (
+                      <Button
+                        onClick={() => handleSendWithEditedContact('both')}
+                        disabled={sendInvoiceMutation.isPending}
+                        className="justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+                      >
+                        <Send className="mr-2 h-4 w-4" />
+                        Send via Email & SMS
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+                    onClick={() => setShowContactEdit(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
