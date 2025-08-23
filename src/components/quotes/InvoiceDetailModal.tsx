@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-// import { SendInvoiceModal } from './SendInvoiceModal';
+import { SendInvoiceModal } from './SendInvoiceModal';
 import { EditInvoiceModal } from './EditInvoiceModal';
 import { ReversePaymentModal } from './ReversePaymentModal';
 
@@ -286,11 +286,11 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailMo
           </div>
         </div>
 
-        {/* <SendInvoiceModal
+        <SendInvoiceModal
           isOpen={isSendModalOpen}
           onClose={() => setIsSendModalOpen(false)}
           invoice={invoice}
-        /> */}
+        />
 
         <EditInvoiceModal
           isOpen={isEditModalOpen}
