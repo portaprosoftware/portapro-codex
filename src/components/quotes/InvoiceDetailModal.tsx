@@ -221,7 +221,7 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <DollarSign className="h-5 w-5" />
             Invoice Details
           </DialogTitle>
         </DialogHeader>
@@ -237,7 +237,7 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
+                    <DollarSign className="h-4 w-4" />
                     Invoice Information
                   </CardTitle>
                 </CardHeader>
