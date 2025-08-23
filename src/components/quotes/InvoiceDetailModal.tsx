@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { X, Mail, Phone, MapPin, Calendar, DollarSign, FileText, User } from "lucide-react";
+import { X, Mail, Phone, MapPin, Calendar, DollarSign, FileText, User, Send, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface InvoiceDetailModalProps {
@@ -17,6 +21,10 @@ interface InvoiceDetailModalProps {
 }
 
 export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetailModalProps) => {
+  const [showContactEdit, setShowContactEdit] = useState(false);
+  const [contactData, setContactData] = useState({ email: '', phone: '', name: '' });
+  const queryClient = useQueryClient();
+
   // Fetch invoice basic data
   const { data: invoice, isLoading: invoiceLoading } = useQuery({
     queryKey: ['invoice-details', invoiceId],
@@ -75,7 +83,89 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     enabled: isOpen && !!invoiceId,
   });
 
+  // Send invoice mutation
+  const sendInvoiceMutation = useMutation({
+    mutationFn: async ({ sendMethod, customerEmail, customerPhone, customerName }: {
+      sendMethod: 'email' | 'sms' | 'both';
+      customerEmail?: string;
+      customerPhone?: string;
+      customerName: string;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('send-invoice-email', {
+        body: {
+          invoiceId: invoiceId,
+          customerEmail,
+          customerPhone,
+          customerName,
+          sendMethod
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data, variables) => {
+      const method = variables.sendMethod === 'both' ? 'email and SMS' : variables.sendMethod;
+      toast.success(`Invoice sent successfully via ${method}!`);
+      queryClient.invalidateQueries({ queryKey: ['invoice-details', invoiceId] });
+    },
+    onError: (error: any) => {
+      console.error('Send invoice error:', error);
+      toast.error(`Failed to send invoice: ${error.message}`);
+    }
+  });
+
   const isLoading = invoiceLoading || itemsLoading;
+
+  // Initialize contact data when invoice loads
+  const customer = invoice?.customers;
+  const defaultContactData = {
+    email: customer?.email || '',
+    phone: customer?.phone || '',
+    name: customer?.name || ''
+  };
+
+  const handleSendOption = (method: 'email' | 'sms' | 'both') => {
+    const currentData = {
+      email: customer?.email || '',
+      phone: customer?.phone || '',
+      name: customer?.name || ''
+    };
+    
+    setContactData(currentData);
+    
+    // Check if we have the required contact info
+    const hasEmail = currentData.email && currentData.email.trim() !== '';
+    const hasPhone = currentData.phone && currentData.phone.trim() !== '';
+    
+    if ((method === 'email' || method === 'both') && !hasEmail) {
+      setShowContactEdit(true);
+      return;
+    }
+    
+    if ((method === 'sms' || method === 'both') && !hasPhone) {
+      setShowContactEdit(true);
+      return;
+    }
+    
+    // Send directly if we have the required info
+    sendInvoiceMutation.mutate({
+      sendMethod: method,
+      customerEmail: method !== 'sms' ? currentData.email : undefined,
+      customerPhone: method !== 'email' ? currentData.phone : undefined,
+      customerName: currentData.name
+    });
+  };
+
+  const handleSendWithEditedContact = (method: 'email' | 'sms' | 'both') => {
+    sendInvoiceMutation.mutate({
+      sendMethod: method,
+      customerEmail: method !== 'sms' ? contactData.email : undefined,
+      customerPhone: method !== 'email' ? contactData.phone : undefined,
+      customerName: contactData.name
+    });
+    setShowContactEdit(false);
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -378,11 +468,115 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
           </div>
         )}
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-between pt-4">
+          {invoice?.status === 'unpaid' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 font-bold">
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Invoice
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                <DropdownMenuItem 
+                  onClick={() => handleSendOption('email')}
+                  disabled={sendInvoiceMutation.isPending}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Send via Email
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleSendOption('sms')}
+                  disabled={sendInvoiceMutation.isPending}
+                >
+                  <Phone className="mr-2 h-4 w-4" />
+                  Send via SMS
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleSendOption('both')}
+                  disabled={sendInvoiceMutation.isPending}
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  Send via Both
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
         </div>
+
+        {/* Contact Edit Modal */}
+        {showContactEdit && (
+          <Dialog open={showContactEdit} onOpenChange={setShowContactEdit}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Contact Information</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="contact-name">Customer Name</Label>
+                  <Input
+                    id="contact-name"
+                    value={contactData.name}
+                    onChange={(e) => setContactData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Customer name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact-email">Email Address</Label>
+                  <Input
+                    id="contact-email"
+                    type="email"
+                    value={contactData.email}
+                    onChange={(e) => setContactData(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="customer@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact-phone">Phone Number</Label>
+                  <Input
+                    id="contact-phone"
+                    type="tel"
+                    value={contactData.phone}
+                    onChange={(e) => setContactData(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setShowContactEdit(false)}>
+                  Cancel
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
+                      Send Invoice
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('email')}>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Send via Email
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('sms')}>
+                      <Phone className="mr-2 h-4 w-4" />
+                      Send via SMS
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleSendWithEditedContact('both')}>
+                      <Send className="mr-2 h-4 w-4" />
+                      Send via Both
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </DialogContent>
     </Dialog>
   );
