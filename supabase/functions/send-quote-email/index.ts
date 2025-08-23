@@ -12,8 +12,10 @@ const corsHeaders = {
 
 interface SendQuoteEmailRequest {
   quoteId: string;
-  customerEmail: string;
+  customerEmail?: string;
+  customerPhone?: string;
   customerName: string;
+  sendMethod: 'email' | 'sms' | 'both';
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,9 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { quoteId, customerEmail, customerName }: SendQuoteEmailRequest = await req.json();
+    const { quoteId, customerEmail, customerPhone, customerName, sendMethod }: SendQuoteEmailRequest = await req.json();
 
-    console.log('Sending quote email:', { quoteId, customerEmail, customerName });
+    console.log('Sending quote:', { quoteId, customerEmail, customerPhone, customerName, sendMethod });
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -218,15 +220,68 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // Send email
-    const emailResponse = await resend.emails.send({
-      from: `${companyName} <${companyEmail}>`,
-      to: [customerEmail],
-      subject: `Quote ${quote.quote_number} from ${companyName}`,
-      html: emailHTML,
-    });
+    let emailResponse = null;
+    let smsResponse = null;
 
-    console.log("Quote email sent successfully:", emailResponse);
+    // Send email if required
+    if (sendMethod === 'email' || sendMethod === 'both') {
+      if (!customerEmail) {
+        throw new Error('Email address is required for email sending');
+      }
+
+      emailResponse = await resend.emails.send({
+        from: `${companyName} <${companyEmail}>`,
+        to: [customerEmail],
+        subject: `Quote ${quote.quote_number} from ${companyName}`,
+        html: emailHTML,
+      });
+
+      console.log("Quote email sent successfully:", emailResponse);
+    }
+
+    // Send SMS if required
+    if (sendMethod === 'sms' || sendMethod === 'both') {
+      if (!customerPhone) {
+        throw new Error('Phone number is required for SMS sending');
+      }
+
+      // Twilio SMS functionality
+      const twilioSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+      const twilioToken = Deno.env.get('TWILIO_AUTH_TOKEN');
+      const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
+
+      if (!twilioSid || !twilioToken || !twilioPhone) {
+        throw new Error('Twilio credentials not configured');
+      }
+
+      const smsMessage = `Hi ${customerName}! Your quote ${quote.quote_number} from ${companyName} is ready. Total: ${formatCurrency(quote.total_amount)}. Contact us at ${companyPhone} for questions. Thank you!`;
+
+      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`;
+      const auth = btoa(`${twilioSid}:${twilioToken}`);
+      
+      const smsPayload = new URLSearchParams({
+        From: twilioPhone,
+        To: customerPhone,
+        Body: smsMessage
+      });
+
+      const twilioResponse = await fetch(twilioUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: smsPayload.toString(),
+      });
+
+      if (!twilioResponse.ok) {
+        const errorText = await twilioResponse.text();
+        throw new Error(`SMS sending failed: ${errorText}`);
+      }
+
+      smsResponse = await twilioResponse.json();
+      console.log("Quote SMS sent successfully:", smsResponse);
+    }
 
     // Update quote to mark as sent
     await supabase
@@ -239,8 +294,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      emailId: emailResponse.data?.id,
-      message: 'Quote email sent successfully' 
+      emailId: emailResponse?.data?.id,
+      smsId: smsResponse?.sid,
+      message: `Quote sent successfully via ${sendMethod}` 
     }), {
       status: 200,
       headers: {
@@ -249,7 +305,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error in send-quote-email function:", error);
+    console.error("Error in send-quote function:", error);
     return new Response(
       JSON.stringify({ 
         error: error.message,
