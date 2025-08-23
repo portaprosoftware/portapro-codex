@@ -441,8 +441,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                 <Button 
                   onClick={handleSendOption}
                   disabled={sendQuoteEmail.isPending}
-                  variant="outline" 
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                 >
                   <Send className="mr-2 h-4 w-4" />
                   Resend Quote
@@ -556,7 +555,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
 
                   <div className="flex justify-end gap-2 pt-4">
                     <Button 
-                      variant="outline" 
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
                       onClick={() => setShowContactEdit(false)}
                     >
                       Cancel
