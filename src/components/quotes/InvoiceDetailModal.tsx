@@ -17,7 +17,8 @@ interface InvoiceDetailModalProps {
 }
 
 export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetailModalProps) => {
-  const { data: invoice, isLoading } = useQuery({
+  // Fetch invoice basic data
+  const { data: invoice, isLoading: invoiceLoading } = useQuery({
     queryKey: ['invoice-details', invoiceId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,15 +46,6 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
             job_number,
             job_type,
             scheduled_date
-          ),
-          invoice_items (
-            id,
-            product_name,
-            variation_name,
-            quantity,
-            unit_price,
-            line_total,
-            description
           )
         `)
         .eq('id', invoiceId)
@@ -64,6 +56,26 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
     },
     enabled: isOpen && !!invoiceId,
   });
+
+  // Fetch invoice items separately since the relationship might not exist
+  const { data: invoiceItems, isLoading: itemsLoading } = useQuery({
+    queryKey: ['invoice-items', invoiceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('invoice_items')
+        .select('id, product_name, variation_name, quantity, unit_price, line_total, description')
+        .eq('invoice_id', invoiceId);
+
+      // Don't throw error if table doesn't exist or no items found
+      if (error && !error.message.includes('relation') && !error.message.includes('does not exist')) {
+        throw error;
+      }
+      return data || [];
+    },
+    enabled: isOpen && !!invoiceId,
+  });
+
+  const isLoading = invoiceLoading || itemsLoading;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -261,8 +273,8 @@ export const InvoiceDetailModal = ({ isOpen, onClose, invoiceId }: InvoiceDetail
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Array.isArray(invoice.invoice_items) && invoice.invoice_items.length > 0 ? (
-                      invoice.invoice_items.map((item: any) => (
+                    {Array.isArray(invoiceItems) && invoiceItems.length > 0 ? (
+                      invoiceItems.map((item: any) => (
                         <TableRow key={item.id}>
                           <TableCell>
                             <div>
