@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
+import { InvoiceDetailModal } from "./InvoiceDetailModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +17,7 @@ interface InvoicesTableProps {
 
 export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading, error } = useQuery({
@@ -192,7 +194,7 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedInvoiceId(invoice.id)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
@@ -216,6 +218,14 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
         <InvoiceCreationWizard
           isOpen={showCreateInvoice}
           onClose={() => setShowCreateInvoice(false)}
+        />
+      )}
+      
+      {selectedInvoiceId && (
+        <InvoiceDetailModal
+          isOpen={!!selectedInvoiceId}
+          onClose={() => setSelectedInvoiceId(null)}
+          invoiceId={selectedInvoiceId}
         />
       )}
     </div>
