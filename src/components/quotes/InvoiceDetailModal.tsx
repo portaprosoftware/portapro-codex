@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { X, Eye, Send, Mail, MessageSquare, Download, Printer, DollarSign, Calendar, User, Building, FileText, Receipt, Edit3, Undo2, Phone, MapPin } from 'lucide-react';
+import { X, Eye, Send, Download, Printer, DollarSign, Edit3, Undo2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,212 +76,107 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-            <Receipt className="h-6 w-6 text-blue-600" />
-            Invoice Details
-          </DialogTitle>
-
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={() => setIsSendModalOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Send Invoice
-            </Button>
-
-            <Button
-              onClick={() => setIsEditModalOpen(true)}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
-            >
-              <Edit3 className="h-4 w-4 mr-2" />
-              Edit Invoice
-            </Button>
-            
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
-            </Button>
-            
-            <Button variant="outline" size="sm">
-              <Printer className="h-4 w-4 mr-2" />
-              Print
-            </Button>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-semibold">
+              Invoice Details
+            </DialogTitle>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => setIsEditModalOpen(true)}
+                variant="outline"
+              >
+                <Edit3 className="h-4 w-4 mr-1" />
+                Edit
+              </Button>
+              <Button
+                onClick={() => setIsSendModalOpen(true)}
+                size="sm"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Send Invoice
+              </Button>
+            </div>
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Header Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Invoice Information */}
-            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-blue-600" />
-                  Invoice Information
-                </h3>
-                {getStatusBadge(invoice.status)}
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-medium">Invoice #:</span>
-                  <span className="font-mono">{invoice.invoice_number}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Created:</span>
-                  <span>{formatDate(invoice.created_at)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Due Date:</span>
-                  <span>{formatDate(invoice.due_date)}</span>
-                </div>
-                {invoice.quote_id && (
-                  <div className="flex justify-between">
-                    <span className="font-medium">Quote ID:</span>
-                    <span className="font-mono">Q-{invoice.quote_id.slice(0, 8).toUpperCase()}</span>
-                  </div>
-                )}
-              </div>
+        <div className="space-y-4">
+          {/* Invoice Header */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div>
+              <h2 className="text-lg font-semibold">Invoice #{invoice.invoice_number}</h2>
+              <p className="text-gray-600">Created: {formatDate(invoice.created_at)}</p>
+              <p className="text-gray-600">Due: {formatDate(invoice.due_date)}</p>
             </div>
-
-            {/* Customer Information */}
-            <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-              <h3 className="font-semibold text-lg flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
-                Customer Information
-              </h3>
-              
-              <div className="space-y-2 text-sm">
-                <div className="font-medium text-base">{invoice.customers?.name}</div>
-                {invoice.customers?.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3 w-3 text-muted-foreground" />
-                    <span>{invoice.customers.email}</span>
-                  </div>
-                )}
-                {invoice.customers?.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3 w-3 text-muted-foreground" />
-                    <span>{invoice.customers.phone}</span>
-                  </div>
-                )}
-              </div>
+            <div className="text-right">
+              {getStatusBadge(invoice.status)}
+              <p className="text-2xl font-bold mt-2">{formatCurrency(invoice.amount)}</p>
             </div>
           </div>
 
-          {/* Financial Summary */}
-          <div className="bg-muted/30 rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              Financial Summary
-            </h3>
-            
-            <div className="space-y-2">
-              {invoice.subtotal && invoice.subtotal > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
-                  <span>{formatCurrency(invoice.subtotal)}</span>
-                </div>
-              )}
-              {invoice.discount_value && invoice.discount_value > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>
-                    Discount ({invoice.discount_type === 'percentage' ? `${invoice.discount_value}%` : 'Fixed'}):
-                  </span>
-                  <span>-{formatCurrency(invoice.discount_value)}</span>
-                </div>
-              )}
-              {invoice.additional_fees && invoice.additional_fees > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span>Additional Fees:</span>
-                  <span>{formatCurrency(invoice.additional_fees)}</span>
-                </div>
-              )}
-              {invoice.tax_amount && invoice.tax_amount > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span>Tax:</span>
-                  <span>{formatCurrency(invoice.tax_amount)}</span>
-                </div>
-              )}
-              <Separator />
-              <div className="flex justify-between text-lg font-bold">
-                <span>Total Amount:</span>
-                <span>{formatCurrency(invoice.amount)}</span>
-              </div>
-            </div>
+          {/* Customer Info */}
+          <div className="p-4 border rounded-lg">
+            <h3 className="font-semibold mb-2">Customer Information</h3>
+            <p className="font-medium">{invoice.customers?.name}</p>
+            {invoice.customers?.email && <p className="text-gray-600">{invoice.customers.email}</p>}
+            {invoice.customers?.phone && <p className="text-gray-600">{invoice.customers.phone}</p>}
           </div>
 
           {/* Payment History */}
           {payments.length > 0 && (
-            <>
-              <Separator />
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Payment History</h3>
-                <div className="space-y-3">
-                  {payments.map((payment) => (
-                    <div key={payment.id} className="bg-muted/30 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-green-600" />
-                            <span className="font-semibold">{formatCurrency(payment.amount)}</span>
-                          </div>
-                          <Badge 
-                            variant="outline" 
-                            className={payment.status === 'reversed' ? 'border-red-500 text-red-600' : 'border-green-500 text-green-600'}
-                          >
-                            {payment.status === 'reversed' ? 'Reversed' : 'Completed'}
-                          </Badge>
-                        </div>
-                        
-                        {payment.status === 'completed' && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => {
-                              setSelectedPayment(payment);
-                              setIsReverseModalOpen(true);
-                            }}
-                          >
-                            <Undo2 className="h-3 w-3 mr-1" />
-                            Reverse
-                          </Button>
-                        )}
+            <div className="p-4 border rounded-lg">
+              <h3 className="font-semibold mb-3">Payment History</h3>
+              <div className="space-y-2">
+                {payments.map((payment) => (
+                  <div key={payment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{formatCurrency(payment.amount)}</span>
+                        <Badge 
+                          variant={payment.status === 'reversed' ? 'destructive' : 'default'}
+                          className={payment.status === 'reversed' ? '' : 'bg-green-100 text-green-800'}
+                        >
+                          {payment.status === 'reversed' ? 'Reversed' : 'Completed'}
+                        </Badge>
                       </div>
-                      
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-4">
-                          <span>Method: {payment.payment_method?.replace('_', ' ').toUpperCase()}</span>
-                          <span>Date: {format(new Date(payment.created_at), 'MMM d, yyyy h:mm a')}</span>
-                        </div>
-                        {payment.reference_number && (
-                          <div className="mt-1">Reference: {payment.reference_number}</div>
-                        )}
-                        {payment.notes && (
-                          <div className="mt-1">Notes: {payment.notes}</div>
-                        )}
-                        {payment.reversal_reason && (
-                          <div className="mt-1 text-red-600">Reversal Reason: {payment.reversal_reason}</div>
-                        )}
-                      </div>
+                      <p className="text-sm text-gray-600">
+                        {payment.payment_method?.replace('_', ' ').toUpperCase()} • {format(new Date(payment.created_at), 'MMM d, yyyy')}
+                      </p>
+                      {payment.reversal_reason && (
+                        <p className="text-sm text-red-600">Reason: {payment.reversal_reason}</p>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    {payment.status === 'completed' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedPayment(payment);
+                          setIsReverseModalOpen(true);
+                        }}
+                      >
+                        <Undo2 className="h-3 w-3 mr-1" />
+                        Reverse
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
-            </>
+            </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 border-0"
-            >
-              Close
+          {/* Actions */}
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1">
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+            <Button variant="outline" className="flex-1">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
             </Button>
           </div>
         </div>
