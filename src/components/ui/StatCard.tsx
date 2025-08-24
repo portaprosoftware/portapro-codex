@@ -17,6 +17,8 @@ interface StatCardProps {
   className?: string;
   animateValue?: boolean;
   delay?: number;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -31,7 +33,9 @@ export const StatCard: React.FC<StatCardProps> = ({
   chart,
   className,
   animateValue = true,
-  delay = 0
+  delay = 0,
+  onClick,
+  clickable = false
 }) => {
   // Extract numeric value for animation - skip if React element
   const isReactElement = React.isValidElement(value);
@@ -54,14 +58,18 @@ export const StatCard: React.FC<StatCardProps> = ({
       value;
 
   return (
-    <div className={cn(
-      "relative overflow-hidden transition-all duration-300 ease-out",
-      "bg-gradient-to-b from-[#F6F9FF] to-white",
-      "rounded-xl border border-gray-200 shadow-sm",
-      "hover:shadow-md hover:-translate-y-1",
-      "p-4 mb-4",
-      className
-    )}>
+    <div 
+      className={cn(
+        "relative overflow-hidden transition-all duration-300 ease-out",
+        "bg-gradient-to-b from-[#F6F9FF] to-white",
+        "rounded-xl border border-gray-200 shadow-sm",
+        "hover:shadow-md hover:-translate-y-1",
+        "p-4 mb-4",
+        clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
+        className
+      )}
+      onClick={clickable ? onClick : undefined}
+    >
       {/* Gradient left border */}
       <div 
         className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"

@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { FileX } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const VehicleDocumentsCard: React.FC = () => {
+  const navigate = useNavigate();
   const { data: vehicleDocsData } = useQuery({
     queryKey: ['dashboard-vehicle-docs'],
     queryFn: async () => {
@@ -38,6 +40,8 @@ export const VehicleDocumentsCard: React.FC = () => {
       subtitle={`${vehicleDocsData?.affectedVehicles || 0} vehicles affected`}
       subtitleColor="text-red-600"
       delay={100}
+      clickable
+      onClick={() => navigate('/fleet/compliance')}
     />
   );
 };

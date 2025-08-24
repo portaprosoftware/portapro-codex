@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const StaffCertificationsCard: React.FC = () => {
+  const navigate = useNavigate();
   const { data: certificationsData } = useQuery({
     queryKey: ['dashboard-staff-certifications'],
     queryFn: async () => {
@@ -38,6 +40,8 @@ export const StaffCertificationsCard: React.FC = () => {
       subtitle={`${certificationsData?.affectedEmployees || 0} staff affected`}
       subtitleColor="text-green-600"
       delay={400}
+      clickable
+      onClick={() => navigate('/team-management')}
     />
   );
 };

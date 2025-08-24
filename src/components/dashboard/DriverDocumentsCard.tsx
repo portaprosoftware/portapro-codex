@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const DriverDocumentsCard: React.FC = () => {
+  const navigate = useNavigate();
   const { data: driverDocsData } = useQuery({
     queryKey: ['dashboard-driver-docs'],
     queryFn: async () => {
@@ -38,6 +40,8 @@ export const DriverDocumentsCard: React.FC = () => {
       subtitle={`${driverDocsData?.affectedDrivers || 0} drivers affected`}
       subtitleColor="text-orange-600"
       delay={200}
+      clickable
+      onClick={() => navigate('/team-management')}
     />
   );
 };

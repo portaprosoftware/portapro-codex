@@ -289,6 +289,8 @@ const Dashboard = () => {
           subtitle={`${inventoryData?.totalUnits || 0} total units, ${inventoryData?.maintenanceItems || 0} in maintenance`}
           subtitleColor="text-gray-600"
           delay={0}
+          clickable
+          onClick={() => navigate('/inventory')}
         />
         
         <StatCard
@@ -301,6 +303,8 @@ const Dashboard = () => {
           subtitle={`${customersData?.total || 0} total customers`}
           subtitleColor="text-gray-600"
           delay={100}
+          clickable
+          onClick={() => navigate('/customers')}
         />
         
         <StatCard
@@ -325,6 +329,8 @@ const Dashboard = () => {
           }
           subtitleColor="text-gray-600"
           delay={200}
+          clickable
+          onClick={() => navigate('/jobs')}
         />
         
         <StatCard
@@ -337,6 +343,8 @@ const Dashboard = () => {
           subtitle="Last 30 days"
           subtitleColor="text-gray-600"
           delay={300}
+          clickable
+          onClick={() => navigate('/quotes-invoices')}
         />
         
         {/* Row 2 */}
@@ -351,6 +359,8 @@ const Dashboard = () => {
           subtitleColor="text-gray-600"
           chart={<DonutChart active={vehiclesData?.available || 0} maintenance={vehiclesData?.maintenance || 0} />}
           delay={400}
+          clickable
+          onClick={() => navigate('/fleet')}
         />
         
         <StatCard
@@ -363,6 +373,8 @@ const Dashboard = () => {
           subtitle="Last 30 days fuel expenses"
           subtitleColor="text-gray-600"
           delay={500}
+          clickable
+          onClick={() => navigate('/fleet/fuel')}
         />
         
         <StatCard
@@ -375,6 +387,8 @@ const Dashboard = () => {
           subtitle="Due within 7 days"
           subtitleColor="text-red-600"
           delay={600}
+          clickable
+          onClick={() => navigate('/fleet/maintenance')}
         />
         
         <CompactConsumablesCard />

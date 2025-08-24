@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const DriverCredentialsCard: React.FC = () => {
+  const navigate = useNavigate();
   const { data: credentialsData } = useQuery({
     queryKey: ['dashboard-driver-credentials'],
     queryFn: async () => {
@@ -45,6 +47,8 @@ export const DriverCredentialsCard: React.FC = () => {
       subtitle={`${credentialsData?.affectedDrivers || 0} drivers affected`}
       subtitleColor="text-yellow-600"
       delay={300}
+      clickable
+      onClick={() => navigate('/team-management')}
     />
   );
 };
