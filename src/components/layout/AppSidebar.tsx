@@ -252,8 +252,8 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
 
   return (
     <Sidebar 
-      collapsible="icon" 
-      variant={isDesktop ? "sidebar" : "inset"} 
+      collapsible={isDesktop ? "icon" : "offcanvas"} 
+      variant={isDesktop ? "sidebar" : "floating"} 
       className="border-r bg-white"
     >
       <SidebarHeader className="p-4 border-b border-gray-200">
