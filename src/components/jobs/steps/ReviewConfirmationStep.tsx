@@ -572,18 +572,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
       </div>
 
       {/* Action Buttons - Different based on wizard mode */}
-      {!isQuoteMode && !isJobAndQuoteMode ? (
-        /* Regular job creation mode */
-        <div className="flex justify-center">
-          <Button
-            onClick={onCreateJob}
-            disabled={creating}
-            className="min-w-[120px]"
-          >
-            {creating ? 'Creating...' : 'Create Job'}
-          </Button>
-        </div>
-      ) : isQuoteMode ? (
+      {isQuoteMode ? (
         /* Quote only mode - aligned with navigation */
         <div className="flex justify-end">
           <Button
