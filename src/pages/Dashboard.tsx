@@ -9,7 +9,11 @@ import { DonutChart } from "@/components/ui/DonutChart";
 import { useNavigate } from "react-router-dom";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/badge";
-import { ConsumablesAlertCard } from "@/components/dashboard/ConsumablesAlertCard";
+import { VehicleDocumentsCard } from "@/components/dashboard/VehicleDocumentsCard";
+import { DriverDocumentsCard } from "@/components/dashboard/DriverDocumentsCard";
+import { DriverCredentialsCard } from "@/components/dashboard/DriverCredentialsCard";
+import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificationsCard";
+import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
 import { 
   Package, 
   Users, 
@@ -192,96 +196,6 @@ const Dashboard = () => {
     }
   });
 
-  // Fetch expiring documents data
-  const { data: documentsData } = useQuery({
-    queryKey: ['dashboard-expiring-docs'],
-    queryFn: async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 30);
-      
-      // Fetch vehicle compliance documents
-      const { data: vehicleDocs, error: vehicleError } = await supabase
-        .from('vehicle_compliance_documents')
-        .select('vehicle_id, expiration_date')
-        .lte('expiration_date', futureDate.toISOString().split('T')[0]);
-      
-      if (vehicleError) throw vehicleError;
-      
-      // Fetch driver documents
-      const { data: driverDocs, error: driverDocsError } = await supabase
-        .from('driver_documents')
-        .select('driver_id, expiry_date')
-        .lte('expiry_date', futureDate.toISOString().split('T')[0]);
-      
-      if (driverDocsError) throw driverDocsError;
-      
-      // Fetch driver credentials (licenses and medical cards)
-      const { data: driverCredentials, error: credentialsError } = await supabase
-        .from('driver_credentials')
-        .select('driver_id, license_expiry_date, medical_card_expiry_date')
-        .or(`license_expiry_date.lte.${futureDate.toISOString().split('T')[0]},medical_card_expiry_date.lte.${futureDate.toISOString().split('T')[0]}`);
-      
-      if (credentialsError) throw credentialsError;
-      
-      // Fetch employee certifications
-      const { data: employeeCerts, error: certsError } = await supabase
-        .from('employee_certifications')
-        .select('driver_clerk_id, expires_on')
-        .lte('expires_on', futureDate.toISOString().split('T')[0]);
-      
-      if (certsError) throw certsError;
-      
-      // Calculate totals first
-      const totalVehicleDocs = vehicleDocs?.length || 0;
-      const totalDriverDocs = driverDocs?.length || 0;
-      const totalCredentialIssues = (driverCredentials?.reduce((count, cred) => {
-        let issues = 0;
-        if (cred.license_expiry_date && new Date(cred.license_expiry_date) <= futureDate) issues++;
-        if (cred.medical_card_expiry_date && new Date(cred.medical_card_expiry_date) <= futureDate) issues++;
-        return count + issues;
-      }, 0)) || 0;
-      const totalCertifications = employeeCerts?.length || 0;
-      
-      const totalDocuments = totalVehicleDocs + totalDriverDocs + totalCredentialIssues + totalCertifications;
-      
-      // Count unique entities affected (for display purposes)
-      const uniqueVehicles = new Set(vehicleDocs?.map(doc => doc.vehicle_id));
-      const driversWithDocs = new Set(driverDocs?.map(doc => doc.driver_id));
-      const driversWithCredentials = new Set(driverCredentials?.map(cred => cred.driver_id));
-      const employeesWithCerts = new Set(employeeCerts?.map(cert => cert.driver_clerk_id));
-      
-      // Combine all unique people/vehicles affected
-      const allAffectedEntities = new Set([
-        ...Array.from(uniqueVehicles).map(id => `vehicle-${id}`),
-        ...Array.from(driversWithDocs).map(id => `driver-${id}`),
-        ...Array.from(driversWithCredentials).map(id => `driver-${id}`),
-        ...Array.from(employeesWithCerts).map(id => `employee-${id}`)
-      ]);
-      
-      // Debug logging
-      console.log('Expiring docs debug:', {
-        totalDocuments,
-        totalAffectedEntities: allAffectedEntities.size,
-        breakdown: {
-          vehicleDocs: totalVehicleDocs,
-          driverDocs: totalDriverDocs,
-          credentials: totalCredentialIssues,
-          certifications: totalCertifications
-        }
-      });
-      
-      return {
-        totalDocuments,
-        affectedEntities: allAffectedEntities.size,
-        breakdown: {
-          vehicleDocs: totalVehicleDocs,
-          driverDocs: totalDriverDocs,
-          credentials: totalCredentialIssues,
-          certifications: totalCertifications
-        }
-      };
-    }
-  });
 
   // Fetch company settings for timezone
   const { data: companySettings } = useQuery({
@@ -463,31 +377,17 @@ const Dashboard = () => {
           delay={600}
         />
         
-        <StatCard
-          title="Expiring Documents"
-          value={documentsData?.totalDocuments || 0}
-          icon={FileX}
-          gradientFrom="#fbbf24"
-          gradientTo="#f59e0b"
-          iconBg="#fbbf24"
-          subtitle={
-            <div className="space-y-1">
-              <div>{documentsData?.totalDocuments || 0} total documents expiring</div>
-              <div className="text-xs space-y-0.5">
-                <div>{documentsData?.breakdown?.vehicleDocs || 0} vehicle docs</div>
-                <div>{documentsData?.breakdown?.driverDocs || 0} driver docs</div>
-                <div>{documentsData?.breakdown?.credentials || 0} credentials</div>
-                <div>{documentsData?.breakdown?.certifications || 0} certifications</div>
-              </div>
-            </div>
-          }
-          subtitleColor="text-orange-600"
-          delay={700}
-        />
+        <CompactConsumablesCard />
       </div>
 
-      {/* Fixed Consumables Alert Card */}
-      <ConsumablesAlertCard />
+      {/* Document Cards Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <VehicleDocumentsCard />
+        <DriverDocumentsCard />
+        <DriverCredentialsCard />
+        <StaffCertificationsCard />
+      </div>
+
     </div>
   );
 };
