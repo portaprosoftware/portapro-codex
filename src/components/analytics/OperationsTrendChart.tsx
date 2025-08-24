@@ -1,0 +1,128 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { format, eachDayOfInterval, subDays } from 'date-fns';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from 'recharts';
+
+interface OperationsTrendChartProps {
+  dateRange: { from: Date; to: Date };
+}
+
+export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ dateRange }) => {
+  const { data: trendData, isLoading } = useQuery({
+    queryKey: ['operations-trend', dateRange],
+    queryFn: async () => {
+      const { data: jobs, error } = await supabase
+        .from('jobs')
+        .select('job_type, scheduled_date, created_at')
+        .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
+        .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'))
+        .order('scheduled_date');
+
+      if (error) throw error;
+
+      // Create date range array
+      const dates = eachDayOfInterval({
+        start: dateRange.from,
+        end: dateRange.to
+      });
+
+      // Group jobs by date and type
+      const dailyData = dates.map(date => {
+        const dateStr = format(date, 'yyyy-MM-dd');
+        const dayJobs = jobs?.filter(job => 
+          format(new Date(job.scheduled_date), 'yyyy-MM-dd') === dateStr
+        ) || [];
+
+        return {
+          date: format(date, 'MMM dd'),
+          fullDate: dateStr,
+          deliveries: dayJobs.filter(job => job.job_type === 'delivery').length,
+          pickups: dayJobs.filter(job => job.job_type === 'pickup').length,
+          services: dayJobs.filter(job => job.job_type === 'service').length,
+          returns: dayJobs.filter(job => job.job_type === 'return').length,
+        };
+      });
+
+      return dailyData;
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500">Loading trend data...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={trendData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis 
+            dataKey="date" 
+            tick={{ fontSize: 12 }}
+            interval="preserveStartEnd"
+          />
+          <YAxis tick={{ fontSize: 12 }} />
+          <Tooltip 
+            labelStyle={{ color: '#374151' }}
+            contentStyle={{ 
+              backgroundColor: 'white', 
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px'
+            }}
+          />
+          <Legend />
+          <Area
+            type="monotone"
+            dataKey="deliveries"
+            stackId="1"
+            stroke="#3b82f6"
+            fill="#3b82f6"
+            fillOpacity={0.7}
+            name="Deliveries"
+          />
+          <Area
+            type="monotone"
+            dataKey="pickups"
+            stackId="1"
+            stroke="#10b981"
+            fill="#10b981"
+            fillOpacity={0.7}
+            name="Pickups"
+          />
+          <Area
+            type="monotone"
+            dataKey="services"
+            stackId="1"
+            stroke="#f59e0b"
+            fill="#f59e0b"
+            fillOpacity={0.7}
+            name="Services"
+          />
+          <Area
+            type="monotone"
+            dataKey="returns"
+            stackId="1"
+            stroke="#8b5cf6"
+            fill="#8b5cf6"
+            fillOpacity={0.7}
+            name="Returns"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
