@@ -229,19 +229,19 @@ const Dashboard = () => {
   }, [companySettings?.company_timezone]);
   
   return (
-    <div className="p-6 space-y-8 font-sans">
-      {/* Hero Banner */}
-      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-8 transition-all duration-300 hover:shadow-md">
+    <div className="p-6 space-y-6 font-sans">
+      {/* Hero Banner - Compact */}
+      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-4 transition-all duration-300 hover:shadow-md">
         <div className="flex items-center justify-between">
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-gray-900 font-sans">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold text-gray-900 font-sans">
               Welcome back, {user?.firstName || 'User'}!
             </h1>
-            <p className="text-lg text-gray-600 font-sans">
+            <p className="text-base text-gray-600 font-sans">
               Here's what's happening with your rental business today.
             </p>
             {role && (
-              <Badge className="bg-gradient-blue text-white font-bold">
+              <Badge className="bg-gradient-blue text-white font-bold text-xs">
                 Role: {role === 'admin' ? 'Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
               </Badge>
             )}
@@ -249,19 +249,18 @@ const Dashboard = () => {
           
           {/* Digital Date and Time - Center */}
           <div className="text-center flex-shrink-0">
-            <div className="text-2xl font-bold text-gray-900 font-sans">
+            <div className="text-xl font-bold text-gray-900 font-sans">
               {currentTime.toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 hour12: true 
               })}
             </div>
-            <div className="text-base text-gray-600 font-sans">
+            <div className="text-sm text-gray-600 font-sans">
               {currentTime.toLocaleDateString([], { 
-                weekday: 'long',
-                month: 'long', 
-                day: 'numeric',
-                year: 'numeric'
+                weekday: 'short',
+                month: 'short', 
+                day: 'numeric'
               })}
             </div>
           </div>
@@ -270,7 +269,7 @@ const Dashboard = () => {
           <div className="flex-shrink-0">
             <MinimalClock 
               timeZone={companySettings?.company_timezone || 'America/New_York'}
-              size={120}
+              size={80}
             />
           </div>
         </div>

@@ -64,7 +64,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         "bg-gradient-to-b from-[#F6F9FF] to-white",
         "rounded-xl border border-gray-200 shadow-sm",
         "hover:shadow-md hover:-translate-y-1",
-        "p-3 h-24", // Fixed compact height
+        "p-3 h-28", // Slightly taller compact height
         clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
         className
       )}
