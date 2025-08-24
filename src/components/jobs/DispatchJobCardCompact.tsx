@@ -130,18 +130,6 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
               </span>
             </div>
 
-            {/* Status Badges - Horizontal layout for better space usage */}
-            <div className="flex gap-1">
-              <Badge className={cn("text-xs px-1.5 py-0.5 font-bold text-center", statusInfo.primary.gradient)}>
-                {statusInfo.primary.label}
-              </Badge>
-              {statusInfo.secondary && (
-                <Badge className={cn("text-xs px-1.5 py-0.5 font-bold text-center", statusInfo.secondary.gradient)}>
-                  {statusInfo.secondary.label}
-                </Badge>
-              )}
-            </div>
-
             {/* Customer */}
             <div>
               <span className="font-semibold text-xs text-gray-700 truncate">
@@ -176,7 +164,7 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
             </div>
 
             {/* Driver & Vehicle Row */}
-            <div className="flex items-center gap-3 text-xs text-gray-600">
+            <div className="flex items-center gap-3 text-xs text-gray-500">
               {job.profiles && (
                 <div className="flex items-center gap-1">
                   <User className="w-3 h-3 text-gray-400" />
@@ -196,8 +184,21 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
             </div>
           </div>
 
-          {/* Right Column - View Button Only */}
-          <div className="flex flex-col items-end justify-center">
+          {/* Right Column - Status Badges & View Button */}
+          <div className="flex flex-col items-end justify-center gap-1">
+            {/* Status Badges */}
+            <div className="flex flex-col gap-1">
+              <Badge className={cn("text-xs px-1.5 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
+                {statusInfo.primary.label}
+              </Badge>
+              {statusInfo.secondary && (
+                <Badge className={cn("text-xs px-1.5 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.secondary.gradient)}>
+                  {statusInfo.secondary.label}
+                </Badge>
+              )}
+            </div>
+            
+            {/* View Button */}
             <Button
               variant="outline"
               size="sm"
