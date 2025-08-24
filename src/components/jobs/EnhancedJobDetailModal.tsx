@@ -57,6 +57,57 @@ export const EnhancedJobDetailModal: React.FC<EnhancedJobDetailModalProps> = ({
     enabled: open && !!jobId
   });
 
+  // Fetch job items separately to avoid nested relationship issues
+  const { data: jobItems } = useQuery({
+    queryKey: ["job-items", jobId],
+    queryFn: async () => {
+      // First, get basic job items
+      const { data: items, error: itemsError } = await supabase
+        .from("job_items")
+        .select("*")
+        .eq("job_id", jobId);
+
+      if (itemsError) throw itemsError;
+      if (!items || items.length === 0) return [];
+
+      // Get unique product and service IDs
+      const productIds = [...new Set(items.filter(item => item.product_id).map(item => item.product_id))];
+      const serviceIds = [...new Set(items.filter(item => item.service_id).map(item => item.service_id))];
+
+      // Fetch products and services in parallel
+      const [productsResult, servicesResult] = await Promise.all([
+        productIds.length > 0 
+          ? supabase.from("products").select("id, name").in("id", productIds)
+          : { data: [], error: null },
+        serviceIds.length > 0
+          ? supabase.from("services").select("id, name").in("id", serviceIds)
+          : { data: [], error: null }
+      ]);
+
+      if (productsResult.error) throw productsResult.error;
+      if (servicesResult.error) throw servicesResult.error;
+
+      // Create lookup maps
+      const productsMap = new Map<string, any>();
+      const servicesMap = new Map<string, any>();
+      
+      if (productsResult.data) {
+        productsResult.data.forEach(p => productsMap.set(p.id, p));
+      }
+      if (servicesResult.data) {
+        servicesResult.data.forEach(s => servicesMap.set(s.id, s));
+      }
+
+      // Merge data
+      return items.map(item => ({
+        ...item,
+        product: item.product_id ? productsMap.get(item.product_id) : null,
+        service: item.service_id ? servicesMap.get(item.service_id) : null,
+      }));
+    },
+    enabled: open && !!jobId
+  });
+
   const getStatusBadge = (status: string) => {
     const colors = {
       assigned: "bg-blue-100 text-blue-700",
@@ -165,6 +216,7 @@ export const EnhancedJobDetailModal: React.FC<EnhancedJobDetailModalProps> = ({
             </TabsList>
 
             <TabsContent value="equipment" className="space-y-4">
+              {/* Equipment Assignments */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -275,6 +327,48 @@ export const EnhancedJobDetailModal: React.FC<EnhancedJobDetailModalProps> = ({
                   )}
                 </CardContent>
               </Card>
+
+              {/* Job Items (Inventory) */}
+              {jobItems && jobItems.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="w-5 h-5" />
+                      Units to Deliver
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Product</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Quantity</TableHead>
+                          <TableHead>Unit Price</TableHead>
+                          <TableHead>Total</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {jobItems.map((item: any) => (
+                          <TableRow key={item.id}>
+                            <TableCell className="font-medium">
+                              {item.product?.name || item.service?.name || "Unknown Item"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={item.line_item_type === 'inventory' ? 'default' : 'secondary'}>
+                                {item.line_item_type === 'inventory' ? 'Units' : item.line_item_type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>${item.unit_price?.toFixed(2) || '0.00'}</TableCell>
+                            <TableCell>${item.total_price?.toFixed(2) || '0.00'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="consumables" className="space-y-4">
