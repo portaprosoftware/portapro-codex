@@ -50,6 +50,28 @@ export function getStatusBadgeVariant(
 }
 
 /**
+ * Get badge variant for quote statuses
+ */
+export function getQuoteStatusBadgeVariant(
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
+): StatusBadgeVariant {
+  switch (status) {
+    case 'draft':
+      return 'draft';
+    case 'sent':
+      return 'assigned';
+    case 'accepted':
+      return 'completed';
+    case 'rejected':
+      return 'cancelled';
+    case 'expired':
+      return 'overdue';
+    default:
+      return 'draft'; // fallback
+  }
+}
+
+/**
  * Get badge variant for general states
  */
 export function getStateBadgeVariant(state: 'active' | 'inactive' | 'draft'): StatusBadgeVariant {
