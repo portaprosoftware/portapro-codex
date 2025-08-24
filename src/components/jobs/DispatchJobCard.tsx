@@ -94,23 +94,23 @@ export const DispatchJobCard: React.FC<DispatchJobCardProps> = ({
       )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center space-x-2 min-w-0 flex-1">
-          <div className={cn("w-2 h-2 rounded-full flex-shrink-0", jobTypeInfo.color)} />
-          <span className="font-medium text-sm text-gray-900 truncate">
-            {job.job_number}
-          </span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
-            {statusInfo.primary.label}
+      <div className="flex items-center space-x-2 min-w-0 flex-1 mb-2">
+        <div className={cn("w-2 h-2 rounded-full flex-shrink-0", jobTypeInfo.color)} />
+        <span className="font-medium text-sm text-gray-900 truncate">
+          {job.job_number}
+        </span>
+      </div>
+
+      {/* Status Badges */}
+      <div className="flex flex-wrap gap-1 mb-2">
+        <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.primary.gradient)}>
+          {statusInfo.primary.label}
+        </Badge>
+        {statusInfo.secondary && (
+          <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
+            {statusInfo.secondary.label}
           </Badge>
-          {statusInfo.secondary && (
-            <Badge className={cn("text-xs px-2 py-0.5 flex-shrink-0 font-bold text-center flex items-center justify-center", statusInfo.secondary.gradient)}>
-              {statusInfo.secondary.label}
-            </Badge>
-          )}
-        </div>
+        )}
       </div>
 
       {/* View Button under job name */}
