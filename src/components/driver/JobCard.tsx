@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { formatDateSafe } from '@/lib/dateUtils';
 import { MapPin, Clock, Phone, Navigation, Play, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { getCustomerTypeIcon, getCustomerTypeColor } from '@/lib/customerTypeIcons';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +28,7 @@ interface Job {
   was_overdue?: boolean;
   customers: {
     name?: string;
+    customer_type?: string;
   } | null;
 }
 
@@ -40,12 +42,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   const [showDetail, setShowDetail] = useState(false);
   const customerName = job.customers?.name || 'Unknown Customer';
   const statusInfo = getDualJobStatusInfo(job);
-  const customerInitials = customerName
-    .split(' ')
-    .map(word => word.charAt(0))
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const customerType = job.customers?.customer_type;
+  const CustomerIcon = getCustomerTypeIcon(customerType);
+  const iconColor = getCustomerTypeColor(customerType);
 
   const handleNavigate = () => {
     // This will be implemented with map integration
@@ -103,10 +102,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">
-                  {customerInitials}
-                </span>
+              <div className={`w-10 h-10 ${iconColor} rounded-full flex items-center justify-center`}>
+                <CustomerIcon className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-gray-900 truncate">

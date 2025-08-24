@@ -33,7 +33,8 @@ export const DriverDashboard: React.FC = () => {
         .select(`
           *,
           customers (
-            name
+            name,
+            customer_type
           )
         `)
         .eq('driver_id', user.id)
@@ -56,7 +57,8 @@ export const DriverDashboard: React.FC = () => {
             .select(`
               *,
               customers (
-                name
+                name,
+                customer_type
               )
             `)
             .eq('driver_id', profileData.id)
