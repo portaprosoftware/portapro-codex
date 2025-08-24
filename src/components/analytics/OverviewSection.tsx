@@ -6,7 +6,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { TrendChart } from './TrendChart';
 import { DonutChart } from './DonutChart';
 import { ActivityFeed } from './ActivityFeed';
-import { Briefcase, DollarSign, Truck, Users, TrendingUp } from 'lucide-react';
+import { Briefcase, DollarSign, Truck, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import type { AnalyticsOverview } from '@/types/analytics';
 
@@ -18,18 +18,74 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
   const { data: overview, isLoading } = useQuery({
     queryKey: ['analytics-overview', dateRange],
     queryFn: async () => {
-      // Since the RPC functions don't exist yet, let's return mock data
-      const mockData: AnalyticsOverview = {
+      // Fetch real job data for overview
+      const { data: jobs, error: jobsError } = await supabase
+        .from('jobs')
+        .select('id, status, job_type, scheduled_date')
+        .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
+        .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'));
+
+      if (jobsError) throw jobsError;
+
+      // Fetch real revenue data
+      const { data: invoices, error: invoicesError } = await supabase
+        .from('invoices')
+        .select('amount, status, created_at')
+        .gte('created_at', format(dateRange.from, 'yyyy-MM-dd'))
+        .lte('created_at', format(dateRange.to, 'yyyy-MM-dd'));
+
+      if (invoicesError) throw invoicesError;
+
+      // Fetch customer growth data
+      const { data: customers, error: customersError } = await supabase
+        .from('customers')
+        .select('id, created_at')
+        .gte('created_at', format(dateRange.from, 'yyyy-MM-dd'))
+        .lte('created_at', format(dateRange.to, 'yyyy-MM-dd'));
+
+      if (customersError) throw customersError;
+
+      // Fetch vehicle data for utilization
+      const { data: vehicles, error: vehiclesError } = await supabase
+        .from('vehicles')
+        .select('id, status');
+
+      if (vehiclesError) throw vehiclesError;
+
+      const { data: vehicleAssignments, error: assignmentsError } = await supabase
+        .from('daily_vehicle_assignments')
+        .select('vehicle_id, assignment_date')
+        .gte('assignment_date', format(dateRange.from, 'yyyy-MM-dd'))
+        .lte('assignment_date', format(dateRange.to, 'yyyy-MM-dd'));
+
+      if (assignmentsError) throw assignmentsError;
+
+      // Calculate metrics from real data
+      const totalJobs = jobs?.length || 0;
+      const completedJobs = jobs?.filter(job => job.status === 'completed').length || 0;
+      const completionRate = totalJobs > 0 ? (completedJobs / totalJobs) * 100 : 0;
+      const totalRevenue = invoices?.filter(inv => inv.status === 'paid').reduce((sum, inv) => sum + (inv.amount || 0), 0) || 0;
+      
+      // Calculate customer growth
+      const newCustomers = customers?.length || 0;
+
+      // Calculate fleet utilization
+      const activeVehicles = vehicles?.filter(v => v.status === 'active').length || 1;
+      const daysInRange = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
+      const totalPossibleAssignments = activeVehicles * daysInRange;
+      const actualAssignments = vehicleAssignments?.length || 0;
+      const fleetUtilization = totalPossibleAssignments > 0 ? (actualAssignments / totalPossibleAssignments) * 100 : 0;
+
+      return {
         jobs: {
-          total: 84,
-          completed: 67,
-          completion_rate: 79.8
+          total: totalJobs,
+          completed: completedJobs,
+          completion_rate: completionRate
         },
-        revenue: 37850,
-        fleet_utilization: 72.5,
-        customer_growth: 12.3
+        revenue: totalRevenue,
+        fleet_utilization: Math.min(fleetUtilization, 100), // Cap at 100%
+        customer_growth: newCustomers
       };
-      return mockData;
     }
   });
 
@@ -62,10 +118,21 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
           delivery: 0,
           pickup: 0,
           service: 0,
+          survey: 0,
+          'partial-pickup': 0,
           return: 0
         };
       }
-      dailyData[date][job.job_type] = (dailyData[date][job.job_type] || 0) + 1;
+      
+      // Map job types to match our display names and handle correctly
+      let jobType = job.job_type;
+      if (job.job_type === 'on-site-survey') {
+        jobType = 'survey';
+      } else if (job.job_type === 'partial-pickup') {
+        jobType = 'partial-pickup';
+      }
+      
+      dailyData[date][jobType] = (dailyData[date][jobType] || 0) + 1;
     });
     
     return Object.values(dailyData).sort((a: any, b: any) => 
@@ -111,7 +178,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
           subtitle={
             <div>
               <div>{overview?.jobs?.completed || 0} completed</div>
-              <div className="text-green-600 font-semibold">+12.5% vs last period</div>
+              <div className="text-green-600 font-semibold">
+                {(overview?.jobs?.completion_rate || 0).toFixed(1)}% completion rate
+              </div>
             </div>
           }
           icon={Briefcase}
@@ -152,13 +221,13 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         />
         
         <StatCard
-          title="Customer Growth"
-          value={`+${(overview?.customer_growth || 0).toFixed(1)}%`}
-          icon={TrendingUp}
+          title="New Customers"
+          value={`+${overview?.customer_growth || 0}`}
+          icon={Users}
           gradientFrom="#8b5cf6"
           gradientTo="#7c3aed"
           iconBg="#8B5CF6"
-          subtitle={<span className="text-green-600 font-semibold">+123.3% vs last period</span>}
+          subtitle={<span className="text-green-600 font-semibold">This period</span>}
         />
       </div>
 

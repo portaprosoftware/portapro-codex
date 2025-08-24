@@ -77,10 +77,12 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, title, height = 30
           <YAxis stroke="#6b7280" fontSize={12} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey="delivery" stackId="a" fill="#3366FF" name="Deliveries" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="pickup" stackId="a" fill="#33CC66" name="Pickups" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="service" stackId="a" fill="#FF9933" name="Services" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="return" stackId="a" fill="#8B5CF6" name="Returns" radius={[2, 2, 0, 0]} />
+          <Bar dataKey="delivery" stackId="a" fill="hsl(214, 83%, 53%)" name="Delivery" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="pickup" stackId="a" fill="hsl(32, 95%, 44%)" name="Pickup" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="service" stackId="a" fill="hsl(259, 55%, 52%)" name="Service" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="survey" stackId="a" fill="hsl(0, 74%, 35%)" name="Survey/Estimate" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="partial-pickup" stackId="a" fill="hsl(25, 95%, 53%)" name="Partial Pickup" radius={[0, 0, 0, 0]} />
+          <Bar dataKey="return" stackId="a" fill="hsl(210, 20%, 50%)" name="Return" radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </Card>

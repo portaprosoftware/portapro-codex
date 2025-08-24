@@ -7,7 +7,7 @@ export interface AnalyticsOverview {
   };
   revenue: number;
   fleet_utilization: number;
-  customer_growth: number;
+  customer_growth: number; // Changed from percentage to count
 }
 
 export interface RevenueAnalytics {
