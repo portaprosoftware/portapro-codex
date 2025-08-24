@@ -111,15 +111,15 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
       </div>
       
       {/* Period Comparison Info */}
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-md">
         <div className="flex items-start gap-3">
-          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+          <Info className="w-4 h-4 text-white mt-0.5 flex-shrink-0" />
           <div className="text-sm">
-            <p className="font-medium text-blue-900 mb-1">Period Comparison</p>
-            <div className="text-blue-700 space-y-1">
+            <p className="font-medium text-white mb-1">Period Comparison</p>
+            <div className="text-white/90 space-y-1">
               <p><span className="font-medium">Current Period:</span> {currentPeriodText} ({periodLength + 1} days)</p>
               <p><span className="font-medium">Previous Period:</span> {previousPeriodText} ({periodLength + 1} days)</p>
-              <p className="text-blue-600 text-xs mt-2">
+              <p className="text-white/80 text-xs mt-2">
                 Percentage changes in metrics compare the current period to the previous period of equal length.
               </p>
             </div>
