@@ -601,11 +601,11 @@ const JobsPage: React.FC = () => {
               <div className="h-full">
                 {/* Grid Layout Container */}
                 <div className="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] h-[calc(100vh-200px)]">
-                  {/* Top Header - Unassigned Jobs (spans both columns) - Collapsible */}
+                  {/* Top Header - Unassigned Jobs (spans both columns) - Always Expanded */}
                   <div className="col-span-2 border-b border-gray-200 bg-gray-50">
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="unassigned-jobs" className="border-none">
-                        <AccordionTrigger className="hover:no-underline p-4 pb-0">
+                    <div className="w-full">
+                      <div className="border-none">
+                        <div className="p-4 pb-0">
                           <div className="flex items-center gap-2">
                             <AlertTriangle className="h-4 w-4 text-orange-500" />
                             <span className="font-medium text-sm">Unassigned Jobs</span>
@@ -613,8 +613,8 @@ const JobsPage: React.FC = () => {
                               {filterJobs(unassignedJobs).length}
                             </Badge>
                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-4 px-4">
+                        </div>
+                        <div className="pb-4 px-4">
                           <Droppable droppableId="unassigned" direction="horizontal">
                             {(provided, snapshot) => (
                               <div
@@ -657,9 +657,9 @@ const JobsPage: React.FC = () => {
                               </div>
                             )}
                           </Droppable>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Left Column - Driver Names */}
