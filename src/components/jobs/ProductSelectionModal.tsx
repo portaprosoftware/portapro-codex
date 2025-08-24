@@ -594,9 +594,9 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-3">
             {products.map((product) => (
-              <ProductCard
+              <ProductListItem
                 key={product.id}
                 product={product}
                 startDate={startDate}
@@ -619,7 +619,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
   );
 };
 
-interface ProductCardProps {
+interface ProductListItemProps {
   product: Product;
   startDate: string;
   endDate?: string | null;
@@ -631,7 +631,7 @@ interface ProductCardProps {
   currentSelections: Record<string, { bulk: number, specific: string[] }>;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductListItem: React.FC<ProductListItemProps> = ({
   product,
   startDate,
   endDate,
@@ -699,7 +699,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
 
   return (
-    <div className="relative p-4 rounded-lg border-2 transition-all hover:shadow-md border-border hover:border-primary/50">
+    <div className="relative p-4 rounded-lg border-2 transition-all hover:shadow-md border-border hover:border-primary/50 flex items-center gap-4">
       {/* Current selections indicator */}
       {totalAlreadySelected > 0 && (
         <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
@@ -708,7 +708,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       )}
       
       {/* Product Image */}
-      <div className="aspect-square w-full mb-3 bg-background rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="w-20 h-20 bg-background rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -719,16 +719,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }}
           />
         ) : (
-          <Package className="h-12 w-12 text-muted-foreground" />
+          <Package className="h-8 w-8 text-muted-foreground" />
         )}
       </div>
 
       {/* Product Info */}
-      <div className="space-y-3">
-        <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-sm mb-2 line-clamp-2">{product.name}</h3>
         
         {/* Availability Badge */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-2">
           {availability.isLoading ? (
             <Badge variant="outline" className="text-xs">
               Loading...
@@ -758,7 +758,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Current selections display */}
         {totalAlreadySelected > 0 && (
-          <div className="text-xs space-y-1 p-2 bg-muted/50 rounded">
+          <div className="text-xs space-y-1 p-2 bg-muted/50 rounded mb-2">
             <div className="font-medium text-muted-foreground">Currently in job:</div>
             {alreadySelectedSpecific > 0 && (
               <div>• {alreadySelectedSpecific} specific units</div>
@@ -768,25 +768,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
         )}
+      </div>
 
+      {/* Controls Section */}
+      <div className="flex items-center gap-4 flex-shrink-0">
         {/* Quantity Input */}
-        <div className="space-y-3">
-          <label className="text-xs font-medium block text-center">
-            Additional Quantity {selectedSpecificUnits > 0 && `(${remainingForBulk} remaining after ${selectedSpecificUnits} specific)`}
+        <div className="flex flex-col items-center space-y-2">
+          <label className="text-xs font-medium text-center whitespace-nowrap">
+            Additional Quantity
           </label>
-          <div className="flex flex-col items-center space-y-2">
-            <NumberInput
-              value={quantity}
-              onChange={(value) => onQuantityChange(Math.min(value || 1, remainingForBulk))}
-              min={0}
-              max={remainingForBulk}
-              step={1}
-              size="default"
-              className="w-32 text-center"
-              disabled={remainingForBulk <= 0}
-              placeholder="0"
-            />
-          </div>
+          {selectedSpecificUnits > 0 && (
+            <div className="text-xs text-muted-foreground text-center">
+              ({remainingForBulk} remaining after {selectedSpecificUnits} specific)
+            </div>
+          )}
+          <NumberInput
+            value={quantity}
+            onChange={(value) => onQuantityChange(Math.min(value || 1, remainingForBulk))}
+            min={0}
+            max={remainingForBulk}
+            step={1}
+            size="default"
+            className="w-20 text-center"
+            disabled={remainingForBulk <= 0}
+            placeholder="0"
+          />
         </div>
 
         {/* Action Buttons */}
@@ -796,7 +802,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               variant="outline"
               size="sm"
-              className="w-full text-xs"
+              className="text-xs whitespace-nowrap"
               onClick={onBulkSelect}
               disabled={!availability.data || quantity <= 0 || quantity > remainingForBulk || remainingForBulk <= 0}
             >
@@ -809,7 +815,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               variant="outline"
               size="sm"
-              className="w-full text-xs"
+              className="text-xs whitespace-nowrap"
               onClick={onViewTrackedUnits}
               disabled={false}
             >
