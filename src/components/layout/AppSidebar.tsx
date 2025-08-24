@@ -196,9 +196,18 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
         <SidebarMenu>
           {items.map((item) => {
             const isActive = location.pathname === item.url || 
-              (item.url === '/fleet' && location.pathname.startsWith('/fleet/')) ||
-              (item.url === '/customers' && location.pathname === '/customer-hub') ||
-              (item.url === '/quotes-invoices' && location.pathname === '/quotes-invoices');
+              (item.url === '/fleet' && location.pathname.startsWith('/fleet')) ||
+              (item.url === '/team-management' && location.pathname.startsWith('/team-management')) ||
+              (item.url === '/inventory' && location.pathname.startsWith('/inventory')) ||
+              (item.url === '/consumables' && location.pathname.startsWith('/consumables')) ||
+              (item.url === '/jobs' && location.pathname.startsWith('/jobs')) ||
+              (item.url === '/customers' && (location.pathname === '/customer-hub' || location.pathname.startsWith('/customers'))) ||
+              (item.url === '/quotes-invoices' && location.pathname.startsWith('/quotes-invoices')) ||
+              (item.url === '/analytics' && location.pathname.startsWith('/analytics')) ||
+              (item.url === '/settings' && location.pathname.startsWith('/settings')) ||
+              (item.url === '/maintenance-hub' && location.pathname.startsWith('/maintenance-hub')) ||
+              (item.url === '/marketing' && location.pathname.startsWith('/marketing')) ||
+              (item.url === '/storage-sites' && location.pathname.startsWith('/storage-sites'));
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton 
