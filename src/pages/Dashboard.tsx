@@ -275,129 +275,135 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Statistics Grid - All cards in single grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3"
-      >
-        {/* Row 1 */}
-        <StatCard
-          title="Total Inventory"
-          value={`${inventoryData?.totalProducts || 0} products`}
-          icon={Package}
-          gradientFrom="#3b82f6"
-          gradientTo="#2563eb"
-          iconBg="#3b82f6"
-          subtitle={`${inventoryData?.totalUnits || 0} total units, ${inventoryData?.maintenanceItems || 0} in maintenance`}
-          subtitleColor="text-gray-600"
-          delay={0}
-          clickable
-          onClick={() => navigate('/inventory')}
-        />
-        
-        <StatCard
-          title="Active Customers"
-          value={customersData?.active || 0}
-          icon={Users}
-          gradientFrom="#8b5cf6"
-          gradientTo="#7c3aed"
-          iconBg="#8b5cf6"
-          subtitle={`${customersData?.total || 0} total customers`}
-          subtitleColor="text-gray-600"
-          delay={100}
-          clickable
-          onClick={() => navigate('/customers')}
-        />
-        
-        <StatCard
-          title="Jobs Today"
-          value={jobsData?.total || 0}
-          icon={Calendar}
-          gradientFrom="#3b82f6"
-          gradientTo="#2563eb"
-          iconBg="#3b82f6"
-          subtitle={
-            <div className="space-y-1">
-              <div className="flex justify-between">
-                <span>{jobsData?.deliveries || 0} deliveries</span>
-                <span>{jobsData?.pickups || 0} pickups</span>
+      {/* Company Overview Section */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900 font-sans">Company Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+          <StatCard
+            title="Total Inventory"
+            value={`${inventoryData?.totalProducts || 0} products`}
+            icon={Package}
+            gradientFrom="#3b82f6"
+            gradientTo="#2563eb"
+            iconBg="#3b82f6"
+            subtitle={`${inventoryData?.totalUnits || 0} total units, ${inventoryData?.maintenanceItems || 0} in maintenance`}
+            subtitleColor="text-gray-600"
+            delay={0}
+            clickable
+            onClick={() => navigate('/inventory')}
+          />
+          
+          <StatCard
+            title="Active Customers"
+            value={customersData?.active || 0}
+            icon={Users}
+            gradientFrom="#8b5cf6"
+            gradientTo="#7c3aed"
+            iconBg="#8b5cf6"
+            subtitle={`${customersData?.total || 0} total customers`}
+            subtitleColor="text-gray-600"
+            delay={100}
+            clickable
+            onClick={() => navigate('/customers')}
+          />
+          
+          <StatCard
+            title="Jobs Today"
+            value={jobsData?.total || 0}
+            icon={Calendar}
+            gradientFrom="#3b82f6"
+            gradientTo="#2563eb"
+            iconBg="#3b82f6"
+            subtitle={
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span>{jobsData?.deliveries || 0} deliveries</span>
+                  <span>{jobsData?.pickups || 0} pickups</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{jobsData?.services || 0} services</span>
+                  <span>{jobsData?.surveys || 0} surveys</span>
+                </div>
+                <div>{jobsData?.partialPickups || 0} partial pickups</div>
               </div>
-              <div className="flex justify-between">
-                <span>{jobsData?.services || 0} services</span>
-                <span>{jobsData?.surveys || 0} surveys</span>
-              </div>
-              <div>{jobsData?.partialPickups || 0} partial pickups</div>
-            </div>
-          }
-          subtitleColor="text-gray-600"
-          delay={200}
-          clickable
-          onClick={() => navigate('/jobs')}
-        />
-        
-        <StatCard
-          title="Monthly Revenue"
-          value={`$${(revenueData?.total || 0).toLocaleString()}`}
-          icon={DollarSign}
-          gradientFrom="#22c55e"
-          gradientTo="#16a34a"
-          iconBg="#22c55e"
-          subtitle="Last 30 days"
-          subtitleColor="text-gray-600"
-          delay={300}
-          clickable
-          onClick={() => navigate('/quotes-invoices')}
-        />
-        
-        {/* Row 2 */}
-        <StatCard
-          title="Fleet Vehicles"
-          value={vehiclesData?.total || 0}
-          icon={Truck}
-          gradientFrom="#6366f1"
-          gradientTo="#4f46e5"
-          iconBg="#6366f1"
-          subtitle={`${vehiclesData?.available || 0} available, ${vehiclesData?.maintenance || 0} maintenance`}
-          subtitleColor="text-gray-600"
-          chart={<DonutChart active={vehiclesData?.available || 0} maintenance={vehiclesData?.maintenance || 0} />}
-          delay={400}
-          clickable
-          onClick={() => navigate('/fleet')}
-        />
-        
-        <StatCard
-          title="Fuel Cost"
-          value={`$${(fuelData?.total || 0).toLocaleString()}`}
-          icon={Fuel}
-          gradientFrom="#eab308"
-          gradientTo="#ca8a04"
-          iconBg="#eab308"
-          subtitle="Last 30 days fuel expenses"
-          subtitleColor="text-gray-600"
-          delay={500}
-          clickable
-          onClick={() => navigate('/fleet/fuel')}
-        />
-        
-        <StatCard
-          title="Maintenance Alerts"
-          value={maintenanceData?.count || 0}
-          icon={Wrench}
-          gradientFrom="#fb7c1f"
-          gradientTo="#f97316"
-          iconBg="#fb7c1f"
-          subtitle="Due within 7 days"
-          subtitleColor="text-red-600"
-          delay={600}
-          clickable
-          onClick={() => navigate('/fleet/maintenance')}
-        />
-        
-        <CompactConsumablesCard />
-        
-        {/* Document Cards */}
-        <VehicleDocumentsCard />
-        <DriverDocumentsCard />
-        <DriverCredentialsCard />
-        <StaffCertificationsCard />
+            }
+            subtitleColor="text-gray-600"
+            delay={200}
+            clickable
+            onClick={() => navigate('/jobs')}
+          />
+          
+          <StatCard
+            title="Monthly Revenue"
+            value={`$${(revenueData?.total || 0).toLocaleString()}`}
+            icon={DollarSign}
+            gradientFrom="#22c55e"
+            gradientTo="#16a34a"
+            iconBg="#22c55e"
+            subtitle="Last 30 days"
+            subtitleColor="text-gray-600"
+            delay={300}
+            clickable
+            onClick={() => navigate('/quotes-invoices')}
+          />
+          
+          <StatCard
+            title="Fleet Vehicles"
+            value={vehiclesData?.total || 0}
+            icon={Truck}
+            gradientFrom="#6366f1"
+            gradientTo="#4f46e5"
+            iconBg="#6366f1"
+            subtitle={`${vehiclesData?.available || 0} available, ${vehiclesData?.maintenance || 0} maintenance`}
+            subtitleColor="text-gray-600"
+            chart={<DonutChart active={vehiclesData?.available || 0} maintenance={vehiclesData?.maintenance || 0} />}
+            delay={400}
+            clickable
+            onClick={() => navigate('/fleet')}
+          />
+          
+          <StatCard
+            title="Fuel Cost"
+            value={`$${(fuelData?.total || 0).toLocaleString()}`}
+            icon={Fuel}
+            gradientFrom="#eab308"
+            gradientTo="#ca8a04"
+            iconBg="#eab308"
+            subtitle="Last 30 days fuel expenses"
+            subtitleColor="text-gray-600"
+            delay={500}
+            clickable
+            onClick={() => navigate('/fleet/fuel')}
+          />
+        </div>
+      </div>
+
+      {/* Alerts & Expiring Documents Section */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+          <StatCard
+            title="Maintenance Alerts"
+            value={maintenanceData?.count || 0}
+            icon={Wrench}
+            gradientFrom="#fb7c1f"
+            gradientTo="#f97316"
+            iconBg="#fb7c1f"
+            subtitle="Due within 7 days"
+            subtitleColor="text-red-600"
+            delay={600}
+            clickable
+            onClick={() => navigate('/fleet/maintenance')}
+          />
+          
+          <CompactConsumablesCard />
+          
+          {/* Document Cards */}
+          <VehicleDocumentsCard />
+          <DriverDocumentsCard />
+          <DriverCredentialsCard />
+          <StaffCertificationsCard />
+        </div>
       </div>
 
     </div>
