@@ -153,16 +153,16 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             </div>
             
             <div className="flex flex-col gap-1">
-              <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full`}>
+              <Badge className={`${statusInfo.primary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
                 {statusInfo.primary.label}
               </Badge>
               {statusInfo.secondary && (
-                <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-medium px-3 py-1 rounded-full text-xs`}>
+                <Badge className={`${statusInfo.secondary.gradient} text-white border-0 font-bold px-3 py-1 rounded-full text-xs`}>
                   {statusInfo.secondary.label}
                 </Badge>
               )}
               {statusInfo.priority && (
-                <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-medium px-2 py-0.5 rounded-full text-xs`}>
+                <Badge className={`${statusInfo.priority.gradient} text-white border-0 font-bold px-2 py-0.5 rounded-full text-xs`}>
                   <AlertTriangle className="w-3 h-3 mr-1" />
                   {statusInfo.priority.label}
                 </Badge>
@@ -189,54 +189,24 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             </p>
           )}
 
-          <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
-            {/* Primary Action Button */}
-            {(job.status === 'assigned' || job.status === 'in_progress') && (
-              <div className="mb-2">
-                {job.status === 'assigned' && (
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3"
-                    onClick={handleStartJob}
-                  >
-                    <Play className="w-5 h-5 mr-2" />
-                    Start Job
-                  </Button>
-                )}
-                
-                {job.status === 'in_progress' && (
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-green hover:bg-gradient-green/90 text-white font-semibold py-3"
-                    onClick={handleCompleteJob}
-                  >
-                    <CheckCircle2 className="w-5 h-5 mr-2" />
-                    Complete Job
-                  </Button>
-                )}
-              </div>
-            )}
+          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1"
+              onClick={handleNavigate}
+            >
+              <Navigation className="w-4 h-4 mr-2" />
+              Navigate
+            </Button>
             
-            {/* Secondary Actions */}
-            <div className="flex space-x-2">
-              <Button 
-                size="sm" 
-                variant="outline"
-                className="flex-1"
-                onClick={handleNavigate}
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                Navigate
-              </Button>
-              
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={handleCall}
-              >
-                <Phone className="w-4 h-4" />
-              </Button>
-            </div>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={handleCall}
+            >
+              <Phone className="w-4 h-4" />
+            </Button>
           </div>
         </CardContent>
       </Card>
