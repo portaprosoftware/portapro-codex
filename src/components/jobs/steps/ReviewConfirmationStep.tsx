@@ -41,6 +41,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   
   // State for readable names
   const [customerName, setCustomerName] = useState<string>('');
+  const [contactName, setContactName] = useState<string>('');
   const [driverName, setDriverName] = useState<string>('');
   const [vehicleDetails, setVehicleDetails] = useState<string>('');
   const [pickupDriverName, setPickupDriverName] = useState<string>('');
@@ -74,6 +75,21 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           .eq('id', d.customer_id)
           .maybeSingle();
         setCustomerName(customer?.name || 'Unknown Customer');
+      }
+
+      // Fetch contact name
+      if (d.contact_id) {
+        const { data: contact } = await supabase
+          .from('customer_contacts')
+          .select('first_name, last_name, title, contact_type')
+          .eq('id', d.contact_id)
+          .maybeSingle();
+        
+        if (contact) {
+          setContactName(`${contact.first_name} ${contact.last_name}${contact.title ? ` (${contact.title})` : ''}`);
+        }
+      } else {
+        setContactName('');
       }
 
       // Fetch driver name
@@ -217,7 +233,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
     };
 
     fetchNames();
-  }, [d.customer_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, items]);
+  }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, items]);
   
   // Calculate rental period in days
   const rentalDays = useMemo(() => {
@@ -387,6 +403,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
         <div className="rounded-lg border p-3 space-y-1">
           <h3 className="font-medium">Basics</h3>
           <div>Customer: {customerName || d.customer_id || '—'}</div>
+          {contactName && <div>Contact: {contactName}</div>}
           <div>Type: {d.job_type ? d.job_type.charAt(0).toUpperCase() + d.job_type.slice(1) : '—'}</div>
           <div>Date: {d.scheduled_date || '—'}{d.return_date ? ` → ${d.return_date}` : ''}</div>
           <div>Time: {d.scheduled_time || '—'} ({formatTimezone(d.timezone)})</div>

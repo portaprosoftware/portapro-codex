@@ -32,11 +32,19 @@ interface Job {
   scheduled_time?: string;
   notes?: string;
   customer_id: string;
+  contact_id?: string;
   driver_id?: string;
   assigned_template_ids?: any;
   default_template_id?: string;
   customers: {
     name?: string;
+  } | null;
+  customer_contacts?: {
+    first_name: string;
+    last_name: string;
+    phone?: string;
+    email?: string;
+    title?: string;
   } | null;
 }
 
@@ -119,6 +127,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   if (!job) return null;
 
   const customerName = job.customers?.name || 'Unknown Customer';
+  const contactName = job.customer_contacts 
+    ? `${job.customer_contacts.first_name} ${job.customer_contacts.last_name}${job.customer_contacts.title ? ` (${job.customer_contacts.title})` : ''}`
+    : null;
+  const contactPhone = job.customer_contacts?.phone;
+  const contactEmail = job.customer_contacts?.email;
   const statusInfo = getDualJobStatusInfo(job);
   const hasServiceTemplates = assignedTemplates.length > 0;
 
@@ -182,8 +195,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleCall = () => {
-    // TODO: Implement call customer functionality
-    window.open(`tel:+1234567890`, '_self');
+    const phoneNumber = contactPhone || ''; // Use contact phone if available
+    if (phoneNumber) {
+      window.open(`tel:${phoneNumber}`, '_self');
+    } else {
+      toast({
+        title: "No Phone Number",
+        description: "No contact phone number available",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleNavigate = () => {
@@ -193,8 +214,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleSendMessage = () => {
-    // TODO: Implement SMS functionality
-    window.open(`sms:+1234567890?body=Hello, this is your driver from PortaPro. I'm on my way to your location.`, '_self');
+    const phoneNumber = contactPhone || '';
+    if (phoneNumber) {
+      window.open(`sms:${phoneNumber}?body=Hello, this is your driver from PortaPro. I'm on my way to your location.`, '_self');
+    } else {
+      toast({
+        title: "No Phone Number", 
+        description: "No contact phone number available",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -222,6 +251,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               {/* Customer Info */}
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">{customerName}</h3>
+                {contactName && (
+                  <div className="text-sm text-muted-foreground">
+                    Contact: {contactName}
+                  </div>
+                )}
                 
                 <div className="space-y-2">
                   <div className="flex items-center text-sm text-muted-foreground">
