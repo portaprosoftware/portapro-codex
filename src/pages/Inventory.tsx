@@ -324,7 +324,7 @@ const Inventory: React.FC = () => {
               Location Map
             </TabNav.Item>
             <TabNav.Item
-              to="/inventory/maintenance"
+              to="#"
               isActive={activeTab === 'maintenance'}
               onClick={() => navigateToTab('maintenance')}
             >
