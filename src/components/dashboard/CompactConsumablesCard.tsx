@@ -83,7 +83,7 @@ export const CompactConsumablesCard: React.FC = () => {
       subtitleColor="text-orange-600"
       delay={700}
       clickable
-      onClick={() => navigate('/inventory/consumables')}
+      onClick={() => navigate('/consumables')}
     />
   );
 };
