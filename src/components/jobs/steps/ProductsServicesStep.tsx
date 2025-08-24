@@ -145,8 +145,8 @@ export const ProductsServicesStep: React.FC = () => {
 
       {/* Error Messages - Only show items errors, pickup inventory errors shown at bottom */}
       {state.errors.items && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-          <p className="text-destructive text-sm font-medium">{state.errors.items}</p>
+        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4">
+          <p className="text-white text-sm font-bold">{state.errors.items}</p>
         </div>
       )}
     </div>

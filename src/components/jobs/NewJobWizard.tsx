@@ -492,19 +492,19 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
         <div className="p-4 border-t bg-muted/20 flex flex-col">
           {/* Validation errors above buttons */}
           {Object.keys(state.errors).length > 0 && (
-            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="mb-4 p-4 bg-gradient-to-r from-red-500 to-red-600 rounded-lg">
               <div className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-destructive text-xs font-medium">!</span>
+                <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-xs font-bold">!</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-destructive mb-1">
+                  <p className="text-sm font-bold text-white mb-2">
                     Please complete the following:
                   </p>
-                  <ul className="text-sm text-destructive/80 space-y-1">
+                  <ul className="text-sm text-white space-y-1">
                     {Object.entries(state.errors).map(([field, message]) => (
                       <li key={field} className="flex items-start gap-2">
-                        <span className="w-1 h-1 rounded-full bg-destructive/60 flex-shrink-0 mt-2"></span>
+                        <span className="w-1 h-1 rounded-full bg-white/80 flex-shrink-0 mt-2"></span>
                         {message}
                       </li>
                     ))}

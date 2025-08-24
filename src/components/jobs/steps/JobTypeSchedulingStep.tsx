@@ -428,8 +428,8 @@ export function JobTypeSchedulingStep() {
               </Card>
               
               {errors.rental_duration && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                  <p className="text-destructive text-sm font-medium">{errors.rental_duration}</p>
+                <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4">
+                  <p className="text-white text-sm font-bold">{errors.rental_duration}</p>
                 </div>
               )}
             </div>
