@@ -383,7 +383,7 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-6 py-6 space-y-6">
+      <div className={cn("max-w-none px-6 py-6 space-y-6", activeTab === "dispatch" && "space-y-3")}>
         {/* Page Header with Navigation Pills */}
         <div className="bg-white rounded-lg border shadow-sm p-6">
           <div className="flex flex-col h-full">
@@ -500,7 +500,7 @@ const JobsPage: React.FC = () => {
         )}
 
         {/* Content Area with Enhanced Spacing */}
-        <div className="space-y-4">
+        <div className={cn("space-y-4", activeTab === "dispatch" && "space-y-0")}>
           {activeTab === 'drafts' && (
             <div className="bg-white rounded-lg border shadow-sm p-6">
               <JobDraftManagement />
