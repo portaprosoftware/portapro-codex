@@ -136,21 +136,24 @@ export function CustomerSelectionStep() {
 
   const getCustomerTypeColor = (type?: string) => {
     const typeGradients = {
-      'bars_restaurants': 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'bars_restaurants': 'bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'hotels_lodging': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'construction': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'festivals_events': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'government_municipalities': 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'healthcare_medical': 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'municipal_government': 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'healthcare_medical': 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'industrial_manufacturing': 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'not_selected': 'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'other': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'not_selected': 'bg-gradient-to-r from-slate-400 to-slate-500 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'other': 'bg-gradient-to-r from-slate-500 to-slate-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'retail': 'bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'sports_recreation': 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'commercial': 'bg-gradient-to-r from-gray-600 to-gray-700 text-white border-0 font-bold px-3 py-1 rounded-full'
+      'commercial': 'bg-gradient-to-r from-slate-600 to-slate-700 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'emergency_disaster_relief': 'bg-gradient-to-r from-red-600 to-red-700 text-white border-0 font-bold px-3 py-1 rounded-full'
     };
-    return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full';
+    return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-slate-500 to-slate-600 text-white border-0 font-bold px-3 py-1 rounded-full';
   };
 
   return (
@@ -184,7 +187,7 @@ export function CustomerSelectionStep() {
             </div>
           </div>
           
-          <div className="grid gap-3 max-h-96 overflow-y-auto">
+          <div className="grid gap-3">{/* Removed max-h-96 overflow-y-auto to let parent handle scrolling */}
             {isLoadingCustomers ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
