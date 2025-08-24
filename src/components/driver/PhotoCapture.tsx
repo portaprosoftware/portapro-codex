@@ -80,7 +80,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Capture Photo</span>
+            <span>Upload Photo</span>
             <Button variant="ghost" size="sm" onClick={handleClose}>
               <X className="h-4 w-4" />
             </Button>
@@ -145,7 +145,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               >
                 <Camera className="w-12 h-12 text-muted-foreground mb-4" />
                 <p className="text-sm text-muted-foreground text-center">
-                  Tap to take photo
+                  Tap to open camera
                 </p>
               </div>
             </div>

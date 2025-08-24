@@ -418,7 +418,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     className="w-full"
                   >
                     <Camera className="w-4 h-4 mr-2" />
-                    Take Photo
+                    Add Photo
                   </Button>
                   
                   <Button 
