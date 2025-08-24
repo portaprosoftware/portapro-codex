@@ -235,14 +235,11 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     onClick={() => onSectionChange?.(item.url)}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 text-sm transition-colors",
-                      !isDesktop && state === "collapsed" && "justify-center px-2",
                       isActive && "text-white [&_*]:text-white"
                     )}
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
-                    {(isDesktop || state === "expanded") && (
-                      <span className="truncate">{item.title}</span>
-                    )}
+                    <span className="truncate">{item.title}</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -260,11 +257,9 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       className="border-r bg-white"
     >
       <SidebarHeader className="p-4 border-b border-gray-200">
-        {isDesktop && (
-          <div className="flex items-center justify-start">
-            <Logo showText={state === "expanded"} />
-          </div>
-        )}
+        <div className="flex items-center justify-start">
+          <Logo showText={state === "expanded"} />
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-2">
