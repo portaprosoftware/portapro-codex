@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Camera, Upload, X } from 'lucide-react';
+import { Camera, Upload, X, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PhotoCaptureProps {
@@ -71,20 +71,19 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     onClose();
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+  const triggerFileInput = (useCamera = false) => {
+    if (fileInputRef.current) {
+      // Set capture attribute based on the option
+      fileInputRef.current.setAttribute('capture', useCamera ? 'environment' : '');
+      fileInputRef.current.click();
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>Upload Photo</span>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle>Upload Photo</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -93,7 +92,6 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handleFileSelect}
             className="hidden"
           />
@@ -129,7 +127,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
                 
                 <Button
                   variant="outline"
-                  onClick={triggerFileInput}
+                  onClick={() => triggerFileInput(true)}
                   className="flex-1"
                 >
                   <Camera className="w-4 h-4 mr-2" />
@@ -139,14 +137,29 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              <div 
-                onClick={triggerFileInput}
-                className="w-full h-64 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
-              >
-                <Camera className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="text-sm text-muted-foreground text-center">
-                  Tap to open camera
-                </p>
+              {/* Two photo options */}
+              <div className="grid grid-cols-1 gap-3">
+                {/* Take Photo Option */}
+                <div 
+                  onClick={() => triggerFileInput(true)}
+                  className="w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <Camera className="w-8 h-8 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Take a Photo
+                  </p>
+                </div>
+
+                {/* Upload from Album Option */}
+                <div 
+                  onClick={() => triggerFileInput(false)}
+                  className="w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Upload from Album
+                  </p>
+                </div>
               </div>
             </div>
           )}
