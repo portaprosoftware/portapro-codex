@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Eye, ChevronDown, ChevronUp, BarChart3, MapPin, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
@@ -206,8 +207,23 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
                       <span className="text-gray-500">In Service:</span>
                       <span className="ml-1 font-medium">{product.stock_in_service}</span>
                     </div>
-                    <div>
+                    <div className="flex items-center gap-1">
                       <span className="text-gray-500">Utilization:</span>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-3 h-3 rounded-full bg-gray-400 text-white text-xs flex items-center justify-center cursor-help">
+                              ?
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">
+                              Utilization rate shows what percentage of your total stock is currently assigned or in service. 
+                              Higher rates indicate better equipment usage but may suggest need for more inventory.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <span className="ml-1 font-medium text-purple-600">{quickStats.utilizationRate}%</span>
                     </div>
                     <div>
