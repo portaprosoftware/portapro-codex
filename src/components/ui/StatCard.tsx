@@ -64,7 +64,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         "bg-gradient-to-b from-[#F6F9FF] to-white",
         "rounded-xl border border-gray-200 shadow-sm",
         "hover:shadow-md hover:-translate-y-1",
-        "p-4 mb-4",
+        "p-3 h-24", // Fixed compact height
         clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
         className
       )}
@@ -78,46 +78,43 @@ export const StatCard: React.FC<StatCardProps> = ({
         }}
       />
       
-      {/* Icon container */}
-      <div className="flex justify-end mb-3">
+      {/* Main content in horizontal layout */}
+      <div className="flex items-center justify-between h-full">
+        {/* Left side - Value and title */}
+        <div className="flex-1 min-w-0">
+          {/* Value */}
+          <div className={cn(
+            "leading-tight mb-1 font-sans",
+            isReactElement ? "" : "text-xl font-bold text-gray-900"
+          )}>
+            {displayValue}
+          </div>
+          
+          {/* Title */}
+          <div className="text-xs font-semibold text-gray-900 font-sans truncate">
+            {title}
+          </div>
+          
+          {/* Subtitle */}
+          {subtitle && (
+            <div className={cn("text-xs font-medium font-sans truncate", subtitleColor)}>
+              {subtitle}
+            </div>
+          )}
+        </div>
+        
+        {/* Right side - Icon */}
         <div 
-          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all duration-200 animate-fade-in animate-scale-in"
+          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 ml-3"
           style={{ 
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
             animationDelay: `${delay}ms`,
-            boxShadow: `0 8px 20px -8px ${gradientFrom}40`
+            boxShadow: `0 4px 12px -4px ${gradientFrom}40`
           }}
         >
-          <Icon className="w-6 h-6 text-white" strokeWidth={2} />
+          <Icon className="w-5 h-5 text-white" strokeWidth={2} />
         </div>
       </div>
-      
-      {/* Value */}
-      <div className={cn(
-        "leading-none mb-1 font-sans",
-        isReactElement ? "" : "text-2xl font-bold text-gray-900"
-      )}>
-        {displayValue}
-      </div>
-      
-      {/* Title */}
-      <div className="text-sm font-semibold text-gray-900 mb-1 font-sans">
-        {title}
-      </div>
-      
-      {/* Subtitle */}
-      {subtitle && (
-        <div className={cn("text-xs font-medium font-sans", subtitleColor)}>
-          {subtitle}
-        </div>
-      )}
-      
-      {/* Chart */}
-      {chart && (
-        <div className="mt-3">
-          {chart}
-        </div>
-      )}
     </div>
   );
 };
