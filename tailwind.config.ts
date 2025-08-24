@@ -124,7 +124,10 @@ export default {
 				'gradient-green': 'var(--gradient-green)',
 				'gradient-orange': 'var(--gradient-orange)',
 				'gradient-yellow': 'var(--gradient-yellow)',
-				'gradient-red': 'var(--gradient-red)'
+				'gradient-red': 'var(--gradient-red)',
+				'gradient-gold': 'var(--gradient-gold)',
+				'gradient-silver': 'var(--gradient-silver)',
+				'gradient-bronze': 'var(--gradient-bronze)'
 			},
 			transitionProperty: {
 				'smooth': 'var(--transition-smooth)',

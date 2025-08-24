@@ -96,6 +96,9 @@
     --gradient-red: linear-gradient(135deg, hsl(0, 84%, 45%), hsl(0, 84%, 50%));
     --gradient-grey: linear-gradient(135deg, hsl(210, 15%, 92%), hsl(210, 15%, 96%));
     --gradient-grey-card: linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%));
+    --gradient-gold: linear-gradient(135deg, hsl(45, 100%, 45%), hsl(45, 100%, 55%));
+    --gradient-silver: linear-gradient(135deg, hsl(210, 15%, 50%), hsl(210, 15%, 65%));
+    --gradient-bronze: linear-gradient(135deg, hsl(25, 60%, 45%), hsl(25, 60%, 55%));
     
     /* Transition System */
     --transition-smooth: all 300ms cubic-bezier(0.4, 0, 0.2, 1);

@@ -88,9 +88,9 @@ export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange 
           <div key={customer.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-                index === 0 ? 'bg-gradient-orange' :
-                index === 1 ? 'bg-gradient-secondary' :
-                index === 2 ? 'bg-gradient-purple' :
+                index === 0 ? 'bg-gradient-gold' :
+                index === 1 ? 'bg-gradient-silver' :
+                index === 2 ? 'bg-gradient-bronze' :
                 'bg-gradient-blue'
               }`}>
                 {index + 1}
