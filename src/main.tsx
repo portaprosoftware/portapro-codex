@@ -8,9 +8,9 @@ import './scanner.css'
 import './utils/devUtils.ts' // Load dev utilities
 
 const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
-const PUBLISHABLE_KEY = envClerkKey ?? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const PUBLISHABLE_KEY = envClerkKey ?? "pk_live_Y2xlcmsucG9ydGFwcm9zb2Z0d2FyZS5jb20k";
 if (!envClerkKey) {
-  console.warn("Clerk publishable key not set. Using development key. Set VITE_CLERK_PUBLISHABLE_KEY for production.");
+  console.warn("VITE_CLERK_PUBLISHABLE_KEY not set; falling back to production publishable key.");
 }
 
 // Development vs Production settings
