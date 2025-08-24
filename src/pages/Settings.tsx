@@ -14,7 +14,6 @@ import {
   Calendar, 
   Bell, 
   DollarSign,
-  QrCode,
   ChevronDown,
   Building2,
   ShieldCheck
@@ -25,7 +24,7 @@ import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection
 import { UserManagementSection } from "@/components/settings/UserManagementSection";
 import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
 import { PricingRulesSection } from "@/components/settings/PricingRulesSection";
-import { QRFeedbackSection } from "@/components/settings/QRFeedbackSection";
+
 import { SanitationComplianceSettings } from "@/components/settings/SanitationComplianceSettings";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -34,7 +33,6 @@ type SettingsSection =
   | 'business-hours' 
   | 'notifications' 
   | 'pricing-rules'
-  | 'qr-feedback'
   | 'sanitation-compliance';
 
 export default function Settings() {
@@ -57,7 +55,6 @@ export default function Settings() {
     { key: 'notifications' as const, label: 'Notifications', icon: Bell },
     { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
     { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
-    { key: 'qr-feedback' as const, label: 'QR Feedback', icon: QrCode },
     { key: 'sanitation-compliance' as const, label: 'Sanitation & Compliance', icon: ShieldCheck },
   ];
 
@@ -78,8 +75,6 @@ export default function Settings() {
         return <NotificationPreferencesSection />;
       case 'pricing-rules':
         return <PricingRulesSection />;
-      case 'qr-feedback':
-        return <QRFeedbackSection />;
       case 'sanitation-compliance':
         return <SanitationComplianceSettings />;
       default:
