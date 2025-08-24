@@ -383,6 +383,17 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </p>
                 </div>
               )}
+
+              {/* Close Button */}
+              <div className="pt-4 border-t">
+                <Button 
+                  onClick={onClose}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         </div>
