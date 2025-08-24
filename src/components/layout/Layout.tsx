@@ -70,7 +70,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={isDesktop}>
       <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
         <AppSidebar 
           activeSection={activeSection} 

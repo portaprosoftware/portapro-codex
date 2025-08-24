@@ -151,6 +151,19 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const { user } = useUser();
   const location = useLocation();
   const { state } = useSidebar();
+  
+  // Check if we're on desktop (>= 1024px)
+  const [isDesktop, setIsDesktop] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
 
   // Fetch today's jobs count for badge
   const { data: todaysJobsCount } = useQuery({
@@ -238,7 +251,11 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   );
 
   return (
-    <Sidebar collapsible="icon" className="border-r bg-white">
+    <Sidebar 
+      collapsible="icon" 
+      variant={isDesktop ? "sidebar" : "inset"} 
+      className="border-r bg-white"
+    >
       <SidebarHeader className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-start">
           <Logo showText={state === "expanded"} />
