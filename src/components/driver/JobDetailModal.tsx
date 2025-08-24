@@ -206,8 +206,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const contactName = job.customer_contacts 
     ? `${job.customer_contacts.first_name} ${job.customer_contacts.last_name}${job.customer_contacts.title ? ` (${job.customer_contacts.title})` : ''}`
     : null;
-  const contactPhone = job.customer_contacts?.phone;
-  const contactEmail = job.customer_contacts?.email;
+  const contactPhone = job.customer_contacts?.phone || job.customers?.phone;
+  const contactEmail = job.customer_contacts?.email || job.customers?.email;
   const statusInfo = getDualJobStatusInfo(job);
   const hasServiceTemplates = assignedTemplates.length > 0;
   const canReverseJob = job.status === 'in-progress' || job.status === 'completed';
@@ -459,7 +459,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                         disabled={!contactPhone}
                       >
                         <Phone className="w-4 h-4 mr-2" />
-                        Call
+                        Call {contactName ? 'Contact' : 'Customer'}
                       </Button>
                       
                       <Button 
