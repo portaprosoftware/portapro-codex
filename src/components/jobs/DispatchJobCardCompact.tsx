@@ -123,12 +123,27 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
         <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto] gap-3 h-full py-2">
           {/* Left Column - Job Info */}
           <div className="min-w-0 space-y-1">
-            {/* Job Number & Customer */}
+            {/* Job Number */}
             <div className="flex items-center gap-2">
               <span className="font-medium text-sm text-gray-900 truncate">
                 {job.job_number}
               </span>
-              <span className="text-xs text-gray-500">•</span>
+            </div>
+
+            {/* Status Badges */}
+            <div className="flex flex-wrap gap-1">
+              <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center", statusInfo.primary.gradient)}>
+                {statusInfo.primary.label}
+              </Badge>
+              {statusInfo.secondary && (
+                <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center", statusInfo.secondary.gradient)}>
+                  {statusInfo.secondary.label}
+                </Badge>
+              )}
+            </div>
+
+            {/* Customer */}
+            <div>
               <span className="font-semibold text-xs text-gray-700 truncate">
                 {job.customers.name}
               </span>
@@ -146,7 +161,7 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
                 </div>
               )}
               {job.scheduled_time && (
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3 text-gray-400" />
                   <span>
                     {(() => {
@@ -181,18 +196,8 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
             </div>
           </div>
 
-          {/* Right Column - Status & Actions */}
-          <div className="flex flex-col items-end gap-1 justify-center">
-            <div className="flex flex-col gap-1">
-              <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
-                {statusInfo.primary.label}
-              </Badge>
-              {statusInfo.secondary && (
-                <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.secondary.gradient)}>
-                  {statusInfo.secondary.label}
-                </Badge>
-              )}
-            </div>
+          {/* Right Column - View Button Only */}
+          <div className="flex flex-col items-end justify-center">
             <Button
               variant="outline"
               size="sm"
@@ -209,7 +214,7 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
     );
   }
 
-  // Compact view - job type text and full status badge
+  // Compact view - job type text with badges underneath
   return (
     <div 
       className={cn(
@@ -233,8 +238,8 @@ export const DispatchJobCardCompact: React.FC<DispatchJobCardCompactProps> = ({
         {jobTypeInfo.label}
       </div>
 
-      {/* Status Badges Container - Positioned higher */}
-      <div className="flex flex-col items-center gap-0.5 mt-auto mb-1">
+      {/* Status Badges Container - Under job type */}
+      <div className="flex flex-col items-center gap-0.5">
         <Badge className={cn("text-xs px-1.5 py-0 font-bold text-center whitespace-nowrap leading-tight", statusInfo.primary.gradient)}>
           {statusInfo.primary.label}
         </Badge>
