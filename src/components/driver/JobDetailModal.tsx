@@ -283,9 +283,12 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleCall = () => {
-    const phoneNumber = contactPhone || ''; // Use contact phone if available
+    const phoneNumber = contactPhone || job.customers?.phone || '';
     if (phoneNumber) {
-      window.open(`tel:${phoneNumber}`, '_self');
+      // For mobile devices, directly open the phone app
+      if (window.confirm(`Call ${phoneNumber}?`)) {
+        window.location.href = `tel:${phoneNumber}`;
+      }
     } else {
       toast({
         title: "No Phone Number",
@@ -302,9 +305,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleSendMessage = () => {
-    const phoneNumber = contactPhone || '';
+    const phoneNumber = contactPhone || job.customers?.phone || '';
     if (phoneNumber) {
-      window.open(`sms:${phoneNumber}?body=Hello, this is your driver from PortaPro. I'm on my way to your location.`, '_self');
+      // For mobile devices, directly open the messages app
+      window.location.href = `sms:${phoneNumber}`;
     } else {
       toast({
         title: "No Phone Number", 
@@ -373,40 +377,27 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Status Information */}
+              {/* Assignment Information */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-4 h-4 bg-gradient-primary rounded-full flex items-center justify-center">
-                      <span className="text-xs text-white font-bold">S</span>
-                    </div>
-                    Status
+                    <User className="w-4 h-4" />
+                    Assignment
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Current Status</label>
-                    <Badge className={`${statusInfo.primary.gradient} text-white border-0 mt-1`}>
-                      {statusInfo.primary.label}
-                    </Badge>
+                    <label className="text-sm font-medium text-muted-foreground">Driver</label>
+                    <p className="text-sm">
+                      {job.driver ? `${job.driver.first_name} ${job.driver.last_name}` : 'You'}
+                    </p>
                   </div>
-                  {statusInfo.secondary && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Additional Info</label>
-                      <Badge className={`${statusInfo.secondary.gradient} text-white border-0 mt-1`}>
-                        {statusInfo.secondary.label}
-                      </Badge>
-                    </div>
-                  )}
-                  {statusInfo.priority && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Priority</label>
-                      <Badge className={`${statusInfo.priority.gradient} text-white border-0 mt-1`}>
-                        <AlertTriangle className="w-3 h-3 mr-1" />
-                        {statusInfo.priority.label}
-                      </Badge>
-                    </div>
-                  )}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Vehicle</label>
+                    <p className="text-sm">
+                      {job.vehicle ? `${job.vehicle.license_plate} (${job.vehicle.vehicle_type})` : 'Unassigned'}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -506,30 +497,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Assignment Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <User className="w-4 h-4" />
-                    Assignment
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Driver</label>
-                    <p className="text-sm">
-                      {job.driver ? `${job.driver.first_name} ${job.driver.last_name}` : 'You'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Vehicle</label>
-                    <p className="text-sm">
-                      {job.vehicle ? `${job.vehicle.license_plate} (${job.vehicle.vehicle_type})` : 'Unassigned'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Customer Information */}
               <Card>
                 <CardHeader className="pb-3">
@@ -543,20 +510,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     <label className="text-sm font-medium text-muted-foreground">Company</label>
                     <p className="text-sm font-medium">{customerName}</p>
                   </div>
-                  {(job.customers?.email || job.customers?.phone) && (
-                    <div className="grid grid-cols-2 gap-4">
-                      {job.customers?.email && (
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Email</label>
-                          <p className="text-sm">{job.customers.email}</p>
-                        </div>
-                      )}
-                      {job.customers?.phone && (
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                          <p className="text-sm">{job.customers.phone}</p>
-                        </div>
-                      )}
+                  {job.customers?.email && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <p className="text-sm">{job.customers.email}</p>
+                    </div>
+                  )}
+                  {job.customers?.phone && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Phone</label>
+                      <p className="text-sm">{job.customers.phone}</p>
                     </div>
                   )}
                 </CardContent>
