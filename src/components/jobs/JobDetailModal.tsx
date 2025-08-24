@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star, Ban } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star, Ban, Package, Truck, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
@@ -83,6 +83,27 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
       return data;
     },
     enabled: !!jobId && open,
+  });
+
+  // Fetch job items to show what needs to be delivered/serviced/picked up
+  const { data: jobItems } = useQuery({
+    queryKey: ['job-items', jobId],
+    queryFn: async () => {
+      if (!jobId) return [];
+      
+      const { data, error } = await supabase
+        .from('job_items')
+        .select(`
+          *,
+          products(name, category),
+          routine_maintenance_services(name, description)
+        `)
+        .eq('job_id', jobId);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!jobId && open
   });
 
   // Fetch drivers for dropdown
@@ -543,6 +564,66 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Job Items - Critical Information */}
+                {jobItems && jobItems.length > 0 && (
+                  <Card className="border-2 border-primary/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        {job?.job_type === 'delivery' && <Package className="w-4 h-4 text-blue-600" />}
+                        {(job?.job_type === 'pickup' || job?.job_type === 'partial-pickup') && <Truck className="w-4 h-4 text-green-600" />}
+                        {job?.job_type === 'service' && <Wrench className="w-4 h-4 text-purple-600" />}
+                        <span className="text-primary">
+                          {job?.job_type === 'delivery' && 'Items to Deliver'}
+                          {(job?.job_type === 'pickup' || job?.job_type === 'partial-pickup') && 'Items to Pick Up'}
+                          {job?.job_type === 'service' && 'Services to Provide'}
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {jobItems.map((item: any, index: number) => (
+                          <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm">
+                                  {item.line_item_type === 'product' 
+                                    ? (item.products?.name || item.product_name || 'Unknown Product')
+                                    : (item.routine_maintenance_services?.name || item.service_name || 'Unknown Service')
+                                  }
+                                </h4>
+                                {item.line_item_type === 'product' && item.products?.category && (
+                                  <p className="text-xs text-muted-foreground mt-1">{item.products.category}</p>
+                                )}
+                                {item.line_item_type === 'service' && item.routine_maintenance_services?.description && (
+                                  <p className="text-xs text-muted-foreground mt-1">{item.routine_maintenance_services.description}</p>
+                                )}
+                                {item.notes && (
+                                  <p className="text-xs text-blue-600 mt-1 font-medium">Note: {item.notes}</p>
+                                )}
+                              </div>
+                              <div className="text-right ml-3">
+                                <div className="text-lg font-bold text-primary">
+                                  {item.quantity || 1}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {item.line_item_type === 'product' ? 'Units' : 'Service'}
+                                </div>
+                              </div>
+                            </div>
+                            {item.pricing_strategy && (
+                              <div className="mt-2 pt-2 border-t border-gray-200">
+                                <p className="text-xs text-muted-foreground">
+                                  Strategy: {item.pricing_strategy.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Assignment Information */}
                 <Card>
