@@ -42,7 +42,31 @@ export const DriverDashboard: React.FC = () => {
             service_street2,
             service_city,
             service_state,
-            service_zip
+            service_zip,
+            customer_service_locations (
+              id,
+              location_name,
+              street,
+              street2,
+              city,
+              state,
+              zip,
+              contact_person,
+              contact_phone,
+              access_instructions,
+              notes,
+              is_default
+            ),
+            customer_contacts (
+              id,
+              first_name,
+              last_name,
+              contact_type,
+              email,
+              phone,
+              title,
+              is_primary
+            )
           )
         `)
         .eq('driver_id', user.id)
@@ -74,7 +98,31 @@ export const DriverDashboard: React.FC = () => {
                 service_street2,
                 service_city,
                 service_state,
-                service_zip
+                service_zip,
+                customer_service_locations (
+                  id,
+                  location_name,
+                  street,
+                  street2,
+                  city,
+                  state,
+                  zip,
+                  contact_person,
+                  contact_phone,
+                  access_instructions,
+                  notes,
+                  is_default
+                ),
+                customer_contacts (
+                  id,
+                  first_name,
+                  last_name,
+                  contact_type,
+                  email,
+                  phone,
+                  title,
+                  is_primary
+                )
               )
             `)
             .eq('driver_id', profileData.id)

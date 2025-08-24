@@ -23,7 +23,8 @@ import {
   Building,
   Key,
   Shield,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
@@ -53,9 +54,16 @@ interface Job {
   lock_notes?: string;
   zip_tied_on_dropoff?: boolean;
   customers: {
+    id?: string;
     name?: string;
+    customer_type?: string;
     email?: string;
     phone?: string;
+    service_street?: string;
+    service_street2?: string;
+    service_city?: string;
+    service_state?: string;
+    service_zip?: string;
     customer_service_locations?: Array<{
       id: string;
       location_name: string;
@@ -365,6 +373,139 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </CardContent>
               </Card>
 
+              {/* Status Information */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <div className="w-4 h-4 bg-gradient-primary rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white font-bold">S</span>
+                    </div>
+                    Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Current Status</label>
+                    <Badge className={`${statusInfo.primary.gradient} text-white border-0 mt-1`}>
+                      {statusInfo.primary.label}
+                    </Badge>
+                  </div>
+                  {statusInfo.secondary && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Additional Info</label>
+                      <Badge className={`${statusInfo.secondary.gradient} text-white border-0 mt-1`}>
+                        {statusInfo.secondary.label}
+                      </Badge>
+                    </div>
+                  )}
+                  {statusInfo.priority && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Priority</label>
+                      <Badge className={`${statusInfo.priority.gradient} text-white border-0 mt-1`}>
+                        <AlertTriangle className="w-3 h-3 mr-1" />
+                        {statusInfo.priority.label}
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Service Location Information */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <MapPin className="w-4 h-4" />
+                    Service Location
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {job.customers?.customer_service_locations && job.customers.customer_service_locations.length > 0 ? (
+                    job.customers.customer_service_locations
+                      .filter(location => location.is_default)
+                      .concat(job.customers.customer_service_locations.filter(location => !location.is_default))
+                      .slice(0, 1) // Show primary location
+                      .map((location) => (
+                        <div key={location.id} className="space-y-3">
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Location</label>
+                            <p className="text-sm font-medium">{location.location_name}</p>
+                            {location.is_default && (
+                              <Badge variant="secondary" className="text-xs mt-1">Default Location</Badge>
+                            )}
+                          </div>
+                          
+                          {(location.street || location.city) && (
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Address</label>
+                              <p className="text-sm">
+                                {location.street}
+                                {location.street2 && `, ${location.street2}`}
+                                {location.city && (
+                                  <br />
+                                )}
+                                {location.city && `${location.city}`}
+                                {location.state && `, ${location.state}`}
+                                {location.zip && ` ${location.zip}`}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {location.contact_person && (
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Site Contact</label>
+                              <p className="text-sm">{location.contact_person}</p>
+                              {location.contact_phone && (
+                                <p className="text-xs text-muted-foreground">{location.contact_phone}</p>
+                              )}
+                            </div>
+                          )}
+                          
+                          {location.access_instructions && (
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Access Instructions</label>
+                              <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{location.access_instructions}</p>
+                            </div>
+                          )}
+                          
+                          {location.notes && (
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Location Notes</label>
+                              <p className="text-sm bg-gray-50 p-2 rounded">{location.notes}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                  ) : (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Service Address</label>
+                      <p className="text-sm">
+                        {job.customers?.service_street}
+                        {job.customers?.service_street2 && `, ${job.customers?.service_street2}`}
+                        {job.customers?.service_city && (
+                          <>
+                            <br />
+                            {job.customers.service_city}
+                            {job.customers.service_state && `, ${job.customers.service_state}`}
+                            {job.customers.service_zip && ` ${job.customers.service_zip}`}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="pt-2 border-t">
+                    <Button 
+                      size="sm" 
+                      onClick={handleNavigate}
+                      className="w-full"
+                    >
+                      <Navigation className="w-4 h-4 mr-2" />
+                      Navigate to Location
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Assignment Information */}
               <Card>
                 <CardHeader className="pb-3">
@@ -377,7 +518,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Driver</label>
                     <p className="text-sm">
-                      {job.driver ? `${job.driver.first_name} ${job.driver.last_name}` : 'Unassigned'}
+                      {job.driver ? `${job.driver.first_name} ${job.driver.last_name}` : 'You'}
                     </p>
                   </div>
                   <div>
@@ -507,88 +648,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                         Message
                       </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Service Location Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <MapPin className="w-4 h-4" />
-                    Service Location
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {job.customers?.customer_service_locations && job.customers.customer_service_locations.length > 0 ? (
-                    job.customers.customer_service_locations
-                      .filter(location => location.is_default)
-                      .concat(job.customers.customer_service_locations.filter(location => !location.is_default))
-                      .slice(0, 1) // Show primary location
-                      .map((location) => (
-                        <div key={location.id} className="space-y-3">
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Location</label>
-                            <p className="text-sm font-medium">{location.location_name}</p>
-                            {location.is_default && (
-                              <Badge variant="secondary" className="text-xs mt-1">Default Location</Badge>
-                            )}
-                          </div>
-                          
-                          {(location.street || location.city) && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Address</label>
-                              <p className="text-sm">
-                                {location.street}
-                                {location.street2 && `, ${location.street2}`}
-                                {location.city && (
-                                  <br />
-                                )}
-                                {location.city && `${location.city}`}
-                                {location.state && `, ${location.state}`}
-                                {location.zip && ` ${location.zip}`}
-                              </p>
-                            </div>
-                          )}
-                          
-                          {location.contact_person && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Site Contact</label>
-                              <p className="text-sm">{location.contact_person}</p>
-                              {location.contact_phone && (
-                                <p className="text-xs text-muted-foreground">{location.contact_phone}</p>
-                              )}
-                            </div>
-                          )}
-                          
-                          {location.access_instructions && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Access Instructions</label>
-                              <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{location.access_instructions}</p>
-                            </div>
-                          )}
-                          
-                          {location.notes && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Location Notes</label>
-                              <p className="text-sm bg-gray-50 p-2 rounded">{location.notes}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No service location details available</p>
-                  )}
-                  
-                  <div className="pt-2 border-t">
-                    <Button 
-                      size="sm" 
-                      onClick={handleNavigate}
-                      className="w-full"
-                    >
-                      <Navigation className="w-4 h-4 mr-2" />
-                      Navigate to Location
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
