@@ -601,11 +601,11 @@ const JobsPage: React.FC = () => {
               <div className="h-full">
                 {/* Grid Layout Container */}
                 <div className="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] h-[calc(100vh-200px)]">
-                  {/* Top Header - Unassigned Jobs (spans both columns) - Always Expanded */}
+                  {/* Top Header - Unassigned Jobs (spans both columns) - Compact */}
                   <div className="col-span-2 border-b border-gray-200 bg-gray-50">
                     <div className="w-full">
                       <div className="border-none">
-                        <div className="p-4 pb-0">
+                        <div className="px-4 pt-3 pb-2">
                           <div className="flex items-center gap-2">
                             <AlertTriangle className="h-4 w-4 text-orange-500" />
                             <span className="font-medium text-sm">Unassigned Jobs</span>
@@ -614,24 +614,26 @@ const JobsPage: React.FC = () => {
                             </Badge>
                           </div>
                         </div>
-                        <div className="pb-4 px-4">
+                        <div className="pb-3 px-4">
                           <Droppable droppableId="unassigned" direction="horizontal">
                             {(provided, snapshot) => (
                               <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 className={cn(
-                                  "flex gap-3 min-h-[90px] border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
+                                  "flex gap-3 h-24 border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
                                   snapshot.isDraggingOver 
                                     ? "border-orange-400 bg-orange-50" 
                                     : "border-gray-300 bg-white"
                                 )}
                               >
                                 {filterJobs(unassignedJobs).length === 0 ? (
-                                  <div className="flex-1 text-center py-6 text-gray-500">
-                                    <ClipboardList className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                                    <p className="text-sm">No unassigned jobs</p>
-                                    <p className="text-xs text-gray-400 mt-1">Drop jobs here to unassign</p>
+                                  <div className="flex-1 text-center flex items-center justify-center text-gray-500">
+                                    <div className="flex flex-col items-center justify-center">
+                                      <ClipboardList className="h-5 w-5 mx-auto mb-1 text-gray-300" />
+                                      <p className="text-sm">No unassigned jobs</p>
+                                      <p className="text-xs text-gray-400">Drop jobs here to unassign</p>
+                                    </div>
                                   </div>
                                 ) : (
                                   filterJobs(unassignedJobs).map((job, index) => (
