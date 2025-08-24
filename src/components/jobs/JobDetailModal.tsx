@@ -59,6 +59,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showTimeSelector, setShowTimeSelector] = useState(false);
 
   // Fetch job data
   const { data: job, isLoading } = useQuery({
@@ -131,6 +132,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   useEffect(() => {
     if (job) {
       const validJobType = jobTypes.find(t => t.value === job.job_type)?.value || 'delivery';
+      const hasScheduledTime = job.scheduled_time !== null && job.scheduled_time !== undefined;
+      setShowTimeSelector(hasScheduledTime);
+      
       form.reset({
         job_type: validJobType,
         scheduled_date: job.scheduled_date || '',
@@ -478,23 +482,43 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           )}
                         />
 
+                        {/* Time Toggle */}
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={showTimeSelector}
+                            onCheckedChange={(checked) => {
+                              setShowTimeSelector(checked);
+                              if (!checked) {
+                                form.setValue('scheduled_time', null);
+                              } else if (!form.getValues('scheduled_time')) {
+                                form.setValue('scheduled_time', '09:00');
+                              }
+                            }}
+                          />
+                          <Label className="text-sm cursor-pointer">
+                            Specific Time
+                          </Label>
+                        </div>
+
                         {/* Time Field */}
-                        <FormField
-                          control={form.control}
-                          name="scheduled_time"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Scheduled Time (Optional)</FormLabel>
-                              <FormControl>
-                                <TimePicker
-                                  value={field.value || ''}
-                                  onChange={field.onChange}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        {showTimeSelector && (
+                          <FormField
+                            control={form.control}
+                            name="scheduled_time"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Scheduled Time</FormLabel>
+                                <FormControl>
+                                  <TimePicker
+                                    value={field.value || ''}
+                                    onChange={field.onChange}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
                       </>
                     ) : (
                       <>
@@ -505,7 +529,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           </div>
                           <div>
                             <label className="text-sm font-medium text-muted-foreground">Time</label>
-                            <p className="text-sm">{job?.scheduled_time || 'Not scheduled'}</p>
+                            <p className="text-sm">{job?.scheduled_time || 'No specific time'}</p>
                           </div>
                         </div>
                         <div>
