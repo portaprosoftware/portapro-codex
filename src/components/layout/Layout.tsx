@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useIsMobile } from "@/hooks/use-mobile";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
@@ -18,6 +19,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
   
   const { role, user, isLoaded } = useUserRole();
+  const isMobile = useIsMobile();
 
   if (!mounted) {
     return (
@@ -65,9 +67,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           onSectionChange={setActiveSection} 
         />
         <SidebarInset className="flex-1">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
-            <SidebarTrigger className="-ml-1" />
-          </header>
+          {isMobile && (
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
+              <SidebarTrigger className="-ml-1" />
+            </header>
+          )}
           <main className="flex-1 overflow-y-auto p-4">
             {children}
           </main>
