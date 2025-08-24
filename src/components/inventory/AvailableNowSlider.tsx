@@ -16,6 +16,28 @@ interface AvailableNowSliderProps {
 export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, onClose }) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
+  const getStatusBadge = (status: string) => {
+    const gradients = {
+      available: "bg-gradient-to-r from-green-600 to-green-700 text-white font-bold",
+      assigned: "bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold",
+      maintenance: "bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold",
+      out_of_service: "bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold"
+    };
+
+    const statusLabels = {
+      available: "Available",
+      assigned: "On Job", 
+      maintenance: "Maintenance",
+      out_of_service: "Permanently Retired"
+    };
+
+    return (
+      <Badge className={gradients[status as keyof typeof gradients] || gradients.available}>
+        {statusLabels[status as keyof typeof statusLabels] || status}
+      </Badge>
+    );
+  };
+
   // Fetch all products with their inventory data
   const { data: productsWithItems = [], isLoading } = useQuery({
     queryKey: ['products-with-items'],
@@ -124,12 +146,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                               <div className="flex items-center gap-2">
                                 <Hash className="w-4 h-4 text-gray-400" />
                                 <span className="font-medium text-gray-900">{item.item_code}</span>
-                                <Badge 
-                                  variant="outline" 
-                                  className="bg-green-50 text-green-700 border-green-200 text-xs"
-                                >
-                                  {item.status}
-                                </Badge>
+                                {getStatusBadge(item.status)}
                               </div>
                               
                               <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
