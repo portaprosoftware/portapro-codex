@@ -1,150 +1,149 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Building2, User, Phone, Mail, Users } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useJobWizard } from '@/contexts/JobWizardContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useJobWizard } from '@/contexts/JobWizardContext';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Building2, Search, User, Users, Phone, Mail, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCategoryDisplay } from '@/lib/categoryUtils';
 
 interface Customer {
   id: string;
   name: string;
-  email?: string;
   phone?: string;
+  email?: string;
   customer_type?: string;
-  address?: string;
-  notes?: string;
 }
 
-interface Contact {
+interface CustomerContact {
   id: string;
+  customer_id: string;
   first_name: string;
   last_name: string;
-  contact_type: string;
   email?: string;
   phone?: string;
   title?: string;
-  is_primary: boolean;
+  contact_type: string;
+  is_primary?: boolean;
+  notes?: string;
 }
+
+const formatCategoryDisplay = (category?: string) => {
+  if (!category) return 'Not Selected';
+  return category
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 export function CustomerSelectionStep() {
   const { state, updateData, nextStep } = useJobWizard();
   const [searchQuery, setSearchQuery] = useState('');
   const [showContactSelection, setShowContactSelection] = useState(false);
 
-  const { data: customers = [], isLoading } = useQuery({
-    queryKey: ['customers', searchQuery],
+  // Fetch customers
+  const { 
+    data: customers = [], 
+    isLoading: isLoadingCustomers 
+  } = useQuery({
+    queryKey: ['customers'],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('customers')
-        .select('id, name, email, phone, customer_type, address, notes')
+        .select('id, name, phone, email, customer_type')
         .order('name');
-
-      if (searchQuery.trim()) {
-        query = query.or(`name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,phone.ilike.%${searchQuery}%`);
-      }
-
-      const { data, error } = await query.limit(20);
+      
       if (error) throw error;
       return data as Customer[];
-    },
+    }
   });
 
   // Fetch contacts for selected customer
-  const { data: contacts = [], isLoading: isLoadingContacts } = useQuery({
+  const { 
+    data: contacts = [], 
+    isLoading: isLoadingContacts 
+  } = useQuery({
     queryKey: ['customer-contacts', state.data.customer_id],
     queryFn: async () => {
       if (!state.data.customer_id) return [];
       
       const { data, error } = await supabase
         .from('customer_contacts')
-        .select('id, first_name, last_name, contact_type, email, phone, title, is_primary')
+        .select('*')
         .eq('customer_id', state.data.customer_id)
-        .order('is_primary', { ascending: false })
-        .order('first_name');
+        .order('is_primary', { ascending: false });
       
       if (error) throw error;
-      return data as Contact[];
+      return data as CustomerContact[];
     },
-    enabled: !!state.data.customer_id,
+    enabled: !!state.data.customer_id
   });
 
+  // Filter customers based on search
+  const filteredCustomers = customers.filter(customer =>
+    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (customer.phone && customer.phone.includes(searchQuery)) ||
+    (customer.email && customer.email.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   const handleCustomerSelect = (customer: Customer) => {
-    // Clear previous contact selection when switching customers
-    updateData({
+    console.log('Customer selected:', customer.name);
+    updateData({ 
       customer_id: customer.id,
-      contact_id: undefined,
+      contact_id: undefined // Clear any previously selected contact
     });
-    
-    // Don't automatically show contact selection - let useEffect handle it
-    // setShowContactSelection(true); // Removed this line
   };
 
-  const handleContactSelect = (contact: Contact) => {
-    updateData({
-      contact_id: contact.id,
-    });
+  const handleContactSelect = (contact: CustomerContact) => {
+    console.log('Contact selected:', contact.first_name, contact.last_name);
+    updateData({ contact_id: contact.id });
+    setShowContactSelection(false);
   };
 
   const handleSkipContactSelection = () => {
-    updateData({
-      contact_id: undefined,
-    });
+    console.log('Skipping contact selection');
+    updateData({ contact_id: undefined });
     setShowContactSelection(false);
   };
 
-  const handleResetCustomer = () => {
-    updateData({
-      customer_id: undefined,
-      contact_id: undefined,
-    });
-    setShowContactSelection(false);
-  };
-
-  // Auto-skip contact selection if no contacts exist, or show it if contacts do exist
+  // Auto-handle contact selection logic
   useEffect(() => {
     console.log('CustomerSelection useEffect triggered:', {
       customer_id: state.data.customer_id,
       contact_id: state.data.contact_id,
       isLoadingContacts,
       contactsLength: contacts.length,
-      currentStep: state.currentStep
+      currentStep: state.currentStep,
+      showContactSelection
     });
     
-    if (state.data.customer_id && !isLoadingContacts) {
+    if (state.data.customer_id && !isLoadingContacts && state.currentStep === 1) {
       if (contacts.length === 0) {
-        console.log('No contacts found, should skip to next step');
+        console.log('No contacts found, auto-advancing to next step');
         // No contacts exist - clear contact_id and automatically skip to next step
-        // But only if we're currently on step 1 (to avoid infinite loops)
-        if (state.currentStep === 1) {
-          updateData({ contact_id: undefined });
-          setShowContactSelection(false);
-          nextStep();
-        }
-      } else {
-        console.log('Contacts exist, managing contact selection UI');
-        // Contacts exist - show contact selection if not already selected
-        if (!state.data.contact_id) {
-          setShowContactSelection(true);
-        } else {
-          setShowContactSelection(false);
-        }
+        updateData({ contact_id: undefined });
+        setShowContactSelection(false);
+        nextStep();
+      } else if (!state.data.contact_id && !showContactSelection) {
+        console.log('Contacts exist but none selected, showing contact selection');
+        // Contacts exist but none selected - show contact selection
+        setShowContactSelection(true);
       }
     }
-  }, [state.data.customer_id, state.data.contact_id, contacts.length, isLoadingContacts, state.currentStep]);
-
+  }, [state.data.customer_id, state.data.contact_id, contacts.length, isLoadingContacts, state.currentStep, showContactSelection]);
 
   const getCustomerTypeColor = (type?: string) => {
     const typeGradients = {
       'bars_restaurants': 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'hotels_lodging': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'construction': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-bold px-3 py-1 rounded-full',
-      'municipal_government': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'festivals_events': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'government_municipalities': 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'healthcare_medical': 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'industrial_manufacturing': 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 font-bold px-3 py-1 rounded-full',
+      'not_selected': 'bg-gradient-to-r from-gray-400 to-gray-500 text-white border-0 font-bold px-3 py-1 rounded-full',
       'other': 'bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-bold px-3 py-1 rounded-full',
       'retail': 'bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 font-bold px-3 py-1 rounded-full',
@@ -158,35 +157,35 @@ export function CustomerSelectionStep() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold mb-2">
-          {!state.data.customer_id ? 'Select Customer' : showContactSelection ? 'Select Contact' : 'Customer & Contact Selected'}
+          {!state.data.customer_id ? 'Select Customer' : showContactSelection ? 'Select Contact' : 'Customer Selected'}
         </h2>
         <p className="text-muted-foreground">
           {!state.data.customer_id 
             ? 'Choose an existing customer for this job. Create customers in the Customers section first.'
             : showContactSelection 
-            ? 'Choose a contact person for this job from the customer\'s contact list.'
-            : 'Customer and contact have been selected for this job.'
-          }
+            ? 'Choose a contact for this customer or continue without selecting one.'
+            : 'Customer has been selected for this job.'}
         </p>
       </div>
 
-      {/* Customer Selection or Contact Selection */}
       {!state.data.customer_id ? (
+        /* Customer Selection */
         <>
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search customers by name, email, or phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-medium">Select Customer</h3>
+            <div className="flex items-center gap-2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search customers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64"
+              />
+            </div>
           </div>
-
-          {/* Customer List */}
-          <div className="space-y-3">
-            {isLoading ? (
+          
+          <div className="grid gap-3 max-h-96 overflow-y-auto">
+            {isLoadingCustomers ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                 <p className="text-muted-foreground mt-2">Loading customers...</p>
@@ -198,55 +197,36 @@ export function CustomerSelectionStep() {
                   {searchQuery ? 'No customers found' : 'No customers available. Create customers in the Customers section first.'}
                 </p>
               </div>
+            ) : filteredCustomers.length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">No customers match your search</p>
+              </div>
             ) : (
-              customers.map((customer) => (
+              filteredCustomers.map((customer) => (
                 <Card
                   key={customer.id}
-                  className={cn(
-                    "cursor-pointer transition-colors hover:bg-muted/50",
-                    state.data.customer_id === customer.id && "ring-2 ring-primary bg-primary/5"
-                  )}
+                  className="cursor-pointer transition-colors hover:bg-muted/50"
                   onClick={() => handleCustomerSelect(customer)}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Building2 className="h-5 w-5 text-primary" />
+                        <div>
                           <h3 className="font-medium">{customer.name}</h3>
-                          {customer.customer_type && (
+                          <div className="flex items-center gap-2 mt-1">
                             <Badge className={getCustomerTypeColor(customer.customer_type)}>
                               {formatCategoryDisplay(customer.customer_type)}
                             </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-1 text-sm text-muted-foreground">
-                          {customer.phone && (
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-3 w-3" />
-                              {customer.phone}
-                            </div>
-                          )}
-                          {customer.email && (
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-3 w-3" />
-                              {customer.email}
-                            </div>
-                          )}
-                          {customer.address && (
-                            <div className="flex items-center gap-2">
-                              <Building2 className="h-3 w-3" />
-                              {customer.address}
-                            </div>
-                          )}
+                            {customer.phone && (
+                              <span className="text-xs text-muted-foreground">
+                                {customer.phone}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      
-                      {state.data.customer_id === customer.id && (
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
-                          <User className="h-3 w-3" />
-                        </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -255,6 +235,7 @@ export function CustomerSelectionStep() {
           </div>
         </>
       ) : showContactSelection ? (
+        /* Contact Selection */
         <div className="space-y-4">
           {/* Selected Customer Display */}
           <Card className="bg-muted/30">
@@ -355,20 +336,20 @@ export function CustomerSelectionStep() {
                   </Card>
                 ))}
               </div>
-              
-              <div className="flex justify-center">
+
+              <div className="flex justify-center pt-4">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   onClick={handleSkipContactSelection}
                 >
-                  Skip Contact Selection
+                  Continue without Contact Selection
                 </Button>
               </div>
             </>
           )}
         </div>
       ) : (
-        /* Selected Customer & Contact Display */
+        /* Selected Customer Display - Only shows when customer is selected and not in contact selection mode */
         <div className="space-y-4">
           <Card className="bg-muted/30">
             <CardContent className="p-4">
@@ -396,7 +377,7 @@ export function CustomerSelectionStep() {
                   </Button>
                 </div>
 
-                {/* Selected Contact */}
+                {/* Selected Contact - Only show if contact is actually selected */}
                 {state.data.contact_id && (
                   <div className="flex items-center justify-between pt-3 border-t">
                     <div className="flex items-center gap-3">
@@ -420,15 +401,30 @@ export function CustomerSelectionStep() {
                     </Button>
                   </div>
                 )}
+                
+                {/* Show "No Contact" message when customer has no contacts */}
+                {!state.data.contact_id && !isLoadingContacts && contacts.length === 0 && (
+                  <div className="pt-3 border-t">
+                    <div className="flex items-center gap-3">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">Contact</p>
+                        <p className="text-sm text-muted-foreground">No contacts available for this customer</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
 
-      {/* Validation Error */}
-      {state.errors.customer && (
-        <p className="text-sm text-destructive">{state.errors.customer}</p>
+          <div className="bg-muted/30 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <span>Customer{state.data.contact_id ? ' and contact have' : ' has'} been selected for this job.</span>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
