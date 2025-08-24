@@ -87,11 +87,15 @@ export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange 
         {topCustomers?.map((customer: any, index: number) => (
           <div key={customer.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                index === 1 ? 'bg-gray-100 text-gray-800' :
-                index === 2 ? 'bg-orange-100 text-orange-800' :
-                'bg-blue-100 text-blue-800'
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
+                index === 0 ? 'bg-gradient-orange' :
+                index === 1 ? 'bg-gradient-secondary' :
+                index === 2 ? 'bg-gradient-purple' :
+                index === 3 ? 'bg-gradient-blue' :
+                index === 4 ? 'bg-gradient-green' :
+                index === 5 ? 'bg-gradient-red' :
+                index === 6 ? 'bg-gradient-primary' :
+                'bg-gradient-secondary'
               }`}>
                 {index + 1}
               </div>
@@ -117,16 +121,6 @@ export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange 
                 </div>
               </div>
               
-              <div className="mt-1">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                  customer.daysSinceLastJob <= 7 ? 'bg-green-100 text-green-800' :
-                  customer.daysSinceLastJob <= 30 ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {customer.daysSinceLastJob <= 7 ? 'Active' :
-                   customer.daysSinceLastJob <= 30 ? 'Recent' : 'Inactive'}
-                </span>
-              </div>
             </div>
           </div>
         ))}

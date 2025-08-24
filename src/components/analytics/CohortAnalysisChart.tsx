@@ -100,17 +100,17 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({ dateRa
                 <td className="py-2 px-3 font-medium text-gray-900">{cohort.cohortMonth}</td>
                 <td className="text-center py-2 px-3">{cohort.totalCustomers}</td>
                 <td className="text-center py-2 px-3">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gradient-green text-white">
                     {cohort.totalCustomers > 0 ? Math.round((cohort.retention30 / cohort.totalCustomers) * 100) : 0}%
                   </span>
                 </td>
                 <td className="text-center py-2 px-3">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gradient-blue text-white">
                     {cohort.totalCustomers > 0 ? Math.round((cohort.retention60 / cohort.totalCustomers) * 100) : 0}%
                   </span>
                 </td>
                 <td className="text-center py-2 px-3">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gradient-purple text-white">
                     {cohort.totalCustomers > 0 ? Math.round((cohort.retention90 / cohort.totalCustomers) * 100) : 0}%
                   </span>
                 </td>
